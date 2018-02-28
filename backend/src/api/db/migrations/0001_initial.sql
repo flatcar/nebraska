@@ -187,7 +187,6 @@ create table package_channel_blacklist (
 
 -- Default team and user (admin/admin)
 insert into team (id, name) values ('d89342dc-9214-441d-a4af-bdd837a3b239', 'default');
-insert into users (username, secret, team_id) values ('admin', '8b31292d4778582c0e5fa96aee5513f1', 'd89342dc-9214-441d-a4af-bdd837a3b239');
 
 -- Event types
 insert into event_type (type, result, description) values (3, 0, 'Instance reported an error during an update step.');
