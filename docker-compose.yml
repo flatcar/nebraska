@@ -1,0 +1,24 @@
+version: '3'
+services:
+  rollerd:
+    build:
+      context: .
+      dockerfile: Dockerfile.rollerd
+    ports:
+      - 8000:8000
+    command: |
+      sh -c '
+        sleep 3
+        /coreroller/rollerd -http-static-dir=/coreroller/static'
+    depends_on:
+      - "postgres"
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+    volumes:
+      - postgres-data:/coreroller/data
+    ports:
+      - 5432:5432
+volumes:
+  postgres-data:
