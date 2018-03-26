@@ -1,0 +1,56 @@
+[prune]
+  non-go = true
+  go-tests = true
+  unused-packages = true
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/aquam8/go-omaha"
+
+[[constraint]]
+  name = "github.com/blang/semver"
+  version = "3.5.1"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/coreos/go-omaha"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/facebookgo/grace"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/jmoiron/sqlx"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/lib/pq"
+
+[[constraint]]
+  name = "github.com/mgutz/logxi"
+  version = "1.0.0"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/rubenv/sql-migrate"
+
+[[constraint]]
+  name = "github.com/satori/go.uuid"
+  version = "1.2.0"
+
+[[constraint]]
+  name = "github.com/stretchr/testify"
+  version = "1.2.1"
+
+[[constraint]]
+  name = "github.com/zenazn/goji"
+  version = "1.0.0"
+
+[[constraint]]
+  name = "gopkg.in/fatih/set.v0"
+  version = "0.1.0"
+
+[[constraint]]
+  name = "gopkg.in/mgutz/dat.v1"
+  version = "1.1.10"
