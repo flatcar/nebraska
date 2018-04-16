@@ -178,9 +178,11 @@ func (api *API) triggerEventConsequences(instanceID, appID, groupID, lastUpdateV
 			return err
 		}
 		if updatesStats.UpdatesToCurrentVersionAttempted == 1 {
-			_ = api.disableUpdates(groupID)
-			_ = api.setGroupRolloutInProgress(groupID, false)
-			_ = api.newGroupActivityEntry(activityRolloutFailed, activityError, lastUpdateVersion, appID, groupID)
+			if api.disableUpdatesOnFailedRollout {
+				_ = api.disableUpdates(groupID)
+				_ = api.setGroupRolloutInProgress(groupID, false)
+				_ = api.newGroupActivityEntry(activityRolloutFailed, activityError, lastUpdateVersion, appID, groupID)
+			}
 		}
 	}
 
