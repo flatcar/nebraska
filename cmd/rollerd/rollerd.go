@@ -19,7 +19,7 @@ const (
 )
 
 var (
-	enableSyncer       = flag.Bool("enable-syncer", true, "Enable CoreOS packages syncer")
+	enableSyncer       = flag.Bool("enable-syncer", false, "Enable CoreOS packages syncer")
 	hostCoreosPackages = flag.Bool("host-coreos-packages", false, "Host CoreOS packages in CoreRoller")
 	coreosPackagesPath = flag.String("coreos-packages-path", "", "Path where CoreOS packages files are stored")
 	corerollerURL      = flag.String("coreroller-url", "", "CoreRoller URL (http://host:port - required when hosting CoreOS packages in CoreRoller)")
