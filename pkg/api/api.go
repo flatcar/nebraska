@@ -35,6 +35,10 @@ type API struct {
 	dbR      *runner.DB
 	dbDriver string
 	dbURL    string
+
+	// disableUpdatesOnFailedRollout defines wether to disable updates
+	// after a first rollout attempt failed (ResultFailed)
+	disableUpdatesOnFailedRollout bool
 }
 
 // New creates a new API instance, creating the underlying db connection and
