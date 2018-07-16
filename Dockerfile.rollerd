@@ -1,4 +1,4 @@
-FROM alpine:3.7 as coreroller-build
+FROM alpine:3.8 as coreroller-build
 
 ENV GOPATH=/go
 
@@ -14,7 +14,7 @@ RUN cd /go/src/github.com/coreroller/coreroller && \
 	npm install && \
 	npm run build
 
-FROM alpine:3.7
+FROM alpine:3.8
 
 RUN apk update && \
 	apk add ca-certificates tzdata
