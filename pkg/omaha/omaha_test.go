@@ -37,14 +37,13 @@ func TestMain(m *testing.M) {
 	os.Setenv("COREROLLER_DB_URL", testsDbURL)
 
 	a, err := api.New(api.OptionInitDB)
-	defer a.Close()
-
 	if err != nil {
 		log.Println("These tests require PostgreSQL running and a tests database created, please adjust testsDbUrl as needed.")
 		log.Println("Default: postgres://postgres@127.0.0.1:5432/coreroller_tests?sslmode=disable")
 		log.Println(err)
 		os.Exit(1)
 	}
+	a.Close()
 
 	os.Exit(m.Run())
 }
