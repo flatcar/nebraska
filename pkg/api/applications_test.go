@@ -9,7 +9,7 @@ import (
 )
 
 func TestAddApp(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -38,7 +38,7 @@ func TestAddApp(t *testing.T) {
 }
 
 func TestAddAppCloning(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -63,7 +63,7 @@ func TestAddAppCloning(t *testing.T) {
 }
 
 func TestUpdateApp(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -91,7 +91,7 @@ func TestUpdateApp(t *testing.T) {
 }
 
 func TestDeleteApp(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -105,7 +105,7 @@ func TestDeleteApp(t *testing.T) {
 }
 
 func TestGetApp(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -122,7 +122,7 @@ func TestGetApp(t *testing.T) {
 }
 
 func TestGetApps(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})

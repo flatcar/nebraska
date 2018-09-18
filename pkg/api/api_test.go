@@ -4,11 +4,22 @@ import (
 	"log"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 const (
 	testsDbURL string = "postgres://postgres@127.0.0.1:5432/coreroller_tests?sslmode=disable&connect_timeout=10"
 )
+
+func newForTest(t *testing.T) *API {
+	a, err := NewForTest(OptionInitDB, OptionDisableUpdatesOnFailedRollout)
+
+	require.NoError(t, err)
+	require.NotNil(t, a)
+
+	return a
+}
 
 func TestMain(m *testing.M) {
 	_ = os.Setenv("COREROLLER_DB_URL", testsDbURL)

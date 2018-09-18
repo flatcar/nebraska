@@ -7,7 +7,7 @@ import (
 )
 
 func TestAddCoreosAction(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})

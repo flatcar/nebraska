@@ -11,6 +11,7 @@ import (
 
 	omahaSpec "github.com/aquam8/go-omaha/omaha"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gopkg.in/mgutz/dat.v1"
 )
 
@@ -22,6 +23,15 @@ const (
 	reqSp       string = "linux"
 	reqArch     string = ""
 )
+
+func newForTest(t *testing.T) *api.API {
+	a, err := api.NewForTest(api.OptionInitDB, api.OptionDisableUpdatesOnFailedRollout)
+
+	require.NoError(t, err)
+	require.NotNil(t, a)
+
+	return a
+}
 
 func TestMain(m *testing.M) {
 	os.Setenv("COREROLLER_DB_URL", testsDbURL)
@@ -40,7 +50,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestInvalidRequests(t *testing.T) {
-	a, _ := api.New(api.OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 	h := NewHandler(a)
 
@@ -73,7 +83,7 @@ func TestInvalidRequests(t *testing.T) {
 }
 
 func TestAppNoUpdateForAppWithChannelAndPackageName(t *testing.T) {
-	a, _ := api.New(api.OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 	h := NewHandler(a)
 
@@ -125,7 +135,7 @@ func TestAppNoUpdateForAppWithChannelAndPackageName(t *testing.T) {
 }
 
 func TestAppRegistrationForAppWithChannelAndPackageName(t *testing.T) {
-	a, _ := api.New(api.OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 	h := NewHandler(a)
 
@@ -156,7 +166,7 @@ func TestAppRegistrationForAppWithChannelAndPackageName(t *testing.T) {
 }
 
 func TestAppUpdateForAppWithChannelAndPackageName(t *testing.T) {
-	a, _ := api.New(api.OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 	h := NewHandler(a)
 
@@ -211,7 +221,7 @@ func TestAppUpdateForAppWithChannelAndPackageName(t *testing.T) {
 }
 
 func TestCoreosGroupNamesConversionToIds(t *testing.T) {
-	a, _ := api.New(api.OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 	h := NewHandler(a)
 

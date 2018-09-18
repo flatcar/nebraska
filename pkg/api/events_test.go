@@ -10,7 +10,7 @@ import (
 )
 
 func TestRegisterEvent_InvalidParams(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -42,7 +42,7 @@ func TestRegisterEvent_InvalidParams(t *testing.T) {
 }
 
 func TestRegisterEvent_TriggerEventConsequences(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -88,7 +88,7 @@ func TestRegisterEvent_TriggerEventConsequences(t *testing.T) {
 }
 
 func TestRegisterEvent_TriggerEventConsequences_FirstUpdateAttemptFailed(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})

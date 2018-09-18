@@ -10,7 +10,7 @@ import (
 )
 
 func TestAddPackage(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -53,7 +53,7 @@ func TestAddPackage(t *testing.T) {
 }
 
 func TestAddPackageCoreos(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	pkg := &Package{
@@ -78,7 +78,7 @@ func TestAddPackageCoreos(t *testing.T) {
 }
 
 func TestUpdatePackage(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -110,7 +110,7 @@ func TestUpdatePackage(t *testing.T) {
 }
 
 func TestUpdatePackageCoreos(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	pkg := &Package{
@@ -144,7 +144,7 @@ func TestUpdatePackageCoreos(t *testing.T) {
 }
 
 func TestDeletePackage(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -162,7 +162,7 @@ func TestDeletePackage(t *testing.T) {
 }
 
 func TestGetPackage(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -186,7 +186,7 @@ func TestGetPackage(t *testing.T) {
 }
 
 func TestGetPackageByVersion(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -211,7 +211,7 @@ func TestGetPackageByVersion(t *testing.T) {
 }
 
 func TestGetPackages(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
