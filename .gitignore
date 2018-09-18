@@ -1,7 +1,6 @@
 .DS_Store
 *.swp
 *sublime*
-pkg
 bin
 node_modules
 frontend/built/js/main.js
