@@ -100,6 +100,14 @@ func OptionInitDB(api *API) error {
 	return nil
 }
 
+// OptionDisableUpdatesOnFailedRollout will modify API to disable
+// updates on failed rollout.
+func OptionDisableUpdatesOnFailedRollout(api *API) error {
+	api.disableUpdatesOnFailedRollout = true
+
+	return nil
+}
+
 // Close releases the connections to the database.
 func (api *API) Close() {
 	_ = api.db.DB.Close()
