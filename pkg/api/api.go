@@ -104,3 +104,24 @@ func OptionInitDB(api *API) error {
 func (api *API) Close() {
 	_ = api.db.DB.Close()
 }
+
+// NewForTest creates a new API instance with given options and fills
+// the database with sample data for testing purposes.
+func NewForTest(options ...func(*API) error) (*API, error) {
+	a, err := New(options...)
+	if err != nil {
+		return nil, err
+	}
+
+	sqlFile, err := Asset("db/sample_data.sql")
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = a.db.Exec(string(sqlFile))
+	if err != nil {
+		return nil, err
+	}
+
+	return a, nil
+}
