@@ -9,7 +9,7 @@ import (
 )
 
 func TestAddGroup(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -53,7 +53,7 @@ func TestAddGroup(t *testing.T) {
 }
 
 func TestUpdateGroup(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -90,7 +90,7 @@ func TestUpdateGroup(t *testing.T) {
 }
 
 func TestDeleteGroup(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -107,7 +107,7 @@ func TestDeleteGroup(t *testing.T) {
 }
 
 func TestGetGroup(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -128,7 +128,7 @@ func TestGetGroup(t *testing.T) {
 }
 
 func TestGetGroups(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})

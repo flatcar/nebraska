@@ -11,7 +11,7 @@ const (
 )
 
 func TestGetUser(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	_, err := a.GetUser("non-existent")
@@ -25,7 +25,7 @@ func TestGetUser(t *testing.T) {
 }
 
 func TestUpdateUserPassword(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	err := a.UpdateUserPassword("non-existent", "new-password")

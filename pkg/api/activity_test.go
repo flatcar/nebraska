@@ -10,7 +10,7 @@ import (
 )
 
 func TestGetActivity(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tVersion := "12.1.0"

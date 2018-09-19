@@ -9,7 +9,7 @@ import (
 )
 
 func TestRegisterInstance(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -65,7 +65,7 @@ func TestRegisterInstance(t *testing.T) {
 }
 
 func TestGetInstance(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -93,7 +93,7 @@ func TestGetInstance(t *testing.T) {
 }
 
 func TestGetInstances(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})

@@ -2,7 +2,7 @@ language: go
 sudo: required
 
 go:
-  - 1.5
+  - "1.11.x"
 
 services:
   - docker
@@ -14,6 +14,7 @@ before_install:
   - docker run --privileged -d -p 127.0.0.1:5432:5432 coreroller/postgres
   - docker ps -a
 
+# at most one test at a time is ran, because most of the tests write
+# to the single database instance
 script:
-  - export GOPATH=$TRAVIS_BUILD_DIR/backend:$TRAVIS_BUILD_DIR/backend/vendor
-  - cd backend/src && LOGXI=* go test -p 1 -v ./...
+  - LOGXI=* go test -p 1 -v ./...

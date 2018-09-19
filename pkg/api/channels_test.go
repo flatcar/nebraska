@@ -9,7 +9,7 @@ import (
 )
 
 func TestAddChannel(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -54,7 +54,7 @@ func TestAddChannel(t *testing.T) {
 }
 
 func TestUpdateChannel(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -83,7 +83,7 @@ func TestUpdateChannel(t *testing.T) {
 }
 
 func TestDeleteChannel(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -101,7 +101,7 @@ func TestDeleteChannel(t *testing.T) {
 }
 
 func TestGetChannel(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -122,7 +122,7 @@ func TestGetChannel(t *testing.T) {
 }
 
 func TestGetChannels(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})

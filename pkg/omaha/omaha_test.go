@@ -7,10 +7,11 @@ import (
 	"os"
 	"testing"
 
-	"api"
+	"github.com/coreroller/coreroller/pkg/api"
 
 	omahaSpec "github.com/aquam8/go-omaha/omaha"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gopkg.in/mgutz/dat.v1"
 )
 
@@ -23,24 +24,32 @@ const (
 	reqArch     string = ""
 )
 
+func newForTest(t *testing.T) *api.API {
+	a, err := api.NewForTest(api.OptionInitDB, api.OptionDisableUpdatesOnFailedRollout)
+
+	require.NoError(t, err)
+	require.NotNil(t, a)
+
+	return a
+}
+
 func TestMain(m *testing.M) {
 	os.Setenv("COREROLLER_DB_URL", testsDbURL)
 
 	a, err := api.New(api.OptionInitDB)
-	defer a.Close()
-
 	if err != nil {
 		log.Println("These tests require PostgreSQL running and a tests database created, please adjust testsDbUrl as needed.")
 		log.Println("Default: postgres://postgres@127.0.0.1:5432/coreroller_tests?sslmode=disable")
 		log.Println(err)
 		os.Exit(1)
 	}
+	a.Close()
 
 	os.Exit(m.Run())
 }
 
 func TestInvalidRequests(t *testing.T) {
-	a, _ := api.New(api.OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 	h := NewHandler(a)
 
@@ -73,7 +82,7 @@ func TestInvalidRequests(t *testing.T) {
 }
 
 func TestAppNoUpdateForAppWithChannelAndPackageName(t *testing.T) {
-	a, _ := api.New(api.OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 	h := NewHandler(a)
 
@@ -125,7 +134,7 @@ func TestAppNoUpdateForAppWithChannelAndPackageName(t *testing.T) {
 }
 
 func TestAppRegistrationForAppWithChannelAndPackageName(t *testing.T) {
-	a, _ := api.New(api.OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 	h := NewHandler(a)
 
@@ -156,7 +165,7 @@ func TestAppRegistrationForAppWithChannelAndPackageName(t *testing.T) {
 }
 
 func TestAppUpdateForAppWithChannelAndPackageName(t *testing.T) {
-	a, _ := api.New(api.OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 	h := NewHandler(a)
 
@@ -211,7 +220,7 @@ func TestAppUpdateForAppWithChannelAndPackageName(t *testing.T) {
 }
 
 func TestCoreosGroupNamesConversionToIds(t *testing.T) {
-	a, _ := api.New(api.OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 	h := NewHandler(a)
 

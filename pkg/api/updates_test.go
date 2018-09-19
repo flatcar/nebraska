@@ -10,7 +10,7 @@ import (
 )
 
 func TestGetUpdatePackage(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -48,7 +48,7 @@ func TestGetUpdatePackage(t *testing.T) {
 }
 
 func TestGetUpdatePackage_GroupNoChannel(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -60,7 +60,7 @@ func TestGetUpdatePackage_GroupNoChannel(t *testing.T) {
 }
 
 func TestGetUpdatePackage_UpdatesDisabled(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -74,7 +74,7 @@ func TestGetUpdatePackage_UpdatesDisabled(t *testing.T) {
 }
 
 func TestGetUpdatePackage_MaxUpdatesPerPeriodLimitReached_SafeMode(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	safeMode := true
@@ -93,7 +93,7 @@ func TestGetUpdatePackage_MaxUpdatesPerPeriodLimitReached_SafeMode(t *testing.T)
 }
 
 func TestGetUpdatePackage_MaxUpdatesPerPeriodLimitReached_LimitUpdated(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -117,7 +117,7 @@ func TestGetUpdatePackage_MaxUpdatesPerPeriodLimitReached_LimitUpdated(t *testin
 }
 
 func TestGetUpdatePackage_MaxUpdatesLimitsReached(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	maxUpdatesPerPeriod := 2
@@ -152,7 +152,7 @@ func TestGetUpdatePackage_MaxUpdatesLimitsReached(t *testing.T) {
 }
 
 func TestGetUpdatePackage_MaxTimedOutUpdatesLimitReached(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	maxUpdatesPerPeriod := 2
@@ -183,7 +183,7 @@ func TestGetUpdatePackage_MaxTimedOutUpdatesLimitReached(t *testing.T) {
 }
 
 func TestGetUpdatePackage_RolloutStats(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -239,7 +239,7 @@ func TestGetUpdatePackage_RolloutStats(t *testing.T) {
 }
 
 func TestGetUpdatePackage_UpdateInProgressOnInstance(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
@@ -258,7 +258,7 @@ func TestGetUpdatePackage_UpdateInProgressOnInstance(t *testing.T) {
 }
 
 func TestGetUpdatePackage_InstanceStatusHistory(t *testing.T) {
-	a, _ := New(OptionInitDB)
+	a := newForTest(t)
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
