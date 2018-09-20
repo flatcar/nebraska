@@ -8,8 +8,8 @@ all: build
 .PHONY: all
 
 build:
-	go build -o bin/rollerd cmd/rollerd/rollerd.go cmd/rollerd/controller.go
-	go build -o bin/initdb cmd/initdb/initdb.go
+	go build -o bin/rollerd ./cmd/rollerd
+	go build -o bin/initdb ./cmd/initdb
 
 .PHONY: build
 
