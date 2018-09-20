@@ -6,6 +6,10 @@ DOCKER_IMAGE_POSTGRES ?= "coreroller-postgres"
 .PHONY: all
 all: build
 
+.PHONY: check
+check:
+	go test -p 1 ./...
+
 .PHONY: build
 build:
 	go build -o bin/rollerd ./cmd/rollerd
