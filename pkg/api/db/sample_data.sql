@@ -4,14 +4,6 @@
 insert into team (id, name) values ('d89342dc-9214-441d-a4af-bdd837a3b239', 'default');
 insert into users (username, secret, team_id) values ('admin', '8b31292d4778582c0e5fa96aee5513f1', 'd89342dc-9214-441d-a4af-bdd837a3b239');
 
--- Event types
-insert into event_type (type, result, description) values (3, 0, 'Instance reported an error during an update step.');
-insert into event_type (type, result, description) values (3, 1, 'Updater has processed and applied package.');
-insert into event_type (type, result, description) values (3, 2, 'Instances upgraded to current channel version.');
-insert into event_type (type, result, description) values (13, 1, 'Downloading latest version.');
-insert into event_type (type, result, description) values (14, 1, 'Update package arrived successfully.');
-insert into event_type (type, result, description) values (800, 1, 'Install success. Update completion prevented by instance.');
-
 -- CoreOS application
 insert into application (id, name, description, team_id) values ('e96281a6-d1af-4bde-9a0a-97b76e56dc57', 'CoreOS', 'Linux for massive server deployments', 'd89342dc-9214-441d-a4af-bdd837a3b239');
 insert into package values ('2ba4c984-5e9b-411e-b7c3-b3eb14f7a261', 1, '766.3.0', 'https://commondatastorage.googleapis.com/update-storage.core-os.net/amd64-usr/766.3.0/', 'update.gz', NULL, '154967458', 'l4Kw7AeBLrVID9JbfyMoJeB5yKg=', '2015-09-20 00:12:37.523938', 'e96281a6-d1af-4bde-9a0a-97b76e56dc57');
