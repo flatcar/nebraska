@@ -693,17 +693,26 @@ func (ctl *controller) getMetrics(c web.C, w http.ResponseWriter, r *http.Reques
 	// https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md#basic-info
 	w.Header().Set("Content-Type", "text/plain; version=0.0.4")
 	w.WriteHeader(http.StatusOK)
+	needEmptyLine := false
 	if len(aipcMetrics) > 0 {
+		if needEmptyLine {
+			fmt.Fprintf(w, "\n")
+		}
 		fmt.Fprintf(w, "%s\n", app_instances_per_channel_metrics_prolog)
 		for _, metric := range aipcMetrics {
 			fmt.Fprintf(w, `coreroller_application_instances_per_channel{application="%s",version="%s",channel="%s"} %d %d%s`, escapeMetricString(metric.ApplicationName), escapeMetricString(metric.Version), escapeMetricString(metric.ChannelName), metric.InstancesCount, nowUnixMillis, "\n")
 		}
+		needEmptyLine = true
 	}
 	if len(fuMetrics) > 0 {
+		if needEmptyLine {
+			fmt.Fprintf(w, "\n")
+		}
 		fmt.Fprintf(w, "%s\n", failed_updates_metrics_prolog)
 		for _, metric := range fuMetrics {
 			fmt.Fprintf(w, `coreroller_failed_updates{application="%s"} %d %d%s`, escapeMetricString(metric.ApplicationName), metric.FailureCount, nowUnixMillis, "\n")
 		}
+		needEmptyLine = true
 	}
 }
 
