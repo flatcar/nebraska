@@ -12,6 +12,14 @@ WHERE a.team_id = $1 AND a.id = ia.application_id AND ia.group_id = g.id AND g.c
 GROUP BY app_name, version, channel_name
 ORDER BY app_name, version, channel_name
 `
+
+	failedUpdatesSQL string = `
+SELECT a.name AS app_name, count(*) as fail_count
+FROM application a, event e, event_type et
+WHERE a.team_id = $1 AND a.id = e.application_id AND e.event_type_id = et.id AND et.result = 0 AND et.type = 3
+GROUP BY app_name
+ORDER BY app_name
+`
 )
 
 type AppInstancesPerChannelMetric struct {
@@ -25,6 +33,24 @@ func (api *API) GetAppInstancesPerChannelMetrics(teamID string) ([]AppInstancesP
 	var metrics []AppInstancesPerChannelMetric
 
 	switch err := api.dbR.SQL(appInstancesPerChannelMetricSQL, teamID).QueryStructs(&metrics); err {
+	case nil:
+		return metrics, nil
+	case sql.ErrNoRows:
+		return metrics, nil
+	default:
+		return nil, err
+	}
+}
+
+type FailedUpdatesMetric struct {
+	ApplicationName string `db:"app_name" json:"app_name"`
+	FailureCount    int    `db:"fail_count" json:"fail_count"`
+}
+
+func (api *API) GetFailedUpdatesMetrics(teamID string) ([]FailedUpdatesMetric, error) {
+	var metrics []FailedUpdatesMetric
+
+	switch err := api.dbR.SQL(failedUpdatesSQL, teamID).QueryStructs(&metrics); err {
 	case nil:
 		return metrics, nil
 	case sql.ErrNoRows:

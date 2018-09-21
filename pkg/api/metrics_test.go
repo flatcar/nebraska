@@ -17,6 +17,12 @@ func TestGetAppInstancesPerChannelMetrics(t *testing.T) {
 		{
 			ApplicationName: "Sample application",
 			Version:         "1.0.1",
+			ChannelName:     "Failing",
+			InstancesCount:  1,
+		},
+		{
+			ApplicationName: "Sample application",
+			Version:         "1.0.1",
 			ChannelName:     "Master",
 			InstancesCount:  1,
 		},
@@ -58,5 +64,21 @@ func TestGetAppInstancesPerChannelMetrics(t *testing.T) {
 		},
 	}
 
+	require.Equal(t, expectedMetrics, metrics)
+}
+
+func TestGetFailedUpdatesMetrics(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	// defaultTeamID constant is defined in users_test.go
+	metrics, err := a.GetFailedUpdatesMetrics(defaultTeamID)
+	require.NoError(t, err)
+	expectedMetrics := []FailedUpdatesMetric{
+		{
+			ApplicationName: "Sample application",
+			FailureCount:    1,
+		},
+	}
 	require.Equal(t, expectedMetrics, metrics)
 }
