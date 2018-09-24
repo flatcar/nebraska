@@ -652,6 +652,20 @@ func (ctl *controller) getActivity(c web.C, w http.ResponseWriter, r *http.Reque
 }
 
 // ----------------------------------------------------------------------------
+// Metrics
+//
+
+func escapeMetricString(str string) string {
+	str = strings.Replace(str, `\`, `\\`, -1)
+	str = strings.Replace(str, `"`, `\"`, -1)
+	str = strings.Replace(str, "\n", `\n`, -1)
+	return str
+}
+
+func (ctl *controller) getMetrics(c web.C, w http.ResponseWriter, r *http.Request) {
+}
+
+// ----------------------------------------------------------------------------
 // OMAHA server
 //
 
