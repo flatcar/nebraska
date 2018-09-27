@@ -77,6 +77,18 @@
   revision = "1b76add642e42c6ffba7211ad7b3939ce654526e"
 
 [[projects]]
+  digest = "1:8ec5041988a57f78bb5c6e8232b677dcd3fc903833a2a5218237cac91f3d2d77"
+  name = "github.com/fzzy/radix"
+  packages = [
+    "extra/pool",
+    "redis",
+    "redis/resp",
+  ]
+  pruneopts = "NUT"
+  revision = "031cc11e9800a2626ee2ae629655a922b630a07d"
+  version = "v0.5.6"
+
+[[projects]]
   branch = "master"
   digest = "1:f7184bb17a1dcbe272dd052bbc3f15bd3edc19fea7b74cd45b12c5d61fce030d"
   name = "github.com/garyburd/redigo"
@@ -86,6 +98,30 @@
   ]
   pruneopts = "NUT"
   revision = "e8e59ed1cd89662b75af5d1109e39e5dc148cc00"
+
+[[projects]]
+  digest = "1:97df918963298c287643883209a2c3f642e6593379f97ab400c2a2e219ab647d"
+  name = "github.com/golang/protobuf"
+  packages = ["proto"]
+  pruneopts = "NUT"
+  revision = "aa810b61a9c79d51363740d207bb46cf8e620ed5"
+  version = "v1.2.0"
+
+[[projects]]
+  digest = "1:f4f203acd8b11b8747bdcd91696a01dbc95ccb9e2ca2db6abf81c3a4f5e950ce"
+  name = "github.com/google/go-github"
+  packages = ["github"]
+  pruneopts = "NUT"
+  revision = "f55b50f38167644bb7e4be03d9a2bde71d435239"
+  version = "v18.2.0"
+
+[[projects]]
+  digest = "1:a63cff6b5d8b95638bfe300385d93b2a6d9d687734b863da8e09dc834510a690"
+  name = "github.com/google/go-querystring"
+  packages = ["query"]
+  pruneopts = "NUT"
+  revision = "44c6ddd0a2342c386950e880b658017258da92fc"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -196,6 +232,14 @@
   version = "v1.2.1"
 
 [[projects]]
+  branch = "master"
+  digest = "1:9002f96ee716e15c6a3059df6e7b8b1027ed268aaeddde4aded26480d1b7c418"
+  name = "github.com/ymichael/sessions"
+  packages = ["."]
+  pruneopts = "NUT"
+  revision = "49b61c00f079e59b047e45c3bc5016dd5c6c164d"
+
+[[projects]]
   digest = "1:216bdbaf194e13f4b92e07059190af9f11df8c6fd8571c66eba96b4aaa772c8e"
   name = "github.com/zenazn/goji"
   packages = [
@@ -213,11 +257,26 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:76ee51c3f468493aff39dbacc401e8831fbb765104cbf613b89bef01cf4bad70"
+  digest = "1:d6b719875cf8091fbab38527d81d34e71f4521b9ee9ccfbd4a32cff2ac5af96e"
   name = "golang.org/x/net"
-  packages = ["context"]
+  packages = [
+    "context",
+    "context/ctxhttp",
+  ]
   pruneopts = "NUT"
   revision = "6078986fec03a1dcc236c34816c71b0e05018fda"
+
+[[projects]]
+  branch = "master"
+  digest = "1:e07316400ef707f6cbfc3d7d501b5abaa8401ee8789bae13628f9416a0da7548"
+  name = "golang.org/x/oauth2"
+  packages = [
+    ".",
+    "github",
+    "internal",
+  ]
+  pruneopts = "NUT"
+  revision = "d2e6202438beef2727060aa7cabdd924d92ebfd9"
 
 [[projects]]
   branch = "master"
@@ -226,6 +285,22 @@
   packages = ["unix"]
   pruneopts = "NUT"
   revision = "7ceb54c8418b8f9cdf0177b511d5cbb06e9fae39"
+
+[[projects]]
+  digest = "1:36354a269794d9cb4cebae233f65a966e818f763088370c8524726853a31c96f"
+  name = "google.golang.org/appengine"
+  packages = [
+    "internal",
+    "internal/base",
+    "internal/datastore",
+    "internal/log",
+    "internal/remote_api",
+    "internal/urlfetch",
+    "urlfetch",
+  ]
+  pruneopts = "NUT"
+  revision = "ae0ab99deb4dc413a2b4bd6c8bdd0eb67f1e4d06"
+  version = "v1.2.0"
 
 [[projects]]
   digest = "1:39f943568ebb4a3dbf1b02cb83be68a724db02cbef9b3f3b72ef783e1fb2e06a"
@@ -266,6 +341,7 @@
     "github.com/blang/semver",
     "github.com/coreos/go-omaha/omaha",
     "github.com/facebookgo/grace/gracehttp",
+    "github.com/google/go-github/github",
     "github.com/jmoiron/sqlx",
     "github.com/lib/pq",
     "github.com/mgutz/logxi/v1",
@@ -273,9 +349,12 @@
     "github.com/satori/go.uuid",
     "github.com/stretchr/testify/assert",
     "github.com/stretchr/testify/require",
+    "github.com/ymichael/sessions",
     "github.com/zenazn/goji",
     "github.com/zenazn/goji/web",
     "github.com/zenazn/goji/web/middleware",
+    "golang.org/x/oauth2",
+    "golang.org/x/oauth2/github",
     "gopkg.in/fatih/set.v0",
     "gopkg.in/mgutz/dat.v1",
     "gopkg.in/mgutz/dat.v1/sqlx-runner",
