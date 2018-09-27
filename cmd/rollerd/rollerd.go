@@ -85,10 +85,23 @@ func checkArgs() error {
 	return nil
 }
 
+func setupRouter(router *web.Mux, name string) {
+	router.Use(func(c *web.C, h http.Handler) http.Handler {
+		fn := func(w http.ResponseWriter, r *http.Request) {
+			logger.Debug("router debug", "request", fmt.Sprintf("%s %s", r.Method, r.URL.String()), "router name", name)
+			h.ServeHTTP(w, r)
+		}
+
+		return http.HandlerFunc(fn)
+	})
+}
+
 func setupRoutes(ctl *controller) {
+	setupRouter(goji.DefaultMux, "top")
 	goji.Use(ctl.sessions.Middleware())
 	// API router setup
 	apiRouter := web.New()
+	setupRouter(apiRouter, "api")
 	apiRouter.Use(ctl.authenticate)
 	goji.Handle("/api/*", apiRouter)
 
@@ -134,6 +147,7 @@ func setupRoutes(ctl *controller) {
 
 	// Omaha server router setup
 	omahaRouter := web.New()
+	setupRouter(omahaRouter, "omaha")
 	omahaRouter.Use(middleware.SubRouter)
 	goji.Handle("/omaha/*", omahaRouter)
 	goji.Handle("/v1/update/*", omahaRouter)
@@ -144,6 +158,7 @@ func setupRoutes(ctl *controller) {
 	// Host CoreOS packages payloads
 	if *hostCoreosPackages {
 		coreosPkgsRouter := web.New()
+		setupRouter(coreosPkgsRouter, "coreos")
 		coreosPkgsRouter.Use(middleware.SubRouter)
 		goji.Handle(coreosPkgsRouterPrefix+"*", coreosPkgsRouter)
 		coreosPkgsRouter.Handle("/*", http.FileServer(http.Dir(*coreosPackagesPath)))
@@ -151,18 +166,21 @@ func setupRoutes(ctl *controller) {
 
 	// Metrics
 	metricsRouter := web.New()
+	setupRouter(metricsRouter, "metrics")
 	metricsRouter.Use(ctl.authenticate)
 	goji.Handle("/metrics", metricsRouter)
 	metricsRouter.Get("/metrics", ctl.getMetrics)
 
 	// oauth
 	oauthRouter := web.New()
+	setupRouter(oauthRouter, "oauth")
 	goji.Handle("/login/*", oauthRouter)
 	oauthRouter.Get("/login/cb", ctl.loginCb)
 	oauthRouter.Post("/login/webhook", ctl.loginWebhook)
 
 	// Serve frontend static content
 	staticRouter := web.New()
+	setupRouter(staticRouter, "static")
 	staticRouter.Use(ctl.authenticate)
 	goji.Handle("/*", staticRouter)
 	staticRouter.Handle("/*", http.FileServer(http.Dir(*httpStaticDir)))
