@@ -21,6 +21,7 @@ backend:
 .PHONY: tools
 tools:
 	go build -o bin/initdb ./cmd/initdb
+	go build -o bin/userctl ./cmd/userctl
 
 .PHONY: container-rollerd
 container-rollerd:
