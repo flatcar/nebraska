@@ -4,15 +4,22 @@ DOCKER_IMAGE_ROLLERD ?= "coreroller-rollerd"
 DOCKER_IMAGE_POSTGRES ?= "coreroller-postgres"
 
 .PHONY: all
-all: build
+all: backend tools frontend
 
 .PHONY: check
 check:
 	go test -p 1 ./...
 
-.PHONY: build
-build:
+.PHONY: frontend
+frontend:
+	cd frontend && npm install && npm run build
+
+.PHONY: backend
+backend:
 	go build -o bin/rollerd ./cmd/rollerd
+
+.PHONY: tools
+tools:
 	go build -o bin/initdb ./cmd/initdb
 
 .PHONY: container-rollerd
