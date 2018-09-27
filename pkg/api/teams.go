@@ -9,6 +9,35 @@ type Team struct {
 	CreatedTs time.Time `db:"created_ts"`
 }
 
+func (api *API) GetTeams() ([]*Team, error) {
+	var teams []*Team
+
+	err := api.dbR.
+		SelectDoc("id, name, created_ts").
+		From("team").
+		OrderBy("name").
+		QueryStructs(&teams)
+
+	if err != nil {
+		return nil, err
+	}
+	return teams, nil
+}
+
+func (api *API) UpdateTeam(team *Team) error {
+	result, err := api.dbR.
+		Update("team").
+		SetWhitelist(team, "name").
+		Where("id = $1", team.ID).
+		Exec()
+
+	if err == nil && result.RowsAffected == 0 {
+		return ErrNoRowsAffected
+	}
+
+	return err
+}
+
 // AddTeam registers a team.
 func (api *API) AddTeam(team *Team) (*Team, error) {
 	var err error
