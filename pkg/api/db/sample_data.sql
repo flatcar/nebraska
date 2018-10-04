@@ -4,14 +4,6 @@
 insert into team (id, name) values ('d89342dc-9214-441d-a4af-bdd837a3b239', 'default');
 insert into users (username, secret, team_id) values ('admin', '8b31292d4778582c0e5fa96aee5513f1', 'd89342dc-9214-441d-a4af-bdd837a3b239');
 
--- Event types
-insert into event_type (type, result, description) values (3, 0, 'Instance reported an error during an update step.');
-insert into event_type (type, result, description) values (3, 1, 'Updater has processed and applied package.');
-insert into event_type (type, result, description) values (3, 2, 'Instances upgraded to current channel version.');
-insert into event_type (type, result, description) values (13, 1, 'Downloading latest version.');
-insert into event_type (type, result, description) values (14, 1, 'Update package arrived successfully.');
-insert into event_type (type, result, description) values (800, 1, 'Install success. Update completion prevented by instance.');
-
 -- CoreOS application
 insert into application (id, name, description, team_id) values ('e96281a6-d1af-4bde-9a0a-97b76e56dc57', 'CoreOS', 'Linux for massive server deployments', 'd89342dc-9214-441d-a4af-bdd837a3b239');
 insert into package values ('2ba4c984-5e9b-411e-b7c3-b3eb14f7a261', 1, '766.3.0', 'https://commondatastorage.googleapis.com/update-storage.core-os.net/amd64-usr/766.3.0/', 'update.gz', NULL, '154967458', 'l4Kw7AeBLrVID9JbfyMoJeB5yKg=', '2015-09-20 00:12:37.523938', 'e96281a6-d1af-4bde-9a0a-97b76e56dc57');
@@ -36,11 +28,14 @@ insert into application (id, name, description, team_id) values ('b6458005-8f40-
 insert into package (id, type, url, filename, version, application_id) values ('5195d5a2-5f82-11e5-9d70-feff819cdc9f', 4, 'https://coreroller.org/', 'test_1.0.2', '1.0.2', 'b6458005-8f40-4627-b33b-be70a718c48e');
 insert into package (id, type, url, filename, version, application_id) values ('12697fa4-5f83-11e5-9d70-feff819cdc9f', 4, 'https://coreroller.org/', 'test_1.0.3', '1.0.3', 'b6458005-8f40-4627-b33b-be70a718c48e');
 insert into package (id, type, url, filename, version, application_id) values ('8004bad8-5f97-11e5-9d70-feff819cdc9f', 4, 'https://coreroller.org/', 'test_1.0.4', '1.0.4', 'b6458005-8f40-4627-b33b-be70a718c48e');
+insert into package (id, type, url, filename, version, application_id) values ('aaaaaaaa-5f98-11e5-9d70-feff819cdc9f', 4, 'https://coreroller.org/', 'test_1.0.5', '1.0.5', 'b6458005-8f40-4627-b33b-be70a718c48e');
 insert into channel (id, name, color, application_id, package_id) values ('bfe32b4a-5f8c-11e5-9d70-feff819cdc9f', 'Master', '#00CC00', 'b6458005-8f40-4627-b33b-be70a718c48e', '8004bad8-5f97-11e5-9d70-feff819cdc9f');
 insert into channel (id, name, color, application_id, package_id) values ('cb2deea8-5f83-11e5-9d70-feff819cdc9f', 'Stable', '#0099FF', 'b6458005-8f40-4627-b33b-be70a718c48e', '12697fa4-5f83-11e5-9d70-feff819cdc9f');
+insert into channel (id, name, color, application_id, package_id) values ('dddddddd-5f83-11e5-9d70-feff819cdc9f', 'Failing', '#AA99FF', 'b6458005-8f40-4627-b33b-be70a718c48e', 'aaaaaaaa-5f98-11e5-9d70-feff819cdc9f');
 insert into groups values ('bcaa68bc-5f82-11e5-9d70-feff819cdc9f', 'Prod EC2 us-west-2', 'Production servers, west coast', false, true, true, false, 'Australia/Sydney', '15 minutes', 2, '60 minutes', '2015-09-19 05:09:34.269062', 'b6458005-8f40-4627-b33b-be70a718c48e', 'cb2deea8-5f83-11e5-9d70-feff819cdc9f');
 insert into groups values ('7074264a-2070-4b84-96ed-8a269dba5021', 'Prod EC2 us-east-1', 'Production servers, east coast', false, true, true, false, 'Australia/Sydney', '15 minutes', 2, '60 minutes', '2015-09-19 05:09:34.269062', 'b6458005-8f40-4627-b33b-be70a718c48e', 'cb2deea8-5f83-11e5-9d70-feff819cdc9f');
 insert into groups values ('b110813a-5f82-11e5-9d70-feff819cdc9f', 'Qa-Dev', 'QA and development servers, Sydney', false, true, true, false, 'Australia/Sydney', '15 minutes', 2, '60 minutes', '2015-09-19 05:09:34.269062', 'b6458005-8f40-4627-b33b-be70a718c48e', 'bfe32b4a-5f8c-11e5-9d70-feff819cdc9f');
+insert into groups values ('cccccccc-5f82-11e5-9d70-feff819cdc9f', 'Failing Qa-Dev', 'Failing QA and development servers, Sydney', false, true, true, false, 'Australia/Sydney', '15 minutes', 2, '60 minutes', '2015-09-19 05:09:34.269062', 'b6458005-8f40-4627-b33b-be70a718c48e', 'dddddddd-5f83-11e5-9d70-feff819cdc9f');
 insert into instance (id, ip) values ('instance1', '10.0.0.1');
 insert into instance (id, ip) values ('instance2', '10.0.0.2');
 insert into instance (id, ip) values ('instance3', '10.0.0.3');
@@ -52,6 +47,7 @@ insert into instance (id, ip) values ('instance8', '10.0.0.8');
 insert into instance (id, ip) values ('instance9', '10.0.0.9');
 insert into instance (id, ip) values ('instance10', '10.0.0.10');
 insert into instance (id, ip) values ('instance11', '10.0.0.11');
+insert into instance (id, ip) values ('instance12', '10.0.0.12');
 insert into instance_application values ('1.0.3', default, 4, default, default, NULL, default, 'instance1', 'b6458005-8f40-4627-b33b-be70a718c48e', 'bcaa68bc-5f82-11e5-9d70-feff819cdc9f');
 insert into instance_application values ('1.0.3', default, 4, default, default, NULL, default, 'instance2', 'b6458005-8f40-4627-b33b-be70a718c48e', 'bcaa68bc-5f82-11e5-9d70-feff819cdc9f');
 insert into instance_application values ('1.0.2', default, 4, default, default, NULL, default, 'instance3', 'b6458005-8f40-4627-b33b-be70a718c48e', 'bcaa68bc-5f82-11e5-9d70-feff819cdc9f');
@@ -63,6 +59,7 @@ insert into instance_application values ('1.0.4', default, 4, default, default, 
 insert into instance_application values ('1.0.3', default, 7, default, default, NULL, default, 'instance9', 'b6458005-8f40-4627-b33b-be70a718c48e', 'b110813a-5f82-11e5-9d70-feff819cdc9f');
 insert into instance_application values ('1.0.2', default, 2, default, default, NULL, default, 'instance10', 'b6458005-8f40-4627-b33b-be70a718c48e', 'b110813a-5f82-11e5-9d70-feff819cdc9f');
 insert into instance_application values ('1.0.1', default, 3, default, default, NULL, default, 'instance11', 'b6458005-8f40-4627-b33b-be70a718c48e', 'b110813a-5f82-11e5-9d70-feff819cdc9f');
+insert into instance_application values ('1.0.1', default, 3, default, default, NULL, default, 'instance12', 'b6458005-8f40-4627-b33b-be70a718c48e', 'cccccccc-5f82-11e5-9d70-feff819cdc9f');
 insert into activity values (default, now() at time zone 'utc' - interval '3 hours', 1, 4, '1.0.3', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021', 'cb2deea8-5f83-11e5-9d70-feff819cdc9f', 'instance1');
 insert into activity values (default, now() at time zone 'utc' - interval '6 hours', 5, 3, '1.0.3', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021', 'cb2deea8-5f83-11e5-9d70-feff819cdc9f', 'instance1');
 insert into activity values (default, now() at time zone 'utc' - interval '12 hours', 3, 1, '1.0.3', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021', 'cb2deea8-5f83-11e5-9d70-feff819cdc9f', 'instance1');
@@ -78,6 +75,7 @@ insert into instance_status_history values (default, 5, '1.0.2', now() at time z
 insert into instance_status_history values (default, 6, '1.0.2', now() at time zone 'utc' - interval '37 hours', 'instance5', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021');
 insert into instance_status_history values (default, 7, '1.0.2', now() at time zone 'utc' - interval '37 hours 45 minutes', 'instance5', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021');
 insert into instance_status_history values (default, 2, '1.0.2', now() at time zone 'utc' - interval '37 hours 45 minutes 10 seconds', 'instance5', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021');
+insert into event (previous_version, error_code, instance_id, application_id, event_type_id) select '', '', 'instance12', 'b6458005-8f40-4627-b33b-be70a718c48e', et.id from event_type et where et.type = 3 and et.result = 0;
 
 -- Sample application 2
 insert into application (id, name, description, team_id) values ('780d6940-9a48-4414-88df-95ba63bbe9cb', 'Sample application 2', 'Another sample application, feel free to remove me', 'd89342dc-9214-441d-a4af-bdd837a3b239');

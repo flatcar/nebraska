@@ -13,6 +13,9 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// Use github.com/kevinburke/go-bindata. Remember to run gofmt -s -w
+// on the generated file.
+//
 //go:generate go-bindata -ignore=\.swp -pkg api db db/migrations
 
 const (

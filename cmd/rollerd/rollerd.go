@@ -139,6 +139,12 @@ func setupRoutes(ctl *controller) {
 		coreosPkgsRouter.Handle("/*", http.FileServer(http.Dir(*coreosPackagesPath)))
 	}
 
+	// Metrics
+	metricsRouter := web.New()
+	metricsRouter.Use(ctl.authenticate)
+	goji.Handle("/metrics", metricsRouter)
+	metricsRouter.Get("/metrics", ctl.getMetrics)
+
 	// Serve frontend static content
 	staticRouter := web.New()
 	staticRouter.Use(ctl.authenticate)

@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net"
 	"net/http"
 	"strconv"
@@ -648,6 +649,70 @@ func (ctl *controller) getActivity(c web.C, w http.ResponseWriter, r *http.Reque
 	default:
 		logger.Error("getActivity", "error", err, "teamID", teamID, "params", p)
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+	}
+}
+
+// ----------------------------------------------------------------------------
+// Metrics
+//
+
+const (
+	app_instances_per_channel_metrics_prolog = `# HELP coreroller_application_instances_per_channel A number of applications from specific channel running on instances
+# TYPE coreroller_application_instances_per_channel gauge`
+	failed_updates_metrics_prolog = `# HELP coreroller_failed_updates A number of failed updates of an application
+# TYPE coreroller_failed_updates gauge`
+)
+
+func escapeMetricString(str string) string {
+	str = strings.Replace(str, `\`, `\\`, -1)
+	str = strings.Replace(str, `"`, `\"`, -1)
+	str = strings.Replace(str, "\n", `\n`, -1)
+	return str
+}
+
+func (ctl *controller) getMetrics(c web.C, w http.ResponseWriter, r *http.Request) {
+	teamID, _ := c.Env["team_id"].(string)
+
+	nowUnixMillis := time.Now().Unix() * 1000
+	aipcMetrics, err := ctl.api.GetAppInstancesPerChannelMetrics(teamID)
+	if err != nil {
+		logger.Error("getMetrics - getting app instances per channel metrics", "error", err.Error(), "teamID", teamID)
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+	fuMetrics, err := ctl.api.GetFailedUpdatesMetrics(teamID)
+	if err != nil {
+		logger.Error("getMetrics - getting failed updates metrics", "error", err.Error(), "teamID", teamID)
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	// "version" specifies a version of prometheus text file
+	// format. For details see:
+	//
+	// https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md#basic-info
+	w.Header().Set("Content-Type", "text/plain; version=0.0.4")
+	w.WriteHeader(http.StatusOK)
+	needEmptyLine := false
+	if len(aipcMetrics) > 0 {
+		if needEmptyLine {
+			fmt.Fprintf(w, "\n")
+		}
+		fmt.Fprintf(w, "%s\n", app_instances_per_channel_metrics_prolog)
+		for _, metric := range aipcMetrics {
+			fmt.Fprintf(w, `coreroller_application_instances_per_channel{application="%s",version="%s",channel="%s"} %d %d%s`, escapeMetricString(metric.ApplicationName), escapeMetricString(metric.Version), escapeMetricString(metric.ChannelName), metric.InstancesCount, nowUnixMillis, "\n")
+		}
+		needEmptyLine = true
+	}
+	if len(fuMetrics) > 0 {
+		if needEmptyLine {
+			fmt.Fprintf(w, "\n")
+		}
+		fmt.Fprintf(w, "%s\n", failed_updates_metrics_prolog)
+		for _, metric := range fuMetrics {
+			fmt.Fprintf(w, `coreroller_failed_updates{application="%s"} %d %d%s`, escapeMetricString(metric.ApplicationName), metric.FailureCount, nowUnixMillis, "\n")
+		}
+		needEmptyLine = true
 	}
 }
 
