@@ -4,21 +4,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.rollerd
-    ports:
-      - 8000:8000
     command: |
       sh -c '
         sleep 3
-        /coreroller/rollerd -http-static-dir=/coreroller/static'
+        LOGXI=* /coreroller/rollerd -http-static-dir=/coreroller/static'
+    network_mode: host
     depends_on:
-      - "postgres"
+      - postgres
   postgres:
     build:
       context: .
       dockerfile: Dockerfile.postgres
     volumes:
       - postgres-data:/coreroller/data
-    ports:
-      - 5432:5432
+    network_mode: host
 volumes:
   postgres-data:

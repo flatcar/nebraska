@@ -22,6 +22,6 @@ RUN apk update && \
 COPY --from=coreroller-build /go/src/github.com/coreroller/coreroller/bin/rollerd /coreroller/
 COPY --from=coreroller-build /go/src/github.com/coreroller/coreroller/frontend/built/ /coreroller/static/
 
-ENV COREROLLER_DB_URL "postgres://postgres@postgres:5432/coreroller?sslmode=disable&connect_timeout=10"
+ENV COREROLLER_DB_URL "postgres://postgres@127.0.0.1:5432/coreroller?sslmode=disable&connect_timeout=10"
 EXPOSE 8000
 CMD ["/coreroller/rollerd", "-http-static-dir=/coreroller/static"]
