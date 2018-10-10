@@ -1,11 +1,17 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"crypto/hmac"
+	"crypto/sha1"
 	"database/sql"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
@@ -28,14 +34,28 @@ const (
 	clientIDEnvName      = "COREROLLER_OAUTH_CLIENT_ID"
 	clientSecretEnvName  = "COREROLLER_OAUTH_CLIENT_SECRET"
 	sessionSecretEnvName = "COREROLLER_SESSION_SECRET"
+	webhookSecretEnvName = "COREROLLER_WEBHOOK_SECRET"
 )
 
+type ghTeamData struct {
+	org  string
+	team *string
+}
+
+type stringSet map[string]struct{}
+type teamToUsersMap map[string]stringSet
+type sessionIDToTeamDataMap map[string]ghTeamData
+type userSessionMap map[string]sessionIDToTeamDataMap
+
 type controller struct {
-	api          *api.API
-	omahaHandler *omaha.Handler
-	syncer       *syncer.Syncer
-	sessions     *sessions.SessionOptions
-	oauthConfig  *oauth2.Config
+	api            *api.API
+	omahaHandler   *omaha.Handler
+	syncer         *syncer.Syncer
+	sessions       *sessions.SessionOptions
+	oauthConfig    *oauth2.Config
+	userSessionIDs userSessionMap
+	teamToUsers    teamToUsersMap
+	webhookSecret  string
 }
 
 type controllerConfig struct {
@@ -46,6 +66,7 @@ type controllerConfig struct {
 	sessionSecret      string
 	oauthClientID      string
 	oauthClientSecret  string
+	webhookSecret      string
 }
 
 func getPotentialOrEnv(potentialValue, envName string) string {
@@ -76,6 +97,13 @@ func obtainOAuthClientSecret(potentialSecret string) (string, error) {
 	return "", errors.New("no oauth client secret passed to rollerd")
 }
 
+func obtainWebhookSecret(potentialSecret string) (string, error) {
+	if secret := getPotentialOrEnv(potentialSecret, webhookSecretEnvName); secret != "" {
+		return secret, nil
+	}
+	return "", errors.New("no webhook secret passed to rollerd")
+}
+
 func newController(conf *controllerConfig) (*controller, error) {
 	api, err := api.New()
 	if err != nil {
@@ -88,6 +116,10 @@ func newController(conf *controllerConfig) (*controller, error) {
 		return nil, err
 	}
 	clientSecret, err := obtainOAuthClientSecret(conf.oauthClientSecret)
+	if err != nil {
+		return nil, err
+	}
+	webhookSecret, err := obtainWebhookSecret(conf.webhookSecret)
 	if err != nil {
 		return nil, err
 	}
@@ -116,6 +148,9 @@ func newController(conf *controllerConfig) (*controller, error) {
 			Scopes:       []string{"read:org"},
 			Endpoint:     githuboauth.Endpoint,
 		},
+		userSessionIDs: make(userSessionMap),
+		teamToUsers:    make(teamToUsersMap),
+		webhookSecret:  webhookSecret,
 	}
 
 	if conf.enableSyncer {
@@ -156,7 +191,36 @@ func makeTeamName(org, team string) string {
 }
 
 func (ctl *controller) cleanupSession(c *web.C, w http.ResponseWriter) {
-	ctl.sessions.DestroySession(c, w)
+	defer ctl.sessions.DestroySession(c, w)
+	obj := ctl.sessions.GetSessionObject(c)
+	usernameAny, ok := obj["username"]
+	if !ok {
+		return
+	}
+	username, ok := usernameAny.(string)
+	if !ok {
+		return
+	}
+	sessionIDs, ok := ctl.userSessionIDs[username]
+	if !ok {
+		return
+	}
+	sessionID := ctl.sessions.GetSessionId(c)
+	if teamData, ok := sessionIDs[sessionID]; ok {
+		if teamData.team != nil {
+			teamName := makeTeamName(teamData.org, *teamData.team)
+			if usersSet, ok := ctl.teamToUsers[teamName]; ok {
+				delete(usersSet, username)
+				if len(usersSet) == 0 {
+					delete(ctl.teamToUsers, teamName)
+				}
+			}
+		}
+		delete(sessionIDs, sessionID)
+		if len(sessionIDs) == 0 {
+			delete(ctl.userSessionIDs, username)
+		}
+	}
 }
 
 func (ctl *controller) loginCb(c web.C, w http.ResponseWriter, r *http.Request) {
@@ -227,6 +291,35 @@ func (ctl *controller) loginCb(c web.C, w http.ResponseWriter, r *http.Request) 
 	}
 }
 
+func (ctl *controller) loginWebhook(c web.C, w http.ResponseWriter, r *http.Request) {
+	signature := r.Header.Get("X-Hub-Signature")
+	if len(signature) == 0 {
+		logger.Debug("webhook", "request with missing signature, ignoring it")
+		return
+	}
+	eventType := r.Header.Get("X-Github-Event")
+	rawPayload, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		logger.Debug("webhook", "failed to read the contents of the message", eventType)
+		return
+	}
+	mac := hmac.New(sha1.New, []byte(ctl.webhookSecret))
+	_, _ = mac.Write(rawPayload)
+	payloadMAC := hex.EncodeToString(mac.Sum(nil))
+	// [5:] is to drop the "sha1-" part.
+	if !hmac.Equal([]byte(signature[5:]), []byte(payloadMAC)) {
+		logger.Debug("webhook", "message validation failed")
+		return
+	}
+	payloadReader := bytes.NewBuffer(rawPayload)
+	logger.Debug("webhook", "got event of type", eventType)
+	switch eventType {
+	default:
+		logger.Debug("webhook", "ignoring event", eventType)
+		return
+	}
+}
+
 func (ctl *controller) doLoginDance(ctx context.Context, oauthClient *http.Client, c *web.C, w http.ResponseWriter) (replied bool) {
 	const (
 		resultOK = iota
@@ -273,6 +366,7 @@ func (ctl *controller) doLoginDance(ctx context.Context, oauthClient *http.Clien
 	for _, team := range teams {
 		teamsMap[team.Name] = team
 	}
+	teamData := ghTeamData{}
 	teamID := ""
 	listOpts := github.ListOptions{
 		Page:    1,
@@ -309,6 +403,8 @@ func (ctl *controller) doLoginDance(ctx context.Context, oauthClient *http.Clien
 			logger.Debug("login dance", "trying to find a matching coreroller team", corerollerTeamName)
 			if team, ok := teamsMap[corerollerTeamName]; ok {
 				logger.Debug("login dance", "found matching team", corerollerTeamName)
+				teamData.org = *ghTeam.Organization.Login
+				teamData.team = ghTeam.Name
 				teamID = team.ID
 				break
 			}
@@ -342,6 +438,7 @@ func (ctl *controller) doLoginDance(ctx context.Context, oauthClient *http.Clien
 				logger.Debug("login dance", "trying to find a matching coreroller team", *ghOrg.Login)
 				if team, ok := teamsMap[*ghOrg.Login]; ok {
 					logger.Debug("login dance", "found matching team", *ghOrg.Login)
+					teamData.org = *ghOrg.Login
 					teamID = team.ID
 					break
 				}
@@ -361,7 +458,24 @@ func (ctl *controller) doLoginDance(ctx context.Context, oauthClient *http.Clien
 		logger.Debug("login dance", "not authorized")
 		return
 	}
+	username := *ghUser.Login
 	obj["teamID"] = teamID
+	obj["username"] = username
+	sessionIDs := ctl.userSessionIDs[username]
+	if sessionIDs == nil {
+		sessionIDs = make(sessionIDToTeamDataMap)
+		ctl.userSessionIDs[username] = sessionIDs
+	}
+	sessionIDs[ctl.sessions.GetSessionId(c)] = teamData
+	if teamData.team != nil {
+		teamName := makeTeamName(teamData.org, *teamData.team)
+		users := ctl.teamToUsers[teamName]
+		if users == nil {
+			users = make(stringSet)
+			ctl.teamToUsers[teamName] = users
+		}
+		users[username] = struct{}{}
+	}
 	result = resultOK
 	return
 }

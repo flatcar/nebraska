@@ -29,6 +29,7 @@ var (
 	clientID           = flag.String("client-id", "", fmt.Sprintf("Client ID used for authentication; can be taken from %s env var too", clientIDEnvName))
 	clientSecret       = flag.String("client-secret", "", fmt.Sprintf("Client secret used for authentication; can be taken from %s env var too", clientSecretEnvName))
 	sessionSecret      = flag.String("session-secret", "", fmt.Sprintf("Session secret used for storing sessions, will be generated if none is passed; can be taken from %s env var too", sessionSecretEnvName))
+	webhookSecret      = flag.String("webhook-secret", "", fmt.Sprintf("Webhook secret used for validing webhook messages; can be taken from %s env var too", webhookSecretEnvName))
 	logger             = log.New("rollerd")
 )
 
@@ -48,6 +49,7 @@ func main() {
 		sessionSecret:      *sessionSecret,
 		oauthClientID:      *clientID,
 		oauthClientSecret:  *clientSecret,
+		webhookSecret:      *webhookSecret,
 	}
 	ctl, err := newController(conf)
 	if err != nil {
@@ -157,6 +159,7 @@ func setupRoutes(ctl *controller) {
 	oauthRouter := web.New()
 	goji.Handle("/login/*", oauthRouter)
 	oauthRouter.Get("/login/cb", ctl.loginCb)
+	oauthRouter.Post("/login/webhook", ctl.loginWebhook)
 
 	// Serve frontend static content
 	staticRouter := web.New()
