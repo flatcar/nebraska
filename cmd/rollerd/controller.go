@@ -323,6 +323,45 @@ func (ctl *controller) loginWebhookAuthorizationEvent(c web.C, w http.ResponseWr
 	}
 }
 
+type GhMembership struct {
+	User GhUser `json:"user"`
+}
+
+type GhOrganizationPayload struct {
+	Action     string       `json:"action"`
+	Membership GhMembership `json:"membership"`
+	Org        GhUser       `json:"organization"`
+}
+
+func (ctl *controller) loginWebhookOrganizationEvent(c web.C, w http.ResponseWriter, payloadReader io.Reader) {
+	var payload GhOrganizationPayload
+	if err := json.NewDecoder(payloadReader).Decode(&payload); err != nil {
+		logger.Error("webhook", "error unmarshalling organization payload", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+	logger.Debug("webhook", "got organization event with action", payload.Action)
+	if payload.Action != "member_removed" {
+		logger.Debug("webhook", "ignoring organization event with action", payload.Action)
+		return
+	}
+	username := payload.Membership.User.Login
+	org := payload.Org.Login
+	if sessionIDs, ok := ctl.userSessionIDs[username]; ok {
+		for sessionID, teamData := range sessionIDs {
+			if teamData.org == org && teamData.team == nil {
+				logger.Debug("webhook", "dropping session", sessionID)
+				ctl.sessions.Store.Destroy(sessionID)
+				delete(sessionIDs, sessionID)
+			}
+		}
+		if len(sessionIDs) == 0 {
+			logger.Debug("webhook", "dropping all the sessions of user", username)
+			delete(ctl.userSessionIDs, username)
+		}
+	}
+}
+
 func (ctl *controller) loginWebhook(c web.C, w http.ResponseWriter, r *http.Request) {
 	signature := r.Header.Get("X-Hub-Signature")
 	if len(signature) == 0 {
@@ -348,6 +387,8 @@ func (ctl *controller) loginWebhook(c web.C, w http.ResponseWriter, r *http.Requ
 	switch eventType {
 	case "github_app_authorization":
 		ctl.loginWebhookAuthorizationEvent(c, w, payloadReader)
+	case "organization":
+		ctl.loginWebhookOrganizationEvent(c, w, payloadReader)
 	default:
 		logger.Debug("webhook", "ignoring event", eventType)
 		return
