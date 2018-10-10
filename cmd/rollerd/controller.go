@@ -362,6 +362,53 @@ func (ctl *controller) loginWebhookOrganizationEvent(c web.C, w http.ResponseWri
 	}
 }
 
+type GhTeam struct {
+	Name string `json:"name"`
+}
+
+type GhMembershipPayload struct {
+	Action string `json:"action"`
+	Scope  string `json:"scope"`
+	Member GhUser `json:"member"`
+	Team   GhTeam `json:"team"`
+	Org    GhUser `json:"organization"`
+}
+
+func (ctl *controller) loginWebhookMembershipEvent(c web.C, w http.ResponseWriter, payloadReader io.Reader) {
+	var payload GhMembershipPayload
+	if err := json.NewDecoder(payloadReader).Decode(&payload); err != nil {
+		logger.Error("webhook", "error unmarshalling membership payload", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+	logger.Debug("webhook", "got membership event with action", payload.Action)
+	if payload.Action != "removed" {
+		logger.Debug("webhook", "ignoring membership event with action", payload.Action)
+		return
+	}
+	logger.Debug("webhook", "got membership remove event with scope", payload.Scope)
+	if payload.Scope != "team" {
+		logger.Debug("webhook", "ignoring membership remove event with scope", payload.Scope)
+		return
+	}
+	username := payload.Member.Login
+	org := payload.Org.Login
+	team := payload.Team.Name
+	if sessionIDs, ok := ctl.userSessionIDs[username]; ok {
+		for sessionID, teamData := range sessionIDs {
+			if teamData.org == org && teamData.team != nil && *teamData.team == team {
+				logger.Debug("webhook", "dropping session", sessionID, "user", username)
+				ctl.sessions.Store.Destroy(sessionID)
+				delete(sessionIDs, sessionID)
+			}
+		}
+		if len(sessionIDs) == 0 {
+			logger.Debug("webhook", "dropping all the sessions of user", username)
+			delete(ctl.userSessionIDs, username)
+		}
+	}
+}
+
 func (ctl *controller) loginWebhook(c web.C, w http.ResponseWriter, r *http.Request) {
 	signature := r.Header.Get("X-Hub-Signature")
 	if len(signature) == 0 {
@@ -389,6 +436,8 @@ func (ctl *controller) loginWebhook(c web.C, w http.ResponseWriter, r *http.Requ
 		ctl.loginWebhookAuthorizationEvent(c, w, payloadReader)
 	case "organization":
 		ctl.loginWebhookOrganizationEvent(c, w, payloadReader)
+	case "membership":
+		ctl.loginWebhookMembershipEvent(c, w, payloadReader)
 	default:
 		logger.Debug("webhook", "ignoring event", eventType)
 		return
