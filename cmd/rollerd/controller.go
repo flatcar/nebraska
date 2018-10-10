@@ -1,26 +1,41 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/google/go-github/github"
+	"github.com/ymichael/sessions"
 	"github.com/zenazn/goji/web"
+	"golang.org/x/oauth2"
+	githuboauth "golang.org/x/oauth2/github"
 
 	"github.com/coreroller/coreroller/pkg/api"
 	"github.com/coreroller/coreroller/pkg/omaha"
 	"github.com/coreroller/coreroller/pkg/syncer"
 )
 
+const (
+	clientIDEnvName      = "COREROLLER_OAUTH_CLIENT_ID"
+	clientSecretEnvName  = "COREROLLER_OAUTH_CLIENT_SECRET"
+	sessionSecretEnvName = "COREROLLER_SESSION_SECRET"
+)
+
 type controller struct {
 	api          *api.API
 	omahaHandler *omaha.Handler
 	syncer       *syncer.Syncer
+	sessions     *sessions.SessionOptions
+	oauthConfig  *oauth2.Config
 }
 
 type controllerConfig struct {
@@ -28,6 +43,37 @@ type controllerConfig struct {
 	hostCoreosPackages bool
 	coreosPackagesPath string
 	corerollerURL      string
+	sessionSecret      string
+	oauthClientID      string
+	oauthClientSecret  string
+}
+
+func getPotentialOrEnv(potentialValue, envName string) string {
+	if potentialValue != "" {
+		return potentialValue
+	}
+	return os.Getenv(envName)
+}
+
+func obtainSessionSecret(potentialSecret string) string {
+	if secret := getPotentialOrEnv(potentialSecret, sessionSecretEnvName); secret != "" {
+		return secret
+	}
+	return sessions.GenerateRandomString(64)
+}
+
+func obtainOAuthClientID(potentialID string) (string, error) {
+	if id := getPotentialOrEnv(potentialID, clientIDEnvName); potentialID != "" {
+		return id, nil
+	}
+	return "", errors.New("no oauth client ID passed to rollerd")
+}
+
+func obtainOAuthClientSecret(potentialSecret string) (string, error) {
+	if secret := getPotentialOrEnv(potentialSecret, clientSecretEnvName); secret != "" {
+		return secret, nil
+	}
+	return "", errors.New("no oauth client secret passed to rollerd")
 }
 
 func newController(conf *controllerConfig) (*controller, error) {
@@ -36,9 +82,40 @@ func newController(conf *controllerConfig) (*controller, error) {
 		return nil, err
 	}
 
+	sessionSecret := obtainSessionSecret(conf.sessionSecret)
+	clientID, err := obtainOAuthClientID(conf.oauthClientID)
+	if err != nil {
+		return nil, err
+	}
+	clientSecret, err := obtainOAuthClientSecret(conf.oauthClientSecret)
+	if err != nil {
+		return nil, err
+	}
+
 	c := &controller{
 		api:          api,
 		omahaHandler: omaha.NewHandler(api),
+		sessions:     sessions.NewSessionOptions(sessionSecret, sessions.MemoryStore{}),
+		oauthConfig: &oauth2.Config{
+			ClientID:     clientID,
+			ClientSecret: clientSecret,
+			// We are using following APIs:
+			//
+			// https://developer.github.com/v3/teams/#list-user-teams
+			//
+			// https://developer.github.com/v3/orgs/#list-your-organizations
+			//
+			// https://developer.github.com/v3/users/#get-the-authenticated-user
+			//
+			// Common required scope in those APIs seems
+			// to be "user". Listing teams and orgs can be
+			// done also with "read:org" scope. We don't
+			// need "user" scope really as all we need is
+			// just login and that's public information
+			// accessible without any scope at all.
+			Scopes:       []string{"read:org"},
+			Endpoint:     githuboauth.Endpoint,
+		},
 	}
 
 	if conf.enableSyncer {
@@ -67,39 +144,253 @@ func (ctl *controller) close() {
 }
 
 // ----------------------------------------------------------------------------
+// OAuth
+//
+
+func redirectTo(w http.ResponseWriter, r *http.Request, where string) {
+	http.Redirect(w, r, where, http.StatusTemporaryRedirect)
+}
+
+func makeTeamName(org, team string) string {
+	return fmt.Sprintf("%s/%s", org, team)
+}
+
+func (ctl *controller) cleanupSession(c *web.C, w http.ResponseWriter) {
+	ctl.sessions.DestroySession(c, w)
+}
+
+func (ctl *controller) loginCb(c web.C, w http.ResponseWriter, r *http.Request) {
+	const (
+		resultOK = iota
+		resultUnauthorized
+		resultInternalFailure
+	)
+	result := resultInternalFailure
+	defer func() {
+		switch result {
+		case resultOK:
+		case resultUnauthorized:
+			ctl.cleanupSession(&c, w)
+			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		case resultInternalFailure:
+			ctl.cleanupSession(&c, w)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+	}()
+
+	obj := ctl.sessions.GetSessionObject(&c)
+	desiredURLAny, ok := obj["desiredurl"]
+	if !ok {
+		logger.Error("login cb", "expected to have desiredurl item in session data")
+		return
+	}
+	desiredURL, ok := desiredURLAny.(string)
+	if !ok {
+		logger.Error("login cb", "expected the desiredurl item in session data to be a string, but it was something else", fmt.Sprintf("%T", desiredURLAny))
+		return
+	}
+	state := r.FormValue("state")
+	logger.Debug("login cb", "received oauth state", state)
+	expectedStateAny, ok := obj["state"]
+	if !ok {
+		logger.Error("login cb", "expected to have state item in session data")
+		return
+	}
+	expectedState, ok := expectedStateAny.(string)
+	if !ok {
+		logger.Error("login cb", "expected the expectedstate item in session data to be a string, but it was something else", fmt.Sprintf("%T", desiredURLAny))
+		return
+	}
+
+	if expectedState != state {
+		logger.Error("login cb", "invalid oauth state, expected %q, got %q", expectedState, state)
+		return
+	}
+	code := r.FormValue("code")
+	logger.Debug("login cb", "received code", code)
+	ctx := context.Background()
+	token, err := ctl.oauthConfig.Exchange(ctx, code)
+	if err != nil {
+		logger.Error("login cb", "oauth exchange failed: %v", err)
+		return
+	}
+	logger.Debug("login cb", "received token", token)
+	if !token.Valid() {
+		logger.Error("login cb", "got invalid token")
+		return
+	}
+
+	oauthClient := ctl.oauthConfig.Client(ctx, token)
+	result = resultOK
+	if replied := ctl.doLoginDance(ctx, oauthClient, &c, w); !replied {
+		redirectTo(w, r, desiredURL)
+	}
+}
+
+func (ctl *controller) doLoginDance(ctx context.Context, oauthClient *http.Client, c *web.C, w http.ResponseWriter) (replied bool) {
+	const (
+		resultOK = iota
+		resultUnauthorized
+		resultInternalFailure
+	)
+
+	result := resultUnauthorized
+	obj := ctl.sessions.GetSessionObject(c)
+	defer func() {
+		replied = true
+		switch result {
+		case resultOK:
+			replied = false
+		case resultUnauthorized:
+			ctl.cleanupSession(c, w)
+			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		case resultInternalFailure:
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		default:
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+	}()
+
+	client := github.NewClient(oauthClient)
+	ghUser, _, err := client.Users.Get(ctx, "")
+	if err != nil {
+		logger.Error("login dance", "failed to get authenticated user", err)
+		result = resultInternalFailure
+		return
+	}
+	if ghUser.Login == nil {
+		logger.Error("login dance", "authenticated as a user without a login, meh")
+		return
+	}
+
+	teams, err := ctl.api.GetTeams()
+	if err != nil {
+		logger.Error("login dance", "failed to get teams", err)
+		result = resultInternalFailure
+		return
+	}
+	teamsMap := make(map[string]*api.Team, len(teams))
+	for _, team := range teams {
+		teamsMap[team.Name] = team
+	}
+	teamID := ""
+	listOpts := github.ListOptions{
+		Page:    1,
+		PerPage: 50,
+	}
+	for {
+		ghTeams, response, err := client.Teams.ListUserTeams(ctx, &listOpts)
+		if err != nil {
+			logger.Error("login dance", "failed to get user teams", err)
+			result = resultInternalFailure
+			return
+		}
+		for _, ghTeam := range ghTeams {
+			if ghTeam.Name == nil {
+				logger.Debug("login dance", "unnamed github team")
+				continue
+			}
+			logger.Debug("login dance", "github team", *ghTeam.Name)
+			if ghTeam.Organization == nil {
+				logger.Debug("login dance", "github team with no org")
+				continue
+			}
+			if ghTeam.Organization.Login == nil {
+				logger.Debug("login dance", "github team in unnamed organization")
+				continue
+			}
+			logger.Debug("login dance", "github team in organization", *ghTeam.Organization.Login)
+			corerollerTeamName := makeTeamName(*ghTeam.Organization.Login, *ghTeam.Name)
+			// TODO(krnowak): This sucks. If coreroller
+			// has two teams (say kubernetes and habitat)
+			// and we have such teams in github kinbolk
+			// organization then we are going to randomly
+			// get an ID of either coreroller team…
+			logger.Debug("login dance", "trying to find a matching coreroller team", corerollerTeamName)
+			if team, ok := teamsMap[corerollerTeamName]; ok {
+				logger.Debug("login dance", "found matching team", corerollerTeamName)
+				teamID = team.ID
+				break
+			}
+		}
+		if teamID != "" {
+			break
+		}
+		// Next page being zero means that we are on the last
+		// page.
+		if response.NextPage == 0 {
+			break
+		}
+		listOpts.Page = response.NextPage
+	}
+	if teamID == "" {
+		logger.Debug("login dance", "no matching teams found, trying orgs")
+		listOpts.Page = 1
+		for {
+			ghOrgs, response, err := client.Organizations.List(ctx, "", &listOpts)
+			if err != nil {
+				logger.Error("login dance", "failed to get user orgs", err)
+				result = resultInternalFailure
+				return
+			}
+			for _, ghOrg := range ghOrgs {
+				if ghOrg.Login == nil {
+					logger.Debug("login dance", "unnamed github organization")
+					continue
+				}
+				logger.Debug("login dance", "github org", *ghOrg.Login)
+				logger.Debug("login dance", "trying to find a matching coreroller team", *ghOrg.Login)
+				if team, ok := teamsMap[*ghOrg.Login]; ok {
+					logger.Debug("login dance", "found matching team", *ghOrg.Login)
+					teamID = team.ID
+					break
+				}
+			}
+			if teamID != "" {
+				break
+			}
+			// Next page being zero means that we are on the last
+			// page.
+			if response.NextPage == 0 {
+				break
+			}
+			listOpts.Page = response.NextPage
+		}
+	}
+	if teamID == "" {
+		logger.Debug("login dance", "not authorized")
+		return
+	}
+	obj["teamID"] = teamID
+	result = resultOK
+	return
+}
+
+// ----------------------------------------------------------------------------
 // Authentication
 //
+
+func (ctl *controller) authMissingTeamID(w http.ResponseWriter, r *http.Request, obj map[string]interface{}) {
+	oauthState := sessions.GenerateRandomString(64)
+	obj["state"] = oauthState
+	obj["desiredurl"] = r.URL.String()
+	logger.Debug("authenticate", "oauthstate", oauthState)
+	url := ctl.oauthConfig.AuthCodeURL(oauthState, oauth2.AccessTypeOnline)
+	logger.Debug("authenticate", "redirecting to", url)
+	redirectTo(w, r, url)
+}
 
 // authenticate is a middleware handler in charge of authenticating requests.
 func (ctl *controller) authenticate(c *web.C, h http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		authError := func() {
-			w.Header().Set("WWW-Authenticate", "Basic realm="+api.Realm)
-			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
-		}
-
-		username, password, _ := r.BasicAuth()
-		if username == "" || password == "" {
-			authError()
+		obj := ctl.sessions.GetSessionObject(c)
+		teamID, ok := obj["teamID"]
+		if !ok {
+			ctl.authMissingTeamID(w, r, obj)
 			return
 		}
 
-		secret, err := ctl.api.GenerateUserSecret(username, password)
-		if err != nil {
-			authError()
-			return
-		}
-
-		user, err := ctl.api.GetUser(username)
-		if err != nil || secret != user.Secret {
-			authError()
-			return
-		}
-
-		c.Env["username"] = username
-		c.Env["team_id"] = user.TeamID
-
-		w.Header()["X-Authenticated-Username"] = []string{username}
+		c.Env["team_id"] = teamID
 		h.ServeHTTP(w, r)
 	}
 
