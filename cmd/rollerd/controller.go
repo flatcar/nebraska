@@ -402,26 +402,6 @@ func (ctl *controller) authenticate(c *web.C, h http.Handler) http.Handler {
 //
 
 func (ctl *controller) updateUserPassword(c web.C, w http.ResponseWriter, r *http.Request) {
-	var update struct {
-		Password string
-	}
-	if err := json.NewDecoder(r.Body).Decode(&update); err != nil {
-		logger.Error("updateUserPassword", "error", err.Error())
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return
-	}
-
-	teamID, _ := c.Env["team_id"].(string)
-	username, _ := c.Env["username"].(string)
-
-	err := ctl.api.UpdateUserPassword(username, update.Password)
-	switch err {
-	case nil:
-		http.Error(w, http.StatusText(http.StatusNoContent), http.StatusNoContent)
-	default:
-		logger.Error("updateUserPassword", "error", err.Error(), "team", teamID, "username", username)
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-	}
 }
 
 // ----------------------------------------------------------------------------
