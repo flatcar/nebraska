@@ -291,6 +291,38 @@ func (ctl *controller) loginCb(c web.C, w http.ResponseWriter, r *http.Request) 
 	}
 }
 
+type GhAppAuthPayload struct {
+	Action string `json:"action"`
+	Sender GhUser `json:"sender"`
+}
+
+type GhUser struct {
+	Login string `json:"login"`
+}
+
+func (ctl *controller) loginWebhookAuthorizationEvent(c web.C, w http.ResponseWriter, payloadReader io.Reader) {
+	var payload GhAppAuthPayload
+	if err := json.NewDecoder(payloadReader).Decode(&payload); err != nil {
+		logger.Error("webhook", "error unmarshalling github_app_authorization payload", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+	logger.Debug("webhook", "got github_app_authorization event with action", payload.Action)
+	if payload.Action != "revoked" {
+		logger.Debug("webhook", "ignoring github_app_authorization event with action", payload.Action)
+		return
+	}
+	username := payload.Sender.Login
+	logger.Debug("webhook", "dropping all the sessions of user", username)
+	if sessionIDs, ok := ctl.userSessionIDs[username]; ok {
+		for sessionID := range sessionIDs {
+			logger.Debug("webhook", "dropping session", sessionID)
+			ctl.sessions.Store.Destroy(sessionID)
+		}
+		delete(ctl.userSessionIDs, username)
+	}
+}
+
 func (ctl *controller) loginWebhook(c web.C, w http.ResponseWriter, r *http.Request) {
 	signature := r.Header.Get("X-Hub-Signature")
 	if len(signature) == 0 {
@@ -314,6 +346,8 @@ func (ctl *controller) loginWebhook(c web.C, w http.ResponseWriter, r *http.Requ
 	payloadReader := bytes.NewBuffer(rawPayload)
 	logger.Debug("webhook", "got event of type", eventType)
 	switch eventType {
+	case "github_app_authorization":
+		ctl.loginWebhookAuthorizationEvent(c, w, payloadReader)
 	default:
 		logger.Debug("webhook", "ignoring event", eventType)
 		return
