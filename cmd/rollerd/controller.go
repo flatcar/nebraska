@@ -667,14 +667,53 @@ func (ctl *controller) doLoginDance(ctx context.Context, oauthClient *http.Clien
 // Authentication
 //
 
-func (ctl *controller) authMissingTeamID(w http.ResponseWriter, r *http.Request, obj map[string]interface{}) {
-	oauthState := sessions.GenerateRandomString(64)
-	obj["state"] = oauthState
-	obj["desiredurl"] = r.URL.String()
-	logger.Debug("authenticate", "oauthstate", oauthState)
-	url := ctl.oauthConfig.AuthCodeURL(oauthState, oauth2.AccessTypeOnline)
-	logger.Debug("authenticate", "redirecting to", url)
-	redirectTo(w, r, url)
+func (ctl *controller) authMissingTeamID(c *web.C, w http.ResponseWriter, r *http.Request, obj map[string]interface{}) (teamID string, replied bool) {
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" {
+		oauthState := sessions.GenerateRandomString(64)
+		obj["state"] = oauthState
+		obj["desiredurl"] = r.URL.String()
+		logger.Debug("authenticate", "oauthstate", oauthState)
+		url := ctl.oauthConfig.AuthCodeURL(oauthState, oauth2.AccessTypeOnline)
+		logger.Debug("authenticate", "redirecting to", url)
+		redirectTo(w, r, url)
+		replied = true
+	} else {
+		failed := true
+		defer func() {
+			if failed {
+				replied = true
+				ctl.cleanupSession(c, w)
+				http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+			}
+		}()
+		if authHeader == "" {
+			logger.Debug("auth metrics", "no authorization header in headers", r.Header)
+			return "", true
+		}
+		splitToken := strings.Fields(authHeader)
+		if len(splitToken) != 2 {
+			logger.Debug("auth metrics", "malformed authorization header", authHeader)
+			return
+		}
+		if strings.ToLower(strings.TrimSpace(splitToken[0])) != "bearer" {
+			logger.Debug("auth metrics", "authorization is not a bearer token", authHeader)
+			return
+		}
+		bearerToken := strings.TrimSpace(splitToken[1])
+		logger.Debug("auth metrics", "going to do the login dance with token", bearerToken)
+		token := oauth2.Token{
+			AccessToken: bearerToken,
+		}
+		tokenSource := oauth2.StaticTokenSource(&token)
+		ctx := context.Background()
+		oauthClient := oauth2.NewClient(ctx, tokenSource)
+		failed = false
+		if replied = ctl.doLoginDance(ctx, oauthClient, c, w); !replied {
+			teamID = obj["teamID"].(string)
+		}
+	}
+	return
 }
 
 // authenticate is a middleware handler in charge of authenticating requests.
@@ -683,8 +722,11 @@ func (ctl *controller) authenticate(c *web.C, h http.Handler) http.Handler {
 		obj := ctl.sessions.GetSessionObject(c)
 		teamID, ok := obj["teamID"]
 		if !ok {
-			ctl.authMissingTeamID(w, r, obj)
-			return
+			if newTeamID, replied := ctl.authMissingTeamID(c, w, r, obj); replied {
+				return
+			} else {
+				teamID = newTeamID
+			}
 		}
 
 		c.Env["team_id"] = teamID
