@@ -409,6 +409,63 @@ func (ctl *controller) loginWebhookMembershipEvent(c web.C, w http.ResponseWrite
 	}
 }
 
+type GhChangesName struct {
+	From string `json:"from"`
+}
+
+type GhChanges struct {
+	Name GhChangesName `json:"name"`
+}
+
+type GhTeamPayload struct {
+	Action  string    `json:"action"`
+	Changes GhChanges `json:"changes"`
+	Team    GhTeam    `json:"team"`
+	Org     GhUser    `json:"organization"`
+}
+
+func (ctl *controller) loginWebhookTeamEvent(c web.C, w http.ResponseWriter, payloadReader io.Reader) {
+	var payload GhTeamPayload
+	if err := json.NewDecoder(payloadReader).Decode(&payload); err != nil {
+		logger.Error("webhook", "error unmarshalling team payload", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+	logger.Debug("webhook", "got team event with action", payload.Action)
+	org := payload.Org.Login
+	team := ""
+	switch payload.Action {
+	case "deleted":
+		team = payload.Team.Name
+	case "edited":
+		if payload.Changes.Name.From == "" {
+			logger.Debug("ignoring edited team event that does not rename the team")
+			return
+		}
+		team = payload.Changes.Name.From
+	default:
+		logger.Debug("webhook", "ignoring team event with action", payload.Action)
+		return
+	}
+	teamName := makeTeamName(org, team)
+	for username := range ctl.teamToUsers[teamName] {
+		if sessionIDs, ok := ctl.userSessionIDs[username]; ok {
+			for sessionID, teamData := range sessionIDs {
+				if teamData.org == org && teamData.team != nil && *teamData.team == team {
+					logger.Debug("webhook", "dropping session", sessionID, "user", username)
+					ctl.sessions.Store.Destroy(sessionID)
+					delete(sessionIDs, sessionID)
+				}
+			}
+			if len(sessionIDs) == 0 {
+				logger.Debug("webhook", "dropping all the sessions of user", username)
+				delete(ctl.userSessionIDs, username)
+			}
+		}
+	}
+	delete(ctl.teamToUsers, teamName)
+}
+
 func (ctl *controller) loginWebhook(c web.C, w http.ResponseWriter, r *http.Request) {
 	signature := r.Header.Get("X-Hub-Signature")
 	if len(signature) == 0 {
@@ -438,6 +495,8 @@ func (ctl *controller) loginWebhook(c web.C, w http.ResponseWriter, r *http.Requ
 		ctl.loginWebhookOrganizationEvent(c, w, payloadReader)
 	case "membership":
 		ctl.loginWebhookMembershipEvent(c, w, payloadReader)
+	case "team":
+		ctl.loginWebhookTeamEvent(c, w, payloadReader)
 	default:
 		logger.Debug("webhook", "ignoring event", eventType)
 		return
