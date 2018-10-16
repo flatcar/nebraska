@@ -4,6 +4,7 @@
 // db/sample_data.sql (15.597kB)
 // db/migrations/0001_initial.sql (7.178kB)
 // db/migrations/0002_event_data.sql (729B)
+// db/migrations/0003_longer_team_names.sql (142B)
 
 package api
 
@@ -147,8 +148,28 @@ func dbMigrations0002_event_dataSql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "db/migrations/0002_event_data.sql", size: 729, mode: os.FileMode(420), modTime: time.Unix(1537957106, 0)}
+	info := bindataFileInfo{name: "db/migrations/0002_event_data.sql", size: 729, mode: os.FileMode(420), modTime: time.Unix(1537958785, 0)}
 	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x93, 0xe9, 0x46, 0x83, 0xf5, 0x9c, 0x90, 0x5b, 0xa7, 0xd8, 0xdf, 0xb6, 0xb9, 0xf4, 0x9e, 0x1a, 0x6b, 0x5f, 0x66, 0x58, 0x61, 0xb9, 0x54, 0x3c, 0x93, 0x3b, 0xd9, 0x5b, 0xae, 0xf, 0x92, 0x8f}}
+	return a, nil
+}
+
+var _dbMigrations0003_longer_team_namesSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xd2\xd5\x55\xd0\xce\xcd\x4c\x2f\x4a\x2c\x49\x55\x08\x2d\xe0\xe2\x4a\xcc\x29\x49\x2d\x52\x28\x49\x4c\xca\x49\x55\x28\x49\x4d\xcc\x55\x80\x08\x24\xe7\xe7\x94\xe6\xe6\x29\xe4\x25\xe6\xa6\x2a\x94\x54\x16\xa4\x2a\x94\x25\x16\x25\x67\x24\x16\x69\x18\x1a\x18\x68\x5a\x73\x71\x21\x1b\xe3\x92\x5f\x9e\x47\xba\x41\x46\xa6\x9a\xd6\x5c\x80\x00\x00\x00\xff\xff\x92\xc6\xdf\x09\x8e\x00\x00\x00")
+
+func dbMigrations0003_longer_team_namesSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_dbMigrations0003_longer_team_namesSql,
+		"db/migrations/0003_longer_team_names.sql",
+	)
+}
+
+func dbMigrations0003_longer_team_namesSql() (*asset, error) {
+	bytes, err := dbMigrations0003_longer_team_namesSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "db/migrations/0003_longer_team_names.sql", size: 142, mode: os.FileMode(420), modTime: time.Unix(1539085921, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xea, 0xbb, 0x50, 0xf, 0x77, 0x25, 0x2e, 0xe6, 0x66, 0x6, 0x9c, 0xed, 0x44, 0xb2, 0x8a, 0xa6, 0x3c, 0xe7, 0xef, 0xb2, 0x49, 0x4, 0x81, 0x57, 0xc7, 0x6d, 0x91, 0x47, 0xe, 0xba, 0xb0, 0x57}}
 	return a, nil
 }
 
@@ -250,6 +271,8 @@ var _bindata = map[string]func() (*asset, error){
 	"db/migrations/0001_initial.sql": dbMigrations0001_initialSql,
 
 	"db/migrations/0002_event_data.sql": dbMigrations0002_event_dataSql,
+
+	"db/migrations/0003_longer_team_names.sql": dbMigrations0003_longer_team_namesSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -296,8 +319,9 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	"db": {nil, map[string]*bintree{
 		"drop_all_tables.sql": {dbDrop_all_tablesSql, map[string]*bintree{}},
 		"migrations": {nil, map[string]*bintree{
-			"0001_initial.sql":    {dbMigrations0001_initialSql, map[string]*bintree{}},
-			"0002_event_data.sql": {dbMigrations0002_event_dataSql, map[string]*bintree{}},
+			"0001_initial.sql":           {dbMigrations0001_initialSql, map[string]*bintree{}},
+			"0002_event_data.sql":        {dbMigrations0002_event_dataSql, map[string]*bintree{}},
+			"0003_longer_team_names.sql": {dbMigrations0003_longer_team_namesSql, map[string]*bintree{}},
 		}},
 		"sample_data.sql": {dbSample_dataSql, map[string]*bintree{}},
 	}},

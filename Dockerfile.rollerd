@@ -8,11 +8,8 @@ RUN apk update && \
 COPY . /go/src/github.com/coreroller/coreroller/
 
 RUN cd /go/src/github.com/coreroller/coreroller && \
-	make build && \
-	cd /go/src/github.com/coreroller/coreroller/frontend && \
-	rm -rf node_modules && \
-	npm install && \
-	npm run build
+	rm -rf frontend/node_modules && \
+	make frontend backend
 
 FROM alpine:3.8
 
