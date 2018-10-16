@@ -109,11 +109,11 @@ func addTeam(a *api.API, teamName string) *api.Team {
 	return team
 }
 
-func changeTeamName(a* api.API, oldName, newName string) {
+func changeTeamName(a *api.API, oldName, newName string) {
 	teamID := getTeamIDFor(a, oldName)
 	ensureNoTeam(a, newName)
 	team := api.Team{
-		ID: teamID,
+		ID:   teamID,
 		Name: newName,
 	}
 	if err := a.UpdateTeam(&team); err != nil {

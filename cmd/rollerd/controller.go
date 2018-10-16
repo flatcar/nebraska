@@ -145,8 +145,8 @@ func newController(conf *controllerConfig) (*controller, error) {
 			// need "user" scope really as all we need is
 			// just login and that's public information
 			// accessible without any scope at all.
-			Scopes:       []string{"read:org"},
-			Endpoint:     githuboauth.Endpoint,
+			Scopes:   []string{"read:org"},
+			Endpoint: githuboauth.Endpoint,
 		},
 		userSessionIDs: make(userSessionMap),
 		teamToUsers:    make(teamToUsersMap),
