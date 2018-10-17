@@ -10,7 +10,7 @@ import (
 	"github.com/mgutz/logxi/v1"
 	"github.com/satori/go.uuid"
 
-	"github.com/coreroller/coreroller/pkg/api"
+	"github.com/kinvolk/nebraska/pkg/api"
 )
 
 var (

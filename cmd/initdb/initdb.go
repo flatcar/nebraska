@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/coreroller/coreroller/pkg/api"
+	"github.com/kinvolk/nebraska/pkg/api"
 )
 
 func main() {

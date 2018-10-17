@@ -25,9 +25,9 @@ import (
 	"golang.org/x/oauth2"
 	githuboauth "golang.org/x/oauth2/github"
 
-	"github.com/coreroller/coreroller/pkg/api"
-	"github.com/coreroller/coreroller/pkg/omaha"
-	"github.com/coreroller/coreroller/pkg/syncer"
+	"github.com/kinvolk/nebraska/pkg/api"
+	"github.com/kinvolk/nebraska/pkg/omaha"
+	"github.com/kinvolk/nebraska/pkg/syncer"
 )
 
 const (

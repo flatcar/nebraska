@@ -10,8 +10,8 @@ import (
 	"syscall"
 	"time"
 
-	cr "github.com/coreroller/coreroller/updaters/lib/go"
 	"github.com/facebookgo/grace/gracehttp"
+	cr "github.com/kinvolk/nebraska/updaters/lib/go"
 )
 
 const (
