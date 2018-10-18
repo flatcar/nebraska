@@ -584,7 +584,7 @@ func (ctl *controller) doLoginDance(ctx context.Context, oauthClient *http.Clien
 			corerollerTeamName := makeTeamName(*ghTeam.Organization.Login, *ghTeam.Name)
 			// TODO(krnowak): This sucks. If coreroller
 			// has two teams (say kubernetes and habitat)
-			// and we have such teams in github kinbolk
+			// and we have such teams in github kinvolk
 			// organization then we are going to randomly
 			// get an ID of either coreroller team…
 			logger.Debug("login dance", "trying to find a matching coreroller team", corerollerTeamName)
