@@ -7,7 +7,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/coreroller/coreroller/pkg/api"
+	"github.com/kinvolk/nebraska/pkg/api"
 
 	omahaSpec "github.com/aquam8/go-omaha/omaha"
 	"github.com/stretchr/testify/assert"

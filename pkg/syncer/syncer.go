@@ -19,7 +19,7 @@ import (
 	"github.com/satori/go.uuid"
 	"gopkg.in/mgutz/dat.v1"
 
-	"github.com/coreroller/coreroller/pkg/api"
+	"github.com/kinvolk/nebraska/pkg/api"
 )
 
 const (

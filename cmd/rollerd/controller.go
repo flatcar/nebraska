@@ -25,9 +25,9 @@ import (
 	"golang.org/x/oauth2"
 	githuboauth "golang.org/x/oauth2/github"
 
-	"github.com/coreroller/coreroller/pkg/api"
-	"github.com/coreroller/coreroller/pkg/omaha"
-	"github.com/coreroller/coreroller/pkg/syncer"
+	"github.com/kinvolk/nebraska/pkg/api"
+	"github.com/kinvolk/nebraska/pkg/omaha"
+	"github.com/kinvolk/nebraska/pkg/syncer"
 )
 
 const (
@@ -145,8 +145,8 @@ func newController(conf *controllerConfig) (*controller, error) {
 			// need "user" scope really as all we need is
 			// just login and that's public information
 			// accessible without any scope at all.
-			Scopes:       []string{"read:org"},
-			Endpoint:     githuboauth.Endpoint,
+			Scopes:   []string{"read:org"},
+			Endpoint: githuboauth.Endpoint,
 		},
 		userSessionIDs: make(userSessionMap),
 		teamToUsers:    make(teamToUsersMap),
