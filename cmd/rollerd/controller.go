@@ -56,6 +56,8 @@ type controller struct {
 	userSessionIDs userSessionMap
 	teamToUsers    teamToUsersMap
 	webhookSecret  string
+	readWriteTeams string
+	readOnlyTeams  string
 }
 
 type controllerConfig struct {
@@ -67,6 +69,8 @@ type controllerConfig struct {
 	oauthClientID      string
 	oauthClientSecret  string
 	webhookSecret      string
+	readWriteTeams     string
+	readOnlyTeams      string
 }
 
 func getPotentialOrEnv(potentialValue, envName string) string {
@@ -151,6 +155,8 @@ func newController(conf *controllerConfig) (*controller, error) {
 		userSessionIDs: make(userSessionMap),
 		teamToUsers:    make(teamToUsersMap),
 		webhookSecret:  webhookSecret,
+		readWriteTeams: conf.readWriteTeams,
+		readOnlyTeams:  conf.readOnlyTeams,
 	}
 
 	if conf.enableSyncer {
