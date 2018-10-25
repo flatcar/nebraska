@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 
 	"github.com/mgutz/logxi/v1"
 	"github.com/zenazn/goji"
@@ -30,8 +31,8 @@ var (
 	clientSecret       = flag.String("client-secret", "", fmt.Sprintf("Client secret used for authentication; can be taken from %s env var too", clientSecretEnvName))
 	sessionSecret      = flag.String("session-secret", "", fmt.Sprintf("Session secret used for storing sessions, will be generated if none is passed; can be taken from %s env var too", sessionSecretEnvName))
 	webhookSecret      = flag.String("webhook-secret", "", fmt.Sprintf("Webhook secret used for validing webhook messages; can be taken from %s env var too", webhookSecretEnvName))
-	readWriteTeams     = flag.String("rw-teams", "", "comma-separated list of read/write teams in the org/team format that user is a member of")
-	readOnlyTeams      = flag.String("ro-teams", "", "comma-separated list of read only teams in the org/team format that user is a member of")
+	readWriteTeams     = flag.String("rw-teams", "", "comma-separated list of read-write teams in the org/team format")
+	readOnlyTeams      = flag.String("ro-teams", "", "comma-separated list of read-only teams in the org/team format")
 	logger             = log.New("rollerd")
 )
 
@@ -52,8 +53,8 @@ func main() {
 		oauthClientID:      *clientID,
 		oauthClientSecret:  *clientSecret,
 		webhookSecret:      *webhookSecret,
-		readWriteTeams:     *readWriteTeams,
-		readOnlyTeams:      *readOnlyTeams,
+		readWriteTeams:     strings.Split(*readWriteTeams, ","),
+		readOnlyTeams:      strings.Split(*readOnlyTeams, ","),
 	}
 	ctl, err := newController(conf)
 	if err != nil {
