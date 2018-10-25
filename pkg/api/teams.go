@@ -24,6 +24,22 @@ func (api *API) GetTeams() ([]*Team, error) {
 	return teams, nil
 }
 
+func (api *API) GetTeam() (*Team, error) {
+	var team *Team
+
+	err := api.dbR.
+		SelectDoc("id, name, created_ts").
+		From("team").
+		Limit(1).
+		QueryStruct(&team)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return team, nil
+}
+
 func (api *API) UpdateTeam(team *Team) error {
 	result, err := api.dbR.
 		Update("team").
