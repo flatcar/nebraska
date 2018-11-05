@@ -761,9 +761,11 @@ func (ctl *controller) authenticate(c *web.C, h http.Handler) http.Handler {
 		}
 
 		c.Env["team_id"] = teamID
-		if obj["accesslevel"] == "ro" && (r.Method != "HEAD" || r.Method != "GET") {
-			httpError(w, http.StatusForbidden)
-			return
+		if obj["accesslevel"] == "ro" {
+			if r.Method != "HEAD" && r.Method != "GET" {
+				httpError(w, http.StatusForbidden)
+				return
+			}
 		}
 		h.ServeHTTP(w, r)
 	}
