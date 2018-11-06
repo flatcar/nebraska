@@ -56,6 +56,8 @@ type controller struct {
 	userSessionIDs userSessionMap
 	teamToUsers    teamToUsersMap
 	webhookSecret  string
+	readWriteTeams []string
+	readOnlyTeams  []string
 }
 
 type controllerConfig struct {
@@ -67,6 +69,8 @@ type controllerConfig struct {
 	oauthClientID      string
 	oauthClientSecret  string
 	webhookSecret      string
+	readWriteTeams     []string
+	readOnlyTeams      []string
 }
 
 func getPotentialOrEnv(potentialValue, envName string) string {
@@ -151,6 +155,8 @@ func newController(conf *controllerConfig) (*controller, error) {
 		userSessionIDs: make(userSessionMap),
 		teamToUsers:    make(teamToUsersMap),
 		webhookSecret:  webhookSecret,
+		readWriteTeams: conf.readWriteTeams,
+		readOnlyTeams:  conf.readOnlyTeams,
 	}
 
 	if conf.enableSyncer {
@@ -543,16 +549,16 @@ func (ctl *controller) doLoginDance(ctx context.Context, oauthClient *http.Clien
 		return
 	}
 
-	teams, err := ctl.api.GetTeams()
+	rwTeams := ctl.readWriteTeams
+	roTeams := ctl.readOnlyTeams
+
+	defaultTeam, err := ctl.api.GetTeam()
 	if err != nil {
-		logger.Error("login dance", "failed to get teams", err)
+		logger.Error("login dance", "failed to get default team", err)
 		result = resultInternalFailure
 		return
 	}
-	teamsMap := make(map[string]*api.Team, len(teams))
-	for _, team := range teams {
-		teamsMap[team.Name] = team
-	}
+
 	teamData := ghTeamData{}
 	teamID := ""
 	listOpts := github.ListOptions{
@@ -581,19 +587,27 @@ func (ctl *controller) doLoginDance(ctx context.Context, oauthClient *http.Clien
 				continue
 			}
 			logger.Debug("login dance", "github team in organization", *ghTeam.Organization.Login)
-			corerollerTeamName := makeTeamName(*ghTeam.Organization.Login, *ghTeam.Name)
-			// TODO(krnowak): This sucks. If coreroller
-			// has two teams (say kubernetes and habitat)
-			// and we have such teams in github kinvolk
-			// organization then we are going to randomly
-			// get an ID of either coreroller team…
-			logger.Debug("login dance", "trying to find a matching coreroller team", corerollerTeamName)
-			if team, ok := teamsMap[corerollerTeamName]; ok {
-				logger.Debug("login dance", "found matching team", corerollerTeamName)
-				teamData.org = *ghTeam.Organization.Login
-				teamData.team = ghTeam.Name
-				teamID = team.ID
-				break
+			fullGithubTeamName := makeTeamName(*ghTeam.Organization.Login, *ghTeam.Name)
+			logger.Debug("login dance", "trying to find a matching ro or rw team", fullGithubTeamName)
+			for _, roTeam := range roTeams {
+				if fullGithubTeamName == roTeam {
+					logger.Debug("login dance", "found matching ro team", fullGithubTeamName)
+					teamData.org = *ghTeam.Organization.Login
+					teamData.team = ghTeam.Name
+					teamID = defaultTeam.ID
+					obj["accesslevel"] = "ro"
+					break
+				}
+			}
+			for _, rwTeam := range rwTeams {
+				if fullGithubTeamName == rwTeam {
+					logger.Debug("login dance", "found matching rw team", fullGithubTeamName)
+					teamData.org = *ghTeam.Organization.Login
+					teamData.team = ghTeam.Name
+					teamID = defaultTeam.ID
+					obj["accesslevel"] = "rw"
+					break
+				}
 			}
 		}
 		if teamID != "" {
@@ -622,12 +636,25 @@ func (ctl *controller) doLoginDance(ctx context.Context, oauthClient *http.Clien
 					continue
 				}
 				logger.Debug("login dance", "github org", *ghOrg.Login)
-				logger.Debug("login dance", "trying to find a matching coreroller team", *ghOrg.Login)
-				if team, ok := teamsMap[*ghOrg.Login]; ok {
-					logger.Debug("login dance", "found matching team", *ghOrg.Login)
-					teamData.org = *ghOrg.Login
-					teamID = team.ID
-					break
+				logger.Debug("login dance", "trying to find a matching ro or rw team", *ghOrg.Login)
+				nebraskaOrgName := *ghOrg.Login
+				for _, roTeam := range roTeams {
+					if nebraskaOrgName == roTeam {
+						logger.Debug("login dance", "found matching ro team", nebraskaOrgName)
+						teamData.org = nebraskaOrgName
+						teamID = defaultTeam.ID
+						obj["accesslevel"] = "ro"
+						break
+					}
+				}
+				for _, rwTeam := range rwTeams {
+					if nebraskaOrgName == rwTeam {
+						logger.Debug("login dance", "found matching rw team", nebraskaOrgName)
+						teamData.org = nebraskaOrgName
+						teamID = defaultTeam.ID
+						obj["accesslevel"] = "rw"
+						break
+					}
 				}
 			}
 			if teamID != "" {
@@ -734,6 +761,12 @@ func (ctl *controller) authenticate(c *web.C, h http.Handler) http.Handler {
 		}
 
 		c.Env["team_id"] = teamID
+		if obj["accesslevel"] == "ro" {
+			if r.Method != "HEAD" && r.Method != "GET" {
+				httpError(w, http.StatusForbidden)
+				return
+			}
+		}
 		h.ServeHTTP(w, r)
 	}
 
