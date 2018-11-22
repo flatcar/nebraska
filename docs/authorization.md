@@ -1,3 +1,11 @@
+# Nebraska Authorization
+
+Nebraska uses OAuth or Bearer tokens to authenticate and authorize
+users. Currently, only GitHub is supported as an authentication backend.
+[GitHub personal access tokens](https://github.com/settings/tokens) can
+be used as bearer token. If no bearer token is send, Nebraska will authorize
+users through the GitHub Oauth flow and create a persistent session.
+
 # Deploying rollerd for testing on local computer
 
 - go to https://smee.io/ and press the `Start a new channel` button,
@@ -55,38 +63,31 @@
   - Choose `Install App` on the left of the page and perform the
     installation
 
-- now go to the coreroller project directory and run `make all`
+- now go to the nebraska project directory and run `make all`
 
 - start the database: `docker run --privileged -d -p
   127.0.0.1:5432:5432 coreroller/postgres`
 
-- make sure that there is a coreroller team in the coreroller database
-  that is named after a github organization or a github team members
-  of which should be allowed to manage the application
-
-  - naming of the coreroller teams is `<ORG>` for coreroller teams
-    based on github organizations or `<ORG>/<TEAM>` for coreroller
-    teams based on github teams
-
-  - you can use `userctl` tool to create/rename coreroller teams; the
-    tool is built as a part of `make tools`
-
-  - use `userctl -list-teams` to see teams
-
-  - use `userctl -add-team <TEAM_NAME>` to create a new team
-
-  - use `userctl -change-team-name-to <TEAM_NAME> -add-team
-    <OLD_TEAM_NAME>` to rename `<OLD_TEAM_NAME>` to `<TEAM_NAME>`
-
-    - yeah, I know, the `-add-team` part here is confusing
-
-- start the coreroller backend:
+- start the nebraska backend:
 
   - `LOGXI=* rollerd -client-id <CLIENT_ID> -client-secret
-    <CLIENT_SECRET> -http-static-dir $PWD/frontend/built -http-log
+    <CLIENT_SECRET> -ro-teams <READ_ONLY_TEAMS> -rw-teams <READ_WRITE_TEAMS>
+    -http-static-dir $PWD/frontend/built -http-log
     -webhook-secret <WEBHOOK_SECRET>`
 
-    - run `rollerd -h` to learn about env vars you can use instead of
+    - Use the `-rw-teams` and `-ro-teams` to specify the list of read-write
+      and read-only access teams.
+    - Nebraska uses this list to set the access level of the user accordingly
+      and users in read-only teams can only perform `GET` and `HEAD` requests.
+    - Nebraska then logs into Github and fetches the list of the Github teams
+      of the logged in user and tries to match them against the list of teams
+      passed through the CLI
+    - If user is not part of any of the teams in the list then Nebraska denies
+      access completely and sets the permissions of the session accordingly.
+    - Nebraska doesn't support groups but instead assumes that there is only
+      one nebraska team in the database. We plan to setup a new nebraska
+      instance for separation needed between different customers or projects
+    - Run `rollerd -h` to learn about env vars you can use instead of
       flags
 
 - in the browser, access `http://localhost:8000`
