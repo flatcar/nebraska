@@ -123,7 +123,7 @@ func (s *Syncer) initialize() error {
 	}
 
 	for _, c := range coreosApp.Channels {
-		if c.Name == "stable" || c.Name == "beta" || c.Name == "alpha" {
+		if c.Name == "stable" || c.Name == "beta" || c.Name == "alpha" || c.Name == "edge" {
 			s.machinesIDs[c.Name] = "{" + uuid.NewV4().String() + "}"
 			s.bootIDs[c.Name] = "{" + uuid.NewV4().String() + "}"
 			s.channelsIDs[c.Name] = c.ID
@@ -140,7 +140,7 @@ func (s *Syncer) initialize() error {
 }
 
 // checkForUpdates polls the public CoreOS servers looking for updates in the
-// official channels (stable, beta, alpha) sending Omaha requests. When an
+// official channels (stable, beta, alpha, edge) sending Omaha requests. When an
 // update is received we'll process it, creating packages and updating channels
 // in CoreRoller as needed.
 func (s *Syncer) checkForUpdates() error {
