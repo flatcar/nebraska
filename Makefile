@@ -1,7 +1,7 @@
 VERSION ?= $(shell git describe --tags --always --dirty)
-DOCKER_REPO ?= "schu"
-DOCKER_IMAGE_ROLLERD ?= "coreroller-rollerd"
-DOCKER_IMAGE_POSTGRES ?= "coreroller-postgres"
+DOCKER_REPO ?= "quay.io/flatcar"
+DOCKER_IMAGE_ROLLERD ?= "nebraska-rollerd"
+DOCKER_IMAGE_POSTGRES ?= "nebraska-postgres"
 
 .PHONY: all
 all: backend tools frontend
