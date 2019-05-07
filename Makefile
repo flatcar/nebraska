@@ -26,6 +26,7 @@ tools:
 .PHONY: container-rollerd
 container-rollerd:
 	docker build \
+		--no-cache \
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_ROLLERD):$(VERSION)" \
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_ROLLERD):latest" \
 		-f Dockerfile.rollerd .
@@ -33,6 +34,7 @@ container-rollerd:
 .PHONY: container-postgres
 container-postgres:
 	docker build \
+		--no-cache \
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_POSTGRES):$(VERSION)" \
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_POSTGRES):latest" \
 		-f Dockerfile.postgres .
