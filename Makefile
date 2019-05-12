@@ -1,7 +1,7 @@
 VERSION ?= $(shell git describe --tags --always --dirty)
-DOCKER_REPO ?= "schu"
-DOCKER_IMAGE_ROLLERD ?= "coreroller-rollerd"
-DOCKER_IMAGE_POSTGRES ?= "coreroller-postgres"
+DOCKER_REPO ?= "quay.io/flatcar"
+DOCKER_IMAGE_ROLLERD ?= "nebraska-rollerd"
+DOCKER_IMAGE_POSTGRES ?= "nebraska-postgres"
 
 .PHONY: all
 all: backend tools frontend
@@ -26,6 +26,7 @@ tools:
 .PHONY: container-rollerd
 container-rollerd:
 	docker build \
+		--no-cache \
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_ROLLERD):$(VERSION)" \
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_ROLLERD):latest" \
 		-f Dockerfile.rollerd .
@@ -33,6 +34,7 @@ container-rollerd:
 .PHONY: container-postgres
 container-postgres:
 	docker build \
+		--no-cache \
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_POSTGRES):$(VERSION)" \
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_POSTGRES):latest" \
 		-f Dockerfile.postgres .
