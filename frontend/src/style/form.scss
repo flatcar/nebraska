@@ -3,7 +3,7 @@
 input[type='text'],
 input[type='search'] {
   height: 30px;
-  border: 1px solid @grey-50;
+  border: 1px solid $grey-50;
   padding: 5px 12px;
   border-radius: 2px;
   -webkit-border-radius: 2px;
@@ -13,10 +13,10 @@ input[type='search'] {
 
 .form-control {
   font-size: 16px;
-  color: @grey;
+  color: $grey;
   height: 32px;
   padding: 5px 12px;
-  border: 1px solid @grey-50;
+  border: 1px solid $grey-50;
   -webkit-box-shadow: none;
   box-shadow: none;
 }
@@ -29,12 +29,12 @@ input[type='search'] {
     font-weight: normal;
     text-transform: uppercase;
     font-size: .75em;
-    color: @grey-50;
+    color: $grey-50;
 
     &.normalText {
       text-transform: none;
       font-size: .9em;
-      color: @grey;
+      color: $grey;
     }
   }
 
@@ -51,7 +51,7 @@ input[type='search'] {
     height: 0;
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
-    border-top: 6px solid @grey-50;
+    border-top: 6px solid $grey-50;
   }
 }
 
@@ -64,9 +64,9 @@ input[type='search'] {
     font-size: 14px;
     text-transform: uppercase;
     font-weight: 300;
-    font-family: @font-family-Roboto-Light;
+    font-family: $font-family-Roboto-Light;
     padding-right: 2px;
-    color: @grey-75;
+    color: $grey-75;
 
     &.add-on span {
       text-transform: none;
@@ -99,7 +99,7 @@ input[type='search'] {
       display: inline-block;
       max-width: 100%;
       /* margin-bottom: 5px; */
-      font-family: @font-family-Lato-Bold;      
+      font-family: $font-family-Lato-Bold;      
       font-weight: 700;
       position: absolute;
       width: 60%;
@@ -115,7 +115,7 @@ input[type='search'] {
   display: inline-block;
   max-width: 100%;
   /* margin-bottom: 5px; */
-  font-family: @font-family-base;
+  font-family: $font-family-base;
   font-weight: 700;
   position: absolute;
   width: 60%;

@@ -11,7 +11,7 @@
     float: none !important;
     // float: left;
     margin-right: 19px;
-    border-right: 1px solid @blue;
+    border-right: 1px solid $blue;
 
     & > li {
       float: none;
@@ -21,19 +21,19 @@
         margin-bottom: 3px;
         margin-right: -1px;
         text-transform: uppercase;
-        .border-radius(4px 0 0 4px);
+        @include border-radius(4px 0 0 4px);
 
         &:focus, &:hover {
-          border-color: @lighter-grey @blue @lighter-grey @lighter-grey;
+          border-color: $lighter-grey $blue $lighter-grey $lighter-grey;
         }
       }
 
       &.active {
 
         & > a {
-          color: @grey;
-          border-color: @blue transparent @blue @blue;
-          *border-right-color: @white;
+          color: $grey;
+          border-color: $blue transparent $blue $blue;
+          *border-right-color: $white;
         }
       }
     }
@@ -68,7 +68,7 @@
   margin-top: 20px;
 
   .nav-tabs {
-    border-bottom-color: @lighter-grey;
+    border-bottom-color: $lighter-grey;
     margin-bottom: 20px;
 
     & > li {
@@ -81,17 +81,17 @@
         border-top: 3px solid transparent;
 
         &:hover {
-          color: @grey;
-          background-color: @grey-5;
+          color: $grey;
+          background-color: $grey-5;
         }
       }
 
       &.active {
 
         & > a {
-          border-color: transparent @lighter-grey;
-          border-top: 3px solid @brand-color;
-          color: @grey;
+          border-color: transparent $lighter-grey;
+          border-top: 3px solid $brand-color;
+          color: $grey;
         }
       }
     }

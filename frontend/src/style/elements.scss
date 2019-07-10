@@ -2,18 +2,18 @@
 
 // Progress bar
 .progress-bar-default {
-  background-color: @medium-grey;
+  background-color: $medium-grey;
 }
 
 .progress-bar-striped {
-  background-image: -webkit-gradient(linear,0 100%,100% 0,color-stop(0.25, @white-10,color-stop(0.25,transparent),color-stop(0.5,transparent),color-stop(0.5, @white-10),color-stop(0.75, @white-10),color-stop(0.75,transparent),to(transparent))); background-image: -webkit-linear-gradient(45deg, @white-10 25%,transparent 25%,transparent 50%, @white-10 50%, @white-10 75%,transparent 75%,transparent); background-image: linear-gradient(45deg,@white-10 25%,transparent 25%,transparent 50%, @white-10 50%, @white-10 75%,transparent 75%,transparent);
+  background-image: -webkit-gradient(linear,0 100%,100% 0,color-stop(0.25, $white-10,color-stop(0.25,transparent),color-stop(0.5,transparent),color-stop(0.5, $white-10),color-stop(0.75, $white-10),color-stop(0.75,transparent),to(transparent))); background-image: -webkit-linear-gradient(45deg, $white-10 25%,transparent 25%,transparent 50%, $white-10 50%, $white-10 75%,transparent 75%,transparent); background-image: linear-gradient(45deg,$white-10 25%,transparent 25%,transparent 50%, $white-10 50%, $white-10 75%,transparent 75%,transparent);
   background-size: 10px 10px;
   background-repeat: repeat;
 }
 
 .progress {
   .progress-bar-striped {
-    border-right: 1px solid @white-75;
+    border-right: 1px solid $white-75;
 
     &:last-child {
       border-right: none;
@@ -23,29 +23,29 @@
 
 // Custom boxes
 .box--success:before {
-  background-color: @box-green;
+  background-color: $box-green;
 }
 
 .box--info:before {
-  background-color: @box-blue;
+  background-color: $box-blue;
 }
 
 .box--warning:before {
-  background-color: @box-orange;
+  background-color: $box-orange;
 }
 
 .box--danger:before {
-  background-color: @box-red;
+  background-color: $box-red;
 }
 
 .box--default:before {
-  background-color: @medium-grey;
+  background-color: $medium-grey;
 }
 
 // Versions
 .versionBullet {
   font-size: 18px;
-  background-color: @grey;
+  background-color: $grey;
   display: inline-block;
   width: 7px;
   height: 7px;
@@ -65,7 +65,7 @@
   padding: 0 0 0 5px;
   font-size: 12px;
   text-decoration: none;
-  background: @lighter-grey;
+  background: $lighter-grey;
   text-transform: uppercase;
   position: relative;
   min-width: 50px;
@@ -92,7 +92,7 @@
   .colouredCircle {
     font-size: 18px;
     padding-right: 5px;
-    background-color: @grey;
+    background-color: $grey;
     display: inline-block;
     width: 7px;
     height: 7px;
@@ -103,10 +103,10 @@
   }
 
   span.channelLabel--span {
-    font-family: @font-family-base;
-    background: @font-color;
+    font-family: $font-family-base;
+    background: $font-color;
     padding: 1px 5px;
-    color: @white;
+    color: $white;
     font-size: 12px;
     margin-left: 15px;
     position: relative;
@@ -126,9 +126,9 @@
       height: 0;
       border-style: solid;
       border-width: 5px 5px 5px 0;
-      border-color: transparent @font-color transparent transparent;
+      border-color: transparent $font-color transparent transparent;
       position: absolute;
-      top: calc(~"50% - 5px");
+      top: calc(50% - 5px);
       left: -5px;
     }
   }

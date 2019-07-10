@@ -29,7 +29,7 @@
     top: -20px;
     bottom: -20px;
     width: 5px;
-    background: @black-10;
+    background: $black-10;
     left: 70px;
     margin-left: -10px;
   }
@@ -43,8 +43,8 @@
       width: 40px;
       text-align: right;
       line-height: 9px;
-      font-family: @font-family-Roboto;
-      color: @black-50;
+      font-family: $font-family-Roboto;
+      color: $black-50;
       padding-top: 3px;
       font-size: .9em;
 
@@ -57,33 +57,33 @@
       margin: -32px 0 0 90px;
       padding: 10px;
       position: relative;
-      border: 1px solid @grey-50;
+      border: 1px solid $grey-50;
       border-radius: 4px;
-      background-color: @white;
+      background-color: $white;
 
       p {
         font-size: 0.8em;
         margin-bottom: 0px;
         margin-top: 5px;
-        color: @grey-75;
+        color: $grey-75;
       }
 
       &:after {
-        right: calc(~"100% + 1px");
+        right: calc(100% + 1px);
         border: solid transparent;
         content: " ";
         height: 0;
         width: 0;
         position: absolute;
         pointer-events: none;
-        border-right-color: @grey-50;
+        border-right-color: $grey-50;
         border-width: 7px;
         top: 12px;
       }
     }
 
     .timeline--eventLabelTitle {
-      border-bottom: 1px solid @grey-50;
+      border-bottom: 1px solid $grey-50;
       margin: 0px;  
       margin-bottom: 10px;
       font-size: 0.8em;
@@ -94,9 +94,9 @@
         font-size: 14px;
         text-transform: uppercase;
         font-weight: 300;
-        font-family: @font-family-Roboto-Light;
+        font-family: $font-family-Roboto-Light;
         padding-right: 2px;
-        color: @grey-75;
+        color: $grey-75;
       }
 
       & > div:last-child {
@@ -106,9 +106,9 @@
 
     .timeline--icon {
       position: absolute;
-      color: @i-dark-blue;
-      box-shadow: 0 0 0 2px @i-dark-blue;  
-      background: @i-lite-blue;
+      color: $i-dark-blue;
+      box-shadow: 0 0 0 2px $i-dark-blue;  
+      background: $i-lite-blue;
       border-radius: 55%;
       text-align: center;
       left: 50px;
@@ -120,27 +120,27 @@
     }
 
     &.error .timeline--icon {
-      color: @i-dark-red;
-      box-shadow: 0 0 0 2px @i-dark-red;  
-      background: @i-lite-red;
+      color: $i-dark-red;
+      box-shadow: 0 0 0 2px $i-dark-red;  
+      background: $i-lite-red;
     }
 
     &.success .timeline--icon {
-      color: @i-dark-green;
-      box-shadow: 0 0 0 2px @i-dark-green;  
-      background: @i-lite-green;
+      color: $i-dark-green;
+      box-shadow: 0 0 0 2px $i-dark-green;  
+      background: $i-lite-green;
     }
 
     &.warning .timeline--icon {
-      color: @i-dark-yellow;
-      box-shadow: 0 0 0 2px @i-dark-yellow;  
-      background: @i-lite-yellow;
+      color: $i-dark-yellow;
+      box-shadow: 0 0 0 2px $i-dark-yellow;  
+      background: $i-lite-yellow;
     }
   }
 }
 
 .timeline--events {
-  width: calc(~"100% - 40px");
+  width: calc(100% - 40px);
   margin: 20px;
   padding: 0px;
   height: 190px;
@@ -170,11 +170,11 @@
     }
 
     &:nth-child(odd) {
-      background-color: @lite-white;
+      background-color: $lite-white;
     }
 
     &:nth-child(even) {
-      background-color: @lite-grey;
+      background-color: $lite-grey;
     }
 
     & > div {
@@ -197,13 +197,13 @@
     }
 
     &.timeline--eventsTitle {
-      width: calc(~"100% - 42px");
+      width: calc(100% - 42px);
       font-size: 14px;
       text-transform: uppercase;
       font-weight: 300;
-      font-family: @font-family-Roboto-Light;
-      color: @grey-75;
-      background-color: @white;
+      font-family: $font-family-Roboto-Light;
+      color: $grey-75;
+      background-color: $white;
       position: absolute;
       top: 21px;
       left: 21px;
@@ -216,4 +216,3 @@
     }
   }
 }
-

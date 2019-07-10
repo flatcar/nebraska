@@ -2,23 +2,23 @@
 
 .navbar-default {
   background-image: none !important;
-  background-color: @white;
+  background-color: $white;
   min-height: 50px;
   height: 50px;
-  .box-shadow(~"inset 0 1px 0 rgba(255,255,255,.15),0 1px 5px rgba(0,0,0,.075)");
+  @include box-shadow("inset 0 1px 0 rgba(255,255,255,.15),0 1px 5px rgba(0,0,0,.075)");
 }
 
 .navbar-brand {
   text-transform: uppercase;
   letter-spacing: 0.5em;
-  font-size: @font-size-px;
-  font-family: @font-family-Lato-Bold;
+  font-size: $font-size-px;
+  font-family: $font-family-Lato-Bold;
   // font-weight: 700;
   padding: 15px;
   margin-top: 2px;
 
   span.blueStyle {
-    color: @brand-color;
+    color: $brand-color;
   }
 }
 
@@ -27,7 +27,7 @@
   height: 32px;
   width: 32px;
   line-height: 32px;
-  border: 1px solid @grey-50;
+  border: 1px solid $grey-50;
   position: absolute;
   top: 9px;
   left: -25px;
@@ -55,7 +55,7 @@
       height: 28px;
       width: 28px;
       line-height: 28px;
-      border: 1px solid @grey-50;
+      border: 1px solid $grey-50;
       position: absolute;
       top: 9px;
       left: -25px;
@@ -100,7 +100,7 @@
 // Tooltip
 .tooltip.bottom .tooltip-inner {
   font-size: 1em;
-  background-color: @white;
+  background-color: $white;
   border: 1px solid #999;
   color: inherit;
   font-size: 14px;
