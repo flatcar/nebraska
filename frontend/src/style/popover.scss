@@ -1,18 +1,18 @@
 /* Popover */
 .popover {
-  border: 1px solid @grey-50;
+  border: 1px solid $grey-50;
   border-radius: 4px;
   box-shadow: none;
   padding: 0px;
   min-width: 250px;
 
   .popover-title {
-    background-color: @lite-grey;
+    background-color: $lite-grey;
     padding: 10px;
     margin: 0px !important;
-    border-bottom: 1px solid @grey-50;
+    border-bottom: 1px solid $grey-50;
     font-size: 18px;
-    color: @grey;
+    color: $grey;
     font-weight: normal;
   }
 
@@ -20,7 +20,7 @@
     border: solid transparent;
     height: 0;
     width: 0;
-    border-bottom-color: @grey-50;
+    border-bottom-color: $grey-50;
     border-width: 7px;
     top: -14px;
     margin-left: -7px;
@@ -36,8 +36,8 @@
   }
 
   .confirm-dialog-btn-abord {
-    background-color: @brand-color;
-    color: @white;
+    background-color: $brand-color;
+    color: $white;
     text-transform: uppercase;
     line-height: 2em;
     padding: 0px 30px;
@@ -46,8 +46,8 @@
   }
 
   .confirm-dialog-btn-confirm {
-    background-color: @grey-50;
-    color: @white;
+    background-color: $grey-50;
+    color: $white;
     text-transform: uppercase;
     line-height: 2em;
     padding: 0px 30px;

@@ -6,7 +6,7 @@
 
   .coreRollerTable-header,
   .coreRollerTable-body {
-    border-bottom: 1px solid @lighter-grey;
+    border-bottom: 1px solid $lighter-grey;
     position: relative;
     clear: both;
     overflow: hidden;
@@ -14,7 +14,7 @@
     .coreRollerTable-cell {
       float: left;
       width: 19%;
-      background-color: @white;
+      background-color: $white;
       padding-right: 30px;
 
       &:nth-child(4) {
@@ -54,7 +54,7 @@
         line-height: 35px;
 
         &.smallText {
-          font-size: @font-size-px * .80;
+          font-size: $font-size-px * .80;
         }
       }
 
@@ -69,7 +69,7 @@
         &:before {
           content: "";
           position: absolute;
-          border: 1px solid @lighter-grey;
+          border: 1px solid $lighter-grey;
           min-width: 16px;
           height: 16px;
           bottom: 9px;
@@ -90,7 +90,7 @@
     .coreRollerTable-cell {
       &.lightText {
         p {
-          font-family: @font-family-Lato-Light;
+          font-family: $font-family-Lato-Light;
           font-weight: 300;
         }
       }
@@ -102,11 +102,11 @@
       font-size: 14px;
       text-transform: uppercase;
       font-weight: 300;
-      font-family: @font-family-Roboto-Light;
-      color: @grey-75;
+      font-family: $font-family-Roboto-Light;
+      color: $grey-75;
       background-color: transparent;
       border: 0;
-      border-bottom: 3px solid @lighter-grey;
+      border-bottom: 3px solid $lighter-grey;
       margin-bottom: 0;
       padding: 2px 0px;
     }
@@ -118,9 +118,9 @@
 
   .coreRollerTable-detail {
     position: relative;
-    // background: @lite-grey;
+    // background: $lite-grey;
     height: 0px;
-    .transition(all .3s ease-in-out);
+    @include transition(all, .3s, ease-in-out);
     overflow: hidden;
 
     .coreRollerTable-detailContent {
@@ -140,7 +140,7 @@
     &.active {
       height: 235px;
       max-height: 235px;
-      border-bottom: 1px solid @lighter-grey;
+      border-bottom: 1px solid $lighter-grey;
     }
 
     &--empty {
@@ -154,8 +154,8 @@
   .label-default {
     line-height: 45px;
     font-weight: normal;
-    background-color: @label-color;
-    color: @white;
+    background-color: $label-color;
+    color: $white;
 
     img {
       padding-right: 5px;
@@ -167,7 +167,7 @@
     padding: 0px;
 
     & > .coreRollerTable-body:nth-last-child(2) {
-      border-bottom: 1px solid @lighter-grey;
+      border-bottom: 1px solid $lighter-grey;
     }
 
     .coreRollerTable-cell {
@@ -193,7 +193,7 @@
       .coreRollerTable-cell {
         &:last-child {
           p {
-            font-family: @font-family-Lato-Light;
+            font-family: $font-family-Lato-Light;
             line-height: 22px;
             font-weight: 300;
             padding-top: 8px;
@@ -222,7 +222,7 @@
         padding-bottom: 10px;
 
         span {
-          border: 2px solid @brand-color;
+          border: 2px solid $brand-color;
           padding: 8px 16px;
           position: relative;
 
@@ -232,7 +232,7 @@
             left: -52px;
             top: 8px;
             font-size: 1.75em;
-            color: @brand-color;
+            color: $brand-color;
           }
 
           &:after {
@@ -242,16 +242,16 @@
             top: 20px;
             height: 2px;
             width: 40px;
-            background-color: @brand-color;
+            background-color: $brand-color;
           }
         }
       }
     }
 
     .coreRollerTable--tbody {
-      border: 1px solid @grey-50;
-      .border-radius(4px);
-      background-color: @white;
+      border: 1px solid $grey-50;
+      @include border-radius(4px);
+      background-color: $white;
       padding: 0px 25px;
       padding-top: 20px;
       margin-bottom: 50px;
@@ -261,9 +261,9 @@
   // Users table
   &.coreRollerTable--users {
     width: 100%;
-    border: 1px solid @grey-50;
-    .border-radius(4px);
-    background-color: @white;
+    border: 1px solid $grey-50;
+    @include border-radius(4px);
+    background-color: $white;
 
     .coreRollerTable-cell {
       width: 20% !important;
@@ -313,9 +313,9 @@
       border-top-right-radius: 4px;
 
       .coreRollerTable-cell {
-        border-bottom: 1px solid @grey-50;
+        border-bottom: 1px solid $grey-50;
         padding: 15px 0px;
-        background-color: @lite-grey;
+        background-color: $lite-grey;
         font-weight: normal;
 
         .cr-button {

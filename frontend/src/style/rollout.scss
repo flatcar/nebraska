@@ -4,10 +4,10 @@
   top: 0px;
   right: 0px;
   padding: 4px 12px;
-  background-color: @white;
+  background-color: $white;
   background-image: none;
-  border: 2px solid @red;
-  color: @red;
+  border: 2px solid $red;
+  color: $red;
 
   &.rollout--bigger {
     right: -80px;
@@ -17,7 +17,7 @@
     margin: 0px;
     font-size: .90em;
     text-transform: uppercase;
-    font-family: @font-family-Lato-Bold;
+    font-family: $font-family-Lato-Bold;
     font-weight: bold;
     text-align: center;
   }
@@ -38,14 +38,14 @@
 .rolloutRunning {
   opacity: 0;
   height: 0px;
-  .transform(scale(0));
+  @include transform(scale(0));
   overflow: auto;
-  .transform(scale(0.7));
+  @include transform(scale(0.7));
 
 
   &.active {
     opacity: 1;
     height: 280px;
-    .transform(scale(1));
+    @include transform(scale(1));
   }
 }

@@ -1,8 +1,8 @@
-@switchPrefixCls:rc-switch;
+$switchPrefixCls:rc-switch;
 
-@duration:.3s;
+$duration:.3s;
 
-.@{switchPrefixCls}{
+.#{$switchPrefixCls}{
   position: relative;
   display: inline-block;
   box-sizing: border-box;
@@ -15,7 +15,7 @@
   background-color: #ccc;
   cursor: pointer;
   margin-left: 15px;
-  transition: all @duration cubic-bezier(0.35, 0, 0.25, 1);
+  transition: all $duration cubic-bezier(0.35, 0, 0.25, 1);
 
   &-inner {
     color:#fff;
@@ -36,9 +36,9 @@
     cursor: pointer;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.26);
     transform: scale(1);
-    transition: left @duration cubic-bezier(0.35, 0, 0.25, 1);
+    transition: left $duration cubic-bezier(0.35, 0, 0.25, 1);
     animation-timing-function: cubic-bezier(0.35, 0, 0.25, 1);
-    animation-duration: @duration;
+    animation-duration: $duration;
     animation-name: rcSwitchOff;
   }
 
@@ -51,7 +51,7 @@
     border: 1px solid #87d068;
     background-color: #87d068;
 
-    .@{switchPrefixCls}-inner {
+    .#{$switchPrefixCls}-inner {
       left:6px;
     }
 

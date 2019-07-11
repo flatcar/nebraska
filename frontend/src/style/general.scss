@@ -1,11 +1,11 @@
 // General
 
 body {
-    font-family: @font-family-base;
+    font-family: $font-family-base;
     padding-top: 50px;
     padding-bottom: 20px;
     /*background: rgba(0,0,0,0.03);*/
-    color: @font-color;
+    color: $font-color;
     font-size: 16px;
     line-height: 20px;
 }
@@ -45,7 +45,7 @@ input[type="text"], textarea, select {
   height: 0;
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
-  border-top: 6px solid @grey-50;
+  border-top: 6px solid $grey-50;
 }
 
 textarea {
@@ -57,10 +57,10 @@ textarea {
     }
 }
 
-:-webkit-autofill { color: @white !important; }
+:-webkit-autofill { color: $white !important; }
 
 ::-webkit-input-placeholder, :-moz-placeholder, ::-moz-placeholder, :-ms-input-placeholder {
-    color: @grey-50;
+    color: $grey-50;
     font-style: italic;
 }
 
@@ -71,7 +71,7 @@ textarea {
 .vertical--divider {
   content: "";
   width: 2px;
-  background-color: @grey-75;
+  background-color: $grey-75;
   height: 100%;
   margin: 20px auto;
   position: absolute;
@@ -80,12 +80,12 @@ textarea {
 }
 
 .mainTitle {
-  color: @brand-color;
+  color: $brand-color;
   font-size: 28px;
 }
 
 h2 {
-  color: @dark-grey;
+  color: $dark-grey;
 }
 
 .icon-loading-container {

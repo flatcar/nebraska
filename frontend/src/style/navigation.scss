@@ -1,7 +1,7 @@
 // Navigation
 
 .activeLink {
-  color: @font-color;
+  color: $font-color;
   transition: color .3s ease-out;
   -webkit-transition: color .3s ease-out;
 
@@ -11,7 +11,7 @@
   // }
 
   &.lighter {
-    color: @medium-grey;
+    color: $medium-grey;
 
     span {
       white-space: nowrap;
@@ -19,7 +19,7 @@
   }
 
   &:hover {
-    color: @brand-color;
+    color: $brand-color;
     cursor: pointer;
   }
 }
