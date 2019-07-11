@@ -6,7 +6,7 @@ import { Input, ButtonInput } from '../legacy/react-bootstrap'
 import Select from "react-select"
 import _ from "underscore"
 import {REGEX_SEMVER, REGEX_SIZE} from "../../constants/regex"
-import validUrl from "valid-url"
+import validator from "validator"
 import $ from "jquery"
 
 class ModalUpdate extends React.Component {
@@ -161,8 +161,7 @@ class ModalUpdate extends React.Component {
                 required={true}
                 validationEvent="onBlur"
                 validate={(val) => {
-                  const validWebUri = validUrl.isWebUri(val)
-                  return _.isUndefined(validWebUri) ? false : true
+                  return validator.isURL(val, {'protocols': ['http', 'https']})
                 }}
                 errorHelp="Please enter a valid url and no more than 256 characters"
               />
