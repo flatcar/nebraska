@@ -28,7 +28,7 @@ class List extends React.Component {
             )}
           </ul>
         </Row>
-      </div>      
+      </div>
     )
   }
 

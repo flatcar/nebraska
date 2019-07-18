@@ -5,7 +5,7 @@ class ApplicationItemGroupItem extends React.Component {
 
   constructor() {
     super()
-  } 
+  }
 
   static PropTypes: {
     group: React.PropTypes.object.isRequired,
