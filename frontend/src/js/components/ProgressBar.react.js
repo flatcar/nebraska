@@ -1,4 +1,5 @@
 import React, { PropTypes } from "react"
+import ReactDOM from "react-dom"
 import PubSub from "pubsub-js"
 import ProgressBarJS from "progressbar.js"
 
@@ -19,13 +20,13 @@ class ProgressBar extends React.Component {
   }
 
   componentDidMount() {
-    let lineContainer = React.findDOMNode(this.refs.progressBar)
+    let lineContainer = ReactDOM.findDOMNode(this.refs.progressBar)
     let lineOptions = {
       color: this.props.color,
       strokeWidth: this.props.width,
       easing: "easeInOut"
     }
-    this.line = new ProgressBarJS.Line(React.findDOMNode(lineContainer), lineOptions)
+    this.line = new ProgressBarJS.Line(ReactDOM.findDOMNode(lineContainer), lineOptions)
   }
 
   componentWillMount() {

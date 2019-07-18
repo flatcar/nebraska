@@ -1,13 +1,13 @@
 import { applicationsStore } from "../../stores/Stores"
 import React, { PropTypes } from "react"
 import { Row, Col } from "react-bootstrap"
-import Router, { Link } from "react-router"
+import { Link } from "react-router-dom"
 import _ from "underscore"
 import Item from "./Item.react"
 import ModalButton from "../Common/ModalButton.react"
 import SearchInput from "react-search-input"
-import Loader from "halogen/ScaleLoader"
-import MiniLoader from "halogen/PulseLoader"
+import Loader from "react-spinners/ScaleLoader"
+import MiniLoader from "react-spinners/PulseLoader"
 import ModalUpdate from "./ModalUpdate.react"
 
 class List extends React.Component {

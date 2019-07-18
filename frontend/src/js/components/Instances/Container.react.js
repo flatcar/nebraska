@@ -3,8 +3,8 @@ import React, { PropTypes } from "react"
 import { Row, Col } from "react-bootstrap"
 import List from "./List.react"
 import _ from "underscore"
-import Loader from "halogen/ScaleLoader"
-import MiniLoader from "halogen/PulseLoader"
+import Loader from "react-spinners/ScaleLoader"
+import MiniLoader from "react-spinners/PulseLoader"
 
 class Container extends React.Component {
 

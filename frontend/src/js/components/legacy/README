@@ -1,0 +1,8 @@
+This is a module for easy legacy compatibility of code that no longer exists in modern versions of their
+respective modules.
+
+react-boostrap: Was taken and adapted from v2.9.5 of [1]
+react-bootstrap-validation: Was taken and adapted from master of [2]
+
+[1] https://github.com/react-bootstrap/react-bootstrap
+[2] https://github.com/heilhead/react-bootstrap-validation

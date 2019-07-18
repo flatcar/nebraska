@@ -1,5 +1,5 @@
 import React, { PropTypes } from "react"
-import Router, { Link } from "react-router"
+import { Link } from "react-router-dom"
 
 class ApplicationItemGroupItem extends React.Component {
 
@@ -16,7 +16,7 @@ class ApplicationItemGroupItem extends React.Component {
     const instances_total = this.props.group.instances_stats.total ? "(" + this.props.group.instances_stats.total + ")" : ""
 
     return(
-      <Link to="GroupLayout" params={{appID: this.props.group.application_id, groupID: this.props.group.id}}>
+      <Link to={{pathname: `/apps/${this.props.group.application_id}/groups/${this.props.group.id}`}}>
         <span className="activeLink lighter">
           {this.props.group.name} {instances_total}&nbsp;<i className="fa fa-caret-right"></i>
         </span>

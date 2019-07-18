@@ -4,7 +4,7 @@ import { Col, Row, Button, Modal } from "react-bootstrap"
 import ModalButton from "../Common/ModalButton.react"
 import Item from "./Item.react"
 import _ from "underscore"
-import Loader from "halogen/ScaleLoader"
+import Loader from "react-spinners/ScaleLoader"
 import SearchInput from "react-search-input"
 import ModalUpdate from "./ModalUpdate.react"
 
