@@ -7,4 +7,4 @@ var routes = (
   <Route path='/' component={Main} />
 )
 
-ReactDOM.render(<Router>{routes}</Router>, document.body)
+ReactDOM.render(<Router>{routes}</Router>, document.getElementById('root'))
