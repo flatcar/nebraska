@@ -13,7 +13,7 @@ class Main extends React.Component {
     return (
       <div>
         <Header />
-        <ProgressBar name="main_progress_bar" color="#ddd" width={0.2} /> 
+        <ProgressBar name="main_progress_bar" color="#ddd" width={0.2} />
         <RouteHandler />
       </div>
     )

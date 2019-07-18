@@ -40,7 +40,7 @@ class Container extends React.Component {
         entries = _.mapObject(this.state.entries, (entry, key) => {
           return <List day={key} entries={entry} key={key} />
         })
-      }      
+      }
     }
 
     return(

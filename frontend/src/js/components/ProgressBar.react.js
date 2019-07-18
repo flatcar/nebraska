@@ -38,7 +38,7 @@ class ProgressBar extends React.Component {
 
   render() {
     return React.createElement("div", {
-      className: this.props.containerClassName, 
+      className: this.props.containerClassName,
       ref: "progressBar"
     })
   }
@@ -70,7 +70,7 @@ class ProgressBar extends React.Component {
             this.line.animate(0.75, {duration: 10000})
           })
           break
-      }      
+      }
     }
   }
 
