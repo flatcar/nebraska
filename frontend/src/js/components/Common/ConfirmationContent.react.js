@@ -1,5 +1,4 @@
 import React, { PropTypes } from "react"
-import Utils from "react/addons"
 import ApplicationsStore from "../../stores/ApplicationsStore"
 
 class ConfirmationContent extends React.Component {
