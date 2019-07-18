@@ -37,9 +37,9 @@ class Container extends React.Component {
       if (_.isEmpty(this.state.entries)) {
         entries = <div className="emptyBox">No activity found for the last week.<br/><br/>You will see here important events related to the rollout of your updates. Stay tuned!</div>
       } else {
-        entries = _.mapObject(this.state.entries, (entry, key) => {
+        entries = Object.values(_.mapObject(this.state.entries, (entry, key) => {
           return <List day={key} entries={entry} key={key} />
-        })
+        }));
       }
     }
 
