@@ -1,7 +1,7 @@
 import { applicationsStore } from "../../stores/Stores"
 import React, { PropTypes } from "react"
 import { Row, Col } from "react-bootstrap"
-import Router, { Link } from "react-router"
+import { Link } from "react-router-dom"
 import Switch from "rc-switch"
 import _ from "underscore"
 import ChannelLabel from "../Common/ChannelLabel.react"

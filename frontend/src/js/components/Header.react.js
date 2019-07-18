@@ -1,8 +1,8 @@
 import API from "../api/API"
 import React, { PropTypes } from "react"
-import Router, { Link } from "react-router"
+import { Link } from "react-router-dom"
 import { Navbar, Nav, NavItem, DropdownButton, MenuItem, Button } from "react-bootstrap"
-import { NavItemLink } from "react-router-bootstrap"
+import { LinkContainer } from "react-router-bootstrap"
 import ModalUpdatePassword from "./Common/ModalUpdatePassword.react"
 
 class Header extends React.Component {
@@ -28,7 +28,7 @@ class Header extends React.Component {
   }
 
   render() {
-    var brand = <Link to="MainLayout">Core<span className="blueStyle">Roller</span></Link>
+    var brand = <Link to="/">Core<span className="blueStyle">Roller</span></Link>
     var options = {
       show: this.state.showModal
     }
@@ -36,7 +36,7 @@ class Header extends React.Component {
     return (
       <Navbar brand={brand} fixedTop={true} toggleNavKey={0}>
         <Nav right eventKey={1}>
-          <NavItemLink eventKey={1} to="MainLayout"><span className="fa fa-server"></span> Applications</NavItemLink>
+          <Link to="/">Applications</Link>
           <li>
             <DropdownButton bsStyle="link" title="My account" key={2}>
               <MenuItem eventKey="2">

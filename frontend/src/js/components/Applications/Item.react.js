@@ -1,6 +1,6 @@
 import { applicationsStore } from "../../stores/Stores"
 import React, { PropTypes } from "react"
-import Router, { Link } from "react-router"
+import { Link } from "react-router-dom"
 import { Row, Col, OverlayTrigger, Button, Popover } from "react-bootstrap"
 import GroupsList from "./ApplicationItemGroupsList.react"
 import ChannelsList from "./ApplicationItemChannelsList.react"
@@ -48,7 +48,7 @@ class Item extends React.Component {
         <Row className="apps--boxHeader">
           <Col xs={10}>
             <h3 className="apps--boxTitle">
-              <Link to="ApplicationLayout" params={{appID}}>
+              <Link to={{pathname: `/apps/${appID}`}}>
                 {this.props.application.name} <i className="fa fa-caret-right"></i>
               </Link>
               <span className="apps--id">(ID: {appID})</span>

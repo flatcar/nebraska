@@ -5,7 +5,7 @@ import _ from "underscore"
 import ModalButton from "../Common/ModalButton.react"
 import Item from "./Item.react"
 import ModalUpdate from "./ModalUpdate.react"
-import Loader from "halogen/ScaleLoader"
+import Loader from "react-spinners/ScaleLoader"
 
 class List extends React.Component {
 

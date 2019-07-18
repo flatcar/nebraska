@@ -1,7 +1,9 @@
+import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
-import { Row, Col, Modal, Input, Button, Alert, ButtonInput } from "react-bootstrap"
-import { Form, ValidatedInput } from "react-bootstrap-validation"
+import React from "react"
+import { Row, Col, Modal, Button, Alert, FormControl } from "react-bootstrap"
+import { Form, ValidatedInput } from "../legacy/react-bootstrap-validation"
+import { Input, ButtonInput } from '../legacy/react-bootstrap'
 import Select from "react-select"
 import _ from "underscore"
 import {REGEX_SEMVER, REGEX_SIZE} from "../../constants/regex"

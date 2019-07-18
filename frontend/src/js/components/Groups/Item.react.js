@@ -1,6 +1,6 @@
 import { applicationsStore } from "../../stores/Stores"
 import React, { PropTypes } from "react";
-import Router, { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { Row, Col, OverlayTrigger, Button, Popover } from "react-bootstrap";
 import Switch from "rc-switch"
 import _ from "underscore"
@@ -48,13 +48,14 @@ class Item extends React.Component {
 
     let groupChannel = _.isEmpty(this.props.group.channel) ? "No channel provided" : <ChannelLabel channel={this.props.group.channel} />
     let styleGroupChannel = _.isEmpty(this.props.group.channel) ? "italicText" : ""
+    let groupPath = `/apps/${this.props.group.application_id}/groups/${this.props.group.id}`
 
     return (
       <div className="groups--box">
         <Row className="groups--boxHeader">
           <Col xs={10}>
             <h3 className="groups--boxTitle">
-              <Link to="GroupLayout" params={{groupID: this.props.group.id, appID: this.props.group.application_id}}>
+              <Link to={groupPath}>
                 {this.props.group.name} <i className="fa fa-caret-right"></i>
               </Link>
               <span className="groups--id">(ID: {this.props.group.id})</span>
@@ -71,7 +72,7 @@ class Item extends React.Component {
         <div className="groups--boxContent">
           <Row className="groups--resume">
             <Col xs={12}>
-              <span className="subtitle">Instances:</span><Link to="GroupLayout" params={{groupID: this.props.group.id, appID: this.props.group.application_id}}><span className="activeLink"> {instances_total}<span className="fa fa-caret-right" /></span></Link>
+              <span className="subtitle">Instances:</span><Link to={groupPath}><span className="activeLink"> {instances_total}<span className="fa fa-caret-right" /></span></Link>
               <div className="divider">|</div>
               <span className="subtitle">Channel:</span> <span className={styleGroupChannel}>{groupChannel}</span>
             </Col>

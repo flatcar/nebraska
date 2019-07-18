@@ -2,7 +2,7 @@ import { applicationsStore } from "../../stores/Stores"
 import React, { PropTypes } from "react"
 import { Row, Col } from "react-bootstrap"
 import _ from "underscore"
-import { Link } from "react-router"
+import { Link } from "react-router-dom"
 import ApplicationsList from "../Applications/List.react"
 import GroupsList from "../Groups/List.react"
 import ChannelsList from "../Channels/List.react"
@@ -14,7 +14,7 @@ class ApplicationLayout extends React.Component {
     super(props);
     this.onChange = this.onChange.bind(this);
 
-    let appID = props.params.appID
+    let appID = props.match.params.appID
     this.state = {
       appID: appID,
       applications: applicationsStore.getCachedApplications()
@@ -22,7 +22,7 @@ class ApplicationLayout extends React.Component {
   }
 
   componentWillMount() {
-    applicationsStore.getApplication(this.props.params.appID)
+    applicationsStore.getApplication(this.props.match.params.appID)
   }
 
   componentDidMount() {
@@ -51,7 +51,7 @@ class ApplicationLayout extends React.Component {
     return(
       <div className="container">
         <ol className="breadcrumb">
-          <li><Link to="MainLayout">Applications</Link></li>
+          <li><Link to="/apps">Applications</Link></li>
           <li className="active">{appName}</li>
         </ol>
         <Row>

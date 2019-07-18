@@ -1,7 +1,8 @@
 import { applicationsStore } from "../../stores/Stores"
 import React, { PropTypes } from "react"
-import { Modal, Input, Button, Col, Row, Alert, ButtonInput } from "react-bootstrap"
-import { Form, ValidatedInput } from "react-bootstrap-validation"
+import { Modal, FormControl, Button, Col, Row, Alert } from "react-bootstrap"
+import { Form, ValidatedInput } from "../legacy/react-bootstrap-validation"
+import { Input, ButtonInput } from "../legacy/react-bootstrap"
 
 class ModalUpdate extends React.Component {
 
