@@ -36,7 +36,7 @@ class Item extends React.Component {
         styleDescription = this.props.application.description ? "" : " italicText",
         channels = this.props.application.channels ? this.props.application.channels : [],
         groups = this.props.application.groups ? this.props.application.groups : [],
-        instances = this.props.application.instances ? this.props.application.instances : 0,
+        instances = this.props.application.instances.count ? this.props.application.instances.count : 0,
         appID = this.props.application ? this.props.application.id : "",
         popoverContent = {
           type: "application",
