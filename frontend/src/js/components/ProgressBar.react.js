@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react"
+import PropTypes from 'prop-types';
+import React from "react"
 import ReactDOM from "react-dom"
 import PubSub from "pubsub-js"
 import ProgressBarJS from "progressbar.js"
@@ -11,12 +12,6 @@ class ProgressBar extends React.Component {
     this.line = null
     this.inProgress = false
     this.inProgressCount = 0
-  }
-
-  static PropTypes: {
-    name: React.PropTypes.string.isRequired,
-    color: React.PropTypes.string.isRequired,
-    width: React.PropTypes.number.isRequired
   }
 
   componentDidMount() {
@@ -76,5 +71,11 @@ class ProgressBar extends React.Component {
   }
 
 };
+
+ProgressBar.propTypes = {
+  name: PropTypes.string.isRequired,
+  color: PropTypes.string.isRequired,
+  width: PropTypes.number.isRequired
+}
 
 export default ProgressBar

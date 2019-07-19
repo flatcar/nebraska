@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react"
+import PropTypes from 'prop-types';
+import React from "react"
 import Item from "./Item.react"
 import _ from "underscore"
 import semver from "semver"
@@ -11,12 +12,6 @@ class List extends React.Component {
     this.onItemToggle = this.onItemToggle.bind(this)
 
     this.state = {selections: {}}
-  }
-
-  static PropTypes: {
-    instances: React.PropTypes.array.isRequired,
-    version_breakdown: React.PropTypes.array,
-    channel: React.PropTypes.object
   }
 
   onItemToggle(id, selected) {
@@ -63,6 +58,12 @@ class List extends React.Component {
     )
   }
 
+}
+
+List.propTypes = {
+  instances: PropTypes.array.isRequired,
+  version_breakdown: PropTypes.array,
+  channel: PropTypes.object
 }
 
 export default List

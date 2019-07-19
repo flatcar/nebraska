@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
+import React from "react"
 import { Row, Col, OverlayTrigger, Button, Popover, Label } from "react-bootstrap"
 import ConfirmationContent from "../Common/ConfirmationContent.react"
 import moment from "moment"
@@ -14,12 +15,6 @@ class Item extends React.Component {
     super(props)
     this.deletePackage = this.deletePackage.bind(this)
     this.updatePackage = this.updatePackage.bind(this)
-  }
-
-  static propTypes: {
-    packageItem: React.PropTypes.object.isRequired,
-    channels: React.PropTypes.array,
-    handleUpdatePackage: React.PropTypes.func.isRequired
   }
 
   deletePackage() {
@@ -81,6 +76,12 @@ class Item extends React.Component {
     )
   }
 
+}
+
+Item.propTypes = {
+  packageItem: PropTypes.object.isRequired,
+  channels: PropTypes.array,
+  handleUpdatePackage: PropTypes.func.isRequired
 }
 
 export default Item

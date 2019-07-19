@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
+import React from "react"
 import { Row, Col, Modal, Button, Alert, OverlayTrigger } from "react-bootstrap"
 import { Input, ButtonInput } from "../legacy/react-bootstrap"
 import { Form, ValidatedInput } from "../legacy/react-bootstrap-validation"
@@ -30,11 +31,6 @@ class ModalUpdate extends React.Component {
       alertVisible: false,
       timezoneError: false
     }
-  }
-
-  static propTypes : {
-    data: PropTypes.object.isRequired,
-    modalVisible: PropTypes.bool.isRequired
   }
 
   updateGroup() {
@@ -312,5 +308,10 @@ class ModalUpdate extends React.Component {
     );
   }
 };
+
+ModalUpdate.propTypes = {
+  data: PropTypes.object.isRequired,
+  modalVisible: PropTypes.bool.isRequired
+}
 
 export default ModalUpdate

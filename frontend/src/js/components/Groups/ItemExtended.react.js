@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
+import React from "react"
 import { Row, Col } from "react-bootstrap"
 import { Link } from "react-router-dom"
 import Switch from "rc-switch"
@@ -15,11 +16,6 @@ class ItemExtended extends React.Component {
     this.onChange = this.onChange.bind(this)
 
     this.state = {applications: applicationsStore.getCachedApplications()}
-  }
-
-  static propTypes: {
-    appID: React.PropTypes.string.isRequired,
-    groupID: React.PropTypes.string.isRequired
   }
 
   componentDidMount() {
@@ -134,6 +130,11 @@ class ItemExtended extends React.Component {
 		)
   }
 
+}
+
+ItemExtended.propTypes = {
+  appID: PropTypes.string.isRequired,
+  groupID: PropTypes.string.isRequired
 }
 
 export default ItemExtended

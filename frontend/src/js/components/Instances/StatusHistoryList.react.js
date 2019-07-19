@@ -1,14 +1,11 @@
-import React, { PropTypes } from "react"
+import PropTypes from 'prop-types';
+import React from "react"
 import StatusHistoryItem from "./StatusHistoryItem.react"
 
 class StatusHistoryList extends React.Component {
 
   constructor(props) {
     super(props)
-  }
-
-  static PropTypes: {
-    entries: React.PropTypes.array.isRequired
   }
 
   render() {
@@ -28,6 +25,10 @@ class StatusHistoryList extends React.Component {
     )
   }
 
+}
+
+StatusHistoryList.propTypes = {
+  entries: PropTypes.array.isRequired
 }
 
 export default StatusHistoryList

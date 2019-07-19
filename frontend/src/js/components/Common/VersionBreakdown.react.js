@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react"
+import PropTypes from 'prop-types';
+import React from "react"
 import { Col, ProgressBar } from "react-bootstrap"
 import _ from "underscore"
 import semver from "semver"
@@ -8,11 +9,6 @@ class VersionBreakdown extends React.Component {
 
   constructor() {
     super()
-  }
-
-  static PropTypes: {
-    version_breakdown: React.PropTypes.array.isRequired,
-    channel: React.PropTypes.object.isRequired
   }
 
   render() {
@@ -74,6 +70,11 @@ class VersionBreakdown extends React.Component {
     )
   }
 
+}
+
+VersionBreakdown.propTypes = {
+  version_breakdown: PropTypes.array.isRequired,
+  channel: PropTypes.object.isRequired
 }
 
 export default VersionBreakdown

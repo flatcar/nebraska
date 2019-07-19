@@ -1,5 +1,5 @@
 import { activityStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
+import React from "react"
 import { Row, Col } from "react-bootstrap"
 import List from "./List.react"
 import _ from "underscore"

@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react"
+import PropTypes from 'prop-types';
+import React from "react"
 import { Row, Col } from "react-bootstrap"
 import Item from "./Item.react"
 
@@ -6,11 +7,6 @@ class List extends React.Component {
 
   constructor() {
     super()
-  }
-
-  static PropTypes: {
-    day: React.PropTypes.string.isRequired,
-    entries: React.PropTypes.array.isRequired,
   }
 
   render() {
@@ -32,6 +28,11 @@ class List extends React.Component {
     )
   }
 
+}
+
+List.propTypes = {
+  day: PropTypes.string.isRequired,
+  entries: PropTypes.array.isRequired
 }
 
 export default List

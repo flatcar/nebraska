@@ -1,13 +1,10 @@
-import React, { PropTypes } from "react"
+import PropTypes from 'prop-types';
+import React from "react"
 
 class VersionBullet extends React.Component {
 
   constructor() {
     super()
-  }
-
-  static PropTypes: {
-    channel: React.PropTypes.object.isRequired
   }
 
   render() {
@@ -20,6 +17,10 @@ class VersionBullet extends React.Component {
     )
   }
 
+}
+
+VersionBullet.propTypes = {
+  channel: PropTypes.object.isRequired
 }
 
 export default VersionBullet

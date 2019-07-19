@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
+import React from "react"
 import { Row, Col, Modal, Button, Alert } from "react-bootstrap"
 import { Form, ValidatedInput } from "../legacy/react-bootstrap-validation"
 import { Input, ButtonInput } from '../legacy/react-bootstrap'
@@ -30,11 +31,6 @@ class ModalUpdate extends React.Component {
       disabledCoreOSSha256: props.data.channel.type == 1 ? false : true,
       coreOSSha256Package: props.data.channel.coreos_action ? props.data.channel.coreos_action.sha256 : ""
     }
-  }
-
-  static propTypes : {
-    data: PropTypes.object.isRequired,
-    modalVisible: PropTypes.bool.isRequired
   }
 
   updatePackage() {
@@ -300,6 +296,11 @@ class ModalUpdate extends React.Component {
     )
   }
 
+}
+
+ModalUpdate.propTypes = {
+  data: PropTypes.object.isRequired,
+  modalVisible: PropTypes.bool.isRequired
 }
 
 export default ModalUpdate

@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types';
 import { instancesStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
+import React from "react"
 import { Label } from "react-bootstrap"
 import moment from "moment"
 import _ from "underscore"
@@ -11,10 +12,6 @@ class StatusHistoryItem extends React.Component {
     this.fetchStatusFromStore = this.fetchStatusFromStore.bind(this)
 
     this.state = {status: {}}
-  }
-
-  static PropTypes: {
-    entry: React.PropTypes.object.isRequired
   }
 
   componentDidMount() {
@@ -49,6 +46,10 @@ class StatusHistoryItem extends React.Component {
     )
   }
 
+}
+
+StatusHistoryItem.propTypes = {
+  entry: PropTypes.object.isRequired
 }
 
 export default StatusHistoryItem
