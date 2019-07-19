@@ -8,6 +8,7 @@
   "description": "CoreRoller",
   "author": "Cynthia SG <cynthiasg@gmail.com>",
   "repository": "https://github.com/kinvolk/nebraska",
+  "private": true,
   "dependencies": {
     "bootstrap": "^3.4.1",
     "flux": "~2.1.1",
@@ -32,17 +33,17 @@
     "validator": "^11.1.0"
   },
   "devDependencies": {
-    "babelify": "~6.3.0",
-    "browserify": "~11.2.0",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.6",
     "catw": "~1.0.1",
-    "envify": "~3.4.0",
     "less": "~3.0.1",
     "less-plugin-clean-css": "~1.5.1",
     "node-sass": "~4.12.0",
-    "reactify": "~1.1.1",
-    "uglify-js": "~2.4.24",
-    "uglifyify": "~3.0.1",
-    "watchify": "~3.4.0"
+    "watchify": "~3.4.0",
+    "webpack": "^4.36.1",
+    "webpack-cli": "^3.3.6"
   },
   "scripts": {
     "copy-css": "cp -R src/css/*.css ./built/css/",
@@ -51,14 +52,7 @@
     "watch": "npm run watch-css && npm run watch-js",
     "build-external-css": "lessc src/style/external-styles.less > ./built/css/external-styles.css",
     "build-css": "node-sass src/style/styles.scss ./built/css/styles.css",
-    "build-js": "browserify -g uglifyify src/js/*.js > ./built/js/main.js",
+    "build-js": "webpack --config webpack.config.js",
     "build": "npm run build-external-css & npm run build-css & npm run build-js && npm run copy-css"
-  },
-  "browserify": {
-    "transform": [
-      "babelify",
-      "reactify",
-      "envify"
-    ]
   }
 }
