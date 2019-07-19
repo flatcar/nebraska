@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react"
+import PropTypes from 'prop-types';
+import React from "react"
 import Item from "./ApplicationItemGroupItem.react"
 
 class ApplicationItemGroupsList extends React.Component {
@@ -6,12 +7,6 @@ class ApplicationItemGroupsList extends React.Component {
   constructor() {
     super()
   }
-
-  static PropTypes: {
-    groups: React.PropTypes.array.isRequired,
-    appID: React.PropTypes.string.isRequired,
-    appName: React.PropTypes.string.isRequired
-  };
 
   render() {
     return(
@@ -23,6 +18,12 @@ class ApplicationItemGroupsList extends React.Component {
     )
   }
 
+}
+
+ApplicationItemGroupsList.propTypes = {
+  groups: PropTypes.array.isRequired,
+  appID: PropTypes.string.isRequired,
+  appName: PropTypes.string.isRequired
 }
 
 export default ApplicationItemGroupsList

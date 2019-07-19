@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react"
+import PropTypes from 'prop-types';
+import React from "react"
 import ChannelLabel from "../Common/ChannelLabel.react"
 import _ from "underscore"
 
@@ -6,10 +7,6 @@ class ApplicationItemChannelsList extends React.Component {
 
   constructor() {
     super()
-  }
-
-  static PropTypes: {
-    channels: React.PropTypes.array.isRequired
   }
 
   render() {
@@ -31,6 +28,10 @@ class ApplicationItemChannelsList extends React.Component {
     )
   }
 
+}
+
+ApplicationItemChannelsList.propTypes = {
+  channels: PropTypes.array.isRequired
 }
 
 export default ApplicationItemChannelsList

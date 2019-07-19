@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
+import React from "react"
 import { Row, Col, Modal, Button, Alert } from "react-bootstrap"
 import { ButtonInput } from "../legacy/react-bootstrap"
 import { Form, ValidatedInput } from "../legacy/react-bootstrap-validation"
@@ -19,10 +20,6 @@ class ModalUpdatePassword extends React.Component {
       isLoading: false,
       alertVisible: false
     }
-  }
-
-  static propTypes : {
-    data: PropTypes.object
   }
 
   updatePassword() {
@@ -125,6 +122,10 @@ class ModalUpdatePassword extends React.Component {
     )
   }
 
+}
+
+ModalUpdatePassword.propTypes = {
+  data: PropTypes.object
 }
 
 export default ModalUpdatePassword

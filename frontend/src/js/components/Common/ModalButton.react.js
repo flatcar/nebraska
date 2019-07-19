@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react"
+import PropTypes from 'prop-types';
+import React from "react"
 import AddApplicationModal from "../Applications/ModalAdd.react"
 import AddGroupModal from "../Groups/ModalAdd.react"
 import AddChannelModal from "../Channels/ModalAdd.react"
@@ -12,12 +13,6 @@ class ModalButton extends React.Component {
     this.open = this.open.bind(this)
 
     this.state = {showModal: false}
-  }
-
-  static propTypes : {
-    icon: PropTypes.string.isRequired,
-    modalToOpen: PropTypes.string.isRequired,
-    data: PropTypes.object
   }
 
   close() {
@@ -56,6 +51,12 @@ class ModalButton extends React.Component {
     )
   }
 
+}
+
+ModalButton.propTypes = {
+  icon: PropTypes.string.isRequired,
+  modalToOpen: PropTypes.string.isRequired,
+  data: PropTypes.object
 }
 
 export default ModalButton

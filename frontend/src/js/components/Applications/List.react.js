@@ -1,5 +1,5 @@
 import { applicationsStore, modalStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
+import React from "react"
 import { Col, Row, Button, Modal } from "react-bootstrap"
 import ModalButton from "../Common/ModalButton.react"
 import Item from "./Item.react"

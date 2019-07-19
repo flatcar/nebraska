@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
+import React from "react"
 import { Link } from "react-router-dom"
 import { Row, Col, OverlayTrigger, Button, Popover } from "react-bootstrap"
 import GroupsList from "./ApplicationItemGroupsList.react"
@@ -12,11 +13,6 @@ class Item extends React.Component {
     super(props)
     this.updateApplication = this.updateApplication.bind(this)
     this.deleteApplication = this.deleteApplication.bind(this)
-  }
-
-  static propTypes: {
-    application: React.PropTypes.object.isRequired,
-    handleUpdateApplication: React.PropTypes.func.isRequired
   }
 
   updateApplication() {
@@ -99,6 +95,11 @@ class Item extends React.Component {
     )
   }
 
+}
+
+Item.propTypes = {
+  application: PropTypes.object.isRequired,
+  handleUpdateApplication: PropTypes.func.isRequired
 }
 
 export default Item

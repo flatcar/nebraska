@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
+import React from "react"
 import { Row, Col } from "react-bootstrap"
 import _ from "underscore"
 import ModalButton from "../Common/ModalButton.react"
@@ -20,10 +21,6 @@ class List extends React.Component {
       updatePackageModalVisible: false,
       updatePackageIDModal: null
     }
-  }
-
-  static propTypes: {
-    appID: React.PropTypes.string.isRequired
   }
 
   closeUpdatePackageModal() {
@@ -94,6 +91,10 @@ class List extends React.Component {
     )
   }
 
+}
+
+List.propTypes = {
+  appID: PropTypes.string.isRequired
 }
 
 export default List

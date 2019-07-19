@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types';
 import { instancesStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
+import React from "react"
 import moment from "moment"
 import { Label } from "react-bootstrap"
 import StatusHistoryContainer from "./StatusHistoryContainer.react"
@@ -19,14 +20,6 @@ class Item extends React.Component {
       loading: false,
       statusHistory: {}
     }
-  }
-
-  static PropTypes: {
-    instance: React.PropTypes.object.isRequired,
-    key: React.PropTypes.number.isRequired,
-    selected: React.PropTypes.bool,
-    versionNumbers: React.PropTypes.array,
-    lastVersionChannel: React.PropTypes.string
   }
 
   fetchStatusHistoryFromStore() {
@@ -110,6 +103,14 @@ class Item extends React.Component {
     )
   }
 
+}
+
+Item.propTypes = {
+  instance: PropTypes.object.isRequired,
+  key: PropTypes.number.isRequired,
+  selected: PropTypes.bool,
+  versionNumbers: PropTypes.array,
+  lastVersionChannel: PropTypes.string
 }
 
 export default Item

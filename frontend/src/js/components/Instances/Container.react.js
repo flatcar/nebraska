@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types';
 import { instancesStore, applicationsStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
+import React from "react"
 import { Row, Col } from "react-bootstrap"
 import List from "./List.react"
 import _ from "underscore"
@@ -19,13 +20,6 @@ class Container extends React.Component {
       updating: false,
       selectedInstance: ""
     }
-  }
-
-  static PropTypes: {
-    appID: React.PropTypes.string.isRequired,
-    groupID: React.PropTypes.string.isRequired,
-    version_breakdown: React.PropTypes.array.isRequired,
-    channel: React.PropTypes.object.isRequired
   }
 
   componentDidMount() {
@@ -93,6 +87,13 @@ class Container extends React.Component {
     )
   }
 
+}
+
+Container.propTypes = {
+  appID: PropTypes.string.isRequired,
+  groupID: PropTypes.string.isRequired,
+  version_breakdown: PropTypes.array.isRequired,
+  channel: PropTypes.object.isRequired
 }
 
 export default Container

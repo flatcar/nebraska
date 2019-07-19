@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
+import React from "react"
 import { Row, Col } from "react-bootstrap"
 import { Link } from "react-router-dom"
 import _ from "underscore"
@@ -26,10 +27,6 @@ class List extends React.Component {
       updateGroupIDModal: null,
       updateAppIDModal: null
     }
-  }
-
-  static propTypes: {
-    appID: React.PropTypes.string.isRequired
   }
 
   closeUpdateGroupModal() {
@@ -132,6 +129,10 @@ class List extends React.Component {
 		)
   }
 
+}
+
+List.propTypes = {
+  appID: PropTypes.string.isRequired
 }
 
 export default List

@@ -1,15 +1,11 @@
-import React, { PropTypes } from "react"
+import PropTypes from 'prop-types';
+import React from "react"
 import { cleanSemverVersion } from "../../constants/helpers"
 
 class ChannelLabel extends React.Component {
 
   constructor() {
     super()
-  }
-
-  static PropTypes: {
-    channel: React.PropTypes.object.isRequired,
-    channelLabelStyle: React.PropTypes.string
   }
 
   render() {
@@ -31,6 +27,11 @@ class ChannelLabel extends React.Component {
     )
   }
 
+}
+
+ChannelLabel.propTypes = {
+  channel: PropTypes.object.isRequired,
+  channelLabelStyle: PropTypes.string
 }
 
 export default ChannelLabel

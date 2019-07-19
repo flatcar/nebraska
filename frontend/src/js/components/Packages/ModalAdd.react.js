@@ -33,10 +33,6 @@ class ModalAdd extends React.Component {
     }
   }
 
-  static propTypes : {
-    data: PropTypes.object
-  }
-
   createPackage() {
     this.setState({isLoading: true})
     let data = {
@@ -286,6 +282,10 @@ class ModalAdd extends React.Component {
     )
   }
 
+}
+
+ModalAdd.propTypes = {
+  data: PropTypes.object
 }
 
 export default ModalAdd

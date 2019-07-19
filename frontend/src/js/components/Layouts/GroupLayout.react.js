@@ -1,5 +1,5 @@
 import { applicationsStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
+import React from "react"
 import { Row, Col } from "react-bootstrap"
 import { Link } from "react-router-dom"
 import _ from "underscore"

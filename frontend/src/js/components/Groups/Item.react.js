@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
-import React, { PropTypes } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { Row, Col, OverlayTrigger, Button, Popover } from "react-bootstrap";
 import Switch from "rc-switch"
@@ -15,13 +16,6 @@ class Item extends React.Component {
     this.deleteGroup = this.deleteGroup.bind(this)
     this.updateGroup = this.updateGroup.bind(this)
   }
-
-	static PropTypes: {
-    group: React.PropTypes.object.isRequired,
-    appName: React.PropTypes.string.isRequired,
-    channels: React.PropTypes.array.isRequired,
-    handleUpdateGroup: React.PropTypes.func.isRequired
-}
 
   deleteGroup() {
     let confirmationText = "Are you sure you want to delete this group?"
@@ -97,5 +91,13 @@ class Item extends React.Component {
   }
 
 }
+
+Item.propTypes = {
+    group: PropTypes.object.isRequired,
+    appName: PropTypes.string.isRequired,
+    channels: PropTypes.array.isRequired,
+    handleUpdateGroup: PropTypes.func.isRequired
+}
+
 
 export default Item

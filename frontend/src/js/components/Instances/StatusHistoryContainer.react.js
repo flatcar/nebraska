@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react"
+import PropTypes from 'prop-types';
+import React from "react"
 import StatusHistoryList from "./StatusHistoryList.react"
 import _ from "underscore"
 
@@ -6,12 +7,6 @@ class StatusHistoryContainer extends React.Component {
 
   constructor(props) {
     super(props)
-  }
-
-  static PropTypes: {
-    key: React.PropTypes.string.isRequired,
-    active: React.PropTypes.array.isRequired,
-    instance: React.PropTypes.object.isRequired
   }
 
   render() {
@@ -34,6 +29,12 @@ class StatusHistoryContainer extends React.Component {
     )
   }
 
+}
+
+StatusHistoryContainer.propTypes = {
+  key: PropTypes.string.isRequired,
+  active: PropTypes.array.isRequired,
+  instance: PropTypes.object.isRequired
 }
 
 export default StatusHistoryContainer

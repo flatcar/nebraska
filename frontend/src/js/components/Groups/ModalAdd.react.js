@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
+import React from "react"
 import { Row, Col, Modal, Button, Alert, OverlayTrigger } from "react-bootstrap"
 import { Form, ValidatedInput } from "../legacy/react-bootstrap-validation"
 import { Input, ButtonInput } from '../legacy/react-bootstrap'
@@ -30,10 +31,6 @@ class ModalAdd extends React.Component {
       alertVisible: false,
       timezoneError: false
     }
-  }
-
-  static propTypes : {
-    data: PropTypes.object
   }
 
   createGroup() {
@@ -298,6 +295,10 @@ class ModalAdd extends React.Component {
     )
   }
 
+}
+
+ModalAdd.propTypes = {
+  data: PropTypes.object
 }
 
 export default ModalAdd

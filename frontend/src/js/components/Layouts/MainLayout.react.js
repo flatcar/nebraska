@@ -1,4 +1,5 @@
-import React, { PropTypes } from "react"
+import PropTypes from 'prop-types';
+import React from "react"
 import { Row, Col } from "react-bootstrap"
 import ApplicationsList from "../Applications/List.react"
 import ActivityContainer from "../Activity/Container.react"
@@ -7,10 +8,6 @@ class MainLayout extends React.Component {
 
   constructor() {
     super()
-  }
-
-  static PropTypes: {
-    stores: React.PropTypes.object.isRequired
   }
 
   render() {
@@ -24,6 +21,10 @@ class MainLayout extends React.Component {
     )
   }
 
+}
+
+MainLayout.propTypes = {
+  stores: PropTypes.object.isRequired
 }
 
 export default MainLayout

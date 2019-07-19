@@ -1,15 +1,11 @@
-import React, { PropTypes } from "react"
+import PropTypes from 'prop-types';
+import React from "react"
 import { Link } from "react-router-dom"
 
 class ApplicationItemGroupItem extends React.Component {
 
   constructor() {
     super()
-  }
-
-  static PropTypes: {
-    group: React.PropTypes.object.isRequired,
-    appName: React.PropTypes.string.isRequired
   }
 
   render() {
@@ -24,6 +20,11 @@ class ApplicationItemGroupItem extends React.Component {
     )
   }
 
+}
+
+ApplicationItemGroupItem.propTypes = {
+  group: PropTypes.object.isRequired,
+  appName: PropTypes.string.isRequired
 }
 
 export default ApplicationItemGroupItem

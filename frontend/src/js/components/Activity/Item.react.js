@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types';
 import { activityStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
+import React from "react"
 import { Row, Col } from "react-bootstrap"
 import moment from "moment"
 
@@ -13,10 +14,6 @@ class Item extends React.Component {
       entrySeverity: {}
     }
   }
-
-  static PropTypes: {
-    entry: React.PropTypes.object.isRequired
-  };
 
   fetchEntryClassFromStore() {
     let entryClass = activityStore.getActivityEntryClass(this.props.entry.class, this.props.entry)
@@ -73,5 +70,9 @@ class Item extends React.Component {
   }
 
 }
+
+Item.propTypes = {
+  entry: PropTypes.object.isRequired
+};
 
 export default Item
