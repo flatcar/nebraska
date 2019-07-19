@@ -1,58 +1,108 @@
-import API from "../api/API"
-import React, { PropTypes } from "react"
-import { Link } from "react-router-dom"
-import { Navbar, Nav, NavItem, DropdownButton, MenuItem, Button } from "react-bootstrap"
-import { LinkContainer } from "react-router-bootstrap"
-import ModalUpdatePassword from "./Common/ModalUpdatePassword.react"
+import API from '../api/API'
+import AppBar from '@material-ui/core/AppBar';
+import { makeStyles } from '@material-ui/core/styles';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import CreateOutlined from '@material-ui/icons/CreateOutlined';
+import DirectionsRunOutlined from '@material-ui/icons/DirectionsRunOutlined';
+import IconButton from '@material-ui/core/IconButton';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import React from 'react'
+import ModalUpdatePassword from './Common/ModalUpdatePassword.react'
 
-class Header extends React.Component {
+const useStyles = makeStyles(theme => ({
+  root: {
+    flexGrow: 1,
+  },
+  title: {
+    flexGrow: 1,
+    display: 'none',
+    [theme.breakpoints.up('sm')]: {
+      display: 'block',
+    },
+  }
+}));
 
-  constructor() {
-    super()
-    this.close = this.close.bind(this)
-    this.open = this.open.bind(this)
+export default function Header() {
+  const classes = useStyles();
 
-    this.state = {showModal: false}
+  let [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
+  let [showModal, setShowModal] = React.useState(false);
+
+  var options = {
+    show: showModal
   }
 
-  logout() {
+  function logout() {
     API.logout();
   }
 
-  close() {
-    this.setState({showModal: false})
+  function handleMenu(event) {
+    setMenuAnchorEl(event.currentTarget);
   }
 
-  open() {
-    this.setState({showModal: true})
+  function handleClose() {
+    setMenuAnchorEl(null);
+    setShowModal(false);
   }
 
-  render() {
-    var brand = <Link to="/">Core<span className="blueStyle">Roller</span></Link>
-    var options = {
-      show: this.state.showModal
-    }
+  function handleChangePassword() {
+    setMenuAnchorEl(null);
+    setShowModal(true);
+  }
 
-    return (
-      <Navbar brand={brand} fixedTop={true} toggleNavKey={0}>
-        <Nav right eventKey={1}>
-          <Link to="/">Applications</Link>
-          <li>
-            <DropdownButton bsStyle="link" title="My account" key={2}>
-              <MenuItem eventKey="2">
-                <Button bsStyle="link" onClick={this.open.bind()} id="openModal-updatePassword">
-                  <span className="fa fa-pencil-square-o"></span> Change password
-                  <ModalUpdatePassword {...options} onHide={this.close} />
-                </Button>
+  return (
+      <div className={classes.root}>
+        <AppBar position='static'>
+          <Toolbar>
+            <Typography variant='h6' className={classes.title}>
+              Nebraska
+            </Typography>
+            <IconButton
+              aria-label='Account of current user'
+              aria-controls='menu-appbar'
+              aria-haspopup='true'
+              onClick={handleMenu}
+              color='inherit'
+            >
+              <AccountCircle />
+            </IconButton>
+            <Menu
+              id='customized-menu'
+              anchorEl={menuAnchorEl}
+              keepMounted
+              open={Boolean(menuAnchorEl)}
+              onClose={handleClose}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+            >
+              <MenuItem onClick={handleChangePassword}>
+                <ListItemIcon>
+                  <CreateOutlined />
+                </ListItemIcon>
+                <ListItemText primary='Change Password' />
+                <ModalUpdatePassword {...options} onHide={handleClose} />
               </MenuItem>
-              <MenuItem divider />
-              <MenuItem eventKey="3"><Button bsStyle="link" onClick={this.logout}><span className="fa fa-sign-out"></span> Log out</Button></MenuItem>
-            </DropdownButton>
-          </li>
-        </Nav>
-       </Navbar>
-    )
-  }
+              <MenuItem onClick={logout}>
+                <ListItemIcon>
+                  <DirectionsRunOutlined />
+                </ListItemIcon>
+                <ListItemText primary='Log out' />
+                <ModalUpdatePassword {...options} onHide={logout} />
+              </MenuItem>
+            </Menu>
+          </Toolbar>
+        </AppBar>
+      </div>
+    );
 }
-
-export default Header
