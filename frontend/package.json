@@ -27,7 +27,6 @@
     "react-dom": "^16.8.6",
     "react-router-bootstrap": "^0.23.3",
     "react-router-dom": "^5.0.1",
-    "react-search-input": "^0.11.3",
     "react-select": "^2.4.4",
     "react-spinners": "^0.5.12",
     "semver": "~5.3.0",

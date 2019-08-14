@@ -6,7 +6,7 @@ import { Link } from "react-router-dom"
 import _ from "underscore"
 import Item from "./Item.react"
 import ModalButton from "../Common/ModalButton.react"
-import SearchInput from "react-search-input"
+import SearchInput from "../Common/ListSearch"
 import Loader from "react-spinners/ScaleLoader"
 import MiniLoader from "react-spinners/PulseLoader"
 import ModalUpdate from "./ModalUpdate.react"
@@ -51,8 +51,9 @@ class List extends React.Component {
     })
   }
 
-  searchUpdated(term) {
-    this.setState({searchTerm: term})
+  searchUpdated(event) {
+    const {name, value} = event.currentTarget;
+    this.setState({searchTerm: value.toLowerCase()})
   }
 
   render() {
@@ -74,9 +75,8 @@ class List extends React.Component {
       instances = application.instances ? application.instances : []
       channels = application.channels ? application.channels : []
 
-      if (this.refs.search) {
-        var filters = ["name"]
-        groups = groups.filter(this.refs.search.filter(filters))
+      if (this.state.searchTerm) {
+        groups = groups.filter(app => app.name.toLowerCase().includes(this.state.searchTerm));
       }
 
       if (_.isEmpty(groups)) {
@@ -106,10 +106,7 @@ class List extends React.Component {
               <ModalButton icon="plus" modalToOpen="AddGroupModal" data={{channels: channels, appID: this.props.appID}} />
             </Col>
             <Col xs={7} className="alignRight">
-              <div className="searchblock">
-                <SearchInput ref="search" onChange={this.searchUpdated} placeholder="Search..." />
-                <label htmlFor="searchGroups"></label>
-              </div>
+              <SearchInput onChange={this.searchUpdated} placeholder="Search..." />
             </Col>
           </Row>
           <Row>

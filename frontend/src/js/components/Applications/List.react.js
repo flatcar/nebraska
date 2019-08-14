@@ -5,7 +5,7 @@ import ModalButton from "../Common/ModalButton.react"
 import Item from "./Item.react"
 import _ from "underscore"
 import Loader from "react-spinners/ScaleLoader"
-import SearchInput from "react-search-input"
+import SearchInput from '../Common/ListSearch'
 import ModalUpdate from "./ModalUpdate.react"
 
 class List extends React.Component {
@@ -47,17 +47,17 @@ class List extends React.Component {
     })
   }
 
-  searchUpdated(term) {
-    this.setState({searchTerm: term})
+  searchUpdated(event) {
+    const {name, value} = event.currentTarget;
+    this.setState({searchTerm: value.toLowerCase()})
   }
 
   render() {
     let applications = this.state.applications,
         entries = ""
 
-    if (this.refs.search) {
-      var filters = ["name"]
-      applications = applications.filter(this.refs.search.filter(filters))
+    if (this.state.searchTerm) {
+      applications = applications.filter(app => app.name.toLowerCase().includes(this.state.searchTerm));
     }
 
     if (_.isNull(applications)) {
@@ -87,10 +87,7 @@ class List extends React.Component {
               <ModalButton icon="plus" modalToOpen="AddApplicationModal" data={{applications: applications}} />
             </Col>
             <Col xs={7} className="alignRight">
-              <div className="searchblock">
-                <SearchInput ref="search" onChange={this.searchUpdated} placeholder="Search..." />
-                <label htmlFor="searchApps"></label>
-              </div>
+              <SearchInput onChange={this.searchUpdated} placeholder="Search..." />
             </Col>
           </Row>
           <Row>

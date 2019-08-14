@@ -1,16 +1,5 @@
 // Form
 
-input[type='text'],
-input[type='search'] {
-  height: 30px;
-  border: 1px solid $grey-50;
-  padding: 5px 12px;
-  border-radius: 2px;
-  -webkit-border-radius: 2px;
-  -moz-border-radius: 2px;
-  box-shadow: none;
-}
-
 .form-control {
   font-size: 16px;
   color: $grey;
@@ -85,78 +74,6 @@ input[type='search'] {
     &.bigSelect {
       min-width: 250px;
     }
-  }
-}
-
-.searchblock {
-  position: relative;
-
-  input[type='text'] {
-    width: 60%;
-    margin-top: 28px;
-
-    & +  label {
-      display: inline-block;
-      max-width: 100%;
-      /* margin-bottom: 5px; */
-      font-family: $font-family-Lato-Bold;      
-      font-weight: 700;
-      position: absolute;
-      width: 60%;
-      right: 0px;
-      bottom: -6px;
-    }
-
-  }
-}
-
-.searchblock input[type='text'] + label,
-.searchblock input[type='search'] {
-  display: inline-block;
-  max-width: 100%;
-  /* margin-bottom: 5px; */
-  font-family: $font-family-base;
-  font-weight: 700;
-  position: absolute;
-  width: 60%;
-  right: 0px;
-  bottom: -6px;
-
-  &:before {
-    content: '';
-    position: absolute;
-    bottom: 0px;
-    left: 0px;
-    background-color: #00AEEF;
-    height: 3px;
-    width: 0%;
-    transition: all .3s ease-out;
-    -webkit-transition: all .3s ease-out;
-  }
-
-  &.active:before {
-    width: 100%;
-  }
-
-  &.removing:before {
-    opacity: 0;
-  }
-}
-
-.searchblock > div {
-
-  &:before {
-    content: "\f002";
-    font: normal normal normal 14px/1 FontAwesome;
-    position: absolute;
-    top: 38px;
-    right: 10px;
-    z-index: 1;
-  }
-
-  input[type='search'] {
-    top: 30px;
-    font-weight: normal;
   }
 }
 
