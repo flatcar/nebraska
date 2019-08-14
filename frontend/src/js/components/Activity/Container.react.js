@@ -1,9 +1,10 @@
 import { activityStore } from "../../stores/Stores"
 import React from "react"
-import { Row, Col } from "react-bootstrap"
 import List from "./List.react"
 import _ from "underscore"
 import Loader from "react-spinners/ScaleLoader"
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 
 class Container extends React.Component {
 
@@ -44,14 +45,19 @@ class Container extends React.Component {
     }
 
     return(
-      <Col xs={5} className="timeline--container">
-        <Row>
-          <Col xs={12}>
-            <h1 className="displayInline mainTitle padBottom25">Activity</h1>
-          </Col>
-        </Row>
-        {entries}
-      </Col>
+      <Grid
+        container
+        direction="column"
+        alignItems="flex-start"
+        justify="flex-start"
+        className="timeline--container">
+        <Grid item>
+          <Typography variant="h4" className="displayInline mainTitle padBottom25">Activity</Typography>
+        </Grid>
+        <Grid item>
+          {entries}
+        </Grid>
+      </Grid>
     )
   }
 

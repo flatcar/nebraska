@@ -1,12 +1,13 @@
 import { applicationsStore, modalStore } from "../../stores/Stores"
 import React from "react"
-import { Col, Row, Button, Modal } from "react-bootstrap"
+import Grid from '@material-ui/core/Grid';
 import ModalButton from "../Common/ModalButton.react"
 import Item from "./Item.react"
 import _ from "underscore"
 import Loader from "react-spinners/ScaleLoader"
 import SearchInput from '../Common/ListSearch'
 import ModalUpdate from "./ModalUpdate.react"
+import Typography from '@material-ui/core/Typography';
 
 class List extends React.Component {
 
@@ -79,23 +80,23 @@ class List extends React.Component {
     const appToUpdate =  applications && this.state.updateAppIDModal ? _.findWhere(applications, {id: this.state.updateAppIDModal}) : null
 
     return(
-      <div>
-        <Col xs={7}>
-          <Row>
-            <Col xs={5}>
-              <h1 className="displayInline mainTitle">Applications</h1>
-              <ModalButton icon="plus" modalToOpen="AddApplicationModal" data={{applications: applications}} />
-            </Col>
-            <Col xs={7} className="alignRight">
-              <SearchInput onChange={this.searchUpdated} placeholder="Search..." />
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={12} className="apps--container">
-              {entries}
-            </Col>
-          </Row>
-        </Col>
+      <Grid container alignItems="stretch">
+        <Grid item xs={8}>
+          <ModalButton icon="plus" modalToOpen="AddApplicationModal" data={{applications: applications}} />
+        </Grid>
+        <Grid item xs={4}>
+          <SearchInput
+            onChange={this.searchUpdated} placeholder="Search..."
+            fullWidth
+          />
+        </Grid>
+        <Grid
+          container
+          alignItems="stretch"
+          direction="column"
+          className="apps--container">
+          {entries}
+        </Grid>
         {/* Update app modal */}
         {appToUpdate &&
           <ModalUpdate
@@ -103,7 +104,7 @@ class List extends React.Component {
             modalVisible={this.state.updateAppModalVisible}
             onHide={this.closeUpdateAppModal} />
         }
-      </div>
+      </Grid>
     )
   }
 

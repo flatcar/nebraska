@@ -1,8 +1,8 @@
 import { applicationsStore } from "../../stores/Stores"
 import React from "react"
-import { Row, Col } from "react-bootstrap"
 import _ from "underscore"
 import { Link } from "react-router-dom"
+import Grid from '@material-ui/core/Grid';
 import ApplicationsList from "../Applications/List.react"
 import GroupsList from "../Groups/List.react"
 import ChannelsList from "../Channels/List.react"
@@ -54,19 +54,28 @@ class ApplicationLayout extends React.Component {
           <li><Link to="/apps">Applications</Link></li>
           <li className="active">{appName}</li>
         </ol>
-        <Row>
-          <GroupsList appID={this.state.appID} />
-          <Col xs={4} className="group--info">
-            <Row>
-              <Col xs={1}></Col>
-              <Col className={11}>
+        <Grid
+          container
+          spacing={1}
+          justify="space-between">
+          <Grid item xs={8}>
+            <GroupsList appID={this.state.appID} />
+          </Grid>
+          <Grid item xs={4}>
+            <Grid
+              container
+              direction="column"
+              alignItems="stretch"
+              spacing={2}>
+              <Grid item xs={12}>
                 <ChannelsList appID={this.state.appID} />
-                <hr />
+              </Grid>
+              <Grid item xs={12}>
                 <PackagesList appID={this.state.appID} />
-              </Col>
-            </Row>
-          </Col>
-        </Row>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
       </div>
     )
   }

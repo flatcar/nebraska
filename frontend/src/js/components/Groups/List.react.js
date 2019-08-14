@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
 import React from "react"
-import { Row, Col } from "react-bootstrap"
-import { Link } from "react-router-dom"
+import Grid from '@material-ui/core/Grid';
 import _ from "underscore"
 import Item from "./Item.react"
 import ModalButton from "../Common/ModalButton.react"
@@ -10,6 +9,7 @@ import SearchInput from "../Common/ListSearch"
 import Loader from "react-spinners/ScaleLoader"
 import MiniLoader from "react-spinners/PulseLoader"
 import ModalUpdate from "./ModalUpdate.react"
+import Typography from '@material-ui/core/Typography';
 
 class List extends React.Component {
 
@@ -98,23 +98,21 @@ class List extends React.Component {
     const groupToUpdate =  !_.isEmpty(groups) && this.state.updateGroupIDModal ? _.findWhere(groups, {id: this.state.updateGroupIDModal}) : null
 
 		return (
-      <div>
-        <Col xs={8}>
-          <Row>
-            <Col xs={5}>
-              <h1 className="displayInline mainTitle">Groups</h1>
-              <ModalButton icon="plus" modalToOpen="AddGroupModal" data={{channels: channels, appID: this.props.appID}} />
-            </Col>
-            <Col xs={7} className="alignRight">
-              <SearchInput onChange={this.searchUpdated} placeholder="Search..." />
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={12} className="groups--container">
-              {entries}
-            </Col>
-          </Row>
-        </Col>
+      <Grid container alignItems="stretch">
+        <Grid item xs={7}>
+          <Typography variant="h4" className="displayInline mainTitle">Groups</Typography>
+          <ModalButton icon="plus" modalToOpen="AddGroupModal" data={{channels: channels, appID: this.props.appID}} />
+        </Grid>
+        <Grid item xs={5}>
+          <SearchInput onChange={this.searchUpdated} placeholder="Search..." />
+        </Grid>
+        <Grid
+          container
+          alignItems="stretch"
+          direction="column"
+          className="groups--container">
+          {entries}
+        </Grid>
         {/* Update group modal */}
         {groupToUpdate &&
           <ModalUpdate
@@ -122,7 +120,7 @@ class List extends React.Component {
             modalVisible={this.state.updateGroupModalVisible}
             onHide={this.closeUpdateGroupModal} />
         }
-      </div>
+      </Grid>
 		)
   }
 
