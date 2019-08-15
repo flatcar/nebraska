@@ -1,13 +1,16 @@
 import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
 import React from "react"
-import { Row, Col } from "react-bootstrap"
-import { Link } from "react-router-dom"
 import Switch from "rc-switch"
 import _ from "underscore"
 import ChannelLabel from "../Common/ChannelLabel.react"
 import InstancesContainer from "../Instances/Container.react"
 import VersionBreakdown from "../Common/VersionBreakdown.react"
+import Grid from '@material-ui/core/Grid';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import {CardFeatureLabel, CardHeader} from '../Common/Card';
+import Typography from '@material-ui/core/Typography';
 
 class ItemExtended extends React.Component {
 
@@ -69,64 +72,52 @@ class ItemExtended extends React.Component {
     }
 
 		return (
-      <Row>
-        <Col xs={12}>
-          <Row>
-            <Col xs={12} className="groups--container">
-              <div className="groups--box">
-                <Row className="groups--boxHeader">
-                  <Col xs={12}>
-                    <h3 className="groups--boxTitle">
-                      {name}
-                      <span className="groups--id">(ID: {groupId})</span>
-                    </h3>
-                    <span className="groups--description">{description}</span>
-                  </Col>
-                </Row>
-                <div className="groups--boxContent">
-                  <Row className="groups--resume">
-                    <Col xs={12}>
-                      <span className="subtitle">Instances:</span><span> {instancesNum}</span>
-                      <div className="divider">|</div>
-                      <span className="subtitle">Channel:</span> <span className={styleGroupChannel}>{groupChannel}</span>
-                    </Col>
-                  </Row>
-                  <Row className="groups--resume">
-                    <Col xs={12}>
-                      <span className="subtitle">Rollout policy:</span> Max {policyMaxUpdatesPerDay} updates per {policyPeriodInterval} &nbsp;|&nbsp; Updates timeout { policyUpdatesTimeout }
-                    </Col>
-                  </Row>
-                  <Row className="groups--resume">
-                    <Col xs={12}>
-                      <span className="subtitle displayInline">Updates enabled:</span>
-                      <div className="displayInline">
-                        <Switch checked={policyUpdates} disabled={true} checkedChildren={"✔"} unCheckedChildren={"✘"} />
-                      </div>
-                      <span className="subtitle displayInline">Only office hours:</span>
-                      <div className="displayInline">
-                        <Switch checked={officeHours} disabled={true} checkedChildren={"✔"} unCheckedChildren={"✘"} />
-                      </div>
-                      <span className="subtitle displayInline">Safe mode:</span>
-                      <div className="displayInline">
-                        <Switch checked={safeMode} disabled={true} checkedChildren={"✔"} unCheckedChildren={"✘"} />
-                      </div>
-                    </Col>
-                  </Row>
-                  <Row className="groups--resume">
-                    <VersionBreakdown version_breakdown={version_breakdown} channel={channel} />
-                  </Row>
-                  {/* Instances */}
-                  <InstancesContainer
-                    appID={this.props.appID}
-                    groupID={this.props.groupID}
-                    version_breakdown={version_breakdown}
-                    channel={channel} />
-                </div>
-              </div>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
+      <Card>
+        <CardHeader
+          cardMainLinkLabel={group.name}
+          cardId={groupId}
+          cardDescription={description}
+        />
+        <CardContent>
+          <Grid container spacing={2}>
+            <Grid item>
+              <CardFeatureLabel>Instances:</CardFeatureLabel>
+              <Typography className="activeLink" component="span">{instancesNum}</Typography>
+            </Grid>
+            <Grid item>
+              <CardFeatureLabel>Channel:</CardFeatureLabel>
+              <span className={styleGroupChannel}>{groupChannel}</span>
+            </Grid>
+            <Grid item xs={12}>
+              <CardFeatureLabel>Rollout Policy:</CardFeatureLabel>
+              Max {policyMaxUpdatesPerDay} updates per {policyPeriodInterval} &nbsp;|&nbsp; Updates timeout { policyUpdatesTimeout }
+            </Grid>
+            <Grid item xs={4}>
+              <CardFeatureLabel>Updates Enabled:</CardFeatureLabel>
+              <Switch checked={policyUpdates} disabled={true} checkedChildren={"✔"} unCheckedChildren={"✘"} />
+            </Grid>
+            <Grid item xs={4}>
+              <CardFeatureLabel>Only Office Hours:</CardFeatureLabel>
+              <Switch checked={officeHours} disabled={true} checkedChildren={"✔"} unCheckedChildren={"✘"} />
+            </Grid>
+            <Grid item xs={4}>
+              <CardFeatureLabel>Safe Mode:</CardFeatureLabel>
+              <Switch checked={safeMode} disabled={true} checkedChildren={"✔"} unCheckedChildren={"✘"} />
+            </Grid>
+            <Grid item xs={12} className="groups--resume">
+              <VersionBreakdown version_breakdown={version_breakdown} channel={channel} />
+            </Grid>
+            <Grid item xs={12} className="groups--resume">
+              {/* Instances */}
+              <InstancesContainer
+                appID={this.props.appID}
+                groupID={this.props.groupID}
+                version_breakdown={version_breakdown}
+                channel={channel} />
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
 		)
   }
 
