@@ -72,7 +72,7 @@ class List extends React.Component {
         }
       } else {
         entries = _.map(applications, (application, i) => {
-          return <Item key={application.id} application={application} handleUpdateApplication={this.openUpdateAppModal} />
+          return <Grid item><Item key={application.id} application={application} handleUpdateApplication={this.openUpdateAppModal} /></Grid>
         })
       }
     }
@@ -94,6 +94,7 @@ class List extends React.Component {
           container
           alignItems="stretch"
           direction="column"
+          spacing={2}
           className="apps--container">
           {entries}
         </Grid>
