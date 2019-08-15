@@ -2,12 +2,14 @@ import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
 import React from "react";
 import { Link } from "react-router-dom";
-import { Row, Col, OverlayTrigger, Button, Popover } from "react-bootstrap";
 import Switch from "rc-switch"
 import _ from "underscore"
 import ChannelLabel from "../Common/ChannelLabel.react"
 import VersionBreakdown from "../Common/VersionBreakdown.react"
-import ConfirmationContent from "../Common/ConfirmationContent.react"
+import Grid from '@material-ui/core/Grid';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import {CardFeatureLabel, CardHeader} from '../Common/Card';
 
 class Item extends React.Component {
 
@@ -32,61 +34,49 @@ class Item extends React.Component {
     let version_breakdown = (this.props.group && this.props.group.version_breakdown) ? this.props.group.version_breakdown : [],
         instances_total = this.props.group.instances_stats ? this.props.group.instances_stats.total : 0,
         description = this.props.group.description ? this.props.group.description : "No description provided",
-        channel = this.props.group.channel ? this.props.group.channel : {},
-        styleDescription = this.props.group.description ? "" : " italicText",
-        popoverContent = {
-          type: "group",
-          appID: this.props.group.application_id,
-          groupID: this.props.group.id
-        }
+        channel = this.props.group.channel ? this.props.group.channel : {}
 
     let groupChannel = _.isEmpty(this.props.group.channel) ? "No channel provided" : <ChannelLabel channel={this.props.group.channel} />
     let styleGroupChannel = _.isEmpty(this.props.group.channel) ? "italicText" : ""
     let groupPath = `/apps/${this.props.group.application_id}/groups/${this.props.group.id}`
 
     return (
-      <div className="groups--box">
-        <Row className="groups--boxHeader">
-          <Col xs={10}>
-            <h3 className="groups--boxTitle">
-              <Link to={groupPath}>
-                {this.props.group.name} <i className="fa fa-caret-right"></i>
-              </Link>
-              <span className="groups--id">(ID: {this.props.group.id})</span>
-            </h3>
-            <span className={"groups--description" + styleDescription}>{description}</span>
-          </Col>
-          <Col xs={2}>
-            <div className="groups--buttons">
-              <button className="cr-button displayInline fa fa-edit" onClick={this.updateGroup}></button>
-              <button className="cr-button displayInline fa fa-trash-o" onClick={this.deleteGroup}></button>
-            </div>
-          </Col>
-        </Row>
-        <div className="groups--boxContent">
-          <Row className="groups--resume">
-            <Col xs={12}>
-              <span className="subtitle">Instances:</span><Link to={groupPath}><span className="activeLink"> {instances_total}<span className="fa fa-caret-right" /></span></Link>
-              <div className="divider">|</div>
-              <span className="subtitle">Channel:</span> <span className={styleGroupChannel}>{groupChannel}</span>
-            </Col>
-          </Row>
-          <Row className="groups--resume noExtended">
-            <Col xs={8}>
-              <span className="subtitle">Rollout policy:</span> Max {this.props.group.policy_max_updates_per_period} updates per {this.props.group.policy_period_interval}
-            </Col>
-            <Col xs={4} className="alignRight">
-              <span className="subtitle displayInline">Updates enabled:</span>
-              <div className="displayInline">
-                <Switch checked={this.props.group.policy_updates_enabled} disabled={true} checkedChildren={"✔"} unCheckedChildren={"✘"} />
-              </div>
-            </Col>
-          </Row>
-          <Row className="groups--resume">
-            <VersionBreakdown version_breakdown={version_breakdown} channel={channel} />
-          </Row>
-        </div>
-      </div>
+      <Card>
+        <CardHeader
+          cardMainLinkLabel={this.props.group.name}
+          cardMainLinkPath={groupPath}
+          cardId={this.props.group.id}
+          cardDescription={description}
+        >
+          <div className="apps--buttons">
+            <button className="cr-button displayInline fa fa-edit" onClick={this.updateGroup}></button>
+            <button className="cr-button displayInline fa fa-trash-o" onClick={this.deleteGroup}></button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <Grid container spacing={2}>
+            <Grid item>
+              <CardFeatureLabel>Instances:</CardFeatureLabel>
+              <Link to={groupPath}><span className="activeLink"> {instances_total}<span className="fa fa-caret-right" /></span></Link>
+            </Grid>
+            <Grid item>
+              <CardFeatureLabel>Channel:</CardFeatureLabel>
+              {groupChannel}
+            </Grid>
+            <Grid item xs={8}>
+              <CardFeatureLabel>Rollout Policy:</CardFeatureLabel>
+              Max {this.props.group.policy_max_updates_per_period} updates per {this.props.group.policy_period_interval}
+            </Grid>
+            <Grid item xs={4}>
+              <CardFeatureLabel>Updates Enabled:</CardFeatureLabel>
+              <Switch checked={this.props.group.policy_updates_enabled} disabled={true} checkedChildren={"✔"} unCheckedChildren={"✘"} />
+            </Grid>
+            <Grid item xs={12}>
+              <VersionBreakdown version_breakdown={version_breakdown} channel={channel} />
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
     )
   }
 
