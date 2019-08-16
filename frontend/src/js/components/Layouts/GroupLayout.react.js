@@ -1,9 +1,9 @@
 import { applicationsStore } from "../../stores/Stores"
 import React from "react"
 import { Row, Col } from "react-bootstrap"
-import { Link } from "react-router-dom"
 import _ from "underscore"
 import GroupExtended from "../Groups/ItemExtended.react"
+import SectionHeader from '../Common/SectionHeader';
 
 class GroupLayout extends React.Component {
 
@@ -55,15 +55,20 @@ class GroupLayout extends React.Component {
     }
 
     return(
-      <div className="container">
-        <ol className="breadcrumb">
-          <li><Link to="/">Applications</Link></li>
-          <li><Link to={{pathname: `/apps/${application.id}`}}>
-            {appName}
-          </Link></li>
-          <li className="active">{groupName}</li>
-        </ol>
-
+      <div>
+        <SectionHeader
+          title={groupName}
+          breadcrumbs={[
+            {
+              path: '/apps',
+              label: 'Applications'
+            },
+            {
+              path: `/apps/${this.state.appID}`,
+              label: appName
+            }
+          ]}
+        />
         <GroupExtended appID={this.state.appID} groupID={this.state.groupID} />
      </div>
     )

@@ -1,12 +1,15 @@
 import { applicationsStore } from "../../stores/Stores"
 import React from "react"
 import _ from "underscore"
-import { Link } from "react-router-dom"
+import { Link as RouterLink } from "react-router-dom"
 import Grid from '@material-ui/core/Grid';
 import ApplicationsList from "../Applications/List.react"
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import GroupsList from "../Groups/List.react"
 import ChannelsList from "../Channels/List.react"
+import Link from '@material-ui/core/Link';
 import PackagesList from "../Packages/List.react"
+import Typography from '@material-ui/core/Typography';
 
 class ApplicationLayout extends React.Component {
 
@@ -50,10 +53,10 @@ class ApplicationLayout extends React.Component {
 
     return(
       <div className="container">
-        <ol className="breadcrumb">
-          <li><Link to="/apps">Applications</Link></li>
-          <li className="active">{appName}</li>
-        </ol>
+        <Breadcrumbs aria-label="breadcrumb">
+          <Link variant="h4" to="/apps" component={RouterLink}>Applications</Link>
+          <Typography variant="h4">{appName}</Typography>
+        </Breadcrumbs>
         <Grid
           container
           spacing={1}
