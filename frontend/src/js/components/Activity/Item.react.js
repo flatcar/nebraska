@@ -1,8 +1,22 @@
+import Card from '@material-ui/core/Card';
+import { makeStyles } from '@material-ui/core/styles';
+import moment from "moment";
 import PropTypes from 'prop-types';
-import { activityStore } from "../../stores/Stores"
-import React from "react"
-import { Row, Col } from "react-bootstrap"
-import moment from "moment"
+import React from "react";
+import { activityStore } from '../../stores/Stores';
+
+const useStyles = makeStyles(theme => ({
+  activityCard: {
+    overflow: "unset",
+  },
+}));
+
+function ActivityCard(props) {
+  const classes = useStyles();
+  return (
+    <Card className={`${classes.activityCard} timeline--eventLabel`}>{props.children}</Card>
+  );
+}
 
 class Item extends React.Component {
 
@@ -55,7 +69,7 @@ class Item extends React.Component {
           <br />
           <span className="timeline--ampm">{ampm}</span>
         </div>
-        <div className="timeline--eventLabel">
+        <ActivityCard>
           <div className="row timeline--eventLabelTitle">
             <div className="col-xs-5 noPadding">{this.state.entryClass.appName}</div>
             <div className="col-xs-7 noPadding">
@@ -64,7 +78,7 @@ class Item extends React.Component {
             </div>
           </div>
           <p>{this.state.entryClass.description}</p>
-        </div>
+        </ActivityCard>
       </li>
     )
   }
