@@ -76,9 +76,9 @@ class List extends React.Component {
         <Grid item xs={12}>
           <Typography variant="h4" className="displayInline mainTitle">Channels</Typography>
           <ModalButton
-              icon="plus"
-              modalToOpen="AddChannelModal"
-              data={{packages: packages, applicationID: this.props.appID}} />
+            icon="plus"
+            modalToOpen="AddChannelModal"
+            data={{packages: packages, applicationID: this.props.appID}} />
         </Grid>
         <Grid item xs={12}>
           <Card>

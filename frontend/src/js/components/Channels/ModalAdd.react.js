@@ -1,174 +1,120 @@
 import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
 import React from "react"
-import { Row, Col, Modal, Button, Alert } from "react-bootstrap"
-import { Form, ValidatedInput } from "../legacy/react-bootstrap-validation"
-import { Input, ButtonInput } from '../legacy/react-bootstrap'
-import ColorPicker from "react-color"
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import MenuItem from '@material-ui/core/MenuItem';
+import Button from '@material-ui/core/Button';
+import { Formik, Form, Field } from 'formik';
+import { TextField } from 'formik-material-ui';
+import {ColorPickerButton} from '../Common/ColorPicker'
 import moment from "moment"
 
-class ModalAdd extends React.Component {
+import * as Yup from 'yup';
 
-  constructor(props) {
-    super(props)
-    this.handleFocus = this.handleFocus.bind(this)
-    this.createChannel = this.createChannel.bind(this)
-    this.changeColor = this.changeColor.bind(this)
-    this.handleColorPicker = this.handleColorPicker.bind(this)
-    this.handleColorPickerClose = this.handleColorPickerClose.bind(this)
-    this.handleValidSubmit = this.handleValidSubmit.bind(this)
-    this.handleInvalidSubmit = this.handleInvalidSubmit.bind(this)
-    this.exitedModal = this.exitedModal.bind(this)
+function ModalAdd(props) {
 
-    this.state = {
-      channelColor: "#777777",
-      displayColorPicker: false,
-      isLoading: false,
-      alertVisible: false
-    }
-  }
+  const [channelColor, setChannelColor] = React.useState('#00ff00');
 
-  createChannel() {
-    this.setState({isLoading: true})
+  function handleSubmit(values, actions) {
     let data = {
-      name: this.refs.nameNewChannel.getValue(),
-      color: this.state.channelColor,
-      application_id: this.props.data.applicationID
+      name: values.name,
+      color: channelColor,
+      application_id: props.data.applicationID
     }
 
-    let package_id = this.refs.packageChannel.getValue()
+    let package_id = values.packageChannel;
     if (package_id) {
-      data["package_id"] = package_id
+      data["package_id"] = package_id;
     }
 
     applicationsStore.createChannel(data).
       done(() => {
-        this.props.onHide()
-        this.setState({isLoading: false})
+        actions.setSubmitting(false);
+        props.onHide()
       }).
       fail(() => {
-        this.setState({alertVisible: true, isLoading: false})
+        actions.setSubmitting(false);
+        actions.setStatus({statusMessage: 'Something went wrong. Check the form or try again later...'});
       })
   }
 
-  handleFocus() {
-    this.setState({alertVisible: false})
+  function handleColorPicked(color) {
+    setChannelColor(color.hex);
   }
 
-  handleColorPickerClose() {
-    this.setState({ displayColorPicker: false })
+  function handleClose() {
+    props.onHide();
   }
 
-  handleColorPicker() {
-    this.setState({ "displayColorPicker": !this.state.displayColorPicker })
-  }
-
-  changeColor(color) {
-    this.setState({ channelColor: "#" + color.hex })
-  }
-
-  handleValidSubmit() {
-    this.createChannel()
-  }
-
-  handleInvalidSubmit() {
-    // this.setState({alertVisible: false})
-  }
-
-  exitedModal() {
-    this.setState({
-      channelColor: "#777777",
-      displayColorPicker: false,
-      isLoading: false,
-      alertVisible: false
-    })
-  }
-
-  render() {
-    let packages = this.props.data.packages ? this.props.data.packages : [],
-        popupPosition = {
-          position: "absolute",
-          top: "10px",
-          left: "10px"
-        },
-        divColor = {
-          backgroundColor: this.state.channelColor
-        },
-        btnStyle = this.state.isLoading ? " loading" : "",
-        btnContent = this.state.isLoading ? "Please wait" : "Submit"
-
+  function renderForm({status, isSubmitting}) {
+    const packages = props.data.packages ? props.data.packages : [];
     return (
-      <Modal {...this.props} animation={true} onExited={this.exitedModal}>
-        <Modal.Header closeButton>
-          <Modal.Title id="contained-modal-title-lg">Add new channel</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="modal--form" onFocus={this.handleFocus}>
-            <Form onValidSubmit={this.handleValidSubmit} onInvalidSubmit={this.handleInvalidSubmit}>
-              <ValidatedInput
-                type="text"
-                label="*Name:"
-                name="nameNewChannel"
-                ref="nameNewChannel"
-                required={true}
-                validationEvent="onBlur"
-                validate="required,isLength:1:25"
-                errorHelp={{
-                  required: "Please enter a name",
-                  isLength: "Name must be less than 25 characters"
-                }}
-              />
-              <div className="form-group">
-                <label className="control-label">
-                  <span>Color:</span>
-                </label>
-                <div className="swatch" >
-                  <div className="color" style={divColor} onClick={ this.handleColorPicker } />
-                </div>
-                <ColorPicker
-                  color={ this.state.channelColor }
-                  position="below"
-                  display={ this.state.displayColorPicker }
-                  onChange={ this.changeColor }
-                  onChangeComplete={ this.handleColorPickerClose }
-                  type="compact" positionCSS={popupPosition} />
-              </div>
-              <Input type="select" label="Package:" placeholder="" groupClassName="arrow-icon" ref="packageChannel">
-                <option value="" />
-                {packages.map((packageItem, i) =>
-                  <option value={packageItem.id} key={"packageItem_" + i}>
-                    {packageItem.version} &nbsp;&nbsp;(created: {moment.utc(packageItem.created_ts).local().format("DD/MM/YYYY")})
-                  </option>
-                )}
-              </Input>
-              <div className="form--legend minlegend marginBottom15">
-                <b>NOTE:</b> updates only happen when a <b>higher</b> version is available. This means that if your instances are running version {"1.3.0"} and the channel is updated pointing it to a lower version (lets say {"1.2.0"}), they won’t execute a downgrade. Only after the channel is pointing to a version higher than {"1.3.0"} they will receive an update.
-              </div>
-              <div className="modal--footer">
-                <Row>
-                  <Col xs={8}>
-                    <Alert bsStyle="danger" className={this.state.alertVisible ? "alert--visible" : ""}>
-                      <strong>Error!</strong> The request failed, please check the form
-                    </Alert>
-                  </Col>
-                  <Col xs={4}>
-                    <ButtonInput
-                      type="submit"
-                      bsStyle="default"
-                      className={"plainBtn" + btnStyle}
-                      disabled={this.state.isLoading}
-                      value={btnContent}
-                    />
-                  </Col>
-                </Row>
-              </div>
-            </Form>
-          </div>
-        </Modal.Body>
-      </Modal>
-    )
+      <Form>
+        <DialogContent>
+          {status && status.statusMessage &&
+          <DialogContentText color="error">
+            {status.statusMessage}
+          </DialogContentText>
+          }
+          <Field
+            name="name"
+            component={TextField}
+            margin="dense"
+            label="Name"
+            type="text"
+            required={true}
+            fullWidth
+          />
+          <ColorPickerButton onColorPicked={handleColorPicked}/>
+          <Field
+            type="text"
+            name="package"
+            label="Package"
+            select
+            margin="dense"
+            component={TextField}
+            fullWidth
+          >
+            <MenuItem value="none" key="none">Nothing yet</MenuItem>
+            {packages.map((packageItem, i) =>
+            <MenuItem value={packageItem.id} key={"packageItem_" + i}>
+              {packageItem.version} &nbsp;&nbsp;(created: {moment.utc(packageItem.created_ts).local().format("DD/MM/YYYY")})
+            </MenuItem>
+            )}
+          </Field>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">Cancel</Button>
+          <Button type="submit" disabled={isSubmitting} color="primary">Add</Button>
+        </DialogActions>
+      </Form>
+    );
   }
 
+  const validation = Yup.object().shape({
+    name: Yup.string()
+      .max(50, 'Must be less than 50 characters')
+      .required('Required'),
+    description: Yup.string()
+      .max(250, 'Must be less than 250 characters'),
+  });
+
+  return (
+    <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
+      <DialogTitle>Add New Channel</DialogTitle>
+        <Formik
+          initialValues={{ name: '',
+                           package: 'none' }}
+          onSubmit={handleSubmit}
+          validationSchema={validation}
+          render={renderForm}
+        />
+    </Dialog>
+  );
 }
 
 ModalAdd.propTypes = {
