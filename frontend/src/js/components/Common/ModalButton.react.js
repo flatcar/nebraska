@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from "react"
-import AddApplicationModal from "../Applications/ModalAdd.react"
+import ApplicationEditDialog from "../Applications/EditDialog"
 import AddGroupModal from "../Groups/ModalAdd.react"
 import AddChannelModal from "../Channels/ModalAdd.react"
 import AddPackageModal from "../Packages/ModalAdd.react"
@@ -31,7 +31,7 @@ class ModalButton extends React.Component {
 
     switch (this.props.modalToOpen) {
       case "AddApplicationModal":
-        var modal = <AddApplicationModal {...options} onHide={this.close} />
+        var modal = <ApplicationEditDialog create {...options} onHide={this.close} />
         break
       case "AddGroupModal":
         var modal = <AddGroupModal {...options} onHide={this.close} />

@@ -6,7 +6,7 @@ import Item from "./Item.react"
 import _ from "underscore"
 import Loader from "react-spinners/ScaleLoader"
 import SearchInput from '../Common/ListSearch'
-import ModalUpdate from "./ModalUpdate.react"
+import EditDialog from "./EditDialog"
 import Typography from '@material-ui/core/Typography';
 
 class List extends React.Component {
@@ -100,9 +100,9 @@ class List extends React.Component {
         </Grid>
         {/* Update app modal */}
         {appToUpdate &&
-          <ModalUpdate
+          <EditDialog
             data={appToUpdate}
-            modalVisible={this.state.updateAppModalVisible}
+            show={this.state.updateAppModalVisible}
             onHide={this.closeUpdateAppModal} />
         }
       </Grid>
