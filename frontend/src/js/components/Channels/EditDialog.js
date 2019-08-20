@@ -1,23 +1,23 @@
-import PropTypes from 'prop-types';
-import { applicationsStore } from "../../stores/Stores"
-import React from "react"
+import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import MenuItem from '@material-ui/core/MenuItem';
-import Button from '@material-ui/core/Button';
+import PropTypes from 'prop-types';
+import React from 'react';
+import moment from 'moment';
+import * as Yup from 'yup';
+import { applicationsStore } from '../../stores/Stores';
 import { Formik, Form, Field } from 'formik';
 import { TextField } from 'formik-material-ui';
-import {ColorPickerButton} from '../Common/ColorPicker'
-import moment from "moment"
+import { ColorPickerButton } from '../Common/ColorPicker';
 
-import * as Yup from 'yup';
+function EditDialog(props) {
 
-function ModalAdd(props) {
-
-  const [channelColor, setChannelColor] = React.useState('#00ff00');
+  const [channelColor, setChannelColor] = React.useState(props.data && props.data.channel ? props.data.channel.color : "#000000");
+  const isCreation = Boolean(props.create);
 
   function handleSubmit(values, actions) {
     let data = {
@@ -26,12 +26,20 @@ function ModalAdd(props) {
       application_id: props.data.applicationID
     }
 
-    let package_id = values.packageChannel;
+    let package_id = values.package;
     if (package_id) {
       data["package_id"] = package_id;
     }
 
-    applicationsStore.createChannel(data).
+    let channelFunctionCall;
+    if (isCreation) {
+        channelFunctionCall = applicationsStore.createChannel(data);
+    } else {
+        data['id'] = props.data.channel.id;
+        channelFunctionCall = applicationsStore.updateChannel(data);
+    }
+
+    channelFunctionCall.
       done(() => {
         actions.setSubmitting(false);
         props.onHide()
@@ -50,7 +58,7 @@ function ModalAdd(props) {
     props.onHide();
   }
 
-  function renderForm({status, isSubmitting}) {
+  function renderForm({values, status, isSubmitting}) {
     const packages = props.data.packages ? props.data.packages : [];
     return (
       <Form>
@@ -69,7 +77,7 @@ function ModalAdd(props) {
             required={true}
             fullWidth
           />
-          <ColorPickerButton onColorPicked={handleColorPicked}/>
+          <ColorPickerButton color={channelColor} onColorPicked={handleColorPicked}/>
           <Field
             type="text"
             name="package"
@@ -79,7 +87,7 @@ function ModalAdd(props) {
             component={TextField}
             fullWidth
           >
-            <MenuItem value="none" key="none">Nothing yet</MenuItem>
+            <MenuItem value="" key="none">Nothing yet</MenuItem>
             {packages.map((packageItem, i) =>
             <MenuItem value={packageItem.id} key={"packageItem_" + i}>
               {packageItem.version} &nbsp;&nbsp;(created: {moment.utc(packageItem.created_ts).local().format("DD/MM/YYYY")})
@@ -89,7 +97,7 @@ function ModalAdd(props) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">Cancel</Button>
-          <Button type="submit" disabled={isSubmitting} color="primary">Add</Button>
+          <Button type="submit" disabled={isSubmitting} color="primary">{ isCreation ? "Add" : "Save" }</Button>
         </DialogActions>
       </Form>
     );
@@ -99,16 +107,20 @@ function ModalAdd(props) {
     name: Yup.string()
       .max(50, 'Must be less than 50 characters')
       .required('Required'),
-    description: Yup.string()
-      .max(250, 'Must be less than 250 characters'),
   });
+
+  let initialValues = {};
+  if (!isCreation) {
+    initialValues = {name: props.data.channel.name,
+                     package: props.data.channel.package_id ? props.data.channel.package_id : "",
+                    };
+  }
 
   return (
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
-      <DialogTitle>Add New Channel</DialogTitle>
+      <DialogTitle>{ isCreation ? "Add New Channel" : "Edit Channel" }</DialogTitle>
         <Formik
-          initialValues={{ name: '',
-                           package: 'none' }}
+          initialValues={initialValues}
           onSubmit={handleSubmit}
           validationSchema={validation}
           render={renderForm}
@@ -117,8 +129,10 @@ function ModalAdd(props) {
   );
 }
 
-ModalAdd.propTypes = {
-  data: PropTypes.object
+EditDialog.propTypes = {
+  data: PropTypes.object,
+  show: PropTypes.bool,
+  create: PropTypes.bool,
 }
 
-export default ModalAdd
+export default EditDialog;

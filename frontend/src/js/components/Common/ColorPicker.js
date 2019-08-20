@@ -8,14 +8,15 @@ import { TwitterPicker } from 'react-color';
 // style as the other form controls.
 
 export function ColorPickerButton(props) {
-  let [channelColor, setChannelColor] = React.useState('#000000');
+  let [channelColor, setChannelColor] = React.useState(props.color);
   let [displayColorPicker, setDisplayColorPicker] = React.useState(false);
   let [anchorEl, setAnchorEl] = React.useState(null);
-  let {onColorPicked} = props;
+  let {color, onColorPicked} = props;
 
   function handleColorChange(color) {
     setChannelColor(color.hex);
     onColorPicked(color);
+    color = color.hex;
   }
 
   function handleColorButtonClick(event) {
