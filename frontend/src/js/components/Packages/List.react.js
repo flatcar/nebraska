@@ -4,7 +4,7 @@ import React from "react"
 import _ from "underscore"
 import ModalButton from "../Common/ModalButton.react"
 import Item from "./Item.react"
-import ModalUpdate from "./ModalUpdate.react"
+import EditDialog from './EditDialog'
 import Loader from "react-spinners/ScaleLoader"
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -85,9 +85,9 @@ class List extends React.Component {
               {entries}
               {/* Update package modal */}
               {packageToUpdate &&
-                <ModalUpdate
+                <EditDialog
                   data={{channels: channels, channel: packageToUpdate}}
-                  modalVisible={this.state.updatePackageModalVisible}
+                  show={this.state.updatePackageModalVisible}
                   onHide={this.closeUpdatePackageModal} />
               }
             </CardContent>

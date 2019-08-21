@@ -3,7 +3,7 @@ import React from "react"
 import ApplicationEditDialog from "../Applications/EditDialog"
 import AddGroupModal from "../Groups/ModalAdd.react"
 import ChannelEditDialog from "../Channels/EditDialog"
-import AddPackageModal from "../Packages/ModalAdd.react"
+import PackageEditDialog from '../Packages/EditDialog';
 
 class ModalButton extends React.Component {
 
@@ -40,7 +40,7 @@ class ModalButton extends React.Component {
         var modal = <ChannelEditDialog create {...options} onHide={this.close} />
         break
       case "AddPackageModal":
-        var modal = <AddPackageModal {...options} onHide={this.close} />
+        var modal = <PackageEditDialog create {...options} onHide={this.close} />
         break
     }
 
