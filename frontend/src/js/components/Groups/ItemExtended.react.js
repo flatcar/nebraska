@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
 import React from "react"
-import Switch from "rc-switch"
 import _ from "underscore"
 import ChannelLabel from "../Common/ChannelLabel.react"
 import InstancesContainer from "../Instances/Container.react"
@@ -93,16 +92,16 @@ class ItemExtended extends React.Component {
               Max {policyMaxUpdatesPerDay} updates per {policyPeriodInterval} &nbsp;|&nbsp; Updates timeout { policyUpdatesTimeout }
             </Grid>
             <Grid item xs={4}>
-              <CardFeatureLabel>Updates Enabled:</CardFeatureLabel>
-              <Switch checked={policyUpdates} disabled={true} checkedChildren={"✔"} unCheckedChildren={"✘"} />
+              <CardFeatureLabel>Updates:</CardFeatureLabel>&nbsp;
+              {policyUpdates ? 'Enabled' : 'Disabled'}
             </Grid>
             <Grid item xs={4}>
-              <CardFeatureLabel>Only Office Hours:</CardFeatureLabel>
-              <Switch checked={officeHours} disabled={true} checkedChildren={"✔"} unCheckedChildren={"✘"} />
+              <CardFeatureLabel>Only Office Hours:</CardFeatureLabel>&nbsp;
+              {officeHours ? 'Yes' : 'No'}
             </Grid>
             <Grid item xs={4}>
-              <CardFeatureLabel>Safe Mode:</CardFeatureLabel>
-              <Switch checked={safeMode} disabled={true} checkedChildren={"✔"} unCheckedChildren={"✘"} />
+              <CardFeatureLabel>Safe Mode:</CardFeatureLabel>&nbsp;
+              {safeMode ? 'Yes' : 'No'}
             </Grid>
             <Grid item xs={12} className="groups--resume">
               <VersionBreakdown version_breakdown={version_breakdown} channel={channel} />

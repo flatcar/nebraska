@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
 import React from "react";
 import { Link } from "react-router-dom";
-import Switch from "rc-switch"
 import _ from "underscore"
 import ChannelLabel from "../Common/ChannelLabel.react"
 import VersionBreakdown from "../Common/VersionBreakdown.react"
@@ -63,13 +62,13 @@ class Item extends React.Component {
               <CardFeatureLabel>Channel:</CardFeatureLabel>
               {groupChannel}
             </Grid>
-            <Grid item xs={8}>
-              <CardFeatureLabel>Rollout Policy:</CardFeatureLabel>
-              Max {this.props.group.policy_max_updates_per_period} updates per {this.props.group.policy_period_interval}
+            <Grid item xs={12}>
+              <CardFeatureLabel>Updates:</CardFeatureLabel>&nbsp;
+              {this.props.group.policy_updates_enabled ? 'Enabled' : 'Disabled'}
             </Grid>
-            <Grid item xs={4}>
-              <CardFeatureLabel>Updates Enabled:</CardFeatureLabel>
-              <Switch checked={this.props.group.policy_updates_enabled} disabled={true} checkedChildren={"✔"} unCheckedChildren={"✘"} />
+            <Grid item xs={12}>
+              <CardFeatureLabel>Rollout Policy:</CardFeatureLabel>&nbsp;
+              Max {this.props.group.policy_max_updates_per_period} updates per {this.props.group.policy_period_interval}
             </Grid>
             <Grid item xs={12}>
               <VersionBreakdown version_breakdown={version_breakdown} channel={channel} />
