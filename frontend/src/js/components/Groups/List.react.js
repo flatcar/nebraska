@@ -8,8 +8,8 @@ import ModalButton from "../Common/ModalButton.react"
 import SearchInput from "../Common/ListSearch"
 import Loader from "react-spinners/ScaleLoader"
 import MiniLoader from "react-spinners/PulseLoader"
-import ModalUpdate from "./ModalUpdate.react"
 import Typography from '@material-ui/core/Typography';
+import EditDialog from './EditDialog';
 
 class List extends React.Component {
 
@@ -115,9 +115,9 @@ class List extends React.Component {
         </Grid>
         {/* Update group modal */}
         {groupToUpdate &&
-          <ModalUpdate
+          <EditDialog
             data={{group: groupToUpdate, channels: channels}}
-            modalVisible={this.state.updateGroupModalVisible}
+            show={this.state.updateGroupModalVisible}
             onHide={this.closeUpdateGroupModal} />
         }
       </Grid>
