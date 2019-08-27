@@ -9,10 +9,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import CreateOutlined from '@material-ui/icons/CreateOutlined';
-import DirectionsRunOutlined from '@material-ui/icons/DirectionsRunOutlined';
 import React from 'react';
-import API from '../api/API';
-import ModalUpdatePassword from './Common/ModalUpdatePassword.react';
 
 const useStyles = makeStyles(theme => ({
   title: {
@@ -28,15 +25,6 @@ export default function Header() {
   const classes = useStyles();
 
   let [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
-  let [showModal, setShowModal] = React.useState(false);
-
-  var options = {
-    show: showModal
-  }
-
-  function logout() {
-    API.logout();
-  }
 
   function handleMenu(event) {
     setMenuAnchorEl(event.currentTarget);
@@ -44,12 +32,6 @@ export default function Header() {
 
   function handleClose() {
     setMenuAnchorEl(null);
-    setShowModal(false);
-  }
-
-  function handleChangePassword() {
-    setMenuAnchorEl(null);
-    setShowModal(true);
   }
 
   return (
@@ -59,7 +41,7 @@ export default function Header() {
           Nebraska
         </Typography>
         <IconButton
-          aria-label='Account of current user'
+          aria-label='User menu'
           aria-controls='menu-appbar'
           aria-haspopup='true'
           onClick={handleMenu}
@@ -70,7 +52,6 @@ export default function Header() {
         <Menu
           id='customized-menu'
           anchorEl={menuAnchorEl}
-          keepMounted
           open={Boolean(menuAnchorEl)}
           onClose={handleClose}
           anchorOrigin={{
@@ -82,18 +63,15 @@ export default function Header() {
             horizontal: 'right',
           }}
         >
-          <MenuItem onClick={handleChangePassword}>
+          <MenuItem
+            component="a"
+            href="https://github.com/settings/apps/authorizations"
+          >
             <ListItemIcon>
               <CreateOutlined />
             </ListItemIcon>
-            <ListItemText primary='Change Password' />
-            <ModalUpdatePassword {...options} onHide={handleClose} />
-          </MenuItem>
-          <MenuItem onClick={logout}>
-            <ListItemIcon>
-              <DirectionsRunOutlined />
-            </ListItemIcon>
-            <ListItemText primary='Log out' />
+            <ListItemText
+              primary="Manage Access"/>
           </MenuItem>
         </Menu>
       </Toolbar>
