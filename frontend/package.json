@@ -12,6 +12,7 @@
   "dependencies": {
     "@material-ui/core": "^4.2.1",
     "@material-ui/icons": "^4.2.1",
+    "@nivo/bar": "^0.59.2",
     "bootstrap": "^3.4.1",
     "downshift": "^3.2.12",
     "flux": "~2.1.1",
