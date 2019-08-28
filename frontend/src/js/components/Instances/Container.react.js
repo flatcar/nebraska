@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types';
 import { instancesStore, applicationsStore } from "../../stores/Stores"
 import React from "react"
-import { Row, Col } from "react-bootstrap"
+import Grid from '@material-ui/core/Grid';
 import List from "./List.react"
 import _ from "underscore"
 import Loader from "react-spinners/ScaleLoader"
 import MiniLoader from "react-spinners/PulseLoader"
+import {CardFeatureLabel} from '../Common/Card';
 
 class Container extends React.Component {
 
@@ -74,16 +75,14 @@ class Container extends React.Component {
     }
 
     return(
-      <div>
-        <Row className="noMargin" id="instances">
-          <h4 className="instancesList--title">Instances list {miniLoader}</h4>
-        </Row>
-        <Row>
-          <Col xs={12}>
-            {entries}
-          </Col>
-        </Row>
-      </div>
+      <Grid container>
+        <Grid item xs={12}>
+          <CardFeatureLabel>Instances list {miniLoader}</CardFeatureLabel>
+        </Grid>
+        <Grid item xs={12}>
+          {entries}
+        </Grid>
+      </Grid>
     )
   }
 
