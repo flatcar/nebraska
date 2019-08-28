@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
 import React from "react"
-import { Row, Col, OverlayTrigger, Button, Popover, Tooltip } from "react-bootstrap"
-import ConfirmationContent from "../Common/ConfirmationContent.react"
+import Grid from '@material-ui/core/Grid';
 import ChannelLabel from "../Common/ChannelLabel.react"
 
 class Item extends React.Component {
@@ -34,24 +33,18 @@ class Item extends React.Component {
     const name = this.props.channel ? this.props.channel.name : "",
           version = (this.props.channel && this.props.channel.package) ? this.props.channel.package.version : "-"
 
-    const tooltip =  <Tooltip id={"tooltip_" + version}><strong>{name}</strong> - {version}</Tooltip>
-
     return (
-      <Row>
-        <Col xs={8}>
-          <OverlayTrigger placement="bottom" overlay={tooltip} trigger={["hover", "focus"]}>
-            <div>
-              <ChannelLabel channel={this.props.channel} channelLabelStyle="fixedWidth" />
-            </div>
-          </OverlayTrigger>
-        </Col>
-        <Col xs={4} className="alignRight">
+      <Grid container>
+        <Grid item xs={8}>
+          <ChannelLabel channel={this.props.channel} channelLabelStyle="fixedWidth" />
+        </Grid>
+        <Grid item xs={4} className="alignRight">
           <div className="channelsList-buttons">
             <button className="cr-button displayInline fa fa-edit" onClick={this.updateChannel}></button>
             <button className="cr-button displayInline fa fa-trash-o" onClick={this.deleteChannel}></button>
           </div>
-        </Col>
-      </Row>
+        </Grid>
+      </Grid>
     )
   }
 
