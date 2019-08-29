@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
 import React from "react"
-import { Label } from "react-bootstrap"
 import Grid from '@material-ui/core/Grid';
+import Label from '../Common/Label';
 import moment from "moment"
 import _ from "underscore"
 import VersionBullet from "../Common/VersionBullet.react"
@@ -62,7 +62,7 @@ class Item extends React.Component {
             <span className="subtitle">Released:</span> {date}
             { !_.isNull(this.props.packageItem.channels_blacklist) &&
               <div className="label-packageItem-container">
-                <Label bsStyle="danger" className="label-packageItem"><i className="fa fa-ban"></i> { blacklistInfo }</Label>
+                <Label><i className="fa fa-ban"></i> { blacklistInfo }</Label>
               </div>
             }
           </div>

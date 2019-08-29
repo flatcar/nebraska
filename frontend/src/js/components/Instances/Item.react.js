@@ -2,11 +2,16 @@ import PropTypes from 'prop-types';
 import { instancesStore } from "../../stores/Stores"
 import React from "react"
 import moment from "moment"
-import { Label } from "react-bootstrap"
+import Label from '../Common/Label';
 import StatusHistoryContainer from "./StatusHistoryContainer.react"
 import semver from "semver"
 import _ from "underscore"
 import { cleanSemverVersion } from "../../constants/helpers"
+import { styled } from '@material-ui/styles';
+
+const TableLabel = styled(Label)({
+  lineHeight: '45px',
+});
 
 class Item extends React.Component {
 
@@ -52,7 +57,7 @@ class Item extends React.Component {
         index = this.props.versionNumbers.indexOf(this.props.instance.application.version),
         downloadingIcon = this.props.instance.statusInfo.spinning ? <img src="img/mini_loading.gif" /> : "",
         statusIcon = this.props.instance.statusInfo.icon ? <i className={this.props.instance.statusInfo.icon}></i> : "",
-        instanceLabel = this.props.instance.statusInfo.className ? <Label>{statusIcon} {downloadingIcon} {this.props.instance.statusInfo.description}</Label> : <div>&nbsp;</div>,
+        instanceLabel = this.props.instance.statusInfo.className ? <TableLabel>{statusIcon} {downloadingIcon} {this.props.instance.statusInfo.description}</TableLabel> : <div>&nbsp;</div>,
         version = cleanSemverVersion(this.props.instance.application.version),
         currentVersionIndex = this.props.lastVersionChannel ? _.indexOf(this.props.versionNumbers, this.props.lastVersionChannel) : null,
         versionStyle = "default"
