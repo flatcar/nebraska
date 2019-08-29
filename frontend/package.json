@@ -13,7 +13,6 @@
     "@material-ui/core": "^4.2.1",
     "@material-ui/icons": "^4.2.1",
     "@nivo/bar": "^0.59.2",
-    "bootstrap": "^3.4.1",
     "downshift": "^3.2.12",
     "flux": "~2.1.1",
     "formik": "^1.5.8",
@@ -25,10 +24,8 @@
     "prop-types": "^15.7.2",
     "pubsub-js": "~1.5.3",
     "react": "^16.8.6",
-    "react-bootstrap": "^0.32.4",
     "react-color": "^2.17.3",
     "react-dom": "^16.8.6",
-    "react-router-bootstrap": "^0.23.3",
     "react-router-dom": "^5.0.1",
     "react-spinners": "^0.5.12",
     "react-window": "^1.8.5",
@@ -48,9 +45,8 @@
   },
   "scripts": {
     "copy-css": "cp -R src/css/*.css ./built/css/",
-    "build-external-css": "lessc src/style/external-styles.less > ./built/css/external-styles.css",
     "build-css": "node-sass src/style/styles.scss ./built/css/styles.css",
     "build-js": "webpack --config webpack.config.js",
-    "build": "npm run build-external-css & npm run build-css & npm run build-js && npm run copy-css"
+    "build": "npm run build-css & npm run build-js && npm run copy-css"
   }
 }
