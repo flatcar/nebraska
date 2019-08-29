@@ -1,9 +1,8 @@
+import Chip from '@material-ui/core/Chip';
+import moment from 'moment';
 import PropTypes from 'prop-types';
-import { instancesStore } from "../../stores/Stores"
-import React from "react"
-import { Label } from "react-bootstrap"
-import moment from "moment"
-import _ from "underscore"
+import React from 'react';
+import { instancesStore } from '../../stores/Stores';
 
 class StatusHistoryItem extends React.Component {
 
@@ -26,7 +25,7 @@ class StatusHistoryItem extends React.Component {
   render() {
     let date = moment.utc(this.props.entry.created_ts).local().format("DD/MM/YYYY"),
         time = moment.utc(this.props.entry.created_ts).local().format("hh:mma"),
-        instanceLabel = this.state.status.className ? <Label>{this.state.status.status}</Label> : <div>&nbsp;</div>
+        instanceLabel = this.state.status.className ? <Chip size='small' label={this.state.status.status} /> : <div>&nbsp;</div>
 
     return(
       <li>
