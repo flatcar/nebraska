@@ -1,12 +1,11 @@
 import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
 import React from "react"
-import { Row, Col, OverlayTrigger, Button, Popover, Label } from "react-bootstrap"
-import ConfirmationContent from "../Common/ConfirmationContent.react"
+import { Label } from "react-bootstrap"
+import Grid from '@material-ui/core/Grid';
 import moment from "moment"
 import _ from "underscore"
 import VersionBullet from "../Common/VersionBullet.react"
-import ModalButton from "../Common/ModalButton.react"
 import { cleanSemverVersion } from "../../constants/helpers"
 
 class Item extends React.Component {
@@ -49,8 +48,8 @@ class Item extends React.Component {
     }
 
     return (
-      <Row>
-        <Col xs={7} className="noPadding">
+      <Grid container>
+        <Grid item xs={7} className="noPadding">
           <div className="package--info">
             <div className={"containerIcon container-" + type}></div>
             <br />
@@ -67,12 +66,12 @@ class Item extends React.Component {
               </div>
             }
           </div>
-        </Col>
-        <Col xs={5} className="alignRight marginTop7">
+        </Grid>
+        <Grid item xs={5} className="alignRight marginTop7">
           <button className="cr-button displayInline fa fa-edit" onClick={this.updatePackage}></button>
           <button className="cr-button displayInline fa fa-trash-o" onClick={this.deletePackage}></button>
-        </Col>
-      </Row>
+        </Grid>
+      </Grid>
     )
   }
 
