@@ -1,6 +1,5 @@
 import { applicationsStore } from "../../stores/Stores"
 import React from "react"
-import { Row, Col } from "react-bootstrap"
 import _ from "underscore"
 import GroupExtended from "../Groups/ItemExtended.react"
 import SectionHeader from '../Common/SectionHeader';
