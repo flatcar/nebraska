@@ -1,16 +1,15 @@
-import PropTypes from 'prop-types';
-import { applicationsStore } from "../../stores/Stores"
-import React from "react"
-import _ from "underscore"
-import ModalButton from "../Common/ModalButton.react"
-import Item from "./Item.react"
-import EditDialog from './EditDialog'
-import Loader from "react-spinners/ScaleLoader"
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import Grid from '@material-ui/core/Grid';
-import {CardDescriptionLabel} from '../Common/Card';
 import Typography from '@material-ui/core/Typography';
+import PropTypes from 'prop-types';
+import React from "react";
+import Loader from "react-spinners/ScaleLoader";
+import _ from "underscore";
+import { applicationsStore } from "../../stores/Stores";
+import { CardDescriptionLabel } from '../Common/Card';
+import ModalButton from "../Common/ModalButton.react";
+import SectionPaper from '../Common/SectionPaper';
+import EditDialog from './EditDialog';
+import Item from "./Item.react";
 
 class List extends React.Component {
 
@@ -73,27 +72,36 @@ class List extends React.Component {
     const packageToUpdate =  !_.isEmpty(packages) && this.state.updatePackageIDModal ? _.findWhere(packages, {id: this.state.updatePackageIDModal}) : null
 
     return (
-      <Grid container spacing={1}>
-        <Grid item xs={12}>
-          <Typography variant="h4" className="displayInline mainTitle">Packages</Typography>
-          <ModalButton icon="plus" modalToOpen="AddPackageModal"
-            data={{channels: channels, appID: this.props.appID}} />
+      <SectionPaper>
+        <Grid
+          container
+          alignItems="center"
+          justify="space-between"
+        >
+          <Grid item>
+            <Typography variant="h5">Packages</Typography>
+          </Grid>
+          <Grid item>
+            <ModalButton
+              icon="plus"
+              modalToOpen="AddPackageModal"
+              data={{
+                channels: channels,
+                appID: this.props.appID
+              }}
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <Card>
-            <CardContent className="groups--packagesList">
-              {entries}
-              {/* Update package modal */}
-              {packageToUpdate &&
-                <EditDialog
-                  data={{channels: channels, channel: packageToUpdate}}
-                  show={this.state.updatePackageModalVisible}
-                  onHide={this.closeUpdatePackageModal} />
-              }
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+        <div className="groups--packagesList">
+          {entries}
+        </div>
+        {packageToUpdate &&
+          <EditDialog
+            data={{channels: channels, channel: packageToUpdate}}
+            show={this.state.updatePackageModalVisible}
+            onHide={this.closeUpdatePackageModal} />
+        }
+      </SectionPaper>
     )
   }
 
