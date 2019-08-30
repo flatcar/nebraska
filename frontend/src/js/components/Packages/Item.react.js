@@ -7,6 +7,7 @@ import moment from "moment"
 import _ from "underscore"
 import VersionBullet from "../Common/VersionBullet.react"
 import { cleanSemverVersion } from "../../constants/helpers"
+import MoreMenu from '../Common/MoreMenu';
 
 class Item extends React.Component {
 
@@ -49,7 +50,7 @@ class Item extends React.Component {
 
     return (
       <Grid container>
-        <Grid item xs={7} className="noPadding">
+        <Grid item xs={10} className="noPadding">
           <div className="package--info">
             <div className={"containerIcon container-" + type}></div>
             <br />
@@ -67,9 +68,11 @@ class Item extends React.Component {
             }
           </div>
         </Grid>
-        <Grid item xs={5} className="alignRight marginTop7">
-          <button className="cr-button displayInline fa fa-edit" onClick={this.updatePackage}></button>
-          <button className="cr-button displayInline fa fa-trash-o" onClick={this.deletePackage}></button>
+        <Grid item xs={2} className="alignRight marginTop7">
+          <MoreMenu options={[
+            {label: 'Edit', action: this.updatePackage},
+            {label: 'Delete', action: this.deletePackage}
+          ]} />
         </Grid>
       </Grid>
     )
