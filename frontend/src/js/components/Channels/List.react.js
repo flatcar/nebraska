@@ -6,10 +6,10 @@ import ModalButton from "../Common/ModalButton.react"
 import EditDialog from "./EditDialog"
 import Item from "./Item.react"
 import Loader from "react-spinners/ScaleLoader"
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import MuiList from '@material-ui/core/List';
+import SectionPaper from '../Common/SectionPaper';
 
 class List extends React.Component {
 
@@ -72,29 +72,36 @@ class List extends React.Component {
     const channelToUpdate =  !_.isEmpty(channels) && this.state.updateChannelIDModal ? _.findWhere(channels, {id: this.state.updateChannelIDModal}) : null
 
     return (
-      <Grid container spacing={1}>
-        <Grid item xs={12}>
-          <Typography variant="h4" className="displayInline mainTitle">Channels</Typography>
-          <ModalButton
-            icon="plus"
-            modalToOpen="AddChannelModal"
-            data={{packages: packages, applicationID: this.props.appID}} />
+      <SectionPaper>
+        <Grid
+          container
+          alignItems="center"
+          justify="space-between"
+        >
+          <Grid item>
+            <Typography variant="h5">Channels</Typography>
+          </Grid>
+          <Grid item>
+            <ModalButton
+              icon="plus"
+              modalToOpen="AddChannelModal"
+              data={{
+                packages: packages,
+                applicationID: this.props.appID
+              }}
+            />
+          </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <Card>
-            <CardContent className="groups--packagesList">
-              {entries}
-              {/* Update channel modal */}
-              {channelToUpdate &&
-                <EditDialog
-                  data={{packages: packages, applicationID: this.props.appID, channel: channelToUpdate}}
-                  show={this.state.updateChannelModalVisible}
-                  onHide={this.closeUpdateChannelModal} />
-              }
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+        <MuiList dense>
+          {entries}
+        </MuiList>
+        {channelToUpdate &&
+          <EditDialog
+            data={{packages: packages, applicationID: this.props.appID, channel: channelToUpdate}}
+            show={this.state.updateChannelModalVisible}
+            onHide={this.closeUpdateChannelModal} />
+        }
+      </SectionPaper>
     )
   }
 }

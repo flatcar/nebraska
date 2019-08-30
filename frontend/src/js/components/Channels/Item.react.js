@@ -1,53 +1,68 @@
+import Avatar from '@material-ui/core/Avatar';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import makeStyles from '@material-ui/styles/makeStyles';
 import PropTypes from 'prop-types';
-import { applicationsStore } from "../../stores/Stores"
-import React from "react"
-import Grid from '@material-ui/core/Grid';
-import ChannelLabel from "../Common/ChannelLabel.react"
+import React from "react";
+import { cleanSemverVersion } from "../../constants/helpers";
+import { applicationsStore } from "../../stores/Stores";
+import MoreMenu from '../Common/MoreMenu';
 
-class Item extends React.Component {
+const useStyles = makeStyles({
+  colorAvatar: props => ({
+    color: props.color,
+    backgroundColor: props.backgroundColor,
+    width: '30px',
+    height: '30px'
+  }),
+});
 
-  constructor(props) {
-    super(props)
-    this.deleteChannel = this.deleteChannel.bind(this)
-    this.updateChannel = this.updateChannel.bind(this)
-  }
+function ChannelAvatar(props) {
+  const classes = useStyles({
+    color: props.color,
+    backgroundColor: props.color,
+  });
 
-  deleteChannel() {
-    let confirmationText = "Are you sure you want to delete this channel?"
+  return (
+    <Avatar className={classes.colorAvatar} />
+  );
+}
+
+function Item(props) {
+  const channel = props.channel;
+  const name = channel ? channel.name : '';
+  const version = channel.package ? cleanSemverVersion(channel.package.version) : 'No package';
+
+  function deleteChannel() {
+    let confirmationText = 'Are you sure you want to delete this channel?';
     if (confirm(confirmationText)) {
-      applicationsStore.deleteChannel(this.props.channel.application_id, this.props.channel.id)
+      applicationsStore.deleteChannel(channel.application_id, channel.id);
     }
   }
 
-  updateChannel() {
-    this.props.handleUpdateChannel(this.props.channel.id)
+  function updateChannel() {
+    props.handleUpdateChannel(channel.id);
   }
 
-  render() {
-    let popoverContent = {
-      type: "channel",
-      appID: this.props.channel.application_id,
-      channelID: this.props.channel.id
-    }
-
-    const name = this.props.channel ? this.props.channel.name : "",
-          version = (this.props.channel && this.props.channel.package) ? this.props.channel.package.version : "-"
-
-    return (
-      <Grid container>
-        <Grid item xs={8}>
-          <ChannelLabel channel={this.props.channel} channelLabelStyle="fixedWidth" />
-        </Grid>
-        <Grid item xs={4} className="alignRight">
-          <div className="channelsList-buttons">
-            <button className="cr-button displayInline fa fa-edit" onClick={this.updateChannel}></button>
-            <button className="cr-button displayInline fa fa-trash-o" onClick={this.deleteChannel}></button>
-          </div>
-        </Grid>
-      </Grid>
-    )
-  }
-
+  return (
+    <ListItem>
+      <ListItemAvatar>
+        <ChannelAvatar color={channel.color}/>
+      </ListItemAvatar>
+      <ListItemText
+        primary={name}
+        secondary={version ? cleanSemverVersion(version) : null}
+      />
+      <ListItemSecondaryAction>
+        <MoreMenu options={[
+          {label: 'Edit', action: updateChannel},
+          {label: 'Delete', action: deleteChannel}
+        ]} />
+      </ListItemSecondaryAction>
+    </ListItem>
+  );
 }
 
 Item.propTypes = {
