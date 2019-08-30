@@ -4,6 +4,8 @@ import ApplicationEditDialog from "../Applications/EditDialog"
 import GroupEditDialog from "../Groups/EditDialog"
 import ChannelEditDialog from "../Channels/EditDialog"
 import PackageEditDialog from '../Packages/EditDialog';
+import AddIcon from '@material-ui/icons/Add';
+import IconButton from '@material-ui/core/IconButton';
 
 class ModalButton extends React.Component {
 
@@ -45,9 +47,12 @@ class ModalButton extends React.Component {
     }
 
     return(
-      <a className={"cr-button displayInline fa fa-" + this.props.icon} href="javascript:void(0)" onClick={this.open.bind()} id={"openModal-" + this.props.modalToOpen}>
+      <div>
+        <IconButton size="small" aria-label="add" onClick={this.open.bind()}>
+          <AddIcon fontSize="small"/>
+        </IconButton>
         {modal}
-      </a>
+      </div>
     )
   }
 
