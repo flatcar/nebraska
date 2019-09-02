@@ -8,8 +8,10 @@ import ModalButton from "../Common/ModalButton.react"
 import SearchInput from "../Common/ListSearch"
 import Loader from "react-spinners/ScaleLoader"
 import MiniLoader from "react-spinners/PulseLoader"
-import Typography from '@material-ui/core/Typography';
 import EditDialog from './EditDialog';
+import MuiList from '@material-ui/core/List';
+import Paper from '@material-ui/core/Paper';
+import ListHeader from '../Common/ListHeader';
 
 class List extends React.Component {
 
@@ -98,29 +100,30 @@ class List extends React.Component {
     const groupToUpdate =  !_.isEmpty(groups) && this.state.updateGroupIDModal ? _.findWhere(groups, {id: this.state.updateGroupIDModal}) : null
 
 		return (
-      <Grid container alignItems="stretch">
-        <Grid item xs={7}>
-          <Typography variant="h4" className="displayInline mainTitle">Groups</Typography>
-          <ModalButton icon="plus" modalToOpen="AddGroupModal" data={{channels: channels, appID: this.props.appID}} />
-        </Grid>
-        <Grid item xs={5}>
-          <SearchInput onChange={this.searchUpdated} placeholder="Search..." />
-        </Grid>
-        <Grid
-          container
-          alignItems="stretch"
-          direction="column"
-          className="groups--container">
+      <Paper>
+        <ListHeader
+          title="Groups"
+          actions={[
+            <ModalButton
+              icon="plus"
+              modalToOpen="AddGroupModal"
+              data={{
+                channels: channels,
+                appID: this.props.appID
+              }}
+            />
+          ]}
+        />
+        <MuiList>
           {entries}
-        </Grid>
-        {/* Update group modal */}
+        </MuiList>
         {groupToUpdate &&
           <EditDialog
             data={{group: groupToUpdate, channels: channels}}
             show={this.state.updateGroupModalVisible}
             onHide={this.closeUpdateGroupModal} />
         }
-      </Grid>
+      </Paper>
 		)
   }
 
