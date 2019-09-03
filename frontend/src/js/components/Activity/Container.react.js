@@ -3,8 +3,9 @@ import React from "react"
 import List from "./List.react"
 import _ from "underscore"
 import Loader from "react-spinners/ScaleLoader"
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import Paper from '@material-ui/core/Paper';
+import ListHeader from '../Common/ListHeader';
 
 class Container extends React.Component {
 
@@ -45,19 +46,12 @@ class Container extends React.Component {
     }
 
     return(
-      <Grid
-        container
-        direction="column"
-        alignItems="flex-start"
-        justify="flex-start"
-        className="timeline--container">
-        <Grid item>
-          <Typography variant="h4" className="displayInline mainTitle padBottom25">Activity</Typography>
-        </Grid>
-        <Grid item>
+      <Paper>
+        <ListHeader title="Activity" />
+        <Box padding="1em">
           {entries}
-        </Grid>
-      </Grid>
+        </Box>
+      </Paper>
     )
   }
 
