@@ -2,14 +2,14 @@ import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
 import React from "react"
 import _ from "underscore"
-import ChannelLabel from "../Common/ChannelLabel.react"
+import ChannelItem from '../Channels/Item.react';
 import InstancesContainer from "../Instances/Container.react"
 import VersionBreakdown from "../Common/VersionBreakdown.react"
 import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import {CardFeatureLabel, CardHeader} from '../Common/Card';
 import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
+import Box from '@material-ui/core/Box';
 
 class ItemExtended extends React.Component {
 
@@ -66,47 +66,62 @@ class ItemExtended extends React.Component {
       safeMode = group.policy_safe_mode ? group.policy_safe_mode : null
       officeHours = group.policy_office_hours ? group.policy_office_hours : null
       version_breakdown = group.version_breakdown ? group.version_breakdown : []
-      groupChannel = _.isEmpty(group.channel) ? "No channel provided" : <ChannelLabel channel={group.channel} />
+      groupChannel = _.isEmpty(group.channel) ? "No channel provided"
+        : <ChannelItem channel={group.channel} ContainerComponent="span" />
       styleGroupChannel = _.isEmpty(group.channel) ? "italicText" : ""
     }
 
 		return (
-      <Card>
-        <CardHeader
-          cardMainLinkLabel={group.name}
-          cardId={groupId}
-          cardDescription={description}
-        />
-        <CardContent>
-          <Grid container spacing={2}>
-            <Grid item>
-              <CardFeatureLabel>Instances:</CardFeatureLabel>
-              <Typography className="activeLink" component="span">{instancesNum}</Typography>
+      <Paper>
+        <Grid
+          container
+        >
+          <Grid item xs={12}>
+            <CardHeader
+              cardMainLinkLabel={name}
+              cardId={groupId}
+              cardDescription={description}
+            />
+          </Grid>
+        </Grid>
+        <Box padding="1em">
+          <Grid item xs={12} container justify="space-between">
+            <Grid item xs={6} container spacing={1} direction="column">
+              <Grid item>
+                <CardFeatureLabel>Instances:</CardFeatureLabel>&nbsp;
+                <Typography component="span">{instancesNum}</Typography>
+              </Grid>
+              <Grid item>
+                <CardFeatureLabel>Channel:</CardFeatureLabel>
+                {groupChannel}
+              </Grid>
             </Grid>
-            <Grid item>
-              <CardFeatureLabel>Channel:</CardFeatureLabel>
-              <span className={styleGroupChannel}>{groupChannel}</span>
+            <Grid item xs={6} container spacing={1} direction="column">
+              <Grid item>
+                <CardFeatureLabel>Updates:</CardFeatureLabel>&nbsp;
+                {policyUpdates ? 'Enabled' : 'Disabled'}
+              </Grid>
+              <Grid item>
+                <CardFeatureLabel>Only Office Hours:</CardFeatureLabel>&nbsp;
+                {officeHours ? 'Yes' : 'No'}
+              </Grid>
+              <Grid item>
+                <CardFeatureLabel>Safe Mode:</CardFeatureLabel>&nbsp;
+                {safeMode ? 'Yes' : 'No'}
+              </Grid>
+              <Grid item>
+                <CardFeatureLabel>Updates Policy:</CardFeatureLabel>&nbsp;
+                Max {policyMaxUpdatesPerDay} updates per {policyPeriodInterval}
+              </Grid>
+              <Grid item>
+                <CardFeatureLabel>Updates Timeout:</CardFeatureLabel>&nbsp;
+                Updates timeout { policyUpdatesTimeout }
+              </Grid>
             </Grid>
             <Grid item xs={12}>
-              <CardFeatureLabel>Rollout Policy:</CardFeatureLabel>
-              Max {policyMaxUpdatesPerDay} updates per {policyPeriodInterval} &nbsp;|&nbsp; Updates timeout { policyUpdatesTimeout }
-            </Grid>
-            <Grid item xs={4}>
-              <CardFeatureLabel>Updates:</CardFeatureLabel>&nbsp;
-              {policyUpdates ? 'Enabled' : 'Disabled'}
-            </Grid>
-            <Grid item xs={4}>
-              <CardFeatureLabel>Only Office Hours:</CardFeatureLabel>&nbsp;
-              {officeHours ? 'Yes' : 'No'}
-            </Grid>
-            <Grid item xs={4}>
-              <CardFeatureLabel>Safe Mode:</CardFeatureLabel>&nbsp;
-              {safeMode ? 'Yes' : 'No'}
-            </Grid>
-            <Grid item xs={12} className="groups--resume">
               <VersionBreakdown version_breakdown={version_breakdown} channel={channel} />
             </Grid>
-            <Grid item xs={12} className="groups--resume">
+            <Grid item xs={12}>
               {/* Instances */}
               <InstancesContainer
                 appID={this.props.appID}
@@ -115,8 +130,8 @@ class ItemExtended extends React.Component {
                 channel={channel} />
             </Grid>
           </Grid>
-        </CardContent>
-      </Card>
+        </Box>
+      </Paper>
 		)
   }
 
