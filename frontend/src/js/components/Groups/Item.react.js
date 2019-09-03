@@ -3,7 +3,7 @@ import { applicationsStore } from "../../stores/Stores"
 import React from "react";
 import { Link } from "react-router-dom";
 import _ from "underscore"
-import ChannelLabel from "../Common/ChannelLabel.react"
+import ChannelItem from '../Channels/Item.react';
 import VersionBreakdown from "../Common/VersionBreakdown.react"
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
@@ -28,7 +28,8 @@ function Item(props) {
   let description = props.group.description || 'No description provided';
   let channel = props.group.channel || {};
 
-  let groupChannel = _.isEmpty(props.group.channel) ? "No channel provided" : <ChannelLabel channel={props.group.channel} />
+  let groupChannel = _.isEmpty(props.group.channel) ? "No channel provided"
+    : <ChannelItem channel={props.group.channel} ContainerComponent="span" />
   let styleGroupChannel = _.isEmpty(props.group.channel) ? "italicText" : ""
   let groupPath = `/apps/${props.group.application_id}/groups/${props.group.id}`
 
