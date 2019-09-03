@@ -1,85 +1,89 @@
-import PropTypes from 'prop-types';
-import { applicationsStore } from "../../stores/Stores"
-import React from "react"
-import GroupsList from "./ApplicationItemGroupsList.react"
-import ChannelsList from "./ApplicationItemChannelsList.react"
 import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import {CardFeatureLabel, CardHeader} from '../Common/Card';
+import ListItem from '@material-ui/core/ListItem';
+import { makeStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { applicationsStore } from '../../stores/Stores';
+import { CardFeatureLabel, CardHeader } from '../Common/Card';
+import MoreMenu from '../Common/MoreMenu';
+import ChannelsList from './ApplicationItemChannelsList.react';
+import GroupsList from './ApplicationItemGroupsList.react';
 
-class Item extends React.Component {
+const useStyles = makeStyles(theme => ({
+  itemSection: {
+    padding: '1em'
+  },
+}));
 
-  constructor(props) {
-    super(props)
-    this.updateApplication = this.updateApplication.bind(this)
-    this.deleteApplication = this.deleteApplication.bind(this)
+function Item(props) {
+  const classes = useStyles();
+  let description = props.application.description || 'No description provided';
+  let channels = props.application.channels || [];
+  let groups = props.application.groups || [];
+  let instances = props.application.instances.count || 0;
+  let appID = props.application ? props.application.id : '';
+
+  function updateApplication() {
+    props.handleUpdateApplication(props.application.id)
   }
 
-  updateApplication() {
-    this.props.handleUpdateApplication(this.props.application.id)
-  }
-
-  deleteApplication() {
+  function deleteApplication() {
     let confirmationText = "Are you sure you want to delete this application?"
     if (confirm(confirmationText)) {
-      applicationsStore.deleteApplication(this.props.application.id)
+      applicationsStore.deleteApplication(props.application.id)
     }
   }
 
-  render() {
-    let application = this.props.application ? this.props.application : {},
-        description = this.props.application.description ? this.props.application.description : "No description provided",
-        styleDescription = this.props.application.description ? "" : " italicText",
-        channels = this.props.application.channels ? this.props.application.channels : [],
-        groups = this.props.application.groups ? this.props.application.groups : [],
-        instances = this.props.application.instances.count ? this.props.application.instances.count : 0,
-        appID = this.props.application ? this.props.application.id : "",
-        popoverContent = {
-          type: "application",
-          appID: appID
-        }
-
-    return(
-      <Card>
-        <CardHeader
-          cardMainLinkLabel={this.props.application.name}
-          cardMainLinkPath={{pathname: `/apps/${appID}`}}
-          cardId={appID}
-          cardDescription={description}
-        >
-          <div className="apps--buttons">
-            <button className="cr-button displayInline fa fa-edit" onClick={this.updateApplication}></button>
-            <button className="cr-button displayInline fa fa-trash-o" onClick={this.deleteApplication}></button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Grid container spacing={2}>
-            <Grid item xs={2}>
-              <CardFeatureLabel>Instances:</CardFeatureLabel>
-              <span>
+  return(
+    <ListItem disableGutters divider>
+      <Grid container>
+        <Grid item xs={12}>
+          <CardHeader
+            cardMainLinkLabel={props.application.name}
+            cardMainLinkPath={{pathname: `/apps/${appID}`}}
+            cardId={appID}
+            cardDescription={description}
+          >
+            <MoreMenu options={[
+              {
+              'label': 'Edit',
+              'action': updateApplication,
+              },
+              {
+                'label': 'Delete',
+                'action': deleteApplication,
+              }
+            ]} />
+          </CardHeader>
+        </Grid>
+        <Grid item xs={12}>
+          <Grid
+            container
+            spacing={2}
+            justify="space-between"
+            className={classes.itemSection}
+          >
+            <Grid item xs={6}>
+              <CardFeatureLabel>Instances:</CardFeatureLabel>&nbsp;
                 {instances}
-              </span>
             </Grid>
-            <Grid item xs={10}>
-              <CardFeatureLabel>Groups:</CardFeatureLabel>
-              <span>
+            <Grid item xs={6}>
+              <CardFeatureLabel>Groups:</CardFeatureLabel>&nbsp;
                 {groups.length}
-              </span>
               <GroupsList
                 groups={groups}
-                appID={this.props.application.id}
-                appName={this.props.application.name} />
+                appID={props.application.id}
+                appName={props.application.name} />
             </Grid>
             <Grid item xs={12}>
               <CardFeatureLabel>Channels:</CardFeatureLabel>
               <ChannelsList channels={channels} />
             </Grid>
           </Grid>
-        </CardContent>
-      </Card>
-    )
-  }
+        </Grid>
+      </Grid>
+    </ListItem>
+  );
 }
 
 Item.propTypes = {

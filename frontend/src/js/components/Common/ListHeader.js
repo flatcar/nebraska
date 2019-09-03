@@ -19,13 +19,17 @@ export default function ListHeader(props) {
             justify="space-between"
             className={classes.sectionHeader}
           >
-            <Grid item>
-              <Typography variant="h5">{props.title}</Typography>
-            </Grid>
-            {actions &&
+            {props.title &&
               <Grid item>
-                {actions}
+                <Typography variant="h5">{props.title}</Typography>
               </Grid>
+            }
+            {actions &&
+              actions.map(action =>
+                <Grid item>
+                  {action}
+                </Grid>
+              )
             }
           </Grid>
   );

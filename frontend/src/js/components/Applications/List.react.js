@@ -1,13 +1,14 @@
 import { applicationsStore, modalStore } from "../../stores/Stores"
 import React from "react"
-import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
 import ModalButton from "../Common/ModalButton.react"
 import Item from "./Item.react"
 import _ from "underscore"
 import Loader from "react-spinners/ScaleLoader"
 import SearchInput from '../Common/ListSearch'
 import EditDialog from "./EditDialog"
-import Typography from '@material-ui/core/Typography';
+import MuiList from '@material-ui/core/List';
+import ListHeader from '../Common/ListHeader';
 
 class List extends React.Component {
 
@@ -72,7 +73,7 @@ class List extends React.Component {
         }
       } else {
         entries = _.map(applications, (application, i) => {
-          return <Grid item><Item key={application.id} application={application} handleUpdateApplication={this.openUpdateAppModal} /></Grid>
+          return <Item key={application.id} application={application} handleUpdateApplication={this.openUpdateAppModal} />
         })
       }
     }
@@ -80,32 +81,25 @@ class List extends React.Component {
     const appToUpdate =  applications && this.state.updateAppIDModal ? _.findWhere(applications, {id: this.state.updateAppIDModal}) : null
 
     return(
-      <Grid container alignItems="stretch">
-        <Grid item xs={8}>
-          <ModalButton icon="plus" modalToOpen="AddApplicationModal" data={{applications: applications}} />
-        </Grid>
-        <Grid item xs={4}>
-          <SearchInput
-            onChange={this.searchUpdated} placeholder="Search..."
-            fullWidth
-          />
-        </Grid>
-        <Grid
-          container
-          alignItems="stretch"
-          direction="column"
-          spacing={2}
-          className="apps--container">
+      <Paper>
+        <ListHeader
+          title="Applications"
+          actions={[
+            <ModalButton
+              modalToOpen="AddApplicationModal"
+              data={{applications: applications}} />
+          ]}
+        />
+        <MuiList>
           {entries}
-        </Grid>
-        {/* Update app modal */}
+        </MuiList>
         {appToUpdate &&
           <EditDialog
             data={appToUpdate}
             show={this.state.updateAppModalVisible}
             onHide={this.closeUpdateAppModal} />
         }
-      </Grid>
+      </Paper>
     )
   }
 
