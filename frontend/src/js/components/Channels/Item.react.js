@@ -31,7 +31,7 @@ function ChannelAvatar(props) {
 }
 
 function Item(props) {
-  const channel = props.channel;
+  let {channel, packages, handleUpdateChannel, ...others} = props;
   const name = channel ? channel.name : '';
   const version = channel.package ? cleanSemverVersion(channel.package.version) : 'No package';
 
@@ -47,7 +47,7 @@ function Item(props) {
   }
 
   return (
-    <ListItem>
+    <ListItem {...others}>
       <ListItemAvatar>
         <ChannelAvatar color={channel.color}/>
       </ListItemAvatar>
@@ -55,20 +55,20 @@ function Item(props) {
         primary={name}
         secondary={version ? cleanSemverVersion(version) : null}
       />
-      <ListItemSecondaryAction>
-        <MoreMenu options={[
-          {label: 'Edit', action: updateChannel},
-          {label: 'Delete', action: deleteChannel}
-        ]} />
-      </ListItemSecondaryAction>
+      {props.handleUpdateChannel &&
+        <ListItemSecondaryAction>
+          <MoreMenu options={[
+            {label: 'Edit', action: updateChannel},
+            {label: 'Delete', action: deleteChannel}
+          ]} />
+        </ListItemSecondaryAction>
+      }
     </ListItem>
   );
 }
 
 Item.propTypes = {
   channel: PropTypes.object.isRequired,
-  packages: PropTypes.array.isRequired,
-  handleUpdateChannel: PropTypes.func.isRequired
 }
 
 export default Item
