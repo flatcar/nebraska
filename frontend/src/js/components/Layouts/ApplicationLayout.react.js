@@ -10,6 +10,7 @@ import ChannelsList from "../Channels/List.react"
 import Link from '@material-ui/core/Link';
 import PackagesList from "../Packages/List.react"
 import Typography from '@material-ui/core/Typography';
+import SectionHeader from '../Common/SectionHeader';
 
 class ApplicationLayout extends React.Component {
 
@@ -52,11 +53,16 @@ class ApplicationLayout extends React.Component {
     }
 
     return(
-      <div className="container">
-        <Breadcrumbs aria-label="breadcrumb">
-          <Link variant="h4" to="/apps" component={RouterLink}>Applications</Link>
-          <Typography variant="h4">{appName}</Typography>
-        </Breadcrumbs>
+      <div>
+        <SectionHeader
+          title={appName}
+          breadcrumbs={[
+            {
+              path: '/apps',
+              label: 'Applications'
+            }
+          ]}
+        />
         <Grid
           container
           spacing={1}
