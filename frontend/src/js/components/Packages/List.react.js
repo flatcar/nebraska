@@ -1,4 +1,5 @@
 import Grid from '@material-ui/core/Grid';
+import MuiList from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
 import React from "react";
@@ -92,9 +93,9 @@ class List extends React.Component {
             />
           </Grid>
         </Grid>
-        <div className="groups--packagesList">
+        <MuiList>
           {entries}
-        </div>
+        </MuiList>
         {packageToUpdate &&
           <EditDialog
             data={{channels: channels, channel: packageToUpdate}}

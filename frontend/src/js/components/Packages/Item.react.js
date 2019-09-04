@@ -1,83 +1,124 @@
-import PropTypes from 'prop-types';
-import { applicationsStore } from "../../stores/Stores"
-import React from "react"
+import coreosIcon from '@iconify/icons-logos/coreos-icon';
+import cancelIcon from '@iconify/icons-mdi/cancel';
+import cubeOutline from '@iconify/icons-mdi/cube-outline';
+import { InlineIcon } from '@iconify/react';
 import Grid from '@material-ui/core/Grid';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import Typography from '@material-ui/core/Typography';
+import makeStyles from '@material-ui/styles/makeStyles';
+import moment from 'moment';
+import PropTypes from 'prop-types';
+import React from 'react';
+import _ from 'underscore';
+import { cleanSemverVersion } from '../../constants/helpers';
+import { applicationsStore } from '../../stores/Stores';
 import Label from '../Common/Label';
-import moment from "moment"
-import _ from "underscore"
-import VersionBullet from "../Common/VersionBullet.react"
-import { cleanSemverVersion } from "../../constants/helpers"
 import MoreMenu from '../Common/MoreMenu';
+import VersionBullet from '../Common/VersionBullet.react';
 
-class Item extends React.Component {
+const useStyles = makeStyles(theme => ({
+  subtitle: {
+    fontSize: '.9em',
+    textTransform: 'uppercase',
+    fontWeight: '300',
+    paddingRight: '.05em',
+    color: theme.palette.grey['500'],
+  },
+  packageIcon: {
+    minWidth: '40px',
+  },
+  channelLabel: {
+    marginRight: '5px',
+  }
+}));
 
-  constructor(props) {
-    super(props)
-    this.deletePackage = this.deletePackage.bind(this)
-    this.updatePackage = this.updatePackage.bind(this)
+const containerIcons = {
+  1: {icon: coreosIcon, name: 'CoreOS'},
+  other: {icon: cubeOutline, name: 'Other'},
+};
+
+function Item(props) {
+  const classes = useStyles();
+  let date = moment.utc(props.packageItem.created_ts).local().format("hh:mma, DD/MM");
+  let type = props.packageItem.type || 1;
+  let processedChannels = _.where(props.channels, {package_id: props.packageItem.id});
+  let blacklistInfo = null;
+  let item = type in containerIcons ? containerIcons[type] : containerIcons.other;
+
+  if (props.packageItem.channels_blacklist) {
+    let channelsList = _.map(props.packageItem.channels_blacklist, (channel, index) => {
+      return (_.findWhere(props.channels, {id: channel})).name;
+    })
+    blacklistInfo = channelsList.join(' - ');
   }
 
-  deletePackage() {
+  function deletePackage() {
     let confirmationText = "Are you sure you want to delete this package?"
     if (confirm(confirmationText)) {
-      applicationsStore.deletePackage(this.props.packageItem.application_id, this.props.packageItem.id)
+      applicationsStore.deletePackage(props.packageItem.application_id, props.packageItem.id);
     }
   }
 
-  updatePackage() {
-    this.props.handleUpdatePackage(this.props.packageItem.id)
+  function updatePackage() {
+    props.handleUpdatePackage(props.packageItem.id);
   }
 
-  render() {
-    let filename = this.props.packageItem.filename ? this.props.packageItem.filename : "",
-        url = this.props.packageItem.url ? this.props.packageItem.url : "#",
-        date = moment.utc(this.props.packageItem.created_ts).local().format("hh:mma, DD/MM"),
-        type = this.props.packageItem.type ? this.props.packageItem.type : 1,
-        processedChannels = _.where(this.props.channels, {package_id: this.props.packageItem.id}),
-        popoverContent = {
-          type: "package",
-          appID: this.props.packageItem.application_id,
-          packageID: this.props.packageItem.id
-        },
-        blacklistInfo = null
-
-    if (this.props.packageItem.channels_blacklist) {
-      let channelsList = _.map(this.props.packageItem.channels_blacklist, (channel, index) => {
-        return (_.findWhere(this.props.channels, {id: channel})).name
-      })
-      blacklistInfo = channelsList.join(" - ")
-    }
-
+  function makeItemSecondaryInfo() {
     return (
-      <Grid container>
-        <Grid item xs={10} className="noPadding">
-          <div className="package--info">
-            <div className={"containerIcon container-" + type}></div>
-            <br />
-            <span className="subtitle">Version:</span>
-            {processedChannels.map((channel, i) =>
-              <VersionBullet channel={channel} key={"packageItemBullet_" + i} />
-            )}
-            {cleanSemverVersion(this.props.packageItem.version)}
-            <br />
-            <span className="subtitle">Released:</span> {date}
-            { !_.isNull(this.props.packageItem.channels_blacklist) &&
-              <div className="label-packageItem-container">
-                <Label><i className="fa fa-ban"></i> { blacklistInfo }</Label>
-              </div>
+      <Grid container direction="column">
+        <Grid item>
+          <Typography component="span" className={classes.subtitle}>Version:</Typography>&nbsp;
+          {cleanSemverVersion(props.packageItem.version)}
+        </Grid>
+        {processedChannels.length > 0 &&
+          <Grid item>
+            <Typography component="span" className={classes.subtitle}>Channels:</Typography>&nbsp;
+            {processedChannels.map((channel, i) => {
+              return (<span className={classes.channelLabel}>
+                        <VersionBullet channel={channel} key={"packageItemBullet_" + i} />
+                        {channel.name}
+                      </span>
+              );
+              })
             }
-          </div>
+          </Grid>
+        }
+        <Grid item>
+          <Typography component="span" className={classes.subtitle}>Released:</Typography>&nbsp;
+          {date}
         </Grid>
-        <Grid item xs={2} className="alignRight marginTop7">
-          <MoreMenu options={[
-            {label: 'Edit', action: this.updatePackage},
-            {label: 'Delete', action: this.deletePackage}
-          ]} />
-        </Grid>
+        {props.packageItem.channels_blacklist &&
+          <Grid item>
+            {props.packageItem.channels_blacklist &&
+              <Label><InlineIcon icon={cancelIcon} width="10" height="10" /> { blacklistInfo }</Label>
+            }
+          </Grid>
+        }
       </Grid>
-    )
+    );
   }
 
+  return (
+    <ListItem dense alignItems="flex-start">
+      <ListItemIcon className={classes.packageIcon}>
+        <InlineIcon icon={item.icon} width="25" height="25" />
+      </ListItemIcon>
+      <ListItemText
+        primary={item.name}
+        secondary={makeItemSecondaryInfo()}
+      />
+      <ListItemSecondaryAction>
+        <MoreMenu options={[
+            {label: 'Edit', action: updatePackage},
+            {label: 'Delete', action: deletePackage}
+          ]}
+        />
+      </ListItemSecondaryAction>
+    </ListItem>
+  );
 }
 
 Item.propTypes = {
