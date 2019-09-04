@@ -1,22 +1,51 @@
-import Card from '@material-ui/core/Card';
 import { makeStyles } from '@material-ui/core/styles';
 import moment from "moment";
 import PropTypes from 'prop-types';
 import React from "react";
 import { activityStore } from '../../stores/Stores';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import { Icon } from '@iconify/react';
+import Grid from '@material-ui/core/Grid';
+import errorIcon from '@iconify/icons-mdi/alert-circle';
+import warningIcon from '@iconify/icons-mdi/alert';
+import infoIcon from '@iconify/icons-mdi/information';
+import successIcon from '@iconify/icons-mdi/checkbox-marked-circle';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles(theme => ({
-  activityCard: {
-    overflow: "unset",
+  stateIcon: {
+    minWidth: '65px',
   },
 }));
 
-function ActivityCard(props) {
+function ActivityItemIcon(props) {
   const classes = useStyles();
+  let {children, ...other} = props;
   return (
-    <Card className={`${classes.activityCard} timeline--eventLabel`}>{props.children}</Card>
+    <ListItemIcon className={classes.stateIcon} {...other}>{children}</ListItemIcon>
   );
 }
+
+const stateIcons = {
+  warning: {
+    icon: warningIcon,
+    color: '#ff5500'
+  },
+  info: {
+    icon: infoIcon,
+    color: '#ff5500'
+  },
+  error: {
+    icon: errorIcon,
+    color: '#b40000'
+  },
+  success: {
+    icon: successIcon,
+    color: '#22bb00'
+  },
+};
 
 class Item extends React.Component {
 
@@ -50,7 +79,7 @@ class Item extends React.Component {
 
   render() {
     let ampm = moment.utc(this.props.entry.created_ts).local().format("a"),
-        time = moment.utc(this.props.entry.created_ts).local().format("HH:mm"),
+        time = moment.utc(this.props.entry.created_ts).local().format("hh:mm"),
         subtitle = "",
         name = ""
 
@@ -59,27 +88,44 @@ class Item extends React.Component {
       name = this.state.entryClass.groupName
     }
 
+    let stateIcon = stateIcons[this.state.entrySeverity.className || 'info'];
+
     return (
-      <li className = {this.state.entrySeverity.className}>
-        <div className="timeline--icon">
-          <span className={"fa " + this.state.entrySeverity.icon}></span>
-        </div>
-        <div className="timeline--event">
-          {time}
-          <br />
-          <span className="timeline--ampm">{ampm}</span>
-        </div>
-        <ActivityCard>
-          <div className="row timeline--eventLabelTitle">
-            <div className="col-xs-5 noPadding">{this.state.entryClass.appName}</div>
-            <div className="col-xs-7 noPadding">
-              <span className="subtitle">{subtitle} </span>
-              {name}
-            </div>
-          </div>
-          <p>{this.state.entryClass.description}</p>
-        </ActivityCard>
-      </li>
+      <ListItem>
+        <ActivityItemIcon>
+          <Grid container direction="column" alignItems="center">
+            <Grid item>
+              <Icon
+                icon={stateIcon.icon}
+                color={stateIcon.color}
+                width="30px"
+                height="30px"
+              />
+            </Grid>
+            <Grid item>
+              <Typography align="center" color="textSecondary">{time}<br/>{ampm}</Typography>
+            </Grid>
+          </Grid>
+        </ActivityItemIcon>
+        <ListItemText
+          primary={
+            <Grid container justify="space-between">
+              <Grid item>
+                {this.state.entryClass.appName}
+              </Grid>
+              {subtitle &&
+                <Grid item>
+                  <Typography color="textSecondary" display="inline">
+                    {subtitle}
+                  </Typography>&nbsp;
+                  {name}
+                </Grid>
+              }
+            </Grid>
+          }
+          secondary={this.state.entryClass.description}
+        />
+      </ListItem>
     )
   }
 
