@@ -1,113 +1,107 @@
-import PropTypes from 'prop-types';
-import { instancesStore } from "../../stores/Stores"
-import React from "react"
-import moment from "moment"
-import Label from '../Common/Label';
-import StatusHistoryContainer from "./StatusHistoryContainer.react"
-import semver from "semver"
-import _ from "underscore"
-import { cleanSemverVersion } from "../../constants/helpers"
+import menuDown from '@iconify/icons-mdi/menu-down';
+import menuUp from '@iconify/icons-mdi/menu-up';
+import { InlineIcon } from '@iconify/react';
+import Button from '@material-ui/core/Button';
+import Collapse from '@material-ui/core/Collapse';
+import TableCell from '@material-ui/core/TableCell';
+import TableRow from '@material-ui/core/TableRow';
 import { styled } from '@material-ui/styles';
+import moment from "moment";
+import PropTypes from 'prop-types';
+import React from "react";
+import semver from "semver";
+import _ from "underscore";
+import { cleanSemverVersion } from "../../constants/helpers";
+import { instancesStore } from "../../stores/Stores";
+import Label from '../Common/Label';
+import StatusHistoryContainer from "./StatusHistoryContainer.react";
 
 const TableLabel = styled(Label)({
   lineHeight: '45px',
 });
 
-class Item extends React.Component {
+function Item(props) {
+  let date = moment.utc(props.instance.application.last_check_for_updates).local().format('DD/MM/YYYY, hh:mma');
+  let downloadingIcon = props.instance.statusInfo.spinning ? <img src='img/mini_loading.gif' /> : '';
+  let statusIcon = props.instance.statusInfo.icon ? <i className={props.instance.statusInfo.icon}></i> : '';
+  let instanceLabel = props.instance.statusInfo.className ? <TableLabel>{statusIcon} {downloadingIcon} {props.instance.statusInfo.description}</TableLabel> : <div>&nbsp;</div>;
+  let version = cleanSemverVersion(props.instance.application.version);
+  let currentVersionIndex = props.lastVersionChannel ? _.indexOf(props.versionNumbers, props.lastVersionChannel) : null;
+  let versionStyle = 'default';
 
-  constructor(props) {
-    super(props)
-    this.onToggle = this.onToggle.bind(this)
-    this.fetchStatusHistoryFromStore = this.fetchStatusHistoryFromStore.bind(this)
+  function fetchStatusHistoryFromStore() {
+    let appID = props.instance.application.application_id;
+    let groupID = props.instance.application.group_id;
+    let instanceID = props.instance.id;
+    const selected = props.selected;
 
-    this.state = {
-      status: {},
-      loading: false,
-      statusHistory: {}
-    }
-  }
-
-  fetchStatusHistoryFromStore() {
-    let appID = this.props.instance.application.application_id,
-        groupID = this.props.instance.application.group_id,
-        instanceID = this.props.instance.id
-
-    if (!this.props.selected) {
-      instancesStore.getInstanceStatusHistory(appID, groupID, instanceID).
-        done(() => {
-          this.props.onToggle(this.props.instance.id, !this.props.selected)
-        }).
-        fail((error) => {
+    if (!selected) {
+      instancesStore.getInstanceStatusHistory(appID, groupID, instanceID)
+        .done(() => {
+          props.onToggle(instanceID);
+        })
+        .fail((error) => {
           if (error.status === 404) {
-            this.props.onToggle(this.props.instance.id, !this.props.selected)
+            props.onToggle(instanceID);
           }
         })
     } else {
-      this.props.onToggle(this.props.instance.id, !this.props.selected)
+      props.onToggle(instanceID);
     }
   }
 
-  onToggle() {
-    this.fetchStatusHistoryFromStore()
+  function onToggle() {
+    fetchStatusHistoryFromStore();
   }
 
-  render() {
-    let date = moment.utc(this.props.instance.application.last_check_for_updates).local().format("DD/MM/YYYY, hh:mma"),
-        active = this.props.selected ? " active" : "",
-        index = this.props.versionNumbers.indexOf(this.props.instance.application.version),
-        downloadingIcon = this.props.instance.statusInfo.spinning ? <img src="img/mini_loading.gif" /> : "",
-        statusIcon = this.props.instance.statusInfo.icon ? <i className={this.props.instance.statusInfo.icon}></i> : "",
-        instanceLabel = this.props.instance.statusInfo.className ? <TableLabel>{statusIcon} {downloadingIcon} {this.props.instance.statusInfo.description}</TableLabel> : <div>&nbsp;</div>,
-        version = cleanSemverVersion(this.props.instance.application.version),
-        currentVersionIndex = this.props.lastVersionChannel ? _.indexOf(this.props.versionNumbers, this.props.lastVersionChannel) : null,
-        versionStyle = "default"
-
-
-    if (!_.isEmpty(this.props.lastVersionChannel)) {
-      if (version == this.props.lastVersionChannel) {
-        versionStyle = "success"
-      } else if (semver.gt(version, this.props.lastVersionChannel)) {
-        versionStyle = "info"
-      } else {
-        let indexDiff = _.indexOf(this.props.versionNumbers, version) - currentVersionIndex
-        switch (indexDiff) {
-          case 1:
-            versionStyle = "warning"
-            break
-          case 2:
-            versionStyle = "danger"
-            break
-        }
-      }
+  if (!_.isEmpty(props.lastVersionChannel)) {
+    if (version == props.lastVersionChannel) {
+      versionStyle = 'success';
+    } else if (semver.gt(version, props.lastVersionChannel)) {
+      versionStyle = 'info';
+    } else {
+      let indexDiff = _.indexOf(props.versionNumbers, version) - currentVersionIndex
+      if (indexDiff == 1)
+        versionStyle = 'warning';
+      else
+        versionStyle = 'danger';
     }
-
-    return(
-      <div className="instance">
-        <div className="coreRollerTable-body">
-          <div className="coreRollerTable-cell lightText">
-            <p onClick={this.onToggle} className="activeLink" id={"instanceDetails-" + this.props.key}>
-              {this.props.instance.ip}
-              &nbsp;<i className="fa fa-caret-right"></i>
-            </p>
-          </div>
-          <div className="coreRollerTable-cell coreRollerTable-cell--medium">
-            <p>{this.props.instance.id}</p>
-          </div>
-          <div className="coreRollerTable-cell">
-            {instanceLabel}
-          </div>
-          <div className="coreRollerTable-cell">
-            <p className={"box--" + versionStyle}>{version}</p>
-          </div>
-          <div className="coreRollerTable-cell">
-            <p>{date}</p>
-          </div>
-        </div>
-        <StatusHistoryContainer active={active} instance={this.props.instance} key={this.props.instance.id} />
-      </div>
-    )
   }
 
+  return(
+    <React.Fragment>
+      <TableRow>
+        <TableCell>
+          <Button size="small" onClick={onToggle}>
+            {props.instance.ip}&nbsp;
+            <InlineIcon icon={ props.selected ? menuUp : menuDown } />
+          </Button>
+        </TableCell>
+        <TableCell>
+          {props.instance.id}
+        </TableCell>
+        <TableCell>
+          {instanceLabel}
+        </TableCell>
+        <TableCell>
+          <span className={"box--" + versionStyle}>{version}</span>
+        </TableCell>
+        <TableCell>
+          {date}
+        </TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell padding="none" colSpan={5}>
+          <Collapse
+            hidden={!props.selected}
+            in={props.selected}
+          >
+            <StatusHistoryContainer instance={props.instance} key={props.instance.id} />
+          </Collapse>
+        </TableCell>
+      </TableRow>
+    </React.Fragment>
+  );
 }
 
 Item.propTypes = {

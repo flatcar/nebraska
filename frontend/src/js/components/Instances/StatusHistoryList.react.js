@@ -1,30 +1,29 @@
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
 import PropTypes from 'prop-types';
-import React from "react"
-import StatusHistoryItem from "./StatusHistoryItem.react"
+import React from 'react';
+import StatusHistoryItem from './StatusHistoryItem.react';
 
-class StatusHistoryList extends React.Component {
+function StatusHistoryList(props) {
+  let entries = props.entries || [];
 
-  constructor(props) {
-    super(props)
-  }
-
-  render() {
-    let entries = this.props.entries ? this.props.entries : []
-
-    return(
-      <ul className="timeline--events">
-        <li className="timeline--eventsTitle">
-          <div>Timestamp</div>
-          <div>Status</div>
-          <div>Message</div>
-        </li>
+  // @todo: Virtualize the table.
+  return(
+    <Table>
+      <TableHead>
+        <TableCell>Instances</TableCell>
+        <TableCell>Status</TableCell>
+        <TableCell>Message</TableCell>
+      </TableHead>
+      <TableBody>
         {entries.map((entry, i) =>
           <StatusHistoryItem key={"statusHistory_" + i} entry={entry} />
         )}
-      </ul>
-    )
-  }
-
+      </TableBody>
+    </Table>
+  );
 }
 
 StatusHistoryList.propTypes = {

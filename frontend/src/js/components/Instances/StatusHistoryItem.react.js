@@ -3,6 +3,8 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { instancesStore } from '../../stores/Stores';
+import TableCell from '@material-ui/core/TableCell';
+import TableRow from '@material-ui/core/TableRow';
 
 class StatusHistoryItem extends React.Component {
 
@@ -27,24 +29,21 @@ class StatusHistoryItem extends React.Component {
         time = moment.utc(this.props.entry.created_ts).local().format("hh:mma"),
         instanceLabel = this.state.status.className ? <Chip size='small' label={this.state.status.status} /> : <div>&nbsp;</div>
 
-    return(
-      <li>
-        <div className="event--date">
+    return (
+      <TableRow>
+        <TableCell>
           {date}
           <span>{time}</span>
-        </div>
-        <div>
+        </TableCell>
+        <TableCell>
           {instanceLabel}
-        </div>
-        <div>
-          <p>
-            {this.state.status.explanation}
-          </p>
-        </div>
-      </li>
-    )
+        </TableCell>
+        <TableCell>
+          {this.state.status.explanation}
+        </TableCell>
+      </TableRow>
+    );
   }
-
 }
 
 StatusHistoryItem.propTypes = {

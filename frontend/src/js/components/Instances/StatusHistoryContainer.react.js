@@ -1,39 +1,37 @@
+import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import React from "react"
-import StatusHistoryList from "./StatusHistoryList.react"
-import _ from "underscore"
+import React from "react";
+import _ from "underscore";
+import StatusHistoryList from "./StatusHistoryList.react";
 
-class StatusHistoryContainer extends React.Component {
+const useStyles = makeStyles({
+  historyBox: {
+    paddingLeft: '2em',
+    paddingRight: '2em',
+    maxHeight: '400px',
+    overflow: 'auto',
+  },
+});
 
-  constructor(props) {
-    super(props)
+function StatusHistoryContainer(props) {
+  const classes = useStyles();
+  let entries = '';
+
+  if (_.isEmpty(props.instance.statusHistory)) {
+    entries = <div className="emptyBox">This instance hasn’t reported any events yet in the context of this application/group.</div>;
+  } else {
+    entries = <StatusHistoryList entries={props.instance.statusHistory} />;
   }
 
-  render() {
-    let entries = "",
-        additionalStyle = ""
-
-    if (_.isEmpty(this.props.instance.statusHistory)) {
-      entries = <div className="emptyBox">This instance hasn’t reported any events yet in the context of this application/group.</div>
-      additionalStyle = " coreRollerTable-detail--empty"
-    } else {
-      entries = <StatusHistoryList entries={this.props.instance.statusHistory} />
-    }
-
-    return(
-      <div className={"coreRollerTable-detail" + additionalStyle + this.props.active} id={"detail-" + this.props.key}>
-        <div className="coreRollerTable-detailContent">
-          {entries}
-        </div>
-      </div>
-    )
-  }
-
+  return(
+    <div className={classes.historyBox}>
+      {entries}
+    </div>
+  );
 }
 
 StatusHistoryContainer.propTypes = {
   key: PropTypes.string.isRequired,
-  active: PropTypes.array.isRequired,
   instance: PropTypes.object.isRequired
 }
 
