@@ -1,34 +1,13 @@
-import Avatar from '@material-ui/core/Avatar';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
-import makeStyles from '@material-ui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React from "react";
 import { cleanSemverVersion } from "../../constants/helpers";
 import { applicationsStore } from "../../stores/Stores";
 import MoreMenu from '../Common/MoreMenu';
-
-const useStyles = makeStyles({
-  colorAvatar: props => ({
-    color: props.color,
-    backgroundColor: props.backgroundColor,
-    width: '30px',
-    height: '30px'
-  }),
-});
-
-function ChannelAvatar(props) {
-  const classes = useStyles({
-    color: props.color,
-    backgroundColor: props.color,
-  });
-
-  return (
-    <Avatar className={classes.colorAvatar} />
-  );
-}
+import ChannelAvatar from './ChannelAvatar';
 
 function Item(props) {
   let {channel, packages, handleUpdateChannel, ...others} = props;
