@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
 import React from "react";
-import { Link } from "react-router-dom";
+import Link from '@material-ui/core/Link';
+import { Link as RouterLink } from 'react-router-dom';
 import _ from "underscore"
 import ChannelItem from '../Channels/Item.react';
 import VersionBreakdown from "../Common/VersionBreakdown.react"
@@ -78,7 +79,12 @@ function Item(props) {
           <Grid item xs={6} container direction="column">
             <Grid item>
               <CardFeatureLabel>Instances:</CardFeatureLabel>
-              <Link to={groupPath}><span className="activeLink"> {instances_total}<span className="fa fa-caret-right" /></span></Link>
+              <Link
+                to={groupPath}
+                component={RouterLink}
+              >
+                {instances_total}
+              </Link>
             </Grid>
             <Grid item>
               <CardFeatureLabel>Channel:</CardFeatureLabel>
