@@ -17,7 +17,7 @@ import { cleanSemverVersion } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import Label from '../Common/Label';
 import MoreMenu from '../Common/MoreMenu';
-import VersionBullet from '../Common/VersionBullet.react';
+import ChannelAvatar from '../Channels/ChannelAvatar';
 
 const useStyles = makeStyles(theme => ({
   subtitle: {
@@ -78,7 +78,7 @@ function Item(props) {
             <Typography component="span" className={classes.subtitle}>Channels:</Typography>&nbsp;
             {processedChannels.map((channel, i) => {
               return (<span className={classes.channelLabel}>
-                        <VersionBullet channel={channel} key={"packageItemBullet_" + i} />
+                        <ChannelAvatar color={channel.color} size="10px" />&nbsp;
                         {channel.name}
                       </span>
               );
