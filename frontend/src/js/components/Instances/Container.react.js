@@ -4,8 +4,7 @@ import React from "react"
 import Grid from '@material-ui/core/Grid';
 import List from "./List.react"
 import _ from "underscore"
-import Loader from "react-spinners/ScaleLoader"
-import MiniLoader from "react-spinners/PulseLoader"
+import Loader from '../Common/Loader';
 import {CardFeatureLabel} from '../Common/Card';
 import Empty from '../Common/EmptyContent';
 
@@ -56,13 +55,13 @@ class Container extends React.Component {
   }
 
   render() {
-    let groupInstances = this.state.instances,
-        miniLoader = this.state.updating ? <MiniLoader color="#00AEEF" size="8px" margin="2px" /> : ""
+    let groupInstances = this.state.instances;
+    let miniLoader = this.state.updating ? <Loader noContainer display="inline" size={12} /> : '';
 
     let entries = ""
 
     if (_.isNull(groupInstances)) {
-      entries = <div className="icon-loading-container"><Loader color="#00AEEF" size="35px" margin="2px"/></div>
+      entries = <Loader />
     } else {
       if (_.isEmpty(groupInstances)) {
         entries = <Empty>No instances have registered yet in this group.<br/><br/>Registration will happen automatically the first time the instance requests an update.</Empty>

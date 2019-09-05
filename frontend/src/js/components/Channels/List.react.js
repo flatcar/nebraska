@@ -5,7 +5,7 @@ import _ from "underscore"
 import ModalButton from "../Common/ModalButton.react"
 import EditDialog from "./EditDialog"
 import Item from "./Item.react"
-import Loader from "react-spinners/ScaleLoader"
+import Loader from '../Common/Loader';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import MuiList from '@material-ui/core/List';
@@ -67,7 +67,7 @@ class List extends React.Component {
         })
       }
     } else {
-      entries = <div className="icon-loading-container"><Loader color="#00AEEF" size="35px" margin="2px"/></div>
+      entries = <Loader />
     }
 
     const channelToUpdate =  !_.isEmpty(channels) && this.state.updateChannelIDModal ? _.findWhere(channels, {id: this.state.updateChannelIDModal}) : null

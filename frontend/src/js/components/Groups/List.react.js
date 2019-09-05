@@ -6,8 +6,7 @@ import _ from "underscore"
 import Item from "./Item.react"
 import ModalButton from "../Common/ModalButton.react"
 import SearchInput from "../Common/ListSearch"
-import Loader from "react-spinners/ScaleLoader"
-import MiniLoader from "react-spinners/PulseLoader"
+import Loader from '../Common/Loader';
 import EditDialog from './EditDialog';
 import MuiList from '@material-ui/core/List';
 import Paper from '@material-ui/core/Paper';
@@ -69,8 +68,6 @@ class List extends React.Component {
         name = "",
         entries = ""
 
-    const miniLoader = <div className="icon-loading-container"><MiniLoader color="#00AEEF" size="12px" /></div>
-
     if (application) {
       name = application.name
       groups = application.groups ? application.groups : []
@@ -95,7 +92,7 @@ class List extends React.Component {
       }
 
     } else {
-      entries = <div className="icon-loading-container"><Loader color="#00AEEF" size="35px" margin="2px"/></div>
+      entries = <Loader />
     }
 
     const groupToUpdate =  !_.isEmpty(groups) && this.state.updateGroupIDModal ? _.findWhere(groups, {id: this.state.updateGroupIDModal}) : null

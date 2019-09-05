@@ -3,7 +3,7 @@ import MuiList from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
 import React from "react";
-import Loader from "react-spinners/ScaleLoader";
+import Loader from '../Common/Loader';
 import _ from "underscore";
 import { applicationsStore } from "../../stores/Stores";
 import Empty from '../Common/EmptyContent';
@@ -67,7 +67,7 @@ class List extends React.Component {
         })
       }
     } else {
-      entries = <Loader color="#00AEEF" size="35px" margin="2px"/>
+      entries = <Loader />
     }
 
     const packageToUpdate =  !_.isEmpty(packages) && this.state.updatePackageIDModal ? _.findWhere(packages, {id: this.state.updatePackageIDModal}) : null

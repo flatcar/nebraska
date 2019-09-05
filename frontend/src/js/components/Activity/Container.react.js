@@ -2,7 +2,7 @@ import { activityStore } from "../../stores/Stores"
 import React from "react"
 import List from "./List.react"
 import _ from "underscore"
-import Loader from "react-spinners/ScaleLoader"
+import Loader from '../Common/Loader';
 import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
 import ListHeader from '../Common/ListHeader';
@@ -35,7 +35,7 @@ class Container extends React.Component {
     let entries = ""
 
     if (_.isNull(this.state.entries)) {
-      entries = <div className="icon-loading-container"><Loader color="#00AEEF" size="35px" margin="2px"/></div>
+      entries = <Loader />
     } else {
       if (_.isEmpty(this.state.entries)) {
         entries = <Empty>No activity found for the last week.<br/><br/>You will see here important events related to the rollout of your updates. Stay tuned!</Empty>

@@ -27,7 +27,6 @@
     "react-color": "^2.17.3",
     "react-dom": "^16.8.6",
     "react-router-dom": "^5.0.1",
-    "react-spinners": "^0.5.12",
     "react-window": "^1.8.5",
     "semver": "~5.3.0",
     "underscore": "~1.8.3",

@@ -4,7 +4,7 @@ import Paper from '@material-ui/core/Paper';
 import ModalButton from "../Common/ModalButton.react"
 import Item from "./Item.react"
 import _ from "underscore"
-import Loader from "react-spinners/ScaleLoader"
+import Loader from '../Common/Loader';
 import SearchInput from '../Common/ListSearch'
 import EditDialog from "./EditDialog"
 import MuiList from '@material-ui/core/List';
@@ -64,7 +64,7 @@ class List extends React.Component {
     }
 
     if (_.isNull(applications)) {
-      entries = <div className="icon-loading-container"><Loader color="#00AEEF" size="35px" margin="2px"/></div>
+      entries = <Loader />
     } else {
       if (_.isEmpty(applications)) {
         if (this.state.searchTerm) {
