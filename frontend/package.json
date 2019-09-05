@@ -20,7 +20,6 @@
     "jquery": "^3.4.1",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.26",
-    "progressbar.js": "~0.9.0",
     "prop-types": "^15.7.2",
     "pubsub-js": "~1.5.3",
     "react": "^16.8.6",
