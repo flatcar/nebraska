@@ -17,10 +17,6 @@ const nebraskaTheme = createMuiTheme({
       main: '#00AEEF',
     },
   },
-  typography: {
-    // Account for base font-size of 62.5%.
-    htmlFontSize: 10,
-  },
 });
 
 export default function Main() {

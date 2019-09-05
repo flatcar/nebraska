@@ -40,15 +40,10 @@
     "@iconify/icons-mdi": "^1.0.10",
     "@iconify/react": "^1.1.1",
     "babel-loader": "^8.0.6",
-    "less": "~3.0.1",
-    "node-sass": "~4.12.0",
     "webpack": "^4.36.1",
     "webpack-cli": "^3.3.6"
   },
   "scripts": {
-    "copy-css": "cp -R src/css/*.css ./built/css/",
-    "build-css": "node-sass src/style/styles.scss ./built/css/styles.css",
-    "build-js": "webpack --config webpack.config.js",
-    "build": "npm run build-css & npm run build-js && npm run copy-css"
+    "build": "webpack --config webpack.config.js"
   }
 }
