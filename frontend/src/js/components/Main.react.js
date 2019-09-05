@@ -16,6 +16,9 @@ const nebraskaTheme = createMuiTheme({
       main: '#00AEEF',
     },
   },
+  typography: {
+    fontFamily: 'Overpass, sans-serif',
+  },
 });
 
 export default function Main() {
