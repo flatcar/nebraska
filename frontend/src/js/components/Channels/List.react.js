@@ -9,6 +9,7 @@ import Loader from "react-spinners/ScaleLoader"
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import MuiList from '@material-ui/core/List';
+import Empty from '../Common/EmptyContent';
 import SectionPaper from '../Common/SectionPaper';
 
 class List extends React.Component {
@@ -59,7 +60,7 @@ class List extends React.Component {
       packages = application.packages ? application.packages : []
 
       if (_.isEmpty(channels)) {
-        entries = <div className="emptyBox">This application does not have any channel yet</div>;
+        entries = <Empty>This application does not have any channel yet</Empty>;
       } else {
         entries = _.map(channels, (channel, i) => {
           return <Item key={"channelID_" + channel.id} channel={channel} packages={packages} handleUpdateChannel={this.openUpdateChannelModal} />

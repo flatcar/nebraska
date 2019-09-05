@@ -6,7 +6,7 @@ import React from "react";
 import Loader from "react-spinners/ScaleLoader";
 import _ from "underscore";
 import { applicationsStore } from "../../stores/Stores";
-import { CardDescriptionLabel } from '../Common/Card';
+import Empty from '../Common/EmptyContent';
 import ModalButton from "../Common/ModalButton.react";
 import SectionPaper from '../Common/SectionPaper';
 import EditDialog from './EditDialog';
@@ -60,7 +60,7 @@ class List extends React.Component {
       packages = application.packages ? application.packages : []
 
       if (_.isEmpty(packages)) {
-        entries = <CardDescriptionLabel>This application does not have any package yet</CardDescriptionLabel>
+        entries = <Empty>This application does not have any package yet</Empty>
       } else {
         entries = _.map(packages, (packageItem, i) => {
           return <Item key={"packageItemID_" + packageItem.id} packageItem={packageItem} channels={channels} handleUpdatePackage={this.openUpdatePackageModal} />

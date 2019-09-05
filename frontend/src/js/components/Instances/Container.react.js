@@ -7,6 +7,7 @@ import _ from "underscore"
 import Loader from "react-spinners/ScaleLoader"
 import MiniLoader from "react-spinners/PulseLoader"
 import {CardFeatureLabel} from '../Common/Card';
+import Empty from '../Common/EmptyContent';
 
 class Container extends React.Component {
 
@@ -64,7 +65,7 @@ class Container extends React.Component {
       entries = <div className="icon-loading-container"><Loader color="#00AEEF" size="35px" margin="2px"/></div>
     } else {
       if (_.isEmpty(groupInstances)) {
-        entries = <div className="emptyBox">No instances have registered yet in this group.<br/><br/>Registration will happen automatically the first time the instance requests an update.</div>
+        entries = <Empty>No instances have registered yet in this group.<br/><br/>Registration will happen automatically the first time the instance requests an update.</Empty>
       } else {
         entries = <List
                 instances={groupInstances}

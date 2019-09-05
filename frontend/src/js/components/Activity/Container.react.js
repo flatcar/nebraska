@@ -6,6 +6,7 @@ import Loader from "react-spinners/ScaleLoader"
 import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
 import ListHeader from '../Common/ListHeader';
+import Empty from '../Common/EmptyContent';
 
 class Container extends React.Component {
 
@@ -37,7 +38,7 @@ class Container extends React.Component {
       entries = <div className="icon-loading-container"><Loader color="#00AEEF" size="35px" margin="2px"/></div>
     } else {
       if (_.isEmpty(this.state.entries)) {
-        entries = <div className="emptyBox">No activity found for the last week.<br/><br/>You will see here important events related to the rollout of your updates. Stay tuned!</div>
+        entries = <Empty>No activity found for the last week.<br/><br/>You will see here important events related to the rollout of your updates. Stay tuned!</Empty>
       } else {
         entries = Object.values(_.mapObject(this.state.entries, (entry, key) => {
           return <List day={key} entries={entry} key={key} />

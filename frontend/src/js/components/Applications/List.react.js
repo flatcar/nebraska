@@ -9,6 +9,7 @@ import SearchInput from '../Common/ListSearch'
 import EditDialog from "./EditDialog"
 import MuiList from '@material-ui/core/List';
 import ListHeader from '../Common/ListHeader';
+import Empty from '../Common/EmptyContent';
 
 class List extends React.Component {
 
@@ -67,9 +68,9 @@ class List extends React.Component {
     } else {
       if (_.isEmpty(applications)) {
         if (this.state.searchTerm) {
-          entries = <div className="emptyBox">No results found.</div>
+          entries = <Empty>No results found.</Empty>
         } else {
-          entries = <div className="emptyBox">Ops, it looks like you have not created any application yet..<br/><br/> Now is a great time to create your first one, just click on the plus symbol above.</div>
+          entries = <Empty>Ops, it looks like you have not created any application yet..<br/><br/> Now is a great time to create your first one, just click on the plus symbol above.</Empty>
         }
       } else {
         entries = _.map(applications, (application, i) => {

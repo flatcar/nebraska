@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from "react";
 import _ from "underscore";
 import StatusHistoryList from "./StatusHistoryList.react";
+import Empty from '../Common/EmptyContent';
 
 const useStyles = makeStyles({
   historyBox: {
@@ -18,7 +19,7 @@ function StatusHistoryContainer(props) {
   let entries = '';
 
   if (_.isEmpty(props.instance.statusHistory)) {
-    entries = <div className="emptyBox">This instance hasn’t reported any events yet in the context of this application/group.</div>;
+    entries = <Empty>This instance hasn’t reported any events yet in the context of this application/group.</Empty>;
   } else {
     entries = <StatusHistoryList entries={props.instance.statusHistory} />;
   }

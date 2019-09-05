@@ -11,6 +11,7 @@ import MiniLoader from "react-spinners/PulseLoader"
 import EditDialog from './EditDialog';
 import MuiList from '@material-ui/core/List';
 import Paper from '@material-ui/core/Paper';
+import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
 
 class List extends React.Component {
@@ -83,9 +84,9 @@ class List extends React.Component {
 
       if (_.isEmpty(groups)) {
         if (this.state.searchTerm) {
-          entries = <div className="emptyBox">No results found.</div>
+          entries = <Empty>No results found.</Empty>
         } else {
-          entries = <div className="emptyBox">There are no groups for this application yet.<br/><br/>Groups help you control how you want to distribute updates to a specific set of instances.</div>
+          entries = <Empty>There are no groups for this application yet.<br/><br/>Groups help you control how you want to distribute updates to a specific set of instances.</Empty>
         }
       } else {
         entries = _.map(groups, (group, i) => {
