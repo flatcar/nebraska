@@ -1,19 +1,16 @@
-import PropTypes from 'prop-types';
-import { applicationsStore } from "../../stores/Stores"
-import React from "react";
-import Link from '@material-ui/core/Link';
-import { Link as RouterLink } from 'react-router-dom';
-import _ from "underscore"
-import ChannelItem from '../Channels/Item.react';
-import VersionBreakdown from "../Common/VersionBreakdown.react"
 import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import ListItem from '../Common/ListItem';
-import CardContent from '@material-ui/core/CardContent';
-import {CardFeatureLabel, CardHeader} from '../Common/Card';
-import MoreMenu from '../Common/MoreMenu';
+import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
-import Divider from '@material-ui/core/Divider';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import _ from 'underscore';
+import { applicationsStore } from '../../stores/Stores';
+import ChannelItem from '../Channels/Item.react';
+import { CardFeatureLabel, CardHeader } from '../Common/Card';
+import ListItem from '../Common/ListItem';
+import MoreMenu from '../Common/MoreMenu';
+import VersionBreakdown from '../Common/VersionBreakdown.react';
 
 const useStyles = makeStyles(theme => ({
   itemSection: {
