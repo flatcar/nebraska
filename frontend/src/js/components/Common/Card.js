@@ -1,33 +1,36 @@
+import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
-import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import { Link as RouterLink } from "react-router-dom"
 import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import React from 'react';
+import { Link as RouterLink } from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
   gridHeader: {
-    background: '#fafafa',
-    padding: '1em',
+    padding: '1rem',
+    flexWrap: 'nowrap',
   },
   mainLink: {
-    color: 'rgba(119,119,119)',
-    fontSize: 25,
-    fontWeight: 'bold',
+    fontSize: '2.2rem',
   },
   featureLabel: {
-    color: 'rgb(119,119,119, .9)',
+    color: theme.palette.text.secondary,
     textTransform: 'uppercase',
-    fontSize: 14,
+    fontSize: '1rem',
   },
   descriptionLabel: {
-    color: 'rgb(119,119,119, .9)',
-    fontSize: 16,
+    color: theme.palette.text.secondary,
+    fontSize: '1rem',
   },
   idLabel: {
-    color: 'rgba(119,119,119,.75)',
-    fontSize: 16
+    color: theme.palette.text.secondary,
+    fontSize: '1rem'
   },
+  innerDivider: {
+    marginLeft: '1em',
+    marginRight: '1em',
+  }
 }));
 
 export function CardFeatureLabel(props) {
@@ -47,15 +50,16 @@ export function CardDescriptionLabel(props) {
 export function CardHeader(props) {
   const classes = useStyles();
   return (
-    <Grid
-      container
-      className={classes.gridHeader}
-      justify="space-between"
-    >
-      <Grid item xs={11}>
-        <Grid
+    <React.Fragment>
+      <Grid
+        container
+        className={classes.gridHeader}
+        justify="space-between"
+      >
+        <Grid item
           container
           spacing={1}
+          alignItems="center"
         >
           <Grid item xs={6}>
             { props.cardMainLinkPath ? (
@@ -76,12 +80,13 @@ export function CardHeader(props) {
             <CardDescriptionLabel variant="h5">{props.cardDescription}</CardDescriptionLabel>
           </Grid>
         </Grid>
+        {props.children &&
+          <Grid item>
+            {props.children}
+          </Grid>
+        }
       </Grid>
-      {props.children &&
-        <Grid item>
-          {props.children}
-        </Grid>
-      }
-    </Grid>
+      <Divider light className={classes.innerDivider} />
+    </React.Fragment>
   );
 }
