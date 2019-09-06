@@ -1,19 +1,10 @@
-import PropTypes from 'prop-types';
-import React from "react"
-import ApplicationsList from "../Applications/List.react"
-import ActivityContainer from "../Activity/Container.react"
-import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
+import PropTypes from 'prop-types';
+import React from 'react';
+import ActivityContainer from '../Activity/Container.react';
+import ApplicationsList from '../Applications/List.react';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1
-  },
-}));
-
-function MainGrid() {
-  const classes = useStyles();
-
+function MainLayout() {
   return(
     <Grid
       container
@@ -28,18 +19,6 @@ function MainGrid() {
       </Grid>
     </Grid>
   );
-}
-
-class MainLayout extends React.Component {
-
-  constructor() {
-    super()
-  }
-
-  render() {
-    return(<MainGrid />);
-  }
-
 }
 
 MainLayout.propTypes = {
