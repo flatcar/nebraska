@@ -1,10 +1,10 @@
 import Grid from '@material-ui/core/Grid';
-import ListItem from '@material-ui/core/ListItem';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { applicationsStore } from '../../stores/Stores';
 import { CardFeatureLabel, CardHeader } from '../Common/Card';
+import ListItem from '../Common/ListItem';
 import MoreMenu from '../Common/MoreMenu';
 import ChannelsList from './ApplicationItemChannelsList.react';
 import GroupsList from './ApplicationItemGroupsList.react';
@@ -35,7 +35,7 @@ function Item(props) {
   }
 
   return(
-    <ListItem disableGutters divider>
+    <ListItem>
       <Grid container>
         <Grid item xs={12}>
           <CardHeader

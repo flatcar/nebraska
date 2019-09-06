@@ -8,7 +8,7 @@ import ChannelItem from '../Channels/Item.react';
 import VersionBreakdown from "../Common/VersionBreakdown.react"
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
-import ListItem from '@material-ui/core/ListItem';
+import ListItem from '../Common/ListItem';
 import CardContent from '@material-ui/core/CardContent';
 import {CardFeatureLabel, CardHeader} from '../Common/Card';
 import MoreMenu from '../Common/MoreMenu';
@@ -46,7 +46,7 @@ function Item(props) {
   }
 
   return (
-    <ListItem disableGutters divider>
+    <ListItem disableGutters>
       <Grid
         container
       >
