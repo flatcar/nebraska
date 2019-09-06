@@ -5,7 +5,7 @@ import GroupEditDialog from "../Groups/EditDialog"
 import ChannelEditDialog from "../Channels/EditDialog"
 import PackageEditDialog from '../Packages/EditDialog';
 import AddIcon from '@material-ui/icons/Add';
-import IconButton from '@material-ui/core/IconButton';
+import Fab from '@material-ui/core/Fab';
 
 class ModalButton extends React.Component {
 
@@ -46,11 +46,13 @@ class ModalButton extends React.Component {
         break
     }
 
+    // @todo: verify whether aria-label should be more specific (in which
+    // case it should be set from the caller).
     return(
       <div>
-        <IconButton size="small" aria-label="add" onClick={this.open.bind()}>
-          <AddIcon fontSize="small"/>
-        </IconButton>
+        <Fab size="small" aria-label="add" onClick={this.open.bind()}>
+          <AddIcon />
+        </Fab>
         {modal}
       </div>
     )
