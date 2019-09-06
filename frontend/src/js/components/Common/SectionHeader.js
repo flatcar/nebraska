@@ -1,6 +1,7 @@
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
+import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import ArrowLeftIos from '@material-ui/icons/ArrowBackIos';
@@ -9,9 +10,11 @@ import { Link as RouterLink } from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
   sectionContainer: {
-    paddingTop: '1em',
-    paddingBottom: '1.5em',
-  }
+    padding: theme.spacing(1),
+    flexShrink: 1,
+    marginBottom: theme.spacing(1),
+    display: 'inline-block',
+  },
 }));
 
 export default function SectionHeader(props) {
@@ -20,37 +23,24 @@ export default function SectionHeader(props) {
   let title = props.title;
 
   return (
-    <Grid
-      container
-      alignItems="center"
-      className={classes.sectionContainer}
-    >
-      <Grid item xs={3}>
-        {breadcrumbs &&
-          <Grid container alignItems="center">
-            <Grid item>
-              <ArrowLeftIos fontSize="inherit"/>
-            </Grid>
-            <Grid item>
+    <Paper elevation={0} className={classes.sectionContainer}>
+      <Grid container alignItems="center" justify="flex-start">
+        <Grid item>
           <Breadcrumbs aria-label="breadcrumbs">
-            {breadcrumbs.map(({path=null, label}) => {
+            {breadcrumbs &&
+              breadcrumbs.map(({path=null, label}) => {
               if (path)
                 return <Link to={path} component={RouterLink}>{label}</Link>;
               else
                 return <Typography>{label}</Typography>;
               }
             )}
+            {title &&
+              <Typography>{title}</Typography>
+            }
           </Breadcrumbs>
-          </Grid>
         </Grid>
-        }
       </Grid>
-      <Grid item xs={6}>
-        <Typography variant="h3" align="center" color="primary">
-          {title}
-        </Typography>
-      </Grid>
-      <Grid item xs={3} aria-hidden="true"></Grid>
-    </Grid>
+    </Paper>
   );
 }

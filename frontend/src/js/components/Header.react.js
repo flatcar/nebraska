@@ -18,7 +18,10 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.up('sm')]: {
       display: 'block',
     },
-  }
+  },
+  header: {
+    marginBottom: theme.spacing(1),
+  },
 }));
 
 export default function Header() {
@@ -35,7 +38,7 @@ export default function Header() {
   }
 
   return (
-    <AppBar position='static'>
+    <AppBar position='static' className={classes.header}>
       <Toolbar>
         <Typography variant='h6' className={classes.title}>
           Nebraska
