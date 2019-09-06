@@ -84,7 +84,6 @@ class List extends React.Component {
           </Grid>
           <Grid item>
             <ModalButton
-              icon="plus"
               modalToOpen="AddChannelModal"
               data={{
                 packages: packages,
