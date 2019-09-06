@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { applicationsStore } from '../../stores/Stores';
-import { CardFeatureLabel, CardHeader } from '../Common/Card';
+import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
 import ListItem from '../Common/ListItem';
 import MoreMenu from '../Common/MoreMenu';
 import ChannelsList from './ApplicationItemChannelsList.react';
@@ -20,7 +20,7 @@ function Item(props) {
   let description = props.application.description || 'No description provided';
   let channels = props.application.channels || [];
   let groups = props.application.groups || [];
-  let instances = props.application.instances.count || 0;
+  let instances = props.application.instances.count || 'None';
   let appID = props.application ? props.application.id : '';
 
   function updateApplication() {
@@ -65,19 +65,23 @@ function Item(props) {
           >
             <Grid item xs={6}>
               <CardFeatureLabel>Instances:</CardFeatureLabel>&nbsp;
-                {instances}
+              <CardLabel>{instances}</CardLabel>
             </Grid>
             <Grid item xs={6}>
               <CardFeatureLabel>Groups:</CardFeatureLabel>&nbsp;
-                {groups.length}
+              <CardLabel>{groups.length == 0 ? 'None' : groups.length}</CardLabel>
               <GroupsList
                 groups={groups}
                 appID={props.application.id}
                 appName={props.application.name} />
             </Grid>
             <Grid item xs={12}>
-              <CardFeatureLabel>Channels:</CardFeatureLabel>
-              <ChannelsList channels={channels} />
+              <CardFeatureLabel>Channels:</CardFeatureLabel>&nbsp;
+              {channels.length > 0 ?
+                <ChannelsList channels={channels} />
+                :
+                <CardLabel>None</CardLabel>
+              }
             </Grid>
           </Grid>
         </Grid>

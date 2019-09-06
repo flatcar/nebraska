@@ -30,7 +30,11 @@ const useStyles = makeStyles(theme => ({
   innerDivider: {
     marginLeft: '1em',
     marginRight: '1em',
-  }
+  },
+  label: props => ({
+    fontSize: '1rem',
+    ...props
+  }),
 }));
 
 export function CardFeatureLabel(props) {
@@ -44,6 +48,14 @@ export function CardDescriptionLabel(props) {
   const classes = useStyles();
   return (
     <Typography component='span' className={classes.descriptionLabel}>{props.children}</Typography>
+  );
+}
+
+export function CardLabel(props) {
+  let {labelStyle={}} = props;
+  const classes = useStyles(labelStyle);
+  return (
+    <Typography component='span' className={classes.label}>{props.children}</Typography>
   );
 }
 

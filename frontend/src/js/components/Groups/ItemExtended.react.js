@@ -6,7 +6,7 @@ import ChannelItem from '../Channels/Item.react';
 import InstancesContainer from "../Instances/Container.react"
 import VersionBreakdown from "../Common/VersionBreakdown.react"
 import Grid from '@material-ui/core/Grid';
-import {CardFeatureLabel, CardHeader} from '../Common/Card';
+import {CardLabel, CardFeatureLabel, CardHeader} from '../Common/Card';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
@@ -85,11 +85,11 @@ class ItemExtended extends React.Component {
           </Grid>
         </Grid>
         <Box padding="1em">
-          <Grid item xs={12} container justify="space-between">
+          <Grid item xs={12} container justify="space-between" spacing={1}>
             <Grid item xs={6} container spacing={1} direction="column">
               <Grid item>
                 <CardFeatureLabel>Instances:</CardFeatureLabel>&nbsp;
-                <Typography component="span">{instancesNum}</Typography>
+                <CardLabel>{instancesNum ? instancesNum : 'None'}</CardLabel>
               </Grid>
               <Grid item>
                 <CardFeatureLabel>Channel:</CardFeatureLabel>
@@ -99,23 +99,23 @@ class ItemExtended extends React.Component {
             <Grid item xs={6} container spacing={1} direction="column">
               <Grid item>
                 <CardFeatureLabel>Updates:</CardFeatureLabel>&nbsp;
-                {policyUpdates ? 'Enabled' : 'Disabled'}
+                <CardLabel>{policyUpdates ? 'Enabled' : 'Disabled'}</CardLabel>
               </Grid>
               <Grid item>
                 <CardFeatureLabel>Only Office Hours:</CardFeatureLabel>&nbsp;
-                {officeHours ? 'Yes' : 'No'}
+                <CardLabel>{officeHours ? 'Yes' : 'No'}</CardLabel>
               </Grid>
               <Grid item>
                 <CardFeatureLabel>Safe Mode:</CardFeatureLabel>&nbsp;
-                {safeMode ? 'Yes' : 'No'}
+                <CardLabel>{safeMode ? 'Yes' : 'No'}</CardLabel>
               </Grid>
               <Grid item>
                 <CardFeatureLabel>Updates Policy:</CardFeatureLabel>&nbsp;
-                Max {policyMaxUpdatesPerDay} updates per {policyPeriodInterval}
+                <CardLabel>Max {policyMaxUpdatesPerDay} updates per {policyPeriodInterval}</CardLabel>
               </Grid>
               <Grid item>
                 <CardFeatureLabel>Updates Timeout:</CardFeatureLabel>&nbsp;
-                Updates timeout { policyUpdatesTimeout }
+                <CardLabel>Updates timeout { policyUpdatesTimeout }</CardLabel>
               </Grid>
             </Grid>
             <Grid item xs={12}>

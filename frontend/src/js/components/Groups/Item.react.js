@@ -7,7 +7,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import _ from 'underscore';
 import { applicationsStore } from '../../stores/Stores';
 import ChannelItem from '../Channels/Item.react';
-import { CardFeatureLabel, CardHeader } from '../Common/Card';
+import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
 import ListItem from '../Common/ListItem';
 import MoreMenu from '../Common/MoreMenu';
 import VersionBreakdown from '../Common/VersionBreakdown.react';
@@ -22,7 +22,8 @@ function Item(props) {
   const classes = useStyles();
 
   let version_breakdown = (props.group && props.group.version_breakdown) ? props.group.version_breakdown : [];
-  let instances_total = props.group.instances_stats ? props.group.instances_stats.total : 0;
+  let noInstancesLabel = 'None';
+  let instances_total = props.group.instances_stats ? (props.group.instances_stats.total || noInstancesLabel) : noInstancesLabel;
   let description = props.group.description || 'No description provided';
   let channel = props.group.channel || {};
 
@@ -75,27 +76,29 @@ function Item(props) {
         >
           <Grid item xs={6} container direction="column">
             <Grid item>
-              <CardFeatureLabel>Instances:</CardFeatureLabel>
-              <Link
-                to={groupPath}
-                component={RouterLink}
-              >
-                {instances_total}
-              </Link>
+              <CardFeatureLabel>Instances:</CardFeatureLabel>&nbsp;
+              <CardLabel labelStyle={{fontSize: '1.5rem'}}>
+                <Link
+                  to={groupPath}
+                  component={RouterLink}
+                >
+                  {instances_total}
+                </Link>
+              </CardLabel>
             </Grid>
             <Grid item>
               <CardFeatureLabel>Channel:</CardFeatureLabel>
-              {groupChannel}
+              <CardLabel>{groupChannel}</CardLabel>
             </Grid>
           </Grid>
           <Grid item xs={6} container direction="column">
             <Grid item>
               <CardFeatureLabel>Updates:</CardFeatureLabel>&nbsp;
-              {props.group.policy_updates_enabled ? 'Enabled' : 'Disabled'}
+              <CardLabel>{props.group.policy_updates_enabled ? 'Enabled' : 'Disabled'}</CardLabel>
             </Grid>
             <Grid item>
               <CardFeatureLabel>Rollout Policy:</CardFeatureLabel>&nbsp;
-              Max {props.group.policy_max_updates_per_period} updates per {props.group.policy_period_interval}
+              <CardLabel>Max {props.group.policy_max_updates_per_period} updates per {props.group.policy_period_interval}</CardLabel>
             </Grid>
           </Grid>
           <Grid item xs={12}>
