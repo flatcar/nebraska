@@ -1,4 +1,5 @@
 VERSION ?= $(shell git describe --tags --always --dirty)
+DOCKER_CMD ?= "docker"
 DOCKER_REPO ?= "quay.io/flatcar"
 DOCKER_IMAGE_ROLLERD ?= "nebraska-rollerd"
 DOCKER_IMAGE_POSTGRES ?= "nebraska-postgres"
@@ -25,7 +26,7 @@ tools:
 
 .PHONY: container-rollerd
 container-rollerd:
-	docker build \
+	$(DOCKER_CMD) build \
 		--no-cache \
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_ROLLERD):$(VERSION)" \
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_ROLLERD):latest" \
@@ -33,7 +34,7 @@ container-rollerd:
 
 .PHONY: container-postgres
 container-postgres:
-	docker build \
+	$(DOCKER_CMD) build \
 		--no-cache \
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_POSTGRES):$(VERSION)" \
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_POSTGRES):latest" \
