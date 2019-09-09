@@ -1,11 +1,16 @@
+import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
-import { Row, Col } from "react-bootstrap"
+import React from "react"
 import _ from "underscore"
 import ModalButton from "../Common/ModalButton.react"
-import ModalUpdate from "./ModalUpdate.react"
+import EditDialog from "./EditDialog"
 import Item from "./Item.react"
-import Loader from "halogen/ScaleLoader"
+import Loader from '../Common/Loader';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import MuiList from '@material-ui/core/List';
+import Empty from '../Common/EmptyContent';
+import SectionPaper from '../Common/SectionPaper';
 
 class List extends React.Component {
 
@@ -20,10 +25,6 @@ class List extends React.Component {
       updateChannelModalVisible: false,
       updateChannelIDModal: null
     }
-  }
-
-  static propTypes: {
-    appID: React.PropTypes.string.isRequired
   }
 
   closeUpdateChannelModal() {
@@ -59,43 +60,54 @@ class List extends React.Component {
       packages = application.packages ? application.packages : []
 
       if (_.isEmpty(channels)) {
-        entries = <div className="emptyBox">This application does not have any channel yet</div>;
+        entries = <Empty>This application does not have any channel yet</Empty>;
       } else {
         entries = _.map(channels, (channel, i) => {
           return <Item key={"channelID_" + channel.id} channel={channel} packages={packages} handleUpdateChannel={this.openUpdateChannelModal} />
         })
       }
     } else {
-      entries = <div className="icon-loading-container"><Loader color="#00AEEF" size="35px" margin="2px"/></div>
+      entries = <Loader />
     }
 
     const channelToUpdate =  !_.isEmpty(channels) && this.state.updateChannelIDModal ? _.findWhere(channels, {id: this.state.updateChannelIDModal}) : null
 
     return (
-      <div>
-        <Row>
-          <Col xs={12}>
-            <h1 className="displayInline mainTitle">Channels</h1>
+      <SectionPaper>
+        <Grid
+          container
+          alignItems="center"
+          justify="space-between"
+        >
+          <Grid item>
+            <Typography variant="h5">Channels</Typography>
+          </Grid>
+          <Grid item>
             <ModalButton
-              icon="plus"
               modalToOpen="AddChannelModal"
-              data={{packages: packages, applicationID: this.props.appID}} />
-          </Col>
-        </Row>
-        <div className="groups--channelsList">
+              data={{
+                packages: packages,
+                applicationID: this.props.appID
+              }}
+            />
+          </Grid>
+        </Grid>
+        <MuiList dense>
           {entries}
-        </div>
-        {/* Update channel modal */}
+        </MuiList>
         {channelToUpdate &&
-          <ModalUpdate
+          <EditDialog
             data={{packages: packages, applicationID: this.props.appID, channel: channelToUpdate}}
-            modalVisible={this.state.updateChannelModalVisible}
+            show={this.state.updateChannelModalVisible}
             onHide={this.closeUpdateChannelModal} />
         }
-      </div>
+      </SectionPaper>
     )
-
   }
+}
+
+List.propTypes = {
+  appID: PropTypes.string.isRequired
 }
 
 export default List

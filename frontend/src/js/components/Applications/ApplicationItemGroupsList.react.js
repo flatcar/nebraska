@@ -1,28 +1,24 @@
-import React, { PropTypes } from "react"
-import Item from "./ApplicationItemGroupItem.react"
+import Grid from '@material-ui/core/Grid';
+import PropTypes from 'prop-types';
+import React from 'react';
+import Item from './ApplicationItemGroupItem.react';
 
-class ApplicationItemGroupsList extends React.Component {
-
-  constructor() {
-    super()
-  }
-
-  static PropTypes: {
-    groups: React.PropTypes.array.isRequired,
-    appID: React.PropTypes.string.isRequired,
-    appName: React.PropTypes.string.isRequired
-  };
-
-  render() {
-    return(
-      <span className="apps--groupsList">
-        {this.props.groups.map((group, i) =>
-          <Item key={"group_" + i} group={group} appID={this.props.appID} appName={this.props.appName} />
-        )}
-      </span>
-    )
-  }
-
+function ApplicationItemGroupsList(props) {
+  return(
+    <Grid container spacing={2}>
+      {props.groups.map((group, i) =>
+        <Grid item>
+          <Item key={"group_" + i} group={group} appID={props.appID} appName={props.appName} />
+        </Grid>
+      )}
+    </Grid>
+  );
 }
 
-export default ApplicationItemGroupsList
+ApplicationItemGroupsList.propTypes = {
+  groups: PropTypes.array.isRequired,
+  appID: PropTypes.string.isRequired,
+  appName: PropTypes.string.isRequired
+};
+
+export default ApplicationItemGroupsList;

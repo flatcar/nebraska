@@ -1,12 +1,16 @@
 import { applicationsStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
-import { Row, Col } from "react-bootstrap"
+import React from "react"
 import _ from "underscore"
-import { Link } from "react-router"
+import { Link as RouterLink } from "react-router-dom"
+import Grid from '@material-ui/core/Grid';
 import ApplicationsList from "../Applications/List.react"
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import GroupsList from "../Groups/List.react"
 import ChannelsList from "../Channels/List.react"
+import Link from '@material-ui/core/Link';
 import PackagesList from "../Packages/List.react"
+import Typography from '@material-ui/core/Typography';
+import SectionHeader from '../Common/SectionHeader';
 
 class ApplicationLayout extends React.Component {
 
@@ -14,7 +18,7 @@ class ApplicationLayout extends React.Component {
     super(props);
     this.onChange = this.onChange.bind(this);
 
-    let appID = props.params.appID
+    let appID = props.match.params.appID
     this.state = {
       appID: appID,
       applications: applicationsStore.getCachedApplications()
@@ -22,7 +26,7 @@ class ApplicationLayout extends React.Component {
   }
 
   componentWillMount() {
-    applicationsStore.getApplication(this.props.params.appID)
+    applicationsStore.getApplication(this.props.match.params.appID)
   }
 
   componentDidMount() {
@@ -49,24 +53,38 @@ class ApplicationLayout extends React.Component {
     }
 
     return(
-      <div className="container">
-        <ol className="breadcrumb">
-          <li><Link to="MainLayout">Applications</Link></li>
-          <li className="active">{appName}</li>
-        </ol>
-        <Row>
-          <GroupsList appID={this.state.appID} />
-          <Col xs={4} className="group--info">
-            <Row>
-              <Col xs={1}></Col>
-              <Col className={11}>
+      <div>
+        <SectionHeader
+          title={appName}
+          breadcrumbs={[
+            {
+              path: '/apps',
+              label: 'Applications'
+            }
+          ]}
+        />
+        <Grid
+          container
+          spacing={1}
+          justify="space-between">
+          <Grid item xs={8}>
+            <GroupsList appID={this.state.appID} />
+          </Grid>
+          <Grid item xs={4}>
+            <Grid
+              container
+              direction="column"
+              alignItems="stretch"
+              spacing={2}>
+              <Grid item xs={12}>
                 <ChannelsList appID={this.state.appID} />
-                <hr />
+              </Grid>
+              <Grid item xs={12}>
                 <PackagesList appID={this.state.appID} />
-              </Col>
-            </Row>
-          </Col>
-        </Row>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
       </div>
     )
   }

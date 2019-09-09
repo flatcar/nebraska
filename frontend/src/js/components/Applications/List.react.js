@@ -1,12 +1,15 @@
 import { applicationsStore, modalStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
-import { Col, Row, Button, Modal } from "react-bootstrap"
+import React from "react"
+import Paper from '@material-ui/core/Paper';
 import ModalButton from "../Common/ModalButton.react"
 import Item from "./Item.react"
 import _ from "underscore"
-import Loader from "halogen/ScaleLoader"
-import SearchInput from "react-search-input"
-import ModalUpdate from "./ModalUpdate.react"
+import Loader from '../Common/Loader';
+import SearchInput from '../Common/ListSearch'
+import EditDialog from "./EditDialog"
+import MuiList from '@material-ui/core/List';
+import ListHeader from '../Common/ListHeader';
+import Empty from '../Common/EmptyContent';
 
 class List extends React.Component {
 
@@ -47,27 +50,27 @@ class List extends React.Component {
     })
   }
 
-  searchUpdated(term) {
-    this.setState({searchTerm: term})
+  searchUpdated(event) {
+    const {name, value} = event.currentTarget;
+    this.setState({searchTerm: value.toLowerCase()})
   }
 
   render() {
     let applications = this.state.applications,
         entries = ""
 
-    if (this.refs.search) {
-      var filters = ["name"]
-      applications = applications.filter(this.refs.search.filter(filters))
+    if (this.state.searchTerm) {
+      applications = applications.filter(app => app.name.toLowerCase().includes(this.state.searchTerm));
     }
 
     if (_.isNull(applications)) {
-      entries = <div className="icon-loading-container"><Loader color="#00AEEF" size="35px" margin="2px"/></div>
+      entries = <Loader />
     } else {
       if (_.isEmpty(applications)) {
         if (this.state.searchTerm) {
-          entries = <div className="emptyBox">No results found.</div>
+          entries = <Empty>No results found.</Empty>
         } else {
-          entries = <div className="emptyBox">Ops, it looks like you have not created any application yet..<br/><br/> Now is a great time to create your first one, just click on the plus symbol above.</div>
+          entries = <Empty>Ops, it looks like you have not created any application yet..<br/><br/> Now is a great time to create your first one, just click on the plus symbol above.</Empty>
         }
       } else {
         entries = _.map(applications, (application, i) => {
@@ -79,34 +82,25 @@ class List extends React.Component {
     const appToUpdate =  applications && this.state.updateAppIDModal ? _.findWhere(applications, {id: this.state.updateAppIDModal}) : null
 
     return(
-      <div>
-        <Col xs={7}>
-          <Row>
-            <Col xs={5}>
-              <h1 className="displayInline mainTitle">Applications</h1>
-              <ModalButton icon="plus" modalToOpen="AddApplicationModal" data={{applications: applications}} />
-            </Col>
-            <Col xs={7} className="alignRight">
-              <div className="searchblock">
-                <SearchInput ref="search" onChange={this.searchUpdated} placeholder="Search..." />
-                <label htmlFor="searchApps"></label>
-              </div>
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={12} className="apps--container">
-              {entries}
-            </Col>
-          </Row>
-        </Col>
-        {/* Update app modal */}
+      <Paper>
+        <ListHeader
+          title="Applications"
+          actions={[
+            <ModalButton
+              modalToOpen="AddApplicationModal"
+              data={{applications: applications}} />
+          ]}
+        />
+        <MuiList>
+          {entries}
+        </MuiList>
         {appToUpdate &&
-          <ModalUpdate
+          <EditDialog
             data={appToUpdate}
-            modalVisible={this.state.updateAppModalVisible}
+            show={this.state.updateAppModalVisible}
             onHide={this.closeUpdateAppModal} />
         }
-      </div>
+      </Paper>
     )
   }
 

@@ -1,5 +1,5 @@
-import React, { PropTypes } from "react"
-import Utils from "react/addons"
+import PropTypes from 'prop-types';
+import React from "react"
 import ApplicationsStore from "../../stores/ApplicationsStore"
 
 class ConfirmationContent extends React.Component {
@@ -7,11 +7,6 @@ class ConfirmationContent extends React.Component {
   constructor(props) {
     super(props)
     this.processClick = this.processClick.bind(this)
-  }
-
-  static PropTypes: {
-    channel: React.PropTypes.object.isRequired,
-    data: React.PropTypes.object.isRequired
   }
 
   processClick() {
@@ -38,6 +33,11 @@ class ConfirmationContent extends React.Component {
     )
   }
 
+}
+
+ConfirmationContent.propTypes = {
+  channel: PropTypes.object.isRequired,
+  data: PropTypes.object.isRequired
 }
 
 export default ConfirmationContent

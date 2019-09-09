@@ -8,56 +8,40 @@
   "description": "CoreRoller",
   "author": "Cynthia SG <cynthiasg@gmail.com>",
   "repository": "https://github.com/kinvolk/nebraska",
+  "private": true,
   "dependencies": {
-    "bootstrap": "~3.3.5",
-    "flux": "~2.1.1",
-    "halogen": "~0.1.10",
-    "jquery": "~2.1.4",
-    "moment": "~2.10.6",
-    "moment-timezone": "~0.4.1",
-    "progressbar.js": "~0.9.0",
+    "@material-ui/core": "^4.2.1",
+    "@material-ui/icons": "^4.2.1",
+    "@nivo/bar": "^0.59.2",
+    "downshift": "^3.2.12",
+    "formik": "^1.5.8",
+    "formik-material-ui": "^0.0.20",
+    "jquery": "^3.4.1",
+    "moment": "^2.24.0",
+    "moment-timezone": "^0.5.26",
+    "prop-types": "^15.7.2",
     "pubsub-js": "~1.5.3",
-    "rc-switch": "~1.2.1",
-    "react": "~0.13.3",
-    "react-bootstrap": "~0.24.5",
-    "react-bootstrap-validation": "~0.1.11",
-    "react-color": "~1.1.2",
-    "react-router": "~0.13.4",
-    "react-router-bootstrap": "~0.18.1",
-    "react-search-input": "~0.5.0",
-    "react-select": "~0.6.1",
+    "react": "^16.8.6",
+    "react-color": "^2.17.3",
+    "react-dom": "^16.8.6",
+    "react-router-dom": "^5.0.1",
+    "react-window": "^1.8.5",
     "semver": "~5.3.0",
     "underscore": "~1.8.3",
-    "valid-url": "^1.0.9"
+    "yup": "^0.27.0"
   },
   "devDependencies": {
-    "babelify": "~6.3.0",
-    "browserify": "~11.2.0",
-    "catw": "~1.0.1",
-    "envify": "~3.4.0",
-    "less": "~3.0.1",
-    "less-plugin-clean-css": "~1.5.1",
-    "reactify": "~1.1.1",
-    "node-sass": "~4.12.0",
-    "uglify-js": "~2.4.24",
-    "uglifyify": "~3.0.1",
-    "watchify": "~3.4.0"
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
+    "@iconify/icons-logos": "^1.0.2",
+    "@iconify/icons-mdi": "^1.0.10",
+    "@iconify/react": "^1.1.1",
+    "babel-loader": "^8.0.6",
+    "webpack": "^4.36.1",
+    "webpack-cli": "^3.3.6"
   },
   "scripts": {
-    "copy-css": "cp -R src/css/*.css ./built/css/",
-    "watch-css": "node-sass src/style/styles.scss ./built/css/styles.css",
-    "watch-js": "watchify src/js/main.js -o ./built/js/main.js -dv",
-    "watch": "npm run watch-css && npm run watch-js",
-    "build-external-css": "lessc src/style/external-styles.less > ./built/css/external-styles.css",
-    "build-css": "node-sass src/style/styles.scss ./built/css/styles.css",
-    "build-js": "browserify -g uglifyify src/js/*.js > ./built/js/main.js",
-    "build": "npm run build-external-css & npm run build-css & npm run build-js && npm run copy-css"
-  },
-  "browserify": {
-    "transform": [
-      "babelify",
-      "reactify",
-      "envify"
-    ]
+    "build": "webpack --config webpack.config.js"
   }
 }

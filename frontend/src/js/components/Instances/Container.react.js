@@ -1,10 +1,12 @@
+import PropTypes from 'prop-types';
 import { instancesStore, applicationsStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
-import { Row, Col } from "react-bootstrap"
+import React from "react"
+import Grid from '@material-ui/core/Grid';
 import List from "./List.react"
 import _ from "underscore"
-import Loader from "halogen/ScaleLoader"
-import MiniLoader from "halogen/PulseLoader"
+import Loader from '../Common/Loader';
+import {CardFeatureLabel} from '../Common/Card';
+import Empty from '../Common/EmptyContent';
 
 class Container extends React.Component {
 
@@ -19,13 +21,6 @@ class Container extends React.Component {
       updating: false,
       selectedInstance: ""
     }
-  }
-
-  static PropTypes: {
-    appID: React.PropTypes.string.isRequired,
-    groupID: React.PropTypes.string.isRequired,
-    version_breakdown: React.PropTypes.array.isRequired,
-    channel: React.PropTypes.object.isRequired
   }
 
   componentDidMount() {
@@ -60,16 +55,16 @@ class Container extends React.Component {
   }
 
   render() {
-    let groupInstances = this.state.instances,
-        miniLoader = this.state.updating ? <MiniLoader color="#00AEEF" size="8px" margin="2px" /> : ""
+    let groupInstances = this.state.instances;
+    let miniLoader = this.state.updating ? <Loader noContainer display="inline" size={12} /> : '';
 
     let entries = ""
 
     if (_.isNull(groupInstances)) {
-      entries = <div className="icon-loading-container"><Loader color="#00AEEF" size="35px" margin="2px"/></div>
+      entries = <Loader />
     } else {
       if (_.isEmpty(groupInstances)) {
-        entries = <div className="emptyBox">No instances have registered yet in this group.<br/><br/>Registration will happen automatically the first time the instance requests an update.</div>
+        entries = <Empty>No instances have registered yet in this group.<br/><br/>Registration will happen automatically the first time the instance requests an update.</Empty>
       } else {
         entries = <List
                 instances={groupInstances}
@@ -80,19 +75,24 @@ class Container extends React.Component {
     }
 
     return(
-      <div>
-        <Row className="noMargin" id="instances">
-          <h4 className="instancesList--title">Instances list {miniLoader}</h4>
-        </Row>
-        <Row>
-          <Col xs={12}>
-            {entries}
-          </Col>
-        </Row>
-      </div>
+      <Grid container>
+        <Grid item xs={12}>
+          <CardFeatureLabel>Instances list {miniLoader}</CardFeatureLabel>
+        </Grid>
+        <Grid item xs={12}>
+          {entries}
+        </Grid>
+      </Grid>
     )
   }
 
+}
+
+Container.propTypes = {
+  appID: PropTypes.string.isRequired,
+  groupID: PropTypes.string.isRequired,
+  version_breakdown: PropTypes.array.isRequired,
+  channel: PropTypes.object.isRequired
 }
 
 export default Container

@@ -1,37 +1,42 @@
-import React, { PropTypes } from "react"
-import { Row, Col } from "react-bootstrap"
-import Item from "./Item.react"
+import Grid from '@material-ui/core/Grid';
+import MuiList from '@material-ui/core/List';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import PropTypes from 'prop-types';
+import React from 'react';
+import Item from './Item.react';
 
-class List extends React.Component {
+const useStyles = makeStyles(theme => ({
+  listTitle: {
+    fontSize: '1em',
+  },
+}));
 
-  constructor() {
-    super()
-  }
+function List(props) {
+  const classes = useStyles();
+  let entries = props.entries ? props.entries : []
 
-  static PropTypes: {
-    day: React.PropTypes.string.isRequired,
-    entries: React.PropTypes.array.isRequired,
-  }
+  return(
+    <Grid
+      container
+      alignItems="stretch"
+      direction="column"
+    >
+      <Typography className={classes.listTitle}>
+        {props.day}
+      </Typography>
+      <MuiList>
+        {entries.map((entry, i) =>
+          <Item key={i} entry={entry} />
+        )}
+      </MuiList>
+    </Grid>
+  );
+}
 
-  render() {
-    let entries = this.props.entries ? this.props.entries : []
-
-    return(
-      <div>
-        <h5 className="timeline--contentTitle">
-          {this.props.day}
-        </h5>
-        <Row>
-          <ul className="timeline--content">
-            {entries.map((entry, i) =>
-              <Item key={i} entry={entry} />
-            )}
-          </ul>
-        </Row>
-      </div>      
-    )
-  }
-
+List.propTypes = {
+  day: PropTypes.string.isRequired,
+  entries: PropTypes.array.isRequired
 }
 
 export default List

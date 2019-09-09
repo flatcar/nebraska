@@ -1,14 +1,17 @@
+import PropTypes from 'prop-types';
 import { applicationsStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
-import { Row, Col } from "react-bootstrap"
-import Router, { Link } from "react-router"
+import React from "react"
+import Grid from '@material-ui/core/Grid';
 import _ from "underscore"
 import Item from "./Item.react"
 import ModalButton from "../Common/ModalButton.react"
-import SearchInput from "react-search-input"
-import Loader from "halogen/ScaleLoader"
-import MiniLoader from "halogen/PulseLoader"
-import ModalUpdate from "./ModalUpdate.react"
+import SearchInput from "../Common/ListSearch"
+import Loader from '../Common/Loader';
+import EditDialog from './EditDialog';
+import MuiList from '@material-ui/core/List';
+import Paper from '@material-ui/core/Paper';
+import Empty from '../Common/EmptyContent';
+import ListHeader from '../Common/ListHeader';
 
 class List extends React.Component {
 
@@ -26,10 +29,6 @@ class List extends React.Component {
       updateGroupIDModal: null,
       updateAppIDModal: null
     }
-  }
-
-  static propTypes: {
-    appID: React.PropTypes.string.isRequired
   }
 
   closeUpdateGroupModal() {
@@ -54,8 +53,9 @@ class List extends React.Component {
     })
   }
 
-  searchUpdated(term) {
-    this.setState({searchTerm: term})
+  searchUpdated(event) {
+    const {name, value} = event.currentTarget;
+    this.setState({searchTerm: value.toLowerCase()})
   }
 
   render() {
@@ -68,8 +68,6 @@ class List extends React.Component {
         name = "",
         entries = ""
 
-    const miniLoader = <div className="icon-loading-container"><MiniLoader color="#00AEEF" size="12px" /></div>
-
     if (application) {
       name = application.name
       groups = application.groups ? application.groups : []
@@ -77,16 +75,15 @@ class List extends React.Component {
       instances = application.instances ? application.instances : []
       channels = application.channels ? application.channels : []
 
-      if (this.refs.search) {
-        var filters = ["name"]
-        groups = groups.filter(this.refs.search.filter(filters))
+      if (this.state.searchTerm) {
+        groups = groups.filter(app => app.name.toLowerCase().includes(this.state.searchTerm));
       }
 
       if (_.isEmpty(groups)) {
         if (this.state.searchTerm) {
-          entries = <div className="emptyBox">No results found.</div>
+          entries = <Empty>No results found.</Empty>
         } else {
-          entries = <div className="emptyBox">There are no groups for this application yet.<br/><br/>Groups help you control how you want to distribute updates to a specific set of instances.</div>
+          entries = <Empty>There are no groups for this application yet.<br/><br/>Groups help you control how you want to distribute updates to a specific set of instances.</Empty>
         }
       } else {
         entries = _.map(groups, (group, i) => {
@@ -95,43 +92,43 @@ class List extends React.Component {
       }
 
     } else {
-      entries = <div className="icon-loading-container"><Loader color="#00AEEF" size="35px" margin="2px"/></div>
+      entries = <Loader />
     }
 
     const groupToUpdate =  !_.isEmpty(groups) && this.state.updateGroupIDModal ? _.findWhere(groups, {id: this.state.updateGroupIDModal}) : null
 
 		return (
-      <div>
-        <Col xs={8}>
-          <Row>
-            <Col xs={5}>
-              <h1 className="displayInline mainTitle">Groups</h1>
-              <ModalButton icon="plus" modalToOpen="AddGroupModal" data={{channels: channels, appID: this.props.appID}} />
-            </Col>
-            <Col xs={7} className="alignRight">
-              <div className="searchblock">
-                <SearchInput ref="search" onChange={this.searchUpdated} placeholder="Search..." />
-                <label htmlFor="searchGroups"></label>
-              </div>
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={12} className="groups--container">
-              {entries}
-            </Col>
-          </Row>
-        </Col>
-        {/* Update group modal */}
+      <Paper>
+        <ListHeader
+          title="Groups"
+          actions={[
+            <ModalButton
+              icon="plus"
+              modalToOpen="AddGroupModal"
+              data={{
+                channels: channels,
+                appID: this.props.appID
+              }}
+            />
+          ]}
+        />
+        <MuiList>
+          {entries}
+        </MuiList>
         {groupToUpdate &&
-          <ModalUpdate
+          <EditDialog
             data={{group: groupToUpdate, channels: channels}}
-            modalVisible={this.state.updateGroupModalVisible}
+            show={this.state.updateGroupModalVisible}
             onHide={this.closeUpdateGroupModal} />
         }
-      </div>
+      </Paper>
 		)
   }
 
+}
+
+List.propTypes = {
+  appID: PropTypes.string.isRequired
 }
 
 export default List

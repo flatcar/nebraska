@@ -1,36 +1,38 @@
-import React, { PropTypes } from "react"
-import ChannelLabel from "../Common/ChannelLabel.react"
-import _ from "underscore"
+import Grid from '@material-ui/core/Grid';
+import PropTypes from 'prop-types';
+import React from "react";
+import ChannelItem from '../Channels/Item.react';
 
-class ApplicationItemChannelsList extends React.Component {
+function ApplicationItemChannelsList(props) {
+  let channels = props.channels || [];
+  let entries = '-';
 
-  constructor() {
-    super()
+  if (channels) {
+    entries = channels.map((channel, i) =>
+      <ChannelItem
+        channel={channel}
+        ContainerComponent="span"
+      />
+    );
   }
 
-  static PropTypes: {
-    channels: React.PropTypes.array.isRequired
-  }
+  return(
+    <Grid
+      container
+      justify="space-between"
+    >
+      {entries.map(entry =>
+        <Grid item xs={4}>
+          {entry}
+        </Grid>
+      )}
+    </Grid>
+  );
 
-  render() {
-    let channels = this.props.channels ? this.props.channels : [],
-        entries = ""
+}
 
-    if (_.isEmpty(channels)) {
-      entries = "-"
-    } else {
-      entries = _.map(channels, (channel, i) => {
-        return <ChannelLabel channel={channel} key={"channel_" + i} />
-      })
-    }
-
-    return(
-      <ul className={_.isEmpty(channels) ? "apps--channelsList apps--channelsList--extraPadding" : "apps--channelsList"}>
-        {entries}
-      </ul>
-    )
-  }
-
+ApplicationItemChannelsList.propTypes = {
+  channels: PropTypes.array.isRequired
 }
 
 export default ApplicationItemChannelsList

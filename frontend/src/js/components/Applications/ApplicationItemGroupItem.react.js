@@ -1,29 +1,33 @@
-import React, { PropTypes } from "react"
-import Router, { Link } from "react-router"
+import Link from '@material-ui/core/Link';
+import { makeStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 
-class ApplicationItemGroupItem extends React.Component {
+const useStyles = makeStyles(theme => ({
+  groupLink: {
+    fontSize: '1rem'
+  },
+}));
 
-  constructor() {
-    super()
-  } 
+function ApplicationItemGroupItem(props) {
+  const classes = useStyles();
+  const instances_total = props.group.instances_stats.total ? '(' + props.group.instances_stats.total + ')' : '';
 
-  static PropTypes: {
-    group: React.PropTypes.object.isRequired,
-    appName: React.PropTypes.string.isRequired
-  }
-
-  render() {
-    const instances_total = this.props.group.instances_stats.total ? "(" + this.props.group.instances_stats.total + ")" : ""
-
-    return(
-      <Link to="GroupLayout" params={{appID: this.props.group.application_id, groupID: this.props.group.id}}>
-        <span className="activeLink lighter">
-          {this.props.group.name} {instances_total}&nbsp;<i className="fa fa-caret-right"></i>
-        </span>
-      </Link>
-    )
-  }
-
+  return(
+    <Link
+      className={classes.groupLink}
+      to={{pathname: `/apps/${props.group.application_id}/groups/${props.group.id}`}}
+      component={RouterLink}
+    >
+      {props.group.name} {instances_total}
+    </Link>
+  )
 }
 
-export default ApplicationItemGroupItem
+ApplicationItemGroupItem.propTypes = {
+  group: PropTypes.object.isRequired,
+  appName: PropTypes.string.isRequired
+};
+
+export default ApplicationItemGroupItem;

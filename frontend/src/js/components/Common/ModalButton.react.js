@@ -1,61 +1,61 @@
-import React, { PropTypes } from "react"
-import AddApplicationModal from "../Applications/ModalAdd.react"
-import AddGroupModal from "../Groups/ModalAdd.react"
-import AddChannelModal from "../Channels/ModalAdd.react"
-import AddPackageModal from "../Packages/ModalAdd.react"
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
+import PropTypes from 'prop-types';
+import React from 'react';
+import ApplicationEditDialog from '../Applications/EditDialog';
+import ChannelEditDialog from '../Channels/EditDialog';
+import GroupEditDialog from '../Groups/EditDialog';
+import PackageEditDialog from '../Packages/EditDialog';
 
-class ModalButton extends React.Component {
+function ModalButton(props) {
+  let [showModal, setShowModal] = React.useState(false);
 
-  constructor(props) {
-    super(props)
-    this.close = this.close.bind(this)
-    this.open = this.open.bind(this)
-
-    this.state = {showModal: false}
+  function close() {
+    setShowModal(false);
   }
 
-  static propTypes : {
-    icon: PropTypes.string.isRequired,
-    modalToOpen: PropTypes.string.isRequired,
-    data: PropTypes.object
+  function open() {
+    setShowModal(true);
   }
 
-  close() {
-    this.setState({showModal: false})
+  let options = {
+    create: true,
+    show: showModal,
+    data: props.data,
+    onHide: close,
   }
 
-  open() {
-    this.setState({showModal: true})
+  let modal = null;
+  switch (props.modalToOpen) {
+    case 'AddApplicationModal':
+      modal = <ApplicationEditDialog {...options} />;
+      break;
+    case 'AddGroupModal':
+      modal = <GroupEditDialog {...options} />;
+      break;
+    case 'AddChannelModal':
+      modal = <ChannelEditDialog {...options} />;
+      break;
+    case 'AddPackageModal':
+      modal = <PackageEditDialog {...options} />;
+      break;
   }
 
-  render() {
-    var options = {
-      show: this.state.showModal,
-      data: this.props.data
-    }
+  // @todo: verify whether aria-label should be more specific (in which
+  // case it should be set from the caller).
+  return(
+    <div>
+      <Fab size="small" aria-label="add" onClick={open}>
+        <AddIcon />
+      </Fab>
+      {modal}
+    </div>
+  );
+}
 
-    switch (this.props.modalToOpen) {
-      case "AddApplicationModal":
-        var modal = <AddApplicationModal {...options} onHide={this.close} />
-        break
-      case "AddGroupModal":
-        var modal = <AddGroupModal {...options} onHide={this.close} />
-        break
-      case "AddChannelModal":
-        var modal = <AddChannelModal {...options} onHide={this.close} />
-        break
-      case "AddPackageModal":
-        var modal = <AddPackageModal {...options} onHide={this.close} />
-        break
-    }
-
-    return(
-      <a className={"cr-button displayInline fa fa-" + this.props.icon} href="javascript:void(0)" onClick={this.open.bind()} id={"openModal-" + this.props.modalToOpen}>
-        {modal}
-      </a>
-    )
-  }
-
+ModalButton.propTypes = {
+  modalToOpen: PropTypes.string.isRequired,
+  data: PropTypes.object
 }
 
 export default ModalButton

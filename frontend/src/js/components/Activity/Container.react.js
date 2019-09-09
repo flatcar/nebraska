@@ -1,9 +1,12 @@
 import { activityStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
-import { Row, Col } from "react-bootstrap"
+import React from "react"
 import List from "./List.react"
 import _ from "underscore"
-import Loader from "halogen/ScaleLoader"
+import Loader from '../Common/Loader';
+import Box from '@material-ui/core/Box';
+import Paper from '@material-ui/core/Paper';
+import ListHeader from '../Common/ListHeader';
+import Empty from '../Common/EmptyContent';
 
 class Container extends React.Component {
 
@@ -32,26 +35,24 @@ class Container extends React.Component {
     let entries = ""
 
     if (_.isNull(this.state.entries)) {
-      entries = <div className="icon-loading-container"><Loader color="#00AEEF" size="35px" margin="2px"/></div>
+      entries = <Loader />
     } else {
       if (_.isEmpty(this.state.entries)) {
-        entries = <div className="emptyBox">No activity found for the last week.<br/><br/>You will see here important events related to the rollout of your updates. Stay tuned!</div>
+        entries = <Empty>No activity found for the last week.<br/><br/>You will see here important events related to the rollout of your updates. Stay tuned!</Empty>
       } else {
-        entries = _.mapObject(this.state.entries, (entry, key) => {
+        entries = Object.values(_.mapObject(this.state.entries, (entry, key) => {
           return <List day={key} entries={entry} key={key} />
-        })
-      }      
+        }));
+      }
     }
 
     return(
-      <Col xs={5} className="timeline--container">
-        <Row>
-          <Col xs={12}>
-            <h1 className="displayInline mainTitle padBottom25">Activity</h1>
-          </Col>
-        </Row>
-        {entries}
-      </Col>
+      <Paper>
+        <ListHeader title="Activity" />
+        <Box padding="1em">
+          {entries}
+        </Box>
+      </Paper>
     )
   }
 

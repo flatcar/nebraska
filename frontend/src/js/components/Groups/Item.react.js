@@ -1,100 +1,120 @@
-import { applicationsStore } from "../../stores/Stores"
-import React, { PropTypes } from "react";
-import Router, { Link } from "react-router";
-import { Row, Col, OverlayTrigger, Button, Popover } from "react-bootstrap";
-import Switch from "rc-switch"
-import _ from "underscore"
-import ChannelLabel from "../Common/ChannelLabel.react"
-import VersionBreakdown from "../Common/VersionBreakdown.react"
-import ConfirmationContent from "../Common/ConfirmationContent.react"
+import Grid from '@material-ui/core/Grid';
+import Link from '@material-ui/core/Link';
+import { makeStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import _ from 'underscore';
+import { applicationsStore } from '../../stores/Stores';
+import ChannelItem from '../Channels/Item.react';
+import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
+import ListItem from '../Common/ListItem';
+import MoreMenu from '../Common/MoreMenu';
+import VersionBreakdown from '../Common/VersionBreakdown.react';
 
-class Item extends React.Component {
+const useStyles = makeStyles(theme => ({
+  itemSection: {
+    padding: '1em'
+  },
+}));
 
-  constructor(props) {
-    super(props)
-    this.deleteGroup = this.deleteGroup.bind(this)
-    this.updateGroup = this.updateGroup.bind(this)
-  }
+function Item(props) {
+  const classes = useStyles();
 
-	static PropTypes: {
-    group: React.PropTypes.object.isRequired,
-    appName: React.PropTypes.string.isRequired,
-    channels: React.PropTypes.array.isRequired,
-    handleUpdateGroup: React.PropTypes.func.isRequired
-}
+  let version_breakdown = (props.group && props.group.version_breakdown) ? props.group.version_breakdown : [];
+  let noInstancesLabel = 'None';
+  let instances_total = props.group.instances_stats ? (props.group.instances_stats.total || noInstancesLabel) : noInstancesLabel;
+  let description = props.group.description || 'No description provided';
+  let channel = props.group.channel || {};
 
-  deleteGroup() {
+  let groupChannel = _.isEmpty(props.group.channel) ? "No channel provided"
+    : <ChannelItem channel={props.group.channel} ContainerComponent="span" />
+  let styleGroupChannel = _.isEmpty(props.group.channel) ? "italicText" : ""
+  let groupPath = `/apps/${props.group.application_id}/groups/${props.group.id}`
+
+  function deleteGroup() {
     let confirmationText = "Are you sure you want to delete this group?"
     if (confirm(confirmationText)) {
-      applicationsStore.deleteGroup(this.props.group.application_id, this.props.group.id)
+      applicationsStore.deleteGroup(props.group.application_id, props.group.id)
     }
   }
 
-  updateGroup() {
-    this.props.handleUpdateGroup(this.props.group.application_id, this.props.group.id)
+  function updateGroup() {
+    props.handleUpdateGroup(props.group.application_id, props.group.id)
   }
 
-  render() {
-    let version_breakdown = (this.props.group && this.props.group.version_breakdown) ? this.props.group.version_breakdown : [],
-        instances_total = this.props.group.instances_stats ? this.props.group.instances_stats.total : 0,
-        description = this.props.group.description ? this.props.group.description : "No description provided",
-        channel = this.props.group.channel ? this.props.group.channel : {},
-        styleDescription = this.props.group.description ? "" : " italicText",
-        popoverContent = {
-          type: "group",
-          appID: this.props.group.application_id,
-          groupID: this.props.group.id
-        }
-
-    let groupChannel = _.isEmpty(this.props.group.channel) ? "No channel provided" : <ChannelLabel channel={this.props.group.channel} />
-    let styleGroupChannel = _.isEmpty(this.props.group.channel) ? "italicText" : ""
-
-    return (
-      <div className="groups--box">
-        <Row className="groups--boxHeader">
-          <Col xs={10}>
-            <h3 className="groups--boxTitle">
-              <Link to="GroupLayout" params={{groupID: this.props.group.id, appID: this.props.group.application_id}}>
-                {this.props.group.name} <i className="fa fa-caret-right"></i>
-              </Link>
-              <span className="groups--id">(ID: {this.props.group.id})</span>
-            </h3>
-            <span className={"groups--description" + styleDescription}>{description}</span>
-          </Col>
-          <Col xs={2}>
-            <div className="groups--buttons">
-              <button className="cr-button displayInline fa fa-edit" onClick={this.updateGroup}></button>
-              <button className="cr-button displayInline fa fa-trash-o" onClick={this.deleteGroup}></button>
-            </div>
-          </Col>
-        </Row>
-        <div className="groups--boxContent">
-          <Row className="groups--resume">
-            <Col xs={12}>
-              <span className="subtitle">Instances:</span><Link to="GroupLayout" params={{groupID: this.props.group.id, appID: this.props.group.application_id}}><span className="activeLink"> {instances_total}<span className="fa fa-caret-right" /></span></Link>
-              <div className="divider">|</div>
-              <span className="subtitle">Channel:</span> <span className={styleGroupChannel}>{groupChannel}</span>
-            </Col>
-          </Row>
-          <Row className="groups--resume noExtended">
-            <Col xs={8}>
-              <span className="subtitle">Rollout policy:</span> Max {this.props.group.policy_max_updates_per_period} updates per {this.props.group.policy_period_interval}
-            </Col>
-            <Col xs={4} className="alignRight">
-              <span className="subtitle displayInline">Updates enabled:</span>
-              <div className="displayInline">
-                <Switch checked={this.props.group.policy_updates_enabled} disabled={true} checkedChildren={"✔"} unCheckedChildren={"✘"} />
-              </div>
-            </Col>
-          </Row>
-          <Row className="groups--resume">
+  return (
+    <ListItem disableGutters>
+      <Grid
+        container
+      >
+        <Grid item xs={12}>
+          <CardHeader
+            cardMainLinkLabel={props.group.name}
+            cardMainLinkPath={groupPath}
+            cardId={props.group.id}
+            cardDescription={description}
+          >
+            <MoreMenu options={[
+              {
+              'label': 'Edit',
+              'action': updateGroup,
+              },
+              {
+                'label': 'Delete',
+                'action': deleteGroup,
+              }
+            ]} />
+          </CardHeader>
+        </Grid>
+        <Grid
+          item
+          xs={12}
+          container
+          justify="space-between"
+          className={classes.itemSection}
+        >
+          <Grid item xs={6} container direction="column">
+            <Grid item>
+              <CardFeatureLabel>Instances:</CardFeatureLabel>&nbsp;
+              <CardLabel labelStyle={{fontSize: '1.5rem'}}>
+                <Link
+                  to={groupPath}
+                  component={RouterLink}
+                >
+                  {instances_total}
+                </Link>
+              </CardLabel>
+            </Grid>
+            <Grid item>
+              <CardFeatureLabel>Channel:</CardFeatureLabel>
+              <CardLabel>{groupChannel}</CardLabel>
+            </Grid>
+          </Grid>
+          <Grid item xs={6} container direction="column">
+            <Grid item>
+              <CardFeatureLabel>Updates:</CardFeatureLabel>&nbsp;
+              <CardLabel>{props.group.policy_updates_enabled ? 'Enabled' : 'Disabled'}</CardLabel>
+            </Grid>
+            <Grid item>
+              <CardFeatureLabel>Rollout Policy:</CardFeatureLabel>&nbsp;
+              <CardLabel>Max {props.group.policy_max_updates_per_period} updates per {props.group.policy_period_interval}</CardLabel>
+            </Grid>
+          </Grid>
+          <Grid item xs={12}>
             <VersionBreakdown version_breakdown={version_breakdown} channel={channel} />
-          </Row>
-        </div>
-      </div>
-    )
-  }
+          </Grid>
+        </Grid>
+      </Grid>
+    </ListItem>
+  );
+}
 
+Item.propTypes = {
+    group: PropTypes.object.isRequired,
+    appName: PropTypes.string.isRequired,
+    channels: PropTypes.array.isRequired,
+    handleUpdateGroup: PropTypes.func.isRequired
 }
 
 export default Item

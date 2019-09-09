@@ -1,11 +1,16 @@
-import { applicationsStore } from "../../stores/Stores"
-import React, { PropTypes } from "react"
-import { Row, Col } from "react-bootstrap"
-import _ from "underscore"
-import ModalButton from "../Common/ModalButton.react"
-import Item from "./Item.react"
-import ModalUpdate from "./ModalUpdate.react"
-import Loader from "halogen/ScaleLoader"
+import Grid from '@material-ui/core/Grid';
+import MuiList from '@material-ui/core/List';
+import Typography from '@material-ui/core/Typography';
+import PropTypes from 'prop-types';
+import React from "react";
+import Loader from '../Common/Loader';
+import _ from "underscore";
+import { applicationsStore } from "../../stores/Stores";
+import Empty from '../Common/EmptyContent';
+import ModalButton from "../Common/ModalButton.react";
+import SectionPaper from '../Common/SectionPaper';
+import EditDialog from './EditDialog';
+import Item from "./Item.react";
 
 class List extends React.Component {
 
@@ -20,10 +25,6 @@ class List extends React.Component {
       updatePackageModalVisible: false,
       updatePackageIDModal: null
     }
-  }
-
-  static propTypes: {
-    appID: React.PropTypes.string.isRequired
   }
 
   closeUpdatePackageModal() {
@@ -59,41 +60,55 @@ class List extends React.Component {
       packages = application.packages ? application.packages : []
 
       if (_.isEmpty(packages)) {
-        entries = <div className="emptyBox">This application does not have any package yet</div>
+        entries = <Empty>This application does not have any package yet</Empty>
       } else {
         entries = _.map(packages, (packageItem, i) => {
           return <Item key={"packageItemID_" + packageItem.id} packageItem={packageItem} channels={channels} handleUpdatePackage={this.openUpdatePackageModal} />
         })
       }
     } else {
-      entries = <div className="icon-loading-container"><Loader color="#00AEEF" size="35px" margin="2px"/></div>
+      entries = <Loader />
     }
 
     const packageToUpdate =  !_.isEmpty(packages) && this.state.updatePackageIDModal ? _.findWhere(packages, {id: this.state.updatePackageIDModal}) : null
 
     return (
-      <div>
-        <Row>
-          <Col xs={12}>
-            <h1 className="displayInline mainTitle">Packages</h1>
-            <ModalButton icon="plus" modalToOpen="AddPackageModal"
-            data={{channels: channels, appID: this.props.appID}} />
-          </Col>
-        </Row>
-        <div className="groups--packagesList">
+      <SectionPaper>
+        <Grid
+          container
+          alignItems="center"
+          justify="space-between"
+        >
+          <Grid item>
+            <Typography variant="h5">Packages</Typography>
+          </Grid>
+          <Grid item>
+            <ModalButton
+              modalToOpen="AddPackageModal"
+              data={{
+                channels: channels,
+                appID: this.props.appID
+              }}
+            />
+          </Grid>
+        </Grid>
+        <MuiList>
           {entries}
-        </div>
-        {/* Update package modal */}
+        </MuiList>
         {packageToUpdate &&
-          <ModalUpdate
+          <EditDialog
             data={{channels: channels, channel: packageToUpdate}}
-            modalVisible={this.state.updatePackageModalVisible}
+            show={this.state.updatePackageModalVisible}
             onHide={this.closeUpdatePackageModal} />
         }
-      </div>
+      </SectionPaper>
     )
   }
 
+}
+
+List.propTypes = {
+  appID: PropTypes.string.isRequired
 }
 
 export default List

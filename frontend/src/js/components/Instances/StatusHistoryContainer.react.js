@@ -1,39 +1,39 @@
-import React, { PropTypes } from "react"
-import StatusHistoryList from "./StatusHistoryList.react"
-import _ from "underscore"
+import { makeStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
+import React from "react";
+import _ from "underscore";
+import StatusHistoryList from "./StatusHistoryList.react";
+import Empty from '../Common/EmptyContent';
 
-class StatusHistoryContainer extends React.Component {
+const useStyles = makeStyles({
+  historyBox: {
+    paddingLeft: '2em',
+    paddingRight: '2em',
+    maxHeight: '400px',
+    overflow: 'auto',
+  },
+});
 
-  constructor(props) {
-    super(props)
+function StatusHistoryContainer(props) {
+  const classes = useStyles();
+  let entries = '';
+
+  if (_.isEmpty(props.instance.statusHistory)) {
+    entries = <Empty>This instance hasn’t reported any events yet in the context of this application/group.</Empty>;
+  } else {
+    entries = <StatusHistoryList entries={props.instance.statusHistory} />;
   }
 
-  static PropTypes: {
-    key: React.PropTypes.string.isRequired,
-    active: React.PropTypes.array.isRequired,
-    instance: React.PropTypes.object.isRequired
-  }
+  return(
+    <div className={classes.historyBox}>
+      {entries}
+    </div>
+  );
+}
 
-  render() {
-    let entries = "",
-        additionalStyle = ""
-
-    if (_.isEmpty(this.props.instance.statusHistory)) {
-      entries = <div className="emptyBox">This instance hasn’t reported any events yet in the context of this application/group.</div>
-      additionalStyle = " coreRollerTable-detail--empty"
-    } else {
-      entries = <StatusHistoryList entries={this.props.instance.statusHistory} />
-    }
-
-    return(
-      <div className={"coreRollerTable-detail" + additionalStyle + this.props.active} id={"detail-" + this.props.key}>
-        <div className="coreRollerTable-detailContent">
-          {entries}
-        </div>
-      </div>
-    )
-  }
-
+StatusHistoryContainer.propTypes = {
+  key: PropTypes.string.isRequired,
+  instance: PropTypes.object.isRequired
 }
 
 export default StatusHistoryContainer
