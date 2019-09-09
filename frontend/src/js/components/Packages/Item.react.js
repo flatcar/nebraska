@@ -20,6 +20,9 @@ import MoreMenu from '../Common/MoreMenu';
 import ChannelAvatar from '../Channels/ChannelAvatar';
 
 const useStyles = makeStyles(theme => ({
+  packageName: {
+    fontSize: '1.1em',
+  },
   subtitle: {
     fontSize: '.9em',
     textTransform: 'uppercase',
@@ -107,6 +110,7 @@ function Item(props) {
         <InlineIcon icon={item.icon} width="35" height="35" />
       </ListItemIcon>
       <ListItemText
+        primaryTypographyProps={{className: classes.packageName}}
         primary={item.name}
         secondary={makeItemSecondaryInfo()}
       />
