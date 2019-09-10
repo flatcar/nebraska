@@ -4,11 +4,11 @@ import React from 'react';
 
 const useStyles = makeStyles({
   colorAvatar: props => ({
-    color: props.color,
+    color: '#fff',
     backgroundColor: props.backgroundColor || props.color,
     width: props.size,
     height: props.size,
-    display: 'inline-block'
+    display: 'inline-flex'
   }),
 });
 
