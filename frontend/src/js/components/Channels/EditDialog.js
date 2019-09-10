@@ -2,6 +2,7 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
+import Grid from '@material-ui/core/Grid';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -68,16 +69,27 @@ function EditDialog(props) {
             {status.statusMessage}
           </DialogContentText>
           }
-          <Field
-            name="name"
-            component={TextField}
-            margin="dense"
-            label="Name"
-            type="text"
-            required={true}
-            fullWidth
-          />
-          <ColorPickerButton color={channelColor} onColorPicked={handleColorPicked}/>
+          <Grid
+            container
+            spacing={2}
+            justify="space-between"
+            alignItems="flex-end"
+          >
+            <Grid item>
+              <ColorPickerButton color={channelColor} onColorPicked={handleColorPicked}/>
+            </Grid>
+            <Grid item>
+              <Field
+                name="name"
+                component={TextField}
+                margin="dense"
+                label="Name"
+                type="text"
+                required={true}
+                fullWidth
+              />
+            </Grid>
+          </Grid>
           <Field
             type="text"
             name="package"
