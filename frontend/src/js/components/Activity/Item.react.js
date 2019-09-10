@@ -35,7 +35,7 @@ const stateIcons = {
   },
   info: {
     icon: infoIcon,
-    color: '#ff5500'
+    color: '#00d3ff'
   },
   error: {
     icon: errorIcon,
