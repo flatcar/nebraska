@@ -28,7 +28,7 @@ function Item(props) {
   return (
     <ListItem {...others}>
       <ListItemAvatar>
-        <ChannelAvatar color={channel.color}/>
+        <ChannelAvatar color={channel.color}>{name[0]}</ChannelAvatar>
       </ListItemAvatar>
       <ListItemText
         primary={name}
