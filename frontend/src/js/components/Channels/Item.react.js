@@ -11,7 +11,7 @@ import ChannelAvatar from './ChannelAvatar';
 
 function Item(props) {
   let {channel, packages, handleUpdateChannel, ...others} = props;
-  const name = channel ? channel.name : '';
+  const name = channel.name;
   const version = channel.package ? cleanSemverVersion(channel.package.version) : 'No package';
 
   function deleteChannel() {
