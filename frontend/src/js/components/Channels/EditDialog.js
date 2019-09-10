@@ -17,8 +17,8 @@ import { TextField } from 'formik-material-ui';
 import { ColorPickerButton } from '../Common/ColorPicker';
 
 function EditDialog(props) {
-
-  const [channelColor, setChannelColor] = React.useState(props.data && props.data.channel ? props.data.channel.color : "#000000");
+  const defaultColor = props.data && props.data.channel ? props.data.channel.color : '';
+  const [channelColor, setChannelColor] = React.useState(defaultColor);
   const isCreation = Boolean(props.create);
 
   function handleSubmit(values, actions) {
