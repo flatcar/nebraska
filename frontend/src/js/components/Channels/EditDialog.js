@@ -8,6 +8,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import MenuItem from '@material-ui/core/MenuItem';
 import PropTypes from 'prop-types';
 import React from 'react';
+import ChannelAvatar from '../Channels/ChannelAvatar';
 import moment from 'moment';
 import * as Yup from 'yup';
 import { applicationsStore } from '../../stores/Stores';
@@ -76,7 +77,13 @@ function EditDialog(props) {
             alignItems="flex-end"
           >
             <Grid item>
-              <ColorPickerButton color={channelColor} onColorPicked={handleColorPicked}/>
+              <ColorPickerButton
+                color={channelColor}
+                onColorPicked={handleColorPicked}
+                componentColorProp="color"
+              >
+                <ChannelAvatar>{values.name ? values.name[0] : ''}</ChannelAvatar>
+              </ColorPickerButton>
             </Grid>
             <Grid item>
               <Field
