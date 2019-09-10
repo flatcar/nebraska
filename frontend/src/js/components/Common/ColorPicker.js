@@ -19,7 +19,10 @@ export function ColorPickerButton(props) {
   let [channelColor, setChannelColor] = React.useState(props.color);
   let [displayColorPicker, setDisplayColorPicker] = React.useState(false);
   let [anchorEl, setAnchorEl] = React.useState(null);
-  let {color, onColorPicked} = props;
+  let {onColorPicked, componentColorProp=null} = props;
+
+  let componentProps = {};
+  componentProps[componentColorProp] = channelColor;
 
   function handleColorChange(color) {
     setChannelColor(color.hex);
@@ -40,7 +43,11 @@ export function ColorPickerButton(props) {
   return (
     <div>
       <IconButton className={classes.iconButton} onClick={handleColorButtonClick}>
-        <ChannelAvatar color={channelColor} />
+        {props.children ?
+          React.cloneElement(props.children, componentProps)
+        :
+          <ChannelAvatar color={channelColor} />
+        }
       </IconButton>
       {displayColorPicker &&
       <Popover
