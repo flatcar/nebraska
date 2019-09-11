@@ -1,4 +1,4 @@
-import coreosIcon from '@iconify/icons-logos/coreos-icon';
+import flatcarIcon from '../../icons/icons.json'
 import cancelIcon from '@iconify/icons-mdi/cancel';
 import cubeOutline from '@iconify/icons-mdi/cube-outline';
 import { InlineIcon } from '@iconify/react';
@@ -20,6 +20,9 @@ import MoreMenu from '../Common/MoreMenu';
 import ChannelAvatar from '../Channels/ChannelAvatar';
 
 const useStyles = makeStyles(theme => ({
+  packageName: {
+    fontSize: '1.1em',
+  },
   subtitle: {
     fontSize: '.9em',
     textTransform: 'uppercase',
@@ -36,7 +39,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const containerIcons = {
-  1: {icon: coreosIcon, name: 'CoreOS'},
+  1: {icon: flatcarIcon.icons.logo, name: 'Flatcar'},
   other: {icon: cubeOutline, name: 'Other'},
 };
 
@@ -104,9 +107,10 @@ function Item(props) {
   return (
     <ListItem dense alignItems="flex-start">
       <ListItemIcon className={classes.packageIcon}>
-        <InlineIcon icon={item.icon} width="25" height="25" />
+        <InlineIcon icon={item.icon} width="35" height="35" />
       </ListItemIcon>
       <ListItemText
+        primaryTypographyProps={{className: classes.packageName}}
         primary={item.name}
         secondary={makeItemSecondaryInfo()}
       />
