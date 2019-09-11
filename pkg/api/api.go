@@ -13,9 +13,12 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// Use github.com/kevinburke/go-bindata. Remember to run gofmt -s -w
-// on the generated file.
+// To re-generate the bindata.go file, use https://github.com/twitter/go-bindata
+// (a fork of the discontinued go-bindata project).
+// Run the following command from the root of the repository:
 //
+//    make bindata
+
 //go:generate go-bindata -ignore=\.swp -pkg api db db/migrations
 
 const (
