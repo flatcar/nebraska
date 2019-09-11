@@ -28,6 +28,7 @@
     "react-window": "^1.8.5",
     "semver": "~5.3.0",
     "underscore": "~1.8.3",
+    "victory": "^33.0.5",
     "yup": "^0.27.0"
   },
   "devDependencies": {
