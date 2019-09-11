@@ -2,8 +2,6 @@
 
 -- Nebraska schema
 
-alter database nebraska set timezone = 'utc';
-
 create extension if not exists "uuid-ossp";
 
 create table team (
