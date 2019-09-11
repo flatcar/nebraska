@@ -72,6 +72,7 @@ export function CardHeader(props) {
           container
           spacing={1}
           alignItems="center"
+          justify="space-between"
         >
           <Grid item xs={6}>
             { props.cardMainLinkPath ? (
@@ -85,8 +86,8 @@ export function CardHeader(props) {
             )
             }
           </Grid>
-          <Grid item xs={6}>
-            <Typography className={classes.idLabel} arial-label="group-id">{props.cardId}</Typography>
+          <Grid item xs>
+            <Typography className={classes.idLabel} arial-label="group-id"  noWrap>{props.cardId}</Typography>
           </Grid>
           <Grid item xs={12}>
             <CardDescriptionLabel variant="h5">{props.cardDescription}</CardDescriptionLabel>

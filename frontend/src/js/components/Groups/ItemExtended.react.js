@@ -10,6 +10,8 @@ import {CardLabel, CardFeatureLabel, CardHeader} from '../Common/Card';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
+import InstanceChartSection from '../Instances/Charts';
+import ListHeader from '../Common/ListHeader';
 
 class ItemExtended extends React.Component {
 
@@ -72,66 +74,88 @@ class ItemExtended extends React.Component {
     }
 
 		return (
-      <Paper>
-        <Grid
-          container
-        >
-          <Grid item xs={12}>
-            <CardHeader
-              cardMainLinkLabel={name}
-              cardId={groupId}
-              cardDescription={description}
-            />
-          </Grid>
+      <Grid
+        container
+        spacing={2}
+        alignItems="stretch"
+      >
+        <Grid item xs={5}>
+          <Paper>
+            <Grid container>
+              <Grid item xs={12}>
+                <CardHeader
+                  cardMainLinkLabel={name}
+                  cardId={groupId}
+                  cardDescription={description}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Box padding="1em">
+                  <Grid
+                    container
+                    direction="column"
+                    justify="space-between"
+                    spacing={1}
+                  >
+                    <Grid item>
+                      <CardFeatureLabel>Channel:</CardFeatureLabel>
+                      {groupChannel}
+                    </Grid>
+                    <Grid item>
+                      <CardFeatureLabel>Updates:</CardFeatureLabel>&nbsp;
+                      <CardLabel>{policyUpdates ? 'Enabled' : 'Disabled'}</CardLabel>
+                    </Grid>
+                    <Grid item>
+                      <CardFeatureLabel>Only Office Hours:</CardFeatureLabel>&nbsp;
+                      <CardLabel>{officeHours ? 'Yes' : 'No'}</CardLabel>
+                    </Grid>
+                    <Grid item>
+                      <CardFeatureLabel>Safe Mode:</CardFeatureLabel>&nbsp;
+                      <CardLabel>{safeMode ? 'Yes' : 'No'}</CardLabel>
+                    </Grid>
+                    <Grid item>
+                      <CardFeatureLabel>Updates Policy:</CardFeatureLabel>&nbsp;
+                      <CardLabel>Max {policyMaxUpdatesPerDay} updates per {policyPeriodInterval}</CardLabel>
+                    </Grid>
+                    <Grid item>
+                      <CardFeatureLabel>Updates Timeout:</CardFeatureLabel>&nbsp;
+                      <CardLabel>Updates timeout { policyUpdatesTimeout }</CardLabel>
+                    </Grid>
+                  </Grid>
+                </Box>
+              </Grid>
+            </Grid>
+          </Paper>
         </Grid>
-        <Box padding="1em">
-          <Grid item xs={12} container justify="space-between" spacing={1}>
-            <Grid item xs={6} container spacing={1} direction="column">
-              <Grid item>
-                <CardFeatureLabel>Instances:</CardFeatureLabel>&nbsp;
-                <CardLabel>{instancesNum ? instancesNum : 'None'}</CardLabel>
-              </Grid>
-              <Grid item>
-                <CardFeatureLabel>Channel:</CardFeatureLabel>
-                {groupChannel}
-              </Grid>
-            </Grid>
-            <Grid item xs={6} container spacing={1} direction="column">
-              <Grid item>
-                <CardFeatureLabel>Updates:</CardFeatureLabel>&nbsp;
-                <CardLabel>{policyUpdates ? 'Enabled' : 'Disabled'}</CardLabel>
-              </Grid>
-              <Grid item>
-                <CardFeatureLabel>Only Office Hours:</CardFeatureLabel>&nbsp;
-                <CardLabel>{officeHours ? 'Yes' : 'No'}</CardLabel>
-              </Grid>
-              <Grid item>
-                <CardFeatureLabel>Safe Mode:</CardFeatureLabel>&nbsp;
-                <CardLabel>{safeMode ? 'Yes' : 'No'}</CardLabel>
-              </Grid>
-              <Grid item>
-                <CardFeatureLabel>Updates Policy:</CardFeatureLabel>&nbsp;
-                <CardLabel>Max {policyMaxUpdatesPerDay} updates per {policyPeriodInterval}</CardLabel>
-              </Grid>
-              <Grid item>
-                <CardFeatureLabel>Updates Timeout:</CardFeatureLabel>&nbsp;
-                <CardLabel>Updates timeout { policyUpdatesTimeout }</CardLabel>
-              </Grid>
-            </Grid>
-            <Grid item xs={12}>
-              <VersionBreakdown version_breakdown={version_breakdown} channel={channel} />
-            </Grid>
-            <Grid item xs={12}>
-              {/* Instances */}
-              <InstancesContainer
-                appID={this.props.appID}
-                groupID={this.props.groupID}
-                version_breakdown={version_breakdown}
-                channel={channel} />
-            </Grid>
+        <Grid item xs={7}>
+          {group &&
+            <InstanceChartSection instanceStats={group.instances_stats} />
+          }
+        </Grid>
+        { (group && group.instances_stats.total > 0) &&
+          <Grid item xs={12}>
+            <Paper>
+              <Box padding="1em">
+                <Grid
+                  container
+                  spacing={2}
+                >
+                  <Grid item xs={12}>
+                    <VersionBreakdown version_breakdown={version_breakdown} channel={channel} />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <InstancesContainer
+                      appID={this.props.appID}
+                      groupID={this.props.groupID}
+                      version_breakdown={version_breakdown}
+                      channel={channel} />
+                  </Grid>
+                </Grid>
+              </Box>
+            </Paper>
           </Grid>
-        </Box>
-      </Paper>
+        }
+      </Grid>
 		)
   }
 

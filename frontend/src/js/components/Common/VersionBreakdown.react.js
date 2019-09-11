@@ -18,7 +18,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function MyResponsiveBar({ keys, data /* see data tab */ }) {
+function ProgressBar({keys, data}) {
   function setUpFill() {
     return ['info', 'warning', 'danger', 'success'].map(level => {
       return {
@@ -166,7 +166,7 @@ function VersionBreakdown(props) {
       </Grid>
       <Grid item xs={12}>
         <Box height={30}>
-          <MyResponsiveBar keys={versionsValues} data={[data]} />
+          <ProgressBar keys={versionsValues} data={[data]} />
         </Box>
       </Grid>
     </Grid>
