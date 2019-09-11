@@ -2,11 +2,13 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
+import Grid from '@material-ui/core/Grid';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import MenuItem from '@material-ui/core/MenuItem';
 import PropTypes from 'prop-types';
 import React from 'react';
+import ChannelAvatar from '../Channels/ChannelAvatar';
 import moment from 'moment';
 import * as Yup from 'yup';
 import { applicationsStore } from '../../stores/Stores';
@@ -15,8 +17,8 @@ import { TextField } from 'formik-material-ui';
 import { ColorPickerButton } from '../Common/ColorPicker';
 
 function EditDialog(props) {
-
-  const [channelColor, setChannelColor] = React.useState(props.data && props.data.channel ? props.data.channel.color : "#000000");
+  const defaultColor = props.data && props.data.channel ? props.data.channel.color : '';
+  const [channelColor, setChannelColor] = React.useState(defaultColor);
   const isCreation = Boolean(props.create);
 
   function handleSubmit(values, actions) {
@@ -68,16 +70,33 @@ function EditDialog(props) {
             {status.statusMessage}
           </DialogContentText>
           }
-          <Field
-            name="name"
-            component={TextField}
-            margin="dense"
-            label="Name"
-            type="text"
-            required={true}
-            fullWidth
-          />
-          <ColorPickerButton color={channelColor} onColorPicked={handleColorPicked}/>
+          <Grid
+            container
+            spacing={2}
+            justify="space-between"
+            alignItems="flex-end"
+          >
+            <Grid item>
+              <ColorPickerButton
+                color={channelColor}
+                onColorPicked={handleColorPicked}
+                componentColorProp="color"
+              >
+                <ChannelAvatar>{values.name ? values.name[0] : ''}</ChannelAvatar>
+              </ColorPickerButton>
+            </Grid>
+            <Grid item>
+              <Field
+                name="name"
+                component={TextField}
+                margin="dense"
+                label="Name"
+                type="text"
+                required={true}
+                fullWidth
+              />
+            </Grid>
+          </Grid>
           <Field
             type="text"
             name="package"
