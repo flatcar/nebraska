@@ -15,6 +15,10 @@ check:
 frontend:
 	cd frontend && npm install && npm run build
 
+.PHONY: frontend-watch
+frontend-watch:
+	cd frontend && npx webpack --watch-poll 1000 --watch --config ./webpack.config.js --mode development
+
 .PHONY: backend
 backend:
 	go build -o bin/rollerd ./cmd/rollerd
