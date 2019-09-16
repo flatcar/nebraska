@@ -3,12 +3,14 @@ import menuUp from '@iconify/icons-mdi/menu-up';
 import { InlineIcon } from '@iconify/react';
 import Button from '@material-ui/core/Button';
 import Collapse from '@material-ui/core/Collapse';
+import Link from '@material-ui/core/Link';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import { styled } from '@material-ui/styles';
 import moment from "moment";
 import PropTypes from 'prop-types';
 import React from "react";
+import { Link as RouterLink } from 'react-router-dom';
 import semver from "semver";
 import _ from "underscore";
 import { cleanSemverVersion } from "../../constants/helpers";
@@ -28,11 +30,11 @@ function Item(props) {
   let version = cleanSemverVersion(props.instance.application.version);
   let currentVersionIndex = props.lastVersionChannel ? _.indexOf(props.versionNumbers, props.lastVersionChannel) : null;
   let versionStyle = 'default';
+  let appID = props.instance.application.application_id;
+  let groupID = props.instance.application.group_id;
+  let instanceID = props.instance.id;
 
   function fetchStatusHistoryFromStore() {
-    let appID = props.instance.application.application_id;
-    let groupID = props.instance.application.group_id;
-    let instanceID = props.instance.id;
     const selected = props.selected;
 
     if (!selected) {
@@ -68,6 +70,8 @@ function Item(props) {
     }
   }
 
+  let instancePath = `/apps/${appID}/groups/${groupID}/instances/${instanceID}`;
+
   return(
     <React.Fragment>
       <TableRow>
@@ -78,7 +82,7 @@ function Item(props) {
           </Button>
         </TableCell>
         <TableCell>
-          {props.instance.id}
+          <Link to={instancePath} component={RouterLink}>{props.instance.id}</Link>
         </TableCell>
         <TableCell>
           {instanceLabel}
