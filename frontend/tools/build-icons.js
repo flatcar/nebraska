@@ -45,13 +45,33 @@ tools.ImportDir(sourceDir).then(result => {
     // SVGO optimization again. Might make files smaller after color/tags changes
     return collection.promiseAll(svg => tools.SVGO(svg));
 }).then(() => {
-    // Export as JSON
-    return tools.ExportJSON(collection, path.join(destDir, 'icons.json'), {
-        minify: false,
-        optimize: true
+    // Export each icon as JSON
+    collection.forEach((item, key) => {
+        let json = {
+            body: item.getBody().replace(/\s*\n\s*/g, ''),
+            width: item.width,
+            height: item.height
+        };
+        let content = JSON.stringify(json, null, '\t');
+        let target = path.join(destDir, `${key}.json`);
+
+        try {
+            try {
+                fs.mkdirSync(destDir);
+            } catch (err) {
+                if (err.code !== 'EEXIST') {
+                    console.log(err);
+                    process.exit(1);
+                }
+            }
+
+            fs.writeFileSync(target, content, 'utf8');
+            console.log(`Created ${target}`);
+        } catch (err) {
+            console.log(err);
+            process.exit(1);
+        }
     });
-}).then(() => {
-    console.log('Parsed ' + collection.length() + ' icons.');
 }).catch(err => {
     console.log(err);
 });
