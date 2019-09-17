@@ -41,7 +41,7 @@ export default function Header() {
     <AppBar position='static' className={classes.header}>
       <Toolbar>
         <Typography variant='h6' className={classes.title}>
-          Nebraska
+          {process.env.PROJECT_NAME}
         </Typography>
         <IconButton
           aria-label='User menu'
