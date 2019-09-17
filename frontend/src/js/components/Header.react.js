@@ -9,7 +9,10 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import CreateOutlined from '@material-ui/icons/CreateOutlined';
+import { Icon } from '@iconify/react';
 import React from 'react';
+import nebraskaLogo from '../icons/nebraska-logo.json';
+import _ from 'underscore';
 
 const useStyles = makeStyles(theme => ({
   title: {
@@ -27,6 +30,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Header() {
   const classes = useStyles();
+  const projectLogo = _.isEmpty(nebraskaLogo) ? null : nebraskaLogo;
 
   let [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
 
@@ -41,6 +45,9 @@ export default function Header() {
   return (
     <AppBar position='static' className={classes.header}>
       <Toolbar>
+        {projectLogo &&
+          <Icon icon={projectLogo} height={45} />
+        }
         <Typography variant='h6' className={classes.title}>
           {process.env.PROJECT_NAME}
         </Typography>
