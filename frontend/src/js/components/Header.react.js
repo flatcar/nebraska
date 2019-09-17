@@ -21,6 +21,7 @@ const useStyles = makeStyles(theme => ({
   },
   header: {
     marginBottom: theme.spacing(1),
+    background: process.env.APPBAR_BG || theme.palette.primary.main,
   },
 }));
 
