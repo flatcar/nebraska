@@ -277,7 +277,7 @@ func (ctl *controller) loginCb(c web.C, w http.ResponseWriter, r *http.Request) 
 	}
 
 	if expectedState != state {
-		logger.Error("login cb", "invalid oauth state, expected %q, got %q", expectedState, state)
+		logger.Error("login cb: invalid oauth state", "expected", expectedState, "got", state)
 		return
 	}
 	code := r.FormValue("code")
@@ -285,7 +285,7 @@ func (ctl *controller) loginCb(c web.C, w http.ResponseWriter, r *http.Request) 
 	ctx := context.Background()
 	token, err := ctl.oauthConfig.Exchange(ctx, code)
 	if err != nil {
-		logger.Error("login cb", "oauth exchange failed: %v", err)
+		logger.Error("login cb: oauth exchange failed", "error", err)
 		return
 	}
 	logger.Debug("login cb", "received token", token)
