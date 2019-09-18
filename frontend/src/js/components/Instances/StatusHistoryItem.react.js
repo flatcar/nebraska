@@ -1,5 +1,5 @@
 import Chip from '@material-ui/core/Chip';
-import moment from 'moment';
+import { makeLocaleTime } from '../../constants/helpers';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { instancesStore } from '../../stores/Stores';
@@ -25,15 +25,13 @@ class StatusHistoryItem extends React.Component {
   }
 
   render() {
-    let date = moment.utc(this.props.entry.created_ts).local().format("DD/MM/YYYY"),
-        time = moment.utc(this.props.entry.created_ts).local().format("hh:mma"),
+    let time = makeLocaleTime(this.props.entry.created_ts),
         instanceLabel = this.state.status.className ? <Chip size='small' label={this.state.status.status} /> : <div>&nbsp;</div>
 
     return (
       <TableRow>
         <TableCell>
-          {date}
-          <span>{time}</span>
+          {time}
         </TableCell>
         <TableCell>
           {instanceLabel}

@@ -1,3 +1,4 @@
+import makeStatusDefs from './StatusDefs';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -6,12 +7,6 @@ import { VictoryAnimation, VictoryLabel, VictoryPie } from 'victory';
 import { makeStyles, useTheme } from '@material-ui/styles';
 import React from 'react';
 import { InlineIcon } from '@iconify/react';
-import alertOctagon from '@iconify/icons-mdi/alert-octagon';
-import progressDownload from '@iconify/icons-mdi/progress-download';
-import boxDownload from '@iconify/icons-mdi/box-download';
-import clipboardCheck from '@iconify/icons-mdi/clipboard-check';
-import checkboxMarked from '@iconify/icons-mdi/checkbox-marked';
-import pauseCircle from '@iconify/icons-mdi/pause-circle';
 import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
 
@@ -150,40 +145,18 @@ function InstanceCountLabel(props) {
 export default function InstanceChartSection(props) {
   const classes = useInstanceSectionStyles();
   const theme = useTheme();
+  const statusDefs = makeStatusDefs(theme);
 
-  const progressTypes = {
-    complete: {
-      label: 'Complete',
-      color: theme.palette.success.main,
-      icon: clipboardCheck,
-    },
-    downloaded: {
-      label: 'Downloaded',
-      color: theme.palette.success['A700'],
-      icon: boxDownload,
-    },
-    onhold: {
-      label: 'On Hold',
-      color: theme.palette.grey['500'],
-      icon: pauseCircle,
-    },
-    installed: {
-      label: 'Installed',
-      color: theme.palette.success['400'],
-      icon: checkboxMarked,
-    },
-    downloading: {
-      label: 'Downloading',
-      color: theme.palette.success['A700'],
-      icon: progressDownload,
-    },
-    error: {
-      label: 'Error',
-      color: theme.palette.error.main,
-      icon: alertOctagon,
-    },
+  let {instanceStats} = props;
+  const instanceStateCount = {
+    InstanceStatusComplete: instanceStats['complete'],
+    InstanceStatusDownloaded: instanceStats['downloaded'],
+    InstanceStatusOnHold: instanceStats['onhold'],
+    InstanceStatusInstalled: instanceStats['installed'],
+    InstanceStatusDownloading: instanceStats['downloading'],
+    InstanceStatusError: instanceStats['error'],
   };
-  let {instanceStats, filter=Object.keys(progressTypes)} = props;
+  let {filter=Object.keys(instanceStateCount)} = props;
   let totalInstances = instanceStats ? instanceStats.total : 0;
 
   return (
@@ -209,10 +182,10 @@ export default function InstanceChartSection(props) {
                   return (
                     <Grid item>
                       <ProgressDoughnut
-                        value={instanceStats[key] / instanceStats['total']}
+                        value={instanceStateCount[key] / instanceStats['total']}
                         width={125}
                         height={125}
-                        {...progressTypes[key]}
+                        {...statusDefs[key]}
                       />
                     </Grid>
                   );

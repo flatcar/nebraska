@@ -29,7 +29,9 @@ class InstancesStore extends Store {
           if (selectedInstance) {
             let instancesList = this.instances[applicationID][groupID]
             let instanceToCopyStatusHistory = _.findWhere(instancesList, {id: selectedInstance})
-            instance.statusHistory = instanceToCopyStatusHistory.statusHistory
+            if (instanceToCopyStatusHistory) {
+              instance.statusHistory = instanceToCopyStatusHistory.statusHistory;
+            }
           }
           instance.statusInfo = this.getInstanceStatus(instance.application.status, instance.application.version)
           return instance.application.last_check_for_updates
