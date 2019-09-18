@@ -16,7 +16,7 @@ const nebraskaTheme = createMuiTheme({
   palette: {
     primary: {
       contrastText: "#fff",
-      main: '#00AEEF',
+      main: process.env.PRIMARY_COLOR,
     },
     success: {
       main: green['500'],

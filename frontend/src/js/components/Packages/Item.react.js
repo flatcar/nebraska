@@ -1,4 +1,4 @@
-import flatcarIcon from '../../icons/icons.json'
+import flatcarIcon from '../../icons/flatcar-logo.json'
 import cancelIcon from '@iconify/icons-mdi/cancel';
 import cubeOutline from '@iconify/icons-mdi/cube-outline';
 import { InlineIcon } from '@iconify/react';
@@ -39,7 +39,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const containerIcons = {
-  1: {icon: flatcarIcon.icons.logo, name: 'Flatcar'},
+  1: {icon: flatcarIcon, name: 'Flatcar'},
   other: {icon: cubeOutline, name: 'Other'},
 };
 
