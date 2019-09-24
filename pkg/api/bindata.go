@@ -6,6 +6,7 @@
 // db/migrations/0002_event_data.sql
 // db/migrations/0003_longer_team_names.sql
 // db/migrations/0004_rename_coreos_action.sql
+// db/migrations/0005_default_team_id.sql
 // DO NOT EDIT!
 
 package api
@@ -193,6 +194,26 @@ func dbMigrations0004_rename_coreos_actionSql() (*asset, error) {
 	return a, nil
 }
 
+var _dbMigrations0005_default_team_idSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x4c\xcd\x51\x0e\x82\x30\x0c\x00\xd0\xff\x9e\xa2\x7f\x83\x48\x3f\xd8\x9a\xc8\xe2\xaf\x57\xf0\x00\xc5\x16\xb3\x84\x0d\x03\x45\xaf\xef\xaf\x27\x78\x44\x78\xa9\xe5\xb5\x8b\x1b\x3e\xde\x00\xa5\x1d\xb6\x3b\x96\xe6\x1b\xba\x49\xc5\xae\xe8\x80\x4d\xaa\xf5\xf8\x91\xf5\xb4\x03\xbb\xa0\x53\x4e\x1c\xf5\x49\x39\x8e\x4c\xcc\xa3\x92\xb0\x2c\x34\xab\x4e\xe9\x2a\x69\x8e\x29\x87\x01\x83\xda\x22\xe7\xea\xa1\xbf\x01\xfc\x43\xf7\xed\xdb\xe0\x17\x00\x00\xff\xff\x06\xdd\xb1\x5e\x7a\x00\x00\x00")
+
+func dbMigrations0005_default_team_idSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_dbMigrations0005_default_team_idSql,
+		"db/migrations/0005_default_team_id.sql",
+	)
+}
+
+func dbMigrations0005_default_team_idSql() (*asset, error) {
+	bytes, err := dbMigrations0005_default_team_idSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "db/migrations/0005_default_team_id.sql", size: 122, mode: os.FileMode(420), modTime: time.Unix(1570427135, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -251,6 +272,7 @@ var _bindata = map[string]func() (*asset, error){
 	"db/migrations/0002_event_data.sql":           dbMigrations0002_event_dataSql,
 	"db/migrations/0003_longer_team_names.sql":    dbMigrations0003_longer_team_namesSql,
 	"db/migrations/0004_rename_coreos_action.sql": dbMigrations0004_rename_coreos_actionSql,
+	"db/migrations/0005_default_team_id.sql":      dbMigrations0005_default_team_idSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -301,6 +323,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"0002_event_data.sql":           {dbMigrations0002_event_dataSql, map[string]*bintree{}},
 			"0003_longer_team_names.sql":    {dbMigrations0003_longer_team_namesSql, map[string]*bintree{}},
 			"0004_rename_coreos_action.sql": {dbMigrations0004_rename_coreos_actionSql, map[string]*bintree{}},
+			"0005_default_team_id.sql":      {dbMigrations0005_default_team_idSql, map[string]*bintree{}},
 		}},
 		"sample_data.sql": {dbSample_dataSql, map[string]*bintree{}},
 	}},
