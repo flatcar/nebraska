@@ -28,6 +28,11 @@ tools:
 	go build -o bin/initdb ./cmd/initdb
 	go build -o bin/userctl ./cmd/userctl
 
+.PHONY: bindata
+bindata:
+	go generate ./pkg/api
+	gofmt -s -w pkg/api/bindata.go
+
 .PHONY: container-nebraska
 container-nebraska:
 	$(DOCKER_CMD) build \
