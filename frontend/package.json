@@ -1,12 +1,12 @@
 {
-  "name": "CoreRoller",
+  "name": "Nebraska",
   "version": "0.1.0",
   "license": {
     "type": "Apache-2.0",
     "url": "http://www.apache.org/licenses/LICENSE-2.0"
   },
-  "description": "CoreRoller",
-  "author": "Cynthia SG <cynthiasg@gmail.com>",
+  "description": "Nebraska is an update manager for Flatcar Linux.",
+  "author": "Kinvolk GmbH <oss@kinvolk.io>",
   "repository": "https://github.com/kinvolk/nebraska",
   "private": true,
   "dependencies": {
