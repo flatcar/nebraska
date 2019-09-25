@@ -21,7 +21,7 @@ frontend-watch:
 
 .PHONY: backend
 backend:
-	go build -o bin/rollerd ./cmd/rollerd
+	go build -o bin/nebraska ./cmd/nebraska
 
 .PHONY: tools
 tools:

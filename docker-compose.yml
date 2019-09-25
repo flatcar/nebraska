@@ -9,7 +9,7 @@ services:
     command: |
       sh -c '
         sleep 3
-        /coreroller/rollerd -http-static-dir=/coreroller/static'
+        /nebraska/nebraska -http-static-dir=/nebraska/static'
     depends_on:
       - "postgres"
   postgres:
