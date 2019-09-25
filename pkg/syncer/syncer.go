@@ -95,6 +95,8 @@ func (s *Syncer) Start() {
 	logger.Debug("syncer ready!")
 	s.ticker = time.NewTicker(checkFrequency)
 
+	_ = s.checkForUpdates()
+
 L:
 	for {
 		select {
