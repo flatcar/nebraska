@@ -78,10 +78,10 @@ class Item extends React.Component {
   }
 
   render() {
-    let ampm = moment.utc(this.props.entry.created_ts).local().format("a"),
-        time = moment.utc(this.props.entry.created_ts).local().format("hh:mm"),
-        subtitle = "",
-        name = ""
+    const timeFormat = moment.localeData().longDateFormat('LT');
+    let time = moment.utc(this.props.entry.created_ts).local().format(`${timeFormat}`);
+    let subtitle = '';
+    let name = '';
 
     if (this.state.entryClass.type !== "activityChannelPackageUpdated") {
       subtitle = "GROUP:"
@@ -103,7 +103,7 @@ class Item extends React.Component {
               />
             </Grid>
             <Grid item>
-              <Typography align="center" color="textSecondary">{time}<br/>{ampm}</Typography>
+              <Typography align="center" color="textSecondary">{time}</Typography>
             </Grid>
           </Grid>
         </ActivityItemIcon>
