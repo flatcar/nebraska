@@ -1,9 +1,9 @@
 version: '3'
 services:
-  rollerd:
+  nebraska:
     build:
       context: .
-      dockerfile: Dockerfile.rollerd
+      dockerfile: Dockerfile.nebraska
     ports:
       - 8000:8000
     command: |

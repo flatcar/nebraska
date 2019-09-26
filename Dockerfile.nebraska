@@ -1,4 +1,4 @@
-FROM alpine:3.10 as coreroller-build
+FROM alpine:3.10 as nebraska-build
 
 ENV GOPATH=/go
 
@@ -16,8 +16,8 @@ FROM alpine:3.10
 RUN apk update && \
 	apk add ca-certificates tzdata
 
-COPY --from=coreroller-build /go/src/github.com/kinvolk/nebraska/bin/nebraska /nebraska/
-COPY --from=coreroller-build /go/src/github.com/kinvolk/nebraska/frontend/built/ /nebraska/static/
+COPY --from=nebraska-build /go/src/github.com/kinvolk/nebraska/bin/nebraska /nebraska/
+COPY --from=nebraska-build /go/src/github.com/kinvolk/nebraska/frontend/built/ /nebraska/static/
 
 ENV COREROLLER_DB_URL "postgres://postgres@postgres:5432/coreroller?sslmode=disable&connect_timeout=10"
 EXPOSE 8000
