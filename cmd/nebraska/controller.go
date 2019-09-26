@@ -31,10 +31,10 @@ import (
 )
 
 const (
-	clientIDEnvName      = "COREROLLER_OAUTH_CLIENT_ID"
-	clientSecretEnvName  = "COREROLLER_OAUTH_CLIENT_SECRET"
-	sessionSecretEnvName = "COREROLLER_SESSION_SECRET"
-	webhookSecretEnvName = "COREROLLER_WEBHOOK_SECRET"
+	clientIDEnvName      = "NEBRASKA_OAUTH_CLIENT_ID"
+	clientSecretEnvName  = "NEBRASKA_OAUTH_CLIENT_SECRET"
+	sessionSecretEnvName = "NEBRASKA_SESSION_SECRET"
+	webhookSecretEnvName = "NEBRASKA_WEBHOOK_SECRET"
 )
 
 type ghTeamData struct {
