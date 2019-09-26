@@ -19,7 +19,7 @@ import (
 //go:generate go-bindata -ignore=\.swp -pkg api db db/migrations
 
 const (
-	defaultDbURL = "postgres://postgres@127.0.0.1:5432/coreroller?sslmode=disable&connect_timeout=10"
+	defaultDbURL = "postgres://postgres@127.0.0.1:5432/nebraska?sslmode=disable&connect_timeout=10"
 	nowUTC       = dat.UnsafeString("now() at time zone 'utc'")
 )
 
@@ -49,8 +49,9 @@ type API struct {
 func New(options ...func(*API) error) (*API, error) {
 	api := &API{
 		dbDriver: "postgres",
-		dbURL:    os.Getenv("COREROLLER_DB_URL"),
+		dbURL:    os.Getenv("NEBRASKA_DB_URL"),
 	}
+
 	if api.dbURL == "" {
 		api.dbURL = defaultDbURL
 	}

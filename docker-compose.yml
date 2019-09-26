@@ -17,7 +17,7 @@ services:
       context: .
       dockerfile: Dockerfile.postgres
     volumes:
-      - postgres-data:/coreroller/data
+      - postgres-data:/nebraska/data
     ports:
       - 5432:5432
 volumes:

@@ -9,9 +9,9 @@ services:
 
 before_install:
   - sudo /etc/init.d/postgresql stop
-  - docker pull coreroller/postgres
+  - docker pull nebraska/postgres
   - sudo service docker restart ; sleep 10
-  - docker run --privileged -d -p 127.0.0.1:5432:5432 coreroller/postgres
+  - docker run --privileged -d -p 127.0.0.1:5432:5432 nebraska/postgres
   - docker ps -a
 
 # at most one test at a time is ran, because most of the tests write

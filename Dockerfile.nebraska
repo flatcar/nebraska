@@ -19,6 +19,6 @@ RUN apk update && \
 COPY --from=nebraska-build /go/src/github.com/kinvolk/nebraska/bin/nebraska /nebraska/
 COPY --from=nebraska-build /go/src/github.com/kinvolk/nebraska/frontend/built/ /nebraska/static/
 
-ENV COREROLLER_DB_URL "postgres://postgres@postgres:5432/coreroller?sslmode=disable&connect_timeout=10"
+ENV NEBRASKA_DB_URL "postgres://postgres@postgres:5432/nebraska?sslmode=disable&connect_timeout=10"
 EXPOSE 8000
 CMD ["/nebraska/nebraska", "-http-static-dir=/nebraska/static"]

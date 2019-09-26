@@ -1,8 +1,8 @@
 -- +migrate Up
 
--- CoreRoller schema
+-- Nebraska schema
 
-alter database coreroller set timezone = 'utc';
+alter database nebraska set timezone = 'utc';
 
 create extension if not exists "uuid-ossp";
 
@@ -47,8 +47,8 @@ create table package (
 
 create table coreos_action (
 	id uuid primary key default uuid_generate_v4(),
-	event varchar(20) default 'postinstall', 
-	chromeos_version varchar(255) default '', 
+	event varchar(20) default 'postinstall',
+	chromeos_version varchar(255) default '',
 	sha256 varchar(64),
 	needs_admin boolean default false,
 	is_delta boolean default false,

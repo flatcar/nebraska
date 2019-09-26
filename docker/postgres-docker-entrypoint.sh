@@ -34,13 +34,13 @@ if [ ! -f "$PGDATA/postgresql.conf" ]; then
 
     gosu postgres pg_ctl -w start
 
-    gosu postgres psql -c "CREATE DATABASE coreroller;"
-    gosu postgres psql -c "ALTER DATABASE coreroller SET TIMEZONE = 'UTC';"
+    gosu postgres psql -c "CREATE DATABASE nebraska;"
+    gosu postgres psql -c "ALTER DATABASE nebraska SET TIMEZONE = 'UTC';"
 
-    gosu postgres psql -c "CREATE DATABASE coreroller_tests;"
-    gosu postgres psql -c "ALTER DATABASE coreroller_tests SET TIMEZONE = 'UTC';"
+    gosu postgres psql -c "CREATE DATABASE nebraska_tests;"
+    gosu postgres psql -c "ALTER DATABASE nebraska_tests SET TIMEZONE = 'UTC';"
 
     gosu postgres pg_ctl -m fast -w stop
 fi
 
-exec gosu postgres postgres 
+exec gosu postgres postgres
