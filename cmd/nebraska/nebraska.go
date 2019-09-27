@@ -24,7 +24,7 @@ var (
 	enableSyncer       = flag.Bool("enable-syncer", false, "Enable CoreOS packages syncer")
 	hostCoreosPackages = flag.Bool("host-coreos-packages", false, "Host CoreOS packages in CoreRoller")
 	coreosPackagesPath = flag.String("coreos-packages-path", "", "Path where CoreOS packages files are stored")
-	corerollerURL      = flag.String("coreroller-url", "", "CoreRoller URL (http://host:port - required when hosting CoreOS packages in CoreRoller)")
+	nebraskaURL        = flag.String("nebraska-url", "", "nebraska URL (http://host:port - required when hosting CoreOS packages in nebraska)")
 	httpLog            = flag.Bool("http-log", false, "Enable http requests logging")
 	httpStaticDir      = flag.String("http-static-dir", "../frontend/built", "Path to frontend static files")
 	clientID           = flag.String("client-id", "", fmt.Sprintf("Client ID used for authentication; can be taken from %s env var too", clientIDEnvName))
@@ -48,7 +48,7 @@ func main() {
 		enableSyncer:       *enableSyncer,
 		hostCoreosPackages: *hostCoreosPackages,
 		coreosPackagesPath: *coreosPackagesPath,
-		corerollerURL:      *corerollerURL,
+		nebraskaURL:        *nebraskaURL,
 		sessionSecret:      *sessionSecret,
 		oauthClientID:      *clientID,
 		oauthClientSecret:  *clientSecret,
