@@ -26,13 +26,13 @@ const (
 var (
 	// ErrNoRowsAffected indicates that no rows were affected in an update or
 	// delete database operation.
-	ErrNoRowsAffected = errors.New("coreroller: no rows affected")
+	ErrNoRowsAffected = errors.New("nebraska: no rows affected")
 
 	// ErrInvalidSemver indicates that the provided semver version is not valid.
-	ErrInvalidSemver = errors.New("coreroller: invalid semver")
+	ErrInvalidSemver = errors.New("nebraska: invalid semver")
 )
 
-// API represents an api instance used to interact with CoreRoller entities.
+// API represents an api instance used to interact with Nebraska entities.
 type API struct {
 	db       *sqlx.DB
 	dbR      *runner.DB

@@ -91,21 +91,21 @@ func obtainOAuthClientID(potentialID string) (string, error) {
 	if id := getPotentialOrEnv(potentialID, clientIDEnvName); potentialID != "" {
 		return id, nil
 	}
-	return "", errors.New("no oauth client ID passed to rollerd")
+	return "", errors.New("no oauth client ID")
 }
 
 func obtainOAuthClientSecret(potentialSecret string) (string, error) {
 	if secret := getPotentialOrEnv(potentialSecret, clientSecretEnvName); secret != "" {
 		return secret, nil
 	}
-	return "", errors.New("no oauth client secret passed to rollerd")
+	return "", errors.New("no oauth client secret")
 }
 
 func obtainWebhookSecret(potentialSecret string) (string, error) {
 	if secret := getPotentialOrEnv(potentialSecret, webhookSecretEnvName); secret != "" {
 		return secret, nil
 	}
-	return "", errors.New("no webhook secret passed to rollerd")
+	return "", errors.New("no webhook secret")
 }
 
 func newController(conf *controllerConfig) (*controller, error) {

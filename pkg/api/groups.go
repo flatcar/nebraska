@@ -11,14 +11,14 @@ import (
 var (
 	// ErrInvalidChannel error indicates that a channel doesn't belong to the
 	// application it was supposed to belong to.
-	ErrInvalidChannel = errors.New("coreroller: invalid channel")
+	ErrInvalidChannel = errors.New("nebraska: invalid channel")
 
 	// ErrExpectingValidTimezone error indicates that a valid timezone wasn't
 	// provided when enabling the flag PolicyOfficeHours.
-	ErrExpectingValidTimezone = errors.New("coreroller: expecting valid timezone")
+	ErrExpectingValidTimezone = errors.New("nebraska: expecting valid timezone")
 )
 
-// Group represents a CoreRoller application's group.
+// Group represents a Nebraska application's group.
 type Group struct {
 	ID                        string                   `db:"id" json:"id"`
 	Name                      string                   `db:"name" json:"name"`
