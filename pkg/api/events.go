@@ -66,9 +66,9 @@ var (
 	// it was rejected.
 	ErrNoUpdateInProgress = errors.New("nebraska: no update in progress")
 
-	// ErrCoreosEventIgnored indicates that a CoreOS updater event was ignored.
-	// This is a temporary solution to handle CoreOS specific behaviour.
-	ErrCoreosEventIgnored = errors.New("nebraska: coreos event ignored")
+	// ErrFlatcarEventIgnored indicates that a Flatcar updater event was ignored.
+	// This is a temporary solution to handle Flatcar specific behaviour.
+	ErrFlatcarEventIgnored = errors.New("nebraska: flatcar event ignored")
 )
 
 // Event represents an event posted by an instance to Nebraska.
@@ -101,10 +101,10 @@ func (api *API) RegisterEvent(instanceID, appID, groupID string, etype, eresult 
 		return ErrNoUpdateInProgress
 	}
 
-	// Temporary hack to handle CoreOS updater specific behaviour
-	if appID == coreosAppID && etype == EventUpdateComplete && eresult == ResultSuccessReboot {
+	// Temporary hack to handle Flatcar updater specific behaviour
+	if appID == flatcarAppID && etype == EventUpdateComplete && eresult == ResultSuccessReboot {
 		if previousVersion == "" || previousVersion == "0.0.0.0" || previousVersion != instance.Application.Version {
-			return ErrCoreosEventIgnored
+			return ErrFlatcarEventIgnored
 		}
 	}
 
@@ -143,7 +143,7 @@ func (api *API) triggerEventConsequences(instanceID, appID, groupID, lastUpdateV
 		return err
 	}
 
-	// TODO: should we also consider ResultSuccess in the next check? CoreOS ~ generic conflicts?
+	// TODO: should we also consider ResultSuccess in the next check? Flatcar ~ generic conflicts?
 	if etype == EventUpdateComplete && result == ResultSuccessReboot {
 		_ = api.updateInstanceStatus(instanceID, appID, InstanceStatusComplete)
 

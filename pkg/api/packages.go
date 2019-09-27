@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	// PkgTypeCoreos indicates that the package is a CoreOS update package
-	PkgTypeCoreos int = 1 + iota
+	// PkgTypeFlatcar indicates that the package is a Flatcar update package
+	PkgTypeFlatcar int = 1 + iota
 
 	// PkgTypeDocker indicates that the package is a Docker container
 	PkgTypeDocker
@@ -42,7 +42,7 @@ type Package struct {
 	CreatedTs         time.Time      `db:"created_ts" json:"created_ts"`
 	ChannelsBlacklist []string       `db:"channels_blacklist" json:"channels_blacklist"`
 	ApplicationID     string         `db:"application_id" json:"application_id"`
-	CoreosAction      *CoreosAction  `db:"coreos_action" json:"coreos_action"`
+	FlatcarAction     *FlatcarAction `db:"coreos_action" json:"coreos_action"`
 }
 
 // AddPackage registers the provided package.
@@ -82,12 +82,12 @@ func (api *API) AddPackage(pkg *Package) (*Package, error) {
 		}
 	}
 
-	if pkg.Type == PkgTypeCoreos && pkg.CoreosAction != nil {
+	if pkg.Type == PkgTypeFlatcar && pkg.FlatcarAction != nil {
 		err = tx.InsertInto("coreos_action").
 			Columns("package_id", "sha256").
-			Values(pkg.ID, pkg.CoreosAction.Sha256).
+			Values(pkg.ID, pkg.FlatcarAction.Sha256).
 			Returning("*").
-			QueryStruct(pkg.CoreosAction)
+			QueryStruct(pkg.FlatcarAction)
 
 		if err != nil {
 			return nil, err
@@ -132,13 +132,13 @@ func (api *API) UpdatePackage(pkg *Package) error {
 		return err
 	}
 
-	if pkg.Type == PkgTypeCoreos && pkg.CoreosAction != nil {
+	if pkg.Type == PkgTypeFlatcar && pkg.FlatcarAction != nil {
 		err = tx.Upsert("coreos_action").
 			Columns("package_id", "sha256").
-			Values(pkg.ID, pkg.CoreosAction.Sha256).
+			Values(pkg.ID, pkg.FlatcarAction.Sha256).
 			Where("package_id = $1", pkg.ID).
 			Returning("*").
-			QueryStruct(pkg.CoreosAction)
+			QueryStruct(pkg.FlatcarAction)
 
 		if err != nil {
 			return err

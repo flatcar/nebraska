@@ -197,10 +197,10 @@ func (api *API) getGroupUpdatesStats(group *Group) (*UpdatesStats, error) {
 	query := fmt.Sprintf(`
 	SELECT
 		count(*) total_instances,
-		sum(case when last_update_version = $1 then 1 else 0 end) updates_to_current_version_granted, 
-		sum(case when update_in_progress = 'false' and last_update_version = $1 then 1 else 0 end) updates_to_current_version_attempted, 
-		sum(case when update_in_progress = 'false' and last_update_version = $1 and last_update_version = version then 1 else 0 end) updates_to_current_version_succeeded, 
-		sum(case when update_in_progress = 'false' and last_update_version = $1 and last_update_version != version then 1 else 0 end) updates_to_current_version_failed, 
+		sum(case when last_update_version = $1 then 1 else 0 end) updates_to_current_version_granted,
+		sum(case when update_in_progress = 'false' and last_update_version = $1 then 1 else 0 end) updates_to_current_version_attempted,
+		sum(case when update_in_progress = 'false' and last_update_version = $1 and last_update_version = version then 1 else 0 end) updates_to_current_version_succeeded,
+		sum(case when update_in_progress = 'false' and last_update_version = $1 and last_update_version != version then 1 else 0 end) updates_to_current_version_failed,
 		sum(case when last_update_granted_ts > now() at time zone 'utc' - interval $2 then 1 else 0 end) updates_granted_in_last_period,
 		sum(case when update_in_progress = 'true' and now() at time zone 'utc' - last_update_granted_ts <= interval $3 then 1 else 0 end) updates_in_progress,
 		sum(case when update_in_progress = 'true' and now() at time zone 'utc' - last_update_granted_ts > interval $4 then 1 else 0 end) updates_timed_out

@@ -17,23 +17,23 @@ import (
 )
 
 const (
-	coreosPkgsRouterPrefix = "/coreos/"
+	flatcarPkgsRouterPrefix = "/flatcar/"
 )
 
 var (
-	enableSyncer       = flag.Bool("enable-syncer", false, "Enable CoreOS packages syncer")
-	hostCoreosPackages = flag.Bool("host-coreos-packages", false, "Host CoreOS packages in Nebraska")
-	coreosPackagesPath = flag.String("coreos-packages-path", "", "Path where CoreOS packages files are stored")
-	nebraskaURL        = flag.String("nebraska-url", "", "nebraska URL (http://host:port - required when hosting CoreOS packages in nebraska)")
-	httpLog            = flag.Bool("http-log", false, "Enable http requests logging")
-	httpStaticDir      = flag.String("http-static-dir", "../frontend/built", "Path to frontend static files")
-	clientID           = flag.String("client-id", "", fmt.Sprintf("Client ID used for authentication; can be taken from %s env var too", clientIDEnvName))
-	clientSecret       = flag.String("client-secret", "", fmt.Sprintf("Client secret used for authentication; can be taken from %s env var too", clientSecretEnvName))
-	sessionSecret      = flag.String("session-secret", "", fmt.Sprintf("Session secret used for storing sessions, will be generated if none is passed; can be taken from %s env var too", sessionSecretEnvName))
-	webhookSecret      = flag.String("webhook-secret", "", fmt.Sprintf("Webhook secret used for validing webhook messages; can be taken from %s env var too", webhookSecretEnvName))
-	readWriteTeams     = flag.String("rw-teams", "", "comma-separated list of read-write teams in the org/team format")
-	readOnlyTeams      = flag.String("ro-teams", "", "comma-separated list of read-only teams in the org/team format")
-	logger             = log.New("nebraska")
+	enableSyncer        = flag.Bool("enable-syncer", false, "Enable Flatcar packages syncer")
+	hostFlatcarPackages = flag.Bool("host-flatcar-packages", false, "Host Flatcar packages in Nebraska")
+	flatcarPackagesPath = flag.String("flatcar-packages-path", "", "Path where Flatcar packages files should be stored")
+	nebraskaURL         = flag.String("nebraska-url", "", "nebraska URL (http://host:port - required when hosting Flatcar packages in nebraska)")
+	httpLog             = flag.Bool("http-log", false, "Enable http requests logging")
+	httpStaticDir       = flag.String("http-static-dir", "../frontend/built", "Path to frontend static files")
+	clientID            = flag.String("client-id", "", fmt.Sprintf("Client ID used for authentication; can be taken from %s env var too", clientIDEnvName))
+	clientSecret        = flag.String("client-secret", "", fmt.Sprintf("Client secret used for authentication; can be taken from %s env var too", clientSecretEnvName))
+	sessionSecret       = flag.String("session-secret", "", fmt.Sprintf("Session secret used for storing sessions, will be generated if none is passed; can be taken from %s env var too", sessionSecretEnvName))
+	webhookSecret       = flag.String("webhook-secret", "", fmt.Sprintf("Webhook secret used for validing webhook messages; can be taken from %s env var too", webhookSecretEnvName))
+	readWriteTeams      = flag.String("rw-teams", "", "comma-separated list of read-write teams in the org/team format")
+	readOnlyTeams       = flag.String("ro-teams", "", "comma-separated list of read-only teams in the org/team format")
+	logger              = log.New("nebraska")
 )
 
 func main() {
@@ -45,16 +45,16 @@ func main() {
 	}
 
 	conf := &controllerConfig{
-		enableSyncer:       *enableSyncer,
-		hostCoreosPackages: *hostCoreosPackages,
-		coreosPackagesPath: *coreosPackagesPath,
-		nebraskaURL:        *nebraskaURL,
-		sessionSecret:      *sessionSecret,
-		oauthClientID:      *clientID,
-		oauthClientSecret:  *clientSecret,
-		webhookSecret:      *webhookSecret,
-		readWriteTeams:     strings.Split(*readWriteTeams, ","),
-		readOnlyTeams:      strings.Split(*readOnlyTeams, ","),
+		enableSyncer:        *enableSyncer,
+		hostFlatcarPackages: *hostFlatcarPackages,
+		flatcarPackagesPath: *flatcarPackagesPath,
+		nebraskaURL:         *nebraskaURL,
+		sessionSecret:       *sessionSecret,
+		oauthClientID:       *clientID,
+		oauthClientSecret:   *clientSecret,
+		webhookSecret:       *webhookSecret,
+		readWriteTeams:      strings.Split(*readWriteTeams, ","),
+		readOnlyTeams:       strings.Split(*readOnlyTeams, ","),
 	}
 	ctl, err := newController(conf)
 	if err != nil {
@@ -72,13 +72,13 @@ func main() {
 }
 
 func checkArgs() error {
-	if *hostCoreosPackages {
-		if *coreosPackagesPath == "" {
-			return errors.New("Invalid CoreOS packages path. Please ensure you provide a valid path using -coreos-packages-path")
+	if *hostFlatcarPackages {
+		if *flatcarPackagesPath == "" {
+			return errors.New("Invalid Flatcar packages path. Please ensure you provide a valid path using -flatcar-packages-path")
 		}
-		tmpFile, err := ioutil.TempFile(*coreosPackagesPath, "")
+		tmpFile, err := ioutil.TempFile(*flatcarPackagesPath, "")
 		if err != nil {
-			return errors.New("Invalid CoreOS packages path: " + err.Error())
+			return errors.New("Invalid Flatcar packages path: " + err.Error())
 		}
 		defer os.Remove(tmpFile.Name())
 
@@ -160,13 +160,13 @@ func setupRoutes(ctl *controller) {
 	// Omaha server routes
 	omahaRouter.Post("/", ctl.processOmahaRequest)
 
-	// Host CoreOS packages payloads
-	if *hostCoreosPackages {
-		coreosPkgsRouter := web.New()
-		setupRouter(coreosPkgsRouter, "coreos")
-		coreosPkgsRouter.Use(middleware.SubRouter)
-		goji.Handle(coreosPkgsRouterPrefix+"*", coreosPkgsRouter)
-		coreosPkgsRouter.Handle("/*", http.FileServer(http.Dir(*coreosPackagesPath)))
+	// Host Flatcar packages payloads
+	if *hostFlatcarPackages {
+		flatcarPkgsRouter := web.New()
+		setupRouter(flatcarPkgsRouter, "flatcar")
+		flatcarPkgsRouter.Use(middleware.SubRouter)
+		goji.Handle(flatcarPkgsRouterPrefix+"*", flatcarPkgsRouter)
+		flatcarPkgsRouter.Handle("/*", http.FileServer(http.Dir(*flatcarPackagesPath)))
 	}
 
 	// Metrics

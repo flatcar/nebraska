@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	coreosAppID = "e96281a6-d1af-4bde-9a0a-97b76e56dc57"
+	flatcarAppID = "e96281a6-d1af-4bde-9a0a-97b76e56dc57"
 )
 
 // Application represents a Nebraska application instance.

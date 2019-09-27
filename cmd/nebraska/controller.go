@@ -61,16 +61,16 @@ type controller struct {
 }
 
 type controllerConfig struct {
-	enableSyncer       bool
-	hostCoreosPackages bool
-	coreosPackagesPath string
-	nebraskaURL        string
-	sessionSecret      string
-	oauthClientID      string
-	oauthClientSecret  string
-	webhookSecret      string
-	readWriteTeams     []string
-	readOnlyTeams      []string
+	enableSyncer        bool
+	hostFlatcarPackages bool
+	flatcarPackagesPath string
+	nebraskaURL         string
+	sessionSecret       string
+	oauthClientID       string
+	oauthClientSecret   string
+	webhookSecret       string
+	readWriteTeams      []string
+	readOnlyTeams       []string
 }
 
 func getPotentialOrEnv(potentialValue, envName string) string {
@@ -162,9 +162,9 @@ func newController(conf *controllerConfig) (*controller, error) {
 	if conf.enableSyncer {
 		syncerConf := &syncer.Config{
 			Api:          api,
-			HostPackages: conf.hostCoreosPackages,
-			PackagesPath: conf.coreosPackagesPath,
-			PackagesURL:  conf.nebraskaURL + coreosPkgsRouterPrefix,
+			HostPackages: conf.hostFlatcarPackages,
+			PackagesPath: conf.flatcarPackagesPath,
+			PackagesURL:  conf.nebraskaURL + flatcarPkgsRouterPrefix,
 		}
 		syncer, err := syncer.New(syncerConf)
 		if err != nil {
