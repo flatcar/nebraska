@@ -38,7 +38,7 @@ var (
 
 // Syncer represents a process in charge of checking for updates in the
 // different official CoreOS channels and updating the CoreOS application in
-// CoreRoller as needed (creating new packages and updating channels to point
+// Nebraska as needed (creating new packages and updating channels to point
 // to them). When hostPackages is enabled, packages payloads will be downloaded
 // into packagesPath and package url/filename will be rewritten.
 type Syncer struct {
@@ -114,7 +114,7 @@ func (s *Syncer) Stop() {
 }
 
 // initialize does some initial setup to prepare the syncer, checking in
-// CoreRoller the last versions we know about for the different channels in the
+// Nebraska the last versions we know about for the different channels in the
 // CoreOS application and keeping track of some ids.
 func (s *Syncer) initialize() error {
 	coreosApp, err := s.api.GetApp(coreosAppID)
@@ -142,7 +142,7 @@ func (s *Syncer) initialize() error {
 // checkForUpdates polls the public CoreOS servers looking for updates in the
 // official channels (stable, beta, alpha, edge) sending Omaha requests. When an
 // update is received we'll process it, creating packages and updating channels
-// in CoreRoller as needed.
+// in Nebraska as needed.
 func (s *Syncer) checkForUpdates() error {
 	for channel, currentVersion := range s.versions {
 		logger.Debug("checking for updates", "channel", channel, "currentVersion", currentVersion)
@@ -219,9 +219,9 @@ func (s *Syncer) doOmahaRequest(channel, currentVersion string) (*omaha.UpdateCh
 }
 
 // processUpdate is in charge of creating packages in the CoreOS application in
-// CoreRoller and updating the appropriate channel to point to the new channel.
+// Nebraska and updating the appropriate channel to point to the new channel.
 func (s *Syncer) processUpdate(channelName string, update *omaha.UpdateCheck) error {
-	// Create new package and action for CoreOS application in CoreRoller if
+	// Create new package and action for CoreOS application in Nebraska if
 	// needed (package may already exist and we just need to update the channel
 	// reference to it)
 	pkg, err := s.api.GetPackageByVersion(coreosAppID, update.Manifest.Version)

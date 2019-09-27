@@ -11,7 +11,7 @@ const (
 	coreosAppID = "e96281a6-d1af-4bde-9a0a-97b76e56dc57"
 )
 
-// Application represents a CoreRoller application instance.
+// Application represents a Nebraska application instance.
 type Application struct {
 	ID          string     `db:"id" json:"id"`
 	Name        string     `db:"name" json:"name"`
@@ -164,8 +164,8 @@ func (api *API) appsQuery() *dat.SelectDocBuilder {
 func (api *API) appInstancesCountQuery() string {
 	return fmt.Sprintf(`
 	SELECT count(*)
-	FROM instance_application 
-	WHERE application_id = application.id AND 
+	FROM instance_application
+	WHERE application_id = application.id AND
 	      last_check_for_updates > now() at time zone 'utc' - interval '%s'
 	`, validityInterval)
 }

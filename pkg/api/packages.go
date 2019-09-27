@@ -26,10 +26,10 @@ const (
 var (
 	// ErrBlacklistingChannel error indicates that the channel the package is
 	// trying to blacklist is already pointing to the package.
-	ErrBlacklistingChannel = errors.New("coreroller: channel trying to blacklist is already pointing to the package")
+	ErrBlacklistingChannel = errors.New("nebraska: channel trying to blacklist is already pointing to the package")
 )
 
-// Package represents a CoreRoller application's package.
+// Package represents a Nebraska application's package.
 type Package struct {
 	ID                string         `db:"id" json:"id"`
 	Type              int            `db:"type" json:"type"`

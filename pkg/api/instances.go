@@ -10,7 +10,7 @@ import (
 
 const (
 	// InstanceStatusUndefined indicates that the instance hasn't sent yet an
-	// event to CoreRoller so it doesn't know in which state it is.
+	// event to Nebraska so it doesn't know in which state it is.
 	InstanceStatusUndefined int = 1 + iota
 
 	// InstanceStatusUpdateGranted indicates that the instance has been granted
@@ -47,7 +47,7 @@ const (
 )
 
 // Instance represents an instance running one or more applications for which
-// CoreRoller can provide updates.
+// Nebraska can provide updates.
 type Instance struct {
 	ID          string              `db:"id" json:"id"`
 	IP          string              `db:"ip" json:"ip"`
@@ -94,7 +94,7 @@ type InstancesQueryParams struct {
 	PerPage       uint64 `json:"perpage"`
 }
 
-// RegisterInstance registers an instance into CoreRoller.
+// RegisterInstance registers an instance into Nebraska.
 func (api *API) RegisterInstance(instanceID, instanceIP, instanceVersion, appID, groupID string) (*Instance, error) {
 	if !isValidSemver(instanceVersion) {
 		return nil, ErrInvalidSemver

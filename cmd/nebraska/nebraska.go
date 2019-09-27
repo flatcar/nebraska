@@ -22,7 +22,7 @@ const (
 
 var (
 	enableSyncer       = flag.Bool("enable-syncer", false, "Enable CoreOS packages syncer")
-	hostCoreosPackages = flag.Bool("host-coreos-packages", false, "Host CoreOS packages in CoreRoller")
+	hostCoreosPackages = flag.Bool("host-coreos-packages", false, "Host CoreOS packages in Nebraska")
 	coreosPackagesPath = flag.String("coreos-packages-path", "", "Path where CoreOS packages files are stored")
 	nebraskaURL        = flag.String("nebraska-url", "", "nebraska URL (http://host:port - required when hosting CoreOS packages in nebraska)")
 	httpLog            = flag.Bool("http-log", false, "Enable http requests logging")
@@ -33,7 +33,7 @@ var (
 	webhookSecret      = flag.String("webhook-secret", "", fmt.Sprintf("Webhook secret used for validing webhook messages; can be taken from %s env var too", webhookSecretEnvName))
 	readWriteTeams     = flag.String("rw-teams", "", "comma-separated list of read-write teams in the org/team format")
 	readOnlyTeams      = flag.String("ro-teams", "", "comma-separated list of read-only teams in the org/team format")
-	logger             = log.New("rollerd")
+	logger             = log.New("nebraska")
 )
 
 func main() {
@@ -82,8 +82,8 @@ func checkArgs() error {
 		}
 		defer os.Remove(tmpFile.Name())
 
-		if _, err := url.ParseRequestURI(*corerollerURL); err != nil {
-			return errors.New("Invalid CoreRoller url. Please ensure the value provided using -coreroller-url is a valid url.")
+		if _, err := url.ParseRequestURI(*nebraskaURL); err != nil {
+			return errors.New("Invalid Nebraska URL. Please ensure the value provided using -nebraska-url is a valid url.")
 		}
 	}
 

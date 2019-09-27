@@ -34,7 +34,7 @@ var (
 )
 
 // Handler represents a component capable of processing Omaha requests. It uses
-// the CoreRoller API to get packages updates, process events, etc.
+// the Nebraska API to get packages updates, process events, etc.
 type Handler struct {
 	crApi *api.API
 }
@@ -67,7 +67,7 @@ func (h *Handler) Handle(rawReq io.Reader, respWriter io.Writer, ip string) erro
 }
 
 func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*omahaSpec.Response, error) {
-	omahaResp := omahaSpec.NewResponse("coreroller")
+	omahaResp := omahaSpec.NewResponse("nebraska")
 
 	for _, reqApp := range omahaReq.Apps {
 		respApp := omahaResp.AddApp(reqApp.Id)
