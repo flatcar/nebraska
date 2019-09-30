@@ -1,0 +1,11 @@
+linters:
+  enable:
+    - gofmt
+    - whitespace
+
+linters-settings:
+  errcheck:
+    ignore: github.com/mgutz/logxi/v1:Error|Warn|Debug
+
+  gofmt:
+    simplify: true
