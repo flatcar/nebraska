@@ -21,7 +21,7 @@ type FlatcarAction struct {
 // AddFlatcarAction registers the provided Omaha Flatcar action.
 func (api *API) AddFlatcarAction(action *FlatcarAction) (*FlatcarAction, error) {
 	err := api.dbR.
-		InsertInto("coreos_action").
+		InsertInto("flatcar_action").
 		Whitelist("event", "chromeos_version", "sha256", "needs_admin", "is_delta", "disable_payload_backoff", "metadata_signature_rsa", "metadata_size", "deadline", "package_id").
 		Record(action).
 		Returning("*").
@@ -36,7 +36,7 @@ func (api *API) GetFlatcarAction(packageID string) (*FlatcarAction, error) {
 	var action FlatcarAction
 
 	err := api.dbR.SelectDoc("*").
-		From("coreos_action").
+		From("flatcar_action").
 		Where("package_id = $1", packageID).
 		QueryStruct(&action)
 
