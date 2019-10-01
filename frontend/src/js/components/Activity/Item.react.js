@@ -17,14 +17,33 @@ import Typography from '@material-ui/core/Typography';
 const useStyles = makeStyles(theme => ({
   stateIcon: {
     minWidth: '65px',
+    marginTop: '10px',
+  },
+  timeText: {
+    color: theme.palette.text.secondary,
+    fontSize: '.9em',
   },
 }));
 
 function ActivityItemIcon(props) {
   const classes = useStyles();
-  let {children, ...other} = props;
+  let {children, icon, color, time, ...other} = props;
   return (
-    <ListItemIcon className={classes.stateIcon} {...other}>{children}</ListItemIcon>
+    <ListItemIcon className={classes.stateIcon} {...other}>
+      <Grid container direction="column" alignItems="center">
+        <Grid item>
+          <Icon
+            icon={icon}
+            color={color}
+            width="30px"
+            height="30px"
+          />
+        </Grid>
+        <Grid item>
+          <Typography align="center" className={classes.timeText}>{time}</Typography>
+        </Grid>
+      </Grid>
+    </ListItemIcon>
   );
 }
 
@@ -78,10 +97,10 @@ class Item extends React.Component {
   }
 
   render() {
-    let ampm = moment.utc(this.props.entry.created_ts).local().format("a"),
-        time = moment.utc(this.props.entry.created_ts).local().format("hh:mm"),
-        subtitle = "",
-        name = ""
+    const timeFormat = moment.localeData().longDateFormat('LT');
+    let time = moment.utc(this.props.entry.created_ts).local().format(`${timeFormat}`);
+    let subtitle = '';
+    let name = '';
 
     if (this.state.entryClass.type !== "activityChannelPackageUpdated") {
       subtitle = "GROUP:"
@@ -91,22 +110,8 @@ class Item extends React.Component {
     let stateIcon = stateIcons[this.state.entrySeverity.className || 'info'];
 
     return (
-      <ListItem>
-        <ActivityItemIcon>
-          <Grid container direction="column" alignItems="center">
-            <Grid item>
-              <Icon
-                icon={stateIcon.icon}
-                color={stateIcon.color}
-                width="30px"
-                height="30px"
-              />
-            </Grid>
-            <Grid item>
-              <Typography align="center" color="textSecondary">{time}<br/>{ampm}</Typography>
-            </Grid>
-          </Grid>
-        </ActivityItemIcon>
+      <ListItem alignItems="start">
+        <ActivityItemIcon {...stateIcon} time={time} />
         <ListItemText
           primary={
             <Grid container justify="space-between">
