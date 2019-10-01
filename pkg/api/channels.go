@@ -10,14 +10,14 @@ import (
 var (
 	// ErrInvalidPackage error indicates that a package doesn't belong to the
 	// application it was supposed to belong to.
-	ErrInvalidPackage = errors.New("coreroller: invalid package")
+	ErrInvalidPackage = errors.New("nebraska: invalid package")
 
 	// ErrBlacklistedChannel error indicates an attempt of creating/updating a
 	// channel using a package that has blacklisted the channel.
-	ErrBlacklistedChannel = errors.New("coreroller: blacklisted channel")
+	ErrBlacklistedChannel = errors.New("nebraska: blacklisted channel")
 )
 
-// Channel represents a CoreRoller application's channel.
+// Channel represents a Nebraska application's channel.
 type Channel struct {
 	ID            string         `db:"id" json:"id"`
 	Name          string         `db:"name" json:"name"`

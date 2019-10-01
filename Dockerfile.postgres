@@ -10,7 +10,7 @@ RUN apk update && \
 
 COPY docker/postgres-docker-entrypoint.sh /docker-entrypoint.sh
 
-ENV PGDATA /coreroller/data
-ENV PGTLS /coreroller/tls
+ENV PGDATA /nebraska/data
+ENV PGTLS /nebraska/tls
 EXPOSE 5432
 CMD ["/docker-entrypoint.sh"]

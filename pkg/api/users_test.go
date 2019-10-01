@@ -39,5 +39,5 @@ func TestUpdateUserPassword(t *testing.T) {
 	assert.Equal(t, "admin", user.Username)
 	assert.Equal(t, defaultTeamID, user.TeamID)
 	assert.NotEqual(t, "8b31292d4778582c0e5fa96aee5513f1", user.Secret)
-	assert.Equal(t, "4ae4f3f6b4be19d33d41f66aa9c79bea", user.Secret)
+	assert.Equal(t, "c01e8daa7a6c135909f218ff2bea1cfe", user.Secret)
 }

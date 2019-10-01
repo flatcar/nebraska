@@ -38,7 +38,7 @@ const (
 	// meant only to be used along with events of EventUpdateComplete type.
 	// It's important that instances use EventUpdateComplete events in
 	// combination with ResultSuccessReboot to communicate a successful update
-	// completed as it has a special meaning for CoreRoller in order to adjust
+	// completed as it has a special meaning for Nebraska in order to adjust
 	// properly the rollout policies and create activity entries.
 	ResultSuccessReboot = 2
 )
@@ -46,32 +46,32 @@ const (
 var (
 	// ErrInvalidInstance indicates that the instance provided is not valid or
 	// it doesn't exist.
-	ErrInvalidInstance = errors.New("coreroller: invalid instance")
+	ErrInvalidInstance = errors.New("nebraska: invalid instance")
 
 	// ErrInvalidApplicationOrGroup indicates that the application or group id
 	// provided are not valid or related to each other.
-	ErrInvalidApplicationOrGroup = errors.New("coreroller: invalid application or group")
+	ErrInvalidApplicationOrGroup = errors.New("nebraska: invalid application or group")
 
 	// ErrInvalidEventTypeOrResult indicates that the event or result provided
-	// are not valid (CoreRoller only implements a subset of the Omaha protocol
+	// are not valid (Nebraska only implements a subset of the Omaha protocol
 	// events).
-	ErrInvalidEventTypeOrResult = errors.New("coreroller: invalid event type or result")
+	ErrInvalidEventTypeOrResult = errors.New("nebraska: invalid event type or result")
 
 	// ErrEventRegistrationFailed indicates that the event registration into
-	// CoreRoller failed.
-	ErrEventRegistrationFailed = errors.New("coreroller: event registration failed")
+	// Nebraska failed.
+	ErrEventRegistrationFailed = errors.New("nebraska: event registration failed")
 
 	// ErrNoUpdateInProgress indicates that an event was received but there
 	// wasn't an update in progress for the provided instance/application, so
 	// it was rejected.
-	ErrNoUpdateInProgress = errors.New("coreroller: no update in progress")
+	ErrNoUpdateInProgress = errors.New("nebraska: no update in progress")
 
-	// ErrCoreosEventIgnored indicates that a CoreOS updater event was ignored.
-	// This is a temporary solution to handle CoreOS specific behaviour.
-	ErrCoreosEventIgnored = errors.New("coreroller: coreos event ignored")
+	// ErrFlatcarEventIgnored indicates that a Flatcar updater event was ignored.
+	// This is a temporary solution to handle Flatcar specific behaviour.
+	ErrFlatcarEventIgnored = errors.New("nebraska: flatcar event ignored")
 )
 
-// Event represents an event posted by an instance to CoreRoller.
+// Event represents an event posted by an instance to Nebraska.
 type Event struct {
 	ID              int            `db:"id" json:"id"`
 	CreatedTs       time.Time      `db:"created_ts" json:"created_ts"`
@@ -82,7 +82,7 @@ type Event struct {
 	EventTypeID     string         `db:"event_type_id" json:"event_type_id"`
 }
 
-// RegisterEvent registers an event posted by an instance in CoreRoller. The
+// RegisterEvent registers an event posted by an instance in Nebraska. The
 // event will be bound to an application/group combination.
 func (api *API) RegisterEvent(instanceID, appID, groupID string, etype, eresult int, previousVersion, errorCode string) error {
 	var err error
@@ -101,10 +101,10 @@ func (api *API) RegisterEvent(instanceID, appID, groupID string, etype, eresult 
 		return ErrNoUpdateInProgress
 	}
 
-	// Temporary hack to handle CoreOS updater specific behaviour
-	if appID == coreosAppID && etype == EventUpdateComplete && eresult == ResultSuccessReboot {
+	// Temporary hack to handle Flatcar updater specific behaviour
+	if appID == flatcarAppID && etype == EventUpdateComplete && eresult == ResultSuccessReboot {
 		if previousVersion == "" || previousVersion == "0.0.0.0" || previousVersion != instance.Application.Version {
-			return ErrCoreosEventIgnored
+			return ErrFlatcarEventIgnored
 		}
 	}
 
@@ -143,7 +143,7 @@ func (api *API) triggerEventConsequences(instanceID, appID, groupID, lastUpdateV
 		return err
 	}
 
-	// TODO: should we also consider ResultSuccess in the next check? CoreOS ~ generic conflicts?
+	// TODO: should we also consider ResultSuccess in the next check? Flatcar ~ generic conflicts?
 	if etype == EventUpdateComplete && result == ResultSuccessReboot {
 		_ = api.updateInstanceStatus(instanceID, appID, InstanceStatusComplete)
 

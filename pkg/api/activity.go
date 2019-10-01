@@ -39,7 +39,7 @@ type activityContext struct {
 	instanceID string
 }
 
-// Activity represents a CoreRoller activity entry.
+// Activity represents a Nebraska activity entry.
 type Activity struct {
 	CreatedTs       time.Time      `db:"created_ts" json:"created_ts"`
 	Class           int            `db:"class" json:"class"`

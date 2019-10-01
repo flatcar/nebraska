@@ -28,7 +28,7 @@ function EditDialog(props) {
   const isCreation = Boolean(props.create);
 
   function getFlatcarActionHash() {
-    return props.data.channel.coreos_action ? props.data.channel.coreos_action.sha256 : '';
+    return props.data.channel.flatcar_action ? props.data.channel.flatcar_action.sha256 : '';
   }
 
   function isFlatcarType(_type) {
@@ -64,7 +64,7 @@ function EditDialog(props) {
     console.log(packageType === otherType);
 
     if (isFlatcarType(packageType)) {
-      data.coreos_action = {sha256: values.flatcarHash}
+      data.flatcar_action = {sha256: values.flatcarHash}
     }
 
     let packageFunctionCall;

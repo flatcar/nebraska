@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	testsDbURL string = "postgres://postgres@127.0.0.1:5432/coreroller_tests?sslmode=disable&connect_timeout=10"
+	testsDbURL string = "postgres://postgres@127.0.0.1:5432/nebraska_tests?sslmode=disable&connect_timeout=10"
 
 	reqVersion  string = "3"
 	reqPlatform string = "coreos"
@@ -34,12 +34,12 @@ func newForTest(t *testing.T) *api.API {
 }
 
 func TestMain(m *testing.M) {
-	os.Setenv("COREROLLER_DB_URL", testsDbURL)
+	os.Setenv("NEBRASKA_DB_URL", testsDbURL)
 
 	a, err := api.New(api.OptionInitDB)
 	if err != nil {
 		log.Println("These tests require PostgreSQL running and a tests database created, please adjust testsDbUrl as needed.")
-		log.Println("Default: postgres://postgres@127.0.0.1:5432/coreroller_tests?sslmode=disable")
+		log.Println("Default: postgres://postgres@127.0.0.1:5432/nebraska_tests?sslmode=disable")
 		log.Println(err)
 		os.Exit(1)
 	}
@@ -55,7 +55,7 @@ func TestInvalidRequests(t *testing.T) {
 
 	tTeam, _ := a.AddTeam(&api.Team{Name: "test_team"})
 	tApp, _ := a.AddApp(&api.Application{Name: "test_app", Description: "Test app", TeamID: tTeam.ID})
-	tPkg, _ := a.AddPackage(&api.Package{Type: api.PkgTypeCoreos, URL: "http://sample.url/pkg", Version: "640.0.0", ApplicationID: tApp.ID})
+	tPkg, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "640.0.0", ApplicationID: tApp.ID})
 	tChannel, _ := a.AddChannel(&api.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: dat.NullStringFrom(tPkg.ID)})
 	tGroup, _ := a.AddGroup(&api.Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: dat.NullStringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
@@ -86,10 +86,10 @@ func TestAppNoUpdateForAppWithChannelAndPackageName(t *testing.T) {
 	defer a.Close()
 	h := NewHandler(a)
 
-	tAppCoreos, _ := a.GetApp(coreosAppID)
-	tPkgCoreos640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeCoreos, URL: "http://sample.url/pkg", Version: "640.0.0", ApplicationID: tAppCoreos.ID})
-	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppCoreos.ID, PackageID: dat.NullStringFrom(tPkgCoreos640.ID)})
-	tGroup, _ := a.AddGroup(&api.Group{Name: "Production", ApplicationID: tAppCoreos.ID, ChannelID: dat.NullStringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tAppFlatcar, _ := a.GetApp(flatcarAppID)
+	tPkgFlatcar640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "640.0.0", ApplicationID: tAppFlatcar.ID})
+	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppFlatcar.ID, PackageID: dat.NullStringFrom(tPkgFlatcar640.ID)})
+	tGroup, _ := a.AddGroup(&api.Group{Name: "Production", ApplicationID: tAppFlatcar.ID, ChannelID: dat.NullStringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
 	validUnregisteredIP := "127.0.0.1"
 	validUnregisteredMachineID := "65e1266d-6f54-4b87-9080-23b99ca9c12f"
@@ -98,38 +98,38 @@ func TestAppNoUpdateForAppWithChannelAndPackageName(t *testing.T) {
 	addPing := true
 
 	// Now with an error event tag, no updatecheck tag
-	omahaResp := doOmahaRequest(t, h, tAppCoreos.ID, expectedAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, !addPing, !updateCheck, "3", "0", "268437959")
-	checkOmahaResponse(t, omahaResp, tAppCoreos.ID, "ok")
-	checkOmahaEventResponse(t, omahaResp, tAppCoreos.ID, 1)
-	checkOmahaPingResponse(t, omahaResp, tAppCoreos.ID, !addPing)
+	omahaResp := doOmahaRequest(t, h, tAppFlatcar.ID, expectedAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, !addPing, !updateCheck, "3", "0", "268437959")
+	checkOmahaResponse(t, omahaResp, tAppFlatcar.ID, "ok")
+	checkOmahaEventResponse(t, omahaResp, tAppFlatcar.ID, 1)
+	checkOmahaPingResponse(t, omahaResp, tAppFlatcar.ID, !addPing)
 	checkOmahaNoUpdateResponse(t, omahaResp)
 
 	// Now updatetag, successful event, no previous version
-	omahaResp = doOmahaRequest(t, h, tAppCoreos.ID, expectedAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, !addPing, updateCheck, "3", "2", "0.0.0.0")
-	checkOmahaResponse(t, omahaResp, tAppCoreos.ID, "ok")
-	checkOmahaEventResponse(t, omahaResp, tAppCoreos.ID, 1)
-	checkOmahaPingResponse(t, omahaResp, tAppCoreos.ID, !addPing)
+	omahaResp = doOmahaRequest(t, h, tAppFlatcar.ID, expectedAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, !addPing, updateCheck, "3", "2", "0.0.0.0")
+	checkOmahaResponse(t, omahaResp, tAppFlatcar.ID, "ok")
+	checkOmahaEventResponse(t, omahaResp, tAppFlatcar.ID, 1)
+	checkOmahaPingResponse(t, omahaResp, tAppFlatcar.ID, !addPing)
 	checkOmahaUpdateResponse(t, omahaResp, expectedAppVersion, "", "", "noupdate")
 
 	// Now updatetag, successful event, no previous version
-	omahaResp = doOmahaRequest(t, h, tAppCoreos.ID, expectedAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, updateCheck, "3", "2", "")
-	checkOmahaResponse(t, omahaResp, tAppCoreos.ID, "ok")
-	checkOmahaEventResponse(t, omahaResp, tAppCoreos.ID, 1)
-	checkOmahaPingResponse(t, omahaResp, tAppCoreos.ID, addPing)
+	omahaResp = doOmahaRequest(t, h, tAppFlatcar.ID, expectedAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, updateCheck, "3", "2", "")
+	checkOmahaResponse(t, omahaResp, tAppFlatcar.ID, "ok")
+	checkOmahaEventResponse(t, omahaResp, tAppFlatcar.ID, 1)
+	checkOmahaPingResponse(t, omahaResp, tAppFlatcar.ID, addPing)
 	checkOmahaUpdateResponse(t, omahaResp, expectedAppVersion, "", "", "noupdate")
 
 	// Now updatetag, successful event, with previous version
-	omahaResp = doOmahaRequest(t, h, tAppCoreos.ID, expectedAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, updateCheck, "3", "2", "614.0.0")
-	checkOmahaResponse(t, omahaResp, tAppCoreos.ID, "ok")
-	checkOmahaEventResponse(t, omahaResp, tAppCoreos.ID, 1)
-	checkOmahaPingResponse(t, omahaResp, tAppCoreos.ID, addPing)
+	omahaResp = doOmahaRequest(t, h, tAppFlatcar.ID, expectedAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, updateCheck, "3", "2", "614.0.0")
+	checkOmahaResponse(t, omahaResp, tAppFlatcar.ID, "ok")
+	checkOmahaEventResponse(t, omahaResp, tAppFlatcar.ID, 1)
+	checkOmahaPingResponse(t, omahaResp, tAppFlatcar.ID, addPing)
 	checkOmahaUpdateResponse(t, omahaResp, expectedAppVersion, "", "", "noupdate")
 
 	// Now updatetag, successful event, with previous version, greater than current active version
-	omahaResp = doOmahaRequest(t, h, tAppCoreos.ID, "666.0.0", validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, updateCheck, "3", "2", "614.0.0")
-	checkOmahaResponse(t, omahaResp, tAppCoreos.ID, "ok")
-	checkOmahaEventResponse(t, omahaResp, tAppCoreos.ID, 1)
-	checkOmahaPingResponse(t, omahaResp, tAppCoreos.ID, addPing)
+	omahaResp = doOmahaRequest(t, h, tAppFlatcar.ID, "666.0.0", validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, updateCheck, "3", "2", "614.0.0")
+	checkOmahaResponse(t, omahaResp, tAppFlatcar.ID, "ok")
+	checkOmahaEventResponse(t, omahaResp, tAppFlatcar.ID, 1)
+	checkOmahaPingResponse(t, omahaResp, tAppFlatcar.ID, addPing)
 	checkOmahaUpdateResponse(t, omahaResp, expectedAppVersion, "", "", "noupdate")
 }
 
@@ -138,10 +138,10 @@ func TestAppRegistrationForAppWithChannelAndPackageName(t *testing.T) {
 	defer a.Close()
 	h := NewHandler(a)
 
-	tAppCoreos, _ := a.GetApp(coreosAppID)
-	tPkgCoreos640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeCoreos, URL: "http://sample.url/pkg", Version: "640.0.0", ApplicationID: tAppCoreos.ID})
-	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppCoreos.ID, PackageID: dat.NullStringFrom(tPkgCoreos640.ID)})
-	tGroup, _ := a.AddGroup(&api.Group{Name: "Production", ApplicationID: tAppCoreos.ID, ChannelID: dat.NullStringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tAppFlatcar, _ := a.GetApp(flatcarAppID)
+	tPkgFlatcar640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "640.0.0", ApplicationID: tAppFlatcar.ID})
+	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppFlatcar.ID, PackageID: dat.NullStringFrom(tPkgFlatcar640.ID)})
+	tGroup, _ := a.AddGroup(&api.Group{Name: "Production", ApplicationID: tAppFlatcar.ID, ChannelID: dat.NullStringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
 	validUnregisteredIP := "127.0.0.1"
 	validUnregisteredMachineID := "65e1266d-6f54-4b87-9080-23b99ca9c12f"
@@ -154,14 +154,14 @@ func TestAppRegistrationForAppWithChannelAndPackageName(t *testing.T) {
 	eventPreviousVersion := ""
 	addPing := true
 
-	omahaResp := doOmahaRequest(t, h, tAppCoreos.ID, expectedAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, updateCheck, noEventType, noEventResult, eventPreviousVersion)
-	checkOmahaResponse(t, omahaResp, tAppCoreos.ID, "ok")
-	checkOmahaPingResponse(t, omahaResp, tAppCoreos.ID, addPing)
+	omahaResp := doOmahaRequest(t, h, tAppFlatcar.ID, expectedAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, updateCheck, noEventType, noEventResult, eventPreviousVersion)
+	checkOmahaResponse(t, omahaResp, tAppFlatcar.ID, "ok")
+	checkOmahaPingResponse(t, omahaResp, tAppFlatcar.ID, addPing)
 	checkOmahaUpdateResponse(t, omahaResp, expectedAppVersion, "", "", "noupdate")
 
-	omahaResp = doOmahaRequest(t, h, tAppCoreos.ID, expectedAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, !updateCheck, completedEventType, sucessEventResult, eventPreviousVersion)
-	checkOmahaResponse(t, omahaResp, tAppCoreos.ID, "ok")
-	checkOmahaPingResponse(t, omahaResp, tAppCoreos.ID, addPing)
+	omahaResp = doOmahaRequest(t, h, tAppFlatcar.ID, expectedAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, !updateCheck, completedEventType, sucessEventResult, eventPreviousVersion)
+	checkOmahaResponse(t, omahaResp, tAppFlatcar.ID, "ok")
+	checkOmahaPingResponse(t, omahaResp, tAppFlatcar.ID, addPing)
 }
 
 func TestAppUpdateForAppWithChannelAndPackageName(t *testing.T) {
@@ -169,12 +169,12 @@ func TestAppUpdateForAppWithChannelAndPackageName(t *testing.T) {
 	defer a.Close()
 	h := NewHandler(a)
 
-	tAppCoreos, _ := a.GetApp(coreosAppID)
-	tFilenameCoreos := "coreosupdate.tgz"
-	tPkgCoreos640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeCoreos, URL: "http://sample.url/pkg", Filename: dat.NullStringFrom(tFilenameCoreos), Version: "99640.0.0", ApplicationID: tAppCoreos.ID})
-	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppCoreos.ID, PackageID: dat.NullStringFrom(tPkgCoreos640.ID)})
-	tGroup, _ := a.AddGroup(&api.Group{Name: "Production", ApplicationID: tAppCoreos.ID, ChannelID: dat.NullStringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
-	coreosAction, _ := a.AddCoreosAction(&api.CoreosAction{Event: "postinstall", Sha256: "fsdkjjfghsdakjfgaksdjfasd", PackageID: tPkgCoreos640.ID})
+	tAppFlatcar, _ := a.GetApp(flatcarAppID)
+	tFilenameFlatcar := "flatcarupdate.tgz"
+	tPkgFlatcar640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Filename: dat.NullStringFrom(tFilenameFlatcar), Version: "99640.0.0", ApplicationID: tAppFlatcar.ID})
+	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppFlatcar.ID, PackageID: dat.NullStringFrom(tPkgFlatcar640.ID)})
+	tGroup, _ := a.AddGroup(&api.Group{Name: "Production", ApplicationID: tAppFlatcar.ID, ChannelID: dat.NullStringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	flatcarAction, _ := a.AddFlatcarAction(&api.FlatcarAction{Event: "postinstall", Sha256: "fsdkjjfghsdakjfgaksdjfasd", PackageID: tPkgFlatcar640.ID})
 
 	validUnregisteredIP := "127.0.0.1"
 	validUnregisteredMachineID := "65e1266d-6f54-4b87-9080-23b99ca9c12f"
@@ -182,60 +182,60 @@ func TestAppUpdateForAppWithChannelAndPackageName(t *testing.T) {
 	updateCheck := true
 	addPing := true
 
-	omahaResp := doOmahaRequest(t, h, tAppCoreos.ID, oldAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, updateCheck, "", "", "")
-	checkOmahaResponse(t, omahaResp, tAppCoreos.ID, "ok")
-	checkOmahaUpdateResponse(t, omahaResp, tPkgCoreos640.Version, tFilenameCoreos, tPkgCoreos640.URL, "ok")
-	checkOmahaPingResponse(t, omahaResp, tAppCoreos.ID, addPing)
-	checkOmahaCoreosAction(t, coreosAction, omahaResp.Apps[0].UpdateCheck.Manifest.Actions.Actions[0])
+	omahaResp := doOmahaRequest(t, h, tAppFlatcar.ID, oldAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, updateCheck, "", "", "")
+	checkOmahaResponse(t, omahaResp, tAppFlatcar.ID, "ok")
+	checkOmahaUpdateResponse(t, omahaResp, tPkgFlatcar640.Version, tFilenameFlatcar, tPkgFlatcar640.URL, "ok")
+	checkOmahaPingResponse(t, omahaResp, tAppFlatcar.ID, addPing)
+	checkOmahaFlatcarAction(t, flatcarAction, omahaResp.Apps[0].UpdateCheck.Manifest.Actions.Actions[0])
 
 	// Send download started
-	omahaResp = doOmahaRequest(t, h, tAppCoreos.ID, oldAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, !updateCheck, "13", "1", "")
-	checkOmahaResponse(t, omahaResp, tAppCoreos.ID, "ok")
-	checkOmahaPingResponse(t, omahaResp, tAppCoreos.ID, addPing)
+	omahaResp = doOmahaRequest(t, h, tAppFlatcar.ID, oldAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, !updateCheck, "13", "1", "")
+	checkOmahaResponse(t, omahaResp, tAppFlatcar.ID, "ok")
+	checkOmahaPingResponse(t, omahaResp, tAppFlatcar.ID, addPing)
 	checkOmahaNoUpdateResponse(t, omahaResp)
 
 	// Send download finished
-	omahaResp = doOmahaRequest(t, h, tAppCoreos.ID, oldAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, !updateCheck, "14", "1", "")
-	checkOmahaResponse(t, omahaResp, tAppCoreos.ID, "ok")
-	checkOmahaPingResponse(t, omahaResp, tAppCoreos.ID, addPing)
+	omahaResp = doOmahaRequest(t, h, tAppFlatcar.ID, oldAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, !updateCheck, "14", "1", "")
+	checkOmahaResponse(t, omahaResp, tAppFlatcar.ID, "ok")
+	checkOmahaPingResponse(t, omahaResp, tAppFlatcar.ID, addPing)
 	checkOmahaNoUpdateResponse(t, omahaResp)
 
 	// Send complete
-	omahaResp = doOmahaRequest(t, h, tAppCoreos.ID, oldAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, !updateCheck, "3", "1", "")
-	checkOmahaResponse(t, omahaResp, tAppCoreos.ID, "ok")
-	checkOmahaPingResponse(t, omahaResp, tAppCoreos.ID, addPing)
+	omahaResp = doOmahaRequest(t, h, tAppFlatcar.ID, oldAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, !updateCheck, "3", "1", "")
+	checkOmahaResponse(t, omahaResp, tAppFlatcar.ID, "ok")
+	checkOmahaPingResponse(t, omahaResp, tAppFlatcar.ID, addPing)
 	checkOmahaNoUpdateResponse(t, omahaResp)
 
 	// Send rebooted
-	omahaResp = doOmahaRequest(t, h, tAppCoreos.ID, tPkgCoreos640.Version, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, updateCheck, "3", "2", oldAppVersion)
-	checkOmahaResponse(t, omahaResp, tAppCoreos.ID, "ok")
-	checkOmahaPingResponse(t, omahaResp, tAppCoreos.ID, addPing)
-	checkOmahaUpdateResponse(t, omahaResp, tPkgCoreos640.Version, "", "", "noupdate")
+	omahaResp = doOmahaRequest(t, h, tAppFlatcar.ID, tPkgFlatcar640.Version, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, updateCheck, "3", "2", oldAppVersion)
+	checkOmahaResponse(t, omahaResp, tAppFlatcar.ID, "ok")
+	checkOmahaPingResponse(t, omahaResp, tAppFlatcar.ID, addPing)
+	checkOmahaUpdateResponse(t, omahaResp, tPkgFlatcar640.Version, "", "", "noupdate")
 
 	// Expect no update
-	omahaResp = doOmahaRequest(t, h, tAppCoreos.ID, tPkgCoreos640.Version, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, updateCheck, "", "", "")
-	checkOmahaResponse(t, omahaResp, tAppCoreos.ID, "ok")
-	checkOmahaPingResponse(t, omahaResp, tAppCoreos.ID, addPing)
-	checkOmahaUpdateResponse(t, omahaResp, tPkgCoreos640.Version, "", "", "noupdate")
+	omahaResp = doOmahaRequest(t, h, tAppFlatcar.ID, tPkgFlatcar640.Version, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, updateCheck, "", "", "")
+	checkOmahaResponse(t, omahaResp, tAppFlatcar.ID, "ok")
+	checkOmahaPingResponse(t, omahaResp, tAppFlatcar.ID, addPing)
+	checkOmahaUpdateResponse(t, omahaResp, tPkgFlatcar640.Version, "", "", "noupdate")
 }
 
-func TestCoreosGroupNamesConversionToIds(t *testing.T) {
+func TestFlatcarGroupNamesConversionToIds(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
 	h := NewHandler(a)
 
-	coreosAppIDWithCurlyBraces := "{" + coreosAppID + "}"
+	flatcarAppIDWithCurlyBraces := "{" + flatcarAppID + "}"
 	machineID := "65e1266d-6f54-4b87-9080-23b99ca9c12f"
 	machineIP := "10.0.0.1"
 
-	omahaResp := doOmahaRequest(t, h, coreosAppID, "2000.0.0", machineID, "invalid-group", machineIP, false, true, "", "", "")
-	checkOmahaResponse(t, omahaResp, coreosAppID, "error-instanceRegistrationFailed")
+	omahaResp := doOmahaRequest(t, h, flatcarAppID, "2000.0.0", machineID, "invalid-group", machineIP, false, true, "", "", "")
+	checkOmahaResponse(t, omahaResp, flatcarAppID, "error-instanceRegistrationFailed")
 
-	omahaResp = doOmahaRequest(t, h, coreosAppID, "2000.0.0", machineID, "alpha", machineIP, false, true, "", "", "")
-	checkOmahaResponse(t, omahaResp, coreosAppID, "ok")
+	omahaResp = doOmahaRequest(t, h, flatcarAppID, "2000.0.0", machineID, "alpha", machineIP, false, true, "", "", "")
+	checkOmahaResponse(t, omahaResp, flatcarAppID, "ok")
 
-	omahaResp = doOmahaRequest(t, h, coreosAppIDWithCurlyBraces, "2000.0.0", machineID, "alpha", machineIP, false, true, "", "", "")
-	checkOmahaResponse(t, omahaResp, coreosAppIDWithCurlyBraces, "ok")
+	omahaResp = doOmahaRequest(t, h, flatcarAppIDWithCurlyBraces, "2000.0.0", machineID, "alpha", machineIP, false, true, "", "", "")
+	checkOmahaResponse(t, omahaResp, flatcarAppIDWithCurlyBraces, "ok")
 }
 
 func doOmahaRequest(t *testing.T, h *Handler, appID, appVersion, appMachineID, appTrack, ip string, addPing, updateCheck bool, eventType, eventResult, eventPreviousVersion string) *omahaSpec.Response {
@@ -321,7 +321,7 @@ func checkOmahaPingResponse(t *testing.T, omahaResp *omahaSpec.Response, expecte
 	}
 }
 
-func checkOmahaCoreosAction(t *testing.T, c *api.CoreosAction, r *omahaSpec.Action) {
+func checkOmahaFlatcarAction(t *testing.T, c *api.FlatcarAction, r *omahaSpec.Action) {
 	assert.Equal(t, c.Event, r.Event)
 	assert.Equal(t, c.Sha256, r.Sha256)
 	assert.Equal(t, c.IsDelta, r.IsDelta)

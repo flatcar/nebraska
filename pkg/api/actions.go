@@ -2,8 +2,8 @@ package api
 
 import "time"
 
-// CoreosAction represents an Omaha action with some CoreOS specific fields.
-type CoreosAction struct {
+// FlatcarAction represents an Omaha action with some Flatcar specific fields.
+type FlatcarAction struct {
 	ID                    string    `db:"id" json:"id"`
 	Event                 string    `db:"event" json:"event"`
 	ChromeOSVersion       string    `db:"chromeos_version" json:"chromeos_version"`
@@ -18,10 +18,10 @@ type CoreosAction struct {
 	PackageID             string    `db:"package_id" json:"-"`
 }
 
-// AddCoreosAction registers the provided Omaha CoreOS action.
-func (api *API) AddCoreosAction(action *CoreosAction) (*CoreosAction, error) {
+// AddFlatcarAction registers the provided Omaha Flatcar action.
+func (api *API) AddFlatcarAction(action *FlatcarAction) (*FlatcarAction, error) {
 	err := api.dbR.
-		InsertInto("coreos_action").
+		InsertInto("flatcar_action").
 		Whitelist("event", "chromeos_version", "sha256", "needs_admin", "is_delta", "disable_payload_backoff", "metadata_signature_rsa", "metadata_size", "deadline", "package_id").
 		Record(action).
 		Returning("*").
@@ -30,13 +30,13 @@ func (api *API) AddCoreosAction(action *CoreosAction) (*CoreosAction, error) {
 	return action, err
 }
 
-// GetCoreosAction returns the CoreOS action entry associated to the package id
+// GetFlatcarAction returns the Flatcar action entry associated to the package id
 // provided.
-func (api *API) GetCoreosAction(packageID string) (*CoreosAction, error) {
-	var action CoreosAction
+func (api *API) GetFlatcarAction(packageID string) (*FlatcarAction, error) {
+	var action FlatcarAction
 
 	err := api.dbR.SelectDoc("*").
-		From("coreos_action").
+		From("flatcar_action").
 		Where("package_id = $1", packageID).
 		QueryStruct(&action)
 

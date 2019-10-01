@@ -52,29 +52,29 @@ func TestAddPackage(t *testing.T) {
 	assert.Error(t, err, "Blacklisted channels must be valid existing channels ids.")
 }
 
-func TestAddPackageCoreos(t *testing.T) {
+func TestAddPackageFlatcar(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
 
 	pkg := &Package{
-		Type:          PkgTypeCoreos,
+		Type:          PkgTypeFlatcar,
 		URL:           "https://commondatastorage.googleapis.com/update-storage.core-os.net/amd64-usr/766.3.0/",
 		Filename:      dat.NullStringFrom("update.gz"),
 		Version:       "2016.6.6",
 		Size:          dat.NullStringFrom("123456"),
 		Hash:          dat.NullStringFrom("sha1:blablablabla"),
-		ApplicationID: coreosAppID,
-		CoreosAction: &CoreosAction{
+		ApplicationID: flatcarAppID,
+		FlatcarAction: &FlatcarAction{
 			Sha256: "sha256:blablablabla",
 		},
 	}
 	_, err := a.AddPackage(pkg)
 	assert.NoError(t, err)
-	assert.Equal(t, "postinstall", pkg.CoreosAction.Event)
-	assert.Equal(t, false, pkg.CoreosAction.NeedsAdmin)
-	assert.Equal(t, false, pkg.CoreosAction.IsDelta)
-	assert.Equal(t, true, pkg.CoreosAction.DisablePayloadBackoff)
-	assert.Equal(t, "sha256:blablablabla", pkg.CoreosAction.Sha256)
+	assert.Equal(t, "postinstall", pkg.FlatcarAction.Event)
+	assert.Equal(t, false, pkg.FlatcarAction.NeedsAdmin)
+	assert.Equal(t, false, pkg.FlatcarAction.IsDelta)
+	assert.Equal(t, true, pkg.FlatcarAction.DisablePayloadBackoff)
+	assert.Equal(t, "sha256:blablablabla", pkg.FlatcarAction.Sha256)
 }
 
 func TestUpdatePackage(t *testing.T) {
@@ -109,38 +109,38 @@ func TestUpdatePackage(t *testing.T) {
 	assert.Len(t, pkg.ChannelsBlacklist, 0)
 }
 
-func TestUpdatePackageCoreos(t *testing.T) {
+func TestUpdatePackageFlatcar(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
 
 	pkg := &Package{
-		Type:          PkgTypeCoreos,
+		Type:          PkgTypeFlatcar,
 		URL:           "https://commondatastorage.googleapis.com/update-storage.core-os.net/amd64-usr/766.3.0/",
 		Filename:      dat.NullStringFrom("update.gz"),
 		Version:       "2016.6.6",
 		Size:          dat.NullStringFrom("123456"),
 		Hash:          dat.NullStringFrom("sha1:blablablabla"),
-		ApplicationID: coreosAppID,
+		ApplicationID: flatcarAppID,
 	}
 	_, err := a.AddPackage(pkg)
 	assert.NoError(t, err)
-	assert.Nil(t, pkg.CoreosAction)
+	assert.Nil(t, pkg.FlatcarAction)
 
-	pkg.CoreosAction = &CoreosAction{
+	pkg.FlatcarAction = &FlatcarAction{
 		Sha256: "sha256:blablablabla",
 	}
 	err = a.UpdatePackage(pkg)
 	assert.NoError(t, err)
-	assert.Equal(t, "postinstall", pkg.CoreosAction.Event)
-	assert.Equal(t, false, pkg.CoreosAction.NeedsAdmin)
-	assert.Equal(t, false, pkg.CoreosAction.IsDelta)
-	assert.Equal(t, true, pkg.CoreosAction.DisablePayloadBackoff)
-	assert.Equal(t, "sha256:blablablabla", pkg.CoreosAction.Sha256)
+	assert.Equal(t, "postinstall", pkg.FlatcarAction.Event)
+	assert.Equal(t, false, pkg.FlatcarAction.NeedsAdmin)
+	assert.Equal(t, false, pkg.FlatcarAction.IsDelta)
+	assert.Equal(t, true, pkg.FlatcarAction.DisablePayloadBackoff)
+	assert.Equal(t, "sha256:blablablabla", pkg.FlatcarAction.Sha256)
 
-	pkg.CoreosAction.Sha256 = "sha256:bleblebleble"
+	pkg.FlatcarAction.Sha256 = "sha256:bleblebleble"
 	err = a.UpdatePackage(pkg)
 	assert.NoError(t, err)
-	assert.Equal(t, "sha256:bleblebleble", pkg.CoreosAction.Sha256)
+	assert.Equal(t, "sha256:bleblebleble", pkg.FlatcarAction.Sha256)
 }
 
 func TestDeletePackage(t *testing.T) {

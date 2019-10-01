@@ -19,20 +19,20 @@ import (
 //go:generate go-bindata -ignore=\.swp -pkg api db db/migrations
 
 const (
-	defaultDbURL = "postgres://postgres@127.0.0.1:5432/coreroller?sslmode=disable&connect_timeout=10"
+	defaultDbURL = "postgres://postgres@127.0.0.1:5432/nebraska?sslmode=disable&connect_timeout=10"
 	nowUTC       = dat.UnsafeString("now() at time zone 'utc'")
 )
 
 var (
 	// ErrNoRowsAffected indicates that no rows were affected in an update or
 	// delete database operation.
-	ErrNoRowsAffected = errors.New("coreroller: no rows affected")
+	ErrNoRowsAffected = errors.New("nebraska: no rows affected")
 
 	// ErrInvalidSemver indicates that the provided semver version is not valid.
-	ErrInvalidSemver = errors.New("coreroller: invalid semver")
+	ErrInvalidSemver = errors.New("nebraska: invalid semver")
 )
 
-// API represents an api instance used to interact with CoreRoller entities.
+// API represents an api instance used to interact with Nebraska entities.
 type API struct {
 	db       *sqlx.DB
 	dbR      *runner.DB
@@ -49,8 +49,9 @@ type API struct {
 func New(options ...func(*API) error) (*API, error) {
 	api := &API{
 		dbDriver: "postgres",
-		dbURL:    os.Getenv("COREROLLER_DB_URL"),
+		dbURL:    os.Getenv("NEBRASKA_DB_URL"),
 	}
+
 	if api.dbURL == "" {
 		api.dbURL = defaultDbURL
 	}

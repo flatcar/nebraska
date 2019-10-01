@@ -31,10 +31,10 @@ import (
 )
 
 const (
-	clientIDEnvName      = "COREROLLER_OAUTH_CLIENT_ID"
-	clientSecretEnvName  = "COREROLLER_OAUTH_CLIENT_SECRET"
-	sessionSecretEnvName = "COREROLLER_SESSION_SECRET"
-	webhookSecretEnvName = "COREROLLER_WEBHOOK_SECRET"
+	clientIDEnvName      = "NEBRASKA_OAUTH_CLIENT_ID"
+	clientSecretEnvName  = "NEBRASKA_OAUTH_CLIENT_SECRET"
+	sessionSecretEnvName = "NEBRASKA_SESSION_SECRET"
+	webhookSecretEnvName = "NEBRASKA_WEBHOOK_SECRET"
 )
 
 type ghTeamData struct {
@@ -61,16 +61,16 @@ type controller struct {
 }
 
 type controllerConfig struct {
-	enableSyncer       bool
-	hostCoreosPackages bool
-	coreosPackagesPath string
-	corerollerURL      string
-	sessionSecret      string
-	oauthClientID      string
-	oauthClientSecret  string
-	webhookSecret      string
-	readWriteTeams     []string
-	readOnlyTeams      []string
+	enableSyncer        bool
+	hostFlatcarPackages bool
+	flatcarPackagesPath string
+	nebraskaURL         string
+	sessionSecret       string
+	oauthClientID       string
+	oauthClientSecret   string
+	webhookSecret       string
+	readWriteTeams      []string
+	readOnlyTeams       []string
 }
 
 func getPotentialOrEnv(potentialValue, envName string) string {
@@ -91,21 +91,21 @@ func obtainOAuthClientID(potentialID string) (string, error) {
 	if id := getPotentialOrEnv(potentialID, clientIDEnvName); potentialID != "" {
 		return id, nil
 	}
-	return "", errors.New("no oauth client ID passed to rollerd")
+	return "", errors.New("no oauth client ID")
 }
 
 func obtainOAuthClientSecret(potentialSecret string) (string, error) {
 	if secret := getPotentialOrEnv(potentialSecret, clientSecretEnvName); secret != "" {
 		return secret, nil
 	}
-	return "", errors.New("no oauth client secret passed to rollerd")
+	return "", errors.New("no oauth client secret")
 }
 
 func obtainWebhookSecret(potentialSecret string) (string, error) {
 	if secret := getPotentialOrEnv(potentialSecret, webhookSecretEnvName); secret != "" {
 		return secret, nil
 	}
-	return "", errors.New("no webhook secret passed to rollerd")
+	return "", errors.New("no webhook secret")
 }
 
 func newController(conf *controllerConfig) (*controller, error) {
@@ -162,9 +162,9 @@ func newController(conf *controllerConfig) (*controller, error) {
 	if conf.enableSyncer {
 		syncerConf := &syncer.Config{
 			Api:          api,
-			HostPackages: conf.hostCoreosPackages,
-			PackagesPath: conf.coreosPackagesPath,
-			PackagesURL:  conf.corerollerURL + coreosPkgsRouterPrefix,
+			HostPackages: conf.hostFlatcarPackages,
+			PackagesPath: conf.flatcarPackagesPath,
+			PackagesURL:  conf.nebraskaURL + flatcarPkgsRouterPrefix,
 		}
 		syncer, err := syncer.New(syncerConf)
 		if err != nil {
@@ -1304,10 +1304,10 @@ func (ctl *controller) getActivity(c web.C, w http.ResponseWriter, r *http.Reque
 //
 
 const (
-	app_instances_per_channel_metrics_prolog = `# HELP coreroller_application_instances_per_channel A number of applications from specific channel running on instances
-# TYPE coreroller_application_instances_per_channel gauge`
-	failed_updates_metrics_prolog = `# HELP coreroller_failed_updates A number of failed updates of an application
-# TYPE coreroller_failed_updates gauge`
+	app_instances_per_channel_metrics_prolog = `# HELP nebraska_application_instances_per_channel A number of applications from specific channel running on instances
+# TYPE nebraska_application_instances_per_channel gauge`
+	failed_updates_metrics_prolog = `# HELP nebraska_failed_updates A number of failed updates of an application
+# TYPE nebraska_failed_updates gauge`
 )
 
 func escapeMetricString(str string) string {
@@ -1347,7 +1347,7 @@ func (ctl *controller) getMetrics(c web.C, w http.ResponseWriter, r *http.Reques
 		}
 		fmt.Fprintf(w, "%s\n", app_instances_per_channel_metrics_prolog)
 		for _, metric := range aipcMetrics {
-			fmt.Fprintf(w, `coreroller_application_instances_per_channel{application="%s",version="%s",channel="%s"} %d %d%s`, escapeMetricString(metric.ApplicationName), escapeMetricString(metric.Version), escapeMetricString(metric.ChannelName), metric.InstancesCount, nowUnixMillis, "\n")
+			fmt.Fprintf(w, `nebraska_application_instances_per_channel{application="%s",version="%s",channel="%s"} %d %d%s`, escapeMetricString(metric.ApplicationName), escapeMetricString(metric.Version), escapeMetricString(metric.ChannelName), metric.InstancesCount, nowUnixMillis, "\n")
 		}
 		needEmptyLine = true
 	}
@@ -1357,7 +1357,7 @@ func (ctl *controller) getMetrics(c web.C, w http.ResponseWriter, r *http.Reques
 		}
 		fmt.Fprintf(w, "%s\n", failed_updates_metrics_prolog)
 		for _, metric := range fuMetrics {
-			fmt.Fprintf(w, `coreroller_failed_updates{application="%s"} %d %d%s`, escapeMetricString(metric.ApplicationName), metric.FailureCount, nowUnixMillis, "\n")
+			fmt.Fprintf(w, `nebraska_failed_updates{application="%s"} %d %d%s`, escapeMetricString(metric.ApplicationName), metric.FailureCount, nowUnixMillis, "\n")
 		}
 		needEmptyLine = true
 	}

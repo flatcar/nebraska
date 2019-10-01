@@ -10,49 +10,49 @@ import (
 var (
 	// ErrRegisterInstanceFailed indicates that the instance registration did
 	// not succeed.
-	ErrRegisterInstanceFailed = errors.New("coreroller: register instance failed")
+	ErrRegisterInstanceFailed = errors.New("nebraska: register instance failed")
 
 	// ErrUpdateInProgressOnInstance indicates that an update is currently in
 	// progress on the instance requesting an update package, so the request
 	// will be rejected.
-	ErrUpdateInProgressOnInstance = errors.New("coreroller: update in progress on instance")
+	ErrUpdateInProgressOnInstance = errors.New("nebraska: update in progress on instance")
 
 	// ErrNoPackageFound indicates that the group doesn't have a channel
 	// assigned or that the channel doesn't have a package assigned.
-	ErrNoPackageFound = errors.New("coreroller: no package found")
+	ErrNoPackageFound = errors.New("nebraska: no package found")
 
 	// ErrNoUpdatePackageAvailable indicates that the instance requesting the
 	// update has already the latest version of the application.
-	ErrNoUpdatePackageAvailable = errors.New("coreroller: no update package available")
+	ErrNoUpdatePackageAvailable = errors.New("nebraska: no update package available")
 
 	// ErrUpdatesDisabled indicates that updates are not enabled in the group.
-	ErrUpdatesDisabled = errors.New("coreroller: updates disabled")
+	ErrUpdatesDisabled = errors.New("nebraska: updates disabled")
 
 	// ErrGetUpdatesStatsFailed indicates that there was a problem getting the
 	// updates stats of the group which are needed to enforce the rollout
 	// policy.
-	ErrGetUpdatesStatsFailed = errors.New("coreroller: get updates stats failed")
+	ErrGetUpdatesStatsFailed = errors.New("nebraska: get updates stats failed")
 
 	// ErrMaxUpdatesPerPeriodLimitReached indicates that the maximum number of
 	// updates per period has been reached.
-	ErrMaxUpdatesPerPeriodLimitReached = errors.New("coreroller: max updates per period limit reached")
+	ErrMaxUpdatesPerPeriodLimitReached = errors.New("nebraska: max updates per period limit reached")
 
 	// ErrMaxConcurrentUpdatesLimitReached indicates that the maximum number of
 	// concurrent updates has been reached.
-	ErrMaxConcurrentUpdatesLimitReached = errors.New("coreroller: max concurrent updates limit reached")
+	ErrMaxConcurrentUpdatesLimitReached = errors.New("nebraska: max concurrent updates limit reached")
 
 	// ErrMaxTimedOutUpdatesLimitReached indicates that limit of instances that
 	// timed out while updating has been reached.
-	ErrMaxTimedOutUpdatesLimitReached = errors.New("coreroller: max timed out updates limit reached")
+	ErrMaxTimedOutUpdatesLimitReached = errors.New("nebraska: max timed out updates limit reached")
 
 	// ErrGrantingUpdate indicates that something went wrong while granting an
 	// update.
-	ErrGrantingUpdate = errors.New("coreroller: error granting update")
+	ErrGrantingUpdate = errors.New("nebraska: error granting update")
 )
 
 // GetUpdatePackage returns an update package for the instance/application
 // provided. The instance details and the application it's running will be
-// registered in CoreRoller (or updated if it's already registered).
+// registered in Nebraska (or updated if it's already registered).
 func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID, groupID string) (*Package, error) {
 	instance, err := api.RegisterInstance(instanceID, instanceIP, instanceVersion, appID, groupID)
 	if err != nil {

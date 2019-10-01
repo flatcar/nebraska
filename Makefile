@@ -1,7 +1,7 @@
 VERSION ?= $(shell git describe --tags --always --dirty)
 DOCKER_CMD ?= "docker"
 DOCKER_REPO ?= "quay.io/flatcar"
-DOCKER_IMAGE_ROLLERD ?= "nebraska-rollerd"
+DOCKER_IMAGE_NEBRASKA ?= "nebraska"
 DOCKER_IMAGE_POSTGRES ?= "nebraska-postgres"
 
 .PHONY: all
@@ -21,20 +21,20 @@ frontend-watch:
 
 .PHONY: backend
 backend:
-	go build -o bin/rollerd ./cmd/rollerd
+	go build -o bin/nebraska ./cmd/nebraska
 
 .PHONY: tools
 tools:
 	go build -o bin/initdb ./cmd/initdb
 	go build -o bin/userctl ./cmd/userctl
 
-.PHONY: container-rollerd
-container-rollerd:
+.PHONY: container-nebraska
+container-nebraska:
 	$(DOCKER_CMD) build \
 		--no-cache \
-		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_ROLLERD):$(VERSION)" \
-		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_ROLLERD):latest" \
-		-f Dockerfile.rollerd .
+		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_NEBRASKA):$(VERSION)" \
+		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_NEBRASKA):latest" \
+		-f Dockerfile.nebraska .
 
 .PHONY: container-postgres
 container-postgres:
@@ -45,4 +45,4 @@ container-postgres:
 		-f Dockerfile.postgres .
 
 .PHONY: container
-container: container-rollerd container-postgres
+container: container-nebraska container-postgres

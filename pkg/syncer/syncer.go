@@ -23,9 +23,9 @@ import (
 )
 
 const (
-	coreosUpdatesURL = "https://public.update.flatcar-linux.net/v1/update/"
-	coreosAppID      = "{e96281a6-d1af-4bde-9a0a-97b76e56dc57}"
-	checkFrequency   = 1 * time.Hour
+	flatcarUpdatesURL = "https://public.update.flatcar-linux.net/v1/update/"
+	flatcarAppID      = "{e96281a6-d1af-4bde-9a0a-97b76e56dc57}"
+	checkFrequency    = 1 * time.Hour
 )
 
 var (
@@ -37,8 +37,8 @@ var (
 )
 
 // Syncer represents a process in charge of checking for updates in the
-// different official CoreOS channels and updating the CoreOS application in
-// CoreRoller as needed (creating new packages and updating channels to point
+// different official Flatcar channels and updating the Flatcar application in
+// Nebraska as needed (creating new packages and updating channels to point
 // to them). When hostPackages is enabled, packages payloads will be downloaded
 // into packagesPath and package url/filename will be rewritten.
 type Syncer struct {
@@ -114,15 +114,15 @@ func (s *Syncer) Stop() {
 }
 
 // initialize does some initial setup to prepare the syncer, checking in
-// CoreRoller the last versions we know about for the different channels in the
-// CoreOS application and keeping track of some ids.
+// Nebraska the last versions we know about for the different channels in the
+// Flatcar application and keeping track of some ids.
 func (s *Syncer) initialize() error {
-	coreosApp, err := s.api.GetApp(coreosAppID)
+	flatcarApp, err := s.api.GetApp(flatcarAppID)
 	if err != nil {
 		return err
 	}
 
-	for _, c := range coreosApp.Channels {
+	for _, c := range flatcarApp.Channels {
 		if c.Name == "stable" || c.Name == "beta" || c.Name == "alpha" || c.Name == "edge" {
 			s.machinesIDs[c.Name] = "{" + uuid.NewV4().String() + "}"
 			s.bootIDs[c.Name] = "{" + uuid.NewV4().String() + "}"
@@ -139,10 +139,10 @@ func (s *Syncer) initialize() error {
 	return nil
 }
 
-// checkForUpdates polls the public CoreOS servers looking for updates in the
+// checkForUpdates polls the public Flatcar servers looking for updates in the
 // official channels (stable, beta, alpha, edge) sending Omaha requests. When an
 // update is received we'll process it, creating packages and updating channels
-// in CoreRoller as needed.
+// in Nebraska as needed.
 func (s *Syncer) checkForUpdates() error {
 	for channel, currentVersion := range s.versions {
 		logger.Debug("checking for updates", "channel", channel, "currentVersion", currentVersion)
@@ -173,14 +173,14 @@ func (s *Syncer) checkForUpdates() error {
 }
 
 // doOmahaRequest sends an Omaha request checking if there is an update for a
-// specific CoreOS channel, returning the update check to the caller.
+// specific Flatcar channel, returning the update check to the caller.
 func (s *Syncer) doOmahaRequest(channel, currentVersion string) (*omaha.UpdateCheck, error) {
 	req := omaha.NewRequest("Chateau", "CoreOS", currentVersion+"_x86_64", "")
 	req.Version = "CoreOSUpdateEngine-0.1.0.0"
 	req.UpdaterVersion = "CoreOSUpdateEngine-0.1.0.0"
 	req.InstallSource = "scheduler"
 	req.IsMachine = "1"
-	app := req.AddApp(coreosAppID, currentVersion)
+	app := req.AddApp(flatcarAppID, currentVersion)
 	app.AddUpdateCheck()
 	app.MachineID = s.machinesIDs[channel]
 	app.BootId = s.bootIDs[channel]
@@ -193,7 +193,7 @@ func (s *Syncer) doOmahaRequest(channel, currentVersion string) (*omaha.UpdateCh
 	}
 	logger.Debug("doOmahaRequest", "request", string(payload))
 
-	resp, err := s.httpClient.Post(coreosUpdatesURL, "text/xml", bytes.NewReader(payload))
+	resp, err := s.httpClient.Post(flatcarUpdatesURL, "text/xml", bytes.NewReader(payload))
 	if err != nil {
 		logger.Error("checkForUpdates, posting omaha response", "error", err)
 		return nil, err
@@ -218,20 +218,20 @@ func (s *Syncer) doOmahaRequest(channel, currentVersion string) (*omaha.UpdateCh
 	return oresp.Apps[0].UpdateCheck, nil
 }
 
-// processUpdate is in charge of creating packages in the CoreOS application in
-// CoreRoller and updating the appropriate channel to point to the new channel.
+// processUpdate is in charge of creating packages in the Flatcar application in
+// Nebraska and updating the appropriate channel to point to the new channel.
 func (s *Syncer) processUpdate(channelName string, update *omaha.UpdateCheck) error {
-	// Create new package and action for CoreOS application in CoreRoller if
+	// Create new package and action for Flatcar application in Nebraska if
 	// needed (package may already exist and we just need to update the channel
 	// reference to it)
-	pkg, err := s.api.GetPackageByVersion(coreosAppID, update.Manifest.Version)
+	pkg, err := s.api.GetPackageByVersion(flatcarAppID, update.Manifest.Version)
 	if err != nil {
 		url := update.Urls.Urls[0].CodeBase
 		filename := update.Manifest.Packages.Packages[0].Name
 
 		if s.hostPackages {
 			url = s.packagesURL
-			filename = fmt.Sprintf("coreos-amd64-%s.gz", update.Manifest.Version)
+			filename = fmt.Sprintf("flatcar-amd64-%s.gz", update.Manifest.Version)
 			if err := s.downloadPackage(update, filename); err != nil {
 				logger.Error("processUpdate, downloading package", "error", err, "channelName", channelName)
 				return err
@@ -239,20 +239,20 @@ func (s *Syncer) processUpdate(channelName string, update *omaha.UpdateCheck) er
 		}
 
 		pkg = &api.Package{
-			Type:          api.PkgTypeCoreos,
+			Type:          api.PkgTypeFlatcar,
 			URL:           url,
 			Version:       update.Manifest.Version,
 			Filename:      dat.NullStringFrom(filename),
 			Size:          dat.NullStringFrom(update.Manifest.Packages.Packages[0].Size),
 			Hash:          dat.NullStringFrom(update.Manifest.Packages.Packages[0].Hash),
-			ApplicationID: coreosAppID,
+			ApplicationID: flatcarAppID,
 		}
 		if _, err = s.api.AddPackage(pkg); err != nil {
 			logger.Error("processUpdate, adding package", "error", err, "channelName", channelName)
 			return err
 		}
 
-		coreosAction := &api.CoreosAction{
+		flatcarAction := &api.FlatcarAction{
 			Event:                 update.Manifest.Actions.Actions[0].Event,
 			ChromeOSVersion:       update.Manifest.Actions.Actions[0].ChromeOSVersion,
 			Sha256:                update.Manifest.Actions.Actions[0].Sha256,
@@ -264,8 +264,8 @@ func (s *Syncer) processUpdate(channelName string, update *omaha.UpdateCheck) er
 			Deadline:              update.Manifest.Actions.Actions[0].Deadline,
 			PackageID:             pkg.ID,
 		}
-		if _, err = s.api.AddCoreosAction(coreosAction); err != nil {
-			logger.Error("processUpdate, adding coreos action", "error", err, "channelName", channelName)
+		if _, err = s.api.AddFlatcarAction(flatcarAction); err != nil {
+			logger.Error("processUpdate, adding flatcar action", "error", err, "channelName", channelName)
 			return err
 		}
 	}
@@ -289,7 +289,7 @@ func (s *Syncer) processUpdate(channelName string, update *omaha.UpdateCheck) er
 // update provided. The downloaded package payload is stored in packagesPath
 // using the filename provided.
 func (s *Syncer) downloadPackage(update *omaha.UpdateCheck, filename string) error {
-	tmpFile, err := ioutil.TempFile(s.packagesPath, "tmp_coreos_pkg_")
+	tmpFile, err := ioutil.TempFile(s.packagesPath, "tmp_flatcar_pkg_")
 	if err != nil {
 		return err
 	}

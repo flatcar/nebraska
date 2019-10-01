@@ -10,16 +10,16 @@ import (
 
 const (
 	// Realm used for basic authentication.
-	Realm = "coreroller.org"
+	Realm = "nebraska"
 )
 
 var (
 	// ErrUpdatingPassword indicates that something went wrong while updating
 	// the user's password.
-	ErrUpdatingPassword = errors.New("coreroller: error updating password")
+	ErrUpdatingPassword = errors.New("nebraska: error updating password")
 )
 
-// User represents a CoreRoller user.
+// User represents a Nebraska user.
 type User struct {
 	ID        string    `db:"id" json:"id"`
 	Username  string    `db:"username" json:"username"`

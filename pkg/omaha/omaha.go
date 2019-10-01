@@ -16,8 +16,8 @@ import (
 var (
 	logger = log.New("omaha")
 
-	coreosAppID  = "e96281a6-d1af-4bde-9a0a-97b76e56dc57"
-	coreosGroups = map[string]string{
+	flatcarAppID  = "e96281a6-d1af-4bde-9a0a-97b76e56dc57"
+	flatcarGroups = map[string]string{
 		"alpha":  "5b810680-e36a-4879-b98a-4f989e80b899",
 		"beta":   "3fe10490-dd73-4b49-b72a-28ac19acfcdc",
 		"stable": "9a2deb70-37be-4026-853f-bfdd6b347bbe",
@@ -34,7 +34,7 @@ var (
 )
 
 // Handler represents a component capable of processing Omaha requests. It uses
-// the CoreRoller API to get packages updates, process events, etc.
+// the Nebraska API to get packages updates, process events, etc.
 type Handler struct {
 	crApi *api.API
 }
@@ -67,7 +67,7 @@ func (h *Handler) Handle(rawReq io.Reader, respWriter io.Writer, ip string) erro
 }
 
 func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*omahaSpec.Response, error) {
-	omahaResp := omahaSpec.NewResponse("coreroller")
+	omahaResp := omahaSpec.NewResponse("nebraska")
 
 	for _, reqApp := range omahaReq.Apps {
 		respApp := omahaResp.AddApp(reqApp.Id)
@@ -75,13 +75,13 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 		respApp.Track = reqApp.Track
 		respApp.Version = reqApp.Version
 
-		// Use Track field as the group to ask CR for updates. For the CoreOS
+		// Use Track field as the group to ask CR for updates. For the Flatcar
 		// app, map group name to its id if available.
 		group := reqApp.Track
 		if reqAppUUID, err := uuid.FromString(reqApp.Id); err == nil {
-			if reqAppUUID.String() == coreosAppID {
-				if coreosGroupID, ok := coreosGroups[group]; ok {
-					group = coreosGroupID
+			if reqAppUUID.String() == flatcarAppID {
+				if flatcarGroupID, ok := flatcarGroups[group]; ok {
+					group = flatcarGroupID
 				}
 			}
 		}
@@ -172,8 +172,8 @@ func (h *Handler) prepareUpdateCheck(pkg *api.Package) *omahaSpec.UpdateCheck {
 	manifest.AddPackage(pkg.Hash.String, pkg.Filename.String, pkg.Size.String, true)
 
 	switch pkg.Type {
-	case api.PkgTypeCoreos:
-		cra, err := h.crApi.GetCoreosAction(pkg.ID)
+	case api.PkgTypeFlatcar:
+		cra, err := h.crApi.GetFlatcarAction(pkg.ID)
 		if err != nil {
 			updateCheck.Status = "err-internal"
 			return updateCheck
