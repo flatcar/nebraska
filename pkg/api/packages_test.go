@@ -85,6 +85,8 @@ func TestUpdatePackage(t *testing.T) {
 	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
 	tChannel1, _ := a.AddChannel(&Channel{Name: "test_channel1", Color: "blue", ApplicationID: tApp.ID})
 	tPkg, err := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, ChannelsBlacklist: []string{tChannel1.ID}})
+	assert.NoError(t, err)
+
 	tChannel2, _ := a.AddChannel(&Channel{Name: "test_channel2", Color: "green", ApplicationID: tApp.ID})
 	tChannel3, _ := a.AddChannel(&Channel{Name: "test_channel3", Color: "red", ApplicationID: tApp.ID})
 	tChannel4, _ := a.AddChannel(&Channel{Name: "test_channel4", Color: "yellow", ApplicationID: tApp.ID, PackageID: dat.NullStringFrom(tPkg.ID)})
@@ -150,6 +152,7 @@ func TestDeletePackage(t *testing.T) {
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
 	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
 	tPkg, err := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	assert.NoError(t, err)
 
 	err = a.DeletePackage(tPkg.ID)
 	assert.NoError(t, err)
@@ -169,6 +172,7 @@ func TestGetPackage(t *testing.T) {
 	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
 	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel1", Color: "blue", ApplicationID: tApp.ID})
 	tPkg, err := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, ChannelsBlacklist: []string{tChannel.ID}})
+	assert.NoError(t, err)
 
 	pkg, err := a.GetPackage(tPkg.ID)
 	assert.NoError(t, err)
@@ -192,6 +196,7 @@ func TestGetPackageByVersion(t *testing.T) {
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
 	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
 	tPkg, err := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	assert.NoError(t, err)
 
 	pkg, err := a.GetPackageByVersion(tApp.ID, tPkg.Version)
 	assert.NoError(t, err)

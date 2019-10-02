@@ -1359,7 +1359,6 @@ func (ctl *controller) getMetrics(c web.C, w http.ResponseWriter, r *http.Reques
 		for _, metric := range fuMetrics {
 			fmt.Fprintf(w, `nebraska_failed_updates{application="%s"} %d %d%s`, escapeMetricString(metric.ApplicationName), metric.FailureCount, nowUnixMillis, "\n")
 		}
-		needEmptyLine = true
 	}
 }
 
@@ -1369,7 +1368,9 @@ func (ctl *controller) getMetrics(c web.C, w http.ResponseWriter, r *http.Reques
 
 func (ctl *controller) processOmahaRequest(c web.C, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/xml")
-	ctl.omahaHandler.Handle(r.Body, w, getRequestIP(r))
+	if err := ctl.omahaHandler.Handle(r.Body, w, getRequestIP(r)); err != nil {
+		logger.Error("process omaha request", "error", err)
+	}
 }
 
 // ----------------------------------------------------------------------------

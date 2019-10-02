@@ -89,6 +89,7 @@ func TestDeleteChannel(t *testing.T) {
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
 	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
 	tChannel, err := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID})
+	assert.NoError(t, err)
 
 	err = a.DeleteChannel(tChannel.ID)
 	assert.NoError(t, err)
@@ -107,6 +108,7 @@ func TestGetChannel(t *testing.T) {
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
 	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
 	tChannel, err := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID})
+	assert.NoError(t, err)
 
 	channel, err := a.GetChannel(tChannel.ID)
 	assert.NoError(t, err)
@@ -128,8 +130,13 @@ func TestGetChannels(t *testing.T) {
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
 	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
 	_, err := a.AddChannel(&Channel{Name: "test_channel1", Color: "blue", ApplicationID: tApp.ID})
+	assert.NoError(t, err)
+
 	_, err = a.AddChannel(&Channel{Name: "test_channel2", Color: "green", ApplicationID: tApp.ID})
+	assert.NoError(t, err)
+
 	_, err = a.AddChannel(&Channel{Name: "test_channel3", Color: "red", ApplicationID: tApp.ID})
+	assert.NoError(t, err)
 
 	channels, err := a.GetChannels(tApp.ID, 0, 0)
 	assert.NoError(t, err)

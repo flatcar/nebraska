@@ -206,7 +206,6 @@ func (s *Syncer) doOmahaRequest(channel, currentVersion string) (*omaha.UpdateCh
 	if err != nil {
 		logger.Error("checkForUpdates, reading omaha response", "error", err)
 		return nil, err
-
 	}
 	logger.Debug("doOmahaRequest", "response", string(body))
 

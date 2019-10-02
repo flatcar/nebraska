@@ -66,7 +66,7 @@ func main() {
 	setupRoutes(ctl)
 
 	if !*httpLog {
-		goji.Abandon(middleware.Logger)
+		_ = goji.Abandon(middleware.Logger)
 	}
 	goji.Serve()
 }

@@ -260,7 +260,8 @@ func doOmahaRequest(t *testing.T, h *Handler, appID, appVersion, appMachineID, a
 	assert.NoError(t, err)
 
 	omahaRespXML := new(bytes.Buffer)
-	h.Handle(bytes.NewReader(omahaReqXML), omahaRespXML, ip)
+	err = h.Handle(bytes.NewReader(omahaReqXML), omahaRespXML, ip)
+	assert.NoError(t, err)
 
 	var omahaResp *omahaSpec.Response
 	err = xml.NewDecoder(omahaRespXML).Decode(&omahaResp)

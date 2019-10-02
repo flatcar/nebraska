@@ -23,7 +23,7 @@ func TestGetUpdatePackage(t *testing.T) {
 	tGroup2, _ := a.AddGroup(&Group{Name: "group2", ApplicationID: tApp2.ID, ChannelID: dat.NullStringFrom(tChannel2.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
 	_, err := a.GetUpdatePackage(uuid.NewV4().String(), "10.0.0.1", "1.0.0", "invalidApplicationID", tGroup.ID)
-	assert.Error(t, ErrInvalidApplicationOrGroup, "Invalid application id.")
+	assert.Error(t, ErrInvalidApplicationOrGroup, err, "Invalid application id.")
 
 	_, err = a.GetUpdatePackage(uuid.NewV4().String(), "10.0.0.1", "1.0.0", tApp.ID, "invalidGroupID")
 	assert.Error(t, err, "Invalid group id.")

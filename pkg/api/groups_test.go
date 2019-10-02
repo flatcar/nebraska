@@ -36,6 +36,7 @@ func TestAddGroup(t *testing.T) {
 	assert.Equal(t, true, group.PolicyUpdatesEnabled)
 
 	groupX, err := a.GetGroup(group.ID)
+	assert.NoError(t, err)
 	assert.Equal(t, group.Name, groupX.Name)
 	assert.Equal(t, group.Description, groupX.Description)
 	assert.Equal(t, group.PolicyUpdatesEnabled, groupX.PolicyUpdatesEnabled)
