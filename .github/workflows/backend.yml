@@ -1,0 +1,50 @@
+name: Build Backend
+on:
+  pull_request:
+    paths:
+    - 'cmd/**'
+    - 'pkg/**'
+    - 'Gopkg.toml'
+    - 'updaters/**'
+    - 'vendor/**'
+
+jobs:
+
+  build:
+    name: Lint & Build
+    runs-on: ubuntu-18.04
+
+    steps:
+
+    - name: Set up Go 1.13
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.13
+      id: go
+
+    - name: Check out code
+      uses: actions/checkout@v1
+
+    - name: Lint
+      run: |
+        # @todo: Extract this into scripts that can also be used out of the CI
+        export GOPATH=${RUNNER_WORKSPACE}/go
+        go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
+        NEBRASKA_REPO=$GITHUB_WORKSPACE
+        NEBRASKA_GO=$GOPATH/src/github.com/$GITHUB_REPOSITORY
+        mkdir -p `dirname $NEBRASKA_GO`
+        ln -s $NEBRASKA_REPO $NEBRASKA_GO
+        cd $NEBRASKA_GO
+        $GOPATH/bin/golangci-lint run ./cmd/... ./pkg/...
+
+    - name: Build
+      run: |
+        cd $RUNNER_WORKSPACE
+        NEBRASKA_REPO=$GITHUB_WORKSPACE
+        export GOPATH=${RUNNER_WORKSPACE}/go
+        NEBRASKA_GO=$GOPATH/src/github.com/$GITHUB_REPOSITORY
+        mkdir -p $GOPATH/bin
+        curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+        cd $NEBRASKA_GO
+        $GOPATH/bin/dep ensure
+        make backend
