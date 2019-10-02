@@ -288,7 +288,7 @@ func (api *API) instancesQuery(p InstancesQueryParams) *dat.SelectDocBuilder {
 // instanceStatusHistoryQuery returns a SelectDocBuilder prepared to return the
 // status history of a given instance in the context of an application/group.
 func (api *API) instanceStatusHistoryQuery(instanceID, appID, groupID string, limit uint64) *dat.SelectDocBuilder {
-	if limit <= 0 {
+	if limit == 0 {
 		limit = 20
 	}
 

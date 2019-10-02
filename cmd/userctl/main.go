@@ -72,7 +72,7 @@ func getUsersInTeam(a *api.API, teamName string) []*api.User {
 }
 
 func addUserToTeam(a *api.API, userToAdd, teamName string) *api.User {
-	user, err := a.GetUser(userToAdd)
+	_, err := a.GetUser(userToAdd)
 	if err != sql.ErrNoRows {
 		if err == nil {
 			fail("user %q already exists", userToAdd)
@@ -84,7 +84,7 @@ func addUserToTeam(a *api.API, userToAdd, teamName string) *api.User {
 	if err != nil {
 		fail("failed to generate secret for user %q: %v", userToAdd, err)
 	}
-	user = &api.User{
+	user := &api.User{
 		Username: userToAdd,
 		Secret:   secret,
 		TeamID:   teamID,

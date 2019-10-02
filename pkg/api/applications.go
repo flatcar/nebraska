@@ -51,7 +51,6 @@ func (api *API) AddAppCloning(app *Application, sourceAppID string) (*Applicatio
 	// NOTE: cloning operation is not transactional and something could go wrong
 
 	if sourceAppID != "" {
-
 		sourceApp, err := api.GetApp(sourceAppID)
 		if err != nil {
 			return app, nil

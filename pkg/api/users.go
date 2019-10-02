@@ -30,9 +30,7 @@ type User struct {
 
 // AddTeam registers a team.
 func (api *API) AddUser(user *User) (*User, error) {
-	var err error
-
-	err = api.dbR.
+	err := api.dbR.
 		InsertInto("users").
 		Whitelist("username", "team_id", "secret").
 		Record(user).
