@@ -20,6 +20,19 @@ the [Omaha](https://code.google.com/p/omaha/) protocol, with special functionali
 - Statistics about the versions installed for instances, status history, and updates progress, etc.;
 - Activity timeline to quickly see important events or errors;
 
+## Screenshots
+
+<table>
+    <tr>
+        <td width="33%"><img src="https://github.com/kinvolk/nebraska/raw/screenshots/screenshots/main.png"></td>
+        <td width="33%"><img src="https://github.com/kinvolk/nebraska/raw/screenshots/screenshots/flatcar_app.png"></td>
+    </tr>
+    <tr>
+        <td width="33%"><img src="https://github.com/kinvolk/nebraska/raw/screenshots/screenshots/group_details.png"></td>
+        <td width="33%"><img src="https://github.com/kinvolk/nebraska/raw/screenshots/screenshots/instance_details.png"></td>
+    </tr>
+</table>
+
 ## Issues
 
 Please report any issues in [here](https://github.com/kinvolk/nebraska/issues).
