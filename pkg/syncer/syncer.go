@@ -52,6 +52,7 @@ type Syncer struct {
 	versions     map[string]string
 	channelsIDs  map[string]string
 	httpClient   *http.Client
+	ticker       *time.Ticker
 }
 
 // Config represents the configuration used to create a new Syncer instance.
@@ -92,12 +93,12 @@ func New(conf *Config) (*Syncer, error) {
 // checkFrequency until it's asked to stop.
 func (s *Syncer) Start() {
 	logger.Debug("syncer ready!")
-	checkCh := time.Tick(checkFrequency)
+	s.ticker = time.NewTicker(checkFrequency)
 
 L:
 	for {
 		select {
-		case <-checkCh:
+		case <-s.ticker.C:
 			_ = s.checkForUpdates()
 		case <-s.stopCh:
 			break L
@@ -109,6 +110,7 @@ L:
 
 // Stop stops the polling for updates.
 func (s *Syncer) Stop() {
+	s.ticker.Stop()
 	logger.Debug("stopping syncer..")
 	s.stopCh <- struct{}{}
 }
