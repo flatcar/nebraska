@@ -148,9 +148,11 @@ function EventTable(props) {
   return (
     <Table>
       <TableHead>
-        <TableCell>Status</TableCell>
-        <TableCell>Version</TableCell>
-        <TableCell>Time{props.events && props.events.status}</TableCell>
+        <TableRow>
+          <TableCell>Status</TableCell>
+          <TableCell>Version</TableCell>
+          <TableCell>Time{props.events && props.events.status}</TableCell>
+        </TableRow>
       </TableHead>
       <TableBody>
         {props.events.map((entry, i) =>
