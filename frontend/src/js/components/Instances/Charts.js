@@ -9,6 +9,7 @@ import React from 'react';
 import { InlineIcon } from '@iconify/react';
 import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
+import { InstanceCountLabel } from './Common';
 
 const useStyles = makeStyles(theme => ({
   doughnutLabel: ({color, labelSize}) => ({
@@ -16,16 +17,6 @@ const useStyles = makeStyles(theme => ({
     color: color || theme.palette.text.secondary,
     display: 'inline',
   }),
-}));
-
-const useInstanceCountStyles = makeStyles(theme => ({
-  instancesCount: {
-    fontSize: '3rem;'
-  },
-  instancesLabel: {
-    color: theme.palette.text.secondary,
-    fontSize: '1.5rem;'
-  },
 }));
 
 const useInstanceSectionStyles = makeStyles({
@@ -121,27 +112,6 @@ function ProgressDoughnut(props) {
   );
 }
 
-function InstanceCountLabel(props) {
-  const classes = useInstanceCountStyles();
-  let {totalInstances} = props;
-
-  return (
-    <Grid
-      container
-      alignItems="center"
-      justify="center"
-      direction="column"
-    >
-      <Grid item>
-        <Typography className={classes.instancesCount}>{totalInstances}</Typography>
-      </Grid>
-      <Grid item>
-        <Typography className={classes.instancesLabel}>Instances</Typography>
-      </Grid>
-    </Grid>
-  );
-}
-
 export default function InstanceChartSection(props) {
   const classes = useInstanceSectionStyles();
   const theme = useTheme();
@@ -170,7 +140,7 @@ export default function InstanceChartSection(props) {
             alignItems="center"
           >
             <Grid item xs={4}>
-              <InstanceCountLabel totalInstances={totalInstances}/>
+              <InstanceCountLabel countText={totalInstances}/>
             </Grid>
             <Grid
               item
