@@ -66,7 +66,11 @@ export default function InstanceLayout(props) {
         {
             path: `/apps/${appID}/groups/${groupID}`,
             label: groupName
-        }
+        },
+        {
+          path: `/apps/${appID}/groups/${groupID}/instances`,
+          label: 'Instances'
+        },
         ]}
       />
       { !instance ? <Loader />
