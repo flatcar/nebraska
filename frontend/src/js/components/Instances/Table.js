@@ -1,4 +1,4 @@
-import Table from '@material-ui/core/Table';
+import MuiTable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
@@ -10,7 +10,7 @@ import _ from 'underscore';
 import { cleanSemverVersion } from '../../constants/helpers';
 import Item from './Item.react';
 
-function List(props) {
+function Table(props) {
   let [selectedInstance, setSelectedInstance] = React.useState(null);
   let versions = props.version_breakdown || [];
   let lastVersionChannel = props.channel.package ? cleanSemverVersion(props.channel.package.version) : '';
@@ -27,7 +27,7 @@ function List(props) {
   }
 
   return(
-    <Table>
+    <MuiTable>
       <TableHead>
         <TableRow>
           <TableCell>IP</TableCell>
@@ -49,14 +49,14 @@ function List(props) {
         />
       )}
       </TableBody>
-    </Table>
+    </MuiTable>
   );
 }
 
-List.propTypes = {
+Table.propTypes = {
   instances: PropTypes.array.isRequired,
   version_breakdown: PropTypes.array,
   channel: PropTypes.object
 }
 
-export default List
+export default Table

@@ -1,0 +1,269 @@
+import Box from '@material-ui/core/Box';
+import FormControl from '@material-ui/core/FormControl';
+import Grid from '@material-ui/core/Grid';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
+import Select from '@material-ui/core/Select';
+import TablePagination from '@material-ui/core/TablePagination';
+import { useTheme } from '@material-ui/styles';
+import PropTypes from 'prop-types';
+import React from "react";
+import { cleanSemverVersion } from "../../constants/helpers";
+import { instancesStore } from '../../stores/Stores';
+import ListHeader from '../Common/ListHeader';
+import Loader from '../Common/Loader';
+import { InstanceCountLabel } from './Common';
+import makeStatusDefs from './StatusDefs';
+import Table from './Table';
+import Empty from '../Common/EmptyContent';
+
+function InstanceFilter(props) {
+  const statusDefs = makeStatusDefs(useTheme());
+  let {onFiltersChanged, versions} = props;
+
+  function changeFilter(filterName, filterValue) {
+    if (filterValue === props.filter[filterName]) {
+      return;
+    }
+
+    let filter = props.filter;
+    filter[filterName] = filterValue;
+
+    onFiltersChanged(filter);
+  }
+
+  return (
+    <Grid container spacing={2}>
+      <Grid item xs={6}>
+        <FormControl
+          fullWidth
+          disabled={props.disabled}
+        >
+          <InputLabel htmlFor="select-status" shrink>Filter Status</InputLabel>
+          <Select
+            onChange={event => changeFilter('status', event.target.value) }
+            input={<Input id="select-status" />}
+            renderValue={selected =>
+              selected ? statusDefs[selected].label : "Show All"
+            }
+            value={props.filter.status}
+            displayEmpty
+          >
+            <MenuItem key="" value="">Show All</MenuItem>
+            {
+              Object.keys(statusDefs).map(statusType => {
+                const label = statusDefs[statusType].label;
+                return <MenuItem key={statusType} value={statusType}>{label}</MenuItem>;
+              })
+            }
+          </Select>
+        </FormControl>
+      </Grid>
+      <Grid item xs={6}>
+        <FormControl
+          fullWidth
+          disabled={props.disabled}
+        >
+          <InputLabel htmlFor="select-versions" shrink>Filter Version</InputLabel>
+          <Select
+            onChange={event => changeFilter('version', event.target.value) }
+            input={<Input id="select-versions" />}
+            renderValue={selected =>
+              selected ? selected : "Show All"
+            }
+            value={props.filter.version}
+            displayEmpty
+          >
+            <MenuItem key="" value="">Show All</MenuItem>
+            {
+              versions.map(({version}) => {
+                return <MenuItem key={version} value={version}>{version}</MenuItem>;
+              })
+            }
+          </Select>
+        </FormControl>
+      </Grid>
+    </Grid>
+  );
+}
+
+function ListView(props) {
+  let {application, group} = props;
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [instances, setInstances] = React.useState([]);
+  const [filteredInstances, setFilteredInstances] = React.useState([]);
+  const [filters, setFilters] = React.useState({status: '', version: ''});
+
+  function handleChangePage(event, newPage) {
+    setPage(newPage);
+  }
+
+  function handleChangeRowsPerPage(event) {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  }
+
+  function onFiltersChanged(newFilters) {
+    applyFilters(newFilters);
+  }
+
+  function applyFilters(_filters={}) {
+    let newFilters = _filters || {status: '', version: ''};
+    setFilters(newFilters);
+
+    let filterInstances = instances.filter(instance => {
+      if (newFilters.version &&
+          newFilters.version != cleanSemverVersion(instance.application.version)) {
+        return false;
+      }
+      if (newFilters.status &&
+          instance.statusInfo.type !== newFilters.status) {
+        return false;
+      }
+      return true;
+    });
+
+    setPage(0);
+    setFilteredInstances(filterInstances);
+  }
+
+  function resetFilters() {
+    applyFilters();
+  }
+
+  function onChangeInstances() {
+    let cachedInstances = instancesStore.getCachedInstances(application.id, group.id) || [];
+    if (instances.length == 0 || filteredInstances.length == 0) {
+      setInstances(cachedInstances);
+      setFilteredInstances(cachedInstances);
+      return;
+    }
+
+    if (cachedInstances.length > 0 && instances.length > 0) {
+      // Update instances state only when needed.
+      if (cachedInstances.length != instances.length ||
+          cachedInstances[0].id != instances[0].id ||
+          cachedInstances[cachedInstances.length - 1].id != instances[instances.length - 1].id) {
+        // @todo: Allow to manually refresh list from UI.
+        setInstances(cachedInstances);
+      }
+    }
+
+    if (filteredInstances.length == 0) {
+      setFilteredInstances(cachedInstances);
+    }
+  }
+
+  React.useEffect(() => {
+    instancesStore.addChangeListener(onChangeInstances);
+    instancesStore.getInstances(application.id, group.id, null);
+
+    return function cleanup() {
+      instancesStore.removeChangeListener(onChangeInstances);
+    };
+  },
+  [instances]);
+
+  function getInstanceCount() {
+    if (instances.length == 0)
+      return group.instances_stats.total;
+    if (filteredInstances.length == instances.length)
+      return filteredInstances.length;
+    return `${filteredInstances.length}/${instances.length}`;
+  }
+
+  function isFiltered() {
+    return filters.status || filters.version;
+  }
+
+  return (
+    <Paper>
+      <ListHeader
+        title="Instance List"
+      />
+      <Box padding="1em">
+        <Grid
+          container
+          spacing={1}
+        >
+          <Grid
+            item
+            container
+            md={12}
+            alignItems="stretch"
+          >
+            <Grid item md>
+              <InstanceCountLabel
+                countText={getInstanceCount()}
+              />
+            </Grid>
+            <Grid item md>
+              <InstanceFilter
+                versions={group.version_breakdown}
+                onFiltersChanged={onFiltersChanged}
+                filter={filters}
+                disabled={instances.length == 0}
+              />
+            </Grid>
+          </Grid>
+          {isFiltered() &&
+            <Grid item md={12} container justify="center">
+              <Grid item>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={resetFilters}
+                >
+                  Reset filters
+                </Button>
+              </Grid>
+            </Grid>
+          }
+          <Grid item md={12}>
+            { instances.length > 0 ?
+              (filteredInstances.length > 0 ?
+                <React.Fragment>
+                  <Table
+                    group={group}
+                    channel={group.channel}
+                    instances={filteredInstances.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)}
+                  />
+                  <TablePagination
+                    rowsPerPageOptions={[10, 25, 50, 100]}
+                    component="div"
+                    count={filteredInstances.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    backIconButtonProps={{
+                      'aria-label': 'previous page',
+                    }}
+                    nextIconButtonProps={{
+                      'aria-label': 'next page',
+                    }}
+                    onChangePage={handleChangePage}
+                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                  />
+                </React.Fragment>
+                :
+                <Empty>No instances.</Empty>
+              )
+              :
+              <Loader />
+            }
+          </Grid>
+        </Grid>
+      </Box>
+    </Paper>
+  );
+}
+
+ListView.propTypes = {
+  application: PropTypes.object.isRequired,
+  group: PropTypes.object.isRequired,
+};
+
+export default ListView;
