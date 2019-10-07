@@ -18,15 +18,10 @@ function List(props) {
     return cleanSemverVersion(version.version)
   })).sort(semver.rcompare);
 
-
   function onItemToggle(id) {
     if (selectedInstance !== id) {
-      // Save opened instance
-      props.onChangeSelectedInstance(id);
       setSelectedInstance(id);
     } else {
-      // Remove opened instance
-      props.onChangeSelectedInstance('');
       setSelectedInstance(null);
     }
   }

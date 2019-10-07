@@ -33,6 +33,7 @@ function Item(props) {
   let appID = props.instance.application.application_id;
   let groupID = props.instance.application.group_id;
   let instanceID = props.instance.id;
+  const [statusHistory, setStatusHistory] = React.useState(props.instance.statusHistory || []);
 
   function fetchStatusHistoryFromStore() {
     const selected = props.selected;
@@ -40,6 +41,10 @@ function Item(props) {
     if (!selected) {
       instancesStore.getInstanceStatusHistory(appID, groupID, instanceID)
         .done(() => {
+          let cachedInstances = instancesStore.getCachedInstances(appID, groupID) || [];
+          let instance = cachedInstances.find(({id}) => id == props.instance.id);
+          if (instance)
+            setStatusHistory(instance.statusHistory);
           props.onToggle(instanceID);
         })
         .fail((error) => {
@@ -100,7 +105,7 @@ function Item(props) {
             hidden={!props.selected}
             in={props.selected}
           >
-            <StatusHistoryContainer instance={props.instance} key={props.instance.id} />
+            <StatusHistoryContainer statusHistory={statusHistory} key={props.instance.id} />
           </Collapse>
         </TableCell>
       </TableRow>
