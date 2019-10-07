@@ -32,7 +32,6 @@ function StatusHistoryContainer(props) {
 }
 
 StatusHistoryContainer.propTypes = {
-  key: PropTypes.string.isRequired,
   statusHistory: PropTypes.array.isRequired
 }
 

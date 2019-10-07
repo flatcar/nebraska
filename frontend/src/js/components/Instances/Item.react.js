@@ -105,7 +105,7 @@ function Item(props) {
             hidden={!props.selected}
             in={props.selected}
           >
-            <StatusHistoryContainer statusHistory={statusHistory} key={props.instance.id} />
+            <StatusHistoryContainer statusHistory={statusHistory} />
           </Collapse>
         </TableCell>
       </TableRow>
@@ -115,7 +115,6 @@ function Item(props) {
 
 Item.propTypes = {
   instance: PropTypes.object.isRequired,
-  key: PropTypes.number.isRequired,
   selected: PropTypes.bool,
   versionNumbers: PropTypes.array,
   lastVersionChannel: PropTypes.string
