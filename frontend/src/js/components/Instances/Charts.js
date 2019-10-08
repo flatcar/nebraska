@@ -2,8 +2,9 @@ import { InlineIcon } from '@iconify/react';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles, useTheme } from '@material-ui/styles';
+import { makeStyles, useTheme, withStyles } from '@material-ui/styles';
 import React from 'react';
 import { VictoryAnimation, VictoryLabel, VictoryPie } from 'victory';
 import Empty from '../Common/EmptyContent';
@@ -16,6 +17,7 @@ const useStyles = makeStyles(theme => ({
     fontSize: labelSize,
     color: color || theme.palette.text.secondary,
     display: 'inline',
+    boxShadow: 'none',
   }),
 }));
 
@@ -25,8 +27,20 @@ const useInstanceSectionStyles = makeStyles({
   },
 });
 
+const LightTooltip = withStyles(theme => ({
+  tooltip: {
+    backgroundColor: theme.palette.common.white,
+    color: 'rgba(0, 0, 0, 0.87)',
+    boxShadow: theme.shadows[1],
+    fontSize: '1rem',
+    whiteSpace: 'pre-line'
+  },
+}))(Tooltip);
+
 function ProgressDoughnut(props) {
   let {label, data, width=100, height=100, color='#afafaf', icon} = props;
+  const [hoverData, setHoverData] = React.useState(null);
+  const [showTooltip, setShowTooltip] = React.useState(false);
 
   const iconSize = '1.1rem';
 
@@ -51,6 +65,7 @@ function ProgressDoughnut(props) {
       x: i,
       y: percentageValue,
       color: color,
+      description: description
     };
   });
 
@@ -58,6 +73,10 @@ function ProgressDoughnut(props) {
   // the circle will be filled, and the current status.
   const percentage = Math.max(totalFilled, 0.5);
 
+  function getTooltipText() {
+    return hoverData ? hoverData.description : null;
+  }
+  const mainTooltipText = data.map(({description}) => description).join('\n');
 
   dataSet.push({
     x: 'remain',
@@ -86,6 +105,43 @@ function ProgressDoughnut(props) {
             style={{
               data: { fill: ({datum}) => datum.color }
             }}
+            events={[{
+              target: "data",
+              eventHandlers: {
+                onMouseOver: () => {
+                  return [
+                    {
+                      target: "data",
+                      mutation: ({datum, style}) => {
+                        // Set what to show in the tooltip on hover.
+                        setHoverData(datum);
+                        setShowTooltip(true);
+
+                        // Highlight the bit on hover, if it's not
+                        // the remaining percentage.
+                        if (datum.x != 'remain') {
+                          return {style: {...style,
+                                          stroke: theme.palette.primary.light,
+                                          strokeWidth: 2}};
+                        }
+                      }
+                    }
+                  ];
+                },
+                onMouseOut: () => {
+                  return [
+                    {
+                      target: "data",
+                      mutation: () => {
+                        // Reset tooltip previously set on hover.
+                        setHoverData(null);
+                        setShowTooltip(false);
+                      }
+                    },
+                  ];
+                }
+              }
+            }]}
           />
           <VictoryAnimation duration={1000} data={valuesSum}>
             {(value) => {
@@ -117,7 +173,18 @@ function ProgressDoughnut(props) {
           </Grid>
         }
         <Grid item>
-          <Typography className={classes.doughnutLabel}>{label}</Typography>
+          <LightTooltip
+            title={getTooltipText() || mainTooltipText}
+            open={showTooltip}
+          >
+            <Typography
+              onMouseOver={() => { setShowTooltip(true) }}
+              onMouseOut={() => { setShowTooltip(false) }}
+              className={classes.doughnutLabel}
+            >
+              {label}
+            </Typography>
+          </LightTooltip>
         </Grid>
       </Grid>
     </Grid>
@@ -203,9 +270,11 @@ export default function InstanceChartSection(props) {
                   <Grid item>
                     <ProgressDoughnut
                       data={count.map(({key, label=status}) => {
+                        let statusLabel = statusDefs[label].label;
                         return {
                           value: instanceStats[key] / instanceStats['total'],
                           color: statusDefs[label].color,
+                          description: `${statusLabel}: ${instanceStats[key]} instances.`,
                         };
                       })}
                       width={125}
