@@ -50,6 +50,7 @@ function ProgressDoughnut(props) {
     return {
       x: i,
       y: percentageValue,
+      color: color,
     };
   });
 
@@ -61,6 +62,7 @@ function ProgressDoughnut(props) {
   dataSet.push({
     x: 'remain',
     y: (100 - percentage),
+    color: theme.palette.grey['100'],
   });
 
   return (
@@ -82,12 +84,7 @@ function ProgressDoughnut(props) {
             padAngle={.5}
             labels={() => null}
             style={{
-              data: { fill: ({datum}) => {
-                  if (datum.x == 'remain')
-                    return theme.palette.grey['100'];
-                  return color;
-                }
-              }
+              data: { fill: ({datum}) => datum.color }
             }}
           />
           <VictoryAnimation duration={1000} data={valuesSum}>
@@ -208,6 +205,7 @@ export default function InstanceChartSection(props) {
                       data={count.map(({key, label=status}) => {
                         return {
                           value: instanceStats[key] / instanceStats['total'],
+                          color: statusDefs[label].color,
                         };
                       })}
                       width={125}
