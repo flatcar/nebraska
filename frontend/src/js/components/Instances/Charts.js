@@ -26,7 +26,7 @@ const useInstanceSectionStyles = makeStyles({
 });
 
 function ProgressDoughnut(props) {
-  let {label, value, width=100, height=100, color='#afafaf', icon} = props;
+  let {label, data, width=100, height=100, color='#afafaf', icon} = props;
 
   const iconSize = '1.1rem';
 
@@ -35,19 +35,34 @@ function ProgressDoughnut(props) {
 
   const pieSize = (width > height ? height : width);
   const radius = pieSize * .45;
+
+  let totalFilled = 0;
+  let valuesSum = 0;
+  let dataSet = data.map(({value, color, description}, i) => {
+    // Ensure that the minimum value displayed is 0.5 if the original value
+    // is 0, or 1.5 otherwise. This ensures the user is able to see the bits
+    // related to this value in the charts.
+    const percentageValue = Math.max(value * 100, value == 0 ? 0.5 : 1.5);
+
+    totalFilled += percentageValue;
+    valuesSum += value * 100;
+
+    return {
+      x: i,
+      y: percentageValue,
+    };
+  });
+
   // Use a minimum of 0.5 so a little progress is seen, which helps predict how
   // the circle will be filled, and the current status.
-  const percentage = Math.max(value * 100, 0.5);
+  const percentage = Math.max(totalFilled, 0.5);
 
 
-  let data = [{
-    x: 1,
-    y: percentage,
-  },
-  {
-    x: 2,
+  dataSet.push({
+    x: 'remain',
     y: (100 - percentage),
-  }];
+  });
+
   return (
     <Grid
       container
@@ -61,21 +76,21 @@ function ProgressDoughnut(props) {
             standalone={false}
             animate={{ duration: 1000 }}
             width={pieSize} height={pieSize}
-            data={data}
+            data={dataSet}
             radius={radius}
             innerRadius={radius * .6}
             padAngle={.5}
             labels={() => null}
             style={{
               data: { fill: ({datum}) => {
-                  if (datum.x === 2)
+                  if (datum.x == 'remain')
                     return theme.palette.grey['100'];
                   return color;
                 }
               }
             }}
           />
-          <VictoryAnimation duration={1000} data={value * 100}>
+          <VictoryAnimation duration={1000} data={valuesSum}>
             {(value) => {
               return (
                 <VictoryLabel
@@ -115,18 +130,45 @@ function ProgressDoughnut(props) {
 export default function InstanceChartSection(props) {
   const classes = useInstanceSectionStyles();
   const theme = useTheme();
-  const statusDefs = makeStatusDefs(theme);
+  let statusDefs = makeStatusDefs(theme);
 
   let {instanceStats} = props;
-  const instanceStateCount = {
-    InstanceStatusComplete: instanceStats['complete'],
-    InstanceStatusDownloaded: instanceStats['downloaded'],
-    InstanceStatusOnHold: instanceStats['onhold'],
-    InstanceStatusInstalled: instanceStats['installed'],
-    InstanceStatusDownloading: instanceStats['downloading'],
-    InstanceStatusError: instanceStats['error'],
-  };
-  let {filter=Object.keys(instanceStateCount)} = props;
+  const instanceStateCount = [
+    {
+      status: 'InstanceStatusComplete',
+      count: [{key: 'complete'}],
+    },
+    {
+      status: 'InstanceStatusDownloaded',
+      count: [{key: 'downloaded'}],
+    },
+    {
+      status: 'InstanceStatusOther',
+      count: [
+        {key: 'onhold', label: 'InstanceStatusOnHold'},
+        {key: 'undefined', label: 'InstanceStatusUndefined'},
+      ],
+    },
+    {
+      status: 'InstanceStatusInstalled',
+      count: [{key: 'installed'}],
+    },
+    {
+      status: 'InstanceStatusDownloading',
+      count: [
+        {key: 'downloading', label: 'InstanceStatusDownloading'},
+        {key: 'update_granted', label: 'InstanceStatusUpdateGranted'},
+      ],
+    },
+    {
+      status: 'InstanceStatusError',
+      count: [{key: 'error'}],
+    },
+  ];
+
+  statusDefs['InstanceStatusOther'] = {...statusDefs['InstanceStatusUndefined']};
+  statusDefs['InstanceStatusOther'].label = 'Other';
+
   let totalInstances = instanceStats ? instanceStats.total : 0;
 
   return (
@@ -148,19 +190,33 @@ export default function InstanceChartSection(props) {
               justify="space-between"
               xs={8}
             >
-            {filter.map(key => {
-                  return (
-                    <Grid item>
-                      <ProgressDoughnut
-                        value={instanceStateCount[key] / instanceStats['total']}
-                        width={125}
-                        height={125}
-                        {...statusDefs[key]}
-                      />
-                    </Grid>
-                  );
-                })
-            }
+              {instanceStateCount.map(({status, count}) => {
+                // Sort the data entries so the smaller amounts are shown first.
+                count.sort((obj1, obj2) => {
+                  const stats1 = instanceStats[obj1.key];
+                  const stats2 = instanceStats[obj2.key];
+                  if (stats1 == stats2)
+                    return 0;
+                  if (stats1 < stats2)
+                    return -1;
+                  return 1;
+                });
+
+                return (
+                  <Grid item>
+                    <ProgressDoughnut
+                      data={count.map(({key, label=status}) => {
+                        return {
+                          value: instanceStats[key] / instanceStats['total'],
+                        };
+                      })}
+                      width={125}
+                      height={125}
+                      {...statusDefs[status]}
+                    />
+                  </Grid>
+                );
+              })}
             </Grid>
           </Grid>
           :
