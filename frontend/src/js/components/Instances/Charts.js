@@ -93,7 +93,7 @@ function ProgressDoughnut(props) {
                 <VictoryLabel
                   textAnchor="middle" verticalAnchor="middle"
                   x={width / 2} y={height / 2}
-                  text={`${Math.round(value)}%`}
+                  text={`${value.toFixed(1)}%`}
                   style={{
                     fontSize: `${radius * .25}px`,
                     fontFamily: theme.typography.fontFamily,
