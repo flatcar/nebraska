@@ -1,15 +1,15 @@
-import makeStatusDefs from './StatusDefs';
+import { InlineIcon } from '@iconify/react';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import { VictoryAnimation, VictoryLabel, VictoryPie } from 'victory';
 import { makeStyles, useTheme } from '@material-ui/styles';
 import React from 'react';
-import { InlineIcon } from '@iconify/react';
+import { VictoryAnimation, VictoryLabel, VictoryPie } from 'victory';
 import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
 import { InstanceCountLabel } from './Common';
+import makeStatusDefs from './StatusDefs';
 
 const useStyles = makeStyles(theme => ({
   doughnutLabel: ({color, labelSize}) => ({
