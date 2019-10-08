@@ -45,7 +45,7 @@ function makeStatusDefs(theme) {
       icon: questionMarkCircle,
     },
     InstanceStatusUpdateGranted: {
-      label: 'Granted',
+      label: 'Update Granted',
       color: theme.palette.success['600'],
       icon: playCircle,
     },
