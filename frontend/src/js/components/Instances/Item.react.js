@@ -13,7 +13,7 @@ import React from "react";
 import { Link as RouterLink } from 'react-router-dom';
 import semver from "semver";
 import _ from "underscore";
-import { cleanSemverVersion } from "../../constants/helpers";
+import { cleanSemverVersion, makeLocaleTime } from "../../constants/helpers";
 import { instancesStore } from "../../stores/Stores";
 import Label from '../Common/Label';
 import StatusHistoryContainer from "./StatusHistoryContainer.react";
@@ -23,7 +23,7 @@ const TableLabel = styled(Label)({
 });
 
 function Item(props) {
-  let date = moment.utc(props.instance.application.last_check_for_updates).local().format('DD/MM/YYYY, hh:mma');
+  let date = props.instance.application.last_check_for_updates;
   let downloadingIcon = props.instance.statusInfo.spinning ? <img src='img/mini_loading.gif' /> : '';
   let statusIcon = props.instance.statusInfo.icon ? <i className={props.instance.statusInfo.icon}></i> : '';
   let instanceLabel = props.instance.statusInfo.className ? <TableLabel>{statusIcon} {downloadingIcon} {props.instance.statusInfo.description}</TableLabel> : <div>&nbsp;</div>;
@@ -33,6 +33,7 @@ function Item(props) {
   let appID = props.instance.application.application_id;
   let groupID = props.instance.application.group_id;
   let instanceID = props.instance.id;
+  const [statusHistory, setStatusHistory] = React.useState(props.instance.statusHistory || []);
 
   function fetchStatusHistoryFromStore() {
     const selected = props.selected;
@@ -40,6 +41,10 @@ function Item(props) {
     if (!selected) {
       instancesStore.getInstanceStatusHistory(appID, groupID, instanceID)
         .done(() => {
+          let cachedInstances = instancesStore.getCachedInstances(appID, groupID) || [];
+          let instance = cachedInstances.find(({id}) => id == props.instance.id);
+          if (instance)
+            setStatusHistory(instance.statusHistory);
           props.onToggle(instanceID);
         })
         .fail((error) => {
@@ -91,7 +96,7 @@ function Item(props) {
           <span className={"box--" + versionStyle}>{version}</span>
         </TableCell>
         <TableCell>
-          {date}
+          {makeLocaleTime(date)}
         </TableCell>
       </TableRow>
       <TableRow>
@@ -100,7 +105,7 @@ function Item(props) {
             hidden={!props.selected}
             in={props.selected}
           >
-            <StatusHistoryContainer instance={props.instance} key={props.instance.id} />
+            <StatusHistoryContainer statusHistory={statusHistory} />
           </Collapse>
         </TableCell>
       </TableRow>
@@ -110,7 +115,6 @@ function Item(props) {
 
 Item.propTypes = {
   instance: PropTypes.object.isRequired,
-  key: PropTypes.number.isRequired,
   selected: PropTypes.bool,
   versionNumbers: PropTypes.array,
   lastVersionChannel: PropTypes.string

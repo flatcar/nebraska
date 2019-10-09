@@ -28,11 +28,11 @@ export default function SectionHeader(props) {
         <Grid item>
           <Breadcrumbs aria-label="breadcrumbs">
             {breadcrumbs &&
-              breadcrumbs.map(({path=null, label}) => {
+              breadcrumbs.map(({path=null, label}, index) => {
               if (path)
-                return <Link to={path} component={RouterLink}>{label}</Link>;
+                return <Link to={path} component={RouterLink} key={index}>{label}</Link>;
               else
-                return <Typography>{label}</Typography>;
+                return <Typography key={index}>{label}</Typography>;
               }
             )}
             {title &&

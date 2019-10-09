@@ -1,17 +1,38 @@
-import PropTypes from 'prop-types';
-import { applicationsStore } from "../../stores/Stores"
-import React from "react"
-import _ from "underscore"
-import ChannelItem from '../Channels/Item.react';
-import InstancesContainer from "../Instances/Container.react"
-import VersionBreakdown from "../Common/VersionBreakdown.react"
-import Grid from '@material-ui/core/Grid';
-import {CardLabel, CardFeatureLabel, CardHeader} from '../Common/Card';
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
+import Link from '@material-ui/core/Link';
+import Paper from '@material-ui/core/Paper';
+import { makeStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
+import React from "react";
+import { Link as RouterLink } from 'react-router-dom';
+import _ from "underscore";
+import { applicationsStore } from "../../stores/Stores";
+import ChannelItem from '../Channels/Item.react';
+import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
+import VersionBreakdown from "../Common/VersionBreakdown.react";
 import InstanceChartSection from '../Instances/Charts';
-import ListHeader from '../Common/ListHeader';
+
+const useStyles = makeStyles({
+  link: {
+    fontSize: '1rem'
+  },
+});
+
+function AllInstancesButton(props) {
+  const classes = useStyles();
+  let {path} = props;
+
+  return (
+    <Link
+      className={classes.link}
+      to={{pathname: path}}
+      component={RouterLink}
+    >
+      See instances
+    </Link>
+  );
+}
 
 class ItemExtended extends React.Component {
 
@@ -138,17 +159,15 @@ class ItemExtended extends React.Component {
               <Box padding="1em">
                 <Grid
                   container
-                  spacing={2}
+                  spacing={3}
+                  alignItems="center"
+                  direction="column"
                 >
                   <Grid item xs={12}>
                     <VersionBreakdown version_breakdown={version_breakdown} channel={channel} />
                   </Grid>
                   <Grid item xs={12}>
-                    <InstancesContainer
-                      appID={this.props.appID}
-                      groupID={this.props.groupID}
-                      version_breakdown={version_breakdown}
-                      channel={channel} />
+                    <AllInstancesButton path={`/apps/${this.props.appID}/groups/${this.props.groupID}/instances`} />
                   </Grid>
                 </Grid>
               </Box>

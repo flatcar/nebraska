@@ -4,6 +4,7 @@ import Header from "./Header.react"
 import MainLayout from "./Layouts/MainLayout.react"
 import ApplicationLayout from "./Layouts/ApplicationLayout.react"
 import InstanceLayout from "./Layouts/InstanceLayout"
+import InstanceListLayout from "./Layouts/InstanceListLayout"
 import GroupLayout from "./Layouts/GroupLayout.react"
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
@@ -44,6 +45,7 @@ export default function Main() {
           <Route path='/apps' exact component={MainLayout} />
           <Route path="/apps/:appID" exact component={ApplicationLayout} />
           <Route path="/apps/:appID/groups/:groupID" exact component={GroupLayout} />
+          <Route path="/apps/:appID/groups/:groupID/instances" exact component={InstanceListLayout} />
           <Route path="/apps/:appID/groups/:groupID/instances/:instanceID" exact component={InstanceLayout} />
         </Switch>
       </Container>

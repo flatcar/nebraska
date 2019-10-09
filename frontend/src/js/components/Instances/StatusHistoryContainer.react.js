@@ -18,10 +18,10 @@ function StatusHistoryContainer(props) {
   const classes = useStyles();
   let entries = '';
 
-  if (_.isEmpty(props.instance.statusHistory)) {
+  if (_.isEmpty(props.statusHistory)) {
     entries = <Empty>This instance hasn’t reported any events yet in the context of this application/group.</Empty>;
   } else {
-    entries = <StatusHistoryList entries={props.instance.statusHistory} />;
+    entries = <StatusHistoryList entries={props.statusHistory} />;
   }
 
   return(
@@ -32,8 +32,7 @@ function StatusHistoryContainer(props) {
 }
 
 StatusHistoryContainer.propTypes = {
-  key: PropTypes.string.isRequired,
-  instance: PropTypes.object.isRequired
+  statusHistory: PropTypes.array.isRequired
 }
 
 export default StatusHistoryContainer
