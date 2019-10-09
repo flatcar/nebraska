@@ -21,7 +21,7 @@ function makeStatusDefs(theme) {
     },
     InstanceStatusOnHold: {
       label: 'On Hold',
-      color: theme.palette.grey['500'],
+      color: theme.palette.grey['400'],
       icon: pauseCircle,
     },
     InstanceStatusInstalled: {
@@ -45,8 +45,8 @@ function makeStatusDefs(theme) {
       icon: questionMarkCircle,
     },
     InstanceStatusUpdateGranted: {
-      label: 'Granted',
-      color: theme.palette.success['400'],
+      label: 'Update Granted',
+      color: theme.palette.success['600'],
       icon: playCircle,
     },
   };
