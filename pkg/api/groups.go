@@ -47,6 +47,12 @@ type VersionBreakdownEntry struct {
 	Percentage float64 `db:"percentage" json:"percentage"`
 }
 
+type VersionCountTimelineEntry struct {
+	Time    time.Time `db:"ts" json:"time"`
+	Version string    `db:"version" json:"version"`
+	Total   uint64    `db:"total" json:"total"`
+}
+
 // InstancesStatusStats represents a set of statistics about the status of the
 // instances that belong to a given group.
 type InstancesStatusStats struct {
@@ -290,4 +296,56 @@ func (api *API) groupInstancesStatusQuery() string {
 	WHERE group_id=groups.id AND last_check_for_updates > now() at time zone 'utc' - interval '%s'`,
 		InstanceStatusError, InstanceStatusUpdateGranted, InstanceStatusComplete, InstanceStatusInstalled,
 		InstanceStatusDownloaded, InstanceStatusDownloading, InstanceStatusOnHold, validityInterval)
+}
+
+func (api *API) GetGroupVersionCountTimeline(groupID string) (map[time.Time](map[string]uint64), error) {
+	var timelineEntry []VersionCountTimelineEntry
+	// Get the number of instances per version until each of the time-interval
+	// divisions. This is done only for the instances that pinged the server in
+	// the last time-interval.
+	query := fmt.Sprintf(`
+	WITH time_series AS (SELECT * FROM generate_series(now() - interval '%[1]s', now(), INTERVAL '1 hour') AS ts),
+		 recent_instances AS (SELECT instance_id, (CASE WHEN last_update_granted_ts IS NOT NULL THEN last_update_granted_ts ELSE created_ts END), version, 4 status FROM instance_application WHERE group_id=$1 AND last_check_for_updates >= now() - interval '%[1]s' ORDER BY last_update_granted_ts DESC),
+		 instance_versions AS (SELECT instance_id, created_ts, version, status FROM instance_status_history WHERE instance_id IN (SELECT instance_id FROM recent_instances) AND status = 4 UNION (SELECT * FROM recent_instances) ORDER BY created_ts DESC)
+	SELECT ts, (CASE WHEN version IS NULL THEN '' ELSE version END), sum(CASE WHEN version IS NOT null THEN 1 ELSE 0 END) total FROM (SELECT * FROM time_series LEFT JOIN LATERAL(SELECT distinct ON (instance_id) instance_Id, version, created_ts FROM instance_versions WHERE created_ts <= time_series.ts ORDER BY instance_Id, created_ts DESC) _ ON true) AS _
+	GROUP BY 1,2
+	ORDER BY ts DESC;
+	`, validityInterval)
+
+	if err := api.dbR.SQL(query, groupID).QueryStructs(&timelineEntry); err != nil {
+		return nil, err
+	}
+
+	allVersions := make(map[string]struct{})
+	timelineCount := make(map[time.Time]map[string]uint64)
+
+	// Create the timeline map, and gather all the versions found.
+	for _, entry := range timelineEntry {
+		value, ok := timelineCount[entry.Time]
+		if !ok {
+			value = make(map[string]uint64)
+			timelineCount[entry.Time] = value
+		}
+
+		allVersions[entry.Version] = struct{}{}
+		versionCount, ok := value[entry.Version]
+		if !ok {
+			versionCount = entry.Total
+		}
+
+		value[entry.Version] = versionCount
+	}
+
+	// We want to return all the versions count per time-interval, i.e. we
+	// don't want some time-intervals to have 3 versions accounted, and others
+	// just 1, so this assigns the missing versions per interval.
+	for version := range allVersions {
+		for timestamp := range timelineCount {
+			if _, ok := timelineCount[timestamp][version]; !ok {
+				timelineCount[timestamp][version] = 0
+			}
+		}
+	}
+
+	return timelineCount, nil
 }
