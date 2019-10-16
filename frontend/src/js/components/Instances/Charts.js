@@ -143,22 +143,16 @@ function ProgressDoughnut(props) {
               }
             }]}
           />
-          <VictoryAnimation duration={1000} data={valuesSum}>
-            {(value) => {
-              return (
-                <VictoryLabel
-                  textAnchor="middle" verticalAnchor="middle"
-                  x={width / 2} y={height / 2}
-                  text={`${value.toFixed(1)}%`}
-                  style={{
-                    fontSize: `${radius * .25}px`,
-                    fontFamily: theme.typography.fontFamily,
-                  }}
-                  class={classes.innerLabelFontSize}
-                />
-              );
+          <VictoryLabel
+            textAnchor="middle" verticalAnchor="middle"
+            x={width / 2} y={height / 2}
+            text={`${valuesSum.toFixed(1)}%`}
+            style={{
+              fontSize: `${radius * .25}px`,
+              fontFamily: theme.typography.fontFamily,
             }}
-          </VictoryAnimation>
+            class={classes.innerLabelFontSize}
+          />
         </svg>
       </Grid>
       <Grid item
