@@ -248,7 +248,7 @@ export default function InstanceChartSection(props) {
               justify="space-between"
               xs={8}
             >
-              {instanceStateCount.map(({status, count}) => {
+              {instanceStateCount.map(({status, count}, i) => {
                 // Sort the data entries so the smaller amounts are shown first.
                 count.sort((obj1, obj2) => {
                   const stats1 = instanceStats[obj1.key];
@@ -261,7 +261,7 @@ export default function InstanceChartSection(props) {
                 });
 
                 return (
-                  <Grid item>
+                  <Grid item key={i}>
                     <ProgressDoughnut
                       data={count.map(({key, label=status}) => {
                         let statusLabel = statusDefs[label].label;
