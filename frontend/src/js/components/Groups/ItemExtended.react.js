@@ -34,82 +34,55 @@ function AllInstancesButton(props) {
   );
 }
 
-class ItemExtended extends React.Component {
+function ItemExtended(props) {
+  const [application, setApplication] = React.useState(null);
+  const [group, setGroup] = React.useState(null);
 
-  constructor() {
-    super()
-    this.onChange = this.onChange.bind(this)
+  function onChange() {
+    let app = applicationsStore.getCachedApplication(props.appID);
 
-    this.state = {applications: applicationsStore.getCachedApplications()}
-  }
-
-  componentDidMount() {
-    applicationsStore.addChangeListener(this.onChange)
-  }
-
-  componentWillUnmount() {
-    applicationsStore.removeChangeListener(this.onChange)
-  }
-
-  onChange() {
-    this.setState({
-      applications: applicationsStore.getCachedApplications()
-    })
-  }
-
-  render() {
-    let application = _.findWhere(this.state.applications, {id: this.props.appID})
-    let group = application ? _.findWhere(application.groups, {id: this.props.groupID}) : null
-
-    let name = "",
-        groupId = "",
-        description = "",
-        instancesNum = 0,
-        policyMaxUpdatesPerDay = 0,
-        policyPeriodInterval = 0,
-        channel = {},
-        version_breakdown = [],
-        policyUpdates,
-        policyUpdatesTimeout,
-        safeMode,
-        officeHours,
-        groupChannel,
-        styleGroupChannel
-
-    if (group) {
-      name = group.name
-      groupId = group.id
-      description = group.description ? group.description : ""
-      channel = group.channel ? group.channel : {}
-      instancesNum = group.instances_stats ? group.instances_stats.total : 0
-      policyMaxUpdatesPerDay = group.policy_max_updates_per_period ? group.policy_max_updates_per_period : 0
-      policyPeriodInterval = group.policy_period_interval ? group.policy_period_interval : 0
-      policyUpdates = group.policy_updates_enabled ? group.policy_updates_enabled : null
-      policyUpdatesTimeout = group.policy_update_timeout ? group.policy_update_timeout : null
-      safeMode = group.policy_safe_mode ? group.policy_safe_mode : null
-      officeHours = group.policy_office_hours ? group.policy_office_hours : null
-      version_breakdown = group.version_breakdown ? group.version_breakdown : []
-      groupChannel = _.isEmpty(group.channel) ? "No channel provided"
-        : <ChannelItem channel={group.channel} ContainerComponent="span" />
-      styleGroupChannel = _.isEmpty(group.channel) ? "italicText" : ""
+    if (!app) {
+      applicationsStore.getApplication(props.appID);
+      return;
     }
 
-		return (
-      <Grid
-        container
-        spacing={2}
-        alignItems="stretch"
-      >
-        <Grid item xs={5}>
-          <Paper>
-            <Grid container>
-              <Grid item xs={12}>
-                <CardHeader
-                  cardMainLinkLabel={name}
-                  cardId={groupId}
-                  cardDescription={description}
-                />
-              </Grid>
+    if (app !== application) {
+      setApplication(app);
+    }
+
+    let groupFound = app ? _.findWhere(app.groups, {id: props.groupID}) : null;
+    if (groupFound !== group) {
+      setGroup(groupFound);
+    }
+  }
+
+  React.useEffect(() => {
+    applicationsStore.addChangeListener(onChange);
+    onChange();
+
+    return function cleanup() {
+      applicationsStore.removeChangeListener(onChange);
+    }
+  },
+  [application, group]);
+
+  return (
+    <Grid
+      container
+      spacing={2}
+      alignItems="stretch"
+    >
+      <Grid item xs={5}>
+        <Paper>
+          <Grid container>
+            <Grid item xs={12}>
+              <CardHeader
+                cardMainLinkLabel={group ? group.name : '…'}
+                cardId={group ? group.id : '…'}
+                cardDescription={group ? group.description : ''}
+              />
+            </Grid>
+            {group &&
               <Grid item xs={12}>
                 <Box padding="1em">
                   <Grid
@@ -120,64 +93,70 @@ class ItemExtended extends React.Component {
                   >
                     <Grid item>
                       <CardFeatureLabel>Channel:</CardFeatureLabel>
-                      {groupChannel}
+                      {_.isEmpty(group.channel) ?
+                        <CardLabel>No channel provided</CardLabel>
+                      :
+                        <ChannelItem
+                          channel={group.channel}
+                          ContainerComponent="span"
+                        />
+                      }
                     </Grid>
                     <Grid item>
                       <CardFeatureLabel>Updates:</CardFeatureLabel>&nbsp;
-                      <CardLabel>{policyUpdates ? 'Enabled' : 'Disabled'}</CardLabel>
+                      <CardLabel>{group.policy_updates_enabled ? 'Enabled' : 'Disabled'}</CardLabel>
                     </Grid>
                     <Grid item>
                       <CardFeatureLabel>Only Office Hours:</CardFeatureLabel>&nbsp;
-                      <CardLabel>{officeHours ? 'Yes' : 'No'}</CardLabel>
+                      <CardLabel>{group.policy_office_hours ? 'Yes' : 'No'}</CardLabel>
                     </Grid>
                     <Grid item>
                       <CardFeatureLabel>Safe Mode:</CardFeatureLabel>&nbsp;
-                      <CardLabel>{safeMode ? 'Yes' : 'No'}</CardLabel>
+                      <CardLabel>{group.policy_safe_mode ? 'Yes' : 'No'}</CardLabel>
                     </Grid>
                     <Grid item>
                       <CardFeatureLabel>Updates Policy:</CardFeatureLabel>&nbsp;
-                      <CardLabel>Max {policyMaxUpdatesPerDay} updates per {policyPeriodInterval}</CardLabel>
+                      <CardLabel>Max {group.policy_max_updates_per_period || 0} updates per {group.policy_period_interval || 0}</CardLabel>
                     </Grid>
                     <Grid item>
                       <CardFeatureLabel>Updates Timeout:</CardFeatureLabel>&nbsp;
-                      <CardLabel>Updates timeout { policyUpdatesTimeout }</CardLabel>
+                      <CardLabel>{group.policy_update_timeout}</CardLabel>
                     </Grid>
                   </Grid>
                 </Box>
               </Grid>
-            </Grid>
-          </Paper>
-        </Grid>
-        <Grid item xs={7}>
-          {group &&
-            <InstanceChartSection instanceStats={group.instances_stats} />
-          }
-        </Grid>
-        { (group && group.instances_stats.total > 0) &&
-          <Grid item xs={12}>
-            <Paper>
-              <Box padding="1em">
-                <Grid
-                  container
-                  spacing={3}
-                  alignItems="center"
-                  direction="column"
-                >
-                  <Grid item xs={12}>
-                    <VersionBreakdown version_breakdown={version_breakdown} channel={channel} />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <AllInstancesButton path={`/apps/${this.props.appID}/groups/${this.props.groupID}/instances`} />
-                  </Grid>
-                </Grid>
-              </Box>
-            </Paper>
+            }
           </Grid>
+        </Paper>
+      </Grid>
+      <Grid item xs={7}>
+        {group &&
+          <InstanceChartSection instanceStats={group.instances_stats} />
         }
       </Grid>
-		)
-  }
-
+      { (group && group.instances_stats.total > 0) &&
+        <Grid item xs={12}>
+          <Paper>
+            <Box padding="1em">
+              <Grid
+                container
+                spacing={3}
+                alignItems="center"
+                direction="column"
+              >
+                <Grid item xs={12}>
+                  <VersionBreakdown version_breakdown={group.version_breakdown || []} channel={group.channel || ''} />
+                </Grid>
+                <Grid item xs={12}>
+                  <AllInstancesButton path={`/apps/${props.appID}/groups/${props.groupID}/instances`} />
+                </Grid>
+              </Grid>
+            </Box>
+          </Paper>
+        </Grid>
+      }
+    </Grid>
+  );
 }
 
 ItemExtended.propTypes = {
