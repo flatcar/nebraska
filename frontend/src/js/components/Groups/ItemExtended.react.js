@@ -10,9 +10,9 @@ import _ from "underscore";
 import { applicationsStore } from "../../stores/Stores";
 import ChannelItem from '../Channels/Item.react';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
-import VersionBreakdown from "../Common/VersionBreakdown.react";
 import InstanceChartSection from '../Instances/Charts';
 import GroupTimelineChart from './Charts';
+import ListHeader from '../Common/ListHeader';
 
 const useStyles = makeStyles({
   link: {
@@ -138,6 +138,7 @@ function ItemExtended(props) {
       { (group && group.instances_stats.total > 0) &&
         <Grid item xs={12}>
           <Paper>
+            <ListHeader title="Version Breakdown" />
             <Box padding="1em">
               <Grid
                 container
@@ -145,9 +146,6 @@ function ItemExtended(props) {
                 alignItems="center"
                 direction="column"
               >
-                <Grid item xs={12}>
-                  <VersionBreakdown version_breakdown={group.version_breakdown || []} channel={group.channel || ''} />
-                </Grid>
                 <Grid item xs={12}>
                   <GroupTimelineChart group={group} />
                 </Grid>
