@@ -26,6 +26,7 @@
     "react-dom": "^16.8.6",
     "react-router-dom": "^5.0.1",
     "react-window": "^1.8.5",
+    "recharts": "^1.8.1",
     "semver": "~5.3.0",
     "underscore": "~1.8.3",
     "victory": "^33.0.5",

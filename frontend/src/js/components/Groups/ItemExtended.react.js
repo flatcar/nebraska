@@ -12,6 +12,7 @@ import ChannelItem from '../Channels/Item.react';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
 import VersionBreakdown from "../Common/VersionBreakdown.react";
 import InstanceChartSection from '../Instances/Charts';
+import GroupTimelineChart from './Charts';
 
 const useStyles = makeStyles({
   link: {
@@ -146,6 +147,9 @@ function ItemExtended(props) {
               >
                 <Grid item xs={12}>
                   <VersionBreakdown version_breakdown={group.version_breakdown || []} channel={group.channel || ''} />
+                </Grid>
+                <Grid item xs={12}>
+                  <GroupTimelineChart group={group} />
                 </Grid>
                 <Grid item xs={12}>
                   <AllInstancesButton path={`/apps/${props.appID}/groups/${props.groupID}/instances`} />
