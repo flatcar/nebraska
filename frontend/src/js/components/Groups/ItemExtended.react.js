@@ -23,21 +23,6 @@ const useStyles = makeStyles({
   },
 });
 
-function AllInstancesButton(props) {
-  const classes = useStyles();
-  let {path} = props;
-
-  return (
-    <Link
-      className={classes.link}
-      to={{pathname: path}}
-      component={RouterLink}
-    >
-      See instances
-    </Link>
-  );
-}
-
 function ItemExtended(props) {
   const [application, setApplication] = React.useState(null);
   const [group, setGroup] = React.useState(null);
@@ -139,6 +124,15 @@ function ItemExtended(props) {
           <Paper className={classes.instancesChartPaper}>
             <ListHeader
               title="Update Progress"
+              actions={[
+                <Link
+                  className={classes.link}
+                  to={{pathname: `/apps/${props.appID}/groups/${props.groupID}/instances`}}
+                  component={RouterLink}
+                >
+                  See instances
+                </Link>
+              ]}
             />
             <Box padding="1em">
               <InstanceStatusArea instanceStats={group.instances_stats} />
@@ -151,19 +145,7 @@ function ItemExtended(props) {
           <Paper>
             <ListHeader title="Version Breakdown" />
             <Box padding="1em">
-              <Grid
-                container
-                spacing={3}
-                alignItems="center"
-                direction="column"
-              >
-                <Grid item xs={12}>
-                  <GroupTimelineChart group={group} />
-                </Grid>
-                <Grid item xs={12}>
-                  <AllInstancesButton path={`/apps/${props.appID}/groups/${props.groupID}/instances`} />
-                </Grid>
-              </Grid>
+              <GroupTimelineChart group={group} />
             </Box>
           </Paper>
         </Grid>
