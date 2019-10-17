@@ -10,13 +10,16 @@ import _ from "underscore";
 import { applicationsStore } from "../../stores/Stores";
 import ChannelItem from '../Channels/Item.react';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
-import InstanceChartSection from '../Instances/Charts';
+import InstanceStatusArea from '../Instances/Charts';
 import GroupTimelineChart from './Charts';
 import ListHeader from '../Common/ListHeader';
 
 const useStyles = makeStyles({
   link: {
     fontSize: '1rem'
+  },
+  instancesChartPaper: {
+    height: '100%',
   },
 });
 
@@ -38,6 +41,7 @@ function AllInstancesButton(props) {
 function ItemExtended(props) {
   const [application, setApplication] = React.useState(null);
   const [group, setGroup] = React.useState(null);
+  const classes = useStyles();
 
   function onChange() {
     let app = applicationsStore.getCachedApplication(props.appID);
@@ -132,7 +136,14 @@ function ItemExtended(props) {
       </Grid>
       <Grid item xs={7}>
         {group &&
-          <InstanceChartSection instanceStats={group.instances_stats} />
+          <Paper className={classes.instancesChartPaper}>
+            <ListHeader
+              title="Update Progress"
+            />
+            <Box padding="1em">
+              <InstanceStatusArea instanceStats={group.instances_stats} />
+            </Box>
+          </Paper>
         }
       </Grid>
       { (group && group.instances_stats.total > 0) &&

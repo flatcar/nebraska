@@ -21,12 +21,6 @@ const useStyles = makeStyles(theme => ({
   }),
 }));
 
-const useInstanceSectionStyles = makeStyles({
-  instancesChartPaper: {
-    height: '100%',
-  },
-});
-
 const LightTooltip = withStyles(theme => ({
   tooltip: {
     backgroundColor: theme.palette.common.white,
@@ -185,8 +179,7 @@ function ProgressDoughnut(props) {
   );
 }
 
-export default function InstanceChartSection(props) {
-  const classes = useInstanceSectionStyles();
+export default function InstanceStatusArea(props) {
   const theme = useTheme();
   let statusDefs = makeStatusDefs(theme);
 
@@ -230,60 +223,58 @@ export default function InstanceChartSection(props) {
   let totalInstances = instanceStats ? instanceStats.total : 0;
 
   return (
-    <Paper className={classes.instancesChartPaper}>
-      <ListHeader title="Update Progress" />
-      <Box padding="1em">
-        { totalInstances > 0 ?
-          <Grid
-            container
-            justify="space-between"
-            alignItems="center"
-          >
-            <Grid item xs={4}>
-              <InstanceCountLabel countText={totalInstances}/>
-            </Grid>
-            <Grid
-              item
-              container
-              justify="space-between"
-              xs={8}
-            >
-              {instanceStateCount.map(({status, count}, i) => {
-                // Sort the data entries so the smaller amounts are shown first.
-                count.sort((obj1, obj2) => {
-                  const stats1 = instanceStats[obj1.key];
-                  const stats2 = instanceStats[obj2.key];
-                  if (stats1 == stats2)
-                    return 0;
-                  if (stats1 < stats2)
-                    return -1;
-                  return 1;
-                });
+    totalInstances > 0 ?
+      <Grid
+        container
+        justify="space-between"
+        alignItems="center"
+      >
+        <Grid item xs={4}>
+          <InstanceCountLabel countText={totalInstances}/>
+        </Grid>
+        <Grid
+          item
+          container
+          justify="space-between"
+          xs={8}
+        >
+          {instanceStateCount.map(({status, count}, i) => {
+            // Sort the data entries so the smaller amounts are shown first.
+            count.sort((obj1, obj2) => {
+              const stats1 = instanceStats[obj1.key];
+              const stats2 = instanceStats[obj2.key];
+              if (stats1 == stats2)
+                return 0;
+              if (stats1 < stats2)
+                return -1;
+              return 1;
+            });
 
-                return (
-                  <Grid item key={i}>
-                    <ProgressDoughnut
-                      data={count.map(({key, label=status}) => {
-                        let statusLabel = statusDefs[label].label;
-                        return {
-                          value: instanceStats[key] / instanceStats['total'],
-                          color: statusDefs[label].color,
-                          description: `${statusLabel}: ${instanceStats[key]} instances.`,
-                        };
-                      })}
-                      width={125}
-                      height={125}
-                      {...statusDefs[status]}
-                    />
-                  </Grid>
-                );
-              })}
-            </Grid>
-          </Grid>
-          :
-          <Empty>No instances have yet registered with this group.<br/><br/>Registration will happen automatically the first time the instance requests an update.</Empty>
-        }
-      </Box>
-    </Paper>
+            return (
+              <Grid item key={i}>
+                <ProgressDoughnut
+                  data={count.map(({key, label=status}) => {
+                    let statusLabel = statusDefs[label].label;
+                    return {
+                      value: instanceStats[key] / instanceStats['total'],
+                      color: statusDefs[label].color,
+                      description: `${statusLabel}: ${instanceStats[key]} instances.`,
+                    };
+                  })}
+                  width={125}
+                  height={125}
+                  {...statusDefs[status]}
+                />
+              </Grid>
+            );
+          })}
+        </Grid>
+      </Grid>
+    :
+      <Empty>
+        No instances have yet registered with this group.
+        <br/><br/>
+        Registration will happen automatically the first time the instance requests an update.
+      </Empty>
   );
 }
