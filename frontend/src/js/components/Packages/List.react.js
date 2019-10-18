@@ -11,11 +11,14 @@ import Loader from '../Common/Loader';
 import ModalButton from "../Common/ModalButton.react";
 import EditDialog from './EditDialog';
 import Item from "./Item.react";
+import TablePagination from '@material-ui/core/TablePagination';
 
 function List(props) {
   const [application, setApplication] =
     React.useState(applicationsStore.getCachedApplication(props.appID) || null);
   const [packageToUpdate, setPackageToUpdate] = React.useState(null);
+  const rowsPerPage = 10;
+  const [page, setPage] = React.useState(0);
 
   function onChange() {
     setApplication(applicationsStore.getCachedApplication(props.appID));
@@ -44,6 +47,10 @@ function List(props) {
     }
   }
 
+  function handleChangePage(event, newPage) {
+    setPage(newPage);
+  }
+
   return (
     <Paper>
       <ListHeader
@@ -70,14 +77,15 @@ function List(props) {
             <React.Fragment>
               <MuiList>
                 {
-                  application.packages.map(packageItem =>
-                    <Item
-                      key={"packageItemID_" + packageItem.id}
-                      packageItem={packageItem}
-                      channels={application.channels}
-                      handleUpdatePackage={openEditDialog}
-                    />
-                  )
+                  application.packages.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map(packageItem =>
+                      <Item
+                        key={"packageItemID_" + packageItem.id}
+                        packageItem={packageItem}
+                        channels={application.channels}
+                        handleUpdatePackage={openEditDialog}
+                      />
+                    )
                 }
               </MuiList>
               {packageToUpdate &&
@@ -86,6 +94,20 @@ function List(props) {
                   show={packageToUpdate}
                   onHide={onCloseEditDialog} />
               }
+              <TablePagination
+                rowsPerPageOptions={[]}
+                component="div"
+                count={application.packages.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                backIconButtonProps={{
+                  'aria-label': 'previous page',
+                }}
+                nextIconButtonProps={{
+                  'aria-label': 'next page',
+                }}
+                onChangePage={handleChangePage}
+              />
             </React.Fragment>
         :
           <Loader />
