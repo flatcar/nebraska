@@ -1,110 +1,98 @@
-import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
 import MuiList from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
 import PropTypes from 'prop-types';
 import React from "react";
-import Loader from '../Common/Loader';
 import _ from "underscore";
 import { applicationsStore } from "../../stores/Stores";
 import Empty from '../Common/EmptyContent';
+import ListHeader from '../Common/ListHeader';
+import Loader from '../Common/Loader';
 import ModalButton from "../Common/ModalButton.react";
-import SectionPaper from '../Common/SectionPaper';
 import EditDialog from './EditDialog';
 import Item from "./Item.react";
 
-class List extends React.Component {
+function List(props) {
+  const [application, setApplication] =
+    React.useState(applicationsStore.getCachedApplication(props.appID) || null);
+  const [packageToUpdate, setPackageToUpdate] = React.useState(null);
 
-  constructor(props) {
-    super(props)
-    this.onChange = this.onChange.bind(this)
-    this.closeUpdatePackageModal = this.closeUpdatePackageModal.bind(this)
-    this.openUpdatePackageModal = this.openUpdatePackageModal.bind(this)
+  function onChange() {
+    setApplication(applicationsStore.getCachedApplication(props.appID));
+  }
 
-    this.state = {
-      application: applicationsStore.getCachedApplication(props.appID),
-      updatePackageModalVisible: false,
-      updatePackageIDModal: null
+  React.useEffect(() => {
+    applicationsStore.addChangeListener(onChange);
+    if (application == null) {
+      applicationsStore.getApplication(props.appID);
+    }
+
+    return function cleanup() {
+      applicationsStore.removeChangeListener(onChange)
+    };
+  },
+  [application]);
+
+  function onCloseEditDialog() {
+    setPackageToUpdate(null);
+  }
+
+  function openEditDialog(packageID) {
+    let pkg = (application.packages || []).find(({id}) => id == packageID) || null;
+    if (pkg != packageToUpdate) {
+      setPackageToUpdate(pkg);
     }
   }
 
-  closeUpdatePackageModal() {
-    this.setState({updatePackageModalVisible: false})
-  }
-
-  openUpdatePackageModal(packageID) {
-    this.setState({updatePackageModalVisible: true, updatePackageIDModal: packageID})
-  }
-
-  componentDidMount() {
-    applicationsStore.addChangeListener(this.onChange)
-  }
-
-  componentWillUnmount() {
-    applicationsStore.removeChangeListener(this.onChange)
-  }
-
-  onChange() {
-    this.setState({
-      application: applicationsStore.getCachedApplication(this.props.appID)
-    })
-  }
-
-  render() {
-    let application = this.state.application,
-        channels = [],
-        packages = [],
-        entries = ""
-
-    if (application) {
-      channels = application.channels ? application.channels : []
-      packages = application.packages ? application.packages : []
-
-      if (_.isEmpty(packages)) {
-        entries = <Empty>This application does not have any package yet</Empty>
-      } else {
-        entries = _.map(packages, (packageItem, i) => {
-          return <Item key={"packageItemID_" + packageItem.id} packageItem={packageItem} channels={channels} handleUpdatePackage={this.openUpdatePackageModal} />
-        })
-      }
-    } else {
-      entries = <Loader />
-    }
-
-    const packageToUpdate =  !_.isEmpty(packages) && this.state.updatePackageIDModal ? _.findWhere(packages, {id: this.state.updatePackageIDModal}) : null
-
-    return (
-      <SectionPaper>
-        <Grid
-          container
-          alignItems="center"
-          justify="space-between"
-        >
-          <Grid item>
-            <Typography variant="h5">Packages</Typography>
-          </Grid>
-          <Grid item>
+  return (
+    <Paper>
+      <ListHeader
+        title="Packages"
+        actions={application ?
+          [
             <ModalButton
               modalToOpen="AddPackageModal"
               data={{
-                channels: channels,
-                appID: this.props.appID
+                channels: application.channels || [],
+                appID: props.appID
               }}
             />
-          </Grid>
-        </Grid>
-        <MuiList>
-          {entries}
-        </MuiList>
-        {packageToUpdate &&
-          <EditDialog
-            data={{channels: channels, channel: packageToUpdate}}
-            show={this.state.updatePackageModalVisible}
-            onHide={this.closeUpdatePackageModal} />
+          ]
+          :
+          []
         }
-      </SectionPaper>
-    )
-  }
-
+      />
+      <Box padding="1em">
+        {application ?
+          _.isEmpty(application.packages || []) ?
+            <Empty>This application does not have any package yet</Empty>
+          :
+            <React.Fragment>
+              <MuiList>
+                {
+                  application.packages.map(packageItem =>
+                    <Item
+                      key={"packageItemID_" + packageItem.id}
+                      packageItem={packageItem}
+                      channels={application.channels}
+                      handleUpdatePackage={openEditDialog}
+                    />
+                  )
+                }
+              </MuiList>
+              {packageToUpdate &&
+                <EditDialog
+                  data={{channels: application.channels, channel: packageToUpdate}}
+                  show={packageToUpdate}
+                  onHide={onCloseEditDialog} />
+              }
+            </React.Fragment>
+        :
+          <Loader />
+        }
+      </Box>
+    </Paper>
+  );
 }
 
 List.propTypes = {
