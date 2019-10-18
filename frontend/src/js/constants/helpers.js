@@ -8,8 +8,15 @@ export function cleanSemverVersion(version) {
   return shortVersion
 }
 
-export function makeLocaleTime(timestamp) {
-  let dateFormat = moment.localeData().longDateFormat('L');
-  let timeFormat = moment.localeData().longDateFormat('LT');
-  return moment.utc(timestamp).local().format(`${dateFormat} ${timeFormat}`);
+export function makeLocaleTime(timestamp, formats={}) {
+  const {dateFormat='L', timeFormat='LT'} = formats;
+  let localeDateFormat = dateFormat ? dateFormat : '';
+  let localeTimeFormat = timeFormat ? timeFormat : '';
+  let format = localeDateFormat;
+
+  if (format != '' && localeTimeFormat)
+    format += ' ';
+  format += localeTimeFormat;
+
+  return moment.utc(timestamp).local().format(format, moment.locale());
 }

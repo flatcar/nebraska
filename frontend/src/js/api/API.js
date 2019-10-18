@@ -76,8 +76,12 @@ class API {
     let keysToRemove = ["id", "created_ts", "version_breakdown", "instances_stats", "channel"],
         processedGroup = API.removeKeysFromObject(groupData, keysToRemove),
         url = BASE_URL + "/apps/" + groupData.application_id + "/groups/" + groupData.id
-    
+
     return API.doRequest("PUT", url, JSON.stringify(groupData))
+  }
+
+  static getGroupVersionCountTimeline(applicationID, groupID) {
+    return API.getJSON(BASE_URL + "/apps/" + applicationID + "/groups/" + groupID + "/version_timeline")
   }
 
   // Channels

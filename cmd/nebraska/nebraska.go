@@ -128,6 +128,7 @@ func setupRoutes(ctl *controller) {
 	apiRouter.Delete("/api/apps/:app_id/groups/:group_id", ctl.deleteGroup)
 	apiRouter.Get("/api/apps/:app_id/groups/:group_id", ctl.getGroup)
 	apiRouter.Get("/api/apps/:app_id/groups", ctl.getGroups)
+	apiRouter.Get("/api/apps/:app_id/groups/:group_id/version_timeline", ctl.getGroupVersionCountTimeline)
 
 	// Channels
 	apiRouter.Post("/api/apps/:app_id/channels", ctl.addChannel)
