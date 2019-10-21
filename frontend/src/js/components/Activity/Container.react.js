@@ -1,61 +1,52 @@
-import { activityStore } from "../../stores/Stores"
-import React from "react"
-import List from "./List.react"
-import _ from "underscore"
-import Loader from '../Common/Loader';
 import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
-import ListHeader from '../Common/ListHeader';
+import React from "react";
+import _ from "underscore";
+import { activityStore } from "../../stores/Stores";
 import Empty from '../Common/EmptyContent';
+import ListHeader from '../Common/ListHeader';
+import Loader from '../Common/Loader';
+import List from "./List.react";
 
-class Container extends React.Component {
+function Container(props) {
+  const [activity, setActivity] = React.useState(activityStore.getCachedActivity());
 
-  constructor() {
-    super()
-    this.onChange = this.onChange.bind(this);
+  React.useEffect(() => {
+    activityStore.addChangeListener(onChange);
 
-    this.state = {entries: activityStore.getCachedActivity()}
-  }
-
-  componentDidMount() {
-    activityStore.addChangeListener(this.onChange)
-  }
-
-  componentWillUnmount() {
-    activityStore.removeChangeListener(this.onChange)
-  }
-
-  onChange() {
-    this.setState({
-      entries: activityStore.getCachedActivity()
-    })
-  }
-
-  render() {
-    let entries = ""
-
-    if (_.isNull(this.state.entries)) {
-      entries = <Loader />
-    } else {
-      if (_.isEmpty(this.state.entries)) {
-        entries = <Empty>No activity found for the last week.<br/><br/>You will see here important events related to the rollout of your updates. Stay tuned!</Empty>
-      } else {
-        entries = Object.values(_.mapObject(this.state.entries, (entry, key) => {
-          return <List day={key} entries={entry} key={key} />
-        }));
-      }
+    return function cleanup () {
+      activityStore.removeChangeListener(onChange);
     }
+  },
+  [activity]);
 
-    return(
-      <Paper>
-        <ListHeader title="Activity" />
-        <Box padding="1em">
-          {entries}
-        </Box>
-      </Paper>
-    )
+  function onChange() {
+    setActivity(activityStore.getCachedActivity());
   }
 
+  return(
+    <Paper>
+      <ListHeader title="Activity" />
+      <Box padding="1em">
+        { _.isNull(activity) ?
+          <Loader />
+        : _.isEmpty(activity) ?
+          <Empty>
+            No activity found for the last week.
+            <br/><br/>
+            You will see here important events related to the rollout of your updates. Stay tuned!
+          </Empty>
+        :
+          Object.keys(activity).map(key => {
+            const entry = activity[key];
+            return (
+              <List day={key} entries={entry} key={key} />
+            );
+          })
+        }
+      </Box>
+    </Paper>
+  );
 }
 
-export default Container
+export default Container;
