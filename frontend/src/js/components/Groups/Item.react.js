@@ -8,9 +8,10 @@ import _ from 'underscore';
 import { applicationsStore } from '../../stores/Stores';
 import ChannelItem from '../Channels/Item.react';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
+import Empty from '../Common/EmptyContent';
 import ListItem from '../Common/ListItem';
 import MoreMenu from '../Common/MoreMenu';
-import VersionBreakdown from '../Common/VersionBreakdown.react';
+import VersionProgressBar from '../Common/VersionBreakdownBar';
 
 const useStyles = makeStyles(theme => ({
   itemSection: {
@@ -100,9 +101,20 @@ function Item(props) {
               <CardFeatureLabel>Rollout Policy:</CardFeatureLabel>&nbsp;
               <CardLabel>Max {props.group.policy_max_updates_per_period} updates per {props.group.policy_period_interval}</CardLabel>
             </Grid>
-          </Grid>
-          <Grid item xs={12}>
-            <VersionBreakdown version_breakdown={version_breakdown} channel={channel} />
+            <Grid item container>
+              <Grid item xs={12}>
+                <CardFeatureLabel>
+                  Version breakdown
+                </CardFeatureLabel>
+              </Grid>
+              <Grid item xs={12}>
+                {version_breakdown.length > 0 ?
+                  <VersionProgressBar version_breakdown={version_breakdown} channel={channel} />
+                :
+                  <Empty>No instances available.</Empty>
+                }
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </Grid>

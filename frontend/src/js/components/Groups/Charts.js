@@ -1,10 +1,5 @@
 import Box from '@material-ui/core/Box';
 import Chip from '@material-ui/core/Chip';
-import amber from '@material-ui/core/colors/amber';
-import deepOrange from '@material-ui/core/colors/deepOrange';
-import lime from '@material-ui/core/colors/lime';
-import orange from '@material-ui/core/colors/orange';
-import red from '@material-ui/core/colors/red';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
@@ -13,7 +8,7 @@ import moment from 'moment';
 import React from 'react';
 import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 import semver from "semver";
-import { cleanSemverVersion, makeLocaleTime } from '../../constants/helpers';
+import { cleanSemverVersion, makeColorsForVersions, makeLocaleTime } from '../../constants/helpers';
 import { applicationsStore } from "../../stores/Stores";
 import Loader from '../Common/Loader';
 import VersionStatsTable from './VersionStatsTable';
@@ -149,17 +144,6 @@ export default function VersionCountTimeline(props) {
   });
 
   const theme = useTheme();
-  const colorScheme = [lime, amber, orange, deepOrange, red];
-  let colors = [];
-
-  // Create a color list for versions to pick from.
-  colorScheme.forEach(color => {
-    // We choose the shades beyond 300 because they should not be too
-    // light (in order to improve contrast).
-    for (let i = 3; i <= 9; i+=2) {
-      colors.push(color[i * 100]);
-    }
-  });
 
   function makeChartData(group, groupTimeline) {
     let data = Object.keys(groupTimeline).map((timestamp, i) => {
@@ -172,36 +156,13 @@ export default function VersionCountTimeline(props) {
     });
 
     let versions = getVersionsFromTimeline(groupTimeline);
-    let versionColors = makeColorsForVersions(versions);
+    let versionColors = makeColorsForVersions(theme, versions, group.channel);
 
     setTimelineChartData({
       data: data,
       keys: versions,
       colors: versionColors,
     });
-  }
-
-  function makeColorsForVersions(versions) {
-    let versionColors = {};
-    let colorIndex = 0;
-    let latestVersion = null;
-
-    if (props.group.channel && props.group.channel.package) {
-      latestVersion = cleanSemverVersion(props.group.channel.package.version);
-    }
-
-    for (let i = versions.length - 1; i >= 0; i--) {
-      let version = versions[i];
-      let cleanVersion = cleanSemverVersion(version);
-
-      if (cleanVersion == latestVersion) {
-        versionColors[cleanVersion] = theme.palette.success.main;
-      } else {
-        versionColors[cleanVersion] = colors[colorIndex++ % colors.length];
-      }
-    }
-
-    return versionColors;
   }
 
   function getVersionsFromTimeline(timeline) {

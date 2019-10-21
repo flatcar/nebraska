@@ -12,7 +12,6 @@
   "dependencies": {
     "@material-ui/core": "^4.2.1",
     "@material-ui/icons": "^4.2.1",
-    "@nivo/bar": "^0.59.2",
     "downshift": "^3.2.12",
     "formik": "^1.5.8",
     "formik-material-ui": "^0.0.20",
