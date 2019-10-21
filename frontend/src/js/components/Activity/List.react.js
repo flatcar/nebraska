@@ -1,4 +1,3 @@
-import Grid from '@material-ui/core/Grid';
 import MuiList from '@material-ui/core/List';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -17,11 +16,7 @@ function List(props) {
   let entries = props.entries ? props.entries : []
 
   return(
-    <Grid
-      container
-      alignItems="stretch"
-      direction="column"
-    >
+    <React.Fragment>
       <Typography className={classes.listTitle}>
         {props.day}
       </Typography>
@@ -30,7 +25,7 @@ function List(props) {
           <Item key={i} entry={entry} />
         )}
       </MuiList>
-    </Grid>
+    </React.Fragment>
   );
 }
 
