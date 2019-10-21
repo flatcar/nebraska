@@ -135,6 +135,8 @@ Nebraska uses `PostgreSQL`. You can install it locally or use the docker image a
 for the tests, respectively. For the main database, the full URL (with a different database name if desired) can be overridden by the environment variable
 `NEBRASKA_DB_URL`.
 
+Note: the timezone for the Nebraska database is expected to be UTC (`set timezone = 'utc';`).
+
 ### Frontend
 
 The frontend side of Nebraska (dashboard) is a web application built using `react` and `material-ui`.
