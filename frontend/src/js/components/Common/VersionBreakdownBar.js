@@ -19,7 +19,7 @@ const useStyles = makeStyles({
 
 const useChartStyle = makeStyles(theme => ({
   chart: {
-    zIndex: theme.zIndex.tooltip,
+    zIndex: theme.zIndex.drawer,
   },
   container: {
     marginLeft: 'auto',
