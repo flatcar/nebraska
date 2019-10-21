@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { makeLocaleTime } from '../../constants/helpers';
 import Item from './Item.react';
 
 const useStyles = makeStyles(theme => ({
@@ -18,7 +19,10 @@ function List(props) {
   return(
     <React.Fragment>
       <Typography className={classes.listTitle}>
-        {props.day}
+        {makeLocaleTime(props.timestamp, {
+          dateFormat: 'dddd, LL',
+          timeFormat: null
+        })}
       </Typography>
       <MuiList>
         {entries.map((entry, i) =>
@@ -30,7 +34,7 @@ function List(props) {
 }
 
 List.propTypes = {
-  day: PropTypes.string.isRequired,
+  timestamp: PropTypes.string.isRequired,
   entries: PropTypes.array.isRequired
 }
 

@@ -1,5 +1,8 @@
 import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+import TablePagination from '@material-ui/core/TablePagination';
+import moment from 'moment';
 import React from "react";
 import _ from "underscore";
 import { activityStore } from "../../stores/Stores";
@@ -9,7 +12,10 @@ import Loader from '../Common/Loader';
 import List from "./List.react";
 
 function Container(props) {
-  const [activity, setActivity] = React.useState(activityStore.getCachedActivity());
+  const [activity, setActivity] = React.useState(getActivityEntries());
+  const rowsOptions = [5, 10, 50];
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(rowsOptions[0]);
 
   React.useEffect(() => {
     activityStore.addChangeListener(onChange);
@@ -21,7 +27,50 @@ function Container(props) {
   [activity]);
 
   function onChange() {
-    setActivity(activityStore.getCachedActivity());
+    setActivity(getActivityEntries());
+    setPage(0);
+  }
+
+  function handleChangePage(event, newPage) {
+    setPage(newPage);
+  }
+
+  function handleChangeRowsPerPage(event) {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  }
+
+  function getPagedActivity() {
+    let entriesPerTime = {};
+    let timestamp = null;
+
+    for (let i = page * rowsPerPage;
+         i < Math.min(activity.length, page * rowsPerPage + rowsPerPage); ++i) {
+      const entry = activity[i];
+      const currentTimestamp = moment(entry.created_ts);
+      if (!timestamp || currentTimestamp.weekday() != timestamp.weekday()) {
+        timestamp = currentTimestamp;
+        entriesPerTime[timestamp] = [];
+      }
+
+      entriesPerTime[timestamp] = entriesPerTime[timestamp].concat(entry);
+    }
+    return entriesPerTime;
+  }
+
+  function getActivityEntries() {
+    let activityObj = activityStore.getCachedActivity();
+    if (_.isNull(activityObj)) {
+      return null;
+    }
+
+    let entries = [];
+
+    Object.values(activityObj).forEach(value => {
+      entries = entries.concat(value)
+    });
+
+    return entries;
   }
 
   return(
@@ -37,12 +86,35 @@ function Container(props) {
             You will see here important events related to the rollout of your updates. Stay tuned!
           </Empty>
         :
-          Object.keys(activity).map(key => {
-            const entry = activity[key];
-            return (
-              <List day={key} entries={entry} key={key} />
-            );
-          })
+          <Grid
+            container
+            direction="column"
+          >
+            <Grid item>
+              {Object.values(
+                _.mapObject(getPagedActivity(), (entry, timestamp) => {
+                  return <List timestamp={timestamp} entries={entry} key={timestamp} />
+                })
+              )}
+            </Grid>
+            <Grid item>
+              <TablePagination
+                rowsPerPageOptions={rowsOptions}
+                component="div"
+                count={activity.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                backIconButtonProps={{
+                  'aria-label': 'previous page',
+                }}
+                nextIconButtonProps={{
+                  'aria-label': 'next page',
+                }}
+                onChangePage={handleChangePage}
+                onChangeRowsPerPage={handleChangeRowsPerPage}
+              />
+            </Grid>
+          </Grid>
         }
       </Box>
     </Paper>
