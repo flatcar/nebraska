@@ -9,7 +9,7 @@ import TableRow from '@material-ui/core/TableRow';
 import React from 'react';
 import Empty from '../Common/EmptyContent';
 
-export default function VersionStatsTable(props) {
+export default function SimpleTable(props) {
   const {columns} = props;
   const [page, setPage] = React.useState(0);
   const rowsPerPageOptions = [5, 10, 50];

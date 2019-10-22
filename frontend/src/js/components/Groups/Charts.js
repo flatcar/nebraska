@@ -11,7 +11,7 @@ import semver from "semver";
 import { cleanSemverVersion, makeColorsForVersions, makeLocaleTime } from '../../constants/helpers';
 import { applicationsStore } from "../../stores/Stores";
 import Loader from '../Common/Loader';
-import VersionStatsTable from './VersionStatsTable';
+import SimpleTable from '../Common/SimpleTable';
 
 function TimelineChart(props) {
   const {width=500, height=400} = props;
@@ -300,7 +300,7 @@ export default function VersionCountTimeline(props) {
           </Box>
         </Grid>
         <Grid item xs={12}>
-          <VersionStatsTable
+          <SimpleTable
             emptyMessage="No data to show for this time point."
             columns={{version: 'Version', instances: 'Version', percentage: 'Percentage'}}
             instances={getInstanceCount(selectedEntry)}
