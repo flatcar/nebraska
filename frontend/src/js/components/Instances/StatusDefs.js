@@ -26,12 +26,12 @@ function makeStatusDefs(theme) {
     },
     InstanceStatusInstalled: {
       label: 'Installed',
-      color: theme.palette.success['400'],
+      color: theme.palette.success['300'],
       icon: checkboxMarked,
     },
     InstanceStatusDownloading: {
       label: 'Downloading',
-      color: theme.palette.success['A700'],
+      color: theme.palette.success['700'],
       icon: progressDownload,
     },
     InstanceStatusError: {
@@ -46,7 +46,7 @@ function makeStatusDefs(theme) {
     },
     InstanceStatusUpdateGranted: {
       label: 'Update Granted',
-      color: theme.palette.success['600'],
+      color: theme.palette.success['500'],
       icon: playCircle,
     },
   };
