@@ -110,7 +110,7 @@ class Item extends React.Component {
     let stateIcon = stateIcons[this.state.entrySeverity.className || 'info'];
 
     return (
-      <ListItem alignItems="start">
+      <ListItem alignItems="flex-start">
         <ActivityItemIcon {...stateIcon} time={time} />
         <ListItemText
           primary={
