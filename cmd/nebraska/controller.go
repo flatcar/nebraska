@@ -1015,6 +1015,23 @@ func (ctl *controller) getGroupVersionCountTimeline(c web.C, w http.ResponseWrit
 	}
 }
 
+func (ctl *controller) getGroupStatusCountTimeline(c web.C, w http.ResponseWriter, r *http.Request) {
+	groupID := c.URLParams["group_id"]
+
+	statusCountTimeline, err := ctl.api.GetGroupStatusCountTimeline(groupID)
+	switch err {
+	case nil:
+		if err := json.NewEncoder(w).Encode(statusCountTimeline); err != nil {
+			logger.Error("getGroupStatusCountTimeline - encoding group", "error", err.Error(), "count-timeline", statusCountTimeline)
+		}
+	case sql.ErrNoRows:
+		httpError(w, http.StatusNotFound)
+	default:
+		logger.Error("getGroupStatusCountTimeline - getting status timeline", "error", err.Error(), "groupID", groupID)
+		httpError(w, http.StatusBadRequest)
+	}
+}
+
 // ----------------------------------------------------------------------------
 // API: channels CRUD
 //
