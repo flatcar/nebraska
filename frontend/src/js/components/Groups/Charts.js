@@ -14,7 +14,7 @@ import Loader from '../Common/Loader';
 import SimpleTable from '../Common/SimpleTable';
 
 function TimelineChart(props) {
-  const {width=500, height=400} = props;
+  const {width=500, height=400, interpolation='monotone'} = props;
   let ticks = {};
 
   function getTickValues(tickCount) {
@@ -117,7 +117,7 @@ function TimelineChart(props) {
         <YAxis />
         {props.keys.map((key, i) =>
           <Area
-            type="monotone"
+            type={interpolation}
             key={i}
             dataKey={key}
             stackId="1"
