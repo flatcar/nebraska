@@ -53,6 +53,8 @@ type VersionCountTimelineEntry struct {
 	Total   uint64    `db:"total" json:"total"`
 }
 
+type VersionCountMap = map[string]uint64
+
 // InstancesStatusStats represents a set of statistics about the status of the
 // instances that belong to a given group.
 type InstancesStatusStats struct {
@@ -298,7 +300,7 @@ func (api *API) groupInstancesStatusQuery() string {
 		InstanceStatusDownloaded, InstanceStatusDownloading, InstanceStatusOnHold, validityInterval)
 }
 
-func (api *API) GetGroupVersionCountTimeline(groupID string) (map[time.Time](map[string]uint64), error) {
+func (api *API) GetGroupVersionCountTimeline(groupID string) (map[time.Time](VersionCountMap), error) {
 	var timelineEntry []VersionCountTimelineEntry
 	// Get the number of instances per version until each of the time-interval
 	// divisions. This is done only for the instances that pinged the server in
@@ -317,13 +319,13 @@ func (api *API) GetGroupVersionCountTimeline(groupID string) (map[time.Time](map
 	}
 
 	allVersions := make(map[string]struct{})
-	timelineCount := make(map[time.Time]map[string]uint64)
+	timelineCount := make(map[time.Time]VersionCountMap)
 
 	// Create the timeline map, and gather all the versions found.
 	for _, entry := range timelineEntry {
 		value, ok := timelineCount[entry.Time]
 		if !ok {
-			value = make(map[string]uint64)
+			value = make(VersionCountMap)
 			timelineCount[entry.Time] = value
 		}
 
