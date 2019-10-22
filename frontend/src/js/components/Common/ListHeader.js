@@ -25,8 +25,8 @@ export default function ListHeader(props) {
               </Grid>
             }
             {actions &&
-              actions.map(action =>
-                <Grid item>
+              actions.map((action, i) =>
+                <Grid item key={i}>
                   {action}
                 </Grid>
               )
