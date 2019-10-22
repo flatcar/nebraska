@@ -207,7 +207,7 @@ export default function VersionCountTimeline(props) {
         version_breakdown.push({
           version: version,
           instances: versionCount,
-
+          percentage: 0,
         });
       }
     }
@@ -219,6 +219,8 @@ export default function VersionCountTimeline(props) {
       if (total > 0) {
         entry.percentage = entry.instances * 100.0 / total;
       }
+
+      entry.percentage = parseFloat(entry.percentage).toFixed(1);
     });
 
     // Sort the entries per number of instances (higher first).
@@ -299,6 +301,8 @@ export default function VersionCountTimeline(props) {
         </Grid>
         <Grid item xs={12}>
           <VersionStatsTable
+            emptyMessage="No data to show for this time point."
+            columns={{version: 'Version', instances: 'Version', percentage: 'Percentage'}}
             instances={getInstanceCount(selectedEntry)}
           />
         </Grid>

@@ -7,8 +7,10 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import React from 'react';
+import Empty from '../Common/EmptyContent';
 
 export default function VersionStatsTable(props) {
+  const {columns} = props;
   const [page, setPage] = React.useState(0);
   const rowsPerPageOptions = [5, 10, 50];
   const [rowsPerPage, setRowsPerPage] = React.useState(rowsPerPageOptions[0]);
@@ -33,58 +35,59 @@ export default function VersionStatsTable(props) {
   }
 
   return (
-    <React.Fragment>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Version</TableCell>
-            <TableCell>Instances</TableCell>
-            <TableCell>Percentage</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-        {props.instances &&
-         getPagedRows().map(({version, color, instances, percentage}, i) =>
-          <TableRow key={i}>
-            <TableCell>
-              {color &&
-                <InlineIcon
-                  icon={squareIcon}
-                  color={color}
-                  height="15"
-                  width="15"
-                />
-              }
-              &nbsp;
-              {version}
-            </TableCell>
-            <TableCell>
-              {instances}
-            </TableCell>
-            <TableCell>
-              {percentage.toFixed(1)}
-            </TableCell>
-          </TableRow>
-        )}
-        </TableBody>
-      </Table>
-      {props.instances.length > rowsPerPageOptions[0] &&
-        <TablePagination
-          rowsPerPageOptions={rowsPerPageOptions}
-          component="div"
-          count={props.instances.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          backIconButtonProps={{
-            'aria-label': 'previous page',
-          }}
-          nextIconButtonProps={{
-            'aria-label': 'next page',
-          }}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-        />
-      }
-    </React.Fragment>
+    props.instances.length == 0 ?
+      <Empty>{props.emptyMessage ? props.emptyMessage : 'No data to be shown.'}</Empty>
+    :
+      <React.Fragment>
+        <Table>
+          <TableHead>
+            <TableRow>
+              {Object.keys(columns).map((column, i) =>
+                <TableCell key={`tabletitle_${i}`}>{columns[column]}</TableCell>
+              )}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+          {props.instances &&
+           getPagedRows().map((row, i) =>
+            <TableRow key={i}>
+              {Object.keys(columns).map((column, i) =>
+                <TableCell key={`cell_${i}`}>
+                  {i == 0 && row.color &&
+                    <React.Fragment>
+                      <InlineIcon
+                        icon={squareIcon}
+                        color={row.color}
+                        height="15"
+                        width="15"
+                      />
+                      &nbsp;
+                    </React.Fragment>
+                  }
+                  {row[column]}
+                </TableCell>
+              )}
+            </TableRow>
+          )}
+          </TableBody>
+        </Table>
+        {props.instances.length > rowsPerPageOptions[0] &&
+          <TablePagination
+            rowsPerPageOptions={rowsPerPageOptions}
+            component="div"
+            count={props.instances.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            backIconButtonProps={{
+              'aria-label': 'previous page',
+            }}
+            nextIconButtonProps={{
+              'aria-label': 'next page',
+            }}
+            onChangePage={handleChangePage}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
+          />
+        }
+      </React.Fragment>
   );
 }
