@@ -11,7 +11,7 @@ import { applicationsStore } from "../../stores/Stores";
 import ChannelItem from '../Channels/Item.react';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
 import InstanceStatusArea from '../Instances/Charts';
-import GroupTimelineChart from './Charts';
+import { VersionCountTimeline, StatusCountTimeline } from './Charts';
 import ListHeader from '../Common/ListHeader';
 
 const useStyles = makeStyles({
@@ -145,7 +145,8 @@ function ItemExtended(props) {
           <Paper>
             <ListHeader title="Version Breakdown" />
             <Box padding="1em">
-              <GroupTimelineChart group={group} />
+              <VersionCountTimeline group={group} />
+              <StatusCountTimeline group={group} />
             </Box>
           </Paper>
         </Grid>

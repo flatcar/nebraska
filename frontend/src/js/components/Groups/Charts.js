@@ -8,10 +8,12 @@ import moment from 'moment';
 import React from 'react';
 import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 import semver from "semver";
+import _ from 'underscore';
 import { cleanSemverVersion, makeColorsForVersions, makeLocaleTime } from '../../constants/helpers';
-import { applicationsStore } from "../../stores/Stores";
+import { applicationsStore, instancesStore } from "../../stores/Stores";
 import Loader from '../Common/Loader';
 import SimpleTable from '../Common/SimpleTable';
+import makeStatusDefs from '../Instances/StatusDefs';
 
 function TimelineChart(props) {
   const {width=500, height=400, interpolation='monotone'} = props;
@@ -130,7 +132,7 @@ function TimelineChart(props) {
   );
 }
 
-export default function VersionCountTimeline(props) {
+export function VersionCountTimeline(props) {
   const [selectedEntry, setSelectedEntry] = React.useState(-1);
   const [timelineChartData, setTimelineChartData] = React.useState({
     data: [],
@@ -303,6 +305,197 @@ export default function VersionCountTimeline(props) {
           <SimpleTable
             emptyMessage="No data to show for this time point."
             columns={{version: 'Version', instances: 'Version', percentage: 'Percentage'}}
+            instances={getInstanceCount(selectedEntry)}
+          />
+        </Grid>
+      </Grid>
+    </Grid>
+  );
+}
+
+export function StatusCountTimeline(props) {
+  const [selectedEntry, setSelectedEntry] = React.useState(-1);
+  const [timelineChartData, setTimelineChartData] = React.useState({
+    data: [],
+    keys: [],
+    colors: []
+  });
+  const [timeline, setTimeline] = React.useState({
+    timeline: {},
+    // A long time ago, to force the first update...
+    lastUpdate: moment([2000, 1, 1]),
+  });
+
+  const theme = useTheme();
+  const statusDefs = makeStatusDefs(theme);
+
+  function makeChartData(groupTimeline) {
+    let data = Object.keys(groupTimeline).map((timestamp, i) => {
+      let status = groupTimeline[timestamp];
+      let statusCount = {};
+      Object.keys(status).forEach(st => {
+        const values = status[st];
+        let count = Object.values(values).reduce((a, b) => a+b, 0);
+        statusCount[st] = count;
+      });
+
+      return {
+        index: i,
+        timestamp: timestamp,
+        ...statusCount
+      };
+    });
+
+    let statuses = getStatusFromTimeline(groupTimeline);
+    let colors = makeStatusesColors(statuses);
+
+    setTimelineChartData({
+      data: data,
+      keys: statuses,
+      colors: colors,
+    });
+  }
+
+  function makeStatusesColors(statuses) {
+    let colors = {};
+    Object.values(statuses).forEach(status => {
+      const statusInfo = instancesStore.getInstanceStatus(status, '');
+      colors[status] = statusDefs[statusInfo.type].color;
+    });
+
+    return colors;
+  }
+
+  function getStatusFromTimeline(timeline) {
+    if (Object.keys(timeline).length == 0) {
+      return [];
+    }
+
+    return Object.keys(Object.values(timeline)[0]).filter(status => status != 0);
+  }
+
+  function getInstanceCount(selectedEntry) {
+    let status_breakdown = [];
+    const statusTimeline = timeline.timeline;
+
+    // Populate it from the selected time one.
+    if (!_.isEmpty(statusTimeline) && !_.isEmpty(timelineChartData.data)) {
+      let timelineIndex = selectedEntry >= 0 ? selectedEntry : timelineChartData.data.length - 1;
+      if (timelineIndex < 0)
+        return [];
+
+      const ts = timelineChartData.data[timelineIndex].timestamp;
+      // Create the version breakdown from the timeline
+      const entries = statusTimeline[ts] || [];
+      for (let status in entries) {
+        if (status == 0) {
+          continue;
+        }
+
+        const versions = entries[status];
+
+        Object.keys(versions).forEach(version => {
+          const versionCount = versions[version];
+          status_breakdown.push({
+            status: status,
+            version: version,
+            instances: versionCount,
+          });
+        });
+      }
+    }
+
+    status_breakdown.forEach((entry) => {
+      const statusInfo = instancesStore.getInstanceStatus(entry.status, entry.version);
+      const statusTheme = statusDefs[statusInfo.type];
+
+      entry.color = statusTheme.color;
+      entry.status = statusTheme.label;
+    });
+
+    // Sort the entries per number of instances (higher first).
+    status_breakdown.sort((elem1, elem2) => {
+      return -(elem1.instances - elem2.instances);
+    })
+
+    return status_breakdown;
+  }
+
+  function getStatusTimeline(group) {
+    // Check if we should update the timeline or it's too early.
+    if (Object.keys(timeline.timeline).length > 0 &&
+        moment(timeline.lastUpdate).diff(moment().utc(), 'minutes') < 5) {
+      return;
+    }
+
+    applicationsStore.getGroupStatusCountTimeline(group.application_id, group.id)
+    .done(statusCountTimeline => {
+      setTimeline({
+        timeline: statusCountTimeline,
+        lastUpdate: moment().utc(),
+      });
+
+      makeChartData(statusCountTimeline || []);
+      setSelectedEntry(-1);
+    })
+    .fail(error => {
+      console.log('Error getting status count timeline', error);
+    });
+  }
+
+  function getSelectedTime() {
+    const data = timelineChartData.data;
+    if (selectedEntry < 0 || data.length == 0) {
+      return '';
+    }
+    const timestamp = data[selectedEntry].timestamp;
+    return makeLocaleTime(timestamp, {dateFormat: 'ddd D'})
+  }
+
+  // Make the timeline data again when needed.
+  React.useEffect(() => {
+    getStatusTimeline(props.group);
+  },
+  [props.group, timeline]);
+
+  return (
+    <Grid container alignItems="center" spacing={2}>
+      <Grid item xs={12}>
+        {timelineChartData.data.length > 0 ?
+          <TimelineChart
+            {...timelineChartData}
+            interpolation="step"
+            onSelect={setSelectedEntry}
+          />
+        :
+          <Loader />
+        }
+      </Grid>
+      <Grid item xs={12} container>
+        <Grid item xs={12}>
+          <Box width={500}>
+            { selectedEntry != -1 ?
+              <React.Fragment>
+                <Typography component="span">
+                  Showing for:
+                </Typography>
+                &nbsp;
+                <Chip
+                  label={getSelectedTime()}
+                  onDelete={() => {setSelectedEntry(-1)}}
+                />
+              </React.Fragment>
+            :
+              <Typography>
+                Showing data for the last hour (click the chart to choose a different time point).
+              </Typography>
+            }
+          </Box>
+        </Grid>
+        <Grid item xs={12}>
+          <SimpleTable
+            emptyMessage="No data to show for this time point."
+            columns={{status: 'Status', version: 'Version', instances: 'Instances'}}
             instances={getInstanceCount(selectedEntry)}
           />
         </Grid>
