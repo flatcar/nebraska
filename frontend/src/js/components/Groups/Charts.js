@@ -271,8 +271,8 @@ export function VersionCountTimeline(props) {
   [props.group, timeline]);
 
   return (
-    <Grid container alignItems="center">
-      <Grid item xs={6}>
+    <Grid container alignItems="center" spacing={2}>
+      <Grid item xs={12}>
         {timelineChartData.data.length > 0 ?
           <TimelineChart
             {...timelineChartData}
@@ -282,7 +282,7 @@ export function VersionCountTimeline(props) {
           <Loader />
         }
       </Grid>
-      <Grid item xs={6} container>
+      <Grid item xs={12} container>
         <Grid item xs={12}>
           <Box width={500}>
             { selectedEntry != -1 ?
