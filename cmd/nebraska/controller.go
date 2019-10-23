@@ -17,6 +17,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/google/go-github/github"
@@ -108,6 +109,37 @@ func obtainWebhookSecret(potentialSecret string) (string, error) {
 	return "", errors.New("no webhook secret")
 }
 
+type lockedStore struct {
+	store sessions.Store
+	lock  sync.RWMutex
+}
+
+var _ sessions.Store = &lockedStore{}
+
+func newLockedStore(store sessions.Store) *lockedStore {
+	return &lockedStore{
+		store: store,
+	}
+}
+
+func (s *lockedStore) Get(key string) (map[string]interface{}, error) {
+	s.lock.RLock()
+	defer s.lock.RUnlock()
+	return s.store.Get(key)
+}
+
+func (s *lockedStore) Save(key string, object map[string]interface{}) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+	s.store.Save(key, object)
+}
+
+func (s *lockedStore) Destroy(key string) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+	s.store.Destroy(key)
+}
+
 func newController(conf *controllerConfig) (*controller, error) {
 	api, err := api.New()
 	if err != nil {
@@ -131,7 +163,7 @@ func newController(conf *controllerConfig) (*controller, error) {
 	c := &controller{
 		api:          api,
 		omahaHandler: omaha.NewHandler(api),
-		sessions:     sessions.NewSessionOptions(sessionSecret, sessions.MemoryStore{}),
+		sessions:     sessions.NewSessionOptions(sessionSecret, newLockedStore(sessions.MemoryStore{})),
 		oauthConfig: &oauth2.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
