@@ -77,14 +77,15 @@ function VersionProgressBar(props) {
 
     version_breakdown.forEach(entry => {
       const {version, percentage} = entry;
+      const percentageValue = parseFloat(percentage);
 
       if (percentage < 10) {
         other.versions.push(version);
-        other.percentage += percentage;
+        other.percentage += percentageValue;
         return;
       }
 
-      data[version] = percentage;
+      data[version] = percentageValue;
     });
 
     let versionColors = makeColorsForVersions(theme, Object.keys(data), channel);

@@ -172,8 +172,14 @@ export function VersionCountTimeline(props) {
       return [];
     }
 
-    let versions = Object.keys(Object.values(timeline)[0]).map(version => {
-      return cleanSemverVersion(version);
+    let versions = [];
+
+    Object.keys(Object.values(timeline)[0]).forEach(version => {
+      let cleanedVersion = cleanSemverVersion(version);
+      // Discard any invalid versions (empty strings, etc.)
+      if (semver.valid(cleanedVersion)) {
+        versions.push(cleanedVersion);
+      }
     });
 
     // Sort versions (earliest first)
