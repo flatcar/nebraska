@@ -336,6 +336,12 @@ func (api *API) GetGroupVersionCountTimeline(groupID string) (map[time.Time](Ver
 			timelineCount[entry.Time] = value
 		}
 
+		// The query may produce a time entry with an empty string for the version when there are
+		// no instances for that time interval, so we skip adding those to the result.
+		if entry.Version == "" {
+			continue
+		}
+
 		allVersions[entry.Version] = struct{}{}
 		versionCount, ok := value[entry.Version]
 		if !ok {
@@ -385,10 +391,22 @@ func (api *API) GetGroupStatusCountTimeline(groupID string) (map[time.Time](map[
 			timelineCount[entry.Time] = value
 		}
 
+		// The query may produce a time entry with a 0 value for the status when there are
+		// no instances for that time interval, so we skip adding those to the result.
+		if entry.Status == 0 {
+			continue
+		}
+
 		allStatuses[entry.Status] = struct{}{}
 		versionCount, ok := value[entry.Status]
 		if !ok {
 			versionCount = make(VersionCountMap)
+		}
+
+		// The query may produce a time entry with an empty string for the version when there are
+		// no instances for that time interval, so we skip adding those to the result.
+		if entry.Version == "" {
+			continue
 		}
 
 		versionCount[entry.Version] = entry.Total
