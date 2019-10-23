@@ -13,7 +13,7 @@ import Item from './Item.react';
 function Table(props) {
   let [selectedInstance, setSelectedInstance] = React.useState(null);
   let versions = props.version_breakdown || [];
-  let lastVersionChannel = props.channel.package ? cleanSemverVersion(props.channel.package.version) : '';
+  let lastVersionChannel = (props.channel && props.channel.package) ? cleanSemverVersion(props.channel.package.version) : '';
   let versionNumbers = (_.map(versions, (version) => {
     return cleanSemverVersion(version.version)
   })).sort(semver.rcompare);

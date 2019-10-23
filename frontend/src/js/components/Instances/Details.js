@@ -227,8 +227,12 @@ function DetailsView(props) {
                   <Link className={classes.link} to={`/apps/${application.id}/groups/${group.id}`} component={RouterLink}>{group.name}</Link>
                 </Grid>
                 <Grid item xs={12}>
-                  <CardFeatureLabel>Channel:</CardFeatureLabel>
-                  <ChannelItem channel={group.channel} ContainerComponent="span" />
+                  <CardFeatureLabel>Channel:</CardFeatureLabel>&nbsp;
+                  {group.channel ?
+                    <ChannelItem channel={group.channel} ContainerComponent="span" />
+                  :
+                    <CardLabel>None</CardLabel>
+                  }
                 </Grid>
               </Grid>
             }
