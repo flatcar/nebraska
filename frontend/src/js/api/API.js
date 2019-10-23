@@ -84,6 +84,10 @@ class API {
     return API.getJSON(BASE_URL + "/apps/" + applicationID + "/groups/" + groupID + "/version_timeline")
   }
 
+  static getGroupStatusCountTimeline(applicationID, groupID) {
+    return API.getJSON(BASE_URL + "/apps/" + applicationID + "/groups/" + groupID + "/status_timeline")
+  }
+
   // Channels
 
   static deleteChannel(applicationID, channelID) {

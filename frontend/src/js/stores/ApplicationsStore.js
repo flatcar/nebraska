@@ -172,6 +172,12 @@ class ApplicationsStore extends Store {
     return API.getGroupVersionCountTimeline(applicationID, groupID);
   }
 
+  getGroupStatusCountTimeline(applicationID, groupID) {
+    // Not much value here, but we still abstract the API call in case we
+    // want to e.g. cache the results in the future.
+    return API.getGroupStatusCountTimeline(applicationID, groupID);
+  }
+
   // Channels
 
   createChannel(data) {

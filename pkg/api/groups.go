@@ -53,6 +53,15 @@ type VersionCountTimelineEntry struct {
 	Total   uint64    `db:"total" json:"total"`
 }
 
+type StatusVersionCountTimelineEntry struct {
+	Time    time.Time `db:"ts" json:"time"`
+	Status  int       `db:"status" json:"status"`
+	Version string    `db:"version" json:"version"`
+	Total   uint64    `db:"total" json:"total"`
+}
+
+type VersionCountMap = map[string]uint64
+
 // InstancesStatusStats represents a set of statistics about the status of the
 // instances that belong to a given group.
 type InstancesStatusStats struct {
@@ -298,7 +307,7 @@ func (api *API) groupInstancesStatusQuery() string {
 		InstanceStatusDownloaded, InstanceStatusDownloading, InstanceStatusOnHold, validityInterval)
 }
 
-func (api *API) GetGroupVersionCountTimeline(groupID string) (map[time.Time](map[string]uint64), error) {
+func (api *API) GetGroupVersionCountTimeline(groupID string) (map[time.Time](VersionCountMap), error) {
 	var timelineEntry []VersionCountTimelineEntry
 	// Get the number of instances per version until each of the time-interval
 	// divisions. This is done only for the instances that pinged the server in
@@ -317,13 +326,13 @@ func (api *API) GetGroupVersionCountTimeline(groupID string) (map[time.Time](map
 	}
 
 	allVersions := make(map[string]struct{})
-	timelineCount := make(map[time.Time]map[string]uint64)
+	timelineCount := make(map[time.Time]VersionCountMap)
 
 	// Create the timeline map, and gather all the versions found.
 	for _, entry := range timelineEntry {
 		value, ok := timelineCount[entry.Time]
 		if !ok {
-			value = make(map[string]uint64)
+			value = make(VersionCountMap)
 			timelineCount[entry.Time] = value
 		}
 
@@ -343,6 +352,57 @@ func (api *API) GetGroupVersionCountTimeline(groupID string) (map[time.Time](map
 		for timestamp := range timelineCount {
 			if _, ok := timelineCount[timestamp][version]; !ok {
 				timelineCount[timestamp][version] = 0
+			}
+		}
+	}
+
+	return timelineCount, nil
+}
+
+func (api *API) GetGroupStatusCountTimeline(groupID string) (map[time.Time](map[int](VersionCountMap)), error) {
+	var timelineEntry []StatusVersionCountTimelineEntry
+	// Get the versions and their number of instances per status within each of the given time intervals.
+	query := fmt.Sprintf(`
+	WITH time_series AS (SELECT * FROM generate_series(now() - interval '%[1]s', now(), INTERVAL '1 hour') AS ts)
+	SELECT ts, (CASE WHEN status IS NULL THEN 0 ELSE status END), (CASE WHEN version IS NULL THEN '' ELSE version END), count(instance_id) as total FROM (SELECT * FROM time_series
+		LEFT JOIN LATERAL(SELECT * FROM instance_status_history WHERE group_id=$1 AND created_ts BETWEEN time_series.ts - INTERVAL '1 hour' + INTERVAL '1 sec' AND time_series.ts) _ ON TRUE) AS _
+	GROUP BY 1,2,3
+	ORDER BY ts DESC;
+	`, validityInterval)
+
+	if err := api.dbR.SQL(query, groupID).QueryStructs(&timelineEntry); err != nil {
+		return nil, err
+	}
+
+	allStatuses := make(map[int]struct{})
+	timelineCount := make(map[time.Time](map[int](VersionCountMap)))
+
+	// Create the timeline map, and gather all the statuses found.
+	for _, entry := range timelineEntry {
+		value, ok := timelineCount[entry.Time]
+		if !ok {
+			value = make(map[int](VersionCountMap))
+			timelineCount[entry.Time] = value
+		}
+
+		allStatuses[entry.Status] = struct{}{}
+		versionCount, ok := value[entry.Status]
+		if !ok {
+			versionCount = make(VersionCountMap)
+		}
+
+		versionCount[entry.Version] = entry.Total
+
+		value[entry.Status] = versionCount
+	}
+
+	// We want to return all the status per time-interval, i.e. we don't want
+	// some time-intervals to have 2 statuses accounted, and others just 1, so
+	// this assigns the missing statuses per interval.
+	for status := range allStatuses {
+		for timestamp := range timelineCount {
+			if _, ok := timelineCount[timestamp][status]; !ok {
+				timelineCount[timestamp][status] = make(VersionCountMap)
 			}
 		}
 	}

@@ -11,7 +11,7 @@ import { applicationsStore } from "../../stores/Stores";
 import ChannelItem from '../Channels/Item.react';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
 import InstanceStatusArea from '../Instances/Charts';
-import GroupTimelineChart from './Charts';
+import { VersionCountTimeline, StatusCountTimeline } from './Charts';
 import ListHeader from '../Common/ListHeader';
 
 const useStyles = makeStyles({
@@ -146,10 +146,34 @@ function ItemExtended(props) {
       { (group && group.instances_stats.total > 0) &&
         <Grid item xs={12}>
           <Paper>
-            <ListHeader title="Version Breakdown" />
-            <Box padding="1em">
-              <GroupTimelineChart group={group} />
-            </Box>
+            <Grid
+              container
+            >
+              <Grid
+                item
+                md
+                xs={12}
+                container
+                direction="column"
+              >
+                <ListHeader title="Version Breakdown" />
+                <Box padding="1em">
+                  <VersionCountTimeline group={group} />
+                </Box>
+              </Grid>
+              <Grid
+                item
+                md
+                xs={12}
+                container
+                direction="column"
+              >
+                <ListHeader title="Status Breakdown" />
+                <Box padding="1em">
+                  <StatusCountTimeline group={group} />
+                </Box>
+              </Grid>
+            </Grid>
           </Paper>
         </Grid>
       }
