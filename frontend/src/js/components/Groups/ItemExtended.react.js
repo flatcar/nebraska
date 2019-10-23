@@ -124,15 +124,18 @@ function ItemExtended(props) {
           <Paper className={classes.instancesChartPaper}>
             <ListHeader
               title="Update Progress"
-              actions={[
-                <Link
-                  className={classes.link}
-                  to={{pathname: `/apps/${props.appID}/groups/${props.groupID}/instances`}}
-                  component={RouterLink}
-                >
-                  See instances
-                </Link>
-              ]}
+              actions={group.instances_stats.total > 0 ? [
+                  <Link
+                    className={classes.link}
+                    to={{pathname: `/apps/${props.appID}/groups/${props.groupID}/instances`}}
+                    component={RouterLink}
+                  >
+                    See instances
+                  </Link>
+                ]
+              :
+                []
+              }
             />
             <Box padding="1em">
               <InstanceStatusArea instanceStats={group.instances_stats} />
