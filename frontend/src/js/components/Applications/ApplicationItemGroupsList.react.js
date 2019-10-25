@@ -7,8 +7,8 @@ function ApplicationItemGroupsList(props) {
   return(
     <Grid container spacing={2}>
       {props.groups.map((group, i) =>
-        <Grid item>
-          <Item key={"group_" + i} group={group} appID={props.appID} appName={props.appName} />
+        <Grid item key={"group_" + i}>
+          <Item group={group} appID={props.appID} appName={props.appName} />
         </Grid>
       )}
     </Grid>
