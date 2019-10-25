@@ -26,7 +26,7 @@ function Item(props) {
   }
 
   return (
-    <ListItem {...others}>
+    <ListItem component="div" {...others}>
       <ListItemAvatar>
         <ChannelAvatar color={channel.color}>{name[0]}</ChannelAvatar>
       </ListItemAvatar>

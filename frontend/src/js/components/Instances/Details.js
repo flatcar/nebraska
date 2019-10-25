@@ -229,7 +229,7 @@ function DetailsView(props) {
                 <Grid item xs={12}>
                   <CardFeatureLabel>Channel:</CardFeatureLabel>&nbsp;
                   {group.channel ?
-                    <ChannelItem channel={group.channel} ContainerComponent="span" />
+                    <ChannelItem channel={group.channel} />
                   :
                     <CardLabel>None</CardLabel>
                   }

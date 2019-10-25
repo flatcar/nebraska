@@ -11,7 +11,6 @@ function ApplicationItemChannelsList(props) {
     entries = channels.map((channel, i) =>
       <ChannelItem
         channel={channel}
-        ContainerComponent="span"
       />
     );
   }
