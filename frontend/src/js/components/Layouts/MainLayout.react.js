@@ -21,8 +21,4 @@ function MainLayout() {
   );
 }
 
-MainLayout.propTypes = {
-  stores: PropTypes.object.isRequired
-}
-
 export default MainLayout
