@@ -110,8 +110,9 @@ function Item(props) {
         <InlineIcon icon={item.icon} width="35" height="35" />
       </ListItemIcon>
       <ListItemText
+        disableTypography
         primaryTypographyProps={{className: classes.packageName}}
-        primary={item.name}
+        primary={<Typography>{item.name}</Typography>}
         secondary={makeItemSecondaryInfo()}
       />
       <ListItemSecondaryAction>
