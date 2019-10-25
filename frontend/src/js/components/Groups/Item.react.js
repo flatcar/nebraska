@@ -28,8 +28,8 @@ function Item(props) {
   let description = props.group.description || 'No description provided';
   let channel = props.group.channel || {};
 
-  let groupChannel = _.isEmpty(props.group.channel) ? "No channel provided"
-    : <ChannelItem channel={props.group.channel} ContainerComponent="span" />
+  let groupChannel = _.isEmpty(props.group.channel) ? <CardLabel>No channel provided</CardLabel>
+    : <ChannelItem channel={props.group.channel} />
   let styleGroupChannel = _.isEmpty(props.group.channel) ? "italicText" : ""
   let groupPath = `/apps/${props.group.application_id}/groups/${props.group.id}`
 
@@ -89,7 +89,7 @@ function Item(props) {
             </Grid>
             <Grid item>
               <CardFeatureLabel>Channel:</CardFeatureLabel>
-              <CardLabel>{groupChannel}</CardLabel>
+              {groupChannel}
             </Grid>
           </Grid>
           <Grid item xs={6} container direction="column">
