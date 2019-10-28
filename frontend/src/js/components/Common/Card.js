@@ -76,7 +76,7 @@ export function CardHeader(props) {
         >
           <Grid item xs={6}>
             { props.cardMainLinkPath ? (
-              <Link component={RouterLink} button to={props.cardMainLinkPath} className={classes.mainLink}>
+              <Link component={RouterLink} to={props.cardMainLinkPath} className={classes.mainLink}>
                 {props.cardMainLinkLabel}
               </Link>
             ) : (

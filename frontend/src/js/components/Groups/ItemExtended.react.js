@@ -88,7 +88,6 @@ function ItemExtended(props) {
                       :
                         <ChannelItem
                           channel={group.channel}
-                          ContainerComponent="span"
                         />
                       }
                     </Grid>

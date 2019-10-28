@@ -69,7 +69,7 @@ function VersionProgressBar(props) {
   });
 
   function setup(version_breakdown, channel) {
-    let data = [];
+    let data = {};
     let other = {
       versions: [],
       percentage: 0,

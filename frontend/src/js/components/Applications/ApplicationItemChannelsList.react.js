@@ -11,7 +11,7 @@ function ApplicationItemChannelsList(props) {
     entries = channels.map((channel, i) =>
       <ChannelItem
         channel={channel}
-        ContainerComponent="span"
+        key={`channelItem_${i}`}
       />
     );
   }
@@ -21,8 +21,8 @@ function ApplicationItemChannelsList(props) {
       container
       justify="space-between"
     >
-      {entries.map(entry =>
-        <Grid item xs={4}>
+      {entries.map((entry, i) =>
+        <Grid item xs={4} key={i}>
           {entry}
         </Grid>
       )}

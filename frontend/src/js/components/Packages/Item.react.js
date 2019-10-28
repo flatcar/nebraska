@@ -80,7 +80,7 @@ function Item(props) {
           <Grid item>
             <Typography component="span" className={classes.subtitle}>Channels:</Typography>&nbsp;
             {processedChannels.map((channel, i) => {
-              return (<span className={classes.channelLabel}>
+              return (<span className={classes.channelLabel} key={i}>
                         <ChannelAvatar color={channel.color} size="10px" />&nbsp;
                         {channel.name}
                       </span>
@@ -110,8 +110,9 @@ function Item(props) {
         <InlineIcon icon={item.icon} width="35" height="35" />
       </ListItemIcon>
       <ListItemText
+        disableTypography
         primaryTypographyProps={{className: classes.packageName}}
-        primary={item.name}
+        primary={<Typography>{item.name}</Typography>}
         secondary={makeItemSecondaryInfo()}
       />
       <ListItemSecondaryAction>
