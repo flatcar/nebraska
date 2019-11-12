@@ -40,7 +40,6 @@ require (
 	github.com/ziutek/mymysql v1.5.4 // indirect
 	golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be
 	google.golang.org/appengine v1.2.0 // indirect
-	gopkg.in/fatih/set.v0 v0.1.0
 	gopkg.in/gorp.v1 v1.7.1 // indirect
 	gopkg.in/mgutz/dat.v1 v1.1.10
 	gopkg.in/stretchr/testify.v1 v1.2.2 // indirect
