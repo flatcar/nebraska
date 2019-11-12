@@ -1,3 +1,6 @@
+GO111MODULE=on
+export GO111MODULE
+
 VERSION ?= $(shell git describe --tags --always --dirty)
 DOCKER_CMD ?= "docker"
 DOCKER_REPO ?= "quay.io/flatcar"
