@@ -32,7 +32,7 @@ require (
 	github.com/mgutz/str v1.2.0 // indirect
 	github.com/mgutz/to v1.0.0 // indirect
 	github.com/pmylund/go-cache v2.1.0+incompatible // indirect
-	github.com/rubenv/sql-migrate v0.0.0-20180217203553-081fe17d19ff
+	github.com/rubenv/sql-migrate v0.0.0-20191025130928-9355dd04f4b3
 	github.com/satori/go.uuid v1.2.0
 	github.com/stretchr/testify v1.4.0
 	github.com/ymichael/sessions v0.0.0-20150521112625-49b61c00f079

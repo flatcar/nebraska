@@ -261,8 +261,8 @@ github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6So
 github.com/rogpeppe/go-internal v1.1.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=
 github.com/rogpeppe/go-internal v1.3.0 h1:RR9dF3JtopPvtkroDZuVD7qquD0bnHlKSqaQhgwt8yk=
 github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFRclV5y23lUDJ4=
-github.com/rubenv/sql-migrate v0.0.0-20180217203553-081fe17d19ff h1:YUL11b9J/H3zmbITsv3RgJfH8H/AniHFZGKVkpcctSE=
-github.com/rubenv/sql-migrate v0.0.0-20180217203553-081fe17d19ff/go.mod h1:WS0rl9eEliYI8DPnr3TOwz4439pay+qNgzJoVya/DmY=
+github.com/rubenv/sql-migrate v0.0.0-20191025130928-9355dd04f4b3 h1:lwDYefgiwhjuAuVnMVUYknoF+Yg9CBUykYGvYoPCNnQ=
+github.com/rubenv/sql-migrate v0.0.0-20191025130928-9355dd04f4b3/go.mod h1:WS0rl9eEliYI8DPnr3TOwz4439pay+qNgzJoVya/DmY=
 github.com/russross/blackfriday v1.5.2/go.mod h1:JO/DiYxRf+HjHt06OyowR9PTA263kcR/rfWxYHBV53g=
 github.com/satori/go.uuid v1.2.0 h1:0uYX9dsZ2yD7q2RtLRtPSdGDWzjeM3TbMJP9utgA0ww=
 github.com/satori/go.uuid v1.2.0/go.mod h1:dA0hQrYB0VpLJoorglMZABFdXlWrHn1NEOzdhQKdks0=
