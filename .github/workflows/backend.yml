@@ -4,9 +4,9 @@ on:
     paths:
     - 'cmd/**'
     - 'pkg/**'
-    - 'Gopkg.toml'
+    - 'go.mod'
+    - 'go.sum'
     - 'updaters/**'
-    - 'vendor/**'
 
 jobs:
 
@@ -19,7 +19,7 @@ jobs:
     - name: Set up Go 1.13
       uses: actions/setup-go@v1
       with:
-        go-version: 1.13
+        go-version: 1.13.x
       id: go
 
     - name: Check out code
@@ -29,22 +29,12 @@ jobs:
       run: |
         # @todo: Extract this into scripts that can also be used out of the CI
         export GOPATH=${RUNNER_WORKSPACE}/go
-        go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
-        NEBRASKA_REPO=$GITHUB_WORKSPACE
-        NEBRASKA_GO=$GOPATH/src/github.com/$GITHUB_REPOSITORY
-        mkdir -p `dirname $NEBRASKA_GO`
-        ln -s $NEBRASKA_REPO $NEBRASKA_GO
-        cd $NEBRASKA_GO
-        $GOPATH/bin/golangci-lint run ./cmd/... ./pkg/...
+        export GO111MODULES=on
+        cd $GITHUB_WORKSPACE
+        go build -o ./tools/golangci-lint github.com/golangci/golangci-lint/cmd/golangci-lint
+        ./tools/golangci-lint run ./cmd/... ./pkg/...
 
     - name: Build
       run: |
-        cd $RUNNER_WORKSPACE
-        NEBRASKA_REPO=$GITHUB_WORKSPACE
-        export GOPATH=${RUNNER_WORKSPACE}/go
-        NEBRASKA_GO=$GOPATH/src/github.com/$GITHUB_REPOSITORY
-        mkdir -p $GOPATH/bin
-        curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-        cd $NEBRASKA_GO
-        $GOPATH/bin/dep ensure
+        cd $GITHUB_WORKSPACE
         make backend
