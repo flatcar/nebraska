@@ -13,9 +13,10 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// To re-generate the bindata.go file, use https://github.com/twitter/go-bindata
-// (a fork of the discontinued go-bindata project).
-// Run the following command from the root of the repository:
+// To re-generate the bindata.go file, use go-bindata from
+// github.com/kevinburke/go-bindata (a fork of the discontinued
+// go-bindata project). Run the following command from the root of the
+// repository:
 //
 //    make bindata
 
