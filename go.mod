@@ -3,7 +3,6 @@ module github.com/kinvolk/nebraska
 go 1.13
 
 require (
-	github.com/aquam8/go-omaha v0.0.0-20150919213127-65e68b0e80b1
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/cenkalti/backoff v1.1.0 // indirect
 	github.com/coreos/go-omaha v0.0.0-20171219192416-6a34f4427508

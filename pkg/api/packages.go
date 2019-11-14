@@ -239,15 +239,14 @@ func (api *API) updatePackageBlacklistedChannels(tx *runner.Tx, pkg *Package) er
 		return err
 	}
 
-	e := struct{}{}
 	newChannelsBlacklist := make(map[string]struct{}, len(pkg.ChannelsBlacklist))
 	for _, channelID := range pkg.ChannelsBlacklist {
-		newChannelsBlacklist[channelID] = e
+		newChannelsBlacklist[channelID] = struct{}{}
 	}
 
 	oldChannelsBlacklist := make(map[string]struct{}, len(pkgUpdated.ChannelsBlacklist))
 	for _, channelID := range pkgUpdated.ChannelsBlacklist {
-		oldChannelsBlacklist[channelID] = e
+		oldChannelsBlacklist[channelID] = struct{}{}
 	}
 
 	for channelID := range newChannelsBlacklist {

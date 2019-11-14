@@ -12,9 +12,10 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 
-	"github.com/aquam8/go-omaha/omaha"
+	"github.com/coreos/go-omaha/omaha"
 	log "github.com/mgutz/logxi/v1"
 	uuid "github.com/satori/go.uuid"
 	"gopkg.in/mgutz/dat.v1"
@@ -178,16 +179,20 @@ func (s *Syncer) checkForUpdates() error {
 
 // doOmahaRequest sends an Omaha request checking if there is an update for a
 // specific Flatcar channel, returning the update check to the caller.
-func (s *Syncer) doOmahaRequest(channel, currentVersion string) (*omaha.UpdateCheck, error) {
-	req := omaha.NewRequest("Chateau", "CoreOS", currentVersion+"_x86_64", "")
+func (s *Syncer) doOmahaRequest(channel, currentVersion string) (*omaha.UpdateResponse, error) {
+	req := omaha.NewRequest()
+	req.OS.Version = "Chateau"
+	req.OS.Platform = "CoreOS"
+	req.OS.ServicePack = currentVersion + "_x86_64"
+	req.OS.Arch = ""
 	req.Version = "CoreOSUpdateEngine-0.1.0.0"
 	req.UpdaterVersion = "CoreOSUpdateEngine-0.1.0.0"
 	req.InstallSource = "scheduler"
-	req.IsMachine = "1"
+	req.IsMachine = 1
 	app := req.AddApp(flatcarAppID, currentVersion)
 	app.AddUpdateCheck()
 	app.MachineID = s.machinesIDs[channel]
-	app.BootId = s.bootIDs[channel]
+	app.BootID = s.bootIDs[channel]
 	app.Track = channel
 
 	payload, err := xml.Marshal(req)
@@ -223,14 +228,14 @@ func (s *Syncer) doOmahaRequest(channel, currentVersion string) (*omaha.UpdateCh
 
 // processUpdate is in charge of creating packages in the Flatcar application in
 // Nebraska and updating the appropriate channel to point to the new channel.
-func (s *Syncer) processUpdate(channelName string, update *omaha.UpdateCheck) error {
+func (s *Syncer) processUpdate(channelName string, update *omaha.UpdateResponse) error {
 	// Create new package and action for Flatcar application in Nebraska if
 	// needed (package may already exist and we just need to update the channel
 	// reference to it)
 	pkg, err := s.api.GetPackageByVersion(flatcarAppID, update.Manifest.Version)
 	if err != nil {
-		url := update.Urls.Urls[0].CodeBase
-		filename := update.Manifest.Packages.Packages[0].Name
+		url := update.URLs[0].CodeBase
+		filename := update.Manifest.Packages[0].Name
 
 		if s.hostPackages {
 			url = s.packagesURL
@@ -246,8 +251,8 @@ func (s *Syncer) processUpdate(channelName string, update *omaha.UpdateCheck) er
 			URL:           url,
 			Version:       update.Manifest.Version,
 			Filename:      dat.NullStringFrom(filename),
-			Size:          dat.NullStringFrom(update.Manifest.Packages.Packages[0].Size),
-			Hash:          dat.NullStringFrom(update.Manifest.Packages.Packages[0].Hash),
+			Size:          dat.NullStringFrom(strconv.FormatUint(update.Manifest.Packages[0].Size, 10)),
+			Hash:          dat.NullStringFrom(update.Manifest.Packages[0].SHA1),
 			ApplicationID: flatcarAppID,
 		}
 		if _, err = s.api.AddPackage(pkg); err != nil {
@@ -256,15 +261,15 @@ func (s *Syncer) processUpdate(channelName string, update *omaha.UpdateCheck) er
 		}
 
 		flatcarAction := &api.FlatcarAction{
-			Event:                 update.Manifest.Actions.Actions[0].Event,
-			ChromeOSVersion:       update.Manifest.Actions.Actions[0].ChromeOSVersion,
-			Sha256:                update.Manifest.Actions.Actions[0].Sha256,
-			NeedsAdmin:            update.Manifest.Actions.Actions[0].NeedsAdmin,
-			IsDelta:               update.Manifest.Actions.Actions[0].IsDelta,
-			DisablePayloadBackoff: update.Manifest.Actions.Actions[0].DisablePayloadBackoff,
-			MetadataSignatureRsa:  update.Manifest.Actions.Actions[0].MetadataSignatureRsa,
-			MetadataSize:          update.Manifest.Actions.Actions[0].MetadataSize,
-			Deadline:              update.Manifest.Actions.Actions[0].Deadline,
+			Event:                 update.Manifest.Actions[0].Event,
+			ChromeOSVersion:       update.Manifest.Actions[0].DisplayVersion,
+			Sha256:                update.Manifest.Actions[0].SHA256,
+			NeedsAdmin:            update.Manifest.Actions[0].NeedsAdmin,
+			IsDelta:               update.Manifest.Actions[0].IsDeltaPayload,
+			DisablePayloadBackoff: update.Manifest.Actions[0].DisablePayloadBackoff,
+			MetadataSignatureRsa:  update.Manifest.Actions[0].MetadataSignatureRsa,
+			MetadataSize:          update.Manifest.Actions[0].MetadataSize,
+			Deadline:              update.Manifest.Actions[0].Deadline,
 			PackageID:             pkg.ID,
 		}
 		if _, err = s.api.AddFlatcarAction(flatcarAction); err != nil {
@@ -291,14 +296,14 @@ func (s *Syncer) processUpdate(channelName string, update *omaha.UpdateCheck) er
 // downloadPackage downloads and verifies the package payload referenced in the
 // update provided. The downloaded package payload is stored in packagesPath
 // using the filename provided.
-func (s *Syncer) downloadPackage(update *omaha.UpdateCheck, filename string) error {
+func (s *Syncer) downloadPackage(update *omaha.UpdateResponse, filename string) error {
 	tmpFile, err := ioutil.TempFile(s.packagesPath, "tmp_flatcar_pkg_")
 	if err != nil {
 		return err
 	}
 	defer os.Remove(tmpFile.Name())
 
-	pkgURL := update.Urls.Urls[0].CodeBase + update.Manifest.Packages.Packages[0].Name
+	pkgURL := update.URLs[0].CodeBase + update.Manifest.Packages[0].Name
 	resp, err := http.Get(pkgURL)
 	if err != nil {
 		return err
@@ -313,7 +318,7 @@ func (s *Syncer) downloadPackage(update *omaha.UpdateCheck, filename string) err
 	if _, err := io.Copy(io.MultiWriter(tmpFile, hashSha256), resp.Body); err != nil {
 		return err
 	}
-	if base64.StdEncoding.EncodeToString(hashSha256.Sum(nil)) != update.Manifest.Actions.Actions[0].Sha256 {
+	if base64.StdEncoding.EncodeToString(hashSha256.Sum(nil)) != update.Manifest.Actions[0].SHA256 {
 		return errors.New("downloaded file hash mismatch")
 	}
 
