@@ -1,5 +1,16 @@
 -- Initial data
 
+-- Drop data added in migration routines
+
+-- added in 0006_initial_application.sql
+delete from groups;
+delete from channel;
+delete from package;
+delete from application;
+
+-- added in 0005_default_team_id.sql
+delete from team;
+
 -- Default team and user (admin/admin)
 insert into team (id, name) values ('d89342dc-9214-441d-a4af-bdd837a3b239', 'default');
 insert into users (username, secret, team_id) values ('admin', '8b31292d4778582c0e5fa96aee5513f1', 'd89342dc-9214-441d-a4af-bdd837a3b239');
