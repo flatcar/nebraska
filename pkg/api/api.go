@@ -20,7 +20,7 @@ import (
 //
 //    make bindata
 
-//go:generate go-bindata -ignore=\.swp -pkg api db db/migrations
+//go:generate go-bindata -ignore=\.swp -pkg=api -modtime=1 db db/migrations
 
 const (
 	defaultDbURL = "postgres://postgres@127.0.0.1:5432/nebraska?sslmode=disable&connect_timeout=10"
