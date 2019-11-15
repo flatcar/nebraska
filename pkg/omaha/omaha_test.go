@@ -34,6 +34,10 @@ func newForTest(t *testing.T) *api.API {
 }
 
 func TestMain(m *testing.M) {
+	if os.Getenv("NEBRASKA_SKIP_TESTS") != "" {
+		return
+	}
+
 	os.Setenv("NEBRASKA_DB_URL", testsDbURL)
 
 	a, err := api.New(api.OptionInitDB)
