@@ -25,16 +25,7 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v1
 
-    - name: Lint
-      run: |
-        # @todo: Extract this into scripts that can also be used out of the CI
-        export GOPATH=${RUNNER_WORKSPACE}/go
-        export GO111MODULES=on
-        cd $GITHUB_WORKSPACE
-        go build -o ./tools/golangci-lint github.com/golangci/golangci-lint/cmd/golangci-lint
-        ./tools/golangci-lint run ./cmd/... ./pkg/...
-
-    - name: Build
+    - name: Build, Lint & Check
       run: |
         cd $GITHUB_WORKSPACE
-        make backend
+        make backend-ci
