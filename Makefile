@@ -1,6 +1,7 @@
 GO111MODULE=on
 export GO111MODULE
 
+SHELL = /bin/bash
 VERSION ?= $(shell git describe --tags --always --dirty)
 DOCKER_CMD ?= "docker"
 DOCKER_REPO ?= "quay.io/flatcar"
@@ -12,6 +13,30 @@ all: backend tools frontend
 
 .PHONY: check
 check:
+	go test -p 1 ./...
+
+container_id:
+	set -e; \
+	docker build \
+		--file Dockerfile.postgres-test \
+		--tag kinvolk/nebraska-postgres-test \
+		.; \
+	trap "rm -f container_id.tmp container_id" ERR; \
+	docker run \
+		--privileged \
+		--detach \
+		--publish 127.0.0.1:5432:5432 \
+		kinvolk/nebraska-postgres-test \
+		>container_id.tmp; \
+	docker exec \
+		$$(cat container_id.tmp) \
+		/wait_for_db_ready.sh; \
+	mv container_id.tmp container_id
+
+.PHONY: check-backend-with-container
+check-backend-with-container: container_id
+	set -e; \
+	trap "docker kill $$(cat container_id); docker rm $$(cat container_id); rm -f container_id" EXIT; \
 	go test -p 1 ./...
 
 .PHONY: frontend
@@ -33,6 +58,16 @@ backend: tools/go-bindata tools/golangci-lint
 	./tools/golangci-lint run --fix
 	go mod tidy
 	go build -o bin/nebraska ./cmd/nebraska
+
+.PHONY: test-clean-work-tree-backend
+test-clean-work-tree-backend:
+	@if ! git diff --quiet -- go.mod go.sum pkg cmd updaters tools/tools.go; then \
+	  echo; \
+	  echo 'Working tree of backend code is not clean'; \
+	  echo; \
+	  git status; \
+	  exit 1; \
+	fi
 
 .PHONY: tools
 tools:
@@ -63,3 +98,6 @@ container-postgres:
 
 .PHONY: container
 container: container-nebraska container-postgres
+
+.PHONY: backend-ci
+backend-ci: backend test-clean-work-tree-backend check-backend-with-container
