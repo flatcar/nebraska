@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 	"gopkg.in/mgutz/dat.v1"
 )
 

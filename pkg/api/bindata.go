@@ -378,17 +378,17 @@ type bintree struct {
 }
 
 var _bintree = &bintree{nil, map[string]*bintree{
-	"db": {nil, map[string]*bintree{
-		"drop_all_tables.sql": {dbDrop_all_tablesSql, map[string]*bintree{}},
-		"migrations": {nil, map[string]*bintree{
-			"0001_initial.sql":              {dbMigrations0001_initialSql, map[string]*bintree{}},
-			"0002_event_data.sql":           {dbMigrations0002_event_dataSql, map[string]*bintree{}},
-			"0003_longer_team_names.sql":    {dbMigrations0003_longer_team_namesSql, map[string]*bintree{}},
-			"0004_rename_coreos_action.sql": {dbMigrations0004_rename_coreos_actionSql, map[string]*bintree{}},
-			"0005_default_team_id.sql":      {dbMigrations0005_default_team_idSql, map[string]*bintree{}},
-			"0006_initial_application.sql":  {dbMigrations0006_initial_applicationSql, map[string]*bintree{}},
+	"db": &bintree{nil, map[string]*bintree{
+		"drop_all_tables.sql": &bintree{dbDrop_all_tablesSql, map[string]*bintree{}},
+		"migrations": &bintree{nil, map[string]*bintree{
+			"0001_initial.sql":              &bintree{dbMigrations0001_initialSql, map[string]*bintree{}},
+			"0002_event_data.sql":           &bintree{dbMigrations0002_event_dataSql, map[string]*bintree{}},
+			"0003_longer_team_names.sql":    &bintree{dbMigrations0003_longer_team_namesSql, map[string]*bintree{}},
+			"0004_rename_coreos_action.sql": &bintree{dbMigrations0004_rename_coreos_actionSql, map[string]*bintree{}},
+			"0005_default_team_id.sql":      &bintree{dbMigrations0005_default_team_idSql, map[string]*bintree{}},
+			"0006_initial_application.sql":  &bintree{dbMigrations0006_initial_applicationSql, map[string]*bintree{}},
 		}},
-		"sample_data.sql": {dbSample_dataSql, map[string]*bintree{}},
+		"sample_data.sql": &bintree{dbSample_dataSql, map[string]*bintree{}},
 	}},
 }}
 

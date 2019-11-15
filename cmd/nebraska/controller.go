@@ -193,7 +193,7 @@ func newController(conf *controllerConfig) (*controller, error) {
 
 	if conf.enableSyncer {
 		syncerConf := &syncer.Config{
-			Api:          api,
+			API:          api,
 			HostPackages: conf.hostFlatcarPackages,
 			PackagesPath: conf.flatcarPackagesPath,
 			PackagesURL:  conf.nebraskaURL + flatcarPkgsRouterPrefix,
@@ -785,11 +785,11 @@ func (ctl *controller) authenticate(c *web.C, h http.Handler) http.Handler {
 		obj := ctl.sessions.GetSessionObject(c)
 		teamID, ok := obj["teamID"]
 		if !ok {
-			if newTeamID, replied := ctl.authMissingTeamID(c, w, r, obj); replied {
+			newTeamID, replied := ctl.authMissingTeamID(c, w, r, obj)
+			if replied {
 				return
-			} else {
-				teamID = newTeamID
 			}
+			teamID = newTeamID
 		}
 
 		c.Env["team_id"] = teamID
@@ -1370,9 +1370,9 @@ func (ctl *controller) getActivity(c web.C, w http.ResponseWriter, r *http.Reque
 //
 
 const (
-	app_instances_per_channel_metrics_prolog = `# HELP nebraska_application_instances_per_channel A number of applications from specific channel running on instances
+	appInstancesPerChannelMetricsProlog = `# HELP nebraska_application_instances_per_channel A number of applications from specific channel running on instances
 # TYPE nebraska_application_instances_per_channel gauge`
-	failed_updates_metrics_prolog = `# HELP nebraska_failed_updates A number of failed updates of an application
+	failedUpdatesMetricsProlog = `# HELP nebraska_failed_updates A number of failed updates of an application
 # TYPE nebraska_failed_updates gauge`
 )
 
@@ -1411,7 +1411,7 @@ func (ctl *controller) getMetrics(c web.C, w http.ResponseWriter, r *http.Reques
 		if needEmptyLine {
 			fmt.Fprintf(w, "\n")
 		}
-		fmt.Fprintf(w, "%s\n", app_instances_per_channel_metrics_prolog)
+		fmt.Fprintf(w, "%s\n", appInstancesPerChannelMetricsProlog)
 		for _, metric := range aipcMetrics {
 			fmt.Fprintf(w, `nebraska_application_instances_per_channel{application="%s",version="%s",channel="%s"} %d %d%s`, escapeMetricString(metric.ApplicationName), escapeMetricString(metric.Version), escapeMetricString(metric.ChannelName), metric.InstancesCount, nowUnixMillis, "\n")
 		}
@@ -1421,7 +1421,7 @@ func (ctl *controller) getMetrics(c web.C, w http.ResponseWriter, r *http.Reques
 		if needEmptyLine {
 			fmt.Fprintf(w, "\n")
 		}
-		fmt.Fprintf(w, "%s\n", failed_updates_metrics_prolog)
+		fmt.Fprintf(w, "%s\n", failedUpdatesMetricsProlog)
 		for _, metric := range fuMetrics {
 			fmt.Fprintf(w, `nebraska_failed_updates{application="%s"} %d %d%s`, escapeMetricString(metric.ApplicationName), metric.FailureCount, nowUnixMillis, "\n")
 		}

@@ -5,7 +5,7 @@ import (
 
 	"gopkg.in/mgutz/dat.v1"
 
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 )
 

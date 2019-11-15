@@ -6,7 +6,7 @@ import (
 
 	"gopkg.in/fatih/set.v0"
 	"gopkg.in/mgutz/dat.v1"
-	"gopkg.in/mgutz/dat.v1/sqlx-runner"
+	runner "gopkg.in/mgutz/dat.v1/sqlx-runner"
 )
 
 const (

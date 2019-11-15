@@ -10,7 +10,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mgutz/logxi/v1"
+	log "github.com/mgutz/logxi/v1"
 	"github.com/zenazn/goji"
 	"github.com/zenazn/goji/web"
 	"github.com/zenazn/goji/web/middleware"
@@ -83,7 +83,7 @@ func checkArgs() error {
 		defer os.Remove(tmpFile.Name())
 
 		if _, err := url.ParseRequestURI(*nebraskaURL); err != nil {
-			return errors.New("Invalid Nebraska URL. Please ensure the value provided using -nebraska-url is a valid url.")
+			return errors.New("invalid Nebraska URL, please ensure the value provided using -nebraska-url is a valid url")
 		}
 	}
 
