@@ -23,7 +23,15 @@ frontend-watch:
 	cd frontend && npx webpack --watch-poll 1000 --watch --config ./webpack.config.js --mode development
 
 .PHONY: backend
-backend:
+backend: tools/go-bindata tools/golangci-lint
+	PATH="$(abspath tools):$${PATH}" go generate ./...
+	# this is to get nice error messages when something doesn't
+	# build (both the project and the tests), golangci-lint's
+	# output in this regard in unreadable.
+	go build ./...
+	NEBRASKA_SKIP_TESTS=1 go test ./... >/dev/null
+	./tools/golangci-lint run --fix
+	go mod tidy
 	go build -o bin/nebraska ./cmd/nebraska
 
 .PHONY: tools
@@ -34,10 +42,8 @@ tools:
 tools/go-bindata: go.mod go.sum
 	go build -o tools/go-bindata github.com/kevinburke/go-bindata/go-bindata
 
-.PHONY: bindata
-bindata: tools/go-bindata
-	PATH="$(abspath tools):$${PATH}" go generate ./...
-	gofmt -s -w pkg/api/bindata.go
+tools/golangci-lint: go.mod go.sum
+	go build -o ./tools/golangci-lint github.com/golangci/golangci-lint/cmd/golangci-lint
 
 .PHONY: container-nebraska
 container-nebraska:
