@@ -13,13 +13,14 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// To re-generate the bindata.go file, use https://github.com/twitter/go-bindata
-// (a fork of the discontinued go-bindata project).
-// Run the following command from the root of the repository:
+// To re-generate the bindata.go file, use go-bindata from
+// github.com/kevinburke/go-bindata (a fork of the discontinued
+// go-bindata project). Run the following command from the root of the
+// repository:
 //
 //    make bindata
 
-//go:generate go-bindata -ignore=\.swp -pkg api db db/migrations
+//go:generate go-bindata -ignore=\.swp -pkg=api -modtime=1 db db/migrations
 
 const (
 	defaultDbURL = "postgres://postgres@127.0.0.1:5432/nebraska?sslmode=disable&connect_timeout=10"

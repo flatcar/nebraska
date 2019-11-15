@@ -31,9 +31,12 @@ tools:
 	go build -o bin/initdb ./cmd/initdb
 	go build -o bin/userctl ./cmd/userctl
 
+tools/go-bindata: go.mod go.sum
+	go build -o tools/go-bindata github.com/kevinburke/go-bindata/go-bindata
+
 .PHONY: bindata
-bindata:
-	go generate ./pkg/api
+bindata: tools/go-bindata
+	PATH="$(abspath tools):$${PATH}" go generate ./...
 	gofmt -s -w pkg/api/bindata.go
 
 .PHONY: container-nebraska
