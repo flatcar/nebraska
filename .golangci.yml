@@ -1,7 +1,13 @@
+run:
+  issues-exit-code: 1 #Default
+  tests: true #Default
+
 linters:
   enable:
     - gofmt
     - whitespace
+    - goimports
+    - golint
 
 linters-settings:
   errcheck:
@@ -9,3 +15,6 @@ linters-settings:
 
   gofmt:
     simplify: true
+
+  goimports:
+    local-prefixes: github.com/kinvolk/nebraska

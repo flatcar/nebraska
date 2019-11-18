@@ -7,8 +7,8 @@ import (
 	"strconv"
 
 	omahaSpec "github.com/aquam8/go-omaha/omaha"
-	"github.com/mgutz/logxi/v1"
-	"github.com/satori/go.uuid"
+	log "github.com/mgutz/logxi/v1"
+	uuid "github.com/satori/go.uuid"
 
 	"github.com/kinvolk/nebraska/pkg/api"
 )
@@ -36,13 +36,13 @@ var (
 // Handler represents a component capable of processing Omaha requests. It uses
 // the Nebraska API to get packages updates, process events, etc.
 type Handler struct {
-	crApi *api.API
+	crAPI *api.API
 }
 
 // NewHandler creates a new Handler instance.
-func NewHandler(crApi *api.API) *Handler {
+func NewHandler(crAPI *api.API) *Handler {
 	return &Handler{
-		crApi: crApi,
+		crAPI: crAPI,
 	}
 }
 
@@ -97,7 +97,7 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 		}
 
 		if reqApp.Ping != nil {
-			if _, err := h.crApi.RegisterInstance(reqApp.MachineID, ip, reqApp.Version, reqApp.Id, group); err != nil {
+			if _, err := h.crAPI.RegisterInstance(reqApp.MachineID, ip, reqApp.Version, reqApp.Id, group); err != nil {
 				logger.Warn("processPing", "error", err.Error())
 			}
 			respPing := respApp.AddPing()
@@ -105,7 +105,7 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 		}
 
 		if reqApp.UpdateCheck != nil {
-			pkg, err := h.crApi.GetUpdatePackage(reqApp.MachineID, ip, reqApp.Version, reqApp.Id, group)
+			pkg, err := h.crAPI.GetUpdatePackage(reqApp.MachineID, ip, reqApp.Version, reqApp.Id, group)
 			if err != nil && err != api.ErrNoUpdatePackageAvailable {
 				respApp.Status = h.getStatusMessage(err)
 			} else {
@@ -129,7 +129,7 @@ func (h *Handler) processEvent(machineID string, appID string, group string, eve
 		return err
 	}
 
-	return h.crApi.RegisterEvent(machineID, appID, group, eventType, eventResult, event.PreviousVersion, event.ErrorCode)
+	return h.crAPI.RegisterEvent(machineID, appID, group, eventType, eventResult, event.PreviousVersion, event.ErrorCode)
 }
 
 func (h *Handler) getStatusMessage(crErr error) string {
@@ -173,7 +173,7 @@ func (h *Handler) prepareUpdateCheck(pkg *api.Package) *omahaSpec.UpdateCheck {
 
 	switch pkg.Type {
 	case api.PkgTypeFlatcar:
-		cra, err := h.crApi.GetFlatcarAction(pkg.ID)
+		cra, err := h.crAPI.GetFlatcarAction(pkg.ID)
 		if err != nil {
 			updateCheck.Status = "err-internal"
 			return updateCheck

@@ -15,8 +15,8 @@ import (
 	"time"
 
 	"github.com/aquam8/go-omaha/omaha"
-	"github.com/mgutz/logxi/v1"
-	"github.com/satori/go.uuid"
+	log "github.com/mgutz/logxi/v1"
+	uuid "github.com/satori/go.uuid"
 	"gopkg.in/mgutz/dat.v1"
 
 	"github.com/kinvolk/nebraska/pkg/api"
@@ -57,7 +57,7 @@ type Syncer struct {
 
 // Config represents the configuration used to create a new Syncer instance.
 type Config struct {
-	Api          *api.API
+	API          *api.API
 	HostPackages bool
 	PackagesPath string
 	PackagesURL  string
@@ -65,12 +65,12 @@ type Config struct {
 
 // New creates a new Syncer instance.
 func New(conf *Config) (*Syncer, error) {
-	if conf.Api == nil {
+	if conf.API == nil {
 		return nil, ErrInvalidAPIInstance
 	}
 
 	s := &Syncer{
-		api:          conf.Api,
+		api:          conf.API,
 		hostPackages: conf.HostPackages,
 		packagesPath: conf.PackagesPath,
 		packagesURL:  conf.PackagesURL,

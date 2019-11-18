@@ -5,9 +5,9 @@ import (
 	"os"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/rubenv/sql-migrate"
+	migrate "github.com/rubenv/sql-migrate"
 	"gopkg.in/mgutz/dat.v1"
-	"gopkg.in/mgutz/dat.v1/sqlx-runner"
+	runner "gopkg.in/mgutz/dat.v1/sqlx-runner"
 
 	// Postgresql driver
 	_ "github.com/lib/pq"
