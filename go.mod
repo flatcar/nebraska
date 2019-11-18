@@ -3,7 +3,6 @@ module github.com/kinvolk/nebraska
 go 1.13
 
 require (
-	github.com/aquam8/go-omaha v0.0.0-20150919213127-65e68b0e80b1
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/cenkalti/backoff v1.1.0 // indirect
 	github.com/coreos/go-omaha v0.0.0-20171219192416-6a34f4427508
@@ -20,8 +19,7 @@ require (
 	github.com/go-sql-driver/mysql v1.4.1 // indirect
 	github.com/gobuffalo/packr v1.30.1 // indirect
 	github.com/golangci/golangci-lint v1.21.0
-	github.com/google/go-github v17.0.0+incompatible
-	github.com/google/go-querystring v1.0.0 // indirect
+	github.com/google/go-github/v28 v28.1.1
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/kevinburke/go-bindata v3.16.0+incompatible
 	github.com/kylelemons/godebug v1.1.0 // indirect
@@ -32,15 +30,13 @@ require (
 	github.com/mgutz/str v1.2.0 // indirect
 	github.com/mgutz/to v1.0.0 // indirect
 	github.com/pmylund/go-cache v2.1.0+incompatible // indirect
-	github.com/rubenv/sql-migrate v0.0.0-20180217203553-081fe17d19ff
+	github.com/rubenv/sql-migrate v0.0.0-20191025130928-9355dd04f4b3
 	github.com/satori/go.uuid v1.2.0
 	github.com/stretchr/testify v1.4.0
 	github.com/ymichael/sessions v0.0.0-20150521112625-49b61c00f079
 	github.com/zenazn/goji v0.9.1-0.20160507202103-64eb34159fe5
 	github.com/ziutek/mymysql v1.5.4 // indirect
-	golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be
-	google.golang.org/appengine v1.2.0 // indirect
-	gopkg.in/fatih/set.v0 v0.1.0
+	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	gopkg.in/gorp.v1 v1.7.1 // indirect
 	gopkg.in/mgutz/dat.v1 v1.1.10
 	gopkg.in/stretchr/testify.v1 v1.2.2 // indirect

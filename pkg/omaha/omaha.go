@@ -6,7 +6,7 @@ import (
 	"io"
 	"strconv"
 
-	omahaSpec "github.com/aquam8/go-omaha/omaha"
+	omahaSpec "github.com/coreos/go-omaha/omaha"
 	log "github.com/mgutz/logxi/v1"
 	uuid "github.com/satori/go.uuid"
 
@@ -67,18 +67,16 @@ func (h *Handler) Handle(rawReq io.Reader, respWriter io.Writer, ip string) erro
 }
 
 func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*omahaSpec.Response, error) {
-	omahaResp := omahaSpec.NewResponse("nebraska")
+	omahaResp := omahaSpec.NewResponse()
+	omahaResp.Server = "nebraska"
 
 	for _, reqApp := range omahaReq.Apps {
-		respApp := omahaResp.AddApp(reqApp.Id)
-		respApp.Status = "ok"
-		respApp.Track = reqApp.Track
-		respApp.Version = reqApp.Version
+		respApp := omahaResp.AddApp(reqApp.ID, omahaSpec.AppOK)
 
 		// Use Track field as the group to ask CR for updates. For the Flatcar
 		// app, map group name to its id if available.
 		group := reqApp.Track
-		if reqAppUUID, err := uuid.FromString(reqApp.Id); err == nil {
+		if reqAppUUID, err := uuid.FromString(reqApp.ID); err == nil {
 			if reqAppUUID.String() == flatcarAppID {
 				if flatcarGroupID, ok := flatcarGroups[group]; ok {
 					group = flatcarGroupID
@@ -86,30 +84,26 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 			}
 		}
 
-		if reqApp.Events != nil {
-			for _, event := range reqApp.Events {
-				if err := h.processEvent(reqApp.MachineID, reqApp.Id, group, event); err != nil {
-					logger.Warn("processEvent", "error", err.Error())
-				}
-				respEvent := respApp.AddEvent()
-				respEvent.Status = "ok"
+		for _, event := range reqApp.Events {
+			if err := h.processEvent(reqApp.MachineID, reqApp.ID, group, event); err != nil {
+				logger.Warn("processEvent", "error", err.Error())
 			}
+			respApp.AddEvent()
 		}
 
 		if reqApp.Ping != nil {
-			if _, err := h.crAPI.RegisterInstance(reqApp.MachineID, ip, reqApp.Version, reqApp.Id, group); err != nil {
+			if _, err := h.crAPI.RegisterInstance(reqApp.MachineID, ip, reqApp.Version, reqApp.ID, group); err != nil {
 				logger.Warn("processPing", "error", err.Error())
 			}
-			respPing := respApp.AddPing()
-			respPing.Status = "ok"
+			respApp.AddPing()
 		}
 
 		if reqApp.UpdateCheck != nil {
-			pkg, err := h.crAPI.GetUpdatePackage(reqApp.MachineID, ip, reqApp.Version, reqApp.Id, group)
+			pkg, err := h.crAPI.GetUpdatePackage(reqApp.MachineID, ip, reqApp.Version, reqApp.ID, group)
 			if err != nil && err != api.ErrNoUpdatePackageAvailable {
 				respApp.Status = h.getStatusMessage(err)
 			} else {
-				respApp.UpdateCheck = h.prepareUpdateCheck(pkg)
+				h.prepareUpdateCheck(respApp, pkg)
 			}
 		}
 	}
@@ -117,22 +111,20 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 	return omahaResp, nil
 }
 
-func (h *Handler) processEvent(machineID string, appID string, group string, event *omahaSpec.Event) error {
-	logger.Info("processEvent", "appID", appID, "group", group, "event", event.Type+"."+event.Result, "eventError", event.ErrorCode, "previousVersion", event.PreviousVersion)
+func (h *Handler) processEvent(machineID string, appID string, group string, event *omahaSpec.EventRequest) error {
+	logger.Info("processEvent", "appID", appID, "group", group, "event", event.Type.String()+"."+event.Result.String(), "eventError", event.ErrorCode, "previousVersion", event.PreviousVersion)
 
-	eventType, err := strconv.Atoi(event.Type)
-	if err != nil {
-		return err
-	}
-	eventResult, err := strconv.Atoi(event.Result)
-	if err != nil {
-		return err
-	}
-
-	return h.crAPI.RegisterEvent(machineID, appID, group, eventType, eventResult, event.PreviousVersion, event.ErrorCode)
+	return h.crAPI.RegisterEvent(machineID, appID, group, int(event.Type), int(event.Result), event.PreviousVersion, strconv.Itoa(event.ErrorCode))
 }
 
-func (h *Handler) getStatusMessage(crErr error) string {
+func (h *Handler) getStatusMessage(crErr error) omahaSpec.AppStatus {
+	return omahaSpec.AppStatus(h.getStatusMessageStr(crErr))
+}
+
+// TODO(krnowak): This seems to return a bunch of custom errors. Not
+// sure if we should try to match it to the standard or extra
+// AppStatus constants.
+func (h *Handler) getStatusMessageStr(crErr error) string {
 	switch crErr {
 	case api.ErrNoPackageFound:
 		return "error-noPackageFound"
@@ -159,41 +151,48 @@ func (h *Handler) getStatusMessage(crErr error) string {
 	return "error-failedToRetrieveUpdatePackageInfo"
 }
 
-func (h *Handler) prepareUpdateCheck(pkg *api.Package) *omahaSpec.UpdateCheck {
-	updateCheck := &omahaSpec.UpdateCheck{}
-
+func (h *Handler) prepareUpdateCheck(appResp *omahaSpec.AppResponse, pkg *api.Package) {
 	if pkg == nil {
-		updateCheck.Status = "noupdate"
-		return updateCheck
+		appResp.AddUpdateCheck(omahaSpec.NoUpdate)
+		return
 	}
 
 	// Create a manifest, but do not add it to UpdateCheck until it's successful
 	manifest := &omahaSpec.Manifest{Version: pkg.Version}
-	manifest.AddPackage(pkg.Hash.String, pkg.Filename.String, pkg.Size.String, true)
+	mpkg := manifest.AddPackage()
+	mpkg.Name = pkg.Filename.String
+	mpkg.SHA1 = pkg.Hash.String
+	if pkg.Size.Valid {
+		size, err := strconv.ParseUint(pkg.Size.String, 10, 64)
+		if err != nil {
+			logger.Warn("prepareUpdateCheck", "bad package size", err.Error())
+		} else {
+			mpkg.Size = size
+		}
+	}
+	mpkg.Required = true
 
 	switch pkg.Type {
 	case api.PkgTypeFlatcar:
 		cra, err := h.crAPI.GetFlatcarAction(pkg.ID)
 		if err != nil {
-			updateCheck.Status = "err-internal"
-			return updateCheck
+			appResp.AddUpdateCheck(omahaSpec.UpdateInternalError)
+			return
 		}
 		a := manifest.AddAction(cra.Event)
-		a.ChromeOSVersion = cra.ChromeOSVersion
-		a.Sha256 = cra.Sha256
+		a.DisplayVersion = cra.ChromeOSVersion
+		a.SHA256 = cra.Sha256
 		a.NeedsAdmin = cra.NeedsAdmin
-		a.IsDelta = cra.IsDelta
+		a.IsDeltaPayload = cra.IsDelta
 		a.DisablePayloadBackoff = cra.DisablePayloadBackoff
 		a.MetadataSignatureRsa = cra.MetadataSignatureRsa
 		a.MetadataSize = cra.MetadataSize
 		a.Deadline = cra.Deadline
 	}
 
-	updateCheck.Status = "ok"
+	updateCheck := appResp.AddUpdateCheck(omahaSpec.UpdateOK)
 	updateCheck.Manifest = manifest
-	updateCheck.AddUrl(pkg.URL)
-
-	return updateCheck
+	updateCheck.AddURL(pkg.URL)
 }
 
 func trace(v interface{}) {

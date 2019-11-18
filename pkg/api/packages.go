@@ -4,7 +4,6 @@ import (
 	"errors"
 	"time"
 
-	"gopkg.in/fatih/set.v0"
 	"gopkg.in/mgutz/dat.v1"
 	runner "gopkg.in/mgutz/dat.v1/sqlx-runner"
 )
@@ -240,18 +239,21 @@ func (api *API) updatePackageBlacklistedChannels(tx *runner.Tx, pkg *Package) er
 		return err
 	}
 
-	newChannelsBlacklist := set.NewNonTS()
+	newChannelsBlacklist := make(map[string]struct{}, len(pkg.ChannelsBlacklist))
 	for _, channelID := range pkg.ChannelsBlacklist {
-		newChannelsBlacklist.Add(channelID)
+		newChannelsBlacklist[channelID] = struct{}{}
 	}
 
-	oldChannelsBlacklist := set.NewNonTS()
+	oldChannelsBlacklist := make(map[string]struct{}, len(pkgUpdated.ChannelsBlacklist))
 	for _, channelID := range pkgUpdated.ChannelsBlacklist {
-		oldChannelsBlacklist.Add(channelID)
+		oldChannelsBlacklist[channelID] = struct{}{}
 	}
 
-	for _, channelID := range set.Difference(newChannelsBlacklist, oldChannelsBlacklist).List() {
-		channel, err := api.GetChannel(channelID.(string))
+	for channelID := range newChannelsBlacklist {
+		if _, ok := oldChannelsBlacklist[channelID]; ok {
+			continue
+		}
+		channel, err := api.GetChannel(channelID)
 		if err != nil {
 			return err
 		}
@@ -260,7 +262,7 @@ func (api *API) updatePackageBlacklistedChannels(tx *runner.Tx, pkg *Package) er
 		}
 		_, err = tx.InsertInto("package_channel_blacklist").
 			Pair("package_id", pkg.ID).
-			Pair("channel_id", channelID.(string)).
+			Pair("channel_id", channelID).
 			Exec()
 
 		if err != nil {
@@ -268,10 +270,13 @@ func (api *API) updatePackageBlacklistedChannels(tx *runner.Tx, pkg *Package) er
 		}
 	}
 
-	for _, channelID := range set.Difference(oldChannelsBlacklist, newChannelsBlacklist).List() {
+	for channelID := range oldChannelsBlacklist {
+		if _, ok := newChannelsBlacklist[channelID]; ok {
+			continue
+		}
 		_, err := tx.DeleteFrom("package_channel_blacklist").
 			Where("package_id = $1", pkg.ID).
-			Where("channel_id = $1", channelID.(string)).
+			Where("channel_id = $1", channelID).
 			Exec()
 
 		if err != nil {
