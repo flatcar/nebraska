@@ -5,7 +5,7 @@
     "type": "Apache-2.0",
     "url": "http://www.apache.org/licenses/LICENSE-2.0"
   },
-  "description": "Nebraska is an update manager for Flatcar Linux.",
+  "description": "Nebraska is an update manager for Flatcar Container Linux.",
   "author": "Kinvolk GmbH <oss@kinvolk.io>",
   "repository": "https://github.com/kinvolk/nebraska",
   "private": true,
