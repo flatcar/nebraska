@@ -1,18 +1,18 @@
 # Nebraska
 
-Nebraska is an update manager for [Flatcar Linux](https://www.flatcar-linux.org/).
+Nebraska is an update manager for [Flatcar Container Linux](https://www.flatcar-linux.org/).
 
 ## Overview
 
 Nebraska offers an easy way to monitor and manage the rollout of updates to applications that use
-the [Omaha](https://code.google.com/p/omaha/) protocol, with special functionality for Flatcar Linux updates.
+the [Omaha](https://code.google.com/p/omaha/) protocol, with special functionality for Flatcar Container Linux updates.
 
 ## Features
 
 - Monitor and control application updates;
-- Optimized for serving updates to Flatcar Linux;
-- Automatically fetch new Flatcar Linux updates;
-- Store and serve Flatcar Linux payloads (optional);
+- Optimized for serving updates to Flatcar Container Linux;
+- Automatically fetch new Flatcar Container Linux updates;
+- Store and serve Flatcar Container Linux payloads (optional);
 - Compatible with any applications that use the Omaha protocol;
 - Define groups, channels, and packages;
 - Control what updates are rolled out for which instance groups, as well as when and how they are updates;
@@ -39,9 +39,9 @@ Please report any issues in [here](https://github.com/kinvolk/nebraska/issues).
 
 ## Managing Flatcar updates
 
-Once you have Nebraska up and running, a common use-case is to manage Flatcar Linux updates.
+Once you have Nebraska up and running, a common use-case is to manage Flatcar Container Linux updates.
 
-By default, your Flatcar Linux instances use the public servers to get updates, so you have to point them to your Nebraska deployment for it to
+By default, your Flatcar Container Linux instances use the public servers to get updates, so you have to point them to your Nebraska deployment for it to
 manage their updates. The process for doing so is slightly different depending on whether you have existing machines or new ones.
 
 ### New machines
@@ -80,22 +80,22 @@ In may take a few minutes to see an update request coming through. If you want t
 
 	update_engine_client -update
 
-### Flatcar Linux packages in Nebraska
+### Flatcar Container Linux packages in Nebraska
 
-Nebraska is able to periodically poll the public Flatcar Linux update servers and create new packages to update the corresponding channels. So if Nebraska is connected to the internet, new packages will show up automatically for the official Flatcar Linux. This functionality is optional, and turned off by default. If you
+Nebraska is able to periodically poll the public Flatcar Container Linux update servers and create new packages to update the corresponding channels. So if Nebraska is connected to the internet, new packages will show up automatically for the official Flatcar Container Linux. This functionality is optional, and turned off by default. If you
 prefer to use it, you should pass the option `-enable-syncer=true` when running Nebraska.
 
-Notice that by default Nebraska only stores metadata about the Flatcar Linux updates, not the updates payload. This means that the updates served to your instances contain instructions to download the packages payload from the public Flatcar Linux update servers directly, so your servers need access to the Internet to download them.
+Notice that by default Nebraska only stores metadata about the Flatcar Container Linux updates, not the updates payload. This means that the updates served to your instances contain instructions to download the packages payload from the public Flatcar Container Linux update servers directly, so your servers need access to the Internet to download them.
 
-It is also possible to host the Flatcar Linux packages payload in Nebraska. In this case, in addition to get the packages metadata, Nebraska will also download the package payload itself so that it can serve it to your instances when serving updates.
+It is also possible to host the Flatcar Container Linux packages payload in Nebraska. In this case, in addition to get the packages metadata, Nebraska will also download the package payload itself so that it can serve it to your instances when serving updates.
 
-This functionality is turned off by default. So to make Nebraska host the Flatcar Linux packages payload, the following options have to be passed to it:
+This functionality is turned off by default. So to make Nebraska host the Flatcar Container Linux packages payload, the following options have to be passed to it:
 
     nebraska -host-flatcar-packages=true -flatcar-packages-path=/PATH/TO/STORE/PACKAGES -nebraska-url=http://your.Nebraska.host:port
 
 ## Managing updates for your own applications
 
-In addition to managing updates for Flatcar Linux, you can use Nebraska for other applications as well.
+In addition to managing updates for Flatcar Container Linux, you can use Nebraska for other applications as well.
 
 In the `updaters/lib` directory there are some sample helpers that can be useful to create your own updaters that talk to Nebraska or even embed them into your own applications.
 
@@ -119,7 +119,7 @@ The Nebraska backend is written in Go. The backend source code is structured as 
 
 - **`pkg/omaha`**: provides functionality to validate, handle, process and reply to Omaha updates and events requests received from the Omaha clients. It relies on the `api` package to get update packages, store events, or register instances when needed.
 
-- **`pkg/syncer`**: provides some functionality to synchronize packages available in the official Flatcar Linux channels, storing the references to them in your Nebraska datastore and even downloading packages payloads when configured to do so. It's basically in charge of keeping up to date your the Flatcar Linux application in your Nebraska installation.
+- **`pkg/syncer`**: provides some functionality to synchronize packages available in the official Flatcar Container Linux channels, storing the references to them in your Nebraska datastore and even downloading packages payloads when configured to do so. It's basically in charge of keeping up to date your the Flatcar Container Linux application in your Nebraska installation.
 
 - **`cmd/nebraska`**: is the main backend process, exposing the functionality described above in the different packages through its http server. It provides several http endpoints used to drive most of the functionality of the dashboard as well as handling the Omaha updates and events requests received from your servers and applications.
 
