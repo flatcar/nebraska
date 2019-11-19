@@ -48,14 +48,14 @@ manage their updates. The process for doing so is slightly different depending o
 
 For new machines, you can set up the updates server in their cloud config. Here is a small example of how to do it:
 
-	Flatcar Linux:
+	coreos:
 		update:
 			group: stable
 			server: http://your.nebraska.host:port/v1/update/
 
 In addition to the default `stable`, `beta` and `alpha` groups, you can also create and use **custom groups** for greater control over the updates. In that case, you **must** use the group id (not the name) you will find next to the group name in the dashboard.
 
-	Flatcar Linux:
+	coreos:
 		update:
 			group: ab51a000-02dc-4fc7-a6b0-c42881c89856
 			server: http://your.nebraska.host:port/v1/update/
