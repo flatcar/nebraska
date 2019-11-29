@@ -58,11 +58,14 @@ func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID,
 	if err != nil {
 		return nil, ErrRegisterInstanceFailed
 	}
+	updateAlreadyGranted := false
 
 	if instance.Application.Status.Valid {
 		switch int(instance.Application.Status.Int64) {
-		case InstanceStatusUpdateGranted, InstanceStatusDownloading, InstanceStatusDownloaded, InstanceStatusInstalled:
+		case InstanceStatusDownloading, InstanceStatusDownloaded, InstanceStatusInstalled:
 			return nil, ErrUpdateInProgressOnInstance
+		case InstanceStatusUpdateGranted:
+			updateAlreadyGranted = true
 		}
 	}
 
@@ -74,6 +77,10 @@ func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID,
 	if group.Channel == nil || group.Channel.Package == nil {
 		_ = api.newGroupActivityEntry(activityPackageNotFound, activityWarning, "0.0.0", appID, groupID)
 		return nil, ErrNoPackageFound
+	}
+
+	if updateAlreadyGranted {
+		return group.Channel.Package, nil
 	}
 
 	for _, blacklistedChannelID := range group.Channel.Package.ChannelsBlacklist {
