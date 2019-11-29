@@ -3,7 +3,7 @@ FROM alpine:3.10 as nebraska-build
 ENV GOPATH=/go
 
 RUN apk update && \
-	apk add git go nodejs npm ca-certificates make musl-dev
+	apk add git go nodejs npm ca-certificates make musl-dev bash
 
 COPY . /go/src/github.com/kinvolk/nebraska/
 
