@@ -5,19 +5,17 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strings"
+	"sync/atomic"
+	"time"
 
+	"github.com/gin-gonic/gin"
 	log "github.com/mgutz/logxi/v1"
-	"github.com/zenazn/goji"
-	"github.com/zenazn/goji/web"
-	"github.com/zenazn/goji/web/middleware"
-)
 
-const (
-	flatcarPkgsRouterPrefix = "/flatcar/"
+	ginsessions "github.com/kinvolk/nebraska/pkg/sessions/gin"
 )
 
 var (
@@ -29,7 +27,8 @@ var (
 	httpStaticDir       = flag.String("http-static-dir", "../frontend/built", "Path to frontend static files")
 	clientID            = flag.String("client-id", "", fmt.Sprintf("Client ID used for authentication; can be taken from %s env var too", clientIDEnvName))
 	clientSecret        = flag.String("client-secret", "", fmt.Sprintf("Client secret used for authentication; can be taken from %s env var too", clientSecretEnvName))
-	sessionSecret       = flag.String("session-secret", "", fmt.Sprintf("Session secret used for storing sessions, will be generated if none is passed; can be taken from %s env var too", sessionSecretEnvName))
+	sessionAuthKey      = flag.String("session-secret", "", fmt.Sprintf("Session secret used authenticating sessions in cookies, will be generated if none is passed; can be taken from %s env var too", sessionAuthKeyEnvName))
+	sessionCryptKey     = flag.String("session-crypt-key", "", fmt.Sprintf("Session key used for encrypting sessions in cookies, will be generated if none is passed; can be taken from %s env var too", sessionCryptKeyEnvName))
 	webhookSecret       = flag.String("webhook-secret", "", fmt.Sprintf("Webhook secret used for validing webhook messages; can be taken from %s env var too", webhookSecretEnvName))
 	readWriteTeams      = flag.String("rw-teams", "", "comma-separated list of read-write teams in the org/team format")
 	readOnlyTeams       = flag.String("ro-teams", "", "comma-separated list of read-only teams in the org/team format")
@@ -49,7 +48,8 @@ func main() {
 		hostFlatcarPackages: *hostFlatcarPackages,
 		flatcarPackagesPath: *flatcarPackagesPath,
 		nebraskaURL:         *nebraskaURL,
-		sessionSecret:       *sessionSecret,
+		sessionAuthKey:      *sessionAuthKey,
+		sessionCryptKey:     *sessionCryptKey,
 		oauthClientID:       *clientID,
 		oauthClientSecret:   *clientSecret,
 		webhookSecret:       *webhookSecret,
@@ -63,12 +63,17 @@ func main() {
 	}
 	defer ctl.close()
 
-	setupRoutes(ctl)
+	engine := setupRoutes(ctl, *httpLog)
 
-	if !*httpLog {
-		_ = goji.Abandon(middleware.Logger)
+	var params []string
+	if os.Getenv("PORT") == "" {
+		params = append(params, ":8000")
 	}
-	goji.Serve()
+	err = engine.Run(params...)
+	if err != nil {
+		logger.Error(err.Error())
+		os.Exit(1)
+	}
 }
 
 func checkArgs() error {
@@ -90,105 +95,141 @@ func checkArgs() error {
 	return nil
 }
 
-func setupRouter(router *web.Mux, name string) {
-	router.Use(func(c *web.C, h http.Handler) http.Handler {
-		fn := func(w http.ResponseWriter, r *http.Request) {
-			logger.Debug("router debug", "request", fmt.Sprintf("%s %s", r.Method, r.URL.String()), "router name", name)
-			h.ServeHTTP(w, r)
-		}
+const requestIDKey = "github.com/kinvolk/nebraska/request-id"
 
-		return http.HandlerFunc(fn)
-	})
+func setupRouter(router gin.IRoutes, name string, httpLog bool) {
+	if httpLog {
+		router.Use(func(c *gin.Context) {
+			reqID, ok := c.Get(requestIDKey)
+			if !ok {
+				reqID = -1
+			}
+			logger.Debug("router debug",
+				"request id", reqID,
+				"router name", name,
+			)
+			c.Next()
+		})
+	}
 }
 
-func setupRoutes(ctl *controller) {
-	setupRouter(goji.DefaultMux, "top")
-	goji.Use(ctl.sessions.Middleware())
+var requestID uint64
+
+func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
+	engine := gin.New()
+	if httpLog {
+		engine.Use(func(c *gin.Context) {
+			reqID := atomic.AddUint64(&requestID, 1)
+			c.Set(requestIDKey, reqID)
+
+			start := time.Now()
+			logger.Debug("request debug",
+				"request ID", reqID,
+				"start time", start,
+				"method", c.Request.Method,
+				"URL", c.Request.URL.String(),
+				"client IP", c.ClientIP(),
+			)
+
+			// Process request
+			c.Next()
+
+			stop := time.Now()
+			latency := stop.Sub(start)
+			logger.Debug("request debug",
+				"request ID", reqID,
+				"stop time", stop,
+				"latency", latency,
+				"status", c.Writer.Status(),
+			)
+		})
+	}
+	engine.Use(gin.Recovery())
+	setupRouter(engine, "top", httpLog)
+	engine.Use(ginsessions.SessionsMiddleware(ctl.sessionsStore, "nebraska"))
 	// API router setup
-	apiRouter := web.New()
-	setupRouter(apiRouter, "api")
+	apiRouter := engine.Group("/api")
+	setupRouter(apiRouter, "api", httpLog)
 	apiRouter.Use(ctl.authenticate)
-	goji.Handle("/api/*", apiRouter)
 
 	// API routes
 
 	// Users
-	apiRouter.Put("/api/password", ctl.updateUserPassword)
+	apiRouter.PUT("/password", ctl.updateUserPassword)
 
 	// Applications
-	apiRouter.Post("/api/apps", ctl.addApp)
-	apiRouter.Put("/api/apps/:app_id", ctl.updateApp)
-	apiRouter.Delete("/api/apps/:app_id", ctl.deleteApp)
-	apiRouter.Get("/api/apps/:app_id", ctl.getApp)
-	apiRouter.Get("/api/apps", ctl.getApps)
+	apiRouter.POST("/apps", ctl.addApp)
+	apiRouter.PUT("/apps/:app_id", ctl.updateApp)
+	apiRouter.DELETE("/apps/:app_id", ctl.deleteApp)
+	apiRouter.GET("/apps/:app_id", ctl.getApp)
+	apiRouter.GET("/apps", ctl.getApps)
 
 	// Groups
-	apiRouter.Post("/api/apps/:app_id/groups", ctl.addGroup)
-	apiRouter.Put("/api/apps/:app_id/groups/:group_id", ctl.updateGroup)
-	apiRouter.Delete("/api/apps/:app_id/groups/:group_id", ctl.deleteGroup)
-	apiRouter.Get("/api/apps/:app_id/groups/:group_id", ctl.getGroup)
-	apiRouter.Get("/api/apps/:app_id/groups", ctl.getGroups)
-	apiRouter.Get("/api/apps/:app_id/groups/:group_id/version_timeline", ctl.getGroupVersionCountTimeline)
-	apiRouter.Get("/api/apps/:app_id/groups/:group_id/status_timeline", ctl.getGroupStatusCountTimeline)
+	apiRouter.POST("/apps/:app_id/groups", ctl.addGroup)
+	apiRouter.PUT("/apps/:app_id/groups/:group_id", ctl.updateGroup)
+	apiRouter.DELETE("/apps/:app_id/groups/:group_id", ctl.deleteGroup)
+	apiRouter.GET("/apps/:app_id/groups/:group_id", ctl.getGroup)
+	apiRouter.GET("/apps/:app_id/groups", ctl.getGroups)
+	apiRouter.GET("/apps/:app_id/groups/:group_id/version_timeline", ctl.getGroupVersionCountTimeline)
+	apiRouter.GET("/apps/:app_id/groups/:group_id/status_timeline", ctl.getGroupStatusCountTimeline)
 
 	// Channels
-	apiRouter.Post("/api/apps/:app_id/channels", ctl.addChannel)
-	apiRouter.Put("/api/apps/:app_id/channels/:channel_id", ctl.updateChannel)
-	apiRouter.Delete("/api/apps/:app_id/channels/:channel_id", ctl.deleteChannel)
-	apiRouter.Get("/api/apps/:app_id/channels/:channel_id", ctl.getChannel)
-	apiRouter.Get("/api/apps/:app_id/channels", ctl.getChannels)
+	apiRouter.POST("/apps/:app_id/channels", ctl.addChannel)
+	apiRouter.PUT("/apps/:app_id/channels/:channel_id", ctl.updateChannel)
+	apiRouter.DELETE("/apps/:app_id/channels/:channel_id", ctl.deleteChannel)
+	apiRouter.GET("/apps/:app_id/channels/:channel_id", ctl.getChannel)
+	apiRouter.GET("/apps/:app_id/channels", ctl.getChannels)
 
 	// Packages
-	apiRouter.Post("/api/apps/:app_id/packages", ctl.addPackage)
-	apiRouter.Put("/api/apps/:app_id/packages/:package_id", ctl.updatePackage)
-	apiRouter.Delete("/api/apps/:app_id/packages/:package_id", ctl.deletePackage)
-	apiRouter.Get("/api/apps/:app_id/packages/:package_id", ctl.getPackage)
-	apiRouter.Get("/api/apps/:app_id/packages", ctl.getPackages)
+	apiRouter.POST("/apps/:app_id/packages", ctl.addPackage)
+	apiRouter.PUT("/apps/:app_id/packages/:package_id", ctl.updatePackage)
+	apiRouter.DELETE("/apps/:app_id/packages/:package_id", ctl.deletePackage)
+	apiRouter.GET("/apps/:app_id/packages/:package_id", ctl.getPackage)
+	apiRouter.GET("/apps/:app_id/packages", ctl.getPackages)
 
 	// Instances
-	apiRouter.Get("/api/apps/:app_id/groups/:group_id/instances/:instance_id/status_history", ctl.getInstanceStatusHistory)
-	apiRouter.Get("/api/apps/:app_id/groups/:group_id/instances", ctl.getInstances)
+	apiRouter.GET("/apps/:app_id/groups/:group_id/instances/:instance_id/status_history", ctl.getInstanceStatusHistory)
+	apiRouter.GET("/apps/:app_id/groups/:group_id/instances", ctl.getInstances)
 
 	// Activity
-	apiRouter.Get("/api/activity", ctl.getActivity)
+	apiRouter.GET("/activity", ctl.getActivity)
 
 	// Omaha server router setup
-	omahaRouter := web.New()
-	setupRouter(omahaRouter, "omaha")
-	omahaRouter.Use(middleware.SubRouter)
-	goji.Handle("/omaha/*", omahaRouter)
-	goji.Handle("/v1/update/*", omahaRouter)
-
-	// Omaha server routes
-	omahaRouter.Post("/", ctl.processOmahaRequest)
+	omahaRouter := engine.Group("/")
+	setupRouter(omahaRouter, "omaha", httpLog)
+	omahaRouter.POST("/omaha", ctl.processOmahaRequest)
+	omahaRouter.POST("/v1/update", ctl.processOmahaRequest)
 
 	// Host Flatcar packages payloads
 	if *hostFlatcarPackages {
-		flatcarPkgsRouter := web.New()
-		setupRouter(flatcarPkgsRouter, "flatcar")
-		flatcarPkgsRouter.Use(middleware.SubRouter)
-		goji.Handle(flatcarPkgsRouterPrefix+"*", flatcarPkgsRouter)
-		flatcarPkgsRouter.Handle("/*", http.FileServer(http.Dir(*flatcarPackagesPath)))
+		flatcarPkgsRouter := engine.Group("/flatcar")
+		setupRouter(flatcarPkgsRouter, "flatcar", httpLog)
+		flatcarPkgsRouter.Static("/", *flatcarPackagesPath)
 	}
 
 	// Metrics
-	metricsRouter := web.New()
-	setupRouter(metricsRouter, "metrics")
+	metricsRouter := engine.Group("/metrics")
+	setupRouter(metricsRouter, "metrics", httpLog)
 	metricsRouter.Use(ctl.authenticate)
-	goji.Handle("/metrics", metricsRouter)
-	metricsRouter.Get("/metrics", ctl.getMetrics)
+	metricsRouter.GET("/", ctl.getMetrics)
 
 	// oauth
-	oauthRouter := web.New()
-	setupRouter(oauthRouter, "oauth")
-	goji.Handle("/login/*", oauthRouter)
-	oauthRouter.Get("/login/cb", ctl.loginCb)
-	oauthRouter.Post("/login/webhook", ctl.loginWebhook)
+	oauthRouter := engine.Group("/login")
+	setupRouter(oauthRouter, "oauth", httpLog)
+	oauthRouter.GET("/cb", ctl.loginCb)
+	oauthRouter.POST("/webhook", ctl.loginWebhook)
 
 	// Serve frontend static content
-	staticRouter := web.New()
-	setupRouter(staticRouter, "static")
+	staticRouter := engine.Group("/")
+	setupRouter(staticRouter, "static", httpLog)
 	staticRouter.Use(ctl.authenticate)
-	goji.Handle("/*", staticRouter)
-	staticRouter.Handle("/*", http.FileServer(http.Dir(*httpStaticDir)))
+	staticRouter.StaticFile("", filepath.Join(*httpStaticDir, "index.html"))
+	for _, file := range []string{"index.html", "favicon.png"} {
+		staticRouter.StaticFile(file, filepath.Join(*httpStaticDir, file))
+	}
+	for _, dir := range []string{"js", "font", "img"} {
+		staticRouter.Static(dir, filepath.Join(*httpStaticDir, dir))
+	}
+
+	return engine
 }

@@ -14,7 +14,6 @@ require (
 	github.com/facebookgo/stack v0.0.0-20160209184415-751773369052 // indirect
 	github.com/facebookgo/stats v0.0.0-20151006221625-1b76add642e4 // indirect
 	github.com/facebookgo/subset v0.0.0-20150612182917-8dac2c3c4870 // indirect
-	github.com/fzzy/radix v0.5.6 // indirect
 	github.com/garyburd/redigo v1.6.1-0.20180320130917-e8e59ed1cd89 // indirect
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-sql-driver/mysql v1.4.1 // indirect
@@ -35,8 +34,6 @@ require (
 	github.com/rubenv/sql-migrate v0.0.0-20191025130928-9355dd04f4b3
 	github.com/satori/go.uuid v1.2.0
 	github.com/stretchr/testify v1.4.0
-	github.com/ymichael/sessions v0.0.0-20150521112625-49b61c00f079
-	github.com/zenazn/goji v0.9.1-0.20160507202103-64eb34159fe5
 	github.com/ziutek/mymysql v1.5.4 // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	gopkg.in/gorp.v1 v1.7.1 // indirect
