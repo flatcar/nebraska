@@ -250,9 +250,15 @@ func TestGetUpdatePackage_UpdateInProgressOnInstance(t *testing.T) {
 
 	instanceID := uuid.NewV4().String()
 
-	_, err := a.GetUpdatePackage(instanceID, "10.0.0.1", "12.0.0", tApp.ID, tGroup.ID)
+	p1, err := a.GetUpdatePackage(instanceID, "10.0.0.1", "12.0.0", tApp.ID, tGroup.ID)
 	assert.NoError(t, err)
 
+	p2, err := a.GetUpdatePackage(instanceID, "10.0.0.1", "12.0.0", tApp.ID, tGroup.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, p1, p2)
+
+	err = a.updateInstanceStatus(instanceID, tApp.ID, InstanceStatusDownloading)
+	assert.NoError(t, err)
 	_, err = a.GetUpdatePackage(instanceID, "10.0.0.1", "12.0.0", tApp.ID, tGroup.ID)
 	assert.Equal(t, ErrUpdateInProgressOnInstance, err)
 }
