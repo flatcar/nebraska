@@ -21,6 +21,7 @@ require (
 	github.com/gobuffalo/packr v1.30.1 // indirect
 	github.com/golangci/golangci-lint v1.21.0
 	github.com/google/go-github/v28 v28.1.1
+	github.com/gorilla/securecookie v1.1.1
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/kevinburke/go-bindata v3.16.0+incompatible
 	github.com/kylelemons/godebug v1.1.0 // indirect
