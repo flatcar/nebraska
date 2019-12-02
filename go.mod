@@ -16,6 +16,7 @@ require (
 	github.com/facebookgo/subset v0.0.0-20150612182917-8dac2c3c4870 // indirect
 	github.com/fzzy/radix v0.5.6 // indirect
 	github.com/garyburd/redigo v1.6.1-0.20180320130917-e8e59ed1cd89 // indirect
+	github.com/gin-gonic/gin v1.5.0
 	github.com/go-sql-driver/mysql v1.4.1 // indirect
 	github.com/gobuffalo/packr v1.30.1 // indirect
 	github.com/golangci/golangci-lint v1.21.0
@@ -24,7 +25,6 @@ require (
 	github.com/kevinburke/go-bindata v3.16.0+incompatible
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/lib/pq v1.2.0
-	github.com/mattn/go-isatty v0.0.9 // indirect
 	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
 	github.com/mgutz/jo v1.1.0 // indirect
 	github.com/mgutz/logxi v0.0.0-20161027140823-aebf8a7d67ab
