@@ -1,0 +1,33 @@
+#!/bin/bash
+
+set -euo pipefail
+
+output_lines=()
+mapfile -t output_lines < <(go list -f '{{.Dir}} - {{.TestGoFiles}} {{.XTestGoFiles}}' ./...)
+
+if [[ ${#output_lines[@]} -eq 0 ]]; then
+    exit 0
+fi
+
+first_dir=$(echo "${output_lines[0]}" | cut -d' ' -f1)
+root=$(go list -f '{{.Root}}' "${first_dir}")
+status=0
+
+for line in "${output_lines[@]}"; do
+    dir=$(echo "${line}" | cut -d' ' -f1)
+    files=$(echo "${line}" | cut -d' ' -f3-)
+    files="${files#'['}"
+    files="${files%']'}"
+    files="${files/] [/ }"
+    if [[ $files == " " ]]; then
+        continue
+    fi
+    pushd "${dir}" >/dev/null
+    if ! grep -q 'NEBRASKA_SKIP_TESTS' ${files}; then
+        status=1
+        echo "tests in package ${dir#${root}/} do not check the NEBRASKA_SKIP_TESTS env var"
+    fi
+    popd >/dev/null
+done
+
+exit ${status}
