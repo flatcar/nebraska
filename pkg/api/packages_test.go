@@ -5,7 +5,7 @@ import (
 
 	"gopkg.in/mgutz/dat.v1"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -45,7 +45,7 @@ func TestAddPackage(t *testing.T) {
 	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0"})
 	assert.Error(t, err, "App id is required and must be a valid uuid.")
 
-	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, ChannelsBlacklist: []string{uuid.NewV4().String()}})
+	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, ChannelsBlacklist: []string{uuid.New().String()}})
 	assert.Error(t, err, "Blacklisted channels must be existing channels ids.")
 
 	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, ChannelsBlacklist: []string{"invalidChannelID"}})
@@ -185,7 +185,7 @@ func TestGetPackage(t *testing.T) {
 	_, err = a.GetPackage("invalidPackageID")
 	assert.Error(t, err, "Package id must be a valid uuid.")
 
-	_, err = a.GetPackage(uuid.NewV4().String())
+	_, err = a.GetPackage(uuid.New().String())
 	assert.Error(t, err, "Package id must exist.")
 }
 
@@ -208,7 +208,7 @@ func TestGetPackageByVersion(t *testing.T) {
 	_, err = a.GetPackageByVersion("invalidAppID", "12.1.0")
 	assert.Error(t, err, "Application id must be a valid uuid.")
 
-	_, err = a.GetPackageByVersion(uuid.NewV4().String(), "12.1.0")
+	_, err = a.GetPackageByVersion(uuid.New().String(), "12.1.0")
 	assert.Error(t, err, "Application id must exist.")
 
 	_, err = a.GetPackageByVersion(tApp.ID, "hola")
@@ -237,6 +237,6 @@ func TestGetPackages(t *testing.T) {
 	_, err = a.GetPackages("invalidAppID", 0, 0)
 	assert.Error(t, err, "Add id must be a valid uuid.")
 
-	_, err = a.GetPackages(uuid.NewV4().String(), 0, 0)
+	_, err = a.GetPackages(uuid.New().String(), 0, 0)
 	assert.Error(t, err, "App id used must exist.")
 }
