@@ -54,6 +54,7 @@ backend: tools/go-bindata tools/golangci-lint
 	# build (both the project and the tests), golangci-lint's
 	# output in this regard in unreadable.
 	go build ./...
+	./tools/check_pkg_test.sh
 	NEBRASKA_SKIP_TESTS=1 go test ./... >/dev/null
 	./tools/golangci-lint run --fix
 	go mod tidy
