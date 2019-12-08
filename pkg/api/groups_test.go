@@ -3,7 +3,7 @@ package api
 import (
 	"testing"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/mgutz/dat.v1"
 )
@@ -124,7 +124,7 @@ func TestGetGroup(t *testing.T) {
 	assert.Equal(t, tChannel.Name, group.Channel.Name)
 	assert.Equal(t, tPkg.Version, group.Channel.Package.Version)
 
-	_, err = a.GetGroup(uuid.NewV4().String())
+	_, err = a.GetGroup(uuid.New().String())
 	assert.Error(t, err, "Trying to get non existent group.")
 }
 

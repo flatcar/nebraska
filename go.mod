@@ -20,6 +20,7 @@ require (
 	github.com/gobuffalo/packr v1.30.1 // indirect
 	github.com/golangci/golangci-lint v1.21.0
 	github.com/google/go-github/v28 v28.1.1
+	github.com/google/uuid v1.1.1
 	github.com/gorilla/securecookie v1.1.1
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/kevinburke/go-bindata v3.16.0+incompatible
@@ -32,7 +33,7 @@ require (
 	github.com/mgutz/to v1.0.0 // indirect
 	github.com/pmylund/go-cache v2.1.0+incompatible // indirect
 	github.com/rubenv/sql-migrate v0.0.0-20191025130928-9355dd04f4b3
-	github.com/satori/go.uuid v1.2.0
+	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/stretchr/testify v1.4.0
 	github.com/ziutek/mymysql v1.5.4 // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45

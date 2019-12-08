@@ -3,7 +3,7 @@ package api
 import (
 	"testing"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/mgutz/dat.v1"
 )
@@ -21,7 +21,7 @@ func TestRegisterInstance(t *testing.T) {
 	tGroup2, _ := a.AddGroup(&Group{Name: "group2", ApplicationID: tApp2.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	tGroup3, _ := a.AddGroup(&Group{Name: "group3", ApplicationID: tApp.ID, ChannelID: dat.NullStringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
-	instanceID := uuid.NewV4().String()
+	instanceID := uuid.New().String()
 
 	_, err := a.RegisterInstance("", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
 	assert.Error(t, err, "Using empty string as instance id.")
@@ -73,9 +73,9 @@ func TestGetInstance(t *testing.T) {
 	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
 	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: dat.NullStringFrom(tPkg.ID)})
 	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: dat.NullStringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
-	tInstance, _ := a.RegisterInstance(uuid.NewV4().String(), "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
+	tInstance, _ := a.RegisterInstance(uuid.New().String(), "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
 
-	_, err := a.GetInstance(uuid.NewV4().String(), tApp.ID)
+	_, err := a.GetInstance(uuid.New().String(), tApp.ID)
 	assert.Error(t, err, "Using non existent instance id.")
 
 	_, err = a.GetInstance("invalidInstanceID", tApp.ID)
@@ -102,9 +102,9 @@ func TestGetInstances(t *testing.T) {
 	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: dat.NullStringFrom(tPkg.ID)})
 	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: dat.NullStringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	tGroup2, _ := a.AddGroup(&Group{Name: "group2", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
-	tInstance, _ := a.RegisterInstance(uuid.NewV4().String(), "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
-	_, _ = a.RegisterInstance(uuid.NewV4().String(), "10.0.0.2", "1.0.1", tApp.ID, tGroup.ID)
-	_, _ = a.RegisterInstance(uuid.NewV4().String(), "10.0.0.3", "1.0.2", tApp.ID, tGroup2.ID)
+	tInstance, _ := a.RegisterInstance(uuid.New().String(), "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
+	_, _ = a.RegisterInstance(uuid.New().String(), "10.0.0.2", "1.0.1", tApp.ID, tGroup.ID)
+	_, _ = a.RegisterInstance(uuid.New().String(), "10.0.0.3", "1.0.2", tApp.ID, tGroup2.ID)
 
 	instances, err := a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Version: "1.0.0", Page: 1, PerPage: 10})
 	assert.NoError(t, err)

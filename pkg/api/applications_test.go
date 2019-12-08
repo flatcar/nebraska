@@ -3,7 +3,7 @@ package api
 import (
 	"testing"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/mgutz/dat.v1"
 )
@@ -30,7 +30,7 @@ func TestAddApp(t *testing.T) {
 	_, err = a.AddApp(&Application{Name: "app2"})
 	assert.Error(t, err, "Team id is required.")
 
-	_, err = a.AddApp(&Application{Name: "app2", TeamID: uuid.NewV4().String()})
+	_, err = a.AddApp(&Application{Name: "app2", TeamID: uuid.New().String()})
 	assert.Error(t, err, "Team id used must exist.")
 
 	_, err = a.AddApp(&Application{Name: "app2", TeamID: "invalidTeamID"})
@@ -117,7 +117,7 @@ func TestGetApp(t *testing.T) {
 	assert.Equal(t, tApp.Name, app.Name)
 	assert.Equal(t, tChannel.Name, app.Channels[0].Name)
 
-	_, err = a.GetApp(uuid.NewV4().String())
+	_, err = a.GetApp(uuid.New().String())
 	assert.Error(t, err, "Trying to get non existent app.")
 }
 
@@ -137,6 +137,6 @@ func TestGetApps(t *testing.T) {
 	assert.Equal(t, tApp2.Name, apps[0].Name)
 	assert.Equal(t, tChannel.Name, apps[1].Channels[0].Name)
 
-	_, err = a.GetApps(uuid.NewV4().String(), 0, 0)
+	_, err = a.GetApps(uuid.New().String(), 0, 0)
 	assert.Error(t, err, "Trying to get apps of inexisting team.")
 }

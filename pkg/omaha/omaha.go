@@ -7,8 +7,8 @@ import (
 	"strconv"
 
 	omahaSpec "github.com/coreos/go-omaha/omaha"
+	"github.com/google/uuid"
 	log "github.com/mgutz/logxi/v1"
-	uuid "github.com/satori/go.uuid"
 
 	"github.com/kinvolk/nebraska/pkg/api"
 )
@@ -76,7 +76,7 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 		// Use Track field as the group to ask CR for updates. For the Flatcar
 		// app, map group name to its id if available.
 		group := reqApp.Track
-		if reqAppUUID, err := uuid.FromString(reqApp.ID); err == nil {
+		if reqAppUUID, err := uuid.Parse(reqApp.ID); err == nil {
 			if reqAppUUID.String() == flatcarAppID {
 				if flatcarGroupID, ok := flatcarGroups[group]; ok {
 					group = flatcarGroupID

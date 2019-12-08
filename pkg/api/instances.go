@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"gopkg.in/mgutz/dat.v1"
 )
 
@@ -184,11 +184,11 @@ func (api *API) GetInstances(p InstancesQueryParams) ([]*Instance, error) {
 // groupID provided if both are valid and the group belongs to the given
 // application, or an error if something goes wrong.
 func (api *API) validateApplicationAndGroup(appID, groupID string) (string, string, error) {
-	appUUID, err := uuid.FromString(appID)
+	appUUID, err := uuid.Parse(appID)
 	if err != nil {
 		return "", "", err
 	}
-	groupUUID, err := uuid.FromString(groupID)
+	groupUUID, err := uuid.Parse(groupID)
 	if err != nil {
 		return "", "", err
 	}

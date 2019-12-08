@@ -16,8 +16,8 @@ import (
 	"time"
 
 	"github.com/coreos/go-omaha/omaha"
+	"github.com/google/uuid"
 	log "github.com/mgutz/logxi/v1"
-	uuid "github.com/satori/go.uuid"
 	"gopkg.in/mgutz/dat.v1"
 
 	"github.com/kinvolk/nebraska/pkg/api"
@@ -129,8 +129,8 @@ func (s *Syncer) initialize() error {
 
 	for _, c := range flatcarApp.Channels {
 		if c.Name == "stable" || c.Name == "beta" || c.Name == "alpha" || c.Name == "edge" {
-			s.machinesIDs[c.Name] = "{" + uuid.NewV4().String() + "}"
-			s.bootIDs[c.Name] = "{" + uuid.NewV4().String() + "}"
+			s.machinesIDs[c.Name] = "{" + uuid.New().String() + "}"
+			s.bootIDs[c.Name] = "{" + uuid.New().String() + "}"
 			s.channelsIDs[c.Name] = c.ID
 
 			if c.Package != nil {
@@ -162,7 +162,7 @@ func (s *Syncer) checkForUpdates() error {
 				return err
 			}
 			s.versions[channel] = update.Manifest.Version
-			s.bootIDs[channel] = "{" + uuid.NewV4().String() + "}"
+			s.bootIDs[channel] = "{" + uuid.New().String() + "}"
 		} else {
 			logger.Debug("checkForUpdates, no update available", "channel", channel, "currentVersion", currentVersion, "updateStatus", update.Status)
 		}

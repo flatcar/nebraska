@@ -3,7 +3,7 @@ package api
 import (
 	"testing"
 
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/mgutz/dat.v1"
 )
@@ -40,13 +40,13 @@ func TestAddChannel(t *testing.T) {
 	_, err = a.AddChannel(&Channel{Name: "channel3", ApplicationID: "invalidAppID"})
 	assert.Error(t, err, "App id must be a valid uuid.")
 
-	_, err = a.AddChannel(&Channel{Name: "channel3", ApplicationID: uuid.NewV4().String()})
+	_, err = a.AddChannel(&Channel{Name: "channel3", ApplicationID: uuid.New().String()})
 	assert.Error(t, err, "App used must exist.")
 
 	_, err = a.AddChannel(&Channel{Name: "channel3", ApplicationID: tApp.ID, PackageID: dat.NullStringFrom("invalidPackageID")})
 	assert.Error(t, err, "Package id must be a valid uuid.")
 
-	_, err = a.AddChannel(&Channel{Name: "channel3", ApplicationID: tApp.ID, PackageID: dat.NullStringFrom(uuid.NewV4().String())})
+	_, err = a.AddChannel(&Channel{Name: "channel3", ApplicationID: tApp.ID, PackageID: dat.NullStringFrom(uuid.New().String())})
 	assert.Error(t, err, "Package used must exist.")
 
 	_, err = a.AddChannel(&Channel{Name: "channel3", ApplicationID: tApp.ID, PackageID: dat.NullStringFrom(tPkg2.ID)})
@@ -119,7 +119,7 @@ func TestGetChannel(t *testing.T) {
 	_, err = a.GetChannel("invalidChannelID")
 	assert.Error(t, err, "Channel id must be a valid uuid.")
 
-	_, err = a.GetChannel(uuid.NewV4().String())
+	_, err = a.GetChannel(uuid.New().String())
 	assert.Error(t, err, "Channel id must exist.")
 }
 
@@ -145,6 +145,6 @@ func TestGetChannels(t *testing.T) {
 	_, err = a.GetChannels("invalidAppID", 0, 0)
 	assert.Error(t, err, "Add id must be a valid uuid.")
 
-	_, err = a.GetChannels(uuid.NewV4().String(), 0, 0)
+	_, err = a.GetChannels(uuid.New().String(), 0, 0)
 	assert.Error(t, err, "App id used must exist.")
 }
