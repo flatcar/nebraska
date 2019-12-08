@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# This script checks if all the packages in the running directory or
+# below support skipping the tests if the NEBRASKA_SKIP_TESTS is
+# defined in the environment. The check itself is quite lame (just a
+# grep for the name), so it can be easily circumvented.
+
 set -euo pipefail
 
 output_lines=()
