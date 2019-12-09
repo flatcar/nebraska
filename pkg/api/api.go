@@ -2,7 +2,9 @@ package api
 
 import (
 	"errors"
+	"fmt"
 	"os"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 	migrate "github.com/rubenv/sql-migrate"
@@ -11,6 +13,10 @@ import (
 
 	// Postgresql driver
 	_ "github.com/lib/pq"
+
+	"github.com/jinzhu/gorm"
+	// Postgresql driver for gorm
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 // To re-generate the bindata.go file, use go-bindata from
@@ -46,6 +52,8 @@ type API struct {
 	// disableUpdatesOnFailedRollout defines wether to disable updates
 	// after a first rollout attempt failed (ResultFailed)
 	disableUpdatesOnFailedRollout bool
+
+	gormDB *gorm.DB
 }
 
 // New creates a new API instance, creating the underlying db connection and
@@ -92,6 +100,25 @@ func New(options ...func(*API) error) (*API, error) {
 	return api, nil
 }
 
+func ConnectWithGORM(api *API) error {
+	db, err := gorm.Open(api.dbDriver, api.dbURL)
+	if err != nil {
+		return err
+	}
+	if sqlDB := db.DB(); sqlDB != nil {
+		if err := sqlDB.Ping(); err != nil {
+			return err
+		}
+	}
+	db.SetLogger(newGORMLogger())
+	db = db.SetNowFuncOverride(func() time.Time {
+		return time.Now().UTC()
+	})
+	db = db.LogMode(true)
+	api.gormDB = db
+	return nil
+}
+
 // OptionInitDB will initialize the database during the API instance creation,
 // dropping all existing tables, which will force all migration scripts to be
 // re-executed. Use with caution, this will DESTROY ALL YOUR DATA.
@@ -119,6 +146,21 @@ func OptionDisableUpdatesOnFailedRollout(api *API) error {
 // Close releases the connections to the database.
 func (api *API) Close() {
 	_ = api.db.DB.Close()
+	if api.gormDB != nil {
+		_ = api.gormDB.Close()
+	}
+}
+
+func (api *API) useGORM() bool {
+	return api.gormDB != nil
+}
+
+//nolint:unused
+func (api *API) gormNotImplemented() error {
+	if !api.useGORM() {
+		return nil
+	}
+	return fmt.Errorf("This query is not yet implemented in GORM")
 }
 
 // NewForTest creates a new API instance with given options and fills

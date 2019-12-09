@@ -16,12 +16,12 @@ require (
 	github.com/facebookgo/subset v0.0.0-20150612182917-8dac2c3c4870 // indirect
 	github.com/garyburd/redigo v1.6.1-0.20180320130917-e8e59ed1cd89 // indirect
 	github.com/gin-gonic/gin v1.5.0
-	github.com/go-sql-driver/mysql v1.4.1 // indirect
 	github.com/gobuffalo/packr v1.30.1 // indirect
 	github.com/golangci/golangci-lint v1.21.0
 	github.com/google/go-github/v28 v28.1.1
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/securecookie v1.1.1
+	github.com/jinzhu/gorm v1.9.11
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/kevinburke/go-bindata v3.16.0+incompatible
 	github.com/kylelemons/godebug v1.1.0 // indirect

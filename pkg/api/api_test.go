@@ -13,7 +13,34 @@ const (
 )
 
 func newForTest(t *testing.T) *API {
-	a, err := NewForTest(OptionInitDB, OptionDisableUpdatesOnFailedRollout)
+	values := map[string]bool{
+		"1":     true,
+		"t":     true,
+		"true":  true,
+		"0":     false,
+		"f":     false,
+		"false": false,
+	}
+	useGORM := false
+	if v, ok := values[os.Getenv("USE_GORM")]; ok {
+		useGORM = v
+	}
+	if useGORM {
+		return newForTestGORM(t)
+	}
+	return newForTestDat(t)
+}
+
+func newForTestDat(t *testing.T) *API {
+	return newForTestWithOpts(t, OptionInitDB, OptionDisableUpdatesOnFailedRollout)
+}
+
+func newForTestGORM(t *testing.T) *API {
+	return newForTestWithOpts(t, OptionInitDB, OptionDisableUpdatesOnFailedRollout, ConnectWithGORM)
+}
+
+func newForTestWithOpts(t *testing.T, options ...func(*API) error) *API {
+	a, err := NewForTest(options...)
 
 	require.NoError(t, err)
 	require.NotNil(t, a)
