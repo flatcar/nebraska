@@ -7,13 +7,14 @@ DOCKER_CMD ?= "docker"
 DOCKER_REPO ?= "quay.io/flatcar"
 DOCKER_IMAGE_NEBRASKA ?= "nebraska"
 DOCKER_IMAGE_POSTGRES ?= "nebraska-postgres"
+GO_TEST := go test $(if $(GO_TEST_VERBOSE),-v) -p 1 $(if $(GO_TEST_RUN),-run $(GO_TEST_RUN)) $(if $(GO_TEST_PKG),$(GO_TEST_PKG),./...)
 
 .PHONY: all
 all: backend tools frontend
 
 .PHONY: check
 check:
-	go test -p 1 ./...
+	$(GO_TEST)
 
 container_id:
 	set -e; \
@@ -37,7 +38,7 @@ container_id:
 check-backend-with-container: container_id
 	set -e; \
 	trap "docker kill $$(cat container_id); docker rm $$(cat container_id); rm -f container_id" EXIT; \
-	go test -p 1 ./...
+	$(GO_TEST)
 
 .PHONY: frontend
 frontend:
