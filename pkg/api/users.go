@@ -28,7 +28,7 @@ type User struct {
 	TeamID    string    `db:"team_id" json:"team_id"`
 }
 
-// AddTeam registers a team.
+// AddUser registers a user.
 func (api *API) AddUser(user *User) (*User, error) {
 	err := api.dbR.
 		InsertInto("users").
