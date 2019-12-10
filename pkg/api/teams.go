@@ -7,6 +7,7 @@ type Team struct {
 	ID        string    `db:"id"`
 	Name      string    `db:"name"`
 	CreatedAt time.Time `db:"created_at"`
+	Users     []User    `db:"-"`
 }
 
 // TableName returns a table name for Team struct. It's for GORM.

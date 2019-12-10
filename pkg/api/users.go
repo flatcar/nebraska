@@ -28,8 +28,20 @@ type User struct {
 	TeamID    string    `db:"team_id" json:"team_id"`
 }
 
+// TableName returns a table name for User struct. It's for GORM.
+func (User) TableName() string {
+	return "users"
+}
+
 // AddUser registers a user.
 func (api *API) AddUser(user *User) (*User, error) {
+	if api.useGORM() {
+		result := api.gormDB.Create(user)
+		if result.Error != nil {
+			return nil, result.Error
+		}
+		return user, nil
+	}
 	err := api.dbR.
 		InsertInto("users").
 		Whitelist("username", "team_id", "secret").
@@ -42,6 +54,16 @@ func (api *API) AddUser(user *User) (*User, error) {
 
 // GetUser returns the user identified by the username provided.
 func (api *API) GetUser(username string) (*User, error) {
+	if api.useGORM() {
+		user := User{}
+		result := api.gormDB.
+			Where(&User{Username: username}).
+			Take(&user)
+		if result.Error != nil {
+			return nil, result.Error
+		}
+		return &user, nil
+	}
 	var user User
 
 	err := api.dbR.SelectDoc("*").
@@ -57,6 +79,16 @@ func (api *API) GetUser(username string) (*User, error) {
 }
 
 func (api *API) GetUsersInTeam(teamID string) ([]*User, error) {
+	if api.useGORM() {
+		var users []*User
+		result := api.gormDB.
+			Where(&User{TeamID: teamID}).
+			Find(&users)
+		if result.Error != nil {
+			return nil, result.Error
+		}
+		return users, nil
+	}
 	var users []*User
 
 	err := api.dbR.
@@ -77,6 +109,17 @@ func (api *API) UpdateUserPassword(username, newPassword string) error {
 	secret, err := api.GenerateUserSecret(username, newPassword)
 	if err != nil {
 		return err
+	}
+
+	if api.useGORM() {
+		result := api.gormDB.
+			Model(User{}).
+			Where(&User{Username: username}).
+			Update("secret", secret)
+		if result.Error != nil || result.RowsAffected == 0 {
+			return ErrUpdatingPassword
+		}
+		return nil
 	}
 
 	result, err := api.dbR.
