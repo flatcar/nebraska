@@ -16,12 +16,15 @@ all: backend tools frontend
 check:
 	$(GO_TEST)
 
-container_id:
-	set -e; \
+.postgres-test-built: Dockerfile.postgres-test
 	docker build \
 		--file Dockerfile.postgres-test \
 		--tag kinvolk/nebraska-postgres-test \
-		.; \
+		.
+	touch "$@"
+
+container_id: .postgres-test-built
+	set -e; \
 	trap "rm -f container_id.tmp container_id" ERR; \
 	docker run \
 		--privileged \

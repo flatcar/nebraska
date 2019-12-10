@@ -9,3 +9,4 @@ frontend/yarn-error.log
 
 /tools/go-bindata
 /tools/golangci-lint
+/.postgres-test-built
