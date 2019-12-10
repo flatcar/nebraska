@@ -41,7 +41,7 @@ type activityContext struct {
 
 // Activity represents a Nebraska activity entry.
 type Activity struct {
-	CreatedTs       time.Time      `db:"created_ts" json:"created_ts"`
+	CreatedAt       time.Time      `db:"created_at" json:"created_ts"`
 	Class           int            `db:"class" json:"class"`
 	Severity        int            `db:"severity" json:"severity"`
 	Version         string         `db:"version" json:"version"`
@@ -94,7 +94,7 @@ func (api *API) activityQuery(teamID string, p ActivityQueryParams) *dat.SelectD
 	}
 
 	query := api.dbR.
-		SelectDoc("a.created_ts", "a.class", "a.severity", "a.version", "a.instance_id", "app.name as application_name", "g.name as group_name", "c.name as channel_name").
+		SelectDoc("a.created_at", "a.class", "a.severity", "a.version", "a.instance_id", "app.name as application_name", "g.name as group_name", "c.name as channel_name").
 		From(`
 			activity a 
 			INNER JOIN application app ON (a.application_id = app.id)
@@ -102,9 +102,9 @@ func (api *API) activityQuery(teamID string, p ActivityQueryParams) *dat.SelectD
 			LEFT JOIN channel c ON (a.channel_id = c.id)
 		`).
 		Where("app.team_id = $1", teamID).
-		Where(fmt.Sprintf("a.created_ts BETWEEN '%s' AND '%s'", start.Format(pgDateFormat), end.Format(pgDateFormat))).
+		Where(fmt.Sprintf("a.created_at BETWEEN '%s' AND '%s'", start.Format(pgDateFormat), end.Format(pgDateFormat))).
 		Paginate(p.Page, p.PerPage).
-		OrderBy("a.created_ts DESC")
+		OrderBy("a.created_at DESC")
 
 	if p.AppID != "" {
 		query.Where("app.id = $1", p.AppID)

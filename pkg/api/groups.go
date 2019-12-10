@@ -23,7 +23,7 @@ type Group struct {
 	ID                        string                   `db:"id" json:"id"`
 	Name                      string                   `db:"name" json:"name"`
 	Description               string                   `db:"description" json:"description"`
-	CreatedTs                 time.Time                `db:"created_ts" json:"created_ts"`
+	CreatedAt                 time.Time                `db:"created_at" json:"created_ts"`
 	RolloutInProgress         bool                     `db:"rollout_in_progress" json:"rollout_in_progress"`
 	ApplicationID             string                   `db:"application_id" json:"application_id"`
 	ChannelID                 dat.NullString           `db:"channel_id" json:"channel_id"`
@@ -268,7 +268,7 @@ func (api *API) groupsQuery() *dat.SelectDocBuilder {
 		One("channel", api.channelsQuery().Where("id = groups.channel_id")).
 		Many("version_breakdown", api.groupVersionBreakdownQuery()).
 		From("groups").
-		OrderBy("created_ts DESC")
+		OrderBy("created_at DESC")
 }
 
 // groupVersionBreakdownQuery returns a SQL query prepared to return the version
@@ -314,9 +314,9 @@ func (api *API) GetGroupVersionCountTimeline(groupID string) (map[time.Time](Ver
 	// the last time-interval.
 	query := fmt.Sprintf(`
 	WITH time_series AS (SELECT * FROM generate_series(now() - interval '%[1]s', now(), INTERVAL '1 hour') AS ts),
-		 recent_instances AS (SELECT instance_id, (CASE WHEN last_update_granted_ts IS NOT NULL THEN last_update_granted_ts ELSE created_ts END), version, 4 status FROM instance_application WHERE group_id=$1 AND last_check_for_updates >= now() - interval '%[1]s' ORDER BY last_update_granted_ts DESC),
-		 instance_versions AS (SELECT instance_id, created_ts, version, status FROM instance_status_history WHERE instance_id IN (SELECT instance_id FROM recent_instances) AND status = 4 UNION (SELECT * FROM recent_instances) ORDER BY created_ts DESC)
-	SELECT ts, (CASE WHEN version IS NULL THEN '' ELSE version END), sum(CASE WHEN version IS NOT null THEN 1 ELSE 0 END) total FROM (SELECT * FROM time_series LEFT JOIN LATERAL(SELECT distinct ON (instance_id) instance_Id, version, created_ts FROM instance_versions WHERE created_ts <= time_series.ts ORDER BY instance_Id, created_ts DESC) _ ON true) AS _
+		 recent_instances AS (SELECT instance_id, (CASE WHEN last_update_granted_ts IS NOT NULL THEN last_update_granted_ts ELSE created_at END), version, 4 status FROM instance_application WHERE group_id=$1 AND last_check_for_updates >= now() - interval '%[1]s' ORDER BY last_update_granted_ts DESC),
+		 instance_versions AS (SELECT instance_id, created_at, version, status FROM instance_status_history WHERE instance_id IN (SELECT instance_id FROM recent_instances) AND status = 4 UNION (SELECT * FROM recent_instances) ORDER BY created_at DESC)
+	SELECT ts, (CASE WHEN version IS NULL THEN '' ELSE version END), sum(CASE WHEN version IS NOT null THEN 1 ELSE 0 END) total FROM (SELECT * FROM time_series LEFT JOIN LATERAL(SELECT distinct ON (instance_id) instance_Id, version, created_at FROM instance_versions WHERE created_at <= time_series.ts ORDER BY instance_Id, created_at DESC) _ ON true) AS _
 	GROUP BY 1,2
 	ORDER BY ts DESC;
 	`, validityInterval)
@@ -371,7 +371,7 @@ func (api *API) GetGroupStatusCountTimeline(groupID string) (map[time.Time](map[
 	query := fmt.Sprintf(`
 	WITH time_series AS (SELECT * FROM generate_series(now() - interval '%[1]s', now(), INTERVAL '1 hour') AS ts)
 	SELECT ts, (CASE WHEN status IS NULL THEN 0 ELSE status END), (CASE WHEN version IS NULL THEN '' ELSE version END), count(instance_id) as total FROM (SELECT * FROM time_series
-		LEFT JOIN LATERAL(SELECT * FROM instance_status_history WHERE group_id=$1 AND created_ts BETWEEN time_series.ts - INTERVAL '1 hour' + INTERVAL '1 sec' AND time_series.ts) _ ON TRUE) AS _
+		LEFT JOIN LATERAL(SELECT * FROM instance_status_history WHERE group_id=$1 AND created_at BETWEEN time_series.ts - INTERVAL '1 hour' + INTERVAL '1 sec' AND time_series.ts) _ ON TRUE) AS _
 	GROUP BY 1,2,3
 	ORDER BY ts DESC;
 	`, validityInterval)

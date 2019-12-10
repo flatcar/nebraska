@@ -8,6 +8,7 @@
 // db/migrations/0004_rename_coreos_action.sql (139B)
 // db/migrations/0005_default_team_id.sql (333B)
 // db/migrations/0006_initial_application.sql (4.08kB)
+// db/migrations/0007_rename_created_ts_to_created_at.sql (1.543kB)
 
 package api
 
@@ -236,6 +237,26 @@ func dbMigrations0006_initial_applicationSql() (*asset, error) {
 	return a, nil
 }
 
+var _dbMigrations0007_rename_created_ts_to_created_atSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xa4\x93\x31\x6e\xec\x30\x0c\x05\x7b\x9f\x42\xfd\xc7\x9e\xe0\xb7\xb9\x42\x6a\xe3\x85\x61\xbc\x42\x64\x4a\x90\x9e\x37\xc8\xed\x53\x65\xb1\x41\x00\x5a\x60\x4a\x17\x33\x84\x29\xce\xe5\x92\xfe\xed\x79\xeb\xa0\xa6\xe7\xb6\x2c\x28\xd4\x9e\x88\x97\xa2\x89\x8a\x3d\x75\x35\xec\x9a\xa4\x96\x63\xb7\x24\x5d\x41\x7d\x5d\x39\x12\xeb\xfd\x0b\xfc\xff\x03\x3c\x86\xf6\x11\x22\xd1\x5a\xc9\x02\xe6\x6a\x21\xbe\x41\xde\xb1\x69\x88\x7d\x2b\xa0\xa0\xaf\x90\xf0\x78\xb9\xc2\x4c\x4b\x88\xdd\x7a\x3d\x5a\x6c\x6b\xd9\x06\x61\x12\xfb\xed\x6f\x78\xfd\xeb\xee\xef\xa2\x41\xf0\x18\xeb\x35\x0f\xd6\xfe\x19\x72\xe9\x4d\x8d\xb1\x0b\x12\xe6\x5b\xe6\xfc\xd8\xe5\x31\x81\xa7\xfa\x61\xd3\x11\x80\x8f\x2e\x8e\xf9\x08\x7c\xf2\xfc\x21\x7c\xde\x8f\xc0\x67\xa7\x22\xf0\x15\x7e\x04\x3e\xeb\x46\xe0\xa3\x27\x11\xcc\xc1\x13\x11\x4c\x8a\xa6\x22\xf0\x5d\x5e\x04\x27\x17\xe4\x47\xf0\x1b\xfe\x0a\x00\x00\xff\xff\x0e\x52\x67\x30\x07\x06\x00\x00")
+
+func dbMigrations0007_rename_created_ts_to_created_atSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_dbMigrations0007_rename_created_ts_to_created_atSql,
+		"db/migrations/0007_rename_created_ts_to_created_at.sql",
+	)
+}
+
+func dbMigrations0007_rename_created_ts_to_created_atSql() (*asset, error) {
+	bytes, err := dbMigrations0007_rename_created_ts_to_created_atSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "db/migrations/0007_rename_created_ts_to_created_at.sql", size: 1543, mode: os.FileMode(0644), modTime: time.Unix(1, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xd5, 0xf3, 0xaa, 0xc3, 0x88, 0xa6, 0x72, 0x51, 0xfa, 0x14, 0x36, 0xb7, 0x9f, 0xe, 0xe4, 0x98, 0x49, 0xd1, 0x6a, 0xbb, 0x7e, 0x51, 0x3a, 0xa2, 0xe2, 0x1f, 0x43, 0x1c, 0x54, 0x53, 0x7e, 0x27}}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -327,14 +348,15 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"db/drop_all_tables.sql":                      dbDrop_all_tablesSql,
-	"db/sample_data.sql":                          dbSample_dataSql,
-	"db/migrations/0001_initial.sql":              dbMigrations0001_initialSql,
-	"db/migrations/0002_event_data.sql":           dbMigrations0002_event_dataSql,
-	"db/migrations/0003_longer_team_names.sql":    dbMigrations0003_longer_team_namesSql,
-	"db/migrations/0004_rename_coreos_action.sql": dbMigrations0004_rename_coreos_actionSql,
-	"db/migrations/0005_default_team_id.sql":      dbMigrations0005_default_team_idSql,
-	"db/migrations/0006_initial_application.sql":  dbMigrations0006_initial_applicationSql,
+	"db/drop_all_tables.sql":                                 dbDrop_all_tablesSql,
+	"db/sample_data.sql":                                     dbSample_dataSql,
+	"db/migrations/0001_initial.sql":                         dbMigrations0001_initialSql,
+	"db/migrations/0002_event_data.sql":                      dbMigrations0002_event_dataSql,
+	"db/migrations/0003_longer_team_names.sql":               dbMigrations0003_longer_team_namesSql,
+	"db/migrations/0004_rename_coreos_action.sql":            dbMigrations0004_rename_coreos_actionSql,
+	"db/migrations/0005_default_team_id.sql":                 dbMigrations0005_default_team_idSql,
+	"db/migrations/0006_initial_application.sql":             dbMigrations0006_initial_applicationSql,
+	"db/migrations/0007_rename_created_ts_to_created_at.sql": dbMigrations0007_rename_created_ts_to_created_atSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -381,12 +403,13 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	"db": &bintree{nil, map[string]*bintree{
 		"drop_all_tables.sql": &bintree{dbDrop_all_tablesSql, map[string]*bintree{}},
 		"migrations": &bintree{nil, map[string]*bintree{
-			"0001_initial.sql":              &bintree{dbMigrations0001_initialSql, map[string]*bintree{}},
-			"0002_event_data.sql":           &bintree{dbMigrations0002_event_dataSql, map[string]*bintree{}},
-			"0003_longer_team_names.sql":    &bintree{dbMigrations0003_longer_team_namesSql, map[string]*bintree{}},
-			"0004_rename_coreos_action.sql": &bintree{dbMigrations0004_rename_coreos_actionSql, map[string]*bintree{}},
-			"0005_default_team_id.sql":      &bintree{dbMigrations0005_default_team_idSql, map[string]*bintree{}},
-			"0006_initial_application.sql":  &bintree{dbMigrations0006_initial_applicationSql, map[string]*bintree{}},
+			"0001_initial.sql":                         &bintree{dbMigrations0001_initialSql, map[string]*bintree{}},
+			"0002_event_data.sql":                      &bintree{dbMigrations0002_event_dataSql, map[string]*bintree{}},
+			"0003_longer_team_names.sql":               &bintree{dbMigrations0003_longer_team_namesSql, map[string]*bintree{}},
+			"0004_rename_coreos_action.sql":            &bintree{dbMigrations0004_rename_coreos_actionSql, map[string]*bintree{}},
+			"0005_default_team_id.sql":                 &bintree{dbMigrations0005_default_team_idSql, map[string]*bintree{}},
+			"0006_initial_application.sql":             &bintree{dbMigrations0006_initial_applicationSql, map[string]*bintree{}},
+			"0007_rename_created_ts_to_created_at.sql": &bintree{dbMigrations0007_rename_created_ts_to_created_atSql, map[string]*bintree{}},
 		}},
 		"sample_data.sql": &bintree{dbSample_dataSql, map[string]*bintree{}},
 	}},

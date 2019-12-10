@@ -74,7 +74,7 @@ var (
 // Event represents an event posted by an instance to Nebraska.
 type Event struct {
 	ID              int            `db:"id" json:"id"`
-	CreatedTs       time.Time      `db:"created_ts" json:"created_ts"`
+	CreatedAt       time.Time      `db:"created_at" json:"created_ts"`
 	PreviousVersion dat.NullString `db:"previous_version" json:"previous_version"`
 	ErrorCode       dat.NullString `db:"error_code" json:"error_code"`
 	InstanceID      string         `db:"instance_id" json:"instance_id"`

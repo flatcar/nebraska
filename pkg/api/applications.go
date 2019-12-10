@@ -16,7 +16,7 @@ type Application struct {
 	ID          string     `db:"id" json:"id"`
 	Name        string     `db:"name" json:"name"`
 	Description string     `db:"description" json:"description"`
-	CreatedTs   time.Time  `db:"created_ts" json:"created_ts"`
+	CreatedAt   time.Time  `db:"created_at" json:"created_ts"`
 	TeamID      string     `db:"team_id" json:"-"`
 	Groups      []*Group   `db:"groups" json:"groups"`
 	Channels    []*Channel `db:"channels" json:"channels"`
@@ -149,13 +149,13 @@ func (api *API) GetApps(teamID string, page, perPage uint64) ([]*Application, er
 // specify how to query the rows or their destination.
 func (api *API) appsQuery() *dat.SelectDocBuilder {
 	return api.dbR.
-		SelectDoc("id, name, description, created_ts").
+		SelectDoc("id, name, description, created_at").
 		One("instances", api.appInstancesCountQuery()).
 		Many("groups", api.groupsQuery().Where("application_id = application.id")).
 		Many("channels", api.channelsQuery().Where("application_id = application.id")).
 		Many("packages", api.packagesQuery().Where("application_id = application.id")).
 		From("application").
-		OrderBy("created_ts DESC")
+		OrderBy("created_at DESC")
 }
 
 // appInstancesCountQuery returns a SQL query prepared to return the number of

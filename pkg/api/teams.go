@@ -6,14 +6,14 @@ import "time"
 type Team struct {
 	ID        string    `db:"id"`
 	Name      string    `db:"name"`
-	CreatedTs time.Time `db:"created_ts"`
+	CreatedAt time.Time `db:"created_at"`
 }
 
 func (api *API) GetTeams() ([]*Team, error) {
 	var teams []*Team
 
 	err := api.dbR.
-		SelectDoc("id, name, created_ts").
+		SelectDoc("id, name, created_at").
 		From("team").
 		OrderBy("name").
 		QueryStructs(&teams)
@@ -28,7 +28,7 @@ func (api *API) GetTeam() (*Team, error) {
 	var team *Team
 
 	err := api.dbR.
-		SelectDoc("id, name, created_ts").
+		SelectDoc("id, name, created_at").
 		From("team").
 		Limit(1).
 		QueryStruct(&team)

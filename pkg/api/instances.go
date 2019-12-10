@@ -51,7 +51,7 @@ const (
 type Instance struct {
 	ID          string              `db:"id" json:"id"`
 	IP          string              `db:"ip" json:"ip"`
-	CreatedTs   time.Time           `db:"created_ts" json:"created_ts"`
+	CreatedAt   time.Time           `db:"created_at" json:"created_ts"`
 	Application InstanceApplication `db:"application" json:"application,omitempty"`
 }
 
@@ -63,7 +63,7 @@ type InstanceApplication struct {
 	ApplicationID       string         `db:"application_id" json:"application_id"`
 	GroupID             dat.NullString `db:"group_id" json:"group_id"`
 	Version             string         `db:"version" json:"version"`
-	CreatedTs           time.Time      `db:"created_ts" json:"created_ts"`
+	CreatedAt           time.Time      `db:"created_at" json:"created_ts"`
 	Status              dat.NullInt64  `db:"status" json:"status"`
 	LastCheckForUpdates time.Time      `db:"last_check_for_updates" json:"last_check_for_updates"`
 	LastUpdateGrantedTs dat.NullTime   `db:"last_update_granted_ts" json:"last_update_granted_ts"`
@@ -77,7 +77,7 @@ type InstanceStatusHistoryEntry struct {
 	ID            int       `db:"id" json:"-"`
 	Status        int       `db:"status" json:"status"`
 	Version       string    `db:"version" json:"version"`
-	CreatedTs     time.Time `db:"created_ts" json:"created_ts"`
+	CreatedAt     time.Time `db:"created_at" json:"created_ts"`
 	InstanceID    string    `db:"instance_id" json:"-"`
 	ApplicationID string    `db:"application_id" json:"-"`
 	GroupID       string    `db:"group_id" json:"-"`
@@ -293,11 +293,11 @@ func (api *API) instanceStatusHistoryQuery(instanceID, appID, groupID string, li
 	}
 
 	return api.dbR.
-		SelectDoc("status", "version", "created_ts").
+		SelectDoc("status", "version", "created_at").
 		From("instance_status_history").
 		Where("instance_id = $1", instanceID).
 		Where("application_id = $1", appID).
 		Where("group_id = $1", groupID).
-		OrderBy("created_ts DESC").
+		OrderBy("created_at DESC").
 		Limit(limit)
 }

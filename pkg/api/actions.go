@@ -14,7 +14,7 @@ type FlatcarAction struct {
 	MetadataSignatureRsa  string    `db:"metadata_signature_rsa" json:"metadata_signature_rsa"`
 	MetadataSize          string    `db:"metadata_size" json:"metadata_size"`
 	Deadline              string    `db:"deadline" json:"deadline"`
-	CreatedTs             time.Time `db:"created_ts" json:"created_ts"`
+	CreatedAt             time.Time `db:"created_at" json:"created_ts"`
 	PackageID             string    `db:"package_id" json:"-"`
 }
 

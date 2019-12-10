@@ -38,7 +38,7 @@ type Package struct {
 	Description       dat.NullString `db:"description" json:"description"`
 	Size              dat.NullString `db:"size" json:"size"`
 	Hash              dat.NullString `db:"hash" json:"hash"`
-	CreatedTs         time.Time      `db:"created_ts" json:"created_ts"`
+	CreatedAt         time.Time      `db:"created_at" json:"created_ts"`
 	ChannelsBlacklist []string       `db:"channels_blacklist" json:"channels_blacklist"`
 	ApplicationID     string         `db:"application_id" json:"application_id"`
 	FlatcarAction     *FlatcarAction `db:"flatcar_action" json:"flatcar_action"`

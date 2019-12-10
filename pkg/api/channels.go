@@ -22,7 +22,7 @@ type Channel struct {
 	ID            string         `db:"id" json:"id"`
 	Name          string         `db:"name" json:"name"`
 	Color         string         `db:"color" json:"color"`
-	CreatedTs     time.Time      `db:"created_ts" json:"created_ts"`
+	CreatedAt     time.Time      `db:"created_at" json:"created_ts"`
 	ApplicationID string         `db:"application_id" json:"application_id"`
 	PackageID     dat.NullString `db:"package_id" json:"package_id"`
 	Package       *Package       `db:"package" json:"package"`

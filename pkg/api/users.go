@@ -24,7 +24,7 @@ type User struct {
 	ID        string    `db:"id" json:"id"`
 	Username  string    `db:"username" json:"username"`
 	Secret    string    `db:"secret" json:"secret"`
-	CreatedTs time.Time `db:"created_ts" json:"-"`
+	CreatedAt time.Time `db:"created_at" json:"-"`
 	TeamID    string    `db:"team_id" json:"team_id"`
 }
 
