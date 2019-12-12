@@ -28,8 +28,21 @@ type Application struct {
 	} `db:"instances" json:"instances,omitempty"`
 }
 
+// TableName returns a table name for Application struct. It's for
+// GORM.
+func (Application) TableName() string {
+	return "application"
+}
+
 // AddApp registers the provided application.
 func (api *API) AddApp(app *Application) (*Application, error) {
+	if api.useGORM() {
+		result, app := addAppWithGORM(api.gormDB, app)
+		if result.Error != nil {
+			return nil, result.Error
+		}
+		return app, nil
+	}
 	err := api.dbR.
 		InsertInto("application").
 		Whitelist("name", "description", "team_id").
@@ -37,13 +50,48 @@ func (api *API) AddApp(app *Application) (*Application, error) {
 		Returning("*").
 		QueryStruct(app)
 
-	return app, err
+	if err != nil {
+		return nil, err
+	}
+	return app, nil
+}
+
+func addAppWithGORM(db *gorm.DB, app *Application) (*gorm.DB, *Application) {
+	result := db.
+		Select("name", "description", "team_id").
+		Create(app)
+	return result, app
 }
 
 // AddAppCloning registers the provided application, cloning the groups and
 // channels from an existing application. Channels' packages will be set to null
 // as packages won't be cloned.
 func (api *API) AddAppCloning(app *Application, sourceAppID string) (*Application, error) {
+	if api.useGORM() {
+		tx := api.gormDB.Begin()
+		var result *gorm.DB
+		result, app = addAppWithGORM(tx, app)
+		if err := result.Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+		/*
+			if sourceAppID != "" {
+				var sourceApp *Application
+				result, sourceApp = getAppWithGORM(tx, sourceAppID)
+				if err != result.Error {
+					tx.Rollback()
+					return app, nil
+				}
+				channelsIDsMappings := make(map[string]dat.NullString)
+				// TODO
+			}
+		*/
+		if err := tx.Commit().Error; err != nil {
+			return nil, err
+		}
+		return app, nil
+	}
 	app, err := api.AddApp(app)
 	if err != nil {
 		return nil, err
@@ -75,6 +123,7 @@ func (api *API) AddAppCloning(app *Application, sourceAppID string) (*Applicatio
 			if group.ChannelID.String != "" {
 				group.ChannelID = channelsIDsMappings[group.ChannelID.String]
 			}
+			// TODO: why override that?
 			group.PolicyUpdatesEnabled = true
 			if _, err := api.AddGroup(group); err != nil {
 				return app, nil // FIXME - think about what we should return to the caller
@@ -88,6 +137,19 @@ func (api *API) AddAppCloning(app *Application, sourceAppID string) (*Applicatio
 // UpdateApp updates an existing application using the content of the
 // application provided.
 func (api *API) UpdateApp(app *Application) error {
+	if api.useGORM() {
+		result := api.gormDB.
+			Model(app).
+			Select("name", "description").
+			Update(app)
+		if result.Error != nil {
+			return result.Error
+		}
+		if result.RowsAffected == 0 {
+			return ErrNoRowsAffected
+		}
+		return nil
+	}
 	result, err := api.dbR.
 		Update("application").
 		SetWhitelist(app, "name", "description").
@@ -103,6 +165,18 @@ func (api *API) UpdateApp(app *Application) error {
 
 // DeleteApp removes the application identified by the id provided.
 func (api *API) DeleteApp(appID string) error {
+	if api.useGORM() {
+		result := api.gormDB.
+			Where(Application{ID: appID}).
+			Delete(Application{})
+		if result.Error != nil {
+			return result.Error
+		}
+		if result.RowsAffected == 0 {
+			return ErrNoRowsAffected
+		}
+		return nil
+	}
 	result, err := api.dbR.
 		DeleteFrom("application").
 		Where("id = $1", appID).
@@ -117,6 +191,13 @@ func (api *API) DeleteApp(appID string) error {
 
 // GetApp returns the application identified by the id provided.
 func (api *API) GetApp(appID string) (*Application, error) {
+	if api.useGORM() {
+		result, app := getAppWithGORM(api.gormDB, appID)
+		if result.Error != nil {
+			return nil, result.Error
+		}
+		return app, nil
+	}
 	var app Application
 
 	err := api.appsQuery().
@@ -130,9 +211,25 @@ func (api *API) GetApp(appID string) (*Application, error) {
 	return &app, nil
 }
 
+func getAppWithGORM(db *gorm.DB, appID string) (*gorm.DB, *Application) {
+	var app Application
+	result := db.
+		Where(Application{ID: appID}).
+		First(&app)
+	return result, &app
+}
+
 // GetApps returns all applications that belong to the team id provided.
 func (api *API) GetApps(teamID string, page, perPage uint64) ([]*Application, error) {
 	page, perPage = validatePaginationParams(page, perPage)
+	if api.useGORM() {
+		var apps []*Application
+		result := api.appsQueryGORM().Where(Application{TeamID: teamID}).Limit(perPage).Offset((page - 1) * perPage).Find(&apps)
+		if result.Error != nil {
+			return nil, result.Error
+		}
+		return apps, nil
+	}
 
 	var apps []*Application
 
@@ -142,6 +239,10 @@ func (api *API) GetApps(teamID string, page, perPage uint64) ([]*Application, er
 		QueryStructs(&apps)
 
 	return apps, err
+}
+
+func (api *API) appsQueryGORM() *gorm.DB {
+	return api.gormDB
 }
 
 // appsQuery returns a SelectDocBuilder prepared to return all applications.
