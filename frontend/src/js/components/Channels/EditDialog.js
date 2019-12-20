@@ -158,10 +158,11 @@ function EditDialog(props) {
             select
             margin="dense"
             component={TextField}
+            helperText={`Showing only for the channel's architecture (${ARCHES[arch]}).`}
             fullWidth
           >
             <MenuItem value="" key="none">Nothing yet</MenuItem>
-            {packages.map((packageItem, i) =>
+            {packages.filter(packageItem => packageItem.arch === arch).map((packageItem, i) =>
             <MenuItem value={packageItem.id} key={"packageItem_" + i}>
               {packageItem.version} &nbsp;&nbsp;(created: {moment.utc(packageItem.created_ts).local().format("DD/MM/YYYY")})
             </MenuItem>
