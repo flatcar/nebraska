@@ -13,15 +13,32 @@ import (
 	"github.com/kinvolk/nebraska/pkg/api"
 )
 
+type channelDescriptor struct {
+	name string
+	arch api.Arch
+}
+
+func chd(name string, arch api.Arch) channelDescriptor {
+	return channelDescriptor{
+		name: name,
+		arch: arch,
+	}
+}
+
 var (
 	logger = log.New("omaha")
 
 	flatcarAppID  = "e96281a6-d1af-4bde-9a0a-97b76e56dc57"
-	flatcarGroups = map[string]string{
-		"alpha":  "5b810680-e36a-4879-b98a-4f989e80b899",
-		"beta":   "3fe10490-dd73-4b49-b72a-28ac19acfcdc",
-		"stable": "9a2deb70-37be-4026-853f-bfdd6b347bbe",
-		"edge":   "72834a2b-ad86-4d6d-b498-e08a19ebe54e",
+	flatcarGroups = map[channelDescriptor]string{
+		chd("alpha", api.ArchAMD64):  "5b810680-e36a-4879-b98a-4f989e80b899",
+		chd("beta", api.ArchAMD64):   "3fe10490-dd73-4b49-b72a-28ac19acfcdc",
+		chd("stable", api.ArchAMD64): "9a2deb70-37be-4026-853f-bfdd6b347bbe",
+		chd("edge", api.ArchAMD64):   "72834a2b-ad86-4d6d-b498-e08a19ebe54e",
+
+		chd("alpha", api.ArchAArch64):  "e641708d-fb48-4260-8bdf-ba2074a1147a",
+		chd("beta", api.ArchAArch64):   "d112ec01-ba34-4a9e-9d4b-9814a685f266",
+		chd("stable", api.ArchAArch64): "11a585f6-9418-4df0-8863-78b2fd3240f8",
+		chd("edge", api.ArchAArch64):   "b4b2fa22-c1ea-498c-a8ac-c1dc0b1d7c17",
 	}
 
 	// ErrMalformedRequest error indicates that the omaha request it has
@@ -66,6 +83,21 @@ func (h *Handler) Handle(rawReq io.Reader, respWriter io.Writer, ip string) erro
 	return xml.NewEncoder(respWriter).Encode(omahaResp)
 }
 
+func getArch(os *omahaSpec.OS, appReq *omahaSpec.AppRequest) api.Arch {
+	arch, err := api.ArchFromCoreosString(appReq.Board)
+	if err == nil {
+		return arch
+	}
+	if os != nil {
+		arch, err = api.ArchFromOmahaString(os.Arch)
+		if err == nil {
+			return arch
+		}
+	}
+	logger.Warn("getArch - unknown arch, assuming amd64 arch")
+	return api.ArchAMD64
+}
+
 func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*omahaSpec.Response, error) {
 	omahaResp := omahaSpec.NewResponse()
 	omahaResp.Server = "nebraska"
@@ -78,7 +110,8 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 		group := reqApp.Track
 		if reqAppUUID, err := uuid.Parse(reqApp.ID); err == nil {
 			if reqAppUUID.String() == flatcarAppID {
-				if flatcarGroupID, ok := flatcarGroups[group]; ok {
+				descriptor := chd(group, getArch(omahaReq.OS, reqApp))
+				if flatcarGroupID, ok := flatcarGroups[descriptor]; ok {
 					group = flatcarGroupID
 				}
 			}
