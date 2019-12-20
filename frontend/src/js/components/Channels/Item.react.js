@@ -4,7 +4,7 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import PropTypes from 'prop-types';
 import React from "react";
-import { cleanSemverVersion } from "../../constants/helpers";
+import { ARCHES, cleanSemverVersion } from "../../constants/helpers";
 import { applicationsStore } from "../../stores/Stores";
 import MoreMenu from '../Common/MoreMenu';
 import ChannelAvatar from './ChannelAvatar';
@@ -32,7 +32,8 @@ function Item(props) {
       </ListItemAvatar>
       <ListItemText
         primary={name}
-        secondary={version ? cleanSemverVersion(version) : null}
+
+        secondary={`${version ? cleanSemverVersion(version) + ' ': ''}(${ARCHES[channel.arch]})`}
       />
       {props.handleUpdateChannel &&
         <ListItemSecondaryAction>
