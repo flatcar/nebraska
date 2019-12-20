@@ -26,19 +26,23 @@ type Channel struct {
 	ApplicationID string         `db:"application_id" json:"application_id"`
 	PackageID     dat.NullString `db:"package_id" json:"package_id"`
 	Package       *Package       `db:"package" json:"package"`
+	Arch          Arch           `db:"arch" json:"arch"`
 }
 
 // AddChannel registers the provided channel.
 func (api *API) AddChannel(channel *Channel) (*Channel, error) {
+	if !channel.Arch.IsValid() {
+		return nil, ErrInvalidArch
+	}
 	if channel.PackageID.String != "" {
-		if _, err := api.validatePackage(channel.PackageID.String, channel.ID, channel.ApplicationID); err != nil {
+		if _, err := api.validatePackage(channel.PackageID.String, channel.ID, channel.ApplicationID, channel.Arch); err != nil {
 			return nil, err
 		}
 	}
 
 	err := api.dbR.
 		InsertInto("channel").
-		Whitelist("name", "color", "application_id", "package_id").
+		Whitelist("name", "color", "application_id", "package_id", "arch").
 		Record(channel).
 		Returning("*").
 		QueryStruct(channel)
@@ -56,7 +60,7 @@ func (api *API) UpdateChannel(channel *Channel) error {
 
 	var pkg *Package
 	if channel.PackageID.String != "" {
-		if pkg, err = api.validatePackage(channel.PackageID.String, channel.ID, channelBeforeUpdate.ApplicationID); err != nil {
+		if pkg, err = api.validatePackage(channel.PackageID.String, channel.ID, channelBeforeUpdate.ApplicationID, channelBeforeUpdate.Arch); err != nil {
 			return err
 		}
 	}
@@ -111,6 +115,16 @@ func (api *API) GetChannel(channelID string) (*Channel, error) {
 	return &channel, nil
 }
 
+func (api *API) getSpecificChannels(channelID ...string) ([]*Channel, error) {
+	var channels []*Channel
+
+	err := api.channelsQuery().
+		Where("id in $1", channelID).
+		QueryStructs(&channels)
+
+	return channels, err
+}
+
 // GetChannels returns all channels associated to the application provided.
 func (api *API) GetChannels(appID string, page, perPage uint64) ([]*Channel, error) {
 	page, perPage = validatePaginationParams(page, perPage)
@@ -128,11 +142,14 @@ func (api *API) GetChannels(appID string, page, perPage uint64) ([]*Channel, err
 // validatePackage checks if a package belongs to the application provided and
 // that the channel is not in the package's channels blacklist. It returns the
 // package if everything is ok.
-func (api *API) validatePackage(packageID, channelID, appID string) (*Package, error) {
+func (api *API) validatePackage(packageID, channelID, appID string, channelArch Arch) (*Package, error) {
 	pkg, err := api.GetPackage(packageID)
 	if err == nil {
 		if pkg.ApplicationID != appID {
 			return nil, ErrInvalidPackage
+		}
+		if pkg.Arch != channelArch {
+			return nil, ErrArchMismatch
 		}
 
 		for _, blacklistedChannelID := range pkg.ChannelsBlacklist {
