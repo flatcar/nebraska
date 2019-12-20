@@ -13,7 +13,7 @@ import moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
 import _ from 'underscore';
-import { cleanSemverVersion } from '../../constants/helpers';
+import { ARCHES, cleanSemverVersion } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import Label from '../Common/Label';
 import MoreMenu from '../Common/MoreMenu';
@@ -74,7 +74,7 @@ function Item(props) {
       <Grid container direction="column">
         <Grid item>
           <Typography component="span" className={classes.subtitle}>Version:</Typography>&nbsp;
-          {cleanSemverVersion(props.packageItem.version)}
+          {`${cleanSemverVersion(props.packageItem.version)} (${ARCHES[props.packageItem.arch]})`}
         </Grid>
         {processedChannels.length > 0 &&
           <Grid item>
