@@ -5,6 +5,15 @@ import orange from '@material-ui/core/colors/orange';
 import red from '@material-ui/core/colors/red';
 import moment from 'moment';
 
+// Indexes/keys for the architectures need to match the ones in
+// pkg/api/arches.go.
+export const ARCHES = {
+  0: 'ALL',
+  1: 'AMD64',
+  2: 'ARM64',
+  3: 'X86',
+};
+
 const colors = makeColors();
 
 function makeColors() {
