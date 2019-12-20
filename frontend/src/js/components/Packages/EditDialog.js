@@ -240,7 +240,7 @@ function EditDialog(props) {
               multiple
               renderValue={selected => getChannelsNames(selected).join(' / ')}
             >
-              {channels.map((packageItem) => {
+              {channels.filter(channelItem => channelItem.arch === arch).map((packageItem) => {
                 let label = packageItem.name;
                 let isDisabled = !isCreation && packageItem.package &&
                   props.data.channel.version === packageItem.package.version;
@@ -254,7 +254,10 @@ function EditDialog(props) {
               })
               }
             </Field>
-            <FormHelperText>Blacklisted channels cannot point to this package</FormHelperText>
+            <FormHelperText>
+              Blacklisted channels cannot point to this package.<br/>
+              Showing only channels with the same architecture ({ARCHES[arch]}).
+            </FormHelperText>
           </FormControl>
         </DialogContent>
         <DialogActions>
