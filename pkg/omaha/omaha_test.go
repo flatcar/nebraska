@@ -21,7 +21,7 @@ const (
 	reqVersion  string = "3"
 	reqPlatform string = "coreos"
 	reqSp       string = "linux"
-	reqArch     string = ""
+	reqArch     string = "x64"
 )
 
 func newForTest(t *testing.T) *api.API {

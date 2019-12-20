@@ -15,10 +15,13 @@ func TestAddPackage(t *testing.T) {
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
 	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tChannel1, _ := a.AddChannel(&Channel{Name: "test_channel1", Color: "blue", ApplicationID: tApp.ID})
-	tChannel2, _ := a.AddChannel(&Channel{Name: "test_channel2", Color: "green", ApplicationID: tApp.ID})
+	tChannel1, _ := a.AddChannel(&Channel{Name: "test_channel1", Color: "blue", ApplicationID: tApp.ID, Arch: ArchAArch64})
+	tChannel2, _ := a.AddChannel(&Channel{Name: "test_channel2", Color: "green", ApplicationID: tApp.ID, Arch: ArchAArch64})
 
-	pkg, err := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, ChannelsBlacklist: []string{tChannel1.ID, tChannel2.ID}})
+	pkg, err := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, ChannelsBlacklist: []string{tChannel1.ID, tChannel2.ID}, Arch: ArchAArch64})
+	assert.NoError(t, err)
+
+	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: ArchX86})
 	assert.NoError(t, err)
 
 	pkgX, err := a.GetPackage(pkg.ID)
@@ -29,6 +32,7 @@ func TestAddPackage(t *testing.T) {
 	assert.Equal(t, tApp.ID, pkgX.ApplicationID)
 	assert.Contains(t, pkgX.ChannelsBlacklist, tChannel1.ID)
 	assert.Contains(t, pkgX.ChannelsBlacklist, tChannel2.ID)
+	assert.Equal(t, ArchAArch64, pkgX.Arch)
 
 	_, err = a.AddPackage(&Package{URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
 	assert.Error(t, err, "Package type is required.")
@@ -50,6 +54,15 @@ func TestAddPackage(t *testing.T) {
 
 	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, ChannelsBlacklist: []string{"invalidChannelID"}})
 	assert.Error(t, err, "Blacklisted channels must be valid existing channels ids.")
+
+	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, ChannelsBlacklist: []string{tChannel1.ID}})
+	assert.Error(t, err, "Blacklisted channels must have a matching arch.")
+
+	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: Arch(77777)})
+	assert.Error(t, err, "Arch must be a valid architecture")
+
+	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: Arch(77777)})
+	assert.Error(t, err, "Arch must be a valid architecture")
 }
 
 func TestAddPackageFlatcar(t *testing.T) {
@@ -105,10 +118,12 @@ func TestUpdatePackage(t *testing.T) {
 	err = a.UpdatePackage(&Package{ID: tPkg.ID, Type: PkgTypeOther, URL: "http://sample.url/pkg_updated", Version: "12.2.0", ChannelsBlacklist: []string{tChannel4.ID}})
 	assert.Equal(t, ErrBlacklistingChannel, err)
 
-	err = a.UpdatePackage(&Package{ID: tPkg.ID, Type: PkgTypeOther, URL: "http://sample.url/pkg_updated", Version: "12.2.0", ChannelsBlacklist: nil})
+	err = a.UpdatePackage(&Package{ID: tPkg.ID, Type: PkgTypeOther, URL: "http://sample.url/pkg_updated", Version: "12.2.0", ChannelsBlacklist: nil, Arch: ArchAArch64})
 	assert.NoError(t, err)
 	pkg, _ = a.GetPackage(tPkg.ID)
 	assert.Len(t, pkg.ChannelsBlacklist, 0)
+	// can't change an arch of a package
+	assert.Equal(t, ArchAll, pkg.Arch)
 }
 
 func TestUpdatePackageFlatcar(t *testing.T) {
@@ -181,6 +196,7 @@ func TestGetPackage(t *testing.T) {
 	assert.Equal(t, "12.1.0", pkg.Version)
 	assert.Equal(t, tApp.ID, pkg.ApplicationID)
 	assert.Equal(t, []string{tChannel.ID}, pkg.ChannelsBlacklist)
+	assert.Equal(t, ArchAll, pkg.Arch)
 
 	_, err = a.GetPackage("invalidPackageID")
 	assert.Error(t, err, "Package id must be a valid uuid.")
@@ -189,7 +205,7 @@ func TestGetPackage(t *testing.T) {
 	assert.Error(t, err, "Package id must exist.")
 }
 
-func TestGetPackageByVersion(t *testing.T) {
+func TestGetPackageByVersionAndArch(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
 
@@ -197,22 +213,32 @@ func TestGetPackageByVersion(t *testing.T) {
 	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
 	tPkg, err := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
 	assert.NoError(t, err)
+	tPkgARM, err := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "13.2.1", ApplicationID: tApp.ID, Arch: ArchAArch64})
+	assert.NoError(t, err)
 
-	pkg, err := a.GetPackageByVersion(tApp.ID, tPkg.Version)
+	pkg, err := a.GetPackageByVersionAndArch(tApp.ID, tPkg.Version, ArchAll)
 	assert.NoError(t, err)
 	assert.Equal(t, PkgTypeOther, pkg.Type)
 	assert.Equal(t, "http://sample.url/pkg", pkg.URL)
 	assert.Equal(t, "12.1.0", pkg.Version)
 	assert.Equal(t, tApp.ID, pkg.ApplicationID)
+	assert.Equal(t, ArchAll, pkg.Arch)
 
-	_, err = a.GetPackageByVersion("invalidAppID", "12.1.0")
+	_, err = a.GetPackageByVersionAndArch("invalidAppID", "12.1.0", ArchAll)
 	assert.Error(t, err, "Application id must be a valid uuid.")
 
-	_, err = a.GetPackageByVersion(uuid.New().String(), "12.1.0")
+	_, err = a.GetPackageByVersionAndArch(uuid.New().String(), "12.1.0", ArchAll)
 	assert.Error(t, err, "Application id must exist.")
 
-	_, err = a.GetPackageByVersion(tApp.ID, "hola")
+	_, err = a.GetPackageByVersionAndArch(tApp.ID, "hola", ArchAll)
 	assert.Error(t, err, "Version must be a valid semver value.")
+
+	_, err = a.GetPackageByVersionAndArch(tApp.ID, tPkgARM.Version, ArchAll)
+	assert.Error(t, err, "Shouldn't pick the ARM version")
+
+	pkg, err = a.GetPackageByVersionAndArch(tApp.ID, tPkgARM.Version, ArchAArch64)
+	assert.NoError(t, err)
+	assert.Equal(t, ArchAArch64, pkg.Arch)
 }
 
 func TestGetPackages(t *testing.T) {
@@ -221,9 +247,9 @@ func TestGetPackages(t *testing.T) {
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
 	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	_, _ = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg1", Version: "1010.5.0+2016-05-27-1832", ApplicationID: tApp.ID})
-	_, _ = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg2", Version: "12.1.0", ApplicationID: tApp.ID})
-	_, _ = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg3", Version: "14.1.0", ApplicationID: tApp.ID})
+	_, _ = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg1", Version: "1010.5.0+2016-05-27-1832", ApplicationID: tApp.ID, Arch: ArchAMD64})
+	_, _ = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg2", Version: "12.1.0", ApplicationID: tApp.ID, Arch: ArchX86})
+	_, _ = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg3", Version: "14.1.0", ApplicationID: tApp.ID, Arch: ArchAArch64})
 	_, _ = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg4", Version: "1010.6.0-blabla", ApplicationID: tApp.ID})
 
 	pkgs, err := a.GetPackages(tApp.ID, 0, 0)
@@ -233,6 +259,11 @@ func TestGetPackages(t *testing.T) {
 	assert.Equal(t, "http://sample.url/pkg1", pkgs[1].URL)
 	assert.Equal(t, "http://sample.url/pkg3", pkgs[2].URL)
 	assert.Equal(t, "http://sample.url/pkg2", pkgs[3].URL)
+
+	assert.Equal(t, ArchAll, pkgs[0].Arch)
+	assert.Equal(t, ArchAMD64, pkgs[1].Arch)
+	assert.Equal(t, ArchAArch64, pkgs[2].Arch)
+	assert.Equal(t, ArchX86, pkgs[3].Arch)
 
 	_, err = a.GetPackages("invalidAppID", 0, 0)
 	assert.Error(t, err, "Add id must be a valid uuid.")

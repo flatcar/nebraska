@@ -27,6 +27,7 @@ func TestAddChannel(t *testing.T) {
 	assert.Equal(t, "blue", channelX.Color)
 	assert.Equal(t, tApp.ID, channelX.ApplicationID)
 	assert.Equal(t, tPkg.ID, channelX.PackageID.String)
+	assert.Equal(t, tPkg.Arch, channelX.Arch)
 
 	channel2, err := a.AddChannel(&Channel{Name: "channel2", Color: "green", ApplicationID: tApp.ID})
 	assert.NoError(t, err, "A channel may not have a package associated yet.")
@@ -51,6 +52,12 @@ func TestAddChannel(t *testing.T) {
 
 	_, err = a.AddChannel(&Channel{Name: "channel3", ApplicationID: tApp.ID, PackageID: dat.NullStringFrom(tPkg2.ID)})
 	assert.Equal(t, ErrInvalidPackage, err, "Package used must belong to the same application as the channel.")
+
+	_, err = a.AddChannel(&Channel{Name: "channel3", ApplicationID: tApp.ID, Arch: Arch(77777)})
+	assert.Equal(t, ErrInvalidArch, err, "Channel must have a valid arch")
+
+	_, err = a.AddChannel(&Channel{Name: "channel3", ApplicationID: tApp.ID, PackageID: dat.NullStringFrom(tPkg.ID), Arch: ArchAArch64})
+	assert.Equal(t, ErrArchMismatch, err, "Channel and its package must have a matching arch")
 }
 
 func TestUpdateChannel(t *testing.T) {
@@ -107,7 +114,7 @@ func TestGetChannel(t *testing.T) {
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
 	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tChannel, err := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID})
+	tChannel, err := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, Arch: ArchAArch64})
 	assert.NoError(t, err)
 
 	channel, err := a.GetChannel(tChannel.ID)
@@ -115,6 +122,7 @@ func TestGetChannel(t *testing.T) {
 	assert.Equal(t, tChannel.Name, channel.Name)
 	assert.Equal(t, tChannel.Color, channel.Color)
 	assert.Equal(t, tApp.ID, channel.ApplicationID)
+	assert.Equal(t, ArchAArch64, channel.Arch)
 
 	_, err = a.GetChannel("invalidChannelID")
 	assert.Error(t, err, "Channel id must be a valid uuid.")

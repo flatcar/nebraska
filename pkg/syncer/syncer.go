@@ -13,6 +13,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/coreos/go-omaha/omaha"
@@ -37,6 +38,11 @@ var (
 	ErrInvalidAPIInstance = errors.New("invalid api instance")
 )
 
+type channelDescriptor struct {
+	name string
+	arch api.Arch
+}
+
 // Syncer represents a process in charge of checking for updates in the
 // different official Flatcar channels and updating the Flatcar application in
 // Nebraska as needed (creating new packages and updating channels to point
@@ -48,10 +54,10 @@ type Syncer struct {
 	packagesPath string
 	packagesURL  string
 	stopCh       chan struct{}
-	machinesIDs  map[string]string
-	bootIDs      map[string]string
-	versions     map[string]string
-	channelsIDs  map[string]string
+	machinesIDs  map[channelDescriptor]string
+	bootIDs      map[channelDescriptor]string
+	versions     map[channelDescriptor]string
+	channelsIDs  map[channelDescriptor]string
 	httpClient   *http.Client
 	ticker       *time.Ticker
 }
@@ -76,10 +82,10 @@ func New(conf *Config) (*Syncer, error) {
 		packagesPath: conf.PackagesPath,
 		packagesURL:  conf.PackagesURL,
 		stopCh:       make(chan struct{}),
-		machinesIDs:  make(map[string]string, 3),
-		bootIDs:      make(map[string]string, 3),
-		channelsIDs:  make(map[string]string, 3),
-		versions:     make(map[string]string, 3),
+		machinesIDs:  make(map[channelDescriptor]string, 8),
+		bootIDs:      make(map[channelDescriptor]string, 8),
+		channelsIDs:  make(map[channelDescriptor]string, 8),
+		versions:     make(map[channelDescriptor]string, 8),
 		httpClient:   &http.Client{},
 	}
 
@@ -129,14 +135,18 @@ func (s *Syncer) initialize() error {
 
 	for _, c := range flatcarApp.Channels {
 		if c.Name == "stable" || c.Name == "beta" || c.Name == "alpha" || c.Name == "edge" {
-			s.machinesIDs[c.Name] = "{" + uuid.New().String() + "}"
-			s.bootIDs[c.Name] = "{" + uuid.New().String() + "}"
-			s.channelsIDs[c.Name] = c.ID
+			descriptor := channelDescriptor{
+				name: c.Name,
+				arch: c.Arch,
+			}
+			s.machinesIDs[descriptor] = "{" + uuid.New().String() + "}"
+			s.bootIDs[descriptor] = "{" + uuid.New().String() + "}"
+			s.channelsIDs[descriptor] = c.ID
 
 			if c.Package != nil {
-				s.versions[c.Name] = c.Package.Version
+				s.versions[descriptor] = c.Package.Version
 			} else {
-				s.versions[c.Name] = "766.0.0"
+				s.versions[descriptor] = "766.0.0"
 			}
 		}
 	}
@@ -149,22 +159,22 @@ func (s *Syncer) initialize() error {
 // update is received we'll process it, creating packages and updating channels
 // in Nebraska as needed.
 func (s *Syncer) checkForUpdates() error {
-	for channel, currentVersion := range s.versions {
-		logger.Debug("checking for updates", "channel", channel, "currentVersion", currentVersion)
+	for descriptor, currentVersion := range s.versions {
+		logger.Debug("checking for updates", "channel", descriptor.name, "arch", descriptor.arch.String(), "currentVersion", currentVersion)
 
-		update, err := s.doOmahaRequest(channel, currentVersion)
+		update, err := s.doOmahaRequest(descriptor, currentVersion)
 		if err != nil {
 			return err
 		}
 		if update.Status == "ok" {
-			logger.Debug("checkForUpdates, got an update", "channel", channel, "currentVersion", currentVersion, "availableVersion", update.Manifest.Version)
-			if err := s.processUpdate(channel, update); err != nil {
+			logger.Debug("checkForUpdates, got an update", "channel", descriptor.name, "arch", descriptor.arch.String(), "currentVersion", currentVersion, "availableVersion", update.Manifest.Version)
+			if err := s.processUpdate(descriptor, update); err != nil {
 				return err
 			}
-			s.versions[channel] = update.Manifest.Version
-			s.bootIDs[channel] = "{" + uuid.New().String() + "}"
+			s.versions[descriptor] = update.Manifest.Version
+			s.bootIDs[descriptor] = "{" + uuid.New().String() + "}"
 		} else {
-			logger.Debug("checkForUpdates, no update available", "channel", channel, "currentVersion", currentVersion, "updateStatus", update.Status)
+			logger.Debug("checkForUpdates, no update available", "channel", descriptor.name, "arch", descriptor.arch.String(), "currentVersion", currentVersion, "updateStatus", update.Status)
 		}
 
 		select {
@@ -179,21 +189,21 @@ func (s *Syncer) checkForUpdates() error {
 
 // doOmahaRequest sends an Omaha request checking if there is an update for a
 // specific Flatcar channel, returning the update check to the caller.
-func (s *Syncer) doOmahaRequest(channel, currentVersion string) (*omaha.UpdateResponse, error) {
+func (s *Syncer) doOmahaRequest(descriptor channelDescriptor, currentVersion string) (*omaha.UpdateResponse, error) {
 	req := omaha.NewRequest()
 	req.OS.Version = "Chateau"
 	req.OS.Platform = "CoreOS"
 	req.OS.ServicePack = currentVersion + "_x86_64"
-	req.OS.Arch = ""
+	req.OS.Arch = descriptor.arch.OmahaString()
 	req.Version = "CoreOSUpdateEngine-0.1.0.0"
 	req.UpdaterVersion = "CoreOSUpdateEngine-0.1.0.0"
 	req.InstallSource = "scheduler"
 	req.IsMachine = 1
 	app := req.AddApp(flatcarAppID, currentVersion)
 	app.AddUpdateCheck()
-	app.MachineID = s.machinesIDs[channel]
-	app.BootID = s.bootIDs[channel]
-	app.Track = channel
+	app.MachineID = s.machinesIDs[descriptor]
+	app.BootID = s.bootIDs[descriptor]
+	app.Track = descriptor.name
 
 	payload, err := xml.Marshal(req)
 	if err != nil {
@@ -228,20 +238,20 @@ func (s *Syncer) doOmahaRequest(channel, currentVersion string) (*omaha.UpdateRe
 
 // processUpdate is in charge of creating packages in the Flatcar application in
 // Nebraska and updating the appropriate channel to point to the new channel.
-func (s *Syncer) processUpdate(channelName string, update *omaha.UpdateResponse) error {
+func (s *Syncer) processUpdate(descriptor channelDescriptor, update *omaha.UpdateResponse) error {
 	// Create new package and action for Flatcar application in Nebraska if
 	// needed (package may already exist and we just need to update the channel
 	// reference to it)
-	pkg, err := s.api.GetPackageByVersion(flatcarAppID, update.Manifest.Version)
+	pkg, err := s.api.GetPackageByVersionAndArch(flatcarAppID, update.Manifest.Version, descriptor.arch)
 	if err != nil {
 		url := update.URLs[0].CodeBase
 		filename := update.Manifest.Packages[0].Name
 
 		if s.hostPackages {
 			url = s.packagesURL
-			filename = fmt.Sprintf("flatcar-amd64-%s.gz", update.Manifest.Version)
+			filename = fmt.Sprintf("flatcar-%s-%s.gz", getArchString(descriptor.arch), update.Manifest.Version)
 			if err := s.downloadPackage(update, filename); err != nil {
-				logger.Error("processUpdate, downloading package", "error", err, "channelName", channelName)
+				logger.Error("processUpdate, downloading package", "error", err, "channel", descriptor.name, "arch", descriptor.arch.String())
 				return err
 			}
 		}
@@ -254,9 +264,10 @@ func (s *Syncer) processUpdate(channelName string, update *omaha.UpdateResponse)
 			Size:          dat.NullStringFrom(strconv.FormatUint(update.Manifest.Packages[0].Size, 10)),
 			Hash:          dat.NullStringFrom(update.Manifest.Packages[0].SHA1),
 			ApplicationID: flatcarAppID,
+			Arch:          descriptor.arch,
 		}
 		if _, err = s.api.AddPackage(pkg); err != nil {
-			logger.Error("processUpdate, adding package", "error", err, "channelName", channelName)
+			logger.Error("processUpdate, adding package", "error", err, "channel", descriptor.name, "arch", descriptor.arch.String())
 			return err
 		}
 
@@ -273,24 +284,28 @@ func (s *Syncer) processUpdate(channelName string, update *omaha.UpdateResponse)
 			PackageID:             pkg.ID,
 		}
 		if _, err = s.api.AddFlatcarAction(flatcarAction); err != nil {
-			logger.Error("processUpdate, adding flatcar action", "error", err, "channelName", channelName)
+			logger.Error("processUpdate, adding flatcar action", "error", err, "channel", descriptor.name, "arch", descriptor.arch.String())
 			return err
 		}
 	}
 
 	// Update channel to point to the package with the new version
-	channel, err := s.api.GetChannel(s.channelsIDs[channelName])
+	channel, err := s.api.GetChannel(s.channelsIDs[descriptor])
 	if err != nil {
-		logger.Error("processUpdate, getting channel to update", "error", err, "channelName", channelName)
+		logger.Error("processUpdate, getting channel to update", "error", err, "channel", descriptor.name, "arch", descriptor.arch.String())
 		return err
 	}
 	channel.PackageID = dat.NullStringFrom(pkg.ID)
 	if err = s.api.UpdateChannel(channel); err != nil {
-		logger.Error("processUpdate, updating channel", "error", err, "channelName", channelName)
+		logger.Error("processUpdate, updating channel", "error", err, "channel", descriptor.name, "arch", descriptor.arch.String())
 		return err
 	}
 
 	return nil
+}
+
+func getArchString(arch api.Arch) string {
+	return strings.TrimSuffix(arch.CoreosString(), "-usr")
 }
 
 // downloadPackage downloads and verifies the package payload referenced in the

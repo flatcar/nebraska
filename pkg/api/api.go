@@ -34,6 +34,13 @@ var (
 
 	// ErrInvalidSemver indicates that the provided semver version is not valid.
 	ErrInvalidSemver = errors.New("nebraska: invalid semver")
+
+	// ErrInvalidArch indicates that the provided architecture is not valid/supported
+	ErrInvalidArch = errors.New("nebraska: invalid/unsupported arch")
+
+	// ErrArchMismatch indicates that arches of two objects didn't
+	// match (for example, for a package and channel)
+	ErrArchMismatch = errors.New("nebraska: mismatched arches")
 )
 
 // API represents an api instance used to interact with Nebraska entities.

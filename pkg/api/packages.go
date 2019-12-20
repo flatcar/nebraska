@@ -42,12 +42,27 @@ type Package struct {
 	ChannelsBlacklist []string       `db:"channels_blacklist" json:"channels_blacklist"`
 	ApplicationID     string         `db:"application_id" json:"application_id"`
 	FlatcarAction     *FlatcarAction `db:"flatcar_action" json:"flatcar_action"`
+	Arch              Arch           `db:"arch" json:"arch"`
 }
 
 // AddPackage registers the provided package.
 func (api *API) AddPackage(pkg *Package) (*Package, error) {
 	if !isValidSemver(pkg.Version) {
 		return nil, ErrInvalidSemver
+	}
+	if !pkg.Arch.IsValid() {
+		return nil, ErrInvalidArch
+	}
+	if len(pkg.ChannelsBlacklist) > 0 {
+		blacklistedChannels, err := api.getSpecificChannels(pkg.ChannelsBlacklist...)
+		if err != nil {
+			return nil, err
+		}
+		for _, channel := range blacklistedChannels {
+			if pkg.Arch != channel.Arch {
+				return nil, ErrArchMismatch
+			}
+		}
 	}
 
 	tx, err := api.dbR.Begin()
@@ -59,7 +74,7 @@ func (api *API) AddPackage(pkg *Package) (*Package, error) {
 	}()
 
 	err = tx.InsertInto("package").
-		Whitelist("type", "filename", "description", "size", "hash", "url", "version", "application_id").
+		Whitelist("type", "filename", "description", "size", "hash", "url", "version", "application_id", "arch").
 		Record(pkg).
 		Returning("*").
 		QueryStruct(pkg)
@@ -180,13 +195,14 @@ func (api *API) GetPackage(pkgID string) (*Package, error) {
 	return &pkg, nil
 }
 
-// GetPackageByVersion returns the package identified by the application id and
-// version provided.
-func (api *API) GetPackageByVersion(appID, version string) (*Package, error) {
+// GetPackageByVersionAndArch returns the package identified by the
+// application ID, version and arch provided.
+func (api *API) GetPackageByVersionAndArch(appID, version string, arch Arch) (*Package, error) {
 	var pkg Package
 
 	err := api.packagesQuery().
 		Where("application_id = $1", appID).
+		Where("arch = $1", arch).
 		Where("version = $1", version).
 		QueryStruct(&pkg)
 
