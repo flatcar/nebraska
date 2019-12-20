@@ -16,6 +16,6 @@ export default function ChannelAvatar(props) {
   const classes = useStyles(props);
 
   return (
-    <Avatar className={classes.colorAvatar}>{props.children}</Avatar>
+    <Avatar className={classes.colorAvatar}>{props.children || '' }</Avatar>
   );
 }
