@@ -5,25 +5,40 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Grid from '@material-ui/core/Grid';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import FormControl from '@material-ui/core/FormControl';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
+import MuiSelect from '@material-ui/core/Select';
+import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import ChannelAvatar from '../Channels/ChannelAvatar';
 import moment from 'moment';
 import * as Yup from 'yup';
+import { ARCHES } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import { Formik, Form, Field } from 'formik';
 import { TextField } from 'formik-material-ui';
 import { ColorPickerButton } from '../Common/ColorPicker';
 
+const useStyles = makeStyles(theme => ({
+  nameField: {
+    width: '15rem',
+  },
+}))
+
 function EditDialog(props) {
+  const classes = useStyles();
   const defaultColor = props.data && props.data.channel ? props.data.channel.color : '';
   const [channelColor, setChannelColor] = React.useState(defaultColor);
+  const [arch, setArch] = React.useState(props.data.channel ? props.data.channel.arch : 1);
   const isCreation = Boolean(props.create);
 
   function handleSubmit(values, actions) {
     let data = {
       name: values.name,
+      arch: parseInt(arch),
       color: channelColor,
       application_id: props.data.applicationID
     }
@@ -48,12 +63,18 @@ function EditDialog(props) {
       }).
       fail(() => {
         actions.setSubmitting(false);
-        actions.setStatus({statusMessage: 'Something went wrong. Check the form or try again later...'});
+        actions.setStatus({
+          statusMessage: 'Something went wrong, or a channel with this name and architecture already exists. Check the form or try again later…'
+        });
       })
   }
 
   function handleColorPicked(color) {
     setChannelColor(color.hex);
+  }
+
+  function handleArchChange(event) {
+    setArch(event.target.value);
   }
 
   function handleClose() {
@@ -74,7 +95,8 @@ function EditDialog(props) {
             container
             spacing={2}
             justify="space-between"
-            alignItems="flex-end"
+            alignItems="center"
+            wrap="nowrap"
           >
             <Grid item>
               <ColorPickerButton
@@ -85,16 +107,48 @@ function EditDialog(props) {
                 <ChannelAvatar>{values.name ? values.name[0] : ''}</ChannelAvatar>
               </ColorPickerButton>
             </Grid>
-            <Grid item>
-              <Field
-                name="name"
-                component={TextField}
-                margin="dense"
-                label="Name"
-                type="text"
-                required={true}
-                fullWidth
-              />
+            <Grid
+              item
+              container
+              alignItems="flex-start"
+              spacing={2}
+            >
+              <Grid
+                item
+                className={classes.nameField}
+              >
+                <Field
+                  name="name"
+                  component={TextField}
+                  margin="dense"
+                  label="Name"
+                  InputLabelProps={{shrink: true}}
+                  autoFocus
+                  type="text"
+                  required={true}
+                  helperText="Can be an existing one as long as the arch is different."
+                  fullWidth
+                />
+              </Grid>
+              <Grid item>
+                <FormControl
+                  margin="dense"
+                  disabled={!isCreation}
+                >
+                  <InputLabel>Architecture</InputLabel>
+                  <MuiSelect
+                    value={arch}
+                    autoWidth
+                    onChange={handleArchChange}
+                  >
+                    {Object.keys(ARCHES).map(key => {
+                      const archName = ARCHES[key];
+                      return <MenuItem value={parseInt(key)} key={key}>{archName}</MenuItem>;
+                    })}
+                  </MuiSelect>
+                  <FormHelperText>Cannot be changed once created.</FormHelperText>
+                </FormControl>
+              </Grid>
             </Grid>
           </Grid>
           <Field
@@ -104,10 +158,11 @@ function EditDialog(props) {
             select
             margin="dense"
             component={TextField}
+            helperText={`Showing only for the channel's architecture (${ARCHES[arch]}).`}
             fullWidth
           >
             <MenuItem value="" key="none">Nothing yet</MenuItem>
-            {packages.map((packageItem, i) =>
+            {packages.filter(packageItem => packageItem.arch === arch).map((packageItem, i) =>
             <MenuItem value={packageItem.id} key={"packageItem_" + i}>
               {packageItem.version} &nbsp;&nbsp;(created: {moment.utc(packageItem.created_ts).local().format("DD/MM/YYYY")})
             </MenuItem>

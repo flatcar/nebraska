@@ -14,17 +14,27 @@ import InputLabel from '@material-ui/core/InputLabel';
 import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
 import MuiSelect from '@material-ui/core/Select';
+import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import * as Yup from 'yup';
+import { ARCHES } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import { Formik, Form, Field } from 'formik';
 import { Select, TextField } from 'formik-material-ui';
 
+const useStyles = makeStyles(theme => ({
+  topSelect: {
+    width: '10rem',
+  },
+}))
+
 function EditDialog(props) {
+  const classes = useStyles();
   const [flatcarType, otherType] = [1, 4];
   const [packageType, setPackageType] =
     React.useState(props.data.channel ? props.data.channel.type : flatcarType);
+  const [arch, setArch] = React.useState(props.data.channel ? props.data.channel.arch : 1);
   const isCreation = Boolean(props.create);
 
   function getFlatcarActionHash() {
@@ -46,9 +56,13 @@ function EditDialog(props) {
     setPackageType(event.target.value);
   }
 
-  function handleSubmit(values, actions) {
+  function handleArchChange(event) {
+    setArch(event.target.value);
+  }
 
+  function handleSubmit(values, actions) {
     let data = {
+      arch: parseInt(arch),
       filename: values.filename,
       description: values.description,
       url: values.url,
@@ -82,7 +96,9 @@ function EditDialog(props) {
       }).
       fail(() => {
         actions.setSubmitting(false);
-        actions.setStatus({statusMessage: 'Something went wrong, or the version you are trying to add already exists. Check the form or try again later...'});
+        actions.setStatus({
+          statusMessage: 'Something went wrong, or the version you are trying to add already exists for the arch and package type. Check the form or try again later...'
+        });
       })
   }
 
@@ -100,15 +116,45 @@ function EditDialog(props) {
             {status.statusMessage}
           </DialogContentText>
           }
-          <FormControl margin="dense">
-            <InputLabel>Type</InputLabel>
-            <MuiSelect
-              value={packageType}
-              onChange={handlePackageTypeChange}>
-              <MenuItem value={otherType} key="other">Other</MenuItem>
-              <MenuItem value={flatcarType} key="flatcar">Flatcar</MenuItem>
-            </MuiSelect>
-          </FormControl>
+          <Grid
+            container
+            justify="space-between"
+          >
+            <Grid item>
+              <FormControl
+                margin="dense"
+                className={classes.topSelect}
+              >
+                <InputLabel>Type</InputLabel>
+                <MuiSelect
+                  value={packageType}
+                  onChange={handlePackageTypeChange}>
+                  <MenuItem value={otherType} key="other">Other</MenuItem>
+                  <MenuItem value={flatcarType} key="flatcar">Flatcar</MenuItem>
+                </MuiSelect>
+              </FormControl>
+            </Grid>
+            <Grid item>
+              <FormControl
+                margin="dense"
+                fullWidth
+                className={classes.topSelect}
+                disabled={!isCreation}
+              >
+                <InputLabel>Architecture</InputLabel>
+                <MuiSelect
+                  value={arch}
+                  onChange={handleArchChange}
+                >
+                  {Object.keys(ARCHES).map(key => {
+                    const archName = ARCHES[key];
+                    return <MenuItem value={parseInt(key)} key={key}>{archName}</MenuItem>;
+                  })}
+                </MuiSelect>
+                <FormHelperText>Cannot be changed once created.</FormHelperText>
+              </FormControl>
+            </Grid>
+          </Grid>
           <Field
             name="url"
             component={TextField}
@@ -194,7 +240,7 @@ function EditDialog(props) {
               multiple
               renderValue={selected => getChannelsNames(selected).join(' / ')}
             >
-              {channels.map((packageItem) => {
+              {channels.filter(channelItem => channelItem.arch === arch).map((packageItem) => {
                 let label = packageItem.name;
                 let isDisabled = !isCreation && packageItem.package &&
                   props.data.channel.version === packageItem.package.version;
@@ -208,7 +254,10 @@ function EditDialog(props) {
               })
               }
             </Field>
-            <FormHelperText>Blacklisted channels cannot point to this package</FormHelperText>
+            <FormHelperText>
+              Blacklisted channels cannot point to this package.<br/>
+              Showing only channels with the same architecture ({ARCHES[arch]}).
+            </FormHelperText>
           </FormControl>
         </DialogContent>
         <DialogActions>
