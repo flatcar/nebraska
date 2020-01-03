@@ -3,17 +3,13 @@ package main
 import (
 	"errors"
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"net/url"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/mgutz/logxi/v1"
-
-	ginsessions "github.com/kinvolk/nebraska/pkg/sessions/gin"
 )
 
 var (
@@ -23,13 +19,6 @@ var (
 	nebraskaURL         = flag.String("nebraska-url", "", "nebraska URL (http://host:port - required when hosting Flatcar packages in nebraska)")
 	httpLog             = flag.Bool("http-log", false, "Enable http requests logging")
 	httpStaticDir       = flag.String("http-static-dir", "../frontend/built", "Path to frontend static files")
-	clientID            = flag.String("client-id", "", fmt.Sprintf("Client ID used for authentication; can be taken from %s env var too", clientIDEnvName))
-	clientSecret        = flag.String("client-secret", "", fmt.Sprintf("Client secret used for authentication; can be taken from %s env var too", clientSecretEnvName))
-	sessionAuthKey      = flag.String("session-secret", "", fmt.Sprintf("Session secret used authenticating sessions in cookies, will be generated if none is passed; can be taken from %s env var too", sessionAuthKeyEnvName))
-	sessionCryptKey     = flag.String("session-crypt-key", "", fmt.Sprintf("Session key used for encrypting sessions in cookies, will be generated if none is passed; can be taken from %s env var too", sessionCryptKeyEnvName))
-	webhookSecret       = flag.String("webhook-secret", "", fmt.Sprintf("Webhook secret used for validing webhook messages; can be taken from %s env var too", webhookSecretEnvName))
-	readWriteTeams      = flag.String("rw-teams", "", "comma-separated list of read-write teams in the org/team format")
-	readOnlyTeams       = flag.String("ro-teams", "", "comma-separated list of read-only teams in the org/team format")
 	logger              = log.New("nebraska")
 )
 
@@ -46,13 +35,6 @@ func main() {
 		hostFlatcarPackages: *hostFlatcarPackages,
 		flatcarPackagesPath: *flatcarPackagesPath,
 		nebraskaURL:         *nebraskaURL,
-		sessionAuthKey:      *sessionAuthKey,
-		sessionCryptKey:     *sessionCryptKey,
-		oauthClientID:       *clientID,
-		oauthClientSecret:   *clientSecret,
-		webhookSecret:       *webhookSecret,
-		readWriteTeams:      strings.Split(*readWriteTeams, ","),
-		readOnlyTeams:       strings.Split(*readOnlyTeams, ","),
 	}
 	ctl, err := newController(conf)
 	if err != nil {
@@ -106,7 +88,6 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 	}
 	engine.Use(gin.Recovery())
 	setupRouter(engine, "top", httpLog)
-	engine.Use(ginsessions.SessionsMiddleware(ctl.sessionsStore, "nebraska"))
 	wrappedEngine := wrapRouter(engine, httpLog)
 
 	// API router setup
@@ -171,11 +152,6 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 	setupRouter(metricsRouter, "metrics", httpLog)
 	metricsRouter.Use(ctl.authenticate)
 	metricsRouter.GET("/", ctl.getMetrics)
-
-	// oauth
-	oauthRouter := wrappedEngine.Group("/login", "oauth")
-	oauthRouter.GET("/cb", ctl.loginCb)
-	oauthRouter.POST("/webhook", ctl.loginWebhook)
 
 	// Serve frontend static content
 	staticRouter := wrappedEngine.Group("/", "static")

@@ -19,7 +19,6 @@ require (
 	github.com/go-sql-driver/mysql v1.4.1 // indirect
 	github.com/gobuffalo/packr v1.30.1 // indirect
 	github.com/golangci/golangci-lint v1.21.0
-	github.com/google/go-github/v28 v28.1.1
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/securecookie v1.1.1
 	github.com/jmoiron/sqlx v1.2.0
@@ -36,7 +35,7 @@ require (
 	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/stretchr/testify v1.4.0
 	github.com/ziutek/mymysql v1.5.4 // indirect
-	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
+	google.golang.org/appengine v1.4.0 // indirect
 	gopkg.in/gorp.v1 v1.7.1 // indirect
 	gopkg.in/mgutz/dat.v1 v1.1.10
 	gopkg.in/stretchr/testify.v1 v1.2.2 // indirect
