@@ -8,12 +8,22 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/mgutz/logxi/v1"
 
 	"github.com/kinvolk/nebraska/cmd/nebraska/auth"
 	"github.com/kinvolk/nebraska/pkg/api"
+	"github.com/kinvolk/nebraska/pkg/random"
+)
+
+const (
+	ghClientIDEnvName        = "NEBRASKA_GITHUB_OAUTH_CLIENT_ID"
+	ghClientSecretEnvName    = "NEBRASKA_GITHUB_OAUTH_CLIENT_SECRET"
+	ghSessionAuthKeyEnvName  = "NEBRASKA_GITHUB_SESSION_SECRET"
+	ghSessionCryptKeyEnvName = "NEBRASKA_GITHUB_SESSION_CRYPT_KEY"
+	ghWebhookSecretEnvName   = "NEBRASKA_GITHUB_WEBHOOK_SECRET"
 )
 
 var (
@@ -23,7 +33,14 @@ var (
 	nebraskaURL         = flag.String("nebraska-url", "", "nebraska URL (http://host:port - required when hosting Flatcar packages in nebraska)")
 	httpLog             = flag.Bool("http-log", false, "Enable http requests logging")
 	httpStaticDir       = flag.String("http-static-dir", "../frontend/built", "Path to frontend static files")
-	authMode            = flag.String("auth-mode", "noop", "authentication mode, available modes: noop")
+	authMode            = flag.String("auth-mode", "noop", "authentication mode, available modes: noop, github")
+	ghClientID          = flag.String("gh-client-id", "", fmt.Sprintf("GitHub client ID used for authentication; can be taken from %s env var too", ghClientIDEnvName))
+	ghClientSecret      = flag.String("gh-client-secret", "", fmt.Sprintf("GitHub client secret used for authentication; can be taken from %s env var too", ghClientSecretEnvName))
+	ghSessionAuthKey    = flag.String("gh-session-secret", "", fmt.Sprintf("Session secret used for authenticating sessions in cookies used for storing GitHub info , will be generated if none is passed; can be taken from %s env var too", ghSessionAuthKeyEnvName))
+	ghSessionCryptKey   = flag.String("gh-session-crypt-key", "", fmt.Sprintf("Session key used for encrypting sessions in cookies used for storing GitHub info, will be generated if none is passed; can be taken from %s env var too", ghSessionCryptKeyEnvName))
+	ghWebhookSecret     = flag.String("gh-webhook-secret", "", fmt.Sprintf("GitHub webhook secret used for validing webhook messages; can be taken from %s env var too", ghWebhookSecretEnvName))
+	ghReadWriteTeams    = flag.String("gh-rw-teams", "", "comma-separated list of read-write GitHub teams in the org/team format")
+	ghReadOnlyTeams     = flag.String("gh-ro-teams", "", "comma-separated list of read-only GitHub teams in the org/team format")
 	logger              = log.New("nebraska")
 )
 
@@ -48,6 +65,7 @@ func mainWithError() error {
 
 	var (
 		noopAuthConfig *auth.NoopAuthConfig
+		ghAuthConfig   *auth.GithubAuthConfig
 	)
 
 	switch *authMode {
@@ -59,6 +77,33 @@ func mainWithError() error {
 		noopAuthConfig = &auth.NoopAuthConfig{
 			DefaultTeamID: defaultTeam.ID,
 		}
+	case "github":
+		defaultTeam, err := api.GetTeam()
+		if err != nil {
+			return err
+		}
+		oauthClientID, err := obtainOAuthClientID(*ghClientID)
+		if err != nil {
+			return err
+		}
+		oauthClientSecret, err := obtainOAuthClientSecret(*ghClientSecret)
+		if err != nil {
+			return err
+		}
+		ghWebhookSecret, err := obtainWebhookSecret(*ghWebhookSecret)
+		if err != nil {
+			return err
+		}
+		ghAuthConfig = &auth.GithubAuthConfig{
+			SessionAuthKey:    obtainSessionAuthKey(*ghSessionAuthKey),
+			SessionCryptKey:   obtainSessionCryptKey(*ghSessionCryptKey),
+			OAuthClientID:     oauthClientID,
+			OAuthClientSecret: oauthClientSecret,
+			WebhookSecret:     ghWebhookSecret,
+			ReadWriteTeams:    strings.Split(*ghReadWriteTeams, ","),
+			ReadOnlyTeams:     strings.Split(*ghReadOnlyTeams, ","),
+			DefaultTeamID:     defaultTeam.ID,
+		}
 	default:
 		return fmt.Errorf("unknown auth mode %q", *authMode)
 	}
@@ -69,6 +114,7 @@ func mainWithError() error {
 		flatcarPackagesPath: *flatcarPackagesPath,
 		nebraskaURL:         *nebraskaURL,
 		noopAuthConfig:      noopAuthConfig,
+		githubAuthConfig:    ghAuthConfig,
 	}
 	ctl, err := newController(conf)
 	if err != nil {
@@ -83,6 +129,48 @@ func mainWithError() error {
 		params = append(params, ":8000")
 	}
 	return engine.Run(params...)
+}
+
+func obtainSessionAuthKey(potentialSecret string) []byte {
+	if secret := getPotentialOrEnv(potentialSecret, ghSessionAuthKeyEnvName); secret != "" {
+		return []byte(secret)
+	}
+	return random.Data(64)
+}
+
+func obtainSessionCryptKey(potentialKey string) []byte {
+	if key := getPotentialOrEnv(potentialKey, ghSessionCryptKeyEnvName); key != "" {
+		return []byte(key)
+	}
+	return random.Data(32)
+}
+
+func obtainOAuthClientID(potentialID string) (string, error) {
+	if id := getPotentialOrEnv(potentialID, ghClientIDEnvName); potentialID != "" {
+		return id, nil
+	}
+	return "", errors.New("no oauth client ID")
+}
+
+func obtainOAuthClientSecret(potentialSecret string) (string, error) {
+	if secret := getPotentialOrEnv(potentialSecret, ghClientSecretEnvName); secret != "" {
+		return secret, nil
+	}
+	return "", errors.New("no oauth client secret")
+}
+
+func obtainWebhookSecret(potentialSecret string) (string, error) {
+	if secret := getPotentialOrEnv(potentialSecret, ghWebhookSecretEnvName); secret != "" {
+		return secret, nil
+	}
+	return "", errors.New("no webhook secret")
+}
+
+func getPotentialOrEnv(potentialValue, envName string) string {
+	if potentialValue != "" {
+		return potentialValue
+	}
+	return os.Getenv(envName)
 }
 
 func checkArgs() error {

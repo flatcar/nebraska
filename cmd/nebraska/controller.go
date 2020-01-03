@@ -32,6 +32,7 @@ type controllerConfig struct {
 	flatcarPackagesPath string
 	nebraskaURL         string
 	noopAuthConfig      *auth.NoopAuthConfig
+	githubAuthConfig    *auth.GithubAuthConfig
 }
 
 func newController(conf *controllerConfig) (*controller, error) {
@@ -73,6 +74,9 @@ func (ctl *controller) close() {
 func getAuthenticator(config *controllerConfig) (auth.Authenticator, error) {
 	if config.noopAuthConfig != nil {
 		return auth.NewNoopAuthenticator(config.noopAuthConfig), nil
+	}
+	if config.githubAuthConfig != nil {
+		return auth.NewGithubAuthenticator(config.githubAuthConfig), nil
 	}
 	return nil, fmt.Errorf("authentication method not configured")
 }
