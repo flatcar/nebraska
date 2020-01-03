@@ -1,12 +1,28 @@
 # Nebraska Authorization
 
-Nebraska uses OAuth or Bearer tokens to authenticate and authorize
-users. Currently, only GitHub is supported as an authentication backend.
-[GitHub personal access tokens](https://github.com/settings/tokens) can
-be used as bearer token. If no bearer token is sent, Nebraska will authorize
-users through the GitHub Oauth flow and create a persistent session.
+Nebraska uses either a noop authentication, or OAuth or Bearer tokens
+to authenticate and authorize users. Currently, only GitHub is
+supported as an OAuth authentication backend.  [GitHub personal access
+tokens](https://github.com/settings/tokens) can be used as bearer
+token. If no bearer token is sent, Nebraska will authorize users
+through the GitHub Oauth flow and create a persistent session.
 
-# Deploying Nebraska for testing on local computer
+# Deploying Nebraska for testing on local computer (noop authentication)
+
+- Go to the nebraska project directory and run `make all`
+
+- Start the database: `docker run --privileged -d -p
+  127.0.0.1:5432:5432 nebraska/postgres`
+
+- Start the Nebraska backend:
+
+  - `LOGXI=* nebraska -auth-mode noop -http-static-dir $PWD/frontend/built
+    -http-log`
+
+- In the browser, access `http://localhost:8000`
+
+# Deploying Nebraska for testing/development on local computer (GitHub
+  authentication)
 
 - Go to https://smee.io/ and press the `Start a new channel` button,
   you'll get redirected to something like
@@ -69,13 +85,13 @@ users through the GitHub Oauth flow and create a persistent session.
 
 - Start the Nebraska backend:
 
-  - `LOGXI=* nebraska -client-id <CLIENT_ID> -client-secret
-    <CLIENT_SECRET> -ro-teams <READ_ONLY_TEAMS> -rw-teams <READ_WRITE_TEAMS>
-    -http-static-dir $PWD/frontend/built -http-log
-    -webhook-secret <WEBHOOK_SECRET>`
+  - `LOGXI=* nebraska -auth-mode github -gh-client-id <CLIENT_ID>
+    -gh-client-secret <CLIENT_SECRET> -gh-ro-teams <READ_ONLY_TEAMS>
+    -gh-rw-teams <READ_WRITE_TEAMS> -gh-webhook-secret <WEBHOOK_SECRET>
+    -http-static-dir $PWD/frontend/built -http-log`
 
-    - Use the `-rw-teams` and `-ro-teams` to specify the list of read-write
-      and read-only access teams.
+    - Use the `-gh-rw-teams` and `-gh-ro-teams` to specify the list of
+      read-write and read-only access teams.
     - Nebraska uses this list to set the access level of the user accordingly
       and users in read-only teams can only perform `GET` and `HEAD` requests.
     - Nebraska then logs into Github and fetches the list of the Github teams
@@ -91,7 +107,7 @@ users through the GitHub Oauth flow and create a persistent session.
 
 - In the browser, access `http://localhost:8000`
 
-# Deploying
+# Deploying on remote server (GitHub authentication)
 
 Assuming that our Nebraska instance is reachable through a
 `nebraska.example.com` address, then there is no need for using `smee` and
@@ -106,7 +122,7 @@ the app configuration can have different values:
 
 Rest of the steps is the same.
 
-# Personal Access Tokens
+# Personal Access Tokens (GitHub authentication)
 
 How a Nebraska instance does authentication depends on existence of the
 `Authorization` header in the first request. Basically if the header
@@ -131,6 +147,6 @@ Personal access token requires just one scope: `read:org`.
     Nebraska, but instead start asking for some CSS and javascript
     stuff outright, which it won't get. That results in a blank
     page. Force the browser to get `index.html` from Nebraska by
-    cleaning the cache for localhost (or the server where the
-    Nebraska instance is deployed). We will try to improve this in
-    the future.
+    either doing a force refresh (ctrl+f5 on firefox), or by cleaning
+    the cache for localhost (or the server where the Nebraska instance
+    is deployed). We will try to improve this in the future.
