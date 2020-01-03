@@ -23,11 +23,17 @@ var (
 )
 
 func main() {
+	if err := mainWithError(); err != nil {
+		logger.Error(err.Error())
+		os.Exit(1)
+	}
+}
+
+func mainWithError() error {
 	flag.Parse()
 
 	if err := checkArgs(); err != nil {
-		logger.Error(err.Error())
-		os.Exit(1)
+		return err
 	}
 
 	conf := &controllerConfig{
@@ -38,8 +44,7 @@ func main() {
 	}
 	ctl, err := newController(conf)
 	if err != nil {
-		logger.Error(err.Error())
-		os.Exit(1)
+		return err
 	}
 	defer ctl.close()
 
@@ -49,11 +54,7 @@ func main() {
 	if os.Getenv("PORT") == "" {
 		params = append(params, ":8000")
 	}
-	err = engine.Run(params...)
-	if err != nil {
-		logger.Error(err.Error())
-		os.Exit(1)
-	}
+	return engine.Run(params...)
 }
 
 func checkArgs() error {
