@@ -12,6 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/kinvolk/nebraska/cmd/nebraska/auth"
 	"github.com/kinvolk/nebraska/pkg/api"
 	"github.com/kinvolk/nebraska/pkg/omaha"
 	"github.com/kinvolk/nebraska/pkg/syncer"
@@ -21,6 +22,7 @@ type controller struct {
 	api          *api.API
 	omahaHandler *omaha.Handler
 	syncer       *syncer.Syncer
+	auth         auth.Authenticator
 }
 
 type controllerConfig struct {
@@ -29,12 +31,18 @@ type controllerConfig struct {
 	hostFlatcarPackages bool
 	flatcarPackagesPath string
 	nebraskaURL         string
+	noopAuthConfig      *auth.NoopAuthConfig
 }
 
 func newController(conf *controllerConfig) (*controller, error) {
+	authenticator, err := getAuthenticator(conf)
+	if err != nil {
+		return nil, err
+	}
 	c := &controller{
 		api:          conf.api,
 		omahaHandler: omaha.NewHandler(conf.api),
+		auth:         authenticator,
 	}
 
 	if conf.enableSyncer {
@@ -62,6 +70,13 @@ func (ctl *controller) close() {
 	ctl.api.Close()
 }
 
+func getAuthenticator(config *controllerConfig) (auth.Authenticator, error) {
+	if config.noopAuthConfig != nil {
+		return auth.NewNoopAuthenticator(config.noopAuthConfig), nil
+	}
+	return nil, fmt.Errorf("authentication method not configured")
+}
+
 func httpError(c *gin.Context, status int) {
 	http.Error(c.Writer, http.StatusText(status), status)
 }
@@ -73,7 +88,13 @@ func httpError(c *gin.Context, status int) {
 // authenticate is a middleware handler in charge of authenticating requests.
 //func (ctl *controller) authenticate(c *web.C, h http.Handler) http.Handler {
 func (ctl *controller) authenticate(c *gin.Context) {
-	httpError(c, http.StatusForbidden)
+	teamID, replied := ctl.auth.Authenticate(c)
+	if replied {
+		return
+	}
+	logger.Debug("authenticate", "setting team id in context keys", teamID)
+	c.Keys["team_id"] = teamID
+	c.Next()
 }
 
 // ----------------------------------------------------------------------------

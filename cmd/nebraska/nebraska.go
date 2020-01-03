@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"net/url"
 	"os"
@@ -11,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 	log "github.com/mgutz/logxi/v1"
 
+	"github.com/kinvolk/nebraska/cmd/nebraska/auth"
 	"github.com/kinvolk/nebraska/pkg/api"
 )
 
@@ -21,6 +23,7 @@ var (
 	nebraskaURL         = flag.String("nebraska-url", "", "nebraska URL (http://host:port - required when hosting Flatcar packages in nebraska)")
 	httpLog             = flag.Bool("http-log", false, "Enable http requests logging")
 	httpStaticDir       = flag.String("http-static-dir", "../frontend/built", "Path to frontend static files")
+	authMode            = flag.String("auth-mode", "noop", "authentication mode, available modes: noop")
 	logger              = log.New("nebraska")
 )
 
@@ -43,12 +46,29 @@ func mainWithError() error {
 		return err
 	}
 
+	var (
+		noopAuthConfig *auth.NoopAuthConfig
+	)
+
+	switch *authMode {
+	case "noop":
+		defaultTeam, err := api.GetTeam()
+		if err != nil {
+			return err
+		}
+		noopAuthConfig = &auth.NoopAuthConfig{
+			DefaultTeamID: defaultTeam.ID,
+		}
+	default:
+		return fmt.Errorf("unknown auth mode %q", *authMode)
+	}
 	conf := &controllerConfig{
 		api:                 api,
 		enableSyncer:        *enableSyncer,
 		hostFlatcarPackages: *hostFlatcarPackages,
 		flatcarPackagesPath: *flatcarPackagesPath,
 		nebraskaURL:         *nebraskaURL,
+		noopAuthConfig:      noopAuthConfig,
 	}
 	ctl, err := newController(conf)
 	if err != nil {
@@ -98,6 +118,8 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 	engine.Use(gin.Recovery())
 	setupRouter(engine, "top", httpLog)
 	wrappedEngine := wrapRouter(engine, httpLog)
+
+	ctl.auth.SetupRouter(wrappedEngine)
 
 	// API router setup
 	apiRouter := wrappedEngine.Group("/api", "api")
