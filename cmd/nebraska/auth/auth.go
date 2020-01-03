@@ -2,8 +2,13 @@ package auth
 
 import (
 	"github.com/gin-gonic/gin"
+	log "github.com/mgutz/logxi/v1"
 
 	"github.com/kinvolk/nebraska/cmd/nebraska/ginhelpers"
+)
+
+var (
+	logger = log.New("auth")
 )
 
 // Authenticator provides a way to authenticate a user sending an HTTP
