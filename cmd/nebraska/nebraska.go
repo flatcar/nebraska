@@ -10,6 +10,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	log "github.com/mgutz/logxi/v1"
+
+	"github.com/kinvolk/nebraska/pkg/api"
 )
 
 var (
@@ -36,7 +38,13 @@ func mainWithError() error {
 		return err
 	}
 
+	api, err := api.New()
+	if err != nil {
+		return err
+	}
+
 	conf := &controllerConfig{
+		api:                 api,
 		enableSyncer:        *enableSyncer,
 		hostFlatcarPackages: *hostFlatcarPackages,
 		flatcarPackagesPath: *flatcarPackagesPath,

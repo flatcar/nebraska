@@ -24,6 +24,7 @@ type controller struct {
 }
 
 type controllerConfig struct {
+	api                 *api.API
 	enableSyncer        bool
 	hostFlatcarPackages bool
 	flatcarPackagesPath string
@@ -31,18 +32,14 @@ type controllerConfig struct {
 }
 
 func newController(conf *controllerConfig) (*controller, error) {
-	api, err := api.New()
-	if err != nil {
-		return nil, err
-	}
 	c := &controller{
-		api:          api,
-		omahaHandler: omaha.NewHandler(api),
+		api:          conf.api,
+		omahaHandler: omaha.NewHandler(conf.api),
 	}
 
 	if conf.enableSyncer {
 		syncerConf := &syncer.Config{
-			API:          api,
+			API:          conf.api,
 			HostPackages: conf.hostFlatcarPackages,
 			PackagesPath: conf.flatcarPackagesPath,
 			PackagesURL:  conf.nebraskaURL + "/flatcar",
