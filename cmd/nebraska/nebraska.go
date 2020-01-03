@@ -9,8 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"sync/atomic"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/mgutz/logxi/v1"
@@ -95,61 +93,24 @@ func checkArgs() error {
 	return nil
 }
 
-const requestIDKey = "github.com/kinvolk/nebraska/request-id"
-
 func setupRouter(router gin.IRoutes, name string, httpLog bool) {
 	if httpLog {
-		router.Use(func(c *gin.Context) {
-			reqID, ok := c.Get(requestIDKey)
-			if !ok {
-				reqID = -1
-			}
-			logger.Debug("router debug",
-				"request id", reqID,
-				"router name", name,
-			)
-			c.Next()
-		})
+		setupUsedRouterLogging(router, name)
 	}
 }
-
-var requestID uint64
 
 func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 	engine := gin.New()
 	if httpLog {
-		engine.Use(func(c *gin.Context) {
-			reqID := atomic.AddUint64(&requestID, 1)
-			c.Set(requestIDKey, reqID)
-
-			start := time.Now()
-			logger.Debug("request debug",
-				"request ID", reqID,
-				"start time", start,
-				"method", c.Request.Method,
-				"URL", c.Request.URL.String(),
-				"client IP", c.ClientIP(),
-			)
-
-			// Process request
-			c.Next()
-
-			stop := time.Now()
-			latency := stop.Sub(start)
-			logger.Debug("request debug",
-				"request ID", reqID,
-				"stop time", stop,
-				"latency", latency,
-				"status", c.Writer.Status(),
-			)
-		})
+		setupRequestLifetimeLogging(engine)
 	}
 	engine.Use(gin.Recovery())
 	setupRouter(engine, "top", httpLog)
 	engine.Use(ginsessions.SessionsMiddleware(ctl.sessionsStore, "nebraska"))
+	wrappedEngine := wrapRouter(engine, httpLog)
+
 	// API router setup
-	apiRouter := engine.Group("/api")
-	setupRouter(apiRouter, "api", httpLog)
+	apiRouter := wrappedEngine.Group("/api", "api")
 	apiRouter.Use(ctl.authenticate)
 
 	// API routes
@@ -195,33 +156,29 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 	apiRouter.GET("/activity", ctl.getActivity)
 
 	// Omaha server router setup
-	omahaRouter := engine.Group("/")
-	setupRouter(omahaRouter, "omaha", httpLog)
+	omahaRouter := wrappedEngine.Group("/", "omaha")
 	omahaRouter.POST("/omaha", ctl.processOmahaRequest)
 	omahaRouter.POST("/v1/update", ctl.processOmahaRequest)
 
 	// Host Flatcar packages payloads
 	if *hostFlatcarPackages {
-		flatcarPkgsRouter := engine.Group("/flatcar")
-		setupRouter(flatcarPkgsRouter, "flatcar", httpLog)
+		flatcarPkgsRouter := wrappedEngine.Group("/flatcar", "flatcar")
 		flatcarPkgsRouter.Static("/", *flatcarPackagesPath)
 	}
 
 	// Metrics
-	metricsRouter := engine.Group("/metrics")
+	metricsRouter := wrappedEngine.Group("/metrics", "metrics")
 	setupRouter(metricsRouter, "metrics", httpLog)
 	metricsRouter.Use(ctl.authenticate)
 	metricsRouter.GET("/", ctl.getMetrics)
 
 	// oauth
-	oauthRouter := engine.Group("/login")
-	setupRouter(oauthRouter, "oauth", httpLog)
+	oauthRouter := wrappedEngine.Group("/login", "oauth")
 	oauthRouter.GET("/cb", ctl.loginCb)
 	oauthRouter.POST("/webhook", ctl.loginWebhook)
 
 	// Serve frontend static content
-	staticRouter := engine.Group("/")
-	setupRouter(staticRouter, "static", httpLog)
+	staticRouter := wrappedEngine.Group("/", "static")
 	staticRouter.Use(ctl.authenticate)
 	staticRouter.StaticFile("", filepath.Join(*httpStaticDir, "index.html"))
 	for _, file := range []string{"index.html", "favicon.png"} {
