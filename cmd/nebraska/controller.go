@@ -82,7 +82,7 @@ func getAuthenticator(config *controllerConfig) (auth.Authenticator, error) {
 }
 
 func httpError(c *gin.Context, status int) {
-	http.Error(c.Writer, http.StatusText(status), status)
+	c.AbortWithStatus(status)
 }
 
 // ----------------------------------------------------------------------------
@@ -90,14 +90,13 @@ func httpError(c *gin.Context, status int) {
 //
 
 // authenticate is a middleware handler in charge of authenticating requests.
-//func (ctl *controller) authenticate(c *web.C, h http.Handler) http.Handler {
 func (ctl *controller) authenticate(c *gin.Context) {
 	teamID, replied := ctl.auth.Authenticate(c)
 	if replied {
 		return
 	}
 	logger.Debug("authenticate", "setting team id in context keys", teamID)
-	c.Keys["team_id"] = teamID
+	c.Set("team_id", teamID)
 	c.Next()
 }
 
@@ -121,7 +120,7 @@ func (ctl *controller) addApp(c *gin.Context) {
 		httpError(c, http.StatusBadRequest)
 		return
 	}
-	app.TeamID = c.Keys["team_id"].(string)
+	app.TeamID = c.GetString("team_id")
 
 	_, err := ctl.api.AddAppCloning(app, sourceAppID)
 	if err != nil {
@@ -149,7 +148,7 @@ func (ctl *controller) updateApp(c *gin.Context) {
 		return
 	}
 	app.ID = c.Params.ByName("app_id")
-	app.TeamID = c.Keys["team_id"].(string)
+	app.TeamID = c.GetString("team_id")
 
 	err := ctl.api.UpdateApp(app)
 	if err != nil {
@@ -175,7 +174,7 @@ func (ctl *controller) deleteApp(c *gin.Context) {
 	err := ctl.api.DeleteApp(appID)
 	switch err {
 	case nil:
-		httpError(c, http.StatusNoContent)
+		c.Status(http.StatusNoContent)
 	default:
 		logger.Error("deleteApp", "error", err.Error(), "appID", appID)
 		httpError(c, http.StatusBadRequest)
@@ -200,7 +199,7 @@ func (ctl *controller) getApp(c *gin.Context) {
 }
 
 func (ctl *controller) getApps(c *gin.Context) {
-	teamID, _ := c.Keys["team_id"].(string)
+	teamID := c.GetString("team_id")
 	page, _ := strconv.ParseUint(c.Query("page"), 10, 64)
 	perPage, _ := strconv.ParseUint(c.Query("perpage"), 10, 64)
 
@@ -283,7 +282,7 @@ func (ctl *controller) deleteGroup(c *gin.Context) {
 	err := ctl.api.DeleteGroup(groupID)
 	switch err {
 	case nil:
-		httpError(c, http.StatusNoContent)
+		c.Status(http.StatusNoContent)
 	default:
 		logger.Error("deleteGroup", "error", err.Error(), "groupID", groupID)
 		httpError(c, http.StatusBadRequest)
@@ -425,7 +424,7 @@ func (ctl *controller) deleteChannel(c *gin.Context) {
 	err := ctl.api.DeleteChannel(channelID)
 	switch err {
 	case nil:
-		httpError(c, http.StatusNoContent)
+		c.Status(http.StatusNoContent)
 	default:
 		logger.Error("deleteChannel", "error", err.Error(), "channelID", channelID)
 		httpError(c, http.StatusBadRequest)
@@ -533,7 +532,7 @@ func (ctl *controller) deletePackage(c *gin.Context) {
 	err := ctl.api.DeletePackage(packageID)
 	switch err {
 	case nil:
-		httpError(c, http.StatusNoContent)
+		c.Status(http.StatusNoContent)
 	default:
 		logger.Error("deletePackage", "error", err.Error(), "packageID", packageID)
 		httpError(c, http.StatusBadRequest)
@@ -632,7 +631,7 @@ func (ctl *controller) getInstances(c *gin.Context) {
 //
 
 func (ctl *controller) getActivity(c *gin.Context) {
-	teamID, _ := c.Keys["team_id"].(string)
+	teamID := c.GetString("team_id")
 
 	p := api.ActivityQueryParams{
 		AppID:      c.Query("app"),
@@ -680,7 +679,7 @@ func escapeMetricString(str string) string {
 }
 
 func (ctl *controller) getMetrics(c *gin.Context) {
-	teamID, _ := c.Keys["team_id"].(string)
+	teamID := c.GetString("team_id")
 
 	nowUnixMillis := time.Now().Unix() * 1000
 	aipcMetrics, err := ctl.api.GetAppInstancesPerChannelMetrics(teamID)
