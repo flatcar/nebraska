@@ -9,13 +9,21 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"sync/atomic"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/mgutz/logxi/v1"
 
-	ginsessions "github.com/kinvolk/nebraska/pkg/sessions/gin"
+	"github.com/kinvolk/nebraska/cmd/nebraska/auth"
+	"github.com/kinvolk/nebraska/pkg/api"
+	"github.com/kinvolk/nebraska/pkg/random"
+)
+
+const (
+	ghClientIDEnvName        = "NEBRASKA_GITHUB_OAUTH_CLIENT_ID"
+	ghClientSecretEnvName    = "NEBRASKA_GITHUB_OAUTH_CLIENT_SECRET"
+	ghSessionAuthKeyEnvName  = "NEBRASKA_GITHUB_SESSION_SECRET"
+	ghSessionCryptKeyEnvName = "NEBRASKA_GITHUB_SESSION_CRYPT_KEY"
+	ghWebhookSecretEnvName   = "NEBRASKA_GITHUB_WEBHOOK_SECRET"
 )
 
 var (
@@ -25,41 +33,92 @@ var (
 	nebraskaURL         = flag.String("nebraska-url", "", "nebraska URL (http://host:port - required when hosting Flatcar packages in nebraska)")
 	httpLog             = flag.Bool("http-log", false, "Enable http requests logging")
 	httpStaticDir       = flag.String("http-static-dir", "../frontend/built", "Path to frontend static files")
-	clientID            = flag.String("client-id", "", fmt.Sprintf("Client ID used for authentication; can be taken from %s env var too", clientIDEnvName))
-	clientSecret        = flag.String("client-secret", "", fmt.Sprintf("Client secret used for authentication; can be taken from %s env var too", clientSecretEnvName))
-	sessionAuthKey      = flag.String("session-secret", "", fmt.Sprintf("Session secret used authenticating sessions in cookies, will be generated if none is passed; can be taken from %s env var too", sessionAuthKeyEnvName))
-	sessionCryptKey     = flag.String("session-crypt-key", "", fmt.Sprintf("Session key used for encrypting sessions in cookies, will be generated if none is passed; can be taken from %s env var too", sessionCryptKeyEnvName))
-	webhookSecret       = flag.String("webhook-secret", "", fmt.Sprintf("Webhook secret used for validing webhook messages; can be taken from %s env var too", webhookSecretEnvName))
-	readWriteTeams      = flag.String("rw-teams", "", "comma-separated list of read-write teams in the org/team format")
-	readOnlyTeams       = flag.String("ro-teams", "", "comma-separated list of read-only teams in the org/team format")
+	authMode            = flag.String("auth-mode", "github", "authentication mode, available modes: noop, github")
+	ghClientID          = flag.String("gh-client-id", "", fmt.Sprintf("GitHub client ID used for authentication; can be taken from %s env var too", ghClientIDEnvName))
+	ghClientSecret      = flag.String("gh-client-secret", "", fmt.Sprintf("GitHub client secret used for authentication; can be taken from %s env var too", ghClientSecretEnvName))
+	ghSessionAuthKey    = flag.String("gh-session-secret", "", fmt.Sprintf("Session secret used for authenticating sessions in cookies used for storing GitHub info , will be generated if none is passed; can be taken from %s env var too", ghSessionAuthKeyEnvName))
+	ghSessionCryptKey   = flag.String("gh-session-crypt-key", "", fmt.Sprintf("Session key used for encrypting sessions in cookies used for storing GitHub info, will be generated if none is passed; can be taken from %s env var too", ghSessionCryptKeyEnvName))
+	ghWebhookSecret     = flag.String("gh-webhook-secret", "", fmt.Sprintf("GitHub webhook secret used for validing webhook messages; can be taken from %s env var too", ghWebhookSecretEnvName))
+	ghReadWriteTeams    = flag.String("gh-rw-teams", "", "comma-separated list of read-write GitHub teams in the org/team format")
+	ghReadOnlyTeams     = flag.String("gh-ro-teams", "", "comma-separated list of read-only GitHub teams in the org/team format")
 	logger              = log.New("nebraska")
 )
 
 func main() {
-	flag.Parse()
-
-	if err := checkArgs(); err != nil {
+	if err := mainWithError(); err != nil {
 		logger.Error(err.Error())
 		os.Exit(1)
 	}
+}
 
+func mainWithError() error {
+	flag.Parse()
+
+	if err := checkArgs(); err != nil {
+		return err
+	}
+
+	api, err := api.New()
+	if err != nil {
+		return err
+	}
+
+	var (
+		noopAuthConfig *auth.NoopAuthConfig
+		ghAuthConfig   *auth.GithubAuthConfig
+	)
+
+	switch *authMode {
+	case "noop":
+		defaultTeam, err := api.GetTeam()
+		if err != nil {
+			return err
+		}
+		noopAuthConfig = &auth.NoopAuthConfig{
+			DefaultTeamID: defaultTeam.ID,
+		}
+	case "github":
+		defaultTeam, err := api.GetTeam()
+		if err != nil {
+			return err
+		}
+		oauthClientID, err := obtainOAuthClientID(*ghClientID)
+		if err != nil {
+			return err
+		}
+		oauthClientSecret, err := obtainOAuthClientSecret(*ghClientSecret)
+		if err != nil {
+			return err
+		}
+		ghWebhookSecret, err := obtainWebhookSecret(*ghWebhookSecret)
+		if err != nil {
+			return err
+		}
+		ghAuthConfig = &auth.GithubAuthConfig{
+			SessionAuthKey:    obtainSessionAuthKey(*ghSessionAuthKey),
+			SessionCryptKey:   obtainSessionCryptKey(*ghSessionCryptKey),
+			OAuthClientID:     oauthClientID,
+			OAuthClientSecret: oauthClientSecret,
+			WebhookSecret:     ghWebhookSecret,
+			ReadWriteTeams:    strings.Split(*ghReadWriteTeams, ","),
+			ReadOnlyTeams:     strings.Split(*ghReadOnlyTeams, ","),
+			DefaultTeamID:     defaultTeam.ID,
+		}
+	default:
+		return fmt.Errorf("unknown auth mode %q", *authMode)
+	}
 	conf := &controllerConfig{
+		api:                 api,
 		enableSyncer:        *enableSyncer,
 		hostFlatcarPackages: *hostFlatcarPackages,
 		flatcarPackagesPath: *flatcarPackagesPath,
 		nebraskaURL:         *nebraskaURL,
-		sessionAuthKey:      *sessionAuthKey,
-		sessionCryptKey:     *sessionCryptKey,
-		oauthClientID:       *clientID,
-		oauthClientSecret:   *clientSecret,
-		webhookSecret:       *webhookSecret,
-		readWriteTeams:      strings.Split(*readWriteTeams, ","),
-		readOnlyTeams:       strings.Split(*readOnlyTeams, ","),
+		noopAuthConfig:      noopAuthConfig,
+		githubAuthConfig:    ghAuthConfig,
 	}
 	ctl, err := newController(conf)
 	if err != nil {
-		logger.Error(err.Error())
-		os.Exit(1)
+		return err
 	}
 	defer ctl.close()
 
@@ -69,11 +128,49 @@ func main() {
 	if os.Getenv("PORT") == "" {
 		params = append(params, ":8000")
 	}
-	err = engine.Run(params...)
-	if err != nil {
-		logger.Error(err.Error())
-		os.Exit(1)
+	return engine.Run(params...)
+}
+
+func obtainSessionAuthKey(potentialSecret string) []byte {
+	if secret := getPotentialOrEnv(potentialSecret, ghSessionAuthKeyEnvName); secret != "" {
+		return []byte(secret)
 	}
+	return random.Data(64)
+}
+
+func obtainSessionCryptKey(potentialKey string) []byte {
+	if key := getPotentialOrEnv(potentialKey, ghSessionCryptKeyEnvName); key != "" {
+		return []byte(key)
+	}
+	return random.Data(32)
+}
+
+func obtainOAuthClientID(potentialID string) (string, error) {
+	if id := getPotentialOrEnv(potentialID, ghClientIDEnvName); potentialID != "" {
+		return id, nil
+	}
+	return "", errors.New("no oauth client ID")
+}
+
+func obtainOAuthClientSecret(potentialSecret string) (string, error) {
+	if secret := getPotentialOrEnv(potentialSecret, ghClientSecretEnvName); secret != "" {
+		return secret, nil
+	}
+	return "", errors.New("no oauth client secret")
+}
+
+func obtainWebhookSecret(potentialSecret string) (string, error) {
+	if secret := getPotentialOrEnv(potentialSecret, ghWebhookSecretEnvName); secret != "" {
+		return secret, nil
+	}
+	return "", errors.New("no webhook secret")
+}
+
+func getPotentialOrEnv(potentialValue, envName string) string {
+	if potentialValue != "" {
+		return potentialValue
+	}
+	return os.Getenv(envName)
 }
 
 func checkArgs() error {
@@ -95,61 +192,25 @@ func checkArgs() error {
 	return nil
 }
 
-const requestIDKey = "github.com/kinvolk/nebraska/request-id"
-
 func setupRouter(router gin.IRoutes, name string, httpLog bool) {
 	if httpLog {
-		router.Use(func(c *gin.Context) {
-			reqID, ok := c.Get(requestIDKey)
-			if !ok {
-				reqID = -1
-			}
-			logger.Debug("router debug",
-				"request id", reqID,
-				"router name", name,
-			)
-			c.Next()
-		})
+		setupUsedRouterLogging(router, name)
 	}
 }
-
-var requestID uint64
 
 func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 	engine := gin.New()
 	if httpLog {
-		engine.Use(func(c *gin.Context) {
-			reqID := atomic.AddUint64(&requestID, 1)
-			c.Set(requestIDKey, reqID)
-
-			start := time.Now()
-			logger.Debug("request debug",
-				"request ID", reqID,
-				"start time", start,
-				"method", c.Request.Method,
-				"URL", c.Request.URL.String(),
-				"client IP", c.ClientIP(),
-			)
-
-			// Process request
-			c.Next()
-
-			stop := time.Now()
-			latency := stop.Sub(start)
-			logger.Debug("request debug",
-				"request ID", reqID,
-				"stop time", stop,
-				"latency", latency,
-				"status", c.Writer.Status(),
-			)
-		})
+		setupRequestLifetimeLogging(engine)
 	}
 	engine.Use(gin.Recovery())
 	setupRouter(engine, "top", httpLog)
-	engine.Use(ginsessions.SessionsMiddleware(ctl.sessionsStore, "nebraska"))
+	wrappedEngine := wrapRouter(engine, httpLog)
+
+	ctl.auth.SetupRouter(wrappedEngine)
+
 	// API router setup
-	apiRouter := engine.Group("/api")
-	setupRouter(apiRouter, "api", httpLog)
+	apiRouter := wrappedEngine.Group("/api", "api")
 	apiRouter.Use(ctl.authenticate)
 
 	// API routes
@@ -195,33 +256,24 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 	apiRouter.GET("/activity", ctl.getActivity)
 
 	// Omaha server router setup
-	omahaRouter := engine.Group("/")
-	setupRouter(omahaRouter, "omaha", httpLog)
+	omahaRouter := wrappedEngine.Group("/", "omaha")
 	omahaRouter.POST("/omaha", ctl.processOmahaRequest)
 	omahaRouter.POST("/v1/update", ctl.processOmahaRequest)
 
 	// Host Flatcar packages payloads
 	if *hostFlatcarPackages {
-		flatcarPkgsRouter := engine.Group("/flatcar")
-		setupRouter(flatcarPkgsRouter, "flatcar", httpLog)
+		flatcarPkgsRouter := wrappedEngine.Group("/flatcar", "flatcar")
 		flatcarPkgsRouter.Static("/", *flatcarPackagesPath)
 	}
 
 	// Metrics
-	metricsRouter := engine.Group("/metrics")
+	metricsRouter := wrappedEngine.Group("/metrics", "metrics")
 	setupRouter(metricsRouter, "metrics", httpLog)
 	metricsRouter.Use(ctl.authenticate)
 	metricsRouter.GET("/", ctl.getMetrics)
 
-	// oauth
-	oauthRouter := engine.Group("/login")
-	setupRouter(oauthRouter, "oauth", httpLog)
-	oauthRouter.GET("/cb", ctl.loginCb)
-	oauthRouter.POST("/webhook", ctl.loginWebhook)
-
 	// Serve frontend static content
-	staticRouter := engine.Group("/")
-	setupRouter(staticRouter, "static", httpLog)
+	staticRouter := wrappedEngine.Group("/", "static")
 	staticRouter.Use(ctl.authenticate)
 	staticRouter.StaticFile("", filepath.Join(*httpStaticDir, "index.html"))
 	for _, file := range []string{"index.html", "favicon.png"} {
