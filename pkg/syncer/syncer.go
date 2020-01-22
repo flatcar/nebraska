@@ -166,7 +166,7 @@ func (s *Syncer) checkForUpdates() error {
 		if err != nil {
 			return err
 		}
-		if update.Status == "ok" {
+		if update != nil && update.Status == "ok" {
 			logger.Debug("checkForUpdates, got an update", "channel", descriptor.name, "arch", descriptor.arch.String(), "currentVersion", currentVersion, "availableVersion", update.Manifest.Version)
 			if err := s.processUpdate(descriptor, update); err != nil {
 				return err
