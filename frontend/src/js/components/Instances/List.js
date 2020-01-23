@@ -169,7 +169,10 @@ function ListView(props) {
     const now = moment();
     if (now.diff(lastCheck, 'seconds', true) > CHECKS_TIMEOUT) {
       setLastCheck(now);
-      instancesStore.getInstances(application.id, group.id, null);
+      instancesStore.getInstances(application.id, group.id, null,
+        {
+          perpage: group.instances_stats.total
+        });
     }
 
     return function cleanup() {
