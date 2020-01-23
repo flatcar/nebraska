@@ -148,3 +148,32 @@ func TestGetGroups(t *testing.T) {
 	assert.Equal(t, tPkg.ID, groups[1].Channel.PackageID.String)
 	assert.Equal(t, tPkg.Version, groups[1].Channel.Package.Version)
 }
+
+func TestGetGroupsFiltered(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: dat.NullStringFrom(tPkg.ID)})
+	tGroup, _ := a.AddGroup(&Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: dat.NullStringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	realInstanceID := uuid.New().String()
+	fakeInstanceID1 := "{" + uuid.New().String() + "}"
+	fakeInstanceID2 := "{" + uuid.New().String() + "}"
+	_, _ = a.RegisterInstance(realInstanceID, "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
+	_, _ = a.RegisterInstance(fakeInstanceID1, "10.0.0.1", "2.0.0", tApp.ID, tGroup.ID)
+	_, _ = a.RegisterInstance(fakeInstanceID2, "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
+
+	groups, err := a.GetGroups(tApp.ID, 0, 0)
+	assert.NoError(t, err)
+	if assert.Len(t, groups, 1) {
+		g := groups[0]
+		assert.Equal(t, 1, g.InstancesStats.Total)
+		if assert.Len(t, g.VersionBreakdown, 1) {
+			vb := g.VersionBreakdown[0]
+			assert.Equal(t, "1.0.0", vb.Version)
+			assert.Equal(t, 1, vb.Instances)
+		}
+	}
+}
