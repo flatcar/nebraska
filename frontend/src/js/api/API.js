@@ -2,6 +2,7 @@ import $ from "jquery";
 import _ from "underscore";
 import moment from "moment";
 import PubSub from "pubsub-js"
+import queryString from 'querystring';
 
 const MAIN_PROGRESS_BAR = "main_progress_bar"
 const BASE_URL = "/api"
@@ -134,9 +135,13 @@ class API {
 
   // Instances
 
-  static getInstances(applicationID, groupID) {
-    let url = BASE_URL + "/apps/" + applicationID + "/groups/" + groupID + "/instances"
-    
+  static getInstances(applicationID, groupID, queryOptions={}) {
+    let url = BASE_URL + "/apps/" + applicationID + "/groups/" + groupID + "/instances";
+
+    if (!_.isEmpty(queryOptions)) {
+      url += "?" + queryString.stringify(queryOptions);
+    }
+
     return API.getJSON(url)
   }
 
