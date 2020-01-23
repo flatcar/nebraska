@@ -20,10 +20,10 @@ class InstancesStore extends Store {
     return cachedInstances
   }
 
-  getInstances(applicationID, groupID, selectedInstance) {
+  getInstances(applicationID, groupID, selectedInstance, queryOptions={}) {
     let application = this.instances.hasOwnProperty(applicationID) ? this.instances[applicationID] : this.instances[applicationID] = {}
 
-    API.getInstances(applicationID, groupID).
+    API.getInstances(applicationID, groupID, queryOptions).
       done(instances => {
         let sortedInstances = _.sortBy(instances, (instance) => {
           if (selectedInstance) {
