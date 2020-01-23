@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/google/uuid"
@@ -140,4 +141,38 @@ func TestGetInstances(t *testing.T) {
 
 	_, err = a.GetInstances(InstancesQueryParams{ApplicationID: "invalidApplicationID", GroupID: "invalidGroupID", Version: "1.0.0", Page: 1, PerPage: 10})
 	assert.Error(t, err, "Application id and group id are required and must be valid uuids.")
+}
+
+func TestGetInstancesFiltered(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: dat.NullStringFrom(tPkg.ID)})
+	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: dat.NullStringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	instanceID1 := "{8d180b2a-0734-4406-af02-9a4f86bd1ee0}"
+	instanceID2 := "{8d180b2a07344406af029a4f86bd1ee1}"
+	instanceID3 := "8d180b2a-0734-4406-af02-9a4f86bd1ee2"
+	instanceID4 := "8d180b2a07344406af029a4f86bd1ee3"
+	for idx, id := range []string{instanceID1, instanceID2, instanceID3, instanceID4} {
+		ip := fmt.Sprintf("10.0.0.%d", idx+1)
+		_, _ = a.RegisterInstance(id, ip, "1.0.0", tApp.ID, tGroup.ID)
+	}
+
+	instances, err := a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Version: "1.0.0", Page: 1, PerPage: 10})
+	assert.NoError(t, err)
+	expectedIDs := map[string]struct{}{
+		instanceID2: {},
+		instanceID3: {},
+		instanceID4: {},
+	}
+	if assert.Equal(t, 3, len(instances)) {
+		for _, instance := range instances {
+			assert.Contains(t, expectedIDs, instance.ID)
+			delete(expectedIDs, instance.ID)
+		}
+		assert.Empty(t, expectedIDs)
+	}
 }

@@ -266,6 +266,7 @@ func (api *API) instancesQuery(p InstancesQueryParams) *dat.SelectDocBuilder {
 		From("instance_application").
 		Where("application_id = $1 AND group_id = $2", p.ApplicationID, p.GroupID).
 		Where(fmt.Sprintf("last_check_for_updates > now() at time zone 'utc' - interval '%s'", validityInterval)).
+		Where(`instance_id NOT SIMILAR TO '\{[a-fA-F0-9-]{36}\}'`).
 		Paginate(p.Page, p.PerPage)
 
 	if p.Status != 0 {
