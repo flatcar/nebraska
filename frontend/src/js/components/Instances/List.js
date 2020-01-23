@@ -82,7 +82,7 @@ function InstanceFilter(props) {
           >
             <MenuItem key="" value="">Show All</MenuItem>
             {
-              versions.map(({version}) => {
+              (versions || []).map(({version}) => {
                 return <MenuItem key={version} value={version}>{version}</MenuItem>;
               })
             }
@@ -97,7 +97,7 @@ function ListView(props) {
   let {application, group} = props;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [instances, setInstances] = React.useState([]);
+  const [instances, setInstances] = React.useState(null);
   const [filteredInstances, setFilteredInstances] = React.useState([]);
   const [lastCheck, setLastCheck] = React.useState(moment([0, 0])); // Long long time ago.
   const [filters, setFilters] = React.useState({status: '', version: ''});
@@ -141,13 +141,13 @@ function ListView(props) {
 
   function onChangeInstances() {
     let cachedInstances = instancesStore.getCachedInstances(application.id, group.id) || [];
-    if (instances.length == 0 || filteredInstances.length == 0) {
+    if (!instances || instances.length == 0 || filteredInstances.length == 0) {
       setInstances(cachedInstances);
       setFilteredInstances(cachedInstances);
       return;
     }
 
-    if (cachedInstances.length > 0 && instances.length > 0) {
+    if (cachedInstances.length > 0 && instances && instances.length > 0) {
       // Update instances state only when needed.
       if (cachedInstances.length != instances.length ||
           cachedInstances[0].id != instances[0].id ||
@@ -182,7 +182,7 @@ function ListView(props) {
   [lastCheck, instances]);
 
   function getInstanceCount() {
-    if (instances.length == 0)
+    if (!instances || instances.length == 0)
       return group.instances_stats.total;
     if (filteredInstances.length == instances.length)
       return filteredInstances.length;
@@ -219,7 +219,7 @@ function ListView(props) {
                 versions={group.version_breakdown}
                 onFiltersChanged={onFiltersChanged}
                 filter={filters}
-                disabled={instances.length == 0}
+                disabled={!instances || instances.length === 0}
               />
             </Grid>
           </Grid>
@@ -237,7 +237,7 @@ function ListView(props) {
             </Grid>
           }
           <Grid item md={12}>
-            { instances.length > 0 ?
+            { instances ?
               (filteredInstances.length > 0 ?
                 <React.Fragment>
                   <Table
