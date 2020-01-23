@@ -120,6 +120,8 @@ func (api *API) activityQuery(teamID string, p ActivityQueryParams) *dat.SelectD
 
 	if p.InstanceID != "" {
 		query.Where("a.instance_id = $1", p.InstanceID)
+	} else {
+		query.Where(ignoreFakeInstanceCondition("a.instance_id"))
 	}
 
 	if p.Version != "" {

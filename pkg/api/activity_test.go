@@ -22,15 +22,18 @@ func TestGetActivity(t *testing.T) {
 	tGroup2, _ := a.AddGroup(&Group{Name: "group2", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	tInstance, _ := a.RegisterInstance(uuid.New().String(), "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
 	tInstance2, _ := a.RegisterInstance(uuid.New().String(), "10.0.0.2", "1.0.0", tApp.ID, tGroup2.ID)
+	tFakeInstance, _ := a.RegisterInstance("{"+uuid.New().String()+"}", "10.0.0.2", "1.0.0", tApp.ID, tGroup2.ID)
 
 	_ = a.newGroupActivityEntry(activityRolloutStarted, activitySuccess, tVersion, tApp.ID, tGroup.ID)
 	_ = a.newGroupActivityEntry(activityRolloutStarted, activitySuccess, tVersion, tApp.ID, tGroup2.ID)
 	_ = a.newInstanceActivityEntry(activityInstanceUpdateFailed, activityError, tVersion, tApp.ID, tGroup.ID, tInstance.ID)
 	_ = a.newInstanceActivityEntry(activityInstanceUpdateFailed, activityError, tVersion, tApp.ID, tGroup2.ID, tInstance2.ID)
 	_ = a.newGroupActivityEntry(activityInstanceUpdateFailed, activitySuccess, tVersion, tApp.ID, tGroup.ID)
+	_ = a.newInstanceActivityEntry(activityInstanceUpdateFailed, activityError, tVersion, tApp.ID, tGroup.ID, tFakeInstance.ID)
 
 	time.Sleep(10 * time.Millisecond)
 
+	// this should ignore the entry for the fake instance
 	activityEntries, err := a.GetActivity(tTeam.ID, ActivityQueryParams{AppID: tApp.ID, GroupID: tGroup.ID})
 	assert.NoError(t, err)
 	assert.Equal(t, 3, len(activityEntries))
@@ -40,6 +43,11 @@ func TestGetActivity(t *testing.T) {
 	assert.Equal(t, 2, len(activityEntries))
 
 	activityEntries, err = a.GetActivity(tTeam.ID, ActivityQueryParams{InstanceID: tInstance2.ID})
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(activityEntries))
+
+	// when asked explicitly, fake instance won't be ignored
+	activityEntries, err = a.GetActivity(tTeam.ID, ActivityQueryParams{InstanceID: tFakeInstance.ID})
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(activityEntries))
 

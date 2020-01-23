@@ -253,7 +253,12 @@ func (api *API) instanceAppQuery(appID string) *dat.SelectDocBuilder {
 		SelectDoc("version", "status", "last_check_for_updates", "last_update_version", "update_in_progress", "application_id", "group_id").
 		From("instance_application").
 		Where("instance_id = instance.id AND application_id = $1", appID).
-		Where(fmt.Sprintf("last_check_for_updates > now() at time zone 'utc' - interval '%s'", validityInterval))
+		Where(fmt.Sprintf("last_check_for_updates > now() at time zone 'utc' - interval '%s'", validityInterval)).
+		Where(ignoreFakeInstanceCondition("instance_id"))
+}
+
+func ignoreFakeInstanceCondition(instanceIDField string) string {
+	return fmt.Sprintf(`(%[1]s IS NULL OR %[1]s NOT SIMILAR TO '\{[a-fA-F0-9-]{36}\}')`, instanceIDField)
 }
 
 // instancesQuery returns a SelectDocBuilder prepared to return all instances
@@ -266,7 +271,7 @@ func (api *API) instancesQuery(p InstancesQueryParams) *dat.SelectDocBuilder {
 		From("instance_application").
 		Where("application_id = $1 AND group_id = $2", p.ApplicationID, p.GroupID).
 		Where(fmt.Sprintf("last_check_for_updates > now() at time zone 'utc' - interval '%s'", validityInterval)).
-		Where(`instance_id NOT SIMILAR TO '\{[a-fA-F0-9-]{36}\}'`).
+		Where(ignoreFakeInstanceCondition("instance_id")).
 		Paginate(p.Page, p.PerPage)
 
 	if p.Status != 0 {

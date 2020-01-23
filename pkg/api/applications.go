@@ -165,6 +165,7 @@ func (api *API) appInstancesCountQuery() string {
 	SELECT count(*)
 	FROM instance_application
 	WHERE application_id = application.id AND
-	      last_check_for_updates > now() at time zone 'utc' - interval '%s'
-	`, validityInterval)
+	      last_check_for_updates > now() at time zone 'utc' - interval '%s' AND
+	      %s
+	`, validityInterval, ignoreFakeInstanceCondition("instance_id"))
 }
