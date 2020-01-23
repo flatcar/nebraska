@@ -1,24 +1,27 @@
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
 import Select from '@material-ui/core/Select';
 import TablePagination from '@material-ui/core/TablePagination';
 import { useTheme } from '@material-ui/styles';
+import moment from 'moment';
 import PropTypes from 'prop-types';
 import React from "react";
 import { cleanSemverVersion } from "../../constants/helpers";
 import { instancesStore } from '../../stores/Stores';
+import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
 import Loader from '../Common/Loader';
 import { InstanceCountLabel } from './Common';
 import makeStatusDefs from './StatusDefs';
 import Table from './Table';
-import Empty from '../Common/EmptyContent';
+
+const CHECKS_TIMEOUT = 60; // secs
 
 function InstanceFilter(props) {
   const statusDefs = makeStatusDefs(useTheme());
@@ -96,6 +99,7 @@ function ListView(props) {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [instances, setInstances] = React.useState([]);
   const [filteredInstances, setFilteredInstances] = React.useState([]);
+  const [lastCheck, setLastCheck] = React.useState(moment([0, 0])); // Long long time ago.
   const [filters, setFilters] = React.useState({status: '', version: ''});
 
   function handleChangePage(event, newPage) {
@@ -160,13 +164,19 @@ function ListView(props) {
 
   React.useEffect(() => {
     instancesStore.addChangeListener(onChangeInstances);
-    instancesStore.getInstances(application.id, group.id, null);
+    // @todo: This check avoids multiple unnecessary fetches, but we should
+    // use a smarter refresh in the background that updates the list when needed.
+    const now = moment();
+    if (now.diff(lastCheck, 'seconds', true) > CHECKS_TIMEOUT) {
+      setLastCheck(now);
+      instancesStore.getInstances(application.id, group.id, null);
+    }
 
     return function cleanup() {
       instancesStore.removeChangeListener(onChangeInstances);
     };
   },
-  [instances]);
+  [lastCheck, instances]);
 
   function getInstanceCount() {
     if (instances.length == 0)
