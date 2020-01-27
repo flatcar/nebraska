@@ -29,6 +29,7 @@ import (
 
 type (
 	GithubAuthConfig struct {
+		EnterpriseURL     string
 		SessionAuthKey    []byte
 		SessionCryptKey   []byte
 		OAuthClientID     string
@@ -50,6 +51,8 @@ type (
 	userSessionMap         map[string]sessionIDToTeamDataMap
 
 	githubAuth struct {
+		enterpriseURL string
+
 		webhookSecret string
 		oauthConfig   *oauth2.Config
 
@@ -70,7 +73,16 @@ var (
 )
 
 func NewGithubAuthenticator(config *GithubAuthConfig) Authenticator {
+	endpoint := githuboauth.Endpoint
+	if config.EnterpriseURL != "" {
+		endpoint = oauth2.Endpoint{
+			AuthURL:  config.EnterpriseURL + "/login/oauth/authorize",
+			TokenURL: config.EnterpriseURL + "/login/oauth/access_token",
+		}
+	}
+
 	return &githubAuth{
+		enterpriseURL: config.EnterpriseURL,
 		webhookSecret: config.WebhookSecret,
 		oauthConfig: &oauth2.Config{
 			ClientID:     config.OAuthClientID,
@@ -90,7 +102,7 @@ func NewGithubAuthenticator(config *GithubAuthConfig) Authenticator {
 			// just login and that's public information
 			// accessible without any scope at all.
 			Scopes:   []string{"read:org"},
-			Endpoint: githuboauth.Endpoint,
+			Endpoint: endpoint,
 		},
 
 		sessionsStore:  newSessionsStore(config),
@@ -304,6 +316,19 @@ func (gha *githubAuth) doLoginDance(c *gin.Context, oauthClient *http.Client) (r
 	}()
 
 	client := github.NewClient(oauthClient)
+	if gha.enterpriseURL != "" {
+		var err error
+		client, err = github.NewEnterpriseClient(
+			gha.enterpriseURL+"/api/v3",
+			gha.enterpriseURL+"/api/v3/upload",
+			oauthClient)
+		if err != nil {
+			logger.Error("create enterprise client", "failed to create", err)
+			result = resultInternalFailure
+			return
+		}
+	}
+
 	ghUser, _, err := client.Users.Get(c.Request.Context(), "")
 	if err != nil {
 		logger.Error("login dance", "failed to get authenticated user", err)
