@@ -76,7 +76,7 @@ export default function Header() {
         >
           <MenuItem
             component="a"
-            href="https://github.com/settings/apps/authorizations"
+            href={process.env.ACCESS_MANAGEMENT_URL}
           >
             <ListItemIcon>
               <CreateOutlined />
