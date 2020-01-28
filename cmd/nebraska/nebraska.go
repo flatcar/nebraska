@@ -24,6 +24,7 @@ const (
 	ghSessionAuthKeyEnvName  = "NEBRASKA_GITHUB_SESSION_SECRET"
 	ghSessionCryptKeyEnvName = "NEBRASKA_GITHUB_SESSION_CRYPT_KEY"
 	ghWebhookSecretEnvName   = "NEBRASKA_GITHUB_WEBHOOK_SECRET"
+	ghEnterpriseURLEnvName   = "NEBRASKA_GITHUB_ENTERPRISE_URL"
 )
 
 var (
@@ -41,6 +42,7 @@ var (
 	ghWebhookSecret     = flag.String("gh-webhook-secret", "", fmt.Sprintf("GitHub webhook secret used for validing webhook messages; can be taken from %s env var too", ghWebhookSecretEnvName))
 	ghReadWriteTeams    = flag.String("gh-rw-teams", "", "comma-separated list of read-write GitHub teams in the org/team format")
 	ghReadOnlyTeams     = flag.String("gh-ro-teams", "", "comma-separated list of read-only GitHub teams in the org/team format")
+	ghEnterpriseURL     = flag.String("gh-enterprise-url", "", fmt.Sprintf("base URL of the enterprise instance if using GHE; can be taken from %s env var too", ghEnterpriseURLEnvName))
 	logger              = log.New("nebraska")
 )
 
@@ -94,6 +96,8 @@ func mainWithError() error {
 		if err != nil {
 			return err
 		}
+		// enterprise URL is optional
+		ghEnterpriseURL, _ := obtainEnterpriseURL(*ghEnterpriseURL)
 		ghAuthConfig = &auth.GithubAuthConfig{
 			SessionAuthKey:    obtainSessionAuthKey(*ghSessionAuthKey),
 			SessionCryptKey:   obtainSessionCryptKey(*ghSessionCryptKey),
@@ -103,6 +107,7 @@ func mainWithError() error {
 			ReadWriteTeams:    strings.Split(*ghReadWriteTeams, ","),
 			ReadOnlyTeams:     strings.Split(*ghReadOnlyTeams, ","),
 			DefaultTeamID:     defaultTeam.ID,
+			EnterpriseURL:     ghEnterpriseURL,
 		}
 	default:
 		return fmt.Errorf("unknown auth mode %q", *authMode)
@@ -164,6 +169,13 @@ func obtainWebhookSecret(potentialSecret string) (string, error) {
 		return secret, nil
 	}
 	return "", errors.New("no webhook secret")
+}
+
+func obtainEnterpriseURL(potentialURL string) (string, error) {
+	if secret := getPotentialOrEnv(potentialURL, ghEnterpriseURLEnvName); secret != "" {
+		return secret, nil
+	}
+	return "", errors.New("no enterprise URL")
 }
 
 func getPotentialOrEnv(potentialValue, envName string) string {

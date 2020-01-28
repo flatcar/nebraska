@@ -138,6 +138,14 @@ generated on github (`https://github.com/settings/tokens`).
 
 Personal access token requires just one scope: `read:org`.
 
+# GitHub Enterprise
+
+If you want to authenticate against GitHub Enterprise, set `-gh-enterprise-url`
+to the URL of your GitHub Enterprise instance, for example
+`https://github.myorganization.net`.
+
+After that, follow the same procedures as with GitHub.
+
 # Troubleshooting:
 
 - I'm getting a blank page!
