@@ -72,14 +72,14 @@ test-clean-work-tree-backend:
 
 .PHONY: tools
 tools:
-	go build -o bin/initdb ./cmd/initdb
-	go build -o bin/userctl ./cmd/userctl
+	CGO_ENABLED=0 go build -o bin/initdb ./cmd/initdb
+	CGO_ENABLED=0 go build -o bin/userctl ./cmd/userctl
 
 tools/go-bindata: go.mod go.sum
-	go build -o tools/go-bindata github.com/kevinburke/go-bindata/go-bindata
+	CGO_ENABLED=0 go build -o tools/go-bindata github.com/kevinburke/go-bindata/go-bindata
 
 tools/golangci-lint: go.mod go.sum
-	go build -o ./tools/golangci-lint github.com/golangci/golangci-lint/cmd/golangci-lint
+	CGO_ENABLED=0 go build -o ./tools/golangci-lint github.com/golangci/golangci-lint/cmd/golangci-lint
 
 .PHONY: container-nebraska
 container-nebraska:
