@@ -13,6 +13,7 @@ import { Icon } from '@iconify/react';
 import React from 'react';
 import nebraskaLogo from '../icons/nebraska-logo.json';
 import _ from 'underscore';
+import API from '../api/API';
 
 const useStyles = makeStyles(theme => ({
   title: {
@@ -30,6 +31,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Header() {
   const classes = useStyles();
+  const [config, setConfig] = React.useState(null);
   const projectLogo = _.isEmpty(nebraskaLogo) ? null : nebraskaLogo;
 
   let [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
@@ -42,6 +44,20 @@ export default function Header() {
     setMenuAnchorEl(null);
   }
 
+  // @todo: This should be abstracted but we should do it when we integrate Redux.
+  React.useEffect(() => {
+    if (!config) {
+      API.getConfig()
+        .done(config => {
+          setConfig(config);
+        })
+        .fail(error => {
+          console.error(error);
+        });
+    }
+  },
+  [config]);
+
   return (
     <AppBar position='static' className={classes.header}>
       <Toolbar>
@@ -51,15 +67,17 @@ export default function Header() {
         <Typography variant='h6' className={classes.title}>
           {process.env.PROJECT_NAME}
         </Typography>
-        <IconButton
-          aria-label='User menu'
-          aria-controls='menu-appbar'
-          aria-haspopup='true'
-          onClick={handleMenu}
-          color='inherit'
-        >
-          <AccountCircle />
-        </IconButton>
+        {config && config.access_management_url &&
+          <IconButton
+            aria-label='User menu'
+            aria-controls='menu-appbar'
+            aria-haspopup='true'
+            onClick={handleMenu}
+            color='inherit'
+          >
+            <AccountCircle />
+          </IconButton>
+        }
         <Menu
           id='customized-menu'
           anchorEl={menuAnchorEl}
@@ -76,7 +94,7 @@ export default function Header() {
         >
           <MenuItem
             component="a"
-            href="https://github.com/settings/apps/authorizations"
+            href={config && config.access_management_url}
           >
             <ListItemIcon>
               <CreateOutlined />

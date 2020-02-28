@@ -18,10 +18,18 @@ import (
 	"github.com/kinvolk/nebraska/pkg/syncer"
 )
 
+const GithubAccessManagementURL = "https://github.com/settings/apps/authorizations"
+
+// ClientConfig represents Nebraska's configuration of interest for the client.
+type ClientConfig struct {
+	AccessManagementURL string `json:"access_management_url"`
+}
+
 type controller struct {
 	api          *api.API
 	omahaHandler *omaha.Handler
 	syncer       *syncer.Syncer
+	clientConfig *ClientConfig
 	auth         auth.Authenticator
 }
 
@@ -61,6 +69,8 @@ func newController(conf *controllerConfig) (*controller, error) {
 		go syncer.Start()
 	}
 
+	c.clientConfig = NewClientConfig(conf)
+
 	return c, nil
 }
 
@@ -83,6 +93,20 @@ func getAuthenticator(config *controllerConfig) (auth.Authenticator, error) {
 
 func httpError(c *gin.Context, status int) {
 	c.AbortWithStatus(status)
+}
+
+func NewClientConfig(conf *controllerConfig) *ClientConfig {
+	config := &ClientConfig{}
+
+	if conf.githubAuthConfig != nil {
+		if conf.githubAuthConfig.EnterpriseURL != "" {
+			config.AccessManagementURL = conf.githubAuthConfig.EnterpriseURL + "/settings/apps/authorizations"
+		} else {
+			config.AccessManagementURL = GithubAccessManagementURL
+		}
+	}
+
+	return config
 }
 
 // ----------------------------------------------------------------------------
@@ -745,4 +769,15 @@ func getRequestIP(r *http.Request) string {
 	}
 	ip, _, _ := net.SplitHostPort(r.RemoteAddr)
 	return ip
+}
+
+// ----------------------------------------------------------------------------
+// Config
+//
+
+func (ctl *controller) getConfig(c *gin.Context) {
+	if err := json.NewEncoder(c.Writer).Encode(ctl.clientConfig); err != nil {
+		logger.Error("getConfig - encoding config", "error", err.Error())
+		httpError(c, http.StatusBadRequest)
+	}
 }

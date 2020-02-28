@@ -170,6 +170,12 @@ class API {
     return API.doRequest("PUT", url, JSON.stringify(userData))
   }
 
+  // Config
+
+  static getConfig() {
+    return API.doRequest("GET", "/config")
+  }
+
   // Helpers
 
   static removeKeysFromObject(data, valuesToRemove) {
