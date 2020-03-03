@@ -151,7 +151,7 @@ func obtainSessionCryptKey(potentialKey string) []byte {
 }
 
 func obtainOAuthClientID(potentialID string) (string, error) {
-	if id := getPotentialOrEnv(potentialID, ghClientIDEnvName); potentialID != "" {
+	if id := getPotentialOrEnv(potentialID, ghClientIDEnvName); id != "" {
 		return id, nil
 	}
 	return "", errors.New("no oauth client ID")
