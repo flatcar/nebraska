@@ -21,8 +21,7 @@ through the GitHub Oauth flow and create a persistent session.
 
 - In the browser, access `http://localhost:8000`
 
-# Deploying Nebraska for testing/development on local computer (GitHub
-  authentication)
+# Deploying Nebraska for testing/development on local computer (GitHub authentication)
 
 - Go to https://smee.io/ and press the `Start a new channel` button,
   you'll get redirected to something like
