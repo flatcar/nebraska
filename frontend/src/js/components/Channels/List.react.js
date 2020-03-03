@@ -1,16 +1,16 @@
-import PropTypes from 'prop-types';
-import { applicationsStore } from "../../stores/Stores"
-import React from "react"
-import _ from "underscore"
-import ModalButton from "../Common/ModalButton.react"
-import EditDialog from "./EditDialog"
-import Item from "./Item.react"
-import Loader from '../Common/Loader';
 import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
 import MuiList from '@material-ui/core/List';
+import Typography from '@material-ui/core/Typography';
+import PropTypes from 'prop-types';
+import React from "react";
+import _ from "underscore";
+import { applicationsStore } from "../../stores/Stores";
 import Empty from '../Common/EmptyContent';
+import Loader from '../Common/Loader';
+import ModalButton from "../Common/ModalButton.react";
 import SectionPaper from '../Common/SectionPaper';
+import EditDialog from "./EditDialog";
+import Item from "./Item.react";
 
 class List extends React.Component {
 
