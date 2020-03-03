@@ -1,16 +1,55 @@
 import Grid from '@material-ui/core/Grid';
 import MuiList from '@material-ui/core/List';
+import ListSubheader from '@material-ui/core/ListSubheader';
 import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
 import React from "react";
 import _ from "underscore";
+import { ARCHES } from "../../constants/helpers";
 import { applicationsStore } from "../../stores/Stores";
-import Empty from '../Common/EmptyContent';
 import Loader from '../Common/Loader';
 import ModalButton from "../Common/ModalButton.react";
 import SectionPaper from '../Common/SectionPaper';
 import EditDialog from "./EditDialog";
 import Item from "./Item.react";
+
+function ChannelList(props) {
+  const {application, onEdit} = props;
+
+  function getChannelsPerArch() {
+    let perArch = {};
+    application.channels.forEach(channel => {
+      if (!perArch[channel.arch]) {
+        perArch[channel.arch] = [];
+      }
+      perArch[channel.arch].push(channel);
+    });
+
+    return perArch;
+  }
+
+  return (
+    <React.Fragment>
+      {Object.entries(getChannelsPerArch()).map(([arch, channels]) =>
+        <MuiList
+          key={arch}
+          subheader={<ListSubheader>{ARCHES[arch]}</ListSubheader>}
+          dense
+        >
+          {channels.map(channel =>
+            <Item
+              key={"channelID_" + channel.id}
+              channel={channel}
+              packages={application.packages || []}
+              showArch={false}
+              handleUpdateChannel={onEdit}
+            />
+          )}
+        </MuiList>
+      )}
+    </React.Fragment>
+  );
+}
 
 class List extends React.Component {
 
@@ -52,22 +91,11 @@ class List extends React.Component {
   render() {
     let application = this.state.application,
         channels = [],
-        packages = [],
-        entries = ""
+        packages = []
 
     if (application) {
       channels = application.channels ? application.channels : []
       packages = application.packages ? application.packages : []
-
-      if (_.isEmpty(channels)) {
-        entries = <Empty>This application does not have any channel yet</Empty>;
-      } else {
-        entries = _.map(channels, (channel, i) => {
-          return <Item key={"channelID_" + channel.id} channel={channel} packages={packages} handleUpdateChannel={this.openUpdateChannelModal} />
-        })
-      }
-    } else {
-      entries = <Loader />
     }
 
     const channelToUpdate =  !_.isEmpty(channels) && this.state.updateChannelIDModal ? _.findWhere(channels, {id: this.state.updateChannelIDModal}) : null
@@ -92,9 +120,14 @@ class List extends React.Component {
             />
           </Grid>
         </Grid>
-        <MuiList dense>
-          {entries}
-        </MuiList>
+        {!application ?
+          <Loader />
+        :
+          <ChannelList
+            application={application}
+            onEdit={this.openUpdateChannelModal}
+          />
+        }
         {channelToUpdate &&
           <EditDialog
             data={{packages: packages, applicationID: this.props.appID, channel: channelToUpdate}}
