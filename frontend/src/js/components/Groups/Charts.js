@@ -310,7 +310,7 @@ export function VersionCountTimeline(props) {
         <Grid item xs={12}>
           <SimpleTable
             emptyMessage="No data to show for this time point."
-            columns={{version: 'Version', instances: 'Version', percentage: 'Percentage'}}
+            columns={{version: 'Version', instances: 'Count', percentage: 'Percentage'}}
             instances={getInstanceCount(selectedEntry)}
           />
         </Grid>
