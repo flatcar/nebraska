@@ -50,6 +50,9 @@ frontend-watch:
 .PHONY: backend
 backend: run-generators backend-code-checks build-backend-binary
 
+.PHONY: backend-binary
+backend-binary: run-generators build-backend-binary
+
 .PHONY: test-clean-work-tree-backend
 test-clean-work-tree-backend:
 	@if ! git diff --quiet -- go.mod go.sum pkg cmd updaters tools/tools.go; then \
