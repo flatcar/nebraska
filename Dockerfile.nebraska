@@ -9,7 +9,7 @@ RUN apk update && \
 COPY . /go/src/github.com/kinvolk/nebraska/
 
 RUN cd /go/src/github.com/kinvolk/nebraska && \
-	rm -rf frontend/node_modules && \
+	rm -rf frontend/node_modules tools/go-bindata tools/golangci-lint bin/nebraska && \
 	make frontend backend
 
 FROM alpine:3.10
