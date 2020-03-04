@@ -10,7 +10,7 @@ import MoreMenu from '../Common/MoreMenu';
 import ChannelAvatar from './ChannelAvatar';
 
 function Item(props) {
-  let {channel, packages, handleUpdateChannel, ...others} = props;
+  let {channel, packages, handleUpdateChannel, showArch=true, ...others} = props;
   const name = channel.name;
   const version = channel.package ? cleanSemverVersion(channel.package.version) : 'No package';
 
@@ -25,6 +25,24 @@ function Item(props) {
     props.handleUpdateChannel(channel.id);
   }
 
+  function getSecondaryText() {
+    let text = '';
+
+    if (version) {
+      text = cleanSemverVersion(version);
+    }
+
+    if (showArch) {
+      if (text !== '') {
+        text += ' ';
+      }
+
+      text += `(${ARCHES[channel.arch]})`;
+    }
+
+    return text;
+  }
+
   return (
     <ListItem component="div" {...others}>
       <ListItemAvatar>
@@ -33,7 +51,7 @@ function Item(props) {
       <ListItemText
         primary={name}
 
-        secondary={`${version ? cleanSemverVersion(version) + ' ': ''}(${ARCHES[channel.arch]})`}
+        secondary={getSecondaryText()}
       />
       {props.handleUpdateChannel &&
         <ListItemSecondaryAction>
