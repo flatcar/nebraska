@@ -33,7 +33,7 @@ function ChannelList(props) {
       {Object.entries(getChannelsPerArch()).map(([arch, channels]) =>
         <MuiList
           key={arch}
-          subheader={<ListSubheader>{ARCHES[arch]}</ListSubheader>}
+          subheader={<ListSubheader disableSticky >{ARCHES[arch]}</ListSubheader>}
           dense
         >
           {channels.map(channel =>
