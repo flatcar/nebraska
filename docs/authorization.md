@@ -7,12 +7,28 @@ tokens](https://github.com/settings/tokens) can be used as bearer
 token. If no bearer token is sent, Nebraska will authorize users
 through the GitHub Oauth flow and create a persistent session.
 
+# Preparing the database for Nebraska
+
+Nebraska uses the `PostgreSQL` database, and expects the used database to
+be set to the UTC timezone.
+
+For a quick setup of `PostgreSQL` for Nebraska's development, you can use
+the `postgres` container as follows:
+
+- Start `Postgres`:
+    - `docker run --rm -d --name nebraska-postgres-dev -p 5432:5432 -e POSTGRES_PASSWORD=nebraska postgres`
+
+- Create the database for Nebraska (by default it is `nebraska`):
+    - `psql postgres://postgres:nebraska@localhost:5432/postgres -c 'create database nebraska;'`
+
+- Set the timezone to Nebraska's database:
+    - `psql postgres://postgres:nebraska@localhost:5432/nebraska -c 'set timezone = "utc";'`
+
 # Deploying Nebraska for testing on local computer (noop authentication)
 
 - Go to the nebraska project directory and run `make all`
 
-- Start the database: `docker run --privileged -d -p
-  127.0.0.1:5432:5432 nebraska/postgres`
+- Start the database (see the section above if you need a quick setup).
 
 - Start the Nebraska backend:
 
