@@ -48,17 +48,10 @@ frontend-watch:
 	cd frontend && npx webpack --watch-poll 1000 --watch --config ./webpack.config.js --mode development
 
 .PHONY: backend
-backend: tools/go-bindata tools/golangci-lint
-	PATH="$(abspath tools):$${PATH}" go generate ./...
-	# this is to get nice error messages when something doesn't
-	# build (both the project and the tests), golangci-lint's
-	# output in this regard in unreadable.
-	go build ./...
-	./tools/check_pkg_test.sh
-	NEBRASKA_SKIP_TESTS=1 go test ./... >/dev/null
-	./tools/golangci-lint run --fix
-	go mod tidy
-	go build -o bin/nebraska ./cmd/nebraska
+backend: run-generators backend-code-checks build-backend-binary
+
+.PHONY: backend-binary
+backend-binary: run-generators build-backend-binary
 
 .PHONY: test-clean-work-tree-backend
 test-clean-work-tree-backend:
@@ -102,3 +95,22 @@ container: container-nebraska container-postgres
 
 .PHONY: backend-ci
 backend-ci: backend test-clean-work-tree-backend check-backend-with-container
+
+.PHONY: run-generators
+run-generators: tools/go-bindata
+	PATH="$(abspath tools):$${PATH}" go generate ./...
+
+.PHONY: build-backend-binary
+build-backend-binary:
+	go build -o bin/nebraska ./cmd/nebraska
+
+.PHONY: backend-code-checks
+backend-code-checks: tools/golangci-lint
+	# this is to get nice error messages when something doesn't
+	# build (both the project and the tests), golangci-lint's
+	# output in this regard in unreadable.
+	go build ./...
+	./tools/check_pkg_test.sh
+	NEBRASKA_SKIP_TESTS=1 go test ./... >/dev/null
+	./tools/golangci-lint run --fix
+	go mod tidy
