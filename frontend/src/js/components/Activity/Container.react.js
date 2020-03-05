@@ -1,6 +1,7 @@
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+import { makeStyles } from '@material-ui/core/styles';
 import TablePagination from '@material-ui/core/TablePagination';
 import moment from 'moment';
 import React from "react";
@@ -11,7 +12,20 @@ import ListHeader from '../Common/ListHeader';
 import Loader from '../Common/Loader';
 import List from "./List.react";
 
+const useStyles = makeStyles({
+  toolbar: {
+    padding: 0,
+  },
+  caption: {
+    fontSize: '.85em',
+  },
+  select: {
+    fontSize: '.85em',
+  }
+});
+
 function Container(props) {
+  const classes = useStyles();
   const [activity, setActivity] = React.useState(getActivityEntries());
   const rowsOptions = [5, 10, 50];
   const [page, setPage] = React.useState(0);
@@ -99,6 +113,7 @@ function Container(props) {
             </Grid>
             <Grid item>
               <TablePagination
+                classes={classes}
                 rowsPerPageOptions={rowsOptions}
                 component="div"
                 count={activity.length}
