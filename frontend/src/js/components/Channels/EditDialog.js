@@ -21,6 +21,7 @@ import { applicationsStore } from '../../stores/Stores';
 import { Formik, Form, Field } from 'formik';
 import { TextField } from 'formik-material-ui';
 import { ColorPickerButton } from '../Common/ColorPicker';
+import { ListItemText } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   nameField: {
@@ -164,7 +165,13 @@ function EditDialog(props) {
             <MenuItem value="" key="none">Nothing yet</MenuItem>
             {packages.filter(packageItem => packageItem.arch === arch).map((packageItem, i) =>
             <MenuItem value={packageItem.id} key={"packageItem_" + i}>
-              {packageItem.version} &nbsp;&nbsp;(created: {moment.utc(packageItem.created_ts).local().format("DD/MM/YYYY")})
+                <ListItemText
+                  primary={packageItem.version}
+                  secondary={`created: ${moment
+                    .utc(packageItem.created_ts)
+                    .local()
+                    .format("DD/MM/YYYY")}`}
+                />
             </MenuItem>
             )}
           </Field>
