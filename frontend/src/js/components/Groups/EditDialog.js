@@ -1,3 +1,4 @@
+import { ListItemText } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -15,6 +16,7 @@ import { Select, Switch, TextField } from 'formik-material-ui';
 import PropTypes from 'prop-types';
 import React from 'react';
 import * as Yup from 'yup';
+import { ARCHES } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import TimezonePicker, { DEFAULT_TIMEZONE } from '../Common/TimezonePicker';
 
@@ -104,12 +106,12 @@ function EditDialog(props) {
               <MenuItem value="" key="">
                 None yet
               </MenuItem>
-              {channels.map((channelItem) => {
-                return (<MenuItem value={channelItem.id} key={channelItem.id}>
-                          {channelItem.name}
-                        </MenuItem>);
-              })
-              }
+              {channels.map((channelItem) =>
+                <MenuItem value={channelItem.id} key={channelItem.id}>
+                      <ListItemText primary={channelItem.name}
+                      secondary={ARCHES[channelItem.arch]} />
+                </MenuItem>)
+              })}
             </Field>
           </FormControl>
           <Grid container
