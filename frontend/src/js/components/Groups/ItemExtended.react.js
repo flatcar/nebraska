@@ -13,6 +13,7 @@ import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
 import InstanceStatusArea from '../Instances/Charts';
 import { VersionCountTimeline, StatusCountTimeline } from './Charts';
 import ListHeader from '../Common/ListHeader';
+import MoreMenu from '../Common/MoreMenu';
 
 const useStyles = makeStyles({
   link: {
@@ -27,7 +28,6 @@ function ItemExtended(props) {
   const [application, setApplication] = React.useState(null);
   const [group, setGroup] = React.useState(null);
   const classes = useStyles();
-
   function onChange() {
     let app = applicationsStore.getCachedApplication(props.appID);
 
@@ -44,6 +44,10 @@ function ItemExtended(props) {
     if (groupFound !== group) {
       setGroup(groupFound);
     }
+  }
+  
+  function updateGroup() {
+    props.handleUpdateGroup(props.groupId, props.appID)
   }
 
   React.useEffect(() => {
@@ -70,7 +74,14 @@ function ItemExtended(props) {
                 cardMainLinkLabel={group ? group.name : '…'}
                 cardId={group ? group.id : '…'}
                 cardDescription={group ? group.description : ''}
-              />
+              >
+                <MoreMenu options={[
+                  {
+                   'label': 'Edit',
+                   'action': updateGroup,
+                  }
+                ]} />
+              </CardHeader>
             </Grid>
             {group &&
               <Grid item xs={12}>

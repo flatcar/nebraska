@@ -3,19 +3,23 @@ import React from "react"
 import _ from "underscore"
 import GroupExtended from "../Groups/ItemExtended.react"
 import SectionHeader from '../Common/SectionHeader';
+import EditDialog from "../Groups/EditDialog";
 
 class GroupLayout extends React.Component {
 
  constructor(props) {
     super(props);
     this.onChange = this.onChange.bind(this);
-
+    this.openUpdateGroupModal = this.openUpdateGroupModal.bind(this);
+    this.closeUpdateGroupModal = this.closeUpdateGroupModal.bind(this)
+    
     let appID = props.match.params.appID,
         groupID = props.match.params.groupID
     this.state = {
       appID: appID,
       groupID: groupID,
-      applications: applicationsStore.getCachedApplications()
+      applications: applicationsStore.getCachedApplications(),
+      updateGroupModalVisible: false,
     }
   }
 
@@ -36,6 +40,14 @@ class GroupLayout extends React.Component {
       applications: applicationsStore.getCachedApplications()
     })
   }
+  
+  openUpdateGroupModal() {
+    this.setState({updateGroupModalVisible: true})
+  }
+
+  closeUpdateGroupModal() {
+    this.setState({updateGroupModalVisible: false})
+  }
 
   render() {
     let appName = "",
@@ -43,16 +55,21 @@ class GroupLayout extends React.Component {
 
     let applications = this.state.applications ? this.state.applications : [],
         application = _.findWhere(applications, {id: this.state.appID})
-
+    let groups = [];
+    let channels = [];
+    
     if (application) {
       appName = application.name
-
+      groups = application.groups; 
+      channels = application.channels ? application.channels : [];
       let group = _.findWhere(application.groups, {id: this.state.groupID})
       if (group) {
         groupName = group.name
       }
     }
-
+   
+    const groupToUpdate = _.findWhere(groups, {id: this.state.groupID});
+    
     return(
       <div>
         <SectionHeader
@@ -68,8 +85,9 @@ class GroupLayout extends React.Component {
             }
           ]}
         />
-        <GroupExtended appID={this.state.appID} groupID={this.state.groupID} />
-     </div>
+        <GroupExtended appID={this.state.appID} groupID={this.state.groupID} handleUpdateGroup={this.openUpdateGroupModal}/>
+        <EditDialog data={{group: groupToUpdate, channels: channels}} show={this.state.updateGroupModalVisible} onHide={this.closeUpdateGroupModal} />
+      </div>
     )
   }
 
