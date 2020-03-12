@@ -156,10 +156,6 @@ function ListView(props) {
         setInstances(cachedInstances);
       }
     }
-
-    if (filteredInstances.length == 0) {
-      setFilteredInstances(cachedInstances);
-    }
   }
 
   React.useEffect(() => {
@@ -179,7 +175,7 @@ function ListView(props) {
       instancesStore.removeChangeListener(onChangeInstances);
     };
   },
-  [lastCheck, instances]);
+  [lastCheck, instances, filteredInstances]);
 
   function getInstanceCount() {
     if (!instances || instances.length == 0)
