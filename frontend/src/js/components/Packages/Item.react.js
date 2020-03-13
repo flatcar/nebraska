@@ -9,7 +9,6 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/styles/makeStyles';
-import moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
 import _ from 'underscore';
@@ -45,7 +44,10 @@ const containerIcons = {
 
 function Item(props) {
   const classes = useStyles();
-  let date = moment.utc(props.packageItem.created_ts).local().format("hh:mma, DD/MM");
+  let createdDate = new Date(props.packageItem.created_ts);
+  let time = createdDate.toLocaleString('default', { hour: "2-digit", minute: "2-digit"});
+  let dateAndMonth = createdDate.toLocaleString('default', {day: 'numeric', month: 'numeric'});
+  let date = `${time}, ${dateAndMonth}`;
   let type = props.packageItem.type || 1;
   let processedChannels = _.where(props.channels, {package_id: props.packageItem.id});
   let blacklistInfo = null;

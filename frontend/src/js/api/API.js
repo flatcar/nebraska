@@ -1,6 +1,5 @@
 import $ from "jquery";
 import _ from "underscore";
-import moment from "moment";
 import PubSub from "pubsub-js"
 import queryString from 'querystring';
 
@@ -154,10 +153,12 @@ class API {
   // Activity
 
   static getActivity() {
-    let now = moment().utc().toISOString(),
-        weekAgo = moment().utc().subtract(7, "days").toISOString(),
-        query = "?start=" + weekAgo + "&end=" + now,
-        url = BASE_URL + "/activity" + query
+    let currentDate = new Date();
+    let now = currentDate.toISOString();
+    currentDate.setDate(currentDate.getDate() - 7);
+    let weekAgo = currentDate.toISOString();
+    let query = "?start=" + weekAgo + "&end=" + now;
+    let url = BASE_URL + "/activity" + query;
 
     return API.getJSON(url)
   }

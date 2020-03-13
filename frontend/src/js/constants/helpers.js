@@ -3,7 +3,6 @@ import deepOrange from '@material-ui/core/colors/deepOrange';
 import lime from '@material-ui/core/colors/lime';
 import orange from '@material-ui/core/colors/orange';
 import red from '@material-ui/core/colors/red';
-import moment from 'moment';
 
 // Indexes/keys for the architectures need to match the ones in
 // pkg/api/arches.go.
@@ -41,17 +40,23 @@ export function cleanSemverVersion(version) {
   return shortVersion
 }
 
-export function makeLocaleTime(timestamp, formats={}) {
-  const {dateFormat='L', timeFormat='LT'} = formats;
-  let localeDateFormat = dateFormat ? dateFormat : '';
-  let localeTimeFormat = timeFormat ? timeFormat : '';
-  let format = localeDateFormat;
+export function getMinuteDifference(date1, date2) {
+  return (date1 - date2) / 1000 / 60;   
+}
 
-  if (format != '' && localeTimeFormat)
-    format += ' ';
-  format += localeTimeFormat;
-
-  return moment.utc(timestamp).local().format(format, moment.locale());
+export function makeLocaleTime(timestamp, opts={}) {
+   const {useDate = true, showTime = true, dateFormat = {weekday: 'short', day: 'numeric'}} = opts;
+   let date = new Date(timestamp);
+   let formattedDate = date.toLocaleDateString('default', dateFormat); 
+   let timeFormat = date.toLocaleString('default', { hour: '2-digit', minute: '2-digit' });
+   
+   if(useDate && showTime) {
+    return `${formattedDate} ${timeFormat}`;
+   }
+   if(useDate) {
+    return formattedDate;
+   }
+   return timeFormat;
 }
 
 export function makeColorsForVersions(theme, versions, channel=null) {

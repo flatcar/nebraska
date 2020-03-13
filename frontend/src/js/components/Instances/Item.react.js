@@ -7,7 +7,6 @@ import Link from '@material-ui/core/Link';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import { styled } from '@material-ui/styles';
-import moment from "moment";
 import PropTypes from 'prop-types';
 import React from "react";
 import { Link as RouterLink } from 'react-router-dom';

@@ -3,7 +3,6 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import TablePagination from '@material-ui/core/TablePagination';
-import moment from 'moment';
 import React from "react";
 import _ from "underscore";
 import { activityStore } from "../../stores/Stores";
@@ -61,9 +60,9 @@ function Container(props) {
     for (let i = page * rowsPerPage;
          i < Math.min(activity.length, page * rowsPerPage + rowsPerPage); ++i) {
       const entry = activity[i];
-      const currentTimestamp = moment(entry.created_ts);
-      if (!timestamp || currentTimestamp.weekday() != timestamp.weekday()) {
-        timestamp = currentTimestamp;
+      const date = new Date(entry.created_ts);
+      if (!timestamp || date.getDay() != new Date(timestamp).getDay()) {
+        timestamp = date.toUTCString();;
         entriesPerTime[timestamp] = [];
       }
 

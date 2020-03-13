@@ -20,8 +20,8 @@ function List(props) {
     <React.Fragment>
       <Typography className={classes.listTitle}>
         {makeLocaleTime(props.timestamp, {
-          dateFormat: 'dddd, LL',
-          timeFormat: null
+          showTime: false,
+          dateFormat: {weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'}
         })}
       </Typography>
       <MuiList>

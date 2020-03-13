@@ -14,7 +14,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import ChannelAvatar from '../Channels/ChannelAvatar';
-import moment from 'moment';
 import * as Yup from 'yup';
 import { ARCHES } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
@@ -164,15 +163,16 @@ function EditDialog(props) {
           >
             <MenuItem value="" key="none">Nothing yet</MenuItem>
             {packages.filter(packageItem => packageItem.arch === arch).map((packageItem, i) =>
-            <MenuItem value={packageItem.id} key={"packageItem_" + i}>
-                <ListItemText
-                  primary={packageItem.version}
-                  secondary={`created: ${moment
-                    .utc(packageItem.created_ts)
-                    .local()
-                    .format("DD/MM/YYYY")}`}
-                />
-            </MenuItem>
+            {
+              let date = new Date(packageItem.created_ts);
+              return (
+                <MenuItem value={packageItem.id} key={"packageItem_" + i}>
+                  <ListItemText
+                    primary={packageItem.version}
+                    secondary={`created: ${date.toLocaleString('default', {day: '2-digit', month:'2-digit', year:'numeric'})}`}
+                  />
+                </MenuItem>);
+            }
             )}
           </Field>
         </DialogContent>
