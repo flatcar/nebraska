@@ -10,7 +10,9 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -318,7 +320,14 @@ func (s *Syncer) downloadPackage(update *omaha.UpdateResponse, filename string) 
 	}
 	defer os.Remove(tmpFile.Name())
 
-	pkgURL := update.URLs[0].CodeBase + update.Manifest.Packages[0].Name
+	updateURL, err := url.Parse(update.URLs[0].CodeBase)
+	if err != nil {
+		return err
+	}
+
+	updateURL.Path = path.Join(updateURL.Path, update.Manifest.Packages[0].Name)
+
+	pkgURL := updateURL.String()
 	resp, err := http.Get(pkgURL)
 	if err != nil {
 		return err
