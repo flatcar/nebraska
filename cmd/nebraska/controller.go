@@ -59,7 +59,7 @@ func newController(conf *controllerConfig) (*controller, error) {
 			API:          conf.api,
 			HostPackages: conf.hostFlatcarPackages,
 			PackagesPath: conf.flatcarPackagesPath,
-			PackagesURL:  conf.nebraskaURL + "/flatcar",
+			PackagesURL:  conf.nebraskaURL + "/flatcar/",
 		}
 		syncer, err := syncer.New(syncerConf)
 		if err != nil {
