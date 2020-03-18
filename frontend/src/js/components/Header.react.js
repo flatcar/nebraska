@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
   },
   header: {
     marginBottom: theme.spacing(1),
-    background: process.env.APPBAR_BG || theme.palette.primary.main,
+    background: process.env.REACT_APP_APPBAR_BG || theme.palette.primary.main,
   },
 }));
 
@@ -65,7 +65,7 @@ export default function Header() {
           <Icon icon={projectLogo} height={45} />
         }
         <Typography variant='h6' className={classes.title}>
-          {process.env.PROJECT_NAME}
+          {process.env.REACT_APP_PROJECT_NAME}
         </Typography>
         {config && config.access_management_url &&
           <IconButton

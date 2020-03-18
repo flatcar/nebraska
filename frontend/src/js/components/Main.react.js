@@ -17,7 +17,7 @@ const nebraskaTheme = createMuiTheme({
   palette: {
     primary: {
       contrastText: "#fff",
-      main: process.env.PRIMARY_COLOR,
+      main: process.env.REACT_APP_PRIMARY_COLOR,
     },
     success: {
       main: green['500'],
@@ -31,7 +31,7 @@ const nebraskaTheme = createMuiTheme({
 
 export default function Main() {
   React.useEffect(() => {
-    document.title = process.env.PROJECT_NAME;
+    document.title = process.env.REACT_APP_PROJECT_NAME;
   },
   []);
 

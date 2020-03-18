@@ -13,6 +13,7 @@ import React from "react";
 import { Link as RouterLink } from 'react-router-dom';
 import semver from "semver";
 import _ from "underscore";
+import LoadingGif from "../../../img/mini_loading.gif"
 import { cleanSemverVersion, makeLocaleTime } from "../../constants/helpers";
 import { instancesStore } from "../../stores/Stores";
 import Label from '../Common/Label';
@@ -24,7 +25,7 @@ const TableLabel = styled(Label)({
 
 function Item(props) {
   let date = props.instance.application.last_check_for_updates;
-  let downloadingIcon = props.instance.statusInfo.spinning ? <img src='img/mini_loading.gif' /> : '';
+  let downloadingIcon = props.instance.statusInfo.spinning ? <img src={LoadingGif} /> : '';
   let statusIcon = props.instance.statusInfo.icon ? <i className={props.instance.statusInfo.icon}></i> : '';
   let instanceLabel = props.instance.statusInfo.className ? <TableLabel>{statusIcon} {downloadingIcon} {props.instance.statusInfo.description}</TableLabel> : <div>&nbsp;</div>;
   let version = cleanSemverVersion(props.instance.application.version);

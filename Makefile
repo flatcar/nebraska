@@ -45,7 +45,7 @@ frontend:
 
 .PHONY: frontend-watch
 frontend-watch:
-	cd frontend && npx webpack --watch-poll 1000 --watch --config ./webpack.config.js --mode development
+	cd frontend && npm start
 
 .PHONY: backend
 backend: run-generators backend-code-checks build-backend-binary

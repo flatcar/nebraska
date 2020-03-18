@@ -16,7 +16,7 @@ function Item(props) {
 
   function deleteChannel() {
     let confirmationText = 'Are you sure you want to delete this channel?';
-    if (confirm(confirmationText)) {
+    if (window.confirm(confirmationText)) {
       applicationsStore.deleteChannel(channel.application_id, channel.id);
     }
   }

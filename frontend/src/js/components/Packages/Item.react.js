@@ -60,7 +60,7 @@ function Item(props) {
 
   function deletePackage() {
     let confirmationText = "Are you sure you want to delete this package?"
-    if (confirm(confirmationText)) {
+    if (window.confirm(confirmationText)) {
       applicationsStore.deletePackage(props.packageItem.application_id, props.packageItem.id);
     }
   }
