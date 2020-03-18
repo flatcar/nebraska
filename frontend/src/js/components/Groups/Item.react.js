@@ -35,7 +35,7 @@ function Item(props) {
 
   function deleteGroup() {
     let confirmationText = "Are you sure you want to delete this group?"
-    if (confirm(confirmationText)) {
+    if (window.confirm(confirmationText)) {
       applicationsStore.deleteGroup(props.group.application_id, props.group.id)
     }
   }

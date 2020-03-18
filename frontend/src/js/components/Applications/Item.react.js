@@ -29,7 +29,7 @@ function Item(props) {
 
   function deleteApplication() {
     let confirmationText = "Are you sure you want to delete this application?"
-    if (confirm(confirmationText)) {
+    if (window.confirm(confirmationText)) {
       applicationsStore.deleteApplication(props.application.id)
     }
   }
