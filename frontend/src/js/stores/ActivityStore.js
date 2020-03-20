@@ -1,5 +1,4 @@
 import API from "../api/API"
-import moment from "moment"
 import _ from "underscore"
 import Store from './BaseStore'
 
@@ -37,7 +36,8 @@ class ActivityStore extends Store {
     let sortedEntries = {}
 
     entries.forEach(entry => {
-      let date = moment.utc(entry.created_ts).local().format("dddd, DD MMMM YYYY")
+      let createdDate = new Date(entry.created_ts);
+      let date = createdDate.toLocaleDateString('default', {day: 'numeric', weekday: 'short', month: 'short', year: 'numeric'});
       if (_.has(sortedEntries, date)) {
         sortedEntries[date].push(entry)
       }

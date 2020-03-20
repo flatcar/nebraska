@@ -4,12 +4,11 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { useTheme } from '@material-ui/styles';
-import moment from 'moment';
 import React from 'react';
 import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 import semver from "semver";
 import _ from 'underscore';
-import { cleanSemverVersion, makeColorsForVersions, makeLocaleTime } from '../../constants/helpers';
+import { cleanSemverVersion, makeColorsForVersions, makeLocaleTime, getMinuteDifference } from '../../constants/helpers';
 import { applicationsStore, instancesStore } from "../../stores/Stores";
 import Loader from '../Common/Loader';
 import SimpleTable from '../Common/SimpleTable';
@@ -20,9 +19,9 @@ function TimelineChart(props) {
   let ticks = {};
 
   function getTickValues(tickCount) {
-    const startTs = moment(props.data[0].timestamp);
-    const endTs = moment(props.data[props.data.length - 1].timestamp);
-    const lengthMinutes = endTs.diff(startTs, 'minutes');
+    const startTs = new Date(props.data[0].timestamp);
+    const endTs = new Date(props.data[props.data.length - 1].timestamp);
+    const lengthMinutes = getMinuteDifference(endTs, startTs);
     // We remove 1 element since that's "0 hours"
     const dimension = props.data.length - 1;
 
@@ -33,23 +32,18 @@ function TimelineChart(props) {
     if (lengthMinutes / 60 < 24) {
       for (let i = 0; i < 4; i++) {
         const index = lengthMinutes  / 4 * i;
-        ticks[index] = makeLocaleTime(props.data[index].timestamp,
-                                      {dateFormat: null});
+        ticks[index] = makeLocaleTime(props.data[index].timestamp, {useDate: false});
       }
 
       return ticks;
     }
 
     // Set up a tick marking the 0 hours of the day contained in the range
-    const nextDay = moment(startTs).add(1, 'days').startOf('date')
-    const nextDayMinuteDiff = moment(nextDay).diff(startTs, 'minutes');
+    const nextDay = new Date(startTs);
+    nextDay.setHours(24, 0, 0, 0);
+    const midnightDay = new Date(nextDay);
+    const nextDayMinuteDiff = getMinuteDifference(nextDay, startTs);
     const midnightTick = nextDayMinuteDiff * dimension / lengthMinutes;
-
-    // The midnight tick just gets the date, not the hours (since they're zero)
-    ticks[midnightTick] = makeLocaleTime(nextDay, {
-      dateFormat: 'ddd D',
-      timeFormat: null
-    });
 
     // Set up the remaining ticks according to the desired amount, separated
     // evenly.
@@ -57,22 +51,23 @@ function TimelineChart(props) {
 
     // Set the ticks around midnight.
     for (let i of [-1, 1]) {
-      let tickDate = moment(nextDay);
+      let tickDate = new Date(nextDay);
 
       while (true) {
-        tickDate.add(tickOffsetMinutes * i, 'minutes');
-        // Stop if this tick falls outside of the times being charted.
-        if (tickDate.isBefore(startTs) || tickDate.isAfter(endTs)) {
+        tickDate.setMinutes(nextDay.getMinutes() + tickOffsetMinutes * i);
+        // Stop if this tick falls outside of the times being charted
+
+        if (tickDate < startTs || tickDate > endTs) {
           break;
         }
 
-        const tick = tickDate.diff(startTs, 'minutes') * dimension / lengthMinutes;
+        const tick = getMinuteDifference(tickDate, startTs) * dimension / lengthMinutes;
         // Show only the time.
-        ticks[tick] = makeLocaleTime(tickDate, {
-          dateFormat: null
-        });
+        ticks[tick] = makeLocaleTime(tickDate, {useDate: false});
       }
     }
+    // The midnight tick just gets the date, not the hours (since they're zero)
+    ticks[midnightTick] = makeLocaleTime(midnightDay, {showTime: false});
 
     return ticks;
   }
@@ -84,9 +79,7 @@ function TimelineChart(props) {
         <Paper>
           <Box padding={1}>
             <Typography>
-              {data[label] && makeLocaleTime(data[label].timestamp, {
-                dateFormat: 'ddd D'
-              })}
+              {data[label] && makeLocaleTime(data[label].timestamp)}
             </Typography>
           </Box>
         </Paper>
@@ -142,7 +135,7 @@ export function VersionCountTimeline(props) {
   const [timeline, setTimeline] = React.useState({
     timeline: {},
     // A long time ago, to force the first update...
-    lastUpdate: moment([2000, 1, 1]),
+    lastUpdate: new Date(2000, 1, 1),
   });
 
   const theme = useTheme();
@@ -241,8 +234,10 @@ export function VersionCountTimeline(props) {
 
   function getVersionTimeline(group) {
     // Check if we should update the timeline or it's too early.
+    let lastUpdate = new Date(timeline.lastUpdate);
+    let currentDate = new Date();
     if (Object.keys(timeline.timeline).length > 0 &&
-        moment(timeline.lastUpdate).diff(moment().utc(), 'minutes') < 5) {
+        getMinuteDifference(lastUpdate, currentDate) < 5) {
       return;
     }
 
@@ -250,7 +245,7 @@ export function VersionCountTimeline(props) {
     .done(versionCountTimeline => {
       setTimeline({
         timeline: versionCountTimeline,
-        lastUpdate: moment().utc(),
+        lastUpdate: lastUpdate.toUTCString(),
       });
 
       makeChartData(group, versionCountTimeline || []);
@@ -267,7 +262,7 @@ export function VersionCountTimeline(props) {
       return '';
     }
     const timestamp = data[selectedEntry].timestamp;
-    return makeLocaleTime(timestamp, {dateFormat: 'ddd D'})
+    return makeLocaleTime(timestamp)
   }
 
   // Make the timeline data again when needed.
@@ -329,7 +324,7 @@ export function StatusCountTimeline(props) {
   const [timeline, setTimeline] = React.useState({
     timeline: {},
     // A long time ago, to force the first update...
-    lastUpdate: moment([2000, 1, 1]),
+    lastUpdate: new Date(2000, 1, 1),
   });
 
   const theme = useTheme();
@@ -429,8 +424,9 @@ export function StatusCountTimeline(props) {
 
   function getStatusTimeline(group) {
     // Check if we should update the timeline or it's too early.
-    if (Object.keys(timeline.timeline).length > 0 &&
-        moment(timeline.lastUpdate).diff(moment().utc(), 'minutes') < 5) {
+    let lastUpdate = new Date(timeline.lastUpdate);
+    let currentDate = new Date();
+    if (Object.keys(timeline.timeline).length > 0 && getMinuteDifference(lastUpdate, currentDate)  < 5) {
       return;
     }
 
@@ -438,7 +434,7 @@ export function StatusCountTimeline(props) {
     .done(statusCountTimeline => {
       setTimeline({
         timeline: statusCountTimeline,
-        lastUpdate: moment().utc(),
+        lastUpdate: new Date().toUTCString(),
       });
 
       makeChartData(statusCountTimeline || []);
@@ -455,7 +451,7 @@ export function StatusCountTimeline(props) {
       return '';
     }
     const timestamp = data[selectedEntry].timestamp;
-    return makeLocaleTime(timestamp, {dateFormat: 'ddd D'})
+    return makeLocaleTime(timestamp)
   }
 
   // Make the timeline data again when needed.

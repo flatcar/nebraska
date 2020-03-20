@@ -1,5 +1,4 @@
 import { makeStyles } from '@material-ui/core/styles';
-import moment from "moment";
 import PropTypes from 'prop-types';
 import React from "react";
 import { activityStore } from '../../stores/Stores';
@@ -97,8 +96,7 @@ class Item extends React.Component {
   }
 
   render() {
-    const timeFormat = moment.localeData().longDateFormat('LT');
-    let time = moment.utc(this.props.entry.created_ts).local().format(`${timeFormat}`);
+    let time = new Date(this.props.entry.created_ts).toLocaleString('default', {hour: "2-digit", minute: "2-digit"});
     let subtitle = '';
     let name = '';
 

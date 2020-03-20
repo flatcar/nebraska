@@ -9,10 +9,9 @@ import Paper from '@material-ui/core/Paper';
 import Select from '@material-ui/core/Select';
 import TablePagination from '@material-ui/core/TablePagination';
 import { useTheme } from '@material-ui/styles';
-import moment from 'moment';
 import PropTypes from 'prop-types';
 import React from "react";
-import { cleanSemverVersion } from "../../constants/helpers";
+import { cleanSemverVersion, getMinuteDifference } from "../../constants/helpers";
 import { instancesStore } from '../../stores/Stores';
 import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
@@ -99,7 +98,7 @@ function ListView(props) {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [instances, setInstances] = React.useState(null);
   const [filteredInstances, setFilteredInstances] = React.useState([]);
-  const [lastCheck, setLastCheck] = React.useState(moment([0, 0])); // Long long time ago.
+  const [lastCheck, setLastCheck] = React.useState(new Date(0, 0)); // Long long time ago.
   const [filters, setFilters] = React.useState({status: '', version: ''});
 
   function handleChangePage(event, newPage) {
@@ -162,8 +161,9 @@ function ListView(props) {
     instancesStore.addChangeListener(onChangeInstances);
     // @todo: This check avoids multiple unnecessary fetches, but we should
     // use a smarter refresh in the background that updates the list when needed.
-    const now = moment();
-    if (now.diff(lastCheck, 'seconds', true) > CHECKS_TIMEOUT) {
+    const now = new Date();
+    // get seconds difference of now and lastCheck
+    if (getMinuteDifference(now, lastCheck) / 60 > CHECKS_TIMEOUT) {
       setLastCheck(now);
       instancesStore.getInstances(application.id, group.id, null,
         {
