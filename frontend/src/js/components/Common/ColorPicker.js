@@ -27,7 +27,6 @@ export function ColorPickerButton(props) {
   function handleColorChange(color) {
     setChannelColor(color.hex);
     onColorPicked(color);
-    color = color.hex;
   }
 
   function handleColorButtonClick(event) {
