@@ -1,4 +1,3 @@
-import flatcarIcon from '../../icons/flatcar-logo.json'
 import cancelIcon from '@iconify/icons-mdi/cancel';
 import cubeOutline from '@iconify/icons-mdi/cube-outline';
 import { InlineIcon } from '@iconify/react';
@@ -13,10 +12,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import _ from 'underscore';
 import { ARCHES, cleanSemverVersion } from '../../constants/helpers';
+import flatcarIcon from '../../icons/flatcar-logo.json';
 import { applicationsStore } from '../../stores/Stores';
+import ChannelAvatar from '../Channels/ChannelAvatar';
 import Label from '../Common/Label';
 import MoreMenu from '../Common/MoreMenu';
-import ChannelAvatar from '../Channels/ChannelAvatar';
 
 const useStyles = makeStyles(theme => ({
   packageName: {
@@ -44,24 +44,24 @@ const containerIcons = {
 
 function Item(props) {
   const classes = useStyles();
-  let createdDate = new Date(props.packageItem.created_ts);
-  let time = createdDate.toLocaleString('default', { hour: "2-digit", minute: "2-digit"});
-  let dateAndMonth = createdDate.toLocaleString('default', {day: 'numeric', month: 'numeric'});
-  let date = `${time}, ${dateAndMonth}`;
-  let type = props.packageItem.type || 1;
-  let processedChannels = _.where(props.channels, {package_id: props.packageItem.id});
+  const createdDate = new Date(props.packageItem.created_ts);
+  const time = createdDate.toLocaleString('default', { hour: '2-digit', minute: '2-digit'});
+  const dateAndMonth = createdDate.toLocaleString('default', {day: 'numeric', month: 'numeric'});
+  const date = `${time}, ${dateAndMonth}`;
+  const type = props.packageItem.type || 1;
+  const processedChannels = _.where(props.channels, {package_id: props.packageItem.id});
   let blacklistInfo = null;
-  let item = type in containerIcons ? containerIcons[type] : containerIcons.other;
+  const item = type in containerIcons ? containerIcons[type] : containerIcons.other;
 
   if (props.packageItem.channels_blacklist) {
-    let channelsList = _.map(props.packageItem.channels_blacklist, (channel, index) => {
+    const channelsList = _.map(props.packageItem.channels_blacklist, (channel, index) => {
       return (_.findWhere(props.channels, {id: channel})).name;
-    })
+    });
     blacklistInfo = channelsList.join(' - ');
   }
 
   function deletePackage() {
-    let confirmationText = "Are you sure you want to delete this package?"
+    const confirmationText = 'Are you sure you want to delete this package?';
     if (window.confirm(confirmationText)) {
       applicationsStore.deletePackage(props.packageItem.application_id, props.packageItem.id);
     }
@@ -83,9 +83,9 @@ function Item(props) {
             <Typography component="span" className={classes.subtitle}>Channels:</Typography>&nbsp;
             {processedChannels.map((channel, i) => {
               return (<span className={classes.channelLabel} key={i}>
-                        <ChannelAvatar color={channel.color} size="10px" />&nbsp;
-                        {channel.name}
-                      </span>
+                <ChannelAvatar color={channel.color} size="10px" />&nbsp;
+                {channel.name}
+              </span>
               );
               })
             }
@@ -132,6 +132,6 @@ Item.propTypes = {
   packageItem: PropTypes.object.isRequired,
   channels: PropTypes.array,
   handleUpdatePackage: PropTypes.func.isRequired
-}
+};
 
-export default Item
+export default Item;

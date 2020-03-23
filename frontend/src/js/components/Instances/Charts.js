@@ -32,7 +32,7 @@ const LightTooltip = withStyles(theme => ({
 }))(Tooltip);
 
 function ProgressDoughnut(props) {
-  let {label, data, width=100, height=100, color='#afafaf', icon} = props;
+  const {label, data, width=100, height=100, color='#afafaf', icon} = props;
   const [hoverData, setHoverData] = React.useState(null);
   const [showTooltip, setShowTooltip] = React.useState(false);
 
@@ -46,7 +46,7 @@ function ProgressDoughnut(props) {
 
   let totalFilled = 0;
   let valuesSum = 0;
-  let dataSet = data.map(({value, color, description}, i) => {
+  const dataSet = data.map(({value, color, description}, i) => {
     // Ensure that the minimum value displayed is 0.5 if the original value
     // is 0, or 1.5 otherwise. This ensures the user is able to see the bits
     // related to this value in the charts.
@@ -100,12 +100,12 @@ function ProgressDoughnut(props) {
               data: { fill: ({datum}) => datum.color }
             }}
             events={[{
-              target: "data",
+              target: 'data',
               eventHandlers: {
                 onMouseOver: () => {
                   return [
                     {
-                      target: "data",
+                      target: 'data',
                       mutation: ({datum, style}) => {
                         // Set what to show in the tooltip on hover.
                         setHoverData(datum);
@@ -125,7 +125,7 @@ function ProgressDoughnut(props) {
                 onMouseOut: () => {
                   return [
                     {
-                      target: "data",
+                      target: 'data',
                       mutation: () => {
                         // Reset tooltip previously set on hover.
                         setHoverData(null);
@@ -166,8 +166,8 @@ function ProgressDoughnut(props) {
             open={showTooltip}
           >
             <Typography
-              onMouseOver={() => { setShowTooltip(true) }}
-              onMouseOut={() => { setShowTooltip(false) }}
+              onMouseOver={() => { setShowTooltip(true); }}
+              onMouseOut={() => { setShowTooltip(false); }}
               className={classes.doughnutLabel}
             >
               {label}
@@ -181,9 +181,9 @@ function ProgressDoughnut(props) {
 
 export default function InstanceStatusArea(props) {
   const theme = useTheme();
-  let statusDefs = makeStatusDefs(theme);
+  const statusDefs = makeStatusDefs(theme);
 
-  let {instanceStats} = props;
+  const {instanceStats} = props;
   const instanceStateCount = [
     {
       status: 'InstanceStatusComplete',
@@ -220,7 +220,7 @@ export default function InstanceStatusArea(props) {
   statusDefs['InstanceStatusOther'] = {...statusDefs['InstanceStatusUndefined']};
   statusDefs['InstanceStatusOther'].label = 'Other';
 
-  let totalInstances = instanceStats ? instanceStats.total : 0;
+  const totalInstances = instanceStats ? instanceStats.total : 0;
 
   return (
     totalInstances > 0 ?
@@ -254,7 +254,7 @@ export default function InstanceStatusArea(props) {
               <Grid item key={i}>
                 <ProgressDoughnut
                   data={count.map(({key, label=status}) => {
-                    let statusLabel = statusDefs[label].label;
+                    const statusLabel = statusDefs[label].label;
                     return {
                       value: instanceStats[key] / instanceStats['total'],
                       color: statusDefs[label].color,
@@ -270,7 +270,7 @@ export default function InstanceStatusArea(props) {
           })}
         </Grid>
       </Grid>
-    :
+      :
       <Empty>
         No instances have yet registered with this group.
         <br/><br/>

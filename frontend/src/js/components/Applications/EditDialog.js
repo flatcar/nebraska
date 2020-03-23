@@ -8,9 +8,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { Field, Form, Formik } from 'formik';
 import { TextField } from 'formik-material-ui';
 import PropTypes from 'prop-types';
-import React from "react";
+import React from 'react';
 import * as Yup from 'yup';
-import { applicationsStore } from "../../stores/Stores";
+import { applicationsStore } from '../../stores/Stores';
 
 function EditDialog(props){
   const isCreation = Boolean(props.create);
@@ -19,7 +19,7 @@ function EditDialog(props){
     var data = {
       name: values.name,
       description: values.description
-    }
+    };
 
     let appFunctionCall;
     if (isCreation) {
@@ -36,7 +36,7 @@ function EditDialog(props){
       fail(() => {
         actions.setSubmitting(false);
         actions.setStatus({statusMessage: 'Something went wrong. Check the form or try again later...'});
-      })
+      });
   }
 
   function handleClose() {
@@ -87,7 +87,7 @@ function EditDialog(props){
               {props.data.applications &&
                 props.data.applications.map((application, i) => {
                   return (
-                    <MenuItem value={application.id} key={"app_" + i}>
+                    <MenuItem value={application.id} key={'app_' + i}>
                       {application.name}
                     </MenuItem>
                   );
@@ -115,7 +115,7 @@ function EditDialog(props){
   return (
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
       <DialogTitle>{isCreation ? 'Add Application' : 'Update Application'}</DialogTitle>
-        <Formik
+      <Formik
           initialValues={{ name: props.data.name,
                            description: props.data.description }}
           onSubmit={handleSubmit}
@@ -129,6 +129,6 @@ function EditDialog(props){
 EditDialog.propTypes = {
   data: PropTypes.object.isRequired,
   show: PropTypes.bool.isRequired
-}
+};
 
-export default EditDialog
+export default EditDialog;

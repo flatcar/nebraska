@@ -1,32 +1,32 @@
+import { ListItemText } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import Grid from '@material-ui/core/Grid';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import MuiSelect from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
+import { Field,Form, Formik } from 'formik';
+import { TextField } from 'formik-material-ui';
 import PropTypes from 'prop-types';
 import React from 'react';
-import ChannelAvatar from '../Channels/ChannelAvatar';
 import * as Yup from 'yup';
 import { ARCHES } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
-import { Formik, Form, Field } from 'formik';
-import { TextField } from 'formik-material-ui';
+import ChannelAvatar from '../Channels/ChannelAvatar';
 import { ColorPickerButton } from '../Common/ColorPicker';
-import { ListItemText } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   nameField: {
     width: '15rem',
   },
-}))
+}));
 
 function EditDialog(props) {
   const classes = useStyles();
@@ -36,37 +36,37 @@ function EditDialog(props) {
   const isCreation = Boolean(props.create);
 
   function handleSubmit(values, actions) {
-    let data = {
+    const data = {
       name: values.name,
       arch: parseInt(arch),
       color: channelColor,
       application_id: props.data.applicationID
-    }
+    };
 
-    let package_id = values.package;
+    const package_id = values.package;
     if (package_id) {
-      data["package_id"] = package_id;
+      data['package_id'] = package_id;
     }
 
     let channelFunctionCall;
     if (isCreation) {
-        channelFunctionCall = applicationsStore.createChannel(data);
+      channelFunctionCall = applicationsStore.createChannel(data);
     } else {
-        data['id'] = props.data.channel.id;
-        channelFunctionCall = applicationsStore.updateChannel(data);
+      data['id'] = props.data.channel.id;
+      channelFunctionCall = applicationsStore.updateChannel(data);
     }
 
     channelFunctionCall.
       done(() => {
         actions.setSubmitting(false);
-        props.onHide()
+        props.onHide();
       }).
       fail(() => {
         actions.setSubmitting(false);
         actions.setStatus({
           statusMessage: 'Something went wrong, or a channel with this name and architecture already exists. Check the form or try again later…'
         });
-      })
+      });
   }
 
   function handleColorPicked(color) {
@@ -164,9 +164,9 @@ function EditDialog(props) {
             <MenuItem value="" key="none">Nothing yet</MenuItem>
             {packages.filter(packageItem => packageItem.arch === arch).map((packageItem, i) =>
             {
-              let date = new Date(packageItem.created_ts);
+              const date = new Date(packageItem.created_ts);
               return (
-                <MenuItem value={packageItem.id} key={"packageItem_" + i}>
+                <MenuItem value={packageItem.id} key={'packageItem_' + i}>
                   <ListItemText
                     primary={packageItem.version}
                     secondary={`created: ${date.toLocaleString('default', {day: '2-digit', month:'2-digit', year:'numeric'})}`}
@@ -178,7 +178,7 @@ function EditDialog(props) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">Cancel</Button>
-          <Button type="submit" disabled={isSubmitting} color="primary">{ isCreation ? "Add" : "Save" }</Button>
+          <Button type="submit" disabled={isSubmitting} color="primary">{ isCreation ? 'Add' : 'Save' }</Button>
         </DialogActions>
       </Form>
     );
@@ -193,14 +193,14 @@ function EditDialog(props) {
   let initialValues = {};
   if (!isCreation) {
     initialValues = {name: props.data.channel.name,
-                     package: props.data.channel.package_id ? props.data.channel.package_id : "",
-                    };
+                     package: props.data.channel.package_id ? props.data.channel.package_id : '',
+    };
   }
 
   return (
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
-      <DialogTitle>{ isCreation ? "Add New Channel" : "Edit Channel" }</DialogTitle>
-        <Formik
+      <DialogTitle>{ isCreation ? 'Add New Channel' : 'Edit Channel' }</DialogTitle>
+      <Formik
           initialValues={initialValues}
           onSubmit={handleSubmit}
           validationSchema={validation}
@@ -214,6 +214,6 @@ EditDialog.propTypes = {
   data: PropTypes.object,
   show: PropTypes.bool,
   create: PropTypes.bool,
-}
+};
 
 export default EditDialog;

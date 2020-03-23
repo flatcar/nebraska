@@ -1,9 +1,9 @@
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import React from "react";
-import _ from "underscore";
-import StatusHistoryList from "./StatusHistoryList.react";
+import React from 'react';
+import _ from 'underscore';
 import Empty from '../Common/EmptyContent';
+import StatusHistoryList from './StatusHistoryList.react';
 
 const useStyles = makeStyles({
   historyBox: {
@@ -33,6 +33,6 @@ function StatusHistoryContainer(props) {
 
 StatusHistoryContainer.propTypes = {
   statusHistory: PropTypes.array.isRequired
-}
+};
 
-export default StatusHistoryContainer
+export default StatusHistoryContainer;

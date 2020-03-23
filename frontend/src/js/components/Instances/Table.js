@@ -11,11 +11,11 @@ import { cleanSemverVersion } from '../../constants/helpers';
 import Item from './Item.react';
 
 function Table(props) {
-  let [selectedInstance, setSelectedInstance] = React.useState(null);
-  let versions = props.version_breakdown || [];
-  let lastVersionChannel = (props.channel && props.channel.package) ? cleanSemverVersion(props.channel.package.version) : '';
-  let versionNumbers = (_.map(versions, (version) => {
-    return cleanSemverVersion(version.version)
+  const [selectedInstance, setSelectedInstance] = React.useState(null);
+  const versions = props.version_breakdown || [];
+  const lastVersionChannel = (props.channel && props.channel.package) ? cleanSemverVersion(props.channel.package.version) : '';
+  const versionNumbers = (_.map(versions, (version) => {
+    return cleanSemverVersion(version.version);
   })).sort(semver.rcompare);
 
   function onItemToggle(id) {
@@ -38,9 +38,9 @@ function Table(props) {
         </TableRow>
       </TableHead>
       <TableBody>
-      {props.instances.map((instance, i) =>
-        <Item
-          key={"instance_" + i}
+        {props.instances.map((instance, i) =>
+          <Item
+          key={'instance_' + i}
           instance={instance}
           lastVersionChannel={lastVersionChannel}
           versionNumbers={versionNumbers}
@@ -57,6 +57,6 @@ Table.propTypes = {
   instances: PropTypes.array.isRequired,
   version_breakdown: PropTypes.array,
   channel: PropTypes.object
-}
+};
 
-export default Table
+export default Table;

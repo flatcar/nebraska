@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => ({
 
 function List(props) {
   const classes = useStyles();
-  let entries = props.entries ? props.entries : []
+  const entries = props.entries ? props.entries : [];
 
   return(
     <React.Fragment>
@@ -36,6 +36,6 @@ function List(props) {
 List.propTypes = {
   timestamp: PropTypes.string.isRequired,
   entries: PropTypes.array.isRequired
-}
+};
 
-export default List
+export default List;

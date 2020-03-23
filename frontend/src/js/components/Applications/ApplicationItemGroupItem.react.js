@@ -22,7 +22,7 @@ function ApplicationItemGroupItem(props) {
     >
       {props.group.name} {instances_total}
     </Link>
-  )
+  );
 }
 
 ApplicationItemGroupItem.propTypes = {

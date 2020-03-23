@@ -1,9 +1,9 @@
-import React from 'react';
 import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/styles';
-import ChannelAvatar from '../Channels/ChannelAvatar';
 import Popover from '@material-ui/core/Popover';
+import { makeStyles } from '@material-ui/styles';
+import React from 'react';
 import { TwitterPicker } from 'react-color';
+import ChannelAvatar from '../Channels/ChannelAvatar';
 
 // @todo: This needs to become a FormControl so we can display it in a similar
 // style as the other form controls.
@@ -16,12 +16,12 @@ const useStyles = makeStyles({
 
 export function ColorPickerButton(props) {
   const classes = useStyles();
-  let [channelColor, setChannelColor] = React.useState(props.color);
-  let [displayColorPicker, setDisplayColorPicker] = React.useState(false);
-  let [anchorEl, setAnchorEl] = React.useState(null);
-  let {onColorPicked, componentColorProp=null} = props;
+  const [channelColor, setChannelColor] = React.useState(props.color);
+  const [displayColorPicker, setDisplayColorPicker] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const {onColorPicked, componentColorProp=null} = props;
 
-  let componentProps = {};
+  const componentProps = {};
   componentProps[componentColorProp] = channelColor;
 
   function handleColorChange(color) {

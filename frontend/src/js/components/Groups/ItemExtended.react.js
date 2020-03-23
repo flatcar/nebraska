@@ -4,16 +4,16 @@ import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import React from "react";
+import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import _ from "underscore";
-import { applicationsStore } from "../../stores/Stores";
+import _ from 'underscore';
+import { applicationsStore } from '../../stores/Stores';
 import ChannelItem from '../Channels/Item.react';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
-import InstanceStatusArea from '../Instances/Charts';
-import { VersionCountTimeline, StatusCountTimeline } from './Charts';
 import ListHeader from '../Common/ListHeader';
 import MoreMenu from '../Common/MoreMenu';
+import InstanceStatusArea from '../Instances/Charts';
+import { StatusCountTimeline,VersionCountTimeline } from './Charts';
 
 const useStyles = makeStyles({
   link: {
@@ -29,7 +29,7 @@ function ItemExtended(props) {
   const [group, setGroup] = React.useState(null);
   const classes = useStyles();
   function onChange() {
-    let app = applicationsStore.getCachedApplication(props.appID);
+    const app = applicationsStore.getCachedApplication(props.appID);
 
     if (!app) {
       applicationsStore.getApplication(props.appID);
@@ -40,14 +40,14 @@ function ItemExtended(props) {
       setApplication(app);
     }
 
-    let groupFound = app ? _.findWhere(app.groups, {id: props.groupID}) : null;
+    const groupFound = app ? _.findWhere(app.groups, {id: props.groupID}) : null;
     if (groupFound !== group) {
       setGroup(groupFound);
     }
   }
-  
+
   function updateGroup() {
-    props.handleUpdateGroup(props.groupId, props.appID)
+    props.handleUpdateGroup(props.groupId, props.appID);
   }
 
   React.useEffect(() => {
@@ -56,7 +56,7 @@ function ItemExtended(props) {
 
     return function cleanup() {
       applicationsStore.removeChangeListener(onChange);
-    }
+    };
   },
   [application, group]);
 
@@ -135,13 +135,13 @@ function ItemExtended(props) {
             <ListHeader
               title="Update Progress"
               actions={group.instances_stats.total > 0 ? [
-                  <Link
+                <Link
                     className={classes.link}
                     to={{pathname: `/apps/${props.appID}/groups/${props.groupID}/instances`}}
                     component={RouterLink}
                   >
                     See instances
-                  </Link>
+                </Link>
                 ]
               :
                 []
@@ -194,6 +194,6 @@ function ItemExtended(props) {
 ItemExtended.propTypes = {
   appID: PropTypes.string.isRequired,
   groupID: PropTypes.string.isRequired
-}
+};
 
-export default ItemExtended
+export default ItemExtended;

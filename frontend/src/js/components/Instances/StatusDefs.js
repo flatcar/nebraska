@@ -1,11 +1,11 @@
 import alertOctagon from '@iconify/icons-mdi/alert-octagon';
-import progressDownload from '@iconify/icons-mdi/progress-download';
 import boxDownload from '@iconify/icons-mdi/box-download';
-import clipboardCheck from '@iconify/icons-mdi/clipboard-check';
 import checkboxMarked from '@iconify/icons-mdi/checkbox-marked';
+import clipboardCheck from '@iconify/icons-mdi/clipboard-check';
 import pauseCircle from '@iconify/icons-mdi/pause-circle';
-import questionMarkCircle from '@iconify/icons-mdi/question-mark-circle';
 import playCircle from '@iconify/icons-mdi/play-circle';
+import progressDownload from '@iconify/icons-mdi/progress-download';
+import questionMarkCircle from '@iconify/icons-mdi/question-mark-circle';
 
 function makeStatusDefs(theme) {
   return {

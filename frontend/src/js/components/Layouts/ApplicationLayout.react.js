@@ -1,16 +1,16 @@
-import { applicationsStore } from "../../stores/Stores"
-import React from "react"
-import _ from "underscore"
-import { Link as RouterLink } from "react-router-dom"
-import Grid from '@material-ui/core/Grid';
-import ApplicationsList from "../Applications/List.react"
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import GroupsList from "../Groups/List.react"
-import ChannelsList from "../Channels/List.react"
+import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
-import PackagesList from "../Packages/List.react"
 import Typography from '@material-ui/core/Typography';
+import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import _ from 'underscore';
+import { applicationsStore } from '../../stores/Stores';
+import ApplicationsList from '../Applications/List.react';
+import ChannelsList from '../Channels/List.react';
 import SectionHeader from '../Common/SectionHeader';
+import GroupsList from '../Groups/List.react';
+import PackagesList from '../Packages/List.react';
 
 class ApplicationLayout extends React.Component {
 
@@ -18,38 +18,38 @@ class ApplicationLayout extends React.Component {
     super(props);
     this.onChange = this.onChange.bind(this);
 
-    let appID = props.match.params.appID
+    const appID = props.match.params.appID;
     this.state = {
       appID: appID,
       applications: applicationsStore.getCachedApplications()
-    }
+    };
   }
 
   componentWillMount() {
-    applicationsStore.getApplication(this.props.match.params.appID)
+    applicationsStore.getApplication(this.props.match.params.appID);
   }
 
   componentDidMount() {
-    applicationsStore.addChangeListener(this.onChange)
+    applicationsStore.addChangeListener(this.onChange);
   }
 
   componentWillUnmount() {
-    applicationsStore.removeChangeListener(this.onChange)
+    applicationsStore.removeChangeListener(this.onChange);
   }
 
   onChange() {
     this.setState({
       applications: applicationsStore.getCachedApplications()
-    })
+    });
   }
 
   render() {
-    let appName = ""
-    let applications = this.state.applications ? this.state.applications : [],
-        application = _.findWhere(applications, {id: this.state.appID})
+    let appName = '';
+    const applications = this.state.applications ? this.state.applications : [];
+    const application = _.findWhere(applications, {id: this.state.appID});
 
     if (application) {
-      appName = application.name
+      appName = application.name;
     }
 
     return(
@@ -86,9 +86,9 @@ class ApplicationLayout extends React.Component {
           </Grid>
         </Grid>
       </div>
-    )
+    );
   }
 
 }
 
-export default ApplicationLayout
+export default ApplicationLayout;

@@ -1,5 +1,3 @@
-import _ from "underscore"
-import {REGEX_SEMVER} from "../../constants/regex"
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import Dialog from '@material-ui/core/Dialog';
@@ -15,19 +13,21 @@ import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
 import MuiSelect from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
+import { Field,Form, Formik } from 'formik';
+import { Select, TextField } from 'formik-material-ui';
 import PropTypes from 'prop-types';
 import React from 'react';
+import _ from 'underscore';
 import * as Yup from 'yup';
 import { ARCHES } from '../../constants/helpers';
+import {REGEX_SEMVER} from '../../constants/regex';
 import { applicationsStore } from '../../stores/Stores';
-import { Formik, Form, Field } from 'formik';
-import { Select, TextField } from 'formik-material-ui';
 
 const useStyles = makeStyles(theme => ({
   topSelect: {
     width: '10rem',
   },
-}))
+}));
 
 function EditDialog(props) {
   const classes = useStyles();
@@ -46,10 +46,10 @@ function EditDialog(props) {
   }
 
   function getChannelsNames(channelIds) {
-    let channels = props.data.channels.filter((channel) => {
+    const channels = props.data.channels.filter((channel) => {
       return channelIds.includes(channel.id);
     });
-    return channels.map((channelObj) => { return channelObj.name });
+    return channels.map((channelObj) => { return channelObj.name; });
   }
 
   function handlePackageTypeChange(event) {
@@ -61,7 +61,7 @@ function EditDialog(props) {
   }
 
   function handleSubmit(values, actions) {
-    let data = {
+    const data = {
       arch: parseInt(arch),
       filename: values.filename,
       description: values.description,
@@ -72,13 +72,13 @@ function EditDialog(props) {
       hash: values.hash,
       application_id: isCreation ? props.data.appID : props.data.channel.application_id,
       channels_blacklist: values.channelsBlacklist ? values.channelsBlacklist : []
-    }
+    };
 
     console.log(packageType);
     console.log(packageType === otherType);
 
     if (isFlatcarType(packageType)) {
-      data.flatcar_action = {sha256: values.flatcarHash}
+      data.flatcar_action = {sha256: values.flatcarHash};
     }
 
     let packageFunctionCall;
@@ -91,7 +91,7 @@ function EditDialog(props) {
 
     packageFunctionCall.
       done(() => {
-        props.onHide()
+        props.onHide();
         actions.setSubmitting(false);
       }).
       fail(() => {
@@ -99,7 +99,7 @@ function EditDialog(props) {
         actions.setStatus({
           statusMessage: 'Something went wrong, or the version you are trying to add already exists for the arch and package type. Check the form or try again later...'
         });
-      })
+      });
   }
 
   function handleClose() {
@@ -241,14 +241,14 @@ function EditDialog(props) {
               renderValue={selected => getChannelsNames(selected).join(' / ')}
             >
               {channels.filter(channelItem => channelItem.arch === arch).map((packageItem) => {
-                let label = packageItem.name;
-                let isDisabled = !isCreation && packageItem.package &&
+                const label = packageItem.name;
+                const isDisabled = !isCreation && packageItem.package &&
                   props.data.channel.version === packageItem.package.version;
 
                 return (
                   <MenuItem value={packageItem.id} disabled={isDisabled} key={packageItem.id}>
                     <Checkbox checked={values.channelsBlacklist.indexOf(packageItem.id) > -1} />
-                    <ListItemText primary={label} secondary={ isDisabled ? "channel pointing to this package" : null } />
+                    <ListItemText primary={label} secondary={ isDisabled ? 'channel pointing to this package' : null } />
                   </MenuItem>
                 );
               })
@@ -262,7 +262,7 @@ function EditDialog(props) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">Cancel</Button>
-          <Button type="submit" disabled={isSubmitting} color="primary">{ isCreation ? "Add" : "Save" }</Button>
+          <Button type="submit" disabled={isSubmitting} color="primary">{ isCreation ? 'Add' : 'Save' }</Button>
         </DialogActions>
       </Form>
     );
@@ -300,7 +300,7 @@ function EditDialog(props) {
                      size: props.data.channel.size,
                      hash: props.data.channel.hash,
                      channelsBlacklist: props.data.channel.channels_blacklist ? props.data.channel.channels_blacklist : [],
-                    };
+    };
 
     if (isFlatcarType(packageType)) {
       initialValues['flatcarHash'] = getFlatcarActionHash();
@@ -309,8 +309,8 @@ function EditDialog(props) {
 
   return (
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
-      <DialogTitle>{ isCreation ? "Add Package" : "Edit Package" }</DialogTitle>
-        <Formik
+      <DialogTitle>{ isCreation ? 'Add Package' : 'Edit Package' }</DialogTitle>
+      <Formik
           initialValues={initialValues}
           onSubmit={handleSubmit}
           validationSchema={validation}
@@ -324,6 +324,6 @@ EditDialog.propTypes = {
   data: PropTypes.object,
   show: PropTypes.bool,
   create: PropTypes.bool,
-}
+};
 
 export default EditDialog;

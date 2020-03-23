@@ -6,10 +6,10 @@ import Typography from '@material-ui/core/Typography';
 import { useTheme } from '@material-ui/styles';
 import React from 'react';
 import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
-import semver from "semver";
+import semver from 'semver';
 import _ from 'underscore';
-import { cleanSemverVersion, makeColorsForVersions, makeLocaleTime, getMinuteDifference } from '../../constants/helpers';
-import { applicationsStore, instancesStore } from "../../stores/Stores";
+import { cleanSemverVersion, getMinuteDifference,makeColorsForVersions, makeLocaleTime } from '../../constants/helpers';
+import { applicationsStore, instancesStore } from '../../stores/Stores';
 import Loader from '../Common/Loader';
 import SimpleTable from '../Common/SimpleTable';
 import makeStatusDefs from '../Instances/StatusDefs';
@@ -50,8 +50,8 @@ function TimelineChart(props) {
     const tickOffsetMinutes = lengthMinutes / tickCount;
 
     // Set the ticks around midnight.
-    for (let i of [-1, 1]) {
-      let tickDate = new Date(nextDay);
+    for (const i of [-1, 1]) {
+      const tickDate = new Date(nextDay);
 
       while (true) {
         tickDate.setMinutes(nextDay.getMinutes() + tickOffsetMinutes * i);
@@ -88,18 +88,18 @@ function TimelineChart(props) {
   }
 
   return (
-      <AreaChart
+    <AreaChart
         width={width}
         height={height}
         data={props.data}
         margin={{
           top: 10, right: 30, left: 0, bottom: 0,
         }}
-        onClick={({activeLabel}) => {props.onSelect(activeLabel)}}
+        onClick={({activeLabel}) => {props.onSelect(activeLabel);}}
       >
-        <CartesianGrid strokeDasharray="3 3" />
-        <Tooltip content={<TimelineTooltip data={props.data} />} />
-        <XAxis
+      <CartesianGrid strokeDasharray="3 3" />
+      <Tooltip content={<TimelineTooltip data={props.data} />} />
+      <XAxis
           dataKey="index"
           type="number"
           interval={0}
@@ -109,9 +109,9 @@ function TimelineChart(props) {
             return ticks[index];
           }}
         />
-        <YAxis />
-        {props.keys.map((key, i) =>
-          <Area
+      <YAxis />
+      {props.keys.map((key, i) =>
+        <Area
             type={interpolation}
             key={i}
             dataKey={key}
@@ -121,7 +121,7 @@ function TimelineChart(props) {
             fill={props.colors[key]}
           />
         )}
-      </AreaChart>
+    </AreaChart>
   );
 }
 
@@ -141,8 +141,8 @@ export function VersionCountTimeline(props) {
   const theme = useTheme();
 
   function makeChartData(group, groupTimeline) {
-    let data = Object.keys(groupTimeline).map((timestamp, i) => {
-      let versions = groupTimeline[timestamp];
+    const data = Object.keys(groupTimeline).map((timestamp, i) => {
+      const versions = groupTimeline[timestamp];
       return {
         index: i,
         timestamp: timestamp,
@@ -150,8 +150,8 @@ export function VersionCountTimeline(props) {
       };
     });
 
-    let versions = getVersionsFromTimeline(groupTimeline);
-    let versionColors = makeColorsForVersions(theme, versions, group.channel);
+    const versions = getVersionsFromTimeline(groupTimeline);
+    const versionColors = makeColorsForVersions(theme, versions, group.channel);
 
     setTimelineChartData({
       data: data,
@@ -165,10 +165,10 @@ export function VersionCountTimeline(props) {
       return [];
     }
 
-    let versions = [];
+    const versions = [];
 
     Object.keys(Object.values(timeline)[0]).forEach(version => {
-      let cleanedVersion = cleanSemverVersion(version);
+      const cleanedVersion = cleanSemverVersion(version);
       // Discard any invalid versions (empty strings, etc.)
       if (semver.valid(cleanedVersion)) {
         versions.push(cleanedVersion);
@@ -200,7 +200,7 @@ export function VersionCountTimeline(props) {
       // Create the version breakdown from the timeline
       const entries = timelineChartData.data[selectedEntry] || [];
 
-      for (let version of timelineChartData.keys) {
+      for (const version of timelineChartData.keys) {
         const versionCount = entries[version];
 
         total += versionCount;
@@ -227,33 +227,33 @@ export function VersionCountTimeline(props) {
     // Sort the entries per number of instances (higher first).
     version_breakdown.sort((elem1, elem2) => {
       return -(elem1.instances - elem2.instances);
-    })
+    });
 
     return version_breakdown;
   }
 
   function getVersionTimeline(group) {
     // Check if we should update the timeline or it's too early.
-    let lastUpdate = new Date(timeline.lastUpdate);
-    let currentDate = new Date();
+    const lastUpdate = new Date(timeline.lastUpdate);
+    const currentDate = new Date();
     if (Object.keys(timeline.timeline).length > 0 &&
         getMinuteDifference(lastUpdate, currentDate) < 5) {
       return;
     }
 
     applicationsStore.getGroupVersionCountTimeline(group.application_id, group.id)
-    .done(versionCountTimeline => {
-      setTimeline({
-        timeline: versionCountTimeline,
-        lastUpdate: lastUpdate.toUTCString(),
-      });
+      .done(versionCountTimeline => {
+        setTimeline({
+          timeline: versionCountTimeline,
+          lastUpdate: lastUpdate.toUTCString(),
+        });
 
-      makeChartData(group, versionCountTimeline || []);
-      setSelectedEntry(-1);
-    })
-    .fail(error => {
-      console.log('Error getting version count timeline', error);
-    });
+        makeChartData(group, versionCountTimeline || []);
+        setSelectedEntry(-1);
+      })
+      .fail(error => {
+        console.log('Error getting version count timeline', error);
+      });
   }
 
   function getSelectedTime() {
@@ -262,7 +262,7 @@ export function VersionCountTimeline(props) {
       return '';
     }
     const timestamp = data[selectedEntry].timestamp;
-    return makeLocaleTime(timestamp)
+    return makeLocaleTime(timestamp);
   }
 
   // Make the timeline data again when needed.
@@ -294,7 +294,7 @@ export function VersionCountTimeline(props) {
                 &nbsp;
                 <Chip
                   label={getSelectedTime()}
-                  onDelete={() => {setSelectedEntry(-1)}}
+                  onDelete={() => {setSelectedEntry(-1);}}
                 />
               </React.Fragment>
             :
@@ -331,12 +331,12 @@ export function StatusCountTimeline(props) {
   const statusDefs = makeStatusDefs(theme);
 
   function makeChartData(groupTimeline) {
-    let data = Object.keys(groupTimeline).map((timestamp, i) => {
-      let status = groupTimeline[timestamp];
-      let statusCount = {};
+    const data = Object.keys(groupTimeline).map((timestamp, i) => {
+      const status = groupTimeline[timestamp];
+      const statusCount = {};
       Object.keys(status).forEach(st => {
         const values = status[st];
-        let count = Object.values(values).reduce((a, b) => a+b, 0);
+        const count = Object.values(values).reduce((a, b) => a+b, 0);
         statusCount[st] = count;
       });
 
@@ -347,8 +347,8 @@ export function StatusCountTimeline(props) {
       };
     });
 
-    let statuses = getStatusFromTimeline(groupTimeline);
-    let colors = makeStatusesColors(statuses);
+    const statuses = getStatusFromTimeline(groupTimeline);
+    const colors = makeStatusesColors(statuses);
 
     setTimelineChartData({
       data: data,
@@ -358,7 +358,7 @@ export function StatusCountTimeline(props) {
   }
 
   function makeStatusesColors(statuses) {
-    let colors = {};
+    const colors = {};
     Object.values(statuses).forEach(status => {
       const statusInfo = instancesStore.getInstanceStatus(status, '');
       colors[status] = statusDefs[statusInfo.type].color;
@@ -376,19 +376,19 @@ export function StatusCountTimeline(props) {
   }
 
   function getInstanceCount(selectedEntry) {
-    let status_breakdown = [];
+    const status_breakdown = [];
     const statusTimeline = timeline.timeline;
 
     // Populate it from the selected time one.
     if (!_.isEmpty(statusTimeline) && !_.isEmpty(timelineChartData.data)) {
-      let timelineIndex = selectedEntry >= 0 ? selectedEntry : timelineChartData.data.length - 1;
+      const timelineIndex = selectedEntry >= 0 ? selectedEntry : timelineChartData.data.length - 1;
       if (timelineIndex < 0)
         return [];
 
       const ts = timelineChartData.data[timelineIndex].timestamp;
       // Create the version breakdown from the timeline
       const entries = statusTimeline[ts] || [];
-      for (let status in entries) {
+      for (const status in entries) {
         if (status == 0) {
           continue;
         }
@@ -417,32 +417,32 @@ export function StatusCountTimeline(props) {
     // Sort the entries per number of instances (higher first).
     status_breakdown.sort((elem1, elem2) => {
       return -(elem1.instances - elem2.instances);
-    })
+    });
 
     return status_breakdown;
   }
 
   function getStatusTimeline(group) {
     // Check if we should update the timeline or it's too early.
-    let lastUpdate = new Date(timeline.lastUpdate);
-    let currentDate = new Date();
+    const lastUpdate = new Date(timeline.lastUpdate);
+    const currentDate = new Date();
     if (Object.keys(timeline.timeline).length > 0 && getMinuteDifference(lastUpdate, currentDate)  < 5) {
       return;
     }
 
     applicationsStore.getGroupStatusCountTimeline(group.application_id, group.id)
-    .done(statusCountTimeline => {
-      setTimeline({
-        timeline: statusCountTimeline,
-        lastUpdate: new Date().toUTCString(),
-      });
+      .done(statusCountTimeline => {
+        setTimeline({
+          timeline: statusCountTimeline,
+          lastUpdate: new Date().toUTCString(),
+        });
 
-      makeChartData(statusCountTimeline || []);
-      setSelectedEntry(-1);
-    })
-    .fail(error => {
-      console.log('Error getting status count timeline', error);
-    });
+        makeChartData(statusCountTimeline || []);
+        setSelectedEntry(-1);
+      })
+      .fail(error => {
+        console.log('Error getting status count timeline', error);
+      });
   }
 
   function getSelectedTime() {
@@ -451,7 +451,7 @@ export function StatusCountTimeline(props) {
       return '';
     }
     const timestamp = data[selectedEntry].timestamp;
-    return makeLocaleTime(timestamp)
+    return makeLocaleTime(timestamp);
   }
 
   // Make the timeline data again when needed.
@@ -484,7 +484,7 @@ export function StatusCountTimeline(props) {
                 &nbsp;
                 <Chip
                   label={getSelectedTime()}
-                  onDelete={() => {setSelectedEntry(-1)}}
+                  onDelete={() => {setSelectedEntry(-1);}}
                 />
               </React.Fragment>
             :

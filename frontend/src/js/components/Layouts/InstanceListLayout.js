@@ -5,13 +5,13 @@ import SectionHeader from '../Common/SectionHeader';
 import List from '../Instances/List';
 
 export default function InstanceLayout(props) {
-  let {appID, groupID} = props.match.params;
-  let [application, setApplication] = React.useState(applicationsStore.getCachedApplication(appID));
-  let [group, setGroup] = React.useState(getGroupFromApplication(application));
+  const {appID, groupID} = props.match.params;
+  const [application, setApplication] = React.useState(applicationsStore.getCachedApplication(appID));
+  const [group, setGroup] = React.useState(getGroupFromApplication(application));
 
   function onChange() {
-    let apps = applicationsStore.getCachedApplications() || [];
-    let app = apps.find(({id}) => id === appID);
+    const apps = applicationsStore.getCachedApplications() || [];
+    const app = apps.find(({id}) => id === appID);
     if (app !== application) {
       setApplication(app);
       setGroup(getGroupFromApplication(app));
@@ -32,8 +32,8 @@ export default function InstanceLayout(props) {
   },
   []);
 
-  let applicationName = application ? application.name : '…';
-  let groupName = group ? group.name : '…';
+  const applicationName = application ? application.name : '…';
+  const groupName = group ? group.name : '…';
 
   return (
     <React.Fragment>

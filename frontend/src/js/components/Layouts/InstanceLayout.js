@@ -5,15 +5,15 @@ import SectionHeader from '../Common/SectionHeader';
 import Details from '../Instances/Details';
 
 export default function InstanceLayout(props) {
-  let {appID, groupID, instanceID} = props.match.params;
-  let [application, setApplication] = React.useState(applicationsStore.getCachedApplication(appID));
-  let [group, setGroup] = React.useState(getGroupFromApplication(application));
-  let [instance, setInstance] = React.useState(null);
+  const {appID, groupID, instanceID} = props.match.params;
+  const [application, setApplication] = React.useState(applicationsStore.getCachedApplication(appID));
+  const [group, setGroup] = React.useState(getGroupFromApplication(application));
+  const [instance, setInstance] = React.useState(null);
 
   function onChange() {
     instancesStore.getInstances(appID, groupID, instanceID);
-    let apps = applicationsStore.getCachedApplications() || [];
-    let app = apps.find(({id}) => id === appID);
+    const apps = applicationsStore.getCachedApplications() || [];
+    const app = apps.find(({id}) => id === appID);
     if (app !== application) {
       setApplication(app);
       setGroup(getGroupFromApplication(app));
@@ -27,8 +27,8 @@ export default function InstanceLayout(props) {
   }
 
   function onChangeInstances() {
-    let instances = instancesStore.getCachedInstances(appID, groupID) || [];
-    let inst = instances.find(({id}) => id === instanceID);
+    const instances = instancesStore.getCachedInstances(appID, groupID) || [];
+    const inst = instances.find(({id}) => id === instanceID);
     if (inst !== instance) {
       setInstance(inst);
     }
@@ -47,8 +47,8 @@ export default function InstanceLayout(props) {
   },
   []);
 
-  let applicationName = application ? application.name : '…';
-  let groupName = group ? group.name : '…';
+  const applicationName = application ? application.name : '…';
+  const groupName = group ? group.name : '…';
 
   return (
     <React.Fragment>
