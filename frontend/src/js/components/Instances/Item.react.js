@@ -8,31 +8,31 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import { styled } from '@material-ui/styles';
 import PropTypes from 'prop-types';
-import React from "react";
+import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import semver from "semver";
-import _ from "underscore";
-import LoadingGif from "../../../img/mini_loading.gif"
-import { cleanSemverVersion, makeLocaleTime } from "../../constants/helpers";
-import { instancesStore } from "../../stores/Stores";
+import semver from 'semver';
+import _ from 'underscore';
+import LoadingGif from '../../../img/mini_loading.gif';
+import { cleanSemverVersion, makeLocaleTime } from '../../constants/helpers';
+import { instancesStore } from '../../stores/Stores';
 import Label from '../Common/Label';
-import StatusHistoryContainer from "./StatusHistoryContainer.react";
+import StatusHistoryContainer from './StatusHistoryContainer.react';
 
 const TableLabel = styled(Label)({
   lineHeight: '45px',
 });
 
 function Item(props) {
-  let date = props.instance.application.last_check_for_updates;
-  let downloadingIcon = props.instance.statusInfo.spinning ? <img src={LoadingGif} /> : '';
-  let statusIcon = props.instance.statusInfo.icon ? <i className={props.instance.statusInfo.icon}></i> : '';
-  let instanceLabel = props.instance.statusInfo.className ? <TableLabel>{statusIcon} {downloadingIcon} {props.instance.statusInfo.description}</TableLabel> : <div>&nbsp;</div>;
-  let version = cleanSemverVersion(props.instance.application.version);
-  let currentVersionIndex = props.lastVersionChannel ? _.indexOf(props.versionNumbers, props.lastVersionChannel) : null;
+  const date = props.instance.application.last_check_for_updates;
+  const downloadingIcon = props.instance.statusInfo.spinning ? <img src={LoadingGif} /> : '';
+  const statusIcon = props.instance.statusInfo.icon ? <i className={props.instance.statusInfo.icon}></i> : '';
+  const instanceLabel = props.instance.statusInfo.className ? <TableLabel>{statusIcon} {downloadingIcon} {props.instance.statusInfo.description}</TableLabel> : <div>&nbsp;</div>;
+  const version = cleanSemverVersion(props.instance.application.version);
+  const currentVersionIndex = props.lastVersionChannel ? _.indexOf(props.versionNumbers, props.lastVersionChannel) : null;
   let versionStyle = 'default';
-  let appID = props.instance.application.application_id;
-  let groupID = props.instance.application.group_id;
-  let instanceID = props.instance.id;
+  const appID = props.instance.application.application_id;
+  const groupID = props.instance.application.group_id;
+  const instanceID = props.instance.id;
   const [statusHistory, setStatusHistory] = React.useState(props.instance.statusHistory || []);
 
   function fetchStatusHistoryFromStore() {
@@ -41,8 +41,8 @@ function Item(props) {
     if (!selected) {
       instancesStore.getInstanceStatusHistory(appID, groupID, instanceID)
         .done(() => {
-          let cachedInstances = instancesStore.getCachedInstances(appID, groupID) || [];
-          let instance = cachedInstances.find(({id}) => id == props.instance.id);
+          const cachedInstances = instancesStore.getCachedInstances(appID, groupID) || [];
+          const instance = cachedInstances.find(({id}) => id == props.instance.id);
           if (instance)
             setStatusHistory(instance.statusHistory);
           props.onToggle(instanceID);
@@ -51,7 +51,7 @@ function Item(props) {
           if (error.status === 404) {
             props.onToggle(instanceID);
           }
-        })
+        });
     } else {
       props.onToggle(instanceID);
     }
@@ -67,7 +67,7 @@ function Item(props) {
     } else if (semver.gt(version, props.lastVersionChannel)) {
       versionStyle = 'info';
     } else {
-      let indexDiff = _.indexOf(props.versionNumbers, version) - currentVersionIndex
+      const indexDiff = _.indexOf(props.versionNumbers, version) - currentVersionIndex;
       if (indexDiff == 1)
         versionStyle = 'warning';
       else
@@ -75,7 +75,7 @@ function Item(props) {
     }
   }
 
-  let instancePath = `/apps/${appID}/groups/${groupID}/instances/${instanceID}`;
+  const instancePath = `/apps/${appID}/groups/${groupID}/instances/${instanceID}`;
 
   return(
     <React.Fragment>
@@ -93,7 +93,7 @@ function Item(props) {
           {instanceLabel}
         </TableCell>
         <TableCell>
-          <span className={"box--" + versionStyle}>{version}</span>
+          <span className={'box--' + versionStyle}>{version}</span>
         </TableCell>
         <TableCell>
           {makeLocaleTime(date)}
@@ -118,6 +118,6 @@ Item.propTypes = {
   selected: PropTypes.bool,
   versionNumbers: PropTypes.array,
   lastVersionChannel: PropTypes.string
-}
+};
 
-export default Item
+export default Item;

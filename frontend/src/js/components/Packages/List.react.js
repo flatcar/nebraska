@@ -1,17 +1,17 @@
 import Box from '@material-ui/core/Box';
 import MuiList from '@material-ui/core/List';
 import Paper from '@material-ui/core/Paper';
+import TablePagination from '@material-ui/core/TablePagination';
 import PropTypes from 'prop-types';
-import React from "react";
-import _ from "underscore";
-import { applicationsStore } from "../../stores/Stores";
+import React from 'react';
+import _ from 'underscore';
+import { applicationsStore } from '../../stores/Stores';
 import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
 import Loader from '../Common/Loader';
-import ModalButton from "../Common/ModalButton.react";
+import ModalButton from '../Common/ModalButton.react';
 import EditDialog from './EditDialog';
-import Item from "./Item.react";
-import TablePagination from '@material-ui/core/TablePagination';
+import Item from './Item.react';
 
 function List(props) {
   const [application, setApplication] =
@@ -31,7 +31,7 @@ function List(props) {
     }
 
     return function cleanup() {
-      applicationsStore.removeChangeListener(onChange)
+      applicationsStore.removeChangeListener(onChange);
     };
   },
   [application]);
@@ -41,7 +41,7 @@ function List(props) {
   }
 
   function openEditDialog(packageID) {
-    let pkg = (application.packages || []).find(({id}) => id == packageID) || null;
+    const pkg = (application.packages || []).find(({id}) => id == packageID) || null;
     if (pkg != packageToUpdate) {
       setPackageToUpdate(pkg);
     }
@@ -80,7 +80,7 @@ function List(props) {
                   application.packages.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map(packageItem =>
                       <Item
-                        key={"packageItemID_" + packageItem.id}
+                        key={'packageItemID_' + packageItem.id}
                         packageItem={packageItem}
                         channels={application.channels}
                         handleUpdatePackage={openEditDialog}
@@ -110,7 +110,7 @@ function List(props) {
               />
             </React.Fragment>
         :
-          <Loader />
+            <Loader />
         }
       </Box>
     </Paper>
@@ -119,6 +119,6 @@ function List(props) {
 
 List.propTypes = {
   appID: PropTypes.string.isRequired
-}
+};
 
-export default List
+export default List;

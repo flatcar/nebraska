@@ -3,19 +3,19 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import PropTypes from 'prop-types';
-import React from "react";
-import { ARCHES, cleanSemverVersion } from "../../constants/helpers";
-import { applicationsStore } from "../../stores/Stores";
+import React from 'react';
+import { ARCHES, cleanSemverVersion } from '../../constants/helpers';
+import { applicationsStore } from '../../stores/Stores';
 import MoreMenu from '../Common/MoreMenu';
 import ChannelAvatar from './ChannelAvatar';
 
 function Item(props) {
-  let {channel, packages, handleUpdateChannel, showArch=true, ...others} = props;
+  const {channel, packages, handleUpdateChannel, showArch=true, ...others} = props;
   const name = channel.name;
   const version = channel.package ? cleanSemverVersion(channel.package.version) : 'No package';
 
   function deleteChannel() {
-    let confirmationText = 'Are you sure you want to delete this channel?';
+    const confirmationText = 'Are you sure you want to delete this channel?';
     if (window.confirm(confirmationText)) {
       applicationsStore.deleteChannel(channel.application_id, channel.id);
     }
@@ -67,6 +67,6 @@ function Item(props) {
 
 Item.propTypes = {
   channel: PropTypes.object.isRequired,
-}
+};
 
-export default Item
+export default Item;

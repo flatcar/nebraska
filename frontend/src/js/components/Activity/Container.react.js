@@ -3,13 +3,13 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import TablePagination from '@material-ui/core/TablePagination';
-import React from "react";
-import _ from "underscore";
-import { activityStore } from "../../stores/Stores";
+import React from 'react';
+import _ from 'underscore';
+import { activityStore } from '../../stores/Stores';
 import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
 import Loader from '../Common/Loader';
-import List from "./List.react";
+import List from './List.react';
 
 const useStyles = makeStyles({
   toolbar: {
@@ -35,7 +35,7 @@ function Container(props) {
 
     return function cleanup () {
       activityStore.removeChangeListener(onChange);
-    }
+    };
   },
   [activity]);
 
@@ -54,11 +54,11 @@ function Container(props) {
   }
 
   function getPagedActivity() {
-    let entriesPerTime = {};
+    const entriesPerTime = {};
     let timestamp = null;
 
     for (let i = page * rowsPerPage;
-         i < Math.min(activity.length, page * rowsPerPage + rowsPerPage); ++i) {
+      i < Math.min(activity.length, page * rowsPerPage + rowsPerPage); ++i) {
       const entry = activity[i];
       const date = new Date(entry.created_ts);
       if (!timestamp || date.getDay() != new Date(timestamp).getDay()) {
@@ -72,7 +72,7 @@ function Container(props) {
   }
 
   function getActivityEntries() {
-    let activityObj = activityStore.getCachedActivity();
+    const activityObj = activityStore.getCachedActivity();
     if (_.isNull(activityObj)) {
       return null;
     }
@@ -80,7 +80,7 @@ function Container(props) {
     let entries = [];
 
     Object.values(activityObj).forEach(value => {
-      entries = entries.concat(value)
+      entries = entries.concat(value);
     });
 
     return entries;
@@ -106,7 +106,7 @@ function Container(props) {
             <Grid item>
               {Object.values(
                 _.mapObject(getPagedActivity(), (entry, timestamp) => {
-                  return <List timestamp={timestamp} entries={entry} key={timestamp} />
+                  return <List timestamp={timestamp} entries={entry} key={timestamp} />;
                 })
               )}
             </Grid>

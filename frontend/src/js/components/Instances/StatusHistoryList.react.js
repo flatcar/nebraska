@@ -8,7 +8,7 @@ import React from 'react';
 import StatusHistoryItem from './StatusHistoryItem.react';
 
 function StatusHistoryList(props) {
-  let entries = props.entries || [];
+  const entries = props.entries || [];
 
   // @todo: Virtualize the table.
   return(
@@ -22,7 +22,7 @@ function StatusHistoryList(props) {
       </TableHead>
       <TableBody>
         {entries.map((entry, i) =>
-          <StatusHistoryItem key={"statusHistory_" + i} entry={entry} />
+          <StatusHistoryItem key={'statusHistory_' + i} entry={entry} />
         )}
       </TableBody>
     </Table>
@@ -31,6 +31,6 @@ function StatusHistoryList(props) {
 
 StatusHistoryList.propTypes = {
   entries: PropTypes.array.isRequired
-}
+};
 
-export default StatusHistoryList
+export default StatusHistoryList;

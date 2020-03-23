@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import AppRoutes from './js/App';
 import { BrowserRouter } from 'react-router-dom';
+import AppRoutes from './js/App';
 
 ReactDOM.render(<BrowserRouter><AppRoutes /></BrowserRouter>, document.getElementById('root'));
 

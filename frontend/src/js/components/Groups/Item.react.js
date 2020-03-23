@@ -22,26 +22,26 @@ const useStyles = makeStyles(theme => ({
 function Item(props) {
   const classes = useStyles();
 
-  let version_breakdown = (props.group && props.group.version_breakdown) ? props.group.version_breakdown : [];
-  let noInstancesLabel = 'None';
-  let instances_total = props.group.instances_stats ? (props.group.instances_stats.total || noInstancesLabel) : noInstancesLabel;
-  let description = props.group.description || 'No description provided';
-  let channel = props.group.channel || {};
+  const version_breakdown = (props.group && props.group.version_breakdown) ? props.group.version_breakdown : [];
+  const noInstancesLabel = 'None';
+  const instances_total = props.group.instances_stats ? (props.group.instances_stats.total || noInstancesLabel) : noInstancesLabel;
+  const description = props.group.description || 'No description provided';
+  const channel = props.group.channel || {};
 
-  let groupChannel = _.isEmpty(props.group.channel) ? <CardLabel>No channel provided</CardLabel>
-    : <ChannelItem channel={props.group.channel} />
-  let styleGroupChannel = _.isEmpty(props.group.channel) ? "italicText" : ""
-  let groupPath = `/apps/${props.group.application_id}/groups/${props.group.id}`
+  const groupChannel = _.isEmpty(props.group.channel) ? <CardLabel>No channel provided</CardLabel>
+    : <ChannelItem channel={props.group.channel} />;
+  const styleGroupChannel = _.isEmpty(props.group.channel) ? 'italicText' : '';
+  const groupPath = `/apps/${props.group.application_id}/groups/${props.group.id}`;
 
   function deleteGroup() {
-    let confirmationText = "Are you sure you want to delete this group?"
+    const confirmationText = 'Are you sure you want to delete this group?';
     if (window.confirm(confirmationText)) {
-      applicationsStore.deleteGroup(props.group.application_id, props.group.id)
+      applicationsStore.deleteGroup(props.group.application_id, props.group.id);
     }
   }
 
   function updateGroup() {
-    props.handleUpdateGroup(props.group.application_id, props.group.id)
+    props.handleUpdateGroup(props.group.application_id, props.group.id);
   }
 
   return (
@@ -123,10 +123,10 @@ function Item(props) {
 }
 
 Item.propTypes = {
-    group: PropTypes.object.isRequired,
-    appName: PropTypes.string.isRequired,
-    channels: PropTypes.array.isRequired,
-    handleUpdateGroup: PropTypes.func.isRequired
-}
+  group: PropTypes.object.isRequired,
+  appName: PropTypes.string.isRequired,
+  channels: PropTypes.array.isRequired,
+  handleUpdateGroup: PropTypes.func.isRequired
+};
 
-export default Item
+export default Item;

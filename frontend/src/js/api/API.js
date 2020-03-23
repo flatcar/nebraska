@@ -1,209 +1,209 @@
-import $ from "jquery";
-import _ from "underscore";
-import PubSub from "pubsub-js"
+import $ from 'jquery';
+import PubSub from 'pubsub-js';
 import queryString from 'querystring';
+import _ from 'underscore';
 
-const MAIN_PROGRESS_BAR = "main_progress_bar"
-const BASE_URL = "/api"
+const MAIN_PROGRESS_BAR = 'main_progress_bar';
+const BASE_URL = '/api';
 
 class API {
 
   static logout() {
     $.ajax({
-      type: "GET",
-      url: BASE_URL + "/activity",
+      type: 'GET',
+      url: BASE_URL + '/activity',
       async: false,
-      username: "admin",
-      password: "invalid-password",
-      headers: { "Authorization": "Basic xxx" }
+      username: 'admin',
+      password: 'invalid-password',
+      headers: { 'Authorization': 'Basic xxx' }
     })
-    .fail(function(){
-      window.location = "/"
-    })
+      .fail(function(){
+        window.location = '/';
+      });
   }
 
   // Applications
 
-  static getApplications() {  
-    return API.getJSON(BASE_URL + "/apps")
+  static getApplications() {
+    return API.getJSON(BASE_URL + '/apps');
   }
 
   static getApplication(applicationID) {
-    return API.getJSON(BASE_URL + "/apps/" + applicationID)
+    return API.getJSON(BASE_URL + '/apps/' + applicationID);
   }
 
   static deleteApplication(applicationID) {
-    let url = BASE_URL + "/apps/" + applicationID
-    
-    return API.doRequest("DELETE", url, "")
+    const url = BASE_URL + '/apps/' + applicationID;
+
+    return API.doRequest('DELETE', url, '');
   }
 
   static createApplication(applicationData, clonedFromAppID) {
-    let url = BASE_URL + "/apps"
+    let url = BASE_URL + '/apps';
     if (clonedFromAppID) {
-      url += "?clone_from=" + clonedFromAppID
+      url += '?clone_from=' + clonedFromAppID;
     }
 
-    return API.doRequest("POST", url, JSON.stringify(applicationData))
+    return API.doRequest('POST', url, JSON.stringify(applicationData));
   }
 
   static updateApplication(applicationData) {
-    let url = BASE_URL + "/apps/" + applicationData.id
-    
-    return API.doRequest("PUT", url, JSON.stringify(applicationData))
+    const url = BASE_URL + '/apps/' + applicationData.id;
+
+    return API.doRequest('PUT', url, JSON.stringify(applicationData));
   }
 
   // Groups
 
   static getGroup(applicationID, groupID) {
-    return API.getJSON(BASE_URL + "/apps/" + applicationID + "/groups/" + groupID)
+    return API.getJSON(BASE_URL + '/apps/' + applicationID + '/groups/' + groupID);
   }
 
   static deleteGroup(applicationID, groupID) {
-    let url = BASE_URL + "/apps/" + applicationID + "/groups/" + groupID
-    
-    return API.doRequest("DELETE", url, "")
+    const url = BASE_URL + '/apps/' + applicationID + '/groups/' + groupID;
+
+    return API.doRequest('DELETE', url, '');
   }
 
   static createGroup(groupData) {
-    let applicationID = groupData.appID,
-        url = BASE_URL + "/apps/" + groupData.application_id + "/groups"
-    
-    return API.doRequest("POST", url, JSON.stringify(groupData))
+    const applicationID = groupData.appID;
+    const url = BASE_URL + '/apps/' + groupData.application_id + '/groups';
+
+    return API.doRequest('POST', url, JSON.stringify(groupData));
   }
 
   static updateGroup(groupData) {
-    let keysToRemove = ["id", "created_ts", "version_breakdown", "instances_stats", "channel"],
-        processedGroup = API.removeKeysFromObject(groupData, keysToRemove),
-        url = BASE_URL + "/apps/" + groupData.application_id + "/groups/" + groupData.id
+    const keysToRemove = ['id', 'created_ts', 'version_breakdown', 'instances_stats', 'channel'];
+    const processedGroup = API.removeKeysFromObject(groupData, keysToRemove);
+    const url = BASE_URL + '/apps/' + groupData.application_id + '/groups/' + groupData.id;
 
-    return API.doRequest("PUT", url, JSON.stringify(groupData))
+    return API.doRequest('PUT', url, JSON.stringify(groupData));
   }
 
   static getGroupVersionCountTimeline(applicationID, groupID) {
-    return API.getJSON(BASE_URL + "/apps/" + applicationID + "/groups/" + groupID + "/version_timeline")
+    return API.getJSON(BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/version_timeline');
   }
 
   static getGroupStatusCountTimeline(applicationID, groupID) {
-    return API.getJSON(BASE_URL + "/apps/" + applicationID + "/groups/" + groupID + "/status_timeline")
+    return API.getJSON(BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/status_timeline');
   }
 
   // Channels
 
   static deleteChannel(applicationID, channelID) {
-    let url = BASE_URL + "/apps/" + applicationID + "/channels/" + channelID
+    const url = BASE_URL + '/apps/' + applicationID + '/channels/' + channelID;
 
-    return API.doRequest("DELETE", url, "")
+    return API.doRequest('DELETE', url, '');
   }
 
   static createChannel(channelData) {
-    let url = BASE_URL + "/apps/" + channelData.application_id + "/channels"
+    const url = BASE_URL + '/apps/' + channelData.application_id + '/channels';
 
-    return API.doRequest("POST", url, JSON.stringify(channelData))
+    return API.doRequest('POST', url, JSON.stringify(channelData));
   }
 
   static updateChannel(channelData, onSuccess) {
-    let keysToRemove = ["id", "created_ts", "package"],
-        processedChannel = API.removeKeysFromObject(channelData, keysToRemove),
-        url = BASE_URL + "/apps/" + channelData.application_id + "/channels/" + channelData.id
+    const keysToRemove = ['id', 'created_ts', 'package'];
+    const processedChannel = API.removeKeysFromObject(channelData, keysToRemove);
+    const url = BASE_URL + '/apps/' + channelData.application_id + '/channels/' + channelData.id;
 
-    return API.doRequest("PUT", url, JSON.stringify(processedChannel))
+    return API.doRequest('PUT', url, JSON.stringify(processedChannel));
   }
 
   // Packages
 
   static deletePackage(applicationID, packageID) {
-    let url = BASE_URL + "/apps/" + applicationID + "/packages/" + packageID
+    const url = BASE_URL + '/apps/' + applicationID + '/packages/' + packageID;
 
-    return API.doRequest("DELETE", url, "")
+    return API.doRequest('DELETE', url, '');
   }
 
   static createPackage(packageData) {
-    let url = BASE_URL + "/apps/" + packageData.application_id + "/packages"
+    const url = BASE_URL + '/apps/' + packageData.application_id + '/packages';
 
-    return API.doRequest("POST", url, JSON.stringify(packageData))
+    return API.doRequest('POST', url, JSON.stringify(packageData));
   }
 
   static updatePackage(packageData) {
-    let keysToRemove = ["id", "created_ts", "package"],
-        processedPackage = API.removeKeysFromObject(packageData, keysToRemove),
-        url = BASE_URL + "/apps/" + packageData.application_id + "/packages/" + packageData.id
+    const keysToRemove = ['id', 'created_ts', 'package'];
+    const processedPackage = API.removeKeysFromObject(packageData, keysToRemove);
+    const url = BASE_URL + '/apps/' + packageData.application_id + '/packages/' + packageData.id;
 
-    return API.doRequest("PUT", url, JSON.stringify(processedPackage))
+    return API.doRequest('PUT', url, JSON.stringify(processedPackage));
   }
 
   // Instances
 
   static getInstances(applicationID, groupID, queryOptions={}) {
-    let url = BASE_URL + "/apps/" + applicationID + "/groups/" + groupID + "/instances";
+    let url = BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/instances';
 
     if (!_.isEmpty(queryOptions)) {
-      url += "?" + queryString.stringify(queryOptions);
+      url += '?' + queryString.stringify(queryOptions);
     }
 
-    return API.getJSON(url)
+    return API.getJSON(url);
   }
 
   static getInstanceStatusHistory(applicationID, groupID, instanceID) {
-    let url = BASE_URL + "/apps/" + applicationID + "/groups/" + groupID + "/instances/" + instanceID + "/status_history"
-    
-    return API.getJSON(url)
+    const url = BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/instances/' + instanceID + '/status_history';
+
+    return API.getJSON(url);
   }
 
   // Activity
 
   static getActivity() {
-    let currentDate = new Date();
-    let now = currentDate.toISOString();
+    const currentDate = new Date();
+    const now = currentDate.toISOString();
     currentDate.setDate(currentDate.getDate() - 7);
-    let weekAgo = currentDate.toISOString();
-    let query = "?start=" + weekAgo + "&end=" + now;
-    let url = BASE_URL + "/activity" + query;
+    const weekAgo = currentDate.toISOString();
+    const query = '?start=' + weekAgo + '&end=' + now;
+    const url = BASE_URL + '/activity' + query;
 
-    return API.getJSON(url)
+    return API.getJSON(url);
   }
 
   // User
 
   static updateUserPassword(userData) {
-    let url = BASE_URL + "/password"
+    const url = BASE_URL + '/password';
 
-    return API.doRequest("PUT", url, JSON.stringify(userData))
+    return API.doRequest('PUT', url, JSON.stringify(userData));
   }
 
   // Config
 
   static getConfig() {
-    return API.doRequest("GET", "/config")
+    return API.doRequest('GET', '/config');
   }
 
   // Helpers
 
   static removeKeysFromObject(data, valuesToRemove) {
-    return _.omit(data, valuesToRemove)
+    return _.omit(data, valuesToRemove);
   }
 
   // Wrappers
 
   static getJSON(url) {
-    PubSub.publish(MAIN_PROGRESS_BAR, "add")
+    PubSub.publish(MAIN_PROGRESS_BAR, 'add');
 
     return $.getJSON(url).
-      always(() => { PubSub.publish(MAIN_PROGRESS_BAR, "done") })
+      always(() => { PubSub.publish(MAIN_PROGRESS_BAR, 'done'); });
   }
 
   static doRequest(method, url, data) {
-    PubSub.publish(MAIN_PROGRESS_BAR, "add")
+    PubSub.publish(MAIN_PROGRESS_BAR, 'add');
 
     return $.ajax({
-        method: method,
-        url: url,
-        data: data,
-        dataType: "json"
-      }).
-      always(() => { PubSub.publish(MAIN_PROGRESS_BAR, "done") })
+      method: method,
+      url: url,
+      data: data,
+      dataType: 'json'
+    }).
+      always(() => { PubSub.publish(MAIN_PROGRESS_BAR, 'done'); });
   }
 
 }
 
-export default API
+export default API;

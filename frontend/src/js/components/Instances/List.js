@@ -10,8 +10,8 @@ import Select from '@material-ui/core/Select';
 import TablePagination from '@material-ui/core/TablePagination';
 import { useTheme } from '@material-ui/styles';
 import PropTypes from 'prop-types';
-import React from "react";
-import { cleanSemverVersion, getMinuteDifference } from "../../constants/helpers";
+import React from 'react';
+import { cleanSemverVersion, getMinuteDifference } from '../../constants/helpers';
 import { instancesStore } from '../../stores/Stores';
 import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
@@ -24,14 +24,14 @@ const CHECKS_TIMEOUT = 60; // secs
 
 function InstanceFilter(props) {
   const statusDefs = makeStatusDefs(useTheme());
-  let {onFiltersChanged, versions} = props;
+  const {onFiltersChanged, versions} = props;
 
   function changeFilter(filterName, filterValue) {
     if (filterValue === props.filter[filterName]) {
       return;
     }
 
-    let filter = props.filter;
+    const filter = props.filter;
     filter[filterName] = filterValue;
 
     onFiltersChanged(filter);
@@ -49,7 +49,7 @@ function InstanceFilter(props) {
             onChange={event => changeFilter('status', event.target.value) }
             input={<Input id="select-status" />}
             renderValue={selected =>
-              selected ? statusDefs[selected].label : "Show All"
+              selected ? statusDefs[selected].label : 'Show All'
             }
             value={props.filter.status}
             displayEmpty
@@ -74,7 +74,7 @@ function InstanceFilter(props) {
             onChange={event => changeFilter('version', event.target.value) }
             input={<Input id="select-versions" />}
             renderValue={selected =>
-              selected ? selected : "Show All"
+              selected ? selected : 'Show All'
             }
             value={props.filter.version}
             displayEmpty
@@ -93,7 +93,7 @@ function InstanceFilter(props) {
 }
 
 function ListView(props) {
-  let {application, group} = props;
+  const {application, group} = props;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [instances, setInstances] = React.useState(null);
@@ -115,10 +115,10 @@ function ListView(props) {
   }
 
   function applyFilters(_filters={}) {
-    let newFilters = _filters || {status: '', version: ''};
+    const newFilters = _filters || {status: '', version: ''};
     setFilters(newFilters);
 
-    let filterInstances = instances.filter(instance => {
+    const filterInstances = instances.filter(instance => {
       if (newFilters.version &&
           newFilters.version != cleanSemverVersion(instance.application.version)) {
         return false;
@@ -139,7 +139,7 @@ function ListView(props) {
   }
 
   function onChangeInstances() {
-    let cachedInstances = instancesStore.getCachedInstances(application.id, group.id) || [];
+    const cachedInstances = instancesStore.getCachedInstances(application.id, group.id) || [];
     if (!instances || instances.length == 0 || filteredInstances.length == 0) {
       setInstances(cachedInstances);
       setFilteredInstances(cachedInstances);
@@ -261,7 +261,7 @@ function ListView(props) {
                 <Empty>No instances.</Empty>
               )
               :
-              <Loader />
+                <Loader />
             }
           </Grid>
         </Grid>

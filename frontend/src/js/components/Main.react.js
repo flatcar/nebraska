@@ -1,22 +1,21 @@
-import React from "react"
-import {Switch, Route } from "react-router-dom"
-import Header from "./Header.react"
-import MainLayout from "./Layouts/MainLayout.react"
-import ApplicationLayout from "./Layouts/ApplicationLayout.react"
-import InstanceLayout from "./Layouts/InstanceLayout"
-import InstanceListLayout from "./Layouts/InstanceListLayout"
-import GroupLayout from "./Layouts/GroupLayout.react"
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Container from '@material-ui/core/Container';
 import green from '@material-ui/core/colors/green';
-import { ThemeProvider } from '@material-ui/styles';
+import Container from '@material-ui/core/Container';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import { createMuiTheme } from '@material-ui/core/styles';
-
+import { ThemeProvider } from '@material-ui/styles';
+import React from 'react';
+import {Route,Switch } from 'react-router-dom';
+import Header from './Header.react';
+import ApplicationLayout from './Layouts/ApplicationLayout.react';
+import GroupLayout from './Layouts/GroupLayout.react';
+import InstanceLayout from './Layouts/InstanceLayout';
+import InstanceListLayout from './Layouts/InstanceListLayout';
+import MainLayout from './Layouts/MainLayout.react';
 
 const nebraskaTheme = createMuiTheme({
   palette: {
     primary: {
-      contrastText: "#fff",
+      contrastText: '#fff',
       main: process.env.REACT_APP_PRIMARY_COLOR,
     },
     success: {

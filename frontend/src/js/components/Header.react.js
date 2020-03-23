@@ -1,3 +1,4 @@
+import { Icon } from '@iconify/react';
 import AppBar from '@material-ui/core/AppBar';
 import IconButton from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -9,11 +10,10 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import CreateOutlined from '@material-ui/icons/CreateOutlined';
-import { Icon } from '@iconify/react';
 import React from 'react';
-import nebraskaLogo from '../icons/nebraska-logo.json';
 import _ from 'underscore';
 import API from '../api/API';
+import nebraskaLogo from '../icons/nebraska-logo.json';
 
 const useStyles = makeStyles(theme => ({
   title: {
@@ -34,7 +34,7 @@ export default function Header() {
   const [config, setConfig] = React.useState(null);
   const projectLogo = _.isEmpty(nebraskaLogo) ? null : nebraskaLogo;
 
-  let [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
+  const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
 
   function handleMenu(event) {
     setMenuAnchorEl(event.currentTarget);

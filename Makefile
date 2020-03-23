@@ -40,12 +40,20 @@ check-backend-with-container: container_id
 	go test -p 1 ./...
 
 .PHONY: frontend
-frontend:
-	cd frontend && npm install && npm run build
+frontend: frontend-install
+	cd frontend && npm run build
 
 .PHONY: frontend-watch
 frontend-watch:
 	cd frontend && npm start
+
+.PHONY: frontend-install
+frontend-install:
+	cd frontend && npm install
+
+.PHONY: frontend-lint
+frontend-lint:
+	cd frontend && npm run lint
 
 .PHONY: backend
 backend: run-generators backend-code-checks build-backend-binary

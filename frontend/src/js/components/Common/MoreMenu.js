@@ -1,12 +1,12 @@
-import React from 'react';
 import IconButton from '@material-ui/core/IconButton';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import React from 'react';
 
 export default function MoreMenu(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  let options = props.options || [];
+  const options = props.options || [];
 
   function handleClick(event) {
     setAnchorEl(event.currentTarget);

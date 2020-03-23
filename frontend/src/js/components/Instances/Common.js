@@ -15,7 +15,7 @@ const useInstanceCountStyles = makeStyles(theme => ({
 
 export function InstanceCountLabel(props) {
   const classes = useInstanceCountStyles();
-  let {countText} = props;
+  const {countText} = props;
 
   return (
     <Grid

@@ -12,8 +12,8 @@ const useStyles = makeStyles({
 
 export default function Loader(props) {
   const classes = useStyles();
-  let {noContainer = false, ...other} = props;
-  let progress = <CircularProgress {...other} />;
+  const {noContainer = false, ...other} = props;
+  const progress = <CircularProgress {...other} />;
 
   if (noContainer)
     return progress;

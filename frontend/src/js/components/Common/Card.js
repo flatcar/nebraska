@@ -4,7 +4,7 @@ import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   gridHeader: {
@@ -52,7 +52,7 @@ export function CardDescriptionLabel(props) {
 }
 
 export function CardLabel(props) {
-  let {labelStyle={}} = props;
+  const {labelStyle={}} = props;
   const classes = useStyles(labelStyle);
   return (
     <Typography component='span' className={classes.label}>{props.children}</Typography>

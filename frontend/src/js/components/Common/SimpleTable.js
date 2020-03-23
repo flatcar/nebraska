@@ -27,7 +27,7 @@ export default function SimpleTable(props) {
   React.useEffect(() => {
     setPage(0);
   },
-  [props.instances])
+  [props.instances]);
 
   function getPagedRows() {
     const startIndex = page * rowsPerPage;
@@ -37,7 +37,7 @@ export default function SimpleTable(props) {
   return (
     props.instances.length == 0 ?
       <Empty>{props.emptyMessage ? props.emptyMessage : 'No data to be shown.'}</Empty>
-    :
+      :
       <React.Fragment>
         <Table>
           <TableHead>
@@ -48,26 +48,26 @@ export default function SimpleTable(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-          {props.instances &&
+            {props.instances &&
            getPagedRows().map((row, i) =>
-            <TableRow key={i}>
-              {Object.keys(columns).map((column, i) =>
-                <TableCell key={`cell_${i}`}>
-                  {i == 0 && row.color &&
-                    <React.Fragment>
-                      <InlineIcon
+             <TableRow key={i}>
+               {Object.keys(columns).map((column, i) =>
+                 <TableCell key={`cell_${i}`}>
+                   {i == 0 && row.color &&
+                   <React.Fragment>
+                     <InlineIcon
                         icon={squareIcon}
                         color={row.color}
                         height="15"
                         width="15"
                       />
                       &nbsp;
-                    </React.Fragment>
+                   </React.Fragment>
                   }
-                  {row[column]}
-                </TableCell>
+                   {row[column]}
+                 </TableCell>
               )}
-            </TableRow>
+             </TableRow>
           )}
           </TableBody>
         </Table>

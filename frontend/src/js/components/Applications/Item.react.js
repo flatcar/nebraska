@@ -17,20 +17,20 @@ const useStyles = makeStyles(theme => ({
 
 function Item(props) {
   const classes = useStyles();
-  let description = props.application.description || 'No description provided';
-  let channels = props.application.channels || [];
-  let groups = props.application.groups || [];
-  let instances = props.application.instances.count || 'None';
-  let appID = props.application ? props.application.id : '';
+  const description = props.application.description || 'No description provided';
+  const channels = props.application.channels || [];
+  const groups = props.application.groups || [];
+  const instances = props.application.instances.count || 'None';
+  const appID = props.application ? props.application.id : '';
 
   function updateApplication() {
-    props.handleUpdateApplication(props.application.id)
+    props.handleUpdateApplication(props.application.id);
   }
 
   function deleteApplication() {
-    let confirmationText = "Are you sure you want to delete this application?"
+    const confirmationText = 'Are you sure you want to delete this application?';
     if (window.confirm(confirmationText)) {
-      applicationsStore.deleteApplication(props.application.id)
+      applicationsStore.deleteApplication(props.application.id);
     }
   }
 
@@ -93,6 +93,6 @@ function Item(props) {
 Item.propTypes = {
   application: PropTypes.object.isRequired,
   handleUpdateApplication: PropTypes.func.isRequired
-}
+};
 
-export default Item
+export default Item;

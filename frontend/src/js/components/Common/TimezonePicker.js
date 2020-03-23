@@ -19,7 +19,7 @@ import { FixedSizeList } from 'react-window';
 const suggestions = moment.tz.names().map(timezone => {
   return {label: timezone,
           utcDiff: moment.tz(moment.utc(), timezone).utcOffset() / 60 // Hours from/to UTC
-         };
+  };
 });
 
 function renderInput(inputProps) {
@@ -109,15 +109,15 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function LazyList(props) {
-  let {options, itemData, ...others} = props;
+  const {options, itemData, ...others} = props;
 
   itemData['suggestions'] = options;
 
   function Row(props) {
     const {index, style, data} = props;
     const suggestion = data.suggestions[index];
-    let getItemProps = data.getItemProps;
-    data['index'] = index
+    const getItemProps = data.getItemProps;
+    data['index'] = index;
     return renderSuggestion({suggestion,
                              style,
                              itemProps: getItemProps({item: suggestion.label}),
@@ -138,8 +138,8 @@ function LazyList(props) {
 export const DEFAULT_TIMEZONE = moment.tz.guess(true);
 
 export default function TimzonePicker(props) {
-  let [showPicker, setShowPicker] = React.useState(false);
-  let [selectedTimezone, setSelectedTimezone] =
+  const [showPicker, setShowPicker] = React.useState(false);
+  const [selectedTimezone, setSelectedTimezone] =
     React.useState(props.value ? props.value : DEFAULT_TIMEZONE);
   const classes = useStyles();
 
@@ -194,8 +194,8 @@ export default function TimzonePicker(props) {
                     fullWidth: true,
                     autoFocus: true,
                     classes,
-                    label: "Timezone",
-                    placeholder: "Start typing to search a timezone",
+                    label: 'Timezone',
+                    placeholder: 'Start typing to search a timezone',
                     InputLabelProps: getLabelProps({ shrink: true }),
                     InputProps: { onBlur, onChange, onFocus },
                     inputProps,

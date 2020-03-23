@@ -8,7 +8,7 @@ import GroupEditDialog from '../Groups/EditDialog';
 import PackageEditDialog from '../Packages/EditDialog';
 
 function ModalButton(props) {
-  let [showModal, setShowModal] = React.useState(false);
+  const [showModal, setShowModal] = React.useState(false);
 
   function close() {
     setShowModal(false);
@@ -18,12 +18,12 @@ function ModalButton(props) {
     setShowModal(true);
   }
 
-  let options = {
+  const options = {
     create: true,
     show: showModal,
     data: props.data,
     onHide: close,
-  }
+  };
 
   let modal = null;
   switch (props.modalToOpen) {
@@ -56,6 +56,6 @@ function ModalButton(props) {
 ModalButton.propTypes = {
   modalToOpen: PropTypes.string.isRequired,
   data: PropTypes.object
-}
+};
 
-export default ModalButton
+export default ModalButton;

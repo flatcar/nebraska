@@ -7,7 +7,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import { useTheme } from '@material-ui/styles';
 import PropTypes from 'prop-types';
-import React from "react";
+import React from 'react';
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { cleanSemverVersion, makeColorsForVersions } from '../../constants/helpers';
 
@@ -69,8 +69,8 @@ function VersionProgressBar(props) {
   });
 
   function setup(version_breakdown, channel) {
-    let data = {};
-    let other = {
+    const data = {};
+    const other = {
       versions: [],
       percentage: 0,
     };
@@ -88,11 +88,11 @@ function VersionProgressBar(props) {
       data[version] = percentageValue;
     });
 
-    let versionColors = makeColorsForVersions(theme, Object.keys(data), channel);
+    const versionColors = makeColorsForVersions(theme, Object.keys(data), channel);
     lastVersionChannel = (channel && channel.package) ? channel.package.version : null;
 
     if (other.percentage > 0) {
-      data[otherVersionLabel] = other.percentage
+      data[otherVersionLabel] = other.percentage;
       versionColors[otherVersionLabel] = theme.palette.grey['500'];
     }
 
@@ -104,7 +104,7 @@ function VersionProgressBar(props) {
       const cleanVersion2 = cleanSemverVersion(version2);
       const results = {cleanVersion1: -1, cleanVersion2: 1};
 
-      for (let version of [cleanVersion1, cleanVersion2]) {
+      for (const version of [cleanVersion1, cleanVersion2]) {
         switch (version) {
           case lastVersionChannel:
             return results[version];
@@ -130,7 +130,7 @@ function VersionProgressBar(props) {
   React.useEffect(() => {
     setup(props.version_breakdown, props.channel);
   },
-  [props.version_breakdown, props.channel])
+  [props.version_breakdown, props.channel]);
 
   return (
     <ResponsiveContainer width="95%" height={30} className={classes.container}>
@@ -144,7 +144,7 @@ function VersionProgressBar(props) {
         <XAxis hide type="number" />
         <YAxis hide dataKey="key" type="category" />
         {chartData.versions.map((version, index) => {
-          let color = chartData.colors[version];
+          const color = chartData.colors[version];
           return (
             <Bar
               key={index}
@@ -164,6 +164,6 @@ function VersionProgressBar(props) {
 VersionProgressBar.propTypes = {
   version_breakdown: PropTypes.array.isRequired,
   channel: PropTypes.object.isRequired
-}
+};
 
-export default VersionProgressBar
+export default VersionProgressBar;

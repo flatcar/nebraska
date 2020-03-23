@@ -1,10 +1,10 @@
 import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
-import React from "react";
+import React from 'react';
 import ChannelItem from '../Channels/Item.react';
 
 function ApplicationItemChannelsList(props) {
-  let channels = props.channels || [];
+  const channels = props.channels || [];
   let entries = '-';
 
   if (channels) {
@@ -33,6 +33,6 @@ function ApplicationItemChannelsList(props) {
 
 ApplicationItemChannelsList.propTypes = {
   channels: PropTypes.array.isRequired
-}
+};
 
-export default ApplicationItemChannelsList
+export default ApplicationItemChannelsList;

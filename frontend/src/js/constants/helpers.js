@@ -16,7 +16,7 @@ export const ARCHES = {
 const colors = makeColors();
 
 function makeColors() {
-  let colors = [];
+  const colors = [];
 
   const colorScheme = [lime, amber, orange, deepOrange, red];
 
@@ -33,34 +33,34 @@ function makeColors() {
 }
 
 export function cleanSemverVersion(version) {
-  let shortVersion = version
-  if (version.includes("+")) {
-    shortVersion = version.split("+")[0]
+  let shortVersion = version;
+  if (version.includes('+')) {
+    shortVersion = version.split('+')[0];
   }
-  return shortVersion
+  return shortVersion;
 }
 
 export function getMinuteDifference(date1, date2) {
-  return (date1 - date2) / 1000 / 60;   
+  return (date1 - date2) / 1000 / 60;
 }
 
 export function makeLocaleTime(timestamp, opts={}) {
-   const {useDate = true, showTime = true, dateFormat = {weekday: 'short', day: 'numeric'}} = opts;
-   let date = new Date(timestamp);
-   let formattedDate = date.toLocaleDateString('default', dateFormat); 
-   let timeFormat = date.toLocaleString('default', { hour: '2-digit', minute: '2-digit' });
-   
-   if(useDate && showTime) {
+  const {useDate = true, showTime = true, dateFormat = {weekday: 'short', day: 'numeric'}} = opts;
+  const date = new Date(timestamp);
+  const formattedDate = date.toLocaleDateString('default', dateFormat);
+  const timeFormat = date.toLocaleString('default', { hour: '2-digit', minute: '2-digit' });
+
+  if(useDate && showTime) {
     return `${formattedDate} ${timeFormat}`;
-   }
-   if(useDate) {
+  }
+  if(useDate) {
     return formattedDate;
-   }
-   return timeFormat;
+  }
+  return timeFormat;
 }
 
 export function makeColorsForVersions(theme, versions, channel=null) {
-  let versionColors = {};
+  const versionColors = {};
   let colorIndex = 0;
   let latestVersion = null;
 
@@ -69,8 +69,8 @@ export function makeColorsForVersions(theme, versions, channel=null) {
   }
 
   for (let i = versions.length - 1; i >= 0; i--) {
-    let version = versions[i];
-    let cleanVersion = cleanSemverVersion(version);
+    const version = versions[i];
+    const cleanVersion = cleanSemverVersion(version);
 
     if (cleanVersion == latestVersion) {
       versionColors[cleanVersion] = theme.palette.success.main;

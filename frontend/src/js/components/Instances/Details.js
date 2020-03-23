@@ -15,10 +15,10 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/styles';
-import { makeLocaleTime } from '../../constants/helpers';
 import PropTypes from 'prop-types';
-import React from "react";
+import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { makeLocaleTime } from '../../constants/helpers';
 import { instancesStore } from '../../stores/Stores';
 import ChannelItem from '../Channels/Item.react';
 import { CardFeatureLabel, CardLabel } from '../Common/Card';
@@ -62,8 +62,8 @@ const useStatusStyles = makeStyles({
 function StatusLabel(props) {
   const classes = useStatusStyles();
   const statusDefs = makeStatusDefs(useTheme());
-  let {status, activated} = props;
-  let {icon=null, label='Unknown', color} = statusDefs[status.type] || {};
+  const {status, activated} = props;
+  const {icon=null, label='Unknown', color} = statusDefs[status.type] || {};
   const iconSize = '22px';
 
   return (
@@ -97,10 +97,10 @@ function StatusLabel(props) {
 
 function StatusRow(props) {
   const classes = useRowStyles();
-  let {entry} = props;
-  let time = makeLocaleTime(entry.created_ts);
+  const {entry} = props;
+  const time = makeLocaleTime(entry.created_ts);
   const status = instancesStore.getInstanceStatus(entry.status, entry.version);
-  let [collapsed, setCollapsed] = React.useState(true);
+  const [collapsed, setCollapsed] = React.useState(true);
 
   function onStatusClick() {
     setCollapsed(!collapsed);
@@ -166,8 +166,8 @@ function EventTable(props) {
 
 function DetailsView(props) {
   const classes = useDetailsStyles();
-  let {application, group, instance} = props;
-  let [eventHistory, setEventHistory] = React.useState([]);
+  const {application, group, instance} = props;
+  const [eventHistory, setEventHistory] = React.useState([]);
 
   function onChangeInstances() {
     setEventHistory(instance.statusHistory || []);
@@ -183,7 +183,6 @@ function DetailsView(props) {
     };
   },
   [instance]);
-
 
   return (
     <Grid
@@ -242,14 +241,14 @@ function DetailsView(props) {
       <Grid item md>
         <Paper>
           <ListHeader title="Event Timeline" />
-            {eventHistory ?
-              <Box padding="1em">
-                <div className={classes.timelineContainer}>
-                  <EventTable events={eventHistory} />
-                </div>
-              </Box>
+          {eventHistory ?
+            <Box padding="1em">
+              <div className={classes.timelineContainer}>
+                <EventTable events={eventHistory} />
+              </div>
+            </Box>
               :
-              <Loader />
+            <Loader />
             }
         </Paper>
       </Grid>

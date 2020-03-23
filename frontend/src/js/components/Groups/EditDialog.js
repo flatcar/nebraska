@@ -24,12 +24,12 @@ function EditDialog(props) {
   const isCreation = Boolean(props.create);
 
   function handleSubmit(values, actions) {
-    let updatesPeriodPolicy = values.updatesPeriodRange.toString() + ' '
+    const updatesPeriodPolicy = values.updatesPeriodRange.toString() + ' '
       + values.updatesPeriodUnit;
-    let updatesTimeoutPolicy = values.updatesTimeout.toString() + ' '
+    const updatesTimeoutPolicy = values.updatesTimeout.toString() + ' '
       + values.updatesTimeoutUnit;
 
-    let data = {
+    const data = {
       name: values.name,
       description: values.description,
       policy_updates_enabled: values.updatesEnabled,
@@ -38,7 +38,7 @@ function EditDialog(props) {
       policy_max_updates_per_period: values.maxUpdates,
       policy_period_interval: updatesPeriodPolicy,
       policy_update_timeout: updatesTimeoutPolicy,
-    }
+    };
 
     if (values.channel)
       data['channel_id'] = values.channel;
@@ -57,13 +57,13 @@ function EditDialog(props) {
 
     packageFunctionCall.
       done(() => {
-        props.onHide()
+        props.onHide();
         actions.setSubmitting(false);
       }).
       fail(() => {
         actions.setSubmitting(false);
         actions.setStatus({statusMessage: 'Something went wrong. Check the form or try again later...'});
-      })
+      });
   }
 
   function handleClose() {
@@ -108,7 +108,7 @@ function EditDialog(props) {
               </MenuItem>
               {channels.map((channelItem) =>
                 <MenuItem value={channelItem.id} key={channelItem.id}>
-                      <ListItemText primary={channelItem.name}
+                  <ListItemText primary={channelItem.name}
                       secondary={ARCHES[channelItem.arch]} />
                 </MenuItem>)
               })}
@@ -196,10 +196,10 @@ function EditDialog(props) {
                 select
                 fullWidth
               >
-              {['hours', 'minutes', 'days'].map((unit) => {
+                {['hours', 'minutes', 'days'].map((unit) => {
                 return (<MenuItem value={unit} key={unit}>
-                          {unit}
-                        </MenuItem>);
+                  {unit}
+                </MenuItem>);
               })
               }
               </Field>
@@ -225,10 +225,10 @@ function EditDialog(props) {
                 select
                 fullWidth
               >
-              {['hours', 'minutes', 'days'].map((unit) => {
+                {['hours', 'minutes', 'days'].map((unit) => {
                 return (<MenuItem value={unit} key={unit}>
-                          {unit}
-                        </MenuItem>);
+                  {unit}
+                </MenuItem>);
               })
               }
               </Field>
@@ -237,7 +237,7 @@ function EditDialog(props) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">Cancel</Button>
-          <Button type="submit" disabled={isSubmitting} color="primary">{ isCreation ? "Add" : "Save" }</Button>
+          <Button type="submit" disabled={isSubmitting} color="primary">{ isCreation ? 'Add' : 'Save' }</Button>
         </DialogActions>
       </Form>
     );
@@ -252,7 +252,7 @@ function EditDialog(props) {
 
   function maxCharacters(maxChars, required=false) {
     let validation = Yup.string()
-      .max(maxChars, `Must be less than $maxChars characters`);
+      .max(maxChars, 'Must be less than $maxChars characters');
 
     if (required)
       validation = validation.required('Required');
@@ -268,7 +268,7 @@ function EditDialog(props) {
     updatesTimeout: positiveNum(),
   });
 
-  let initialValues = {}
+  let initialValues = {};
 
   if (isCreation) {
     initialValues = {
@@ -279,12 +279,12 @@ function EditDialog(props) {
       updatesTimeoutUnit: 'days',
       channel: '',
       timezone: DEFAULT_TIMEZONE,
-    }
+    };
   } else {
-    let group = props.data.group;
-    let [currentUpdatesPeriodRange, currentUpdatesPeriodUnit] =
+    const group = props.data.group;
+    const [currentUpdatesPeriodRange, currentUpdatesPeriodUnit] =
       group.policy_period_interval.split(' ');
-    let [currentupdatesTimeout, currentUpdatesTimeoutUnit] =
+    const [currentupdatesTimeout, currentUpdatesTimeoutUnit] =
       group.policy_update_timeout.split(' ');
 
     initialValues = {
@@ -305,8 +305,8 @@ function EditDialog(props) {
 
   return (
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
-      <DialogTitle>{ isCreation ? "Add Group" : "Edit Group" }</DialogTitle>
-        <Formik
+      <DialogTitle>{ isCreation ? 'Add Group' : 'Edit Group' }</DialogTitle>
+      <Formik
           initialValues={initialValues}
           onSubmit={handleSubmit}
           validationSchema={validation}
@@ -320,6 +320,6 @@ EditDialog.propTypes = {
   data: PropTypes.object,
   show: PropTypes.bool,
   create: PropTypes.bool,
-}
+};
 
 export default EditDialog;
