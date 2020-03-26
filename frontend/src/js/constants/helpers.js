@@ -72,7 +72,7 @@ export function makeColorsForVersions(theme, versions, channel=null) {
     const version = versions[i];
     const cleanVersion = cleanSemverVersion(version);
 
-    if (cleanVersion == latestVersion) {
+    if (cleanVersion === latestVersion) {
       versionColors[cleanVersion] = theme.palette.success.main;
     } else {
       versionColors[cleanVersion] = colors[colorIndex++ % colors.length];

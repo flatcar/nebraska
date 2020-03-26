@@ -69,7 +69,7 @@ function Item(props) {
             </Grid>
             <Grid item xs={6}>
               <CardFeatureLabel>Groups:</CardFeatureLabel>&nbsp;
-              <CardLabel>{groups.length == 0 ? 'None' : groups.length}</CardLabel>
+              <CardLabel>{groups.length === 0 ? 'None' : groups.length}</CardLabel>
               <GroupsList
                 groups={groups}
                 appID={props.application.id}

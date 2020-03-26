@@ -42,7 +42,7 @@ function Item(props) {
       instancesStore.getInstanceStatusHistory(appID, groupID, instanceID)
         .done(() => {
           const cachedInstances = instancesStore.getCachedInstances(appID, groupID) || [];
-          const instance = cachedInstances.find(({id}) => id == props.instance.id);
+          const instance = cachedInstances.find(({id}) => id === props.instance.id);
           if (instance)
             setStatusHistory(instance.statusHistory);
           props.onToggle(instanceID);
@@ -62,13 +62,13 @@ function Item(props) {
   }
 
   if (!_.isEmpty(props.lastVersionChannel)) {
-    if (version == props.lastVersionChannel) {
+    if (version === props.lastVersionChannel) {
       versionStyle = 'success';
     } else if (semver.gt(version, props.lastVersionChannel)) {
       versionStyle = 'info';
     } else {
       const indexDiff = _.indexOf(props.versionNumbers, version) - currentVersionIndex;
-      if (indexDiff == 1)
+      if (indexDiff === 1)
         versionStyle = 'warning';
       else
         versionStyle = 'danger';

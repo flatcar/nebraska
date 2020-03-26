@@ -61,7 +61,7 @@ function Container(props) {
       i < Math.min(activity.length, page * rowsPerPage + rowsPerPage); ++i) {
       const entry = activity[i];
       const date = new Date(entry.created_ts);
-      if (!timestamp || date.getDay() != new Date(timestamp).getDay()) {
+      if (!timestamp || date.getDay() !== new Date(timestamp).getDay()) {
         timestamp = date.toUTCString();;
         entriesPerTime[timestamp] = [];
       }

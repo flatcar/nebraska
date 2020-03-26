@@ -120,7 +120,7 @@ function ListView(props) {
 
     const filterInstances = instances.filter(instance => {
       if (newFilters.version &&
-          newFilters.version != cleanSemverVersion(instance.application.version)) {
+          newFilters.version !== cleanSemverVersion(instance.application.version)) {
         return false;
       }
       if (newFilters.status &&
@@ -140,7 +140,7 @@ function ListView(props) {
 
   function onChangeInstances() {
     const cachedInstances = instancesStore.getCachedInstances(application.id, group.id) || [];
-    if (!instances || instances.length == 0 || filteredInstances.length == 0) {
+    if (!instances || instances.length === 0 || filteredInstances.length === 0) {
       setInstances(cachedInstances);
       setFilteredInstances(cachedInstances);
       return;
@@ -148,9 +148,9 @@ function ListView(props) {
 
     if (cachedInstances.length > 0 && instances && instances.length > 0) {
       // Update instances state only when needed.
-      if (cachedInstances.length != instances.length ||
-          cachedInstances[0].id != instances[0].id ||
-          cachedInstances[cachedInstances.length - 1].id != instances[instances.length - 1].id) {
+      if (cachedInstances.length !== instances.length ||
+          cachedInstances[0].id !== instances[0].id ||
+          cachedInstances[cachedInstances.length - 1].id !== instances[instances.length - 1].id) {
         // @todo: Allow to manually refresh list from UI.
         setInstances(cachedInstances);
       }
@@ -178,9 +178,9 @@ function ListView(props) {
   [lastCheck, instances, filteredInstances]);
 
   function getInstanceCount() {
-    if (!instances || instances.length == 0)
+    if (!instances || instances.length === 0)
       return group.instances_stats.total;
-    if (filteredInstances.length == instances.length)
+    if (filteredInstances.length === instances.length)
       return filteredInstances.length;
     return `${filteredInstances.length}/${instances.length}`;
   }

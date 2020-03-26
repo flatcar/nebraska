@@ -161,7 +161,7 @@ export function VersionCountTimeline(props) {
   }
 
   function getVersionsFromTimeline(timeline) {
-    if (Object.keys(timeline).length == 0) {
+    if (Object.keys(timeline).length === 0) {
       return [];
     }
 
@@ -188,7 +188,7 @@ export function VersionCountTimeline(props) {
 
     // If there is no timeline or no specific time is selected,
     // use the version breakdown (the whole period breakdown).
-    if (timelineChartData.data.length == 0 || selectedEntry == -1) {
+    if (timelineChartData.data.length === 0 || selectedEntry === -1) {
       version_breakdown = [...props.group.version_breakdown];
     }
 
@@ -196,7 +196,7 @@ export function VersionCountTimeline(props) {
 
     // If we're not using the default group version breakdown,
     // let's populate it from the selected time one.
-    if (version_breakdown.length == 0 && selectedEntry > -1) {
+    if (version_breakdown.length === 0 && selectedEntry > -1) {
       // Create the version breakdown from the timeline
       const entries = timelineChartData.data[selectedEntry] || [];
 
@@ -258,7 +258,7 @@ export function VersionCountTimeline(props) {
 
   function getSelectedTime() {
     const data = timelineChartData.data;
-    if (selectedEntry < 0 || data.length == 0) {
+    if (selectedEntry < 0 || data.length === 0) {
       return '';
     }
     const timestamp = data[selectedEntry].timestamp;
@@ -286,7 +286,7 @@ export function VersionCountTimeline(props) {
       <Grid item xs={12} container>
         <Grid item xs={12}>
           <Box width={500}>
-            { selectedEntry != -1 ?
+            { selectedEntry !== -1 ?
               <React.Fragment>
                 <Typography component="span">
                   Showing for:
@@ -368,11 +368,11 @@ export function StatusCountTimeline(props) {
   }
 
   function getStatusFromTimeline(timeline) {
-    if (Object.keys(timeline).length == 0) {
+    if (Object.keys(timeline).length === 0) {
       return [];
     }
 
-    return Object.keys(Object.values(timeline)[0]).filter(status => status != 0);
+    return Object.keys(Object.values(timeline)[0]).filter(status => status !== 0);
   }
 
   function getInstanceCount(selectedEntry) {
@@ -389,7 +389,7 @@ export function StatusCountTimeline(props) {
       // Create the version breakdown from the timeline
       const entries = statusTimeline[ts] || [];
       for (const status in entries) {
-        if (status == 0) {
+        if (status === 0) {
           continue;
         }
 
@@ -447,7 +447,7 @@ export function StatusCountTimeline(props) {
 
   function getSelectedTime() {
     const data = timelineChartData.data;
-    if (selectedEntry < 0 || data.length == 0) {
+    if (selectedEntry < 0 || data.length === 0) {
       return '';
     }
     const timestamp = data[selectedEntry].timestamp;
@@ -476,7 +476,7 @@ export function StatusCountTimeline(props) {
       <Grid item xs={12} container>
         <Grid item xs={12}>
           <Box width={500}>
-            { selectedEntry != -1 ?
+            { selectedEntry !== -1 ?
               <React.Fragment>
                 <Typography component="span">
                   Showing for:
