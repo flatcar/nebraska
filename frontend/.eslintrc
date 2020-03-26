@@ -5,6 +5,7 @@
     "simple-import-sort"
   ],
   "rules": {
+    "eqeqeq": [2,"always"],
     "space-in-parens": [0, "always"],
     "template-curly-spacing": [0, "always"],
     "array-bracket-spacing": [0, "always"],
