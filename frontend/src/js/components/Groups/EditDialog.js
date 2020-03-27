@@ -280,7 +280,7 @@ function EditDialog(props) {
       channel: '',
       timezone: DEFAULT_TIMEZONE,
     };
-  } else {
+  } else if (!!props.data.group) {
     const group = props.data.group;
     const [currentUpdatesPeriodRange, currentUpdatesPeriodUnit] =
       group.policy_period_interval.split(' ');
