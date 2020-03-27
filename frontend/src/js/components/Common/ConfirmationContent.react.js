@@ -10,13 +10,13 @@ class ConfirmationContent extends React.Component {
   }
 
   processClick() {
-    if (this.props.data.type == 'application') {
+    if (this.props.data.type === 'application') {
       ApplicationsStore.deleteApplication(this.props.data.appID);
-    } else if (this.props.data.type == 'group') {
+    } else if (this.props.data.type === 'group') {
       ApplicationsStore.deleteGroup(this.props.data.appID, this.props.data.groupID);
-    } else if (this.props.data.type == 'channel') {
+    } else if (this.props.data.type === 'channel') {
       ApplicationsStore.deleteChannel(this.props.data.appID, this.props.data.channelID);
-    } else if (this.props.data.type == 'package') {
+    } else if (this.props.data.type === 'package') {
       ApplicationsStore.deletePackage(this.props.data.appID, this.props.data.packageID);
     }
   }

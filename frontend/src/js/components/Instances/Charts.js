@@ -50,7 +50,7 @@ function ProgressDoughnut(props) {
     // Ensure that the minimum value displayed is 0.5 if the original value
     // is 0, or 1.5 otherwise. This ensures the user is able to see the bits
     // related to this value in the charts.
-    const percentageValue = Math.max(value * 100, value == 0 ? 0.5 : 1.5);
+    const percentageValue = Math.max(value * 100, value === 0 ? 0.5 : 1.5);
 
     totalFilled += percentageValue;
     valuesSum += value * 100;
@@ -113,7 +113,7 @@ function ProgressDoughnut(props) {
 
                         // Highlight the bit on hover, if it's not
                         // the remaining percentage.
-                        if (datum.x != 'remain') {
+                        if (datum.x !== 'remain') {
                           return {style: {...style,
                                           stroke: theme.palette.primary.light,
                                           strokeWidth: 2}};
@@ -243,7 +243,7 @@ export default function InstanceStatusArea(props) {
             count.sort((obj1, obj2) => {
               const stats1 = instanceStats[obj1.key];
               const stats2 = instanceStats[obj2.key];
-              if (stats1 == stats2)
+              if (stats1 === stats2)
                 return 0;
               if (stats1 < stats2)
                 return -1;

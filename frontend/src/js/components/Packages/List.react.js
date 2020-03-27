@@ -26,7 +26,7 @@ function List(props) {
 
   React.useEffect(() => {
     applicationsStore.addChangeListener(onChange);
-    if (application == null) {
+    if (application === null) {
       applicationsStore.getApplication(props.appID);
     }
 
@@ -41,8 +41,8 @@ function List(props) {
   }
 
   function openEditDialog(packageID) {
-    const pkg = (application.packages || []).find(({id}) => id == packageID) || null;
-    if (pkg != packageToUpdate) {
+    const pkg = (application.packages || []).find(({id}) => id === packageID) || null;
+    if (pkg !== packageToUpdate) {
       setPackageToUpdate(pkg);
     }
   }
