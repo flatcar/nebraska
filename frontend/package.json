@@ -44,6 +44,8 @@
     "@iconify/tools": "^1.3.9",
     "babel-loader": "^8.0.6",
     "dotenv-webpack": "^1.7.0",
+    "eslint-plugin-react": "^7.19.0",
+    "eslint-plugin-react-hooks": "^3.0.0",
     "eslint-plugin-simple-import-sort": "^5.0.2",
     "http-proxy-middleware": "^1.0.3",
     "webpack": "^4.41.2",
