@@ -351,8 +351,12 @@ func (ctl *controller) getGroups(c *gin.Context) {
 
 func (ctl *controller) getGroupVersionCountTimeline(c *gin.Context) {
 	groupID := c.Params.ByName("group_id")
-
-	versionCountTimeline, err := ctl.api.GetGroupVersionCountTimeline(groupID)
+	durationMap := c.Request.URL.Query()
+	var duration string
+	if _, ok := durationMap["duration"]; ok {
+		duration = durationMap["duration"][0]
+	}
+	versionCountTimeline, err := ctl.api.GetGroupVersionCountTimeline(groupID, duration)
 	switch err {
 	case nil:
 		if err := json.NewEncoder(c.Writer).Encode(versionCountTimeline); err != nil {
@@ -368,8 +372,12 @@ func (ctl *controller) getGroupVersionCountTimeline(c *gin.Context) {
 
 func (ctl *controller) getGroupStatusCountTimeline(c *gin.Context) {
 	groupID := c.Params.ByName("group_id")
-
-	statusCountTimeline, err := ctl.api.GetGroupStatusCountTimeline(groupID)
+	durationMap := c.Request.URL.Query()
+	var duration string
+	if _, ok := durationMap["duration"]; ok {
+		duration = durationMap["duration"][0]
+	}
+	statusCountTimeline, err := ctl.api.GetGroupStatusCountTimeline(groupID, duration)
 	switch err {
 	case nil:
 		if err := json.NewEncoder(c.Writer).Encode(statusCountTimeline); err != nil {
