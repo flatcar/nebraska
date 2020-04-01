@@ -62,12 +62,12 @@ class API {
     return API.doRequest('PUT', url, JSON.stringify(groupData));
   }
 
-  static getGroupVersionCountTimeline(applicationID, groupID) {
-    return API.getJSON(BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/version_timeline');
+  static getGroupVersionCountTimeline(applicationID, groupID,duration) {
+    return API.getJSON(BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/version_timeline' + `?duration=${duration}`);
   }
 
-  static getGroupStatusCountTimeline(applicationID, groupID) {
-    return API.getJSON(BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/status_timeline');
+  static getGroupStatusCountTimeline(applicationID, groupID,duration) {
+    return API.getJSON(BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/status_timeline' + `?duration=${duration}`);
   }
 
   // Channels
