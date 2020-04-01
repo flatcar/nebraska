@@ -90,7 +90,8 @@ function ProgressDoughnut(props) {
           <VictoryPie
             standalone={false}
             animate={{ duration: 1000 }}
-            width={pieSize} height={pieSize}
+            width={pieSize}
+            height={pieSize}
             data={dataSet}
             radius={radius}
             innerRadius={radius * .6}
@@ -138,8 +139,10 @@ function ProgressDoughnut(props) {
             }]}
           />
           <VictoryLabel
-            textAnchor="middle" verticalAnchor="middle"
-            x={width / 2} y={height / 2}
+            textAnchor="middle"
+            verticalAnchor="middle"
+            x={width / 2}
+            y={height / 2}
             text={`${valuesSum.toFixed(1)}%`}
             style={{
               fontSize: `${radius * .25}px`,

@@ -34,7 +34,7 @@ export default function MoreMenu(props) {
             onClick={event => {
               handleClose(event);
               action();
-          }}
+            }}
           >
             {label}
           </MenuItem>

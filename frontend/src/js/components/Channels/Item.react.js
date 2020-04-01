@@ -58,7 +58,8 @@ function Item(props) {
           <MoreMenu options={[
             {label: 'Edit', action: updateChannel},
             {label: 'Delete', action: deleteChannel}
-          ]} />
+          ]}
+          />
         </ListItemSecondaryAction>
       }
     </ListItem>

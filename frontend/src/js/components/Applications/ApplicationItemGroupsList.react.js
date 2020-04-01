@@ -4,7 +4,7 @@ import React from 'react';
 import Item from './ApplicationItemGroupItem.react';
 
 function ApplicationItemGroupsList(props) {
-  return(
+  return (
     <Grid container spacing={2}>
       {props.groups.map((group, i) =>
         <Grid item key={'group_' + i}>

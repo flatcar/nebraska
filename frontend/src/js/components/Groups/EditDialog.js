@@ -109,14 +109,16 @@ function EditDialog(props) {
               {channels.map((channelItem) =>
                 <MenuItem value={channelItem.id} key={channelItem.id}>
                   <ListItemText primary={channelItem.name}
-                      secondary={ARCHES[channelItem.arch]} />
+                    secondary={ARCHES[channelItem.arch]}
+                  />
                 </MenuItem>)
-              })}
+              }
             </Field>
           </FormControl>
           <Grid container
             justify="space-between"
-            spacing={4}>
+            spacing={4}
+          >
             <Grid item xs={6}>
               <FormControlLabel
                 label="Updates enabled"
@@ -166,7 +168,8 @@ function EditDialog(props) {
           </FormControl>
           <Grid container
             justify="space-between"
-            spacing={4}>
+            spacing={4}
+          >
             <Grid item xs={6}>
               <Field
                 name="maxUpdates"
@@ -197,16 +200,17 @@ function EditDialog(props) {
                 fullWidth
               >
                 {['hours', 'minutes', 'days'].map((unit) => {
-                return (<MenuItem value={unit} key={unit}>
-                  {unit}
-                </MenuItem>);
-              })
-              }
+                  return (<MenuItem value={unit} key={unit}>
+                    {unit}
+                  </MenuItem>);
+                })
+                }
               </Field>
             </Grid>
           </Grid>
           <Grid container
-            spacing={1}>
+            spacing={1}
+          >
             <Grid item xs={6}>
               <Field
                 name="updatesTimeout"
@@ -226,11 +230,11 @@ function EditDialog(props) {
                 fullWidth
               >
                 {['hours', 'minutes', 'days'].map((unit) => {
-                return (<MenuItem value={unit} key={unit}>
-                  {unit}
-                </MenuItem>);
-              })
-              }
+                  return (<MenuItem value={unit} key={unit}>
+                    {unit}
+                  </MenuItem>);
+                })
+                }
               </Field>
             </Grid>
           </Grid>
@@ -307,11 +311,11 @@ function EditDialog(props) {
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
       <DialogTitle>{ isCreation ? 'Add Group' : 'Edit Group' }</DialogTitle>
       <Formik
-          initialValues={initialValues}
-          onSubmit={handleSubmit}
-          validationSchema={validation}
-          render={renderForm}
-        />
+        initialValues={initialValues}
+        onSubmit={handleSubmit}
+        validationSchema={validation}
+        render={renderForm}
+      />
     </Dialog>
   );
 }

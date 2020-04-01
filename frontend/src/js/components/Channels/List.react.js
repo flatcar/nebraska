@@ -122,7 +122,7 @@ class List extends React.Component {
         </Grid>
         {!application ?
           <Loader />
-        :
+          :
           <ChannelList
             application={application}
             onEdit={this.openUpdateChannelModal}
@@ -132,7 +132,8 @@ class List extends React.Component {
           <EditDialog
             data={{packages: packages, applicationID: this.props.appID, channel: channelToUpdate}}
             show={this.state.updateChannelModalVisible}
-            onHide={this.closeUpdateChannelModal} />
+            onHide={this.closeUpdateChannelModal}
+          />
         }
       </SectionPaper>
     );

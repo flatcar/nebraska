@@ -8,7 +8,7 @@ import React from 'react';
 import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 import semver from 'semver';
 import _ from 'underscore';
-import { cleanSemverVersion, getMinuteDifference,makeColorsForVersions, makeLocaleTime } from '../../constants/helpers';
+import { cleanSemverVersion, getMinuteDifference, makeColorsForVersions, makeLocaleTime } from '../../constants/helpers';
 import { applicationsStore, instancesStore } from '../../stores/Stores';
 import Loader from '../Common/Loader';
 import SimpleTable from '../Common/SimpleTable';
@@ -89,38 +89,38 @@ function TimelineChart(props) {
 
   return (
     <AreaChart
-        width={width}
-        height={height}
-        data={props.data}
-        margin={{
-          top: 10, right: 30, left: 0, bottom: 0,
-        }}
-        onClick={({activeLabel}) => {props.onSelect(activeLabel);}}
-      >
+      width={width}
+      height={height}
+      data={props.data}
+      margin={{
+        top: 10, right: 30, left: 0, bottom: 0,
+      }}
+      onClick={({activeLabel}) => {props.onSelect(activeLabel);}}
+    >
       <CartesianGrid strokeDasharray="3 3" />
       <Tooltip content={<TimelineTooltip data={props.data} />} />
       <XAxis
-          dataKey="index"
-          type="number"
-          interval={0}
-          domain={[0, 'dataMax']}
-          ticks={Object.keys(getTickValues(4))}
-          tickFormatter={index => {
-            return ticks[index];
-          }}
-        />
+        dataKey="index"
+        type="number"
+        interval={0}
+        domain={[0, 'dataMax']}
+        ticks={Object.keys(getTickValues(4))}
+        tickFormatter={index => {
+          return ticks[index];
+        }}
+      />
       <YAxis />
       {props.keys.map((key, i) =>
         <Area
-            type={interpolation}
-            key={i}
-            dataKey={key}
-            stackId="1"
-            stroke={props.colors[key]}
-            cursor="pointer"
-            fill={props.colors[key]}
-          />
-        )}
+          type={interpolation}
+          key={i}
+          dataKey={key}
+          stackId="1"
+          stroke={props.colors[key]}
+          cursor="pointer"
+          fill={props.colors[key]}
+        />
+      )}
     </AreaChart>
   );
 }
@@ -279,7 +279,7 @@ export function VersionCountTimeline(props) {
             {...timelineChartData}
             onSelect={setSelectedEntry}
           />
-        :
+          :
           <Loader />
         }
       </Grid>
@@ -297,7 +297,7 @@ export function VersionCountTimeline(props) {
                   onDelete={() => {setSelectedEntry(-1);}}
                 />
               </React.Fragment>
-            :
+              :
               <Typography>Showing for the last 24 hours (click the chart to choose a different time point).</Typography>
             }
           </Box>
@@ -469,7 +469,7 @@ export function StatusCountTimeline(props) {
             interpolation="step"
             onSelect={setSelectedEntry}
           />
-        :
+          :
           <Loader />
         }
       </Grid>
@@ -487,7 +487,7 @@ export function StatusCountTimeline(props) {
                   onDelete={() => {setSelectedEntry(-1);}}
                 />
               </React.Fragment>
-            :
+              :
               <Typography>
                 Showing data for the last hour (click the chart to choose a different time point).
               </Typography>

@@ -34,7 +34,7 @@ function Item(props) {
     }
   }
 
-  return(
+  return (
     <ListItem>
       <Grid container>
         <Grid item xs={12}>
@@ -46,14 +46,15 @@ function Item(props) {
           >
             <MoreMenu options={[
               {
-              'label': 'Edit',
-              'action': updateApplication,
+                'label': 'Edit',
+                'action': updateApplication,
               },
               {
                 'label': 'Delete',
                 'action': deleteApplication,
               }
-            ]} />
+            ]}
+            />
           </CardHeader>
         </Grid>
         <Grid item xs={12}>
@@ -73,7 +74,8 @@ function Item(props) {
               <GroupsList
                 groups={groups}
                 appID={props.application.id}
-                appName={props.application.name} />
+                appName={props.application.name}
+              />
             </Grid>
             <Grid item xs={12}>
               <CardFeatureLabel>Channels:</CardFeatureLabel>&nbsp;

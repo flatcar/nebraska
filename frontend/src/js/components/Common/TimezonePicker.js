@@ -168,7 +168,7 @@ export default function TimzonePicker(props) {
           }}
           placeholder="Pick a timezone"
           readOnly
-      />
+        />
       </FormControl>
       <Dialog open={showPicker}>
         <DialogTitle>

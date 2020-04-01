@@ -56,19 +56,19 @@ export default function SimpleTable(props) {
                    {i === 0 && row.color &&
                    <React.Fragment>
                      <InlineIcon
-                        icon={squareIcon}
-                        color={row.color}
-                        height="15"
-                        width="15"
-                      />
+                       icon={squareIcon}
+                       color={row.color}
+                       height="15"
+                       width="15"
+                     />
                       &nbsp;
                    </React.Fragment>
-                  }
+                   }
                    {row[column]}
                  </TableCell>
-              )}
+               )}
              </TableRow>
-          )}
+           )}
           </TableBody>
         </Table>
         {props.instances.length > rowsPerPageOptions[0] &&

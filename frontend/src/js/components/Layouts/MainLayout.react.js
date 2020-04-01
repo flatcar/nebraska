@@ -5,12 +5,13 @@ import ActivityContainer from '../Activity/Container.react';
 import ApplicationsList from '../Applications/List.react';
 
 function MainLayout() {
-  return(
+  return (
     <Grid
       container
       spacing={1}
       justify="center"
-      alignItems="flex-start">
+      alignItems="flex-start"
+    >
       <Grid item xs={8}>
         <ApplicationsList />
       </Grid>

@@ -11,7 +11,7 @@ function StatusHistoryList(props) {
   const entries = props.entries || [];
 
   // @todo: Virtualize the table.
-  return(
+  return (
     <Table>
       <TableHead>
         <TableRow>

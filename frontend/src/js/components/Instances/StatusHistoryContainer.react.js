@@ -24,7 +24,7 @@ function StatusHistoryContainer(props) {
     entries = <StatusHistoryList entries={props.statusHistory} />;
   }
 
-  return(
+  return (
     <div className={classes.historyBox}>
       {entries}
     </div>

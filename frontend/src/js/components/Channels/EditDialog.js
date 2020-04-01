@@ -12,7 +12,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import MuiSelect from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
-import { Field,Form, Formik } from 'formik';
+import { Field, Form, Formik } from 'formik';
 import { TextField } from 'formik-material-ui';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -125,7 +125,7 @@ function EditDialog(props) {
                   InputLabelProps={{shrink: true}}
                   autoFocus
                   type="text"
-                  required={true}
+                  required
                   helperText="Can be an existing one as long as the arch is different."
                   fullWidth
                 />
@@ -201,11 +201,11 @@ function EditDialog(props) {
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
       <DialogTitle>{ isCreation ? 'Add New Channel' : 'Edit Channel' }</DialogTitle>
       <Formik
-          initialValues={initialValues}
-          onSubmit={handleSubmit}
-          validationSchema={validation}
-          render={renderForm}
-        />
+        initialValues={initialValues}
+        onSubmit={handleSubmit}
+        validationSchema={validation}
+        render={renderForm}
+      />
     </Dialog>
   );
 }

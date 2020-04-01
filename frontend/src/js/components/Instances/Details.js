@@ -229,7 +229,7 @@ function DetailsView(props) {
                   <CardFeatureLabel>Channel:</CardFeatureLabel>&nbsp;
                   {group.channel ?
                     <ChannelItem channel={group.channel} />
-                  :
+                    :
                     <CardLabel>None</CardLabel>
                   }
                 </Grid>
@@ -247,9 +247,9 @@ function DetailsView(props) {
                 <EventTable events={eventHistory} />
               </div>
             </Box>
-              :
+            :
             <Loader />
-            }
+          }
         </Paper>
       </Grid>
     </Grid>

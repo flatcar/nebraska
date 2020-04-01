@@ -58,14 +58,15 @@ function Item(props) {
           >
             <MoreMenu options={[
               {
-              'label': 'Edit',
-              'action': updateGroup,
+                'label': 'Edit',
+                'action': updateGroup,
               },
               {
                 'label': 'Delete',
                 'action': deleteGroup,
               }
-            ]} />
+            ]}
+            />
           </CardHeader>
         </Grid>
         <Grid
@@ -110,7 +111,7 @@ function Item(props) {
               <Grid item xs={12}>
                 {version_breakdown.length > 0 ?
                   <VersionProgressBar version_breakdown={version_breakdown} channel={channel} />
-                :
+                  :
                   <Empty>No instances available.</Empty>
                 }
               </Grid>

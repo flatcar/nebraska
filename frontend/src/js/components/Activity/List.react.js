@@ -16,7 +16,7 @@ function List(props) {
   const classes = useStyles();
   const entries = props.entries ? props.entries : [];
 
-  return(
+  return (
     <React.Fragment>
       <Typography className={classes.listTitle}>
         {makeLocaleTime(props.timestamp, {

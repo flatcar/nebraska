@@ -13,7 +13,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
 import MuiSelect from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
-import { Field,Form, Formik } from 'formik';
+import { Field, Form, Formik } from 'formik';
 import { Select, TextField } from 'formik-material-ui';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -128,7 +128,8 @@ function EditDialog(props) {
                 <InputLabel>Type</InputLabel>
                 <MuiSelect
                   value={packageType}
-                  onChange={handlePackageTypeChange}>
+                  onChange={handlePackageTypeChange}
+                >
                   <MenuItem value={otherType} key="other">Other</MenuItem>
                   <MenuItem value={flatcarType} key="flatcar">Flatcar</MenuItem>
                 </MuiSelect>
@@ -161,7 +162,7 @@ function EditDialog(props) {
             margin="dense"
             label="URL"
             type="url"
-            required={true}
+            required
             fullWidth
           />
           <Field
@@ -170,7 +171,7 @@ function EditDialog(props) {
             margin="dense"
             label="Filename"
             type="text"
-            required={true}
+            required
             fullWidth
           />
           <Field
@@ -179,12 +180,13 @@ function EditDialog(props) {
             margin="dense"
             label="Description"
             type="text"
-            required={true}
+            required
             fullWidth
           />
           <Grid container
             justify="space-between"
-            spacing={4}>
+            spacing={4}
+          >
             <Grid item xs={6}>
               <Field
                 name="version"
@@ -192,7 +194,7 @@ function EditDialog(props) {
                 margin="dense"
                 label="Version"
                 type="text"
-                required={true}
+                required
                 helperText="Use SemVer format (1.0.1)"
                 fullWidth
               />
@@ -204,7 +206,7 @@ function EditDialog(props) {
                 margin="dense"
                 label="Size"
                 type="number"
-                required={true}
+                required
                 helperText="In bytes"
                 fullWidth
               />
@@ -216,7 +218,7 @@ function EditDialog(props) {
             margin="dense"
             label="Hash"
             type="text"
-            required={true}
+            required
             helperText="Tip: cat update.gz | openssl dgst -sha1 -binary | base64"
             fullWidth
           />
@@ -227,7 +229,7 @@ function EditDialog(props) {
             margin="dense"
             label="Flatcar Action SHA256"
             type="text"
-            required={true}
+            required
             helperText="Tip: cat update.gz | openssl dgst -sha256 -binary | base64"
             fullWidth
           />
@@ -311,11 +313,11 @@ function EditDialog(props) {
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
       <DialogTitle>{ isCreation ? 'Add Package' : 'Edit Package' }</DialogTitle>
       <Formik
-          initialValues={initialValues}
-          onSubmit={handleSubmit}
-          validationSchema={validation}
-          render={renderForm}
-        />
+        initialValues={initialValues}
+        onSubmit={handleSubmit}
+        validationSchema={validation}
+        render={renderForm}
+      />
     </Dialog>
   );
 }

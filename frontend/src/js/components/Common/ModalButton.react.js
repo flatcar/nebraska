@@ -43,7 +43,7 @@ function ModalButton(props) {
 
   // @todo: verify whether aria-label should be more specific (in which
   // case it should be set from the caller).
-  return(
+  return (
     <div>
       <Fab size="small" aria-label="add" onClick={open}>
         <AddIcon />

@@ -44,7 +44,7 @@ export function ColorPickerButton(props) {
       <IconButton className={classes.iconButton} onClick={handleColorButtonClick}>
         {props.children ?
           React.cloneElement(props.children, componentProps)
-        :
+          :
           <ChannelAvatar color={channelColor} />
         }
       </IconButton>

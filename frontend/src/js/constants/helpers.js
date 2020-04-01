@@ -50,10 +50,10 @@ export function makeLocaleTime(timestamp, opts={}) {
   const formattedDate = date.toLocaleDateString('default', dateFormat);
   const timeFormat = date.toLocaleString('default', { hour: '2-digit', minute: '2-digit' });
 
-  if(useDate && showTime) {
+  if (useDate && showTime) {
     return `${formattedDate} ${timeFormat}`;
   }
-  if(useDate) {
+  if (useDate) {
     return formattedDate;
   }
   return timeFormat;

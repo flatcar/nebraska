@@ -81,14 +81,15 @@ class List extends React.Component {
 
     const appToUpdate =  applications && this.state.updateAppIDModal ? _.findWhere(applications, {id: this.state.updateAppIDModal}) : null;
 
-    return(
+    return (
       <Paper>
         <ListHeader
           title="Applications"
           actions={[
             <ModalButton
               modalToOpen="AddApplicationModal"
-              data={{applications: applications}} />
+              data={{applications: applications}}
+            />
           ]}
         />
         <MuiList>
@@ -98,7 +99,8 @@ class List extends React.Component {
           <EditDialog
             data={appToUpdate}
             show={this.state.updateAppModalVisible}
-            onHide={this.closeUpdateAppModal} />
+            onHide={this.closeUpdateAppModal}
+          />
         }
       </Paper>
     );

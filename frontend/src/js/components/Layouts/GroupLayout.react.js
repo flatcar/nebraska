@@ -70,7 +70,7 @@ class GroupLayout extends React.Component {
 
     const groupToUpdate = _.findWhere(groups, {id: this.state.groupID});
 
-    return(
+    return (
       <div>
         <SectionHeader
           title={groupName}
