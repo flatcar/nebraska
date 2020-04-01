@@ -7,11 +7,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import _ from 'underscore';
+import timeIntervals from '../../constants/timeInterval';
 import { applicationsStore } from '../../stores/Stores';
 import ChannelItem from '../Channels/Item.react';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
 import ListHeader from '../Common/ListHeader';
 import MoreMenu from '../Common/MoreMenu';
+import TimeIntervalLinks from '../Common/TimeIntervalLinks';
 import InstanceStatusArea from '../Instances/Charts';
 import { StatusCountTimeline, VersionCountTimeline } from './Charts';
 
@@ -27,6 +29,8 @@ const useStyles = makeStyles({
 function ItemExtended(props) {
   const [application, setApplication] = React.useState(null);
   const [group, setGroup] = React.useState(null);
+  const [versionChartSelectedDuration, setVersionChartSelectedDuration] = React.useState(timeIntervals[0]);
+  const [statusChartDuration, setStatusChartDuration] = React.useState(timeIntervals[0]);
   const classes = useStyles();
   function onChange() {
     const app = applicationsStore.getCachedApplication(props.appID);
@@ -49,7 +53,12 @@ function ItemExtended(props) {
   function updateGroup() {
     props.handleUpdateGroup(props.groupId, props.appID);
   }
-
+  function updateVersionChart(duration){
+    setVersionChartSelectedDuration(duration);
+  }
+  function updateStatusChart(duration){
+    setStatusChartDuration(duration);
+  }
   React.useEffect(() => {
     applicationsStore.addChangeListener(onChange);
     onChange();
@@ -170,9 +179,16 @@ function ItemExtended(props) {
                 container
                 direction="column"
               >
-                <ListHeader title="Version Breakdown" />
+                <Grid container alignItems="center" spacing={10}>
+                  <Grid item>
+                    <ListHeader title="Version Breakdown" />
+                  </Grid>
+                  <Grid item>
+                    <TimeIntervalLinks intervalChangeHandler={updateVersionChart}/>
+                  </Grid>
+                </Grid>
                 <Box padding="1em">
-                  <VersionCountTimeline group={group} />
+                  <VersionCountTimeline group={group} duration={versionChartSelectedDuration}/>
                 </Box>
               </Grid>
               <Grid
@@ -182,9 +198,16 @@ function ItemExtended(props) {
                 container
                 direction="column"
               >
-                <ListHeader title="Status Breakdown" />
+                <Grid container alignItems="center" spacing={10}>
+                  <Grid item>
+                    <ListHeader title="Status Breakdown" />
+                  </Grid>
+                  <Grid item>
+                    <TimeIntervalLinks intervalChangeHandler={updateStatusChart}/>
+                  </Grid>
+                </Grid>
                 <Box padding="1em">
-                  <StatusCountTimeline group={group} />
+                  <StatusCountTimeline group={group} duration={statusChartDuration}/>
                 </Box>
               </Grid>
             </Grid>

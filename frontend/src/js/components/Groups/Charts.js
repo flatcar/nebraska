@@ -9,16 +9,18 @@ import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts'
 import semver from 'semver';
 import _ from 'underscore';
 import { cleanSemverVersion, getMinuteDifference, makeColorsForVersions, makeLocaleTime } from '../../constants/helpers';
-import { applicationsStore, instancesStore } from '../../stores/Stores';
+import { applicationsStore, groupChartStore, instancesStore } from '../../stores/Stores';
 import Loader from '../Common/Loader';
 import SimpleTable from '../Common/SimpleTable';
 import makeStatusDefs from '../Instances/StatusDefs';
 
 function TimelineChart(props) {
-  const {width = 500, height = 400, interpolation = 'monotone'} = props;
+  const { width = 500, height = 400, interpolation = 'monotone' } = props;
   let ticks = {};
 
-  function getTickValues(tickCount) {
+  function getTickValues() {
+    let tickCount=4;
+    let dateFormat={useDate: false};
     const startTs = new Date(props.data[0].timestamp);
     const endTs = new Date(props.data[props.data.length - 1].timestamp);
     const lengthMinutes = getMinuteDifference(endTs, startTs);
@@ -29,15 +31,11 @@ function TimelineChart(props) {
     ticks = {};
 
     // If it's the same day, just add a tick every quarter.
-    if (lengthMinutes / 60 < 24) {
-      for (let i = 0; i < 4; i++) {
-        const index = lengthMinutes / 4 * i;
-        ticks[index] = makeLocaleTime(props.data[index].timestamp, {useDate: false});
-      }
-
-      return ticks;
+    if (lengthMinutes === 7*24*60)
+    {
+      tickCount = 7;
+      dateFormat = {useDate:true, showTime:false};
     }
-
     // Set up a tick marking the 0 hours of the day contained in the range
     const nextDay = new Date(startTs);
     nextDay.setHours(24, 0, 0, 0);
@@ -63,17 +61,16 @@ function TimelineChart(props) {
 
         const tick = getMinuteDifference(tickDate, startTs) * dimension / lengthMinutes;
         // Show only the time.
-        ticks[tick] = makeLocaleTime(tickDate, {useDate: false});
+        ticks[tick] = makeLocaleTime(tickDate, dateFormat);
       }
     }
     // The midnight tick just gets the date, not the hours (since they're zero)
-    ticks[midnightTick] = makeLocaleTime(midnightDay, {showTime: false});
-
+    ticks[midnightTick] = makeLocaleTime(midnightDay, { showTime: false });
     return ticks;
   }
 
   function TimelineTooltip(props) {
-    const {label, data} = props;
+    const { label, data } = props;
     return (
       <div className="custom-tooltip">
         <Paper>
@@ -86,7 +83,6 @@ function TimelineChart(props) {
       </div>
     );
   }
-
   return (
     <AreaChart
       width={width}
@@ -127,6 +123,7 @@ function TimelineChart(props) {
 
 export function VersionCountTimeline(props) {
   const [selectedEntry, setSelectedEntry] = React.useState(-1);
+  const { duration } = props;
   const [timelineChartData, setTimelineChartData] = React.useState({
     data: [],
     keys: [],
@@ -268,9 +265,39 @@ export function VersionCountTimeline(props) {
 
   // Make the timeline data again when needed.
   React.useEffect(() => {
+    function getVersionTimeline(group) {
+      // Check if we should update the timeline or it's too early.
+      const lastUpdate = new Date(timeline.lastUpdate);
+      const cachedVersionChartData=groupChartStore.getVersionChartData(duration);
+      if (duration!=='1 hour' && cachedVersionChartData){
+        setTimeline({
+          timeline: cachedVersionChartData,
+          lastUpdate: lastUpdate.toUTCString(),
+        });
+        makeChartData(group, cachedVersionChartData || []);
+        setSelectedEntry(-1);
+      } else {
+        setTimelineChartData({data:[], keys:[], colors:[]});
+        applicationsStore.getGroupVersionCountTimeline(group.application_id, group.id, duration)
+          .done(versionCountTimeline => {
+            if (duration!=='1 hour'){
+              groupChartStore.setVersionChartData(duration, versionCountTimeline);
+            }
+            setTimeline({
+              timeline: versionCountTimeline,
+              lastUpdate: lastUpdate.toUTCString(),
+            });
+            makeChartData(group, versionCountTimeline || []);
+            setSelectedEntry(-1);
+          })
+          .fail(error => {
+            console.log('Error getting version count timeline', error);
+          });
+      }
+    }
     getVersionTimeline(props.group);
   },
-  [props.group, timeline]);
+    [duration]);
 
   return (
     <Grid container alignItems="center" spacing={2}>
@@ -287,7 +314,7 @@ export function VersionCountTimeline(props) {
       <Grid item xs={12} container>
         <Grid item xs={12}>
           <Box width={500}>
-            { selectedEntry !== -1 ?
+            {selectedEntry !== -1 ?
               <React.Fragment>
                 <Typography component="span">
                   Showing for:
@@ -295,7 +322,7 @@ export function VersionCountTimeline(props) {
                 &nbsp;
                 <Chip
                   label={getSelectedTime()}
-                  onDelete={() => {setSelectedEntry(-1);}}
+                  onDelete={() => { setSelectedEntry(-1); }}
                 />
               </React.Fragment>
               :
@@ -309,7 +336,7 @@ export function VersionCountTimeline(props) {
         <Grid item xs={12}>
           <SimpleTable
             emptyMessage="No data to show for this time point."
-            columns={{version: 'Version', instances: 'Count', percentage: 'Percentage'}}
+            columns={{ version: 'Version', instances: 'Count', percentage: 'Percentage' }}
             instances={getInstanceCount(selectedEntry)}
           />
         </Grid>
@@ -320,6 +347,7 @@ export function VersionCountTimeline(props) {
 
 export function StatusCountTimeline(props) {
   const [selectedEntry, setSelectedEntry] = React.useState(-1);
+  const { duration } = props;
   const [timelineChartData, setTimelineChartData] = React.useState({
     data: [],
     keys: [],
@@ -375,7 +403,6 @@ export function StatusCountTimeline(props) {
     if (Object.keys(timeline).length === 0) {
       return [];
     }
-
     return Object.keys(Object.values(timeline)[0]).filter(status => status !== 0);
   }
 
@@ -461,9 +488,36 @@ export function StatusCountTimeline(props) {
 
   // Make the timeline data again when needed.
   React.useEffect(() => {
+    function getStatusTimeline(group) {
+      const statusChartData=groupChartStore.getStatusChartData(duration);
+      if (duration!=='1 hour' && statusChartData){
+        setTimeline({
+          timeline: statusChartData,
+          lastUpdate: new Date().toUTCString(),
+        });
+        makeChartData(statusChartData || []);
+        setSelectedEntry(-1);
+      } else {
+        setTimelineChartData({data:[], keys:[], colors:[]});
+        applicationsStore.getGroupStatusCountTimeline(group.application_id, group.id, duration)
+          .done(statusCountTimeline => {
+            groupChartStore.setStatusChartData(duration, statusCountTimeline);
+            setTimeline({
+              timeline: statusCountTimeline,
+              lastUpdate: new Date().toUTCString(),
+            });
+
+            makeChartData(statusCountTimeline || []);
+            setSelectedEntry(-1);
+          })
+          .fail(error => {
+            console.log('Error getting status count timeline', error);
+          });
+      }
+    }
     getStatusTimeline(props.group);
   },
-  [props.group, timeline]);
+    [props.duration]);
 
   return (
     <Grid container alignItems="center" spacing={2}>
@@ -481,7 +535,7 @@ export function StatusCountTimeline(props) {
       <Grid item xs={12} container>
         <Grid item xs={12}>
           <Box width={500}>
-            { selectedEntry !== -1 ?
+            {selectedEntry !== -1 ?
               <React.Fragment>
                 <Typography component="span">
                   Showing for:
@@ -489,12 +543,12 @@ export function StatusCountTimeline(props) {
                 &nbsp;
                 <Chip
                   label={getSelectedTime()}
-                  onDelete={() => {setSelectedEntry(-1);}}
+                  onDelete={() => { setSelectedEntry(-1); }}
                 />
               </React.Fragment>
               :
               <Typography>
-                Showing data for the last hour (click the chart to choose a different time point).
+                Showing data for the {duration} (click the interval to choose a different time point).
               </Typography>
             }
           </Box>
@@ -502,7 +556,7 @@ export function StatusCountTimeline(props) {
         <Grid item xs={12}>
           <SimpleTable
             emptyMessage="No data to show for this time point."
-            columns={{status: 'Status', version: 'Version', instances: 'Instances'}}
+            columns={{ status: 'Status', version: 'Version', instances: 'Instances' }}
             instances={getInstanceCount(selectedEntry)}
           />
         </Grid>
