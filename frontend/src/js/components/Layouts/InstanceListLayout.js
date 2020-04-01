@@ -40,25 +40,26 @@ export default function InstanceLayout(props) {
       <SectionHeader
         title="Instances"
         breadcrumbs={[
-        {
+          {
             path: '/apps',
             label: 'Applications'
-        },
-        {
+          },
+          {
             path: `/apps/${appID}`,
             label: applicationName
-        },
-        {
+          },
+          {
             path: `/apps/${appID}/groups/${groupID}`,
             label: groupName
-        }
+          }
         ]}
       />
       { group === null ? <Loader />
-      : <List
-          application={application}
-          group={group}
-        />
+        :
+      <List
+        application={application}
+        group={group}
+      />
       }
     </React.Fragment>
   );

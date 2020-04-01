@@ -26,7 +26,7 @@ function Table(props) {
     }
   }
 
-  return(
+  return (
     <MuiTable>
       <TableHead>
         <TableRow>
@@ -40,14 +40,14 @@ function Table(props) {
       <TableBody>
         {props.instances.map((instance, i) =>
           <Item
-          key={'instance_' + i}
-          instance={instance}
-          lastVersionChannel={lastVersionChannel}
-          versionNumbers={versionNumbers}
-          selected={selectedInstance === instance.id}
-          onToggle={onItemToggle}
-        />
-      )}
+            key={'instance_' + i}
+            instance={instance}
+            lastVersionChannel={lastVersionChannel}
+            versionNumbers={versionNumbers}
+            selected={selectedInstance === instance.id}
+            onToggle={onItemToggle}
+          />
+        )}
       </TableBody>
     </MuiTable>
   );

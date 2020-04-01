@@ -116,12 +116,12 @@ function EditDialog(props){
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
       <DialogTitle>{isCreation ? 'Add Application' : 'Update Application'}</DialogTitle>
       <Formik
-          initialValues={{ name: props.data.name,
-                           description: props.data.description }}
-          onSubmit={handleSubmit}
-          validationSchema={validation}
-          render={renderForm}
-        />
+        initialValues={{ name: props.data.name,
+                         description: props.data.description }}
+        onSubmit={handleSubmit}
+        validationSchema={validation}
+        render={renderForm}
+      />
     </Dialog>
   );
 }

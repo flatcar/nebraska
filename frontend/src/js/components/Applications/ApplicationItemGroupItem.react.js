@@ -14,7 +14,7 @@ function ApplicationItemGroupItem(props) {
   const classes = useStyles();
   const instances_total = props.group.instances_stats.total ? '(' + props.group.instances_stats.total + ')' : '';
 
-  return(
+  return (
     <Link
       className={classes.groupLink}
       to={{pathname: `/apps/${props.group.application_id}/groups/${props.group.id}`}}

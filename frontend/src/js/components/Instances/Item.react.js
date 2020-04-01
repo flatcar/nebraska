@@ -77,7 +77,7 @@ function Item(props) {
 
   const instancePath = `/apps/${appID}/groups/${groupID}/instances/${instanceID}`;
 
-  return(
+  return (
     <React.Fragment>
       <TableRow>
         <TableCell>

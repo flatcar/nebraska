@@ -52,7 +52,7 @@ class ApplicationLayout extends React.Component {
       appName = application.name;
     }
 
-    return(
+    return (
       <div>
         <SectionHeader
           title={appName}
@@ -66,7 +66,8 @@ class ApplicationLayout extends React.Component {
         <Grid
           container
           spacing={1}
-          justify="space-between">
+          justify="space-between"
+        >
           <Grid item xs={8}>
             <GroupsList appID={this.state.appID} />
           </Grid>
@@ -75,7 +76,8 @@ class ApplicationLayout extends React.Component {
               container
               direction="column"
               alignItems="stretch"
-              spacing={2}>
+              spacing={2}
+            >
               <Grid item xs={12}>
                 <ChannelsList appID={this.state.appID} />
               </Grid>

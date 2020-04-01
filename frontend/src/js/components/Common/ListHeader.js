@@ -13,24 +13,25 @@ export default function ListHeader(props) {
   const classes = useStyles();
   const actions = props.actions || [];
 
-  return (<Grid
-            container
-            alignItems="flex-start"
-            justify="space-between"
-            className={classes.sectionHeader}
-          >
-    {props.title &&
-    <Grid item>
-      <Typography variant="h5">{props.title}</Typography>
-    </Grid>
-            }
-    {actions &&
+  return (
+    <Grid
+      container
+      alignItems="flex-start"
+      justify="space-between"
+      className={classes.sectionHeader}
+    >
+      {props.title &&
+      <Grid item>
+        <Typography variant="h5">{props.title}</Typography>
+      </Grid>
+      }
+      {actions &&
               actions.map((action, i) =>
                 <Grid item key={i}>
                   {action}
                 </Grid>
               )
-            }
-  </Grid>
+      }
+    </Grid>
   );
 }

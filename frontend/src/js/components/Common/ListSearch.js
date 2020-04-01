@@ -18,11 +18,11 @@ export default function SearchInput(props) {
   return (
     <div className={classes.container}>
       <Input
-          className={classes.input}
-          inputProps={{
-            'aria-label': 'description',
-          }}
-         {...props}
+        className={classes.input}
+        inputProps={{
+          'aria-label': 'description',
+        }}
+        {...props}
       />
     </div>
   );

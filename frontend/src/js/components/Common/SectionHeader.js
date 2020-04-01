@@ -29,12 +29,12 @@ export default function SectionHeader(props) {
           <Breadcrumbs aria-label="breadcrumbs">
             {breadcrumbs &&
               breadcrumbs.map(({path=null, label}, index) => {
-              if (path)
-                return <Link to={path} component={RouterLink} key={index}>{label}</Link>;
-              else
-                return <Typography key={index}>{label}</Typography>;
+                if (path)
+                  return <Link to={path} component={RouterLink} key={index}>{label}</Link>;
+                else
+                  return <Typography key={index}>{label}</Typography>;
               }
-            )}
+              )}
             {title &&
               <Typography>{title}</Typography>
             }

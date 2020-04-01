@@ -117,9 +117,10 @@ class List extends React.Component {
         </MuiList>
         {groupToUpdate &&
         <EditDialog
-            data={{group: groupToUpdate, channels: channels}}
-            show={this.state.updateGroupModalVisible}
-            onHide={this.closeUpdateGroupModal} />
+          data={{group: groupToUpdate, channels: channels}}
+          show={this.state.updateGroupModalVisible}
+          onHide={this.closeUpdateGroupModal}
+        />
         }
       </Paper>
     );

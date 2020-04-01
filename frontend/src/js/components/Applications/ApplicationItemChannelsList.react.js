@@ -16,7 +16,7 @@ function ApplicationItemChannelsList(props) {
     );
   }
 
-  return(
+  return (
     <Grid
       container
       justify="space-between"

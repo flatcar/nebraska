@@ -100,7 +100,8 @@ export default function Header() {
               <CreateOutlined />
             </ListItemIcon>
             <ListItemText
-              primary="Manage Access"/>
+              primary="Manage Access"
+            />
           </MenuItem>
         </Menu>
       </Toolbar>

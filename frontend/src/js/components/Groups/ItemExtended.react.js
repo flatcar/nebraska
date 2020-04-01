@@ -13,7 +13,7 @@ import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
 import ListHeader from '../Common/ListHeader';
 import MoreMenu from '../Common/MoreMenu';
 import InstanceStatusArea from '../Instances/Charts';
-import { StatusCountTimeline,VersionCountTimeline } from './Charts';
+import { StatusCountTimeline, VersionCountTimeline } from './Charts';
 
 const useStyles = makeStyles({
   link: {
@@ -77,10 +77,11 @@ function ItemExtended(props) {
               >
                 <MoreMenu options={[
                   {
-                   'label': 'Edit',
-                   'action': updateGroup,
+                    'label': 'Edit',
+                    'action': updateGroup,
                   }
-                ]} />
+                ]}
+                />
               </CardHeader>
             </Grid>
             {group &&
@@ -96,7 +97,7 @@ function ItemExtended(props) {
                       <CardFeatureLabel>Channel:</CardFeatureLabel>
                       {_.isEmpty(group.channel) ?
                         <CardLabel>No channel provided</CardLabel>
-                      :
+                        :
                         <ChannelItem
                           channel={group.channel}
                         />
@@ -136,14 +137,14 @@ function ItemExtended(props) {
               title="Update Progress"
               actions={group.instances_stats.total > 0 ? [
                 <Link
-                    className={classes.link}
-                    to={{pathname: `/apps/${props.appID}/groups/${props.groupID}/instances`}}
-                    component={RouterLink}
-                  >
-                    See instances
+                  className={classes.link}
+                  to={{pathname: `/apps/${props.appID}/groups/${props.groupID}/instances`}}
+                  component={RouterLink}
+                >
+                  See instances
                 </Link>
-                ]
-              :
+              ]
+                :
                 []
               }
             />

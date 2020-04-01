@@ -154,7 +154,7 @@ function VersionProgressBar(props) {
               layout="vertical"
             />
           );
-          })
+        })
         }
       </BarChart>
     </ResponsiveContainer>

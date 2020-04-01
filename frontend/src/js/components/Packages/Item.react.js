@@ -87,7 +87,7 @@ function Item(props) {
                 {channel.name}
               </span>
               );
-              })
+            })
             }
           </Grid>
         }
@@ -119,9 +119,9 @@ function Item(props) {
       />
       <ListItemSecondaryAction>
         <MoreMenu options={[
-            {label: 'Edit', action: updatePackage},
-            {label: 'Delete', action: deletePackage}
-          ]}
+          {label: 'Edit', action: updatePackage},
+          {label: 'Delete', action: deletePackage}
+        ]}
         />
       </ListItemSecondaryAction>
     </ListItem>

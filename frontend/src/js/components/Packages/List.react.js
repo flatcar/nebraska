@@ -73,7 +73,7 @@ function List(props) {
         {application ?
           _.isEmpty(application.packages || []) ?
             <Empty>This application does not have any package yet</Empty>
-          :
+            :
             <React.Fragment>
               <MuiList>
                 {
@@ -92,7 +92,8 @@ function List(props) {
                 <EditDialog
                   data={{channels: application.channels, channel: packageToUpdate}}
                   show={packageToUpdate}
-                  onHide={onCloseEditDialog} />
+                  onHide={onCloseEditDialog}
+                />
               }
               <TablePagination
                 rowsPerPageOptions={[]}
@@ -109,7 +110,7 @@ function List(props) {
                 onChangePage={handleChangePage}
               />
             </React.Fragment>
-        :
+          :
             <Loader />
         }
       </Box>
