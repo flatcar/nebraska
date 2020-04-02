@@ -52,7 +52,7 @@ export function CardDescriptionLabel(props) {
 }
 
 export function CardLabel(props) {
-  const {labelStyle={}} = props;
+  const {labelStyle = {}} = props;
   const classes = useStyles(labelStyle);
   return (
     <Typography component='span' className={classes.label}>{props.children}</Typography>
@@ -87,7 +87,7 @@ export function CardHeader(props) {
             }
           </Grid>
           <Grid item xs>
-            <Typography className={classes.idLabel} arial-label="group-id"  noWrap>{props.cardId}</Typography>
+            <Typography className={classes.idLabel} arial-label="group-id" noWrap>{props.cardId}</Typography>
           </Grid>
           <Grid item xs={12}>
             <CardDescriptionLabel variant="h5">{props.cardDescription}</CardDescriptionLabel>

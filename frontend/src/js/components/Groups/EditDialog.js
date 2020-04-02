@@ -254,7 +254,7 @@ function EditDialog(props) {
       .required('Required');
   }
 
-  function maxCharacters(maxChars, required=false) {
+  function maxCharacters(maxChars, required = false) {
     let validation = Yup.string()
       .max(maxChars, 'Must be less than $maxChars characters');
 

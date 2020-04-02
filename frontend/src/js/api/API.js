@@ -134,7 +134,7 @@ class API {
 
   // Instances
 
-  static getInstances(applicationID, groupID, queryOptions={}) {
+  static getInstances(applicationID, groupID, queryOptions = {}) {
     let url = BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/instances';
 
     if (!_.isEmpty(queryOptions)) {

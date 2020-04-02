@@ -79,7 +79,7 @@ class List extends React.Component {
       }
     }
 
-    const appToUpdate =  applications && this.state.updateAppIDModal ? _.findWhere(applications, {id: this.state.updateAppIDModal}) : null;
+    const appToUpdate = applications && this.state.updateAppIDModal ? _.findWhere(applications, {id: this.state.updateAppIDModal}) : null;
 
     return (
       <Paper>

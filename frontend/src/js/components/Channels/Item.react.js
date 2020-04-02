@@ -10,7 +10,7 @@ import MoreMenu from '../Common/MoreMenu';
 import ChannelAvatar from './ChannelAvatar';
 
 function Item(props) {
-  const {channel, packages, handleUpdateChannel, showArch=true, ...others} = props;
+  const {channel, packages, handleUpdateChannel, showArch = true, ...others} = props;
   const name = channel.name;
   const version = channel.package ? cleanSemverVersion(channel.package.version) : 'No package';
 
