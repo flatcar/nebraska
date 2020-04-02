@@ -268,8 +268,8 @@ export function VersionCountTimeline(props) {
     function getVersionTimeline(group) {
       // Check if we should update the timeline or it's too early.
       const lastUpdate = new Date(timeline.lastUpdate);
-      const cachedVersionChartData=groupChartStore.getVersionChartData(duration);
-      if (duration!=='1 hour' && cachedVersionChartData){
+      const cachedVersionChartData=groupChartStore.getVersionChartData(duration.queryValue);
+      if (duration.displayValue!=='1 hour' && cachedVersionChartData){
         setTimeline({
           timeline: cachedVersionChartData,
           lastUpdate: lastUpdate.toUTCString(),
@@ -278,10 +278,10 @@ export function VersionCountTimeline(props) {
         setSelectedEntry(-1);
       } else {
         setTimelineChartData({data:[], keys:[], colors:[]});
-        applicationsStore.getGroupVersionCountTimeline(group.application_id, group.id, duration)
+        applicationsStore.getGroupVersionCountTimeline(group.application_id, group.id, duration.queryValue)
           .done(versionCountTimeline => {
-            if (duration!=='1 hour'){
-              groupChartStore.setVersionChartData(duration, versionCountTimeline);
+            if (duration.displayValue!=='1 hour'){
+              groupChartStore.setVersionChartData(duration.queryValue, versionCountTimeline);
             }
             setTimeline({
               timeline: versionCountTimeline,
@@ -489,8 +489,8 @@ export function StatusCountTimeline(props) {
   // Make the timeline data again when needed.
   React.useEffect(() => {
     function getStatusTimeline(group) {
-      const statusChartData=groupChartStore.getStatusChartData(duration);
-      if (duration!=='1 hour' && statusChartData){
+      const statusChartData=groupChartStore.getStatusChartData(duration.queryValue);
+      if (duration.displayValue!=='1 hour' && statusChartData){
         setTimeline({
           timeline: statusChartData,
           lastUpdate: new Date().toUTCString(),
@@ -499,9 +499,9 @@ export function StatusCountTimeline(props) {
         setSelectedEntry(-1);
       } else {
         setTimelineChartData({data:[], keys:[], colors:[]});
-        applicationsStore.getGroupStatusCountTimeline(group.application_id, group.id, duration)
+        applicationsStore.getGroupStatusCountTimeline(group.application_id, group.id, duration.queryValue)
           .done(statusCountTimeline => {
-            groupChartStore.setStatusChartData(duration, statusCountTimeline);
+            groupChartStore.setStatusChartData(duration.queryValue, statusCountTimeline);
             setTimeline({
               timeline: statusCountTimeline,
               lastUpdate: new Date().toUTCString(),
@@ -548,7 +548,7 @@ export function StatusCountTimeline(props) {
               </React.Fragment>
               :
               <Typography>
-                Showing data for the {duration} (click the interval to choose a different time point).
+                Showing data for the {duration.displayValue} (click the interval to choose a different time point).
               </Typography>
             }
           </Box>

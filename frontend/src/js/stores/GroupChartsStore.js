@@ -1,14 +1,14 @@
 export default class GroupChartsStore{
   constructor(){
-    this.VersionBreakdownChartData={};
-    this.StatusBreakdownChartData={};
+    this.VersionBreakdownChartData = {};
+    this.StatusBreakdownChartData = {};
   }
   setVersionChartData(key, data){
     if (this.VersionBreakdownChartData.hasOwnProperty(key))
     {
       return;
     }
-    this.VersionBreakdownChartData[key]=data;
+    this.VersionBreakdownChartData[key] = data;
   }
   getVersionChartData(key){
     return this.VersionBreakdownChartData[key];
@@ -17,7 +17,7 @@ export default class GroupChartsStore{
     if (this.StatusBreakdownChartData.hasOwnProperty(key)){
       return;
     }
-    this.StatusBreakdownChartData[key]=data;
+    this.StatusBreakdownChartData[key] = data;
   }
   getStatusChartData(key){
     return this.StatusBreakdownChartData[key];
