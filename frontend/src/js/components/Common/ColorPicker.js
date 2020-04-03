@@ -19,7 +19,7 @@ export function ColorPickerButton(props) {
   const [channelColor, setChannelColor] = React.useState(props.color);
   const [displayColorPicker, setDisplayColorPicker] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const {onColorPicked, componentColorProp = null} = props;
+  const {onColorPicked, componentColorProp=null} = props;
 
   const componentProps = {};
   componentProps[componentColorProp] = channelColor;

@@ -32,7 +32,7 @@ const LightTooltip = withStyles(theme => ({
 }))(Tooltip);
 
 function ProgressDoughnut(props) {
-  const {label, data, width = 100, height = 100, color = '#afafaf', icon} = props;
+  const {label, data, width=100, height=100, color='#afafaf', icon} = props;
   const [hoverData, setHoverData] = React.useState(null);
   const [showTooltip, setShowTooltip] = React.useState(false);
 
@@ -256,7 +256,7 @@ export default function InstanceStatusArea(props) {
             return (
               <Grid item key={i}>
                 <ProgressDoughnut
-                  data={count.map(({key, label = status}) => {
+                  data={count.map(({key, label=status}) => {
                     const statusLabel = statusDefs[label].label;
                     return {
                       value: instanceStats[key] / instanceStats['total'],

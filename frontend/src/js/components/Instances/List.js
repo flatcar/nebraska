@@ -114,7 +114,7 @@ function ListView(props) {
     applyFilters(newFilters);
   }
 
-  function applyFilters(_filters = {}) {
+  function applyFilters(_filters={}) {
     const newFilters = _filters || {status: '', version: ''};
     setFilters(newFilters);
 

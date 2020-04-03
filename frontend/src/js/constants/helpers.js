@@ -24,7 +24,7 @@ function makeColors() {
   colorScheme.forEach(color => {
     // We choose the shades beyond 300 because they should not be too
     // light (in order to improve contrast).
-    for (let i = 3; i <= 9; i += 2) {
+    for (let i = 3; i <= 9; i+=2) {
       colors.push(color[i * 100]);
     }
   });
@@ -44,7 +44,7 @@ export function getMinuteDifference(date1, date2) {
   return (date1 - date2) / 1000 / 60;
 }
 
-export function makeLocaleTime(timestamp, opts = {}) {
+export function makeLocaleTime(timestamp, opts={}) {
   const {useDate = true, showTime = true, dateFormat = {weekday: 'short', day: 'numeric'}} = opts;
   const date = new Date(timestamp);
   const formattedDate = date.toLocaleDateString('default', dateFormat);
@@ -59,7 +59,7 @@ export function makeLocaleTime(timestamp, opts = {}) {
   return timeFormat;
 }
 
-export function makeColorsForVersions(theme, versions, channel = null) {
+export function makeColorsForVersions(theme, versions, channel=null) {
   const versionColors = {};
   let colorIndex = 0;
   let latestVersion = null;

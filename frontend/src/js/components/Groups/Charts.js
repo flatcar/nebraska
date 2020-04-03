@@ -15,7 +15,7 @@ import SimpleTable from '../Common/SimpleTable';
 import makeStatusDefs from '../Instances/StatusDefs';
 
 function TimelineChart(props) {
-  const {width = 500, height = 400, interpolation = 'monotone'} = props;
+  const {width=500, height=400, interpolation='monotone'} = props;
   let ticks = {};
 
   function getTickValues(tickCount) {
@@ -31,7 +31,7 @@ function TimelineChart(props) {
     // If it's the same day, just add a tick every quarter.
     if (lengthMinutes / 60 < 24) {
       for (let i = 0; i < 4; i++) {
-        const index = lengthMinutes / 4 * i;
+        const index = lengthMinutes  / 4 * i;
         ticks[index] = makeLocaleTime(props.data[index].timestamp, {useDate: false});
       }
 
@@ -336,7 +336,7 @@ export function StatusCountTimeline(props) {
       const statusCount = {};
       Object.keys(status).forEach(st => {
         const values = status[st];
-        const count = Object.values(values).reduce((a, b) => a + b, 0);
+        const count = Object.values(values).reduce((a, b) => a+b, 0);
         statusCount[st] = count;
       });
 
@@ -426,7 +426,7 @@ export function StatusCountTimeline(props) {
     // Check if we should update the timeline or it's too early.
     const lastUpdate = new Date(timeline.lastUpdate);
     const currentDate = new Date();
-    if (Object.keys(timeline.timeline).length > 0 && getMinuteDifference(lastUpdate, currentDate) < 5) {
+    if (Object.keys(timeline.timeline).length > 0 && getMinuteDifference(lastUpdate, currentDate)  < 5) {
       return;
     }
 
