@@ -95,7 +95,7 @@ class List extends React.Component {
       entries = <Loader />;
     }
 
-    const groupToUpdate =  !_.isEmpty(groups) && this.state.updateGroupIDModal ? _.findWhere(groups, {id: this.state.updateGroupIDModal}) : null;
+    const groupToUpdate = !_.isEmpty(groups) && this.state.updateGroupIDModal ? _.findWhere(groups, {id: this.state.updateGroupIDModal}) : null;
 
     return (
       <Paper>

@@ -20,7 +20,7 @@ class InstancesStore extends Store {
     return cachedInstances;
   }
 
-  getInstances(applicationID, groupID, selectedInstance, queryOptions={}) {
+  getInstances(applicationID, groupID, selectedInstance, queryOptions = {}) {
     const application = this.instances.hasOwnProperty(applicationID) ? this.instances[applicationID] : this.instances[applicationID] = {};
 
     API.getInstances(applicationID, groupID, queryOptions).
