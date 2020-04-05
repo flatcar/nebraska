@@ -330,7 +330,7 @@ func durationToPostgresTimings(duration Duration) (string, string, error) {
 	case OneDay:
 		return "1days", "1 hour", nil
 	case OneHour:
-		return "1hour", "5 minute", nil
+		return "1hour", "15 minute", nil
 	default:
 		return "", "", fmt.Errorf("invalid duration enumeration value %d", duration)
 	}
