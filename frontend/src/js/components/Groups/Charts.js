@@ -19,8 +19,8 @@ function TimelineChart(props) {
   let ticks = {};
 
   function getTickValues() {
-    let tickCount=4;
-    let dateFormat={useDate: false};
+    let tickCount = 4;
+    let dateFormat = {useDate: false};
     const startTs = new Date(props.data[0].timestamp);
     const endTs = new Date(props.data[props.data.length - 1].timestamp);
     const lengthMinutes = getMinuteDifference(endTs, startTs);
@@ -31,7 +31,16 @@ function TimelineChart(props) {
     ticks = {};
 
     // If it's the same day, just add a tick every quarter.
-    if (lengthMinutes === 7*24*60)
+    if (lengthMinutes === 60){
+      for (let i = 0;i < 4;i++){
+        const minuteValue = lengthMinutes / 4 * i;
+        startTs.setMinutes(new Date(props.data[0].timestamp).getMinutes() + minuteValue);
+        ticks[i] = makeLocaleTime(startTs, {useDate:false});
+
+      }
+      return ticks;
+    }
+    if (lengthMinutes === 7 * 24 * 60)
     {
       tickCount = 7;
       dateFormat = {useDate:true, showTime:false};
@@ -100,7 +109,7 @@ function TimelineChart(props) {
         type="number"
         interval={0}
         domain={[0, 'dataMax']}
-        ticks={Object.keys(getTickValues(4))}
+        ticks={Object.keys(getTickValues())}
         tickFormatter={index => {
           return ticks[index];
         }}
