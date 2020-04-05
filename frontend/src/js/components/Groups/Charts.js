@@ -274,11 +274,12 @@ export function VersionCountTimeline(props) {
 
   // Make the timeline data again when needed.
   React.useEffect(() => {
+    let canceled = false;
     function getVersionTimeline(group) {
       // Check if we should update the timeline or it's too early.
       const lastUpdate = new Date(timeline.lastUpdate);
-      const cachedVersionChartData=groupChartStore.getVersionChartData(duration.queryValue);
-      if (duration.displayValue!=='1 hour' && cachedVersionChartData){
+      const cachedVersionChartData = groupChartStore.getVersionChartData(duration.queryValue);
+      if (duration.displayValue !== '1 hour' && cachedVersionChartData){
         setTimeline({
           timeline: cachedVersionChartData,
           lastUpdate: lastUpdate.toUTCString(),
@@ -289,15 +290,18 @@ export function VersionCountTimeline(props) {
         setTimelineChartData({data:[], keys:[], colors:[]});
         applicationsStore.getGroupVersionCountTimeline(group.application_id, group.id, duration.queryValue)
           .done(versionCountTimeline => {
-            if (duration.displayValue!=='1 hour'){
+            if (duration.displayValue !== '1 hour'){
               groupChartStore.setVersionChartData(duration.queryValue, versionCountTimeline);
             }
-            setTimeline({
-              timeline: versionCountTimeline,
-              lastUpdate: lastUpdate.toUTCString(),
-            });
-            makeChartData(group, versionCountTimeline || []);
-            setSelectedEntry(-1);
+            if (!canceled)
+            {
+              setTimeline({
+                timeline: versionCountTimeline,
+                lastUpdate: lastUpdate.toUTCString(),
+              });
+              makeChartData(group, versionCountTimeline || []);
+              setSelectedEntry(-1);
+            }
           })
           .fail(error => {
             console.log('Error getting version count timeline', error);
@@ -305,6 +309,7 @@ export function VersionCountTimeline(props) {
       }
     }
     getVersionTimeline(props.group);
+    return ()=>(canceled = true);
   },
     [duration]);
 
@@ -497,9 +502,11 @@ export function StatusCountTimeline(props) {
 
   // Make the timeline data again when needed.
   React.useEffect(() => {
+    let canceled = false;
     function getStatusTimeline(group) {
-      const statusChartData=groupChartStore.getStatusChartData(duration.queryValue);
-      if (duration.displayValue!=='1 hour' && statusChartData){
+
+      const statusChartData = groupChartStore.getStatusChartData(duration.queryValue);
+      if (duration.displayValue !== '1 hour' && statusChartData){
         setTimeline({
           timeline: statusChartData,
           lastUpdate: new Date().toUTCString(),
@@ -511,13 +518,15 @@ export function StatusCountTimeline(props) {
         applicationsStore.getGroupStatusCountTimeline(group.application_id, group.id, duration.queryValue)
           .done(statusCountTimeline => {
             groupChartStore.setStatusChartData(duration.queryValue, statusCountTimeline);
-            setTimeline({
-              timeline: statusCountTimeline,
-              lastUpdate: new Date().toUTCString(),
-            });
+            if (!canceled){
+              setTimeline({
+                timeline: statusCountTimeline,
+                lastUpdate: new Date().toUTCString(),
+              });
 
-            makeChartData(statusCountTimeline || []);
-            setSelectedEntry(-1);
+              makeChartData(statusCountTimeline || []);
+              setSelectedEntry(-1);
+            }
           })
           .fail(error => {
             console.log('Error getting status count timeline', error);
@@ -525,6 +534,7 @@ export function StatusCountTimeline(props) {
       }
     }
     getStatusTimeline(props.group);
+    return ()=>(canceled = true);
   },
     [props.duration]);
 
