@@ -26,9 +26,13 @@ function Item(props) {
   const date = props.instance.application.last_check_for_updates;
   const downloadingIcon = props.instance.statusInfo.spinning ? <img src={LoadingGif} /> : '';
   const statusIcon = props.instance.statusInfo.icon ? <i className={props.instance.statusInfo.icon}></i> : '';
-  const instanceLabel = props.instance.statusInfo.className ? <TableLabel>{statusIcon} {downloadingIcon} {props.instance.statusInfo.description}</TableLabel> : <div>&nbsp;</div>;
+  const instanceLabel = props.instance.statusInfo.className ?
+    <TableLabel>
+      {statusIcon} {downloadingIcon} {props.instance.statusInfo.description}
+    </TableLabel> : <div>&nbsp;</div>;
   const version = cleanSemverVersion(props.instance.application.version);
-  const currentVersionIndex = props.lastVersionChannel ? _.indexOf(props.versionNumbers, props.lastVersionChannel) : null;
+  const currentVersionIndex = props.lastVersionChannel ?
+    _.indexOf(props.versionNumbers, props.lastVersionChannel) : null;
   let versionStyle = 'default';
   const appID = props.instance.application.application_id;
   const groupID = props.instance.application.group_id;

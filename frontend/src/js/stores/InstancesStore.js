@@ -21,7 +21,8 @@ class InstancesStore extends Store {
   }
 
   getInstances(applicationID, groupID, selectedInstance, queryOptions = {}) {
-    const application = this.instances.hasOwnProperty(applicationID) ? this.instances[applicationID] : this.instances[applicationID] = {};
+    const application = this.instances.hasOwnProperty(applicationID) ?
+      this.instances[applicationID] : this.instances[applicationID] = {};
 
     API.getInstances(applicationID, groupID, queryOptions).
       done(instances => {
@@ -33,7 +34,8 @@ class InstancesStore extends Store {
               instance.statusHistory = instanceToCopyStatusHistory.statusHistory;
             }
           }
-          instance.statusInfo = this.getInstanceStatus(instance.application.status, instance.application.version);
+          instance.statusInfo = this.getInstanceStatus(instance.application.status,
+            instance.application.version);
           return instance.application.last_check_for_updates;
         });
         application[groupID] = sortedInstances.reverse();

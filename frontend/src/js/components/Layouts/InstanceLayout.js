@@ -6,7 +6,10 @@ import Details from '../Instances/Details';
 
 export default function InstanceLayout(props) {
   const {appID, groupID, instanceID} = props.match.params;
-  const [application, setApplication] = React.useState(applicationsStore.getCachedApplication(appID));
+  const [application, setApplication] = React.useState(
+    applicationsStore
+      .getCachedApplication(appID)
+  );
   const [group, setGroup] = React.useState(getGroupFromApplication(application));
   const [instance, setInstance] = React.useState(null);
 

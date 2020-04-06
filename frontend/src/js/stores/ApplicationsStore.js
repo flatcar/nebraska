@@ -43,7 +43,8 @@ class ApplicationsStore extends Store {
       done(application => {
         if (this.applications) {
           const applicationItem = application;
-          const index = this.applications ? _.findIndex(this.applications, {id: applicationID}) : null;
+          const index = this.applications ?
+            _.findIndex(this.applications, {id: applicationID}) : null;
           if (index >= 0) {
             this.applications[index] = applicationItem;
           } else {
@@ -102,7 +103,8 @@ class ApplicationsStore extends Store {
   deleteApplication(applicationID) {
     API.deleteApplication(applicationID).
       done(() => {
-        this.applications = _.without(this.applications, _.findWhere(this.applications, {id: applicationID}));
+        this.applications = _.without(this.applications,
+          _.findWhere(this.applications, {id: applicationID}));
         this.emitChange();
       });
   }
@@ -127,7 +129,8 @@ class ApplicationsStore extends Store {
     API.deleteGroup(applicationID, groupID).
       done(() => {
         const applicationToUpdate = _.findWhere(this.applications, {id: applicationID});
-        const newGroups = _.without(applicationToUpdate.groups, _.findWhere(applicationToUpdate.groups, {id: groupID}));
+        const newGroups = _.without(applicationToUpdate.groups,
+          _.findWhere(applicationToUpdate.groups, {id: groupID}));
         applicationToUpdate.groups = newGroups;
         this.emitChange();
       });

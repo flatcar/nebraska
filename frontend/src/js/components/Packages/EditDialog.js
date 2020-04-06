@@ -301,7 +301,8 @@ function EditDialog(props) {
                      version: props.data.channel.version,
                      size: props.data.channel.size,
                      hash: props.data.channel.hash,
-                     channelsBlacklist: props.data.channel.channels_blacklist ? props.data.channel.channels_blacklist : [],
+                     channelsBlacklist: props.data.channel.channels_blacklist
+                       ? props.data.channel.channels_blacklist : [],
     };
 
     if (isFlatcarType(packageType)) {

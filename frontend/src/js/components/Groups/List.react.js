@@ -36,7 +36,11 @@ class List extends React.Component {
   }
 
   openUpdateGroupModal(appID, groupID) {
-    this.setState({updateGroupModalVisible: true, updateGroupIDModal: groupID, updateAppIDModal: appID});
+    this.setState({
+      updateGroupModalVisible: true,
+      updateGroupIDModal: groupID,
+      updateAppIDModal: appID
+    });
   }
 
   componentDidMount() {
@@ -83,11 +87,23 @@ class List extends React.Component {
         if (this.state.searchTerm) {
           entries = <Empty>No results found.</Empty>;
         } else {
-          entries = <Empty>There are no groups for this application yet.<br/><br/>Groups help you control how you want to distribute updates to a specific set of instances.</Empty>;
+          entries = <Empty>
+            There are no groups for this application yet.
+            <br/><br/>
+            Groups help you control how you want to distribute updates to
+            a specific set of instances.
+          </Empty>;
         }
       } else {
         entries = _.map(groups, (group, i) => {
-          return <Item key={'groupID_' + group.id} group={group} appName={name} channels={channels} handleUpdateGroup={this.openUpdateGroupModal} />;
+          return (
+            <Item
+              key={'groupID_' + group.id}
+              group={group}
+              appName={name}
+              channels={channels}
+              handleUpdateGroup={this.openUpdateGroupModal}
+            />);
         });
       }
 
@@ -95,7 +111,9 @@ class List extends React.Component {
       entries = <Loader />;
     }
 
-    const groupToUpdate = !_.isEmpty(groups) && this.state.updateGroupIDModal ? _.findWhere(groups, {id: this.state.updateGroupIDModal}) : null;
+    const groupToUpdate = !_.isEmpty(groups) &&
+      this.state.updateGroupIDModal ?
+      _.findWhere(groups, {id: this.state.updateGroupIDModal}) : null;
 
     return (
       <Paper>

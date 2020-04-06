@@ -6,7 +6,8 @@ import List from '../Instances/List';
 
 export default function InstanceLayout(props) {
   const {appID, groupID} = props.match.params;
-  const [application, setApplication] = React.useState(applicationsStore.getCachedApplication(appID));
+  const [application, setApplication] =
+    React.useState(applicationsStore.getCachedApplication(appID));
   const [group, setGroup] = React.useState(getGroupFromApplication(application));
 
   function onChange() {

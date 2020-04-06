@@ -20,7 +20,8 @@ class StatusHistoryItem extends React.Component {
   }
 
   fetchStatusFromStore() {
-    const status = instancesStore.getInstanceStatus(this.props.entry.status, this.props.entry.version);
+    const status = instancesStore
+      .getInstanceStatus(this.props.entry.status, this.props.entry.version);
     this.setState({status: status});
   }
 

@@ -214,7 +214,11 @@ function DetailsView(props) {
                 </Grid>
                 <Grid item xs={12}>
                   <CardFeatureLabel>Last Update Check:</CardFeatureLabel>&nbsp;
-                  {instance.statusInfo && <CardLabel>{makeLocaleTime(instance.statusInfo.created_ts)}</CardLabel>}
+                  {instance.statusInfo &&
+                  <CardLabel>
+                    {makeLocaleTime(instance.statusInfo.created_ts)}
+                  </CardLabel>
+                  }
                 </Grid>
                 <Grid item xs={12}><Divider className={classes.divider} /></Grid>
                 <Grid item xs={12}>

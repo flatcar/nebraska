@@ -60,7 +60,9 @@ class List extends React.Component {
     let entries = '';
 
     if (this.state.searchTerm) {
-      applications = applications.filter(app => app.name.toLowerCase().includes(this.state.searchTerm));
+      applications = applications.filter(app => app.name
+        .toLowerCase()
+        .includes(this.state.searchTerm));
     }
 
     if (_.isNull(applications)) {
@@ -70,16 +72,24 @@ class List extends React.Component {
         if (this.state.searchTerm) {
           entries = <Empty>No results found.</Empty>;
         } else {
-          entries = <Empty>Ops, it looks like you have not created any application yet..<br/><br/> Now is a great time to create your first one, just click on the plus symbol above.</Empty>;
+          entries = <Empty>Ops, it looks like you have not created any
+            application yet..<br/><br/> Now is a great time to create your
+            first one, just click on the plus symbol above.</Empty>;
         }
       } else {
         entries = _.map(applications, (application, i) => {
-          return <Item key={application.id} application={application} handleUpdateApplication={this.openUpdateAppModal} />;
+          return (
+            <Item key={application.id}
+              application={application}
+              handleUpdateApplication={this.openUpdateAppModal}
+            />);
         });
       }
     }
 
-    const appToUpdate = applications && this.state.updateAppIDModal ? _.findWhere(applications, {id: this.state.updateAppIDModal}) : null;
+    const appToUpdate = applications &&
+      this.state.updateAppIDModal ?
+      _.findWhere(applications, {id: this.state.updateAppIDModal}) : null;
 
     return (
       <Paper>
