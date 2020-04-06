@@ -18,7 +18,10 @@ import (
 	"github.com/kinvolk/nebraska/pkg/syncer"
 )
 
-const GithubAccessManagementURL = "https://github.com/settings/apps/authorizations"
+const (
+	GithubAccessManagementURL = "https://github.com/settings/apps/authorizations"
+	validityInterval          = "1 days"
+)
 
 // ClientConfig represents Nebraska's configuration of interest for the client.
 type ClientConfig struct {
@@ -153,7 +156,7 @@ func (ctl *controller) addApp(c *gin.Context) {
 		return
 	}
 
-	app, err = ctl.api.GetApp(app.ID)
+	app, err = ctl.api.GetApp(app.ID, validityInterval)
 	if err != nil {
 		logger.Error("addApp - getting added app", "error", err.Error(), "appID", app.ID)
 		httpError(c, http.StatusInternalServerError)
@@ -181,7 +184,7 @@ func (ctl *controller) updateApp(c *gin.Context) {
 		return
 	}
 
-	app, err = ctl.api.GetApp(app.ID)
+	app, err = ctl.api.GetApp(app.ID, validityInterval)
 	if err != nil {
 		logger.Error("updateApp - getting updated app", "error", err.Error(), "appID", app.ID)
 		httpError(c, http.StatusInternalServerError)
@@ -207,8 +210,12 @@ func (ctl *controller) deleteApp(c *gin.Context) {
 
 func (ctl *controller) getApp(c *gin.Context) {
 	appID := c.Params.ByName("app_id")
+	duration := c.Query("duration")
 
-	app, err := ctl.api.GetApp(appID)
+	if duration == "" {
+		duration = validityInterval
+	}
+	app, err := ctl.api.GetApp(appID, duration)
 	switch err {
 	case nil:
 		if err := json.NewEncoder(c.Writer).Encode(app); err != nil {

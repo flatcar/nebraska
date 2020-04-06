@@ -17,7 +17,7 @@ func TestAddApp(t *testing.T) {
 	newApp, err := a.AddApp(&Application{Name: "app1", TeamID: tTeam.ID})
 	assert.NoError(t, err)
 
-	newAppX, err := a.GetApp(newApp.ID)
+	newAppX, err := a.GetApp(newApp.ID, validityInterval)
 	assert.NoError(t, err)
 	assert.Equal(t, "app1", newAppX.Name)
 
@@ -51,8 +51,8 @@ func TestAddAppCloning(t *testing.T) {
 	clonedApp, err := a.AddAppCloning(&Application{Name: "app1", TeamID: tTeam.ID}, tApp.ID)
 	assert.NoError(t, err)
 
-	sourceApp, _ := a.GetApp(tApp.ID)
-	clonedAppX, _ := a.GetApp(clonedApp.ID)
+	sourceApp, _ := a.GetApp(tApp.ID, validityInterval)
+	clonedAppX, _ := a.GetApp(clonedApp.ID, validityInterval)
 	assert.Equal(t, len(sourceApp.Groups), len(clonedAppX.Groups))
 	assert.Equal(t, len(sourceApp.Channels), len(clonedAppX.Channels))
 
@@ -72,14 +72,14 @@ func TestUpdateApp(t *testing.T) {
 	err := a.UpdateApp(&Application{ID: tApp.ID, Name: "test_app_updated"})
 	assert.NoError(t, err)
 
-	app, _ := a.GetApp(tApp.ID)
+	app, _ := a.GetApp(tApp.ID, validityInterval)
 	assert.Equal(t, "test_app_updated", app.Name)
 	assert.Equal(t, "", app.Description, "Description set to empty string in last update as it wasn't provided")
 
 	err = a.UpdateApp(&Application{ID: tApp.ID, Name: "test_app", Description: "description_updated"})
 	assert.NoError(t, err)
 
-	app, _ = a.GetApp(tApp.ID)
+	app, _ = a.GetApp(tApp.ID, validityInterval)
 	assert.Equal(t, "test_app", app.Name)
 	assert.Equal(t, "description_updated", app.Description)
 
@@ -100,7 +100,7 @@ func TestDeleteApp(t *testing.T) {
 	err := a.DeleteApp(tApp.ID)
 	assert.NoError(t, err)
 
-	_, err = a.GetApp(tApp.ID)
+	_, err = a.GetApp(tApp.ID, validityInterval)
 	assert.Error(t, err, "Trying to get deleted app.")
 }
 
@@ -112,12 +112,12 @@ func TestGetApp(t *testing.T) {
 	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
 	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID})
 
-	app, err := a.GetApp(tApp.ID)
+	app, err := a.GetApp(tApp.ID, validityInterval)
 	assert.NoError(t, err)
 	assert.Equal(t, tApp.Name, app.Name)
 	assert.Equal(t, tChannel.Name, app.Channels[0].Name)
 
-	_, err = a.GetApp(uuid.New().String())
+	_, err = a.GetApp(uuid.New().String(), validityInterval)
 	assert.Error(t, err, "Trying to get non existent app.")
 }
 

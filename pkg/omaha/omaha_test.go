@@ -18,10 +18,11 @@ import (
 const (
 	testsDbURL string = "postgres://postgres@127.0.0.1:5432/nebraska_tests?sslmode=disable&connect_timeout=10"
 
-	reqVersion  string = "3"
-	reqPlatform string = "coreos"
-	reqSp       string = "linux"
-	reqArch     string = "x64"
+	reqVersion       string = "3"
+	reqPlatform      string = "coreos"
+	reqSp            string = "linux"
+	reqArch          string = "x64"
+	validityInterval string = "1 days"
 )
 
 func newForTest(t *testing.T) *api.API {
@@ -88,7 +89,7 @@ func TestAppNoUpdateForAppWithChannelAndPackageName(t *testing.T) {
 	defer a.Close()
 	h := NewHandler(a)
 
-	tAppFlatcar, _ := a.GetApp(flatcarAppID)
+	tAppFlatcar, _ := a.GetApp(flatcarAppID, validityInterval)
 	tPkgFlatcar640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "640.0.0", ApplicationID: tAppFlatcar.ID})
 	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppFlatcar.ID, PackageID: dat.NullStringFrom(tPkgFlatcar640.ID)})
 	tGroup, _ := a.AddGroup(&api.Group{Name: "Production", ApplicationID: tAppFlatcar.ID, ChannelID: dat.NullStringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
@@ -140,7 +141,7 @@ func TestAppRegistrationForAppWithChannelAndPackageName(t *testing.T) {
 	defer a.Close()
 	h := NewHandler(a)
 
-	tAppFlatcar, _ := a.GetApp(flatcarAppID)
+	tAppFlatcar, _ := a.GetApp(flatcarAppID, validityInterval)
 	tPkgFlatcar640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "640.0.0", ApplicationID: tAppFlatcar.ID})
 	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppFlatcar.ID, PackageID: dat.NullStringFrom(tPkgFlatcar640.ID)})
 	tGroup, _ := a.AddGroup(&api.Group{Name: "Production", ApplicationID: tAppFlatcar.ID, ChannelID: dat.NullStringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
@@ -168,7 +169,7 @@ func TestAppUpdateForAppWithChannelAndPackageName(t *testing.T) {
 	defer a.Close()
 	h := NewHandler(a)
 
-	tAppFlatcar, _ := a.GetApp(flatcarAppID)
+	tAppFlatcar, _ := a.GetApp(flatcarAppID, validityInterval)
 	tFilenameFlatcar := "flatcarupdate.tgz"
 	tPkgFlatcar640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Filename: dat.NullStringFrom(tFilenameFlatcar), Version: "99640.0.0", ApplicationID: tAppFlatcar.ID})
 	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppFlatcar.ID, PackageID: dat.NullStringFrom(tPkgFlatcar640.ID)})

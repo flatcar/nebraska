@@ -177,7 +177,7 @@ func (api *API) DeleteGroup(groupID string) error {
 func (api *API) GetGroup(groupID string) (*Group, error) {
 	var group Group
 
-	err := api.groupsQuery().
+	err := api.groupsQuery(validityInterval).
 		Where("id = $1", groupID).
 		QueryStruct(&group)
 
@@ -194,7 +194,7 @@ func (api *API) GetGroups(appID string, page, perPage uint64) ([]*Group, error) 
 
 	var groups []*Group
 
-	err := api.groupsQuery().
+	err := api.groupsQuery(validityInterval).
 		Where("application_id = $1", appID).
 		Paginate(page, perPage).
 		QueryStructs(&groups)
@@ -276,10 +276,10 @@ func (api *API) setGroupRolloutInProgress(groupID string, inProgress bool) error
 // query is meant to be extended later in the methods using it to filter by a
 // specific group id, all groups of a given app, specify how to query the rows
 // or their destination.
-func (api *API) groupsQuery() *dat.SelectDocBuilder {
+func (api *API) groupsQuery(duration string) *dat.SelectDocBuilder {
 	return api.dbR.
 		SelectDoc("*").
-		One("instances_stats", api.groupInstancesStatusQuery()).
+		One("instances_stats", api.groupInstancesStatusQuery(duration)).
 		One("channel", api.channelsQuery().Where("id = groups.channel_id")).
 		Many("version_breakdown", api.groupVersionBreakdownQuery()).
 		From("groups").
@@ -304,7 +304,14 @@ func (api *API) groupVersionBreakdownQuery() string {
 
 // groupInstancesStatusQuery returns a SQL query prepared to return a summary
 // of the status of the instances that belong to a given group.
-func (api *API) groupInstancesStatusQuery() string {
+func (api *API) groupInstancesStatusQuery(duration string) string {
+	var durationString string
+	if duration == validityInterval {
+		durationString = validityInterval
+	} else {
+		var durationEnumVal Duration = durationMap[duration]
+		durationString, _, _ = durationToPostgresTimings(durationEnumVal)
+	}
 	return fmt.Sprintf(`
 	SELECT
 		count(*) total,
@@ -319,7 +326,7 @@ func (api *API) groupInstancesStatusQuery() string {
 	FROM instance_application
 	WHERE group_id=groups.id AND last_check_for_updates > now() at time zone 'utc' - interval '%s' AND %s`,
 		InstanceStatusError, InstanceStatusUpdateGranted, InstanceStatusComplete, InstanceStatusInstalled,
-		InstanceStatusDownloaded, InstanceStatusDownloading, InstanceStatusOnHold, validityInterval, ignoreFakeInstanceCondition("instance_id"))
+		InstanceStatusDownloaded, InstanceStatusDownloading, InstanceStatusOnHold, durationString, ignoreFakeInstanceCondition("instance_id"))
 }
 func durationToPostgresTimings(duration Duration) (string, string, error) {
 	switch duration {
@@ -328,9 +335,9 @@ func durationToPostgresTimings(duration Duration) (string, string, error) {
 	case SevenDays:
 		return "7 days", "8 hour", nil
 	case OneDay:
-		return "1days", "1 hour", nil
+		return "1 days", "1 hour", nil
 	case OneHour:
-		return "1hour", "15 minute", nil
+		return "1 hour", "15 minute", nil
 	default:
 		return "", "", fmt.Errorf("invalid duration enumeration value %d", duration)
 	}

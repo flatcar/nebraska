@@ -51,7 +51,7 @@ func (api *API) AddAppCloning(app *Application, sourceAppID string) (*Applicatio
 	// NOTE: cloning operation is not transactional and something could go wrong
 
 	if sourceAppID != "" {
-		sourceApp, err := api.GetApp(sourceAppID)
+		sourceApp, err := api.GetApp(sourceAppID, validityInterval)
 		if err != nil {
 			return app, nil
 		}
@@ -115,10 +115,10 @@ func (api *API) DeleteApp(appID string) error {
 }
 
 // GetApp returns the application identified by the id provided.
-func (api *API) GetApp(appID string) (*Application, error) {
+func (api *API) GetApp(appID string, duration string) (*Application, error) {
 	var app Application
 
-	err := api.appsQuery().
+	err := api.appsQuery(duration).
 		Where("id = $1", appID).
 		QueryStruct(&app)
 
@@ -135,7 +135,7 @@ func (api *API) GetApps(teamID string, page, perPage uint64) ([]*Application, er
 
 	var apps []*Application
 
-	err := api.appsQuery().
+	err := api.appsQuery(validityInterval).
 		Where("team_id = $1", teamID).
 		Paginate(page, perPage).
 		QueryStructs(&apps)
@@ -147,11 +147,11 @@ func (api *API) GetApps(teamID string, page, perPage uint64) ([]*Application, er
 // This query is meant to be extended later in the methods using it to filter
 // by a specific application id, all applications that belong to a given team,
 // specify how to query the rows or their destination.
-func (api *API) appsQuery() *dat.SelectDocBuilder {
+func (api *API) appsQuery(duration string) *dat.SelectDocBuilder {
 	return api.dbR.
 		SelectDoc("id, name, description, created_ts").
 		One("instances", api.appInstancesCountQuery()).
-		Many("groups", api.groupsQuery().Where("application_id = application.id")).
+		Many("groups", api.groupsQuery(duration).Where("application_id = application.id")).
 		Many("channels", api.channelsQuery().Where("application_id = application.id")).
 		Many("packages", api.packagesQuery().Where("application_id = application.id")).
 		From("application").

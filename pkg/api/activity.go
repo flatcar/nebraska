@@ -213,7 +213,7 @@ func (api *API) postHipchat(class, severity int, version string, ctx *activityCo
 	var msg bytes.Buffer
 	var color string
 
-	app, _ := api.GetApp(ctx.appID)
+	app, _ := api.GetApp(ctx.appID, validityInterval)
 	fmt.Fprintf(&msg, "<b>%s</b> ", app.Name)
 
 	if ctx.groupID != "" {

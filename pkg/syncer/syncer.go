@@ -26,6 +26,7 @@ import (
 	"github.com/kinvolk/nebraska/pkg/api"
 )
 
+const validityInterval = "1 days"
 const (
 	flatcarUpdatesURL = "https://public.update.flatcar-linux.net/v1/update/"
 	flatcarAppID      = "{e96281a6-d1af-4bde-9a0a-97b76e56dc57}"
@@ -130,7 +131,7 @@ func (s *Syncer) Stop() {
 // Nebraska the last versions we know about for the different channels in the
 // Flatcar application and keeping track of some ids.
 func (s *Syncer) initialize() error {
-	flatcarApp, err := s.api.GetApp(flatcarAppID)
+	flatcarApp, err := s.api.GetApp(flatcarAppID, validityInterval)
 	if err != nil {
 		return err
 	}
