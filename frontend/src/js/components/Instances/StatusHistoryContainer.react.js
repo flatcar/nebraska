@@ -19,7 +19,10 @@ function StatusHistoryContainer(props) {
   let entries = '';
 
   if (_.isEmpty(props.statusHistory)) {
-    entries = <Empty>This instance hasn’t reported any events yet in the context of this application/group.</Empty>;
+    entries = (
+      <Empty>
+        This instance hasn’t reported any events yet in the context of this application/group.
+      </Empty>);
   } else {
     entries = <StatusHistoryList entries={props.statusHistory} />;
   }

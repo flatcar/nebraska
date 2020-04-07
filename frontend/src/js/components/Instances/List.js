@@ -239,7 +239,10 @@ function ListView(props) {
                   <Table
                     group={group}
                     channel={group.channel}
-                    instances={filteredInstances.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)}
+                    instances={
+                      filteredInstances
+                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    }
                   />
                   <TablePagination
                     rowsPerPageOptions={[10, 25, 50, 100]}

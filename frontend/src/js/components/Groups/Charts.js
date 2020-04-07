@@ -298,7 +298,10 @@ export function VersionCountTimeline(props) {
                 />
               </React.Fragment>
               :
-              <Typography>Showing for the last 24 hours (click the chart to choose a different time point).</Typography>
+              <Typography>
+                Showing for the last 24 hours
+                (click the chart to choose a different time point).
+              </Typography>
             }
           </Box>
         </Grid>
@@ -426,7 +429,8 @@ export function StatusCountTimeline(props) {
     // Check if we should update the timeline or it's too early.
     const lastUpdate = new Date(timeline.lastUpdate);
     const currentDate = new Date();
-    if (Object.keys(timeline.timeline).length > 0 && getMinuteDifference(lastUpdate, currentDate) < 5) {
+    if (Object.keys(timeline.timeline).length > 0 &&
+        getMinuteDifference(lastUpdate, currentDate) < 5) {
       return;
     }
 

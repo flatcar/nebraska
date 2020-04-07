@@ -117,7 +117,10 @@ function ItemExtended(props) {
                     </Grid>
                     <Grid item>
                       <CardFeatureLabel>Updates Policy:</CardFeatureLabel>&nbsp;
-                      <CardLabel>Max {group.policy_max_updates_per_period || 0} updates per {group.policy_period_interval || 0}</CardLabel>
+                      <CardLabel>
+                        Max {group.policy_max_updates_per_period || 0}
+                        updates per {group.policy_period_interval || 0}
+                      </CardLabel>
                     </Grid>
                     <Grid item>
                       <CardFeatureLabel>Updates Timeout:</CardFeatureLabel>&nbsp;

@@ -98,7 +98,9 @@ class List extends React.Component {
       packages = application.packages ? application.packages : [];
     }
 
-    const channelToUpdate = !_.isEmpty(channels) && this.state.updateChannelIDModal ? _.findWhere(channels, {id: this.state.updateChannelIDModal}) : null;
+    const channelToUpdate = !_.isEmpty(channels) &&
+      this.state.updateChannelIDModal ?
+      _.findWhere(channels, {id: this.state.updateChannelIDModal}) : null;
 
     return (
       <SectionPaper>

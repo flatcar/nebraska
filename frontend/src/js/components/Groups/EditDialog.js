@@ -142,7 +142,9 @@ function EditDialog(props) {
                   />
                 }
               />
-              <FormHelperText>Only update 1 instance at a time, and stop if an update fails.</FormHelperText>
+              <FormHelperText>
+                Only update 1 instance at a time, and stop if an update fails.
+              </FormHelperText>
             </Grid>
           </Grid>
           <Field

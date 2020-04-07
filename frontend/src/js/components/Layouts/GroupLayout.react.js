@@ -85,8 +85,16 @@ class GroupLayout extends React.Component {
             }
           ]}
         />
-        <GroupExtended appID={this.state.appID} groupID={this.state.groupID} handleUpdateGroup={this.openUpdateGroupModal}/>
-        <EditDialog data={{group: groupToUpdate, channels: channels}} show={this.state.updateGroupModalVisible} onHide={this.closeUpdateGroupModal} />
+        <GroupExtended
+          appID={this.state.appID}
+          groupID={this.state.groupID}
+          handleUpdateGroup={this.openUpdateGroupModal}
+        />
+        <EditDialog
+          data={{group: groupToUpdate, channels: channels}}
+          show={this.state.updateGroupModalVisible}
+          onHide={this.closeUpdateGroupModal}
+        />
       </div>
     );
   }

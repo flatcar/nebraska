@@ -77,7 +77,8 @@ class Item extends React.Component {
   }
 
   fetchEntryClassFromStore() {
-    const entryClass = activityStore.getActivityEntryClass(this.props.entry.class, this.props.entry);
+    const entryClass = activityStore
+      .getActivityEntryClass(this.props.entry.class, this.props.entry);
     this.setState({
       entryClass: entryClass
     });

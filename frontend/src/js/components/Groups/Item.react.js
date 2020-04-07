@@ -22,9 +22,12 @@ const useStyles = makeStyles(theme => ({
 function Item(props) {
   const classes = useStyles();
 
-  const version_breakdown = (props.group && props.group.version_breakdown) ? props.group.version_breakdown : [];
+  const version_breakdown = (props.group &&
+    props.group.version_breakdown) ? props.group.version_breakdown : [];
   const noInstancesLabel = 'None';
-  const instances_total = props.group.instances_stats ? (props.group.instances_stats.total || noInstancesLabel) : noInstancesLabel;
+  const instances_total = props.group.instances_stats ?
+    (props.group.instances_stats.total || noInstancesLabel)
+    : noInstancesLabel;
   const description = props.group.description || 'No description provided';
   const channel = props.group.channel || {};
 
@@ -100,7 +103,10 @@ function Item(props) {
             </Grid>
             <Grid item>
               <CardFeatureLabel>Rollout Policy:</CardFeatureLabel>&nbsp;
-              <CardLabel>Max {props.group.policy_max_updates_per_period} updates per {props.group.policy_period_interval}</CardLabel>
+              <CardLabel>
+                Max {props.group.policy_max_updates_per_period}
+                updates per {props.group.policy_period_interval}
+              </CardLabel>
             </Grid>
             <Grid item container>
               <Grid item xs={12}>
