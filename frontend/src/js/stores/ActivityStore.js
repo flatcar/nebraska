@@ -19,12 +19,12 @@ class ActivityStore extends Store {
   }
 
   getActivity() {
-    API.getActivity().
-      done(activity => {
+    API.getActivity()
+      .then(activity => {
         this.activity = this.sortActivityByDate(activity);
         this.emitChange();
-      }).
-      fail((error) => {
+      })
+      .catch((error) => {
         if (error.status === 404) {
           this.activity = [];
           this.emitChange();

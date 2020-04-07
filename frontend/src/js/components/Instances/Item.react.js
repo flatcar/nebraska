@@ -44,14 +44,14 @@ function Item(props) {
 
     if (!selected) {
       instancesStore.getInstanceStatusHistory(appID, groupID, instanceID)
-        .done(() => {
+        .then(() => {
           const cachedInstances = instancesStore.getCachedInstances(appID, groupID) || [];
           const instance = cachedInstances.find(({id}) => id === props.instance.id);
           if (instance)
             setStatusHistory(instance.statusHistory);
           props.onToggle(instanceID);
         })
-        .fail((error) => {
+        .catch((error) => {
           if (error.status === 404) {
             props.onToggle(instanceID);
           }

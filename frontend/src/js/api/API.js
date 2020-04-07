@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import PubSub from 'pubsub-js';
 import queryString from 'querystring';
 import _ from 'underscore';
@@ -7,20 +6,6 @@ const MAIN_PROGRESS_BAR = 'main_progress_bar';
 const BASE_URL = '/api';
 
 class API {
-
-  static logout() {
-    $.ajax({
-      type: 'GET',
-      url: BASE_URL + '/activity',
-      async: false,
-      username: 'admin',
-      password: 'invalid-password',
-      headers: { 'Authorization': 'Basic xxx' }
-    })
-      .fail(function(){
-        window.location = '/';
-      });
-  }
 
   // Applications
 
@@ -66,15 +51,12 @@ class API {
   }
 
   static createGroup(groupData) {
-    const applicationID = groupData.appID;
     const url = BASE_URL + '/apps/' + groupData.application_id + '/groups';
 
     return API.doRequest('POST', url, JSON.stringify(groupData));
   }
 
   static updateGroup(groupData) {
-    const keysToRemove = ['id', 'created_ts', 'version_breakdown', 'instances_stats', 'channel'];
-    const processedGroup = API.removeKeysFromObject(groupData, keysToRemove);
     const url = BASE_URL + '/apps/' + groupData.application_id + '/groups/' + groupData.id;
 
     return API.doRequest('PUT', url, JSON.stringify(groupData));
@@ -163,14 +145,6 @@ class API {
     return API.getJSON(url);
   }
 
-  // User
-
-  static updateUserPassword(userData) {
-    const url = BASE_URL + '/password';
-
-    return API.doRequest('PUT', url, JSON.stringify(userData));
-  }
-
   // Config
 
   static getConfig() {
@@ -188,20 +162,29 @@ class API {
   static getJSON(url) {
     PubSub.publish(MAIN_PROGRESS_BAR, 'add');
 
-    return $.getJSON(url).
-      always(() => { PubSub.publish(MAIN_PROGRESS_BAR, 'done'); });
+    return fetch(url)
+      .then((response) => response.json())
+      .finally(() => PubSub.publish(MAIN_PROGRESS_BAR, 'done') );
   }
 
   static doRequest(method, url, data) {
     PubSub.publish(MAIN_PROGRESS_BAR, 'add');
-
-    return $.ajax({
-      method: method,
-      url: url,
-      data: data,
-      dataType: 'json'
-    }).
-      always(() => { PubSub.publish(MAIN_PROGRESS_BAR, 'done'); });
+    let fetchConfigObject;
+    if (method === 'DELETE') {
+      fetchConfigObject = {
+        method
+      };
+      return fetch(url, fetchConfigObject)
+        .finally(() => PubSub.publish(MAIN_PROGRESS_BAR, 'done'));
+    } else {
+      fetchConfigObject = {
+        method,
+        body: data,
+      };
+    }
+    return fetch(url, fetchConfigObject)
+      .then((response) => response.json())
+      .finally(() => PubSub.publish(MAIN_PROGRESS_BAR, 'done'));
   }
 
 }

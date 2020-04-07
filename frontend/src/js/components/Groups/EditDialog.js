@@ -55,12 +55,12 @@ function EditDialog(props) {
       packageFunctionCall = applicationsStore.updateGroup(data);
     }
 
-    packageFunctionCall.
-      done(() => {
+    packageFunctionCall
+      .then(() => {
         props.onHide();
         actions.setSubmitting(false);
-      }).
-      fail(() => {
+      })
+      .catch(() => {
         actions.setSubmitting(false);
         actions.setStatus({statusMessage: 'Something went wrong. Check the form or try again later...'});
       });

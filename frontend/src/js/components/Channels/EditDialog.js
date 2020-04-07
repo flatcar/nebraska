@@ -56,12 +56,12 @@ function EditDialog(props) {
       channelFunctionCall = applicationsStore.updateChannel(data);
     }
 
-    channelFunctionCall.
-      done(() => {
+    channelFunctionCall
+      .then(() => {
         actions.setSubmitting(false);
         props.onHide();
-      }).
-      fail(() => {
+      })
+      .catch(() => {
         actions.setSubmitting(false);
         actions.setStatus({
           statusMessage: 'Something went wrong, or a channel with this name and architecture already exists. Check the form or try again later…'

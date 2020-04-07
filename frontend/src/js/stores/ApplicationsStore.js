@@ -25,12 +25,12 @@ class ApplicationsStore extends Store {
   }
 
   getApplications() {
-    API.getApplications().
-      done(applications => {
+    API.getApplications()
+      .then(applications => {
         this.applications = applications;
         this.emitChange();
-      }).
-      fail((error) => {
+      })
+      .catch((error) => {
         if (error.status === 404) {
           this.applications = [];
           this.emitChange();
@@ -39,8 +39,8 @@ class ApplicationsStore extends Store {
   }
 
   getApplication(applicationID) {
-    API.getApplication(applicationID).
-      done(application => {
+    API.getApplication(applicationID)
+      .then(application => {
         if (this.applications) {
           const applicationItem = application;
           const index = this.applications ?
@@ -68,8 +68,8 @@ class ApplicationsStore extends Store {
   }
 
   createApplication(data, clonedApplication) {
-    return API.createApplication(data, clonedApplication).
-      done(application => {
+    return API.createApplication(data, clonedApplication)
+      .then(application => {
         const applicationItem = application;
         this.applications.unshift(applicationItem);
         this.emitChange();
@@ -79,8 +79,8 @@ class ApplicationsStore extends Store {
   updateApplication(applicationID, data) {
     data.id = applicationID;
 
-    return API.updateApplication(data).
-      done(application => {
+    return API.updateApplication(data)
+      .then(application => {
         const applicationItem = application;
         const applicationToUpdate = _.findWhere(this.applications, {id: applicationItem.id});
 
@@ -91,8 +91,8 @@ class ApplicationsStore extends Store {
   }
 
   getAndUpdateApplication(applicationID) {
-    API.getApplication(applicationID).
-      done(application => {
+    API.getApplication(applicationID)
+      .then(application => {
         const applicationItem = application;
         const index = _.findIndex(this.applications, {id: applicationID});
         this.applications[index] = applicationItem;
@@ -102,7 +102,7 @@ class ApplicationsStore extends Store {
 
   deleteApplication(applicationID) {
     API.deleteApplication(applicationID).
-      done(() => {
+      then(() => {
         this.applications = _.without(this.applications,
           _.findWhere(this.applications, {id: applicationID}));
         this.emitChange();
@@ -112,8 +112,8 @@ class ApplicationsStore extends Store {
   // Groups
 
   createGroup(data) {
-    return API.createGroup(data).
-      done(group => {
+    return API.createGroup(data)
+      .then(group => {
         const groupItem = group;
         const applicationToUpdate = _.findWhere(this.applications, {id: groupItem.application_id});
         if (applicationToUpdate.groups) {
@@ -126,8 +126,8 @@ class ApplicationsStore extends Store {
   }
 
   deleteGroup(applicationID, groupID) {
-    API.deleteGroup(applicationID, groupID).
-      done(() => {
+    API.deleteGroup(applicationID, groupID)
+      .then(() => {
         const applicationToUpdate = _.findWhere(this.applications, {id: applicationID});
         const newGroups = _.without(applicationToUpdate.groups,
           _.findWhere(applicationToUpdate.groups, {id: groupID}));
@@ -137,8 +137,8 @@ class ApplicationsStore extends Store {
   }
 
   updateGroup(data) {
-    return API.updateGroup(data).
-      done(group => {
+    return API.updateGroup(data)
+      .then(group => {
         const groupItem = group;
         const applicationToUpdate = _.findWhere(this.applications, {id: groupItem.application_id});
         const index = _.findIndex(applicationToUpdate.groups, {id: groupItem.id});
@@ -148,8 +148,8 @@ class ApplicationsStore extends Store {
   }
 
   getGroup(applicationID, groupID) {
-    API.getGroup(applicationID, groupID).
-      done(group => {
+    API.getGroup(applicationID, groupID)
+      .then(group => {
         const groupItem = group;
         const applicationToUpdate = _.findWhere(this.applications, {id: groupItem.application_id});
         const index = _.findIndex(applicationToUpdate.groups, {id: groupItem.id});
@@ -184,23 +184,23 @@ class ApplicationsStore extends Store {
   // Channels
 
   createChannel(data) {
-    return API.createChannel(data).
-      done(channel => {
+    return API.createChannel(data)
+      .then(channel => {
         const channelItem = channel;
         this.getAndUpdateApplication(channelItem.application_id);
       });
   }
 
   deleteChannel(applicationID, channelID) {
-    API.deleteChannel(applicationID, channelID).
-      done(() => {
+    API.deleteChannel(applicationID, channelID)
+      .then(() => {
         this.getAndUpdateApplication(applicationID);
       });
   }
 
   updateChannel(data) {
-    return API.updateChannel(data).
-      done(channel => {
+    return API.updateChannel(data)
+      .then(channel => {
         const channelItem = channel;
         this.getAndUpdateApplication(channelItem.application_id);
       });
@@ -209,23 +209,23 @@ class ApplicationsStore extends Store {
   // Packages
 
   createPackage(data) {
-    return API.createPackage(data).
-      done(packageItem => {
+    return API.createPackage(data)
+      .then(packageItem => {
         const newpackage = packageItem;
         this.getAndUpdateApplication(newpackage.application_id);
       });
   }
 
   deletePackage(applicationID, packageID) {
-    API.deletePackage(applicationID, packageID).
-      done(() => {
+    API.deletePackage(applicationID, packageID)
+      .then(() => {
         this.getAndUpdateApplication(applicationID);
       });
   }
 
   updatePackage(data) {
-    return API.updatePackage(data).
-      done(packageItem => {
+    return API.updatePackage(data)
+      .then(packageItem => {
         const updatedpackage = packageItem;
         this.getAndUpdateApplication(updatedpackage.application_id);
       });
