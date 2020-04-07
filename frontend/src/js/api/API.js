@@ -8,20 +8,6 @@ const BASE_URL = '/api';
 
 class API {
 
-  static logout() {
-    $.ajax({
-      type: 'GET',
-      url: BASE_URL + '/activity',
-      async: false,
-      username: 'admin',
-      password: 'invalid-password',
-      headers: { 'Authorization': 'Basic xxx' }
-    })
-      .fail(function(){
-        window.location = '/';
-      });
-  }
-
   // Applications
 
   static getApplications() {
@@ -66,15 +52,12 @@ class API {
   }
 
   static createGroup(groupData) {
-    const applicationID = groupData.appID;
     const url = BASE_URL + '/apps/' + groupData.application_id + '/groups';
 
     return API.doRequest('POST', url, JSON.stringify(groupData));
   }
 
   static updateGroup(groupData) {
-    const keysToRemove = ['id', 'created_ts', 'version_breakdown', 'instances_stats', 'channel'];
-    const processedGroup = API.removeKeysFromObject(groupData, keysToRemove);
     const url = BASE_URL + '/apps/' + groupData.application_id + '/groups/' + groupData.id;
 
     return API.doRequest('PUT', url, JSON.stringify(groupData));
@@ -161,14 +144,6 @@ class API {
     const url = BASE_URL + '/activity' + query;
 
     return API.getJSON(url);
-  }
-
-  // User
-
-  static updateUserPassword(userData) {
-    const url = BASE_URL + '/password';
-
-    return API.doRequest('PUT', url, JSON.stringify(userData));
   }
 
   // Config
