@@ -24,8 +24,8 @@ class InstancesStore extends Store {
     const application = this.instances.hasOwnProperty(applicationID) ?
       this.instances[applicationID] : this.instances[applicationID] = {};
 
-    API.getInstances(applicationID, groupID, queryOptions).
-      done(instances => {
+    API.getInstances(applicationID, groupID, queryOptions)
+      .then(instances => {
         const sortedInstances = _.sortBy(instances, (instance) => {
           if (selectedInstance) {
             const instancesList = this.instances[applicationID][groupID];
@@ -44,8 +44,8 @@ class InstancesStore extends Store {
         if (selectedInstance) {
           this.getInstanceStatusHistory(applicationID, groupID, selectedInstance);
         }
-      }).
-      fail((error) => {
+      })
+      .catch((error) => {
         if (error.status === 404) {
           application[groupID] = [];
           this.emitChange();
@@ -57,12 +57,12 @@ class InstancesStore extends Store {
     const instancesList = this.instances[applicationID][groupID];
     const instanceToUpdate = _.findWhere(instancesList, {id: instanceID});
 
-    return API.getInstanceStatusHistory(applicationID, groupID, instanceID).
-      done(statusHistory => {
+    return API.getInstanceStatusHistory(applicationID, groupID, instanceID)
+      .then(statusHistory => {
         instanceToUpdate.statusHistory = statusHistory;
         this.emitChange();
-      }).
-      fail((error) => {
+      })
+      .catch((error) => {
         if (error.status === 404) {
           instanceToUpdate.statusHistory = [];
           this.emitChange();

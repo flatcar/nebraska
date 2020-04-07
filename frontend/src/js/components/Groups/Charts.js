@@ -241,8 +241,9 @@ export function VersionCountTimeline(props) {
       return;
     }
 
-    applicationsStore.getGroupVersionCountTimeline(group.application_id, group.id)
-      .done(versionCountTimeline => {
+    applicationsStore
+      .getGroupVersionCountTimeline(group.application_id, group.id)
+      .then(versionCountTimeline => {
         setTimeline({
           timeline: versionCountTimeline,
           lastUpdate: lastUpdate.toUTCString(),
@@ -251,7 +252,7 @@ export function VersionCountTimeline(props) {
         makeChartData(group, versionCountTimeline || []);
         setSelectedEntry(-1);
       })
-      .fail(error => {
+      .catch(error => {
         console.log('Error getting version count timeline', error);
       });
   }
@@ -435,7 +436,7 @@ export function StatusCountTimeline(props) {
     }
 
     applicationsStore.getGroupStatusCountTimeline(group.application_id, group.id)
-      .done(statusCountTimeline => {
+      .then(statusCountTimeline => {
         setTimeline({
           timeline: statusCountTimeline,
           lastUpdate: new Date().toUTCString(),
@@ -444,7 +445,7 @@ export function StatusCountTimeline(props) {
         makeChartData(statusCountTimeline || []);
         setSelectedEntry(-1);
       })
-      .fail(error => {
+      .catch(error => {
         console.log('Error getting status count timeline', error);
       });
   }

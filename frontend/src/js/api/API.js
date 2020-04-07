@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import PubSub from 'pubsub-js';
 import queryString from 'querystring';
 import _ from 'underscore';
@@ -163,20 +162,29 @@ class API {
   static getJSON(url) {
     PubSub.publish(MAIN_PROGRESS_BAR, 'add');
 
-    return $.getJSON(url).
-      always(() => { PubSub.publish(MAIN_PROGRESS_BAR, 'done'); });
+    return fetch(url)
+      .then((response) => response.json())
+      .finally(() => PubSub.publish(MAIN_PROGRESS_BAR, 'done') );
   }
 
   static doRequest(method, url, data) {
     PubSub.publish(MAIN_PROGRESS_BAR, 'add');
-
-    return $.ajax({
-      method: method,
-      url: url,
-      data: data,
-      dataType: 'json'
-    }).
-      always(() => { PubSub.publish(MAIN_PROGRESS_BAR, 'done'); });
+    let fetchConfigObject;
+    if (method === 'DELETE') {
+      fetchConfigObject = {
+        method
+      };
+      return fetch(url, fetchConfigObject)
+        .finally(() => PubSub.publish(MAIN_PROGRESS_BAR, 'done'));
+    } else {
+      fetchConfigObject = {
+        method,
+        body: data,
+      };
+    }
+    return fetch(url, fetchConfigObject)
+      .then((response) => response.json())
+      .finally(() => PubSub.publish(MAIN_PROGRESS_BAR, 'done'));
   }
 
 }

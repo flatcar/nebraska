@@ -28,12 +28,12 @@ function EditDialog(props){
       appFunctionCall = applicationsStore.updateApplication(props.data.id, data);
     }
 
-    appFunctionCall.
-      done(() => {
+    appFunctionCall
+      .then(() => {
         actions.setSubmitting(false);
         props.onHide();
-      }).
-      fail(() => {
+      })
+      .catch(() => {
         actions.setSubmitting(false);
         actions.setStatus({statusMessage: 'Something went wrong. Check the form or try again later...'});
       });

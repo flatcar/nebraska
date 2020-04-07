@@ -89,12 +89,12 @@ function EditDialog(props) {
       packageFunctionCall = applicationsStore.updatePackage(data);
     }
 
-    packageFunctionCall.
-      done(() => {
+    packageFunctionCall
+      .then(() => {
         props.onHide();
         actions.setSubmitting(false);
-      }).
-      fail(() => {
+      })
+      .catch(() => {
         actions.setSubmitting(false);
         actions.setStatus({
           statusMessage: 'Something went wrong, or the version you are trying to add already exists for the arch and package type. Check the form or try again later...'

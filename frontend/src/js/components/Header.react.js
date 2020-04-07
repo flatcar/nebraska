@@ -48,10 +48,10 @@ export default function Header() {
   React.useEffect(() => {
     if (!config) {
       API.getConfig()
-        .done(config => {
+        .then(config => {
           setConfig(config);
         })
-        .fail(error => {
+        .catch(error => {
           console.error(error);
         });
     }

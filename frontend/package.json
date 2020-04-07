@@ -18,7 +18,6 @@
     "downshift": "^3.4.7",
     "formik": "^1.5.8",
     "formik-material-ui": "^0.0.20",
-    "jquery": "^3.4.1",
     "moment-timezone": "^0.5.27",
     "prop-types": "^15.7.2",
     "pubsub-js": "~1.5.3",
