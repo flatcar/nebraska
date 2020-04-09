@@ -13,41 +13,49 @@ function makeStatusDefs(theme) {
       label: 'Complete',
       color: theme.palette.success.main,
       icon: clipboardCheck,
+      queryValue: '4'
     },
     InstanceStatusDownloaded: {
       label: 'Downloaded',
       color: theme.palette.success['A700'],
       icon: boxDownload,
+      queryValue: '6'
     },
     InstanceStatusOnHold: {
       label: 'On Hold',
       color: theme.palette.grey['400'],
       icon: pauseCircle,
+      queryValue: '8'
     },
     InstanceStatusInstalled: {
       label: 'Installed',
       color: theme.palette.success['300'],
       icon: checkboxMarked,
+      queryValue: '5'
     },
     InstanceStatusDownloading: {
       label: 'Downloading',
       color: theme.palette.success['700'],
       icon: progressDownload,
+      queryValue: '7'
     },
     InstanceStatusError: {
       label: 'Error',
       color: theme.palette.error.main,
       icon: alertOctagon,
+      queryValue: '3'
     },
     InstanceStatusUndefined: {
       label: 'Unknown',
       color: theme.palette.grey['500'],
       icon: questionMarkCircle,
+      queryValue: '1'
     },
     InstanceStatusUpdateGranted: {
       label: 'Update Granted',
       color: theme.palette.success['500'],
       icon: playCircle,
+      queryValue: '2'
     },
   };
 }
