@@ -163,7 +163,11 @@ class API {
     PubSub.publish(MAIN_PROGRESS_BAR, 'add');
 
     return fetch(url)
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw response;
+        }
+        return response.json();})
       .finally(() => PubSub.publish(MAIN_PROGRESS_BAR, 'done') );
   }
 
@@ -183,7 +187,12 @@ class API {
       };
     }
     return fetch(url, fetchConfigObject)
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw response;
+        }
+        return response.json();
+      })
       .finally(() => PubSub.publish(MAIN_PROGRESS_BAR, 'done'));
   }
 
