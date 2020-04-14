@@ -19,8 +19,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import API from '../../api/API';
-import { makeLocaleTime } from '../../constants/helpers';
-import { instancesStore } from '../../stores/Stores';
+import { getInstanceStatus, makeLocaleTime } from '../../constants/helpers';
 import ChannelItem from '../Channels/Item.react';
 import { CardFeatureLabel, CardLabel } from '../Common/Card';
 import Empty from '../Common/EmptyContent';
@@ -101,7 +100,7 @@ function StatusRow(props) {
   const classes = useRowStyles();
   const {entry} = props;
   const time = makeLocaleTime(entry.created_ts);
-  const status = instancesStore.getInstanceStatus(entry.status, entry.version);
+  const status = getInstanceStatus(entry.status, entry.version);
   const [collapsed, setCollapsed] = React.useState(true);
 
   function onStatusClick() {

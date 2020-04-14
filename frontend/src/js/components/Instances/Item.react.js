@@ -15,7 +15,6 @@ import _ from 'underscore';
 import LoadingGif from '../../../img/mini_loading.gif';
 import API from '../../api/API';
 import { cleanSemverVersion, makeLocaleTime } from '../../constants/helpers';
-import { instancesStore } from '../../stores/Stores';
 import Label from '../Common/Label';
 import StatusHistoryContainer from './StatusHistoryContainer.react';
 

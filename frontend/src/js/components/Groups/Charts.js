@@ -8,8 +8,8 @@ import React from 'react';
 import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 import semver from 'semver';
 import _ from 'underscore';
-import { cleanSemverVersion, getMinuteDifference, makeColorsForVersions, makeLocaleTime } from '../../constants/helpers';
-import { applicationsStore, instancesStore } from '../../stores/Stores';
+import { cleanSemverVersion, getInstanceStatus, getMinuteDifference, makeColorsForVersions, makeLocaleTime } from '../../constants/helpers';
+import { applicationsStore } from '../../stores/Stores';
 import Loader from '../Common/Loader';
 import SimpleTable from '../Common/SimpleTable';
 import makeStatusDefs from '../Instances/StatusDefs';
@@ -364,7 +364,7 @@ export function StatusCountTimeline(props) {
   function makeStatusesColors(statuses) {
     const colors = {};
     Object.values(statuses).forEach(status => {
-      const statusInfo = instancesStore.getInstanceStatus(status, '');
+      const statusInfo = getInstanceStatus(status, '');
       colors[status] = statusDefs[statusInfo.type].color;
     });
 
@@ -411,7 +411,7 @@ export function StatusCountTimeline(props) {
     }
 
     status_breakdown.forEach((entry) => {
-      const statusInfo = instancesStore.getInstanceStatus(entry.status, entry.version);
+      const statusInfo = getInstanceStatus(entry.status, entry.version);
       const statusTheme = statusDefs[statusInfo.type];
 
       entry.color = statusTheme.color;

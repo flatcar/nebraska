@@ -12,7 +12,7 @@ import { useTheme } from '@material-ui/styles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import API from '../../api/API';
-import { instancesStore } from '../../stores/Stores';
+import { getInstanceStatus } from '../../constants/helpers';
 import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
 import Loader from '../Common/Loader';
@@ -117,7 +117,7 @@ function ListView(props) {
       setInstanceFetchLoading(false);
       if (result.instances) {
         const massagedInstances = result.instances.map((instance) => {
-          instance.statusInfo = instancesStore.getInstanceStatus(instance.application.status,
+          instance.statusInfo = getInstanceStatus(instance.application.status,
               instance.application.version);
           return instance;
         });

@@ -3,8 +3,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { makeLocaleTime } from '../../constants/helpers';
-import { instancesStore } from '../../stores/Stores';
+import { getInstanceStatus, makeLocaleTime } from '../../constants/helpers';
 
 class StatusHistoryItem extends React.Component {
 
@@ -20,8 +19,7 @@ class StatusHistoryItem extends React.Component {
   }
 
   fetchStatusFromStore() {
-    const status = instancesStore
-      .getInstanceStatus(this.props.entry.status, this.props.entry.version);
+    const status = getInstanceStatus(this.props.entry.status, this.props.entry.version);
     this.setState({status: status});
   }
 
