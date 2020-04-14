@@ -26,12 +26,12 @@ export default function InstanceLayout(props) {
   }
 
   function getGroupFromApplication(app) {
-    return app ? app.groups.find(({id})=> id === groupID) : null;
+    return app ? app.groups.find(({id}) => id === groupID) : null;
   }
 
   function onChangeInstances() {
     const instances = instancesStore.getCachedInstances(appID, groupID) || [];
-    const inst = instances.find(({id}) =>id === instanceID);
+    const inst = instances.find(({id}) => id === instanceID);
     if (inst !== instance) {
       setInstance(inst);
     }
