@@ -20,6 +20,7 @@ import * as Yup from 'yup';
 import { ARCHES } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import ChannelAvatar from '../Channels/ChannelAvatar';
+import AutoCompletePicker from '../Common/AutoCompletePicker';
 import { ColorPickerButton } from '../Common/ColorPicker';
 
 const useStyles = makeStyles(theme => ({
@@ -34,7 +35,7 @@ function EditDialog(props) {
   const [channelColor, setChannelColor] = React.useState(defaultColor);
   const [arch, setArch] = React.useState(props.data.channel ? props.data.channel.arch : 1);
   const isCreation = Boolean(props.create);
-
+  const {channel} = props.data;
   function handleSubmit(values, actions) {
     const data = {
       name: values.name,
@@ -81,7 +82,7 @@ function EditDialog(props) {
     props.onHide();
   }
 
-  function renderForm({values, status, isSubmitting}) {
+  function renderForm({values, status, setFieldValue, isSubmitting}) {
     const packages = props.data.packages ? props.data.packages : [];
     return (
       <Form>
@@ -157,24 +158,34 @@ function EditDialog(props) {
             label="Package"
             select
             margin="dense"
-            component={TextField}
+            component={AutoCompletePicker}
             helperText={`Showing only for the channel's architecture (${ARCHES[arch]}).`}
             fullWidth
-          >
-            <MenuItem value="" key="none">Nothing yet</MenuItem>
-            {packages.filter(packageItem => packageItem.arch === arch).map((packageItem, i) =>
-            {
-              const date = new Date(packageItem.created_ts);
-              return (
-                <MenuItem value={packageItem.id} key={'packageItem_' + i}>
-                  <ListItemText
-                    primary={packageItem.version}
-                    secondary={`created: ${date.toLocaleString('default', {day: '2-digit', month:'2-digit', year:'numeric'})}`}
-                  />
-                </MenuItem>);
+            onSelect={packageVersion => {
+              const selectedPackage = packages.filter(packageItem => packageItem.arch === arch)
+                .filter((packageItem) => packageItem.version === packageVersion
+                );
+              setFieldValue('package', selectedPackage[0].id);
+            }}
+            getSuggestions={
+              packages.filter(packageItem => packageItem.arch === arch)
+                .map((packageItem, i) =>
+                {
+                  const date = new Date(packageItem.created_ts);
+                  return {
+                    primary: packageItem.version,
+                    secondary:`created: ${date.toLocaleString('default', {day: '2-digit', month:'2-digit', year:'numeric'})}`
+                  };
+                })
             }
-            )}
-          </Field>
+            placeholder={'Pick a package'}
+            pickerPlaceholder={'Start typing to search a package'}
+            data={packages.filter(packageItem => packageItem.arch === arch)}
+            label={'Package'}
+            dialogTitle={'Choose a package'}
+            defaultValue={channel && channel.package ? channel.package.version : ''}
+          />
+
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">Cancel</Button>
