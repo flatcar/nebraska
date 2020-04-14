@@ -29,17 +29,8 @@ export default function InstanceLayout(props) {
     return app ? app.groups.find(({id}) => id === groupID) : null;
   }
 
-  function onChangeInstances() {
-    const instances = instancesStore.getCachedInstances(appID, groupID) || [];
-    const inst = instances.find(({id}) => id === instanceID);
-    if (inst !== instance) {
-      setInstance(inst);
-    }
-  }
-
   React.useEffect(() => {
     applicationsStore.addChangeListener(onChange);
-    instancesStore.addChangeListener(onChangeInstances);
 
     applicationsStore.getApplication(appID);
 
