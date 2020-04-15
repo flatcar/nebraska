@@ -636,15 +636,12 @@ func (ctl *controller) getInstances(c *gin.Context) {
 	p.Page, _ = strconv.ParseUint(c.Query("page"), 10, 64)
 	p.PerPage, _ = strconv.ParseUint(c.Query("perpage"), 10, 64)
 
-	instances, err := ctl.api.GetInstances(p)
-	switch err {
-	case nil:
-		if err := json.NewEncoder(c.Writer).Encode(instances); err != nil {
+	result, err := ctl.api.GetInstances(p)
+	if err == nil {
+		if err := json.NewEncoder(c.Writer).Encode(result); err != nil {
 			logger.Error("getInstances - encoding instances", "error", err.Error(), "params", p)
 		}
-	case sql.ErrNoRows:
-		httpError(c, http.StatusNotFound)
-	default:
+	} else {
 		logger.Error("getInstances - getting instances", "error", err.Error(), "params", p)
 		httpError(c, http.StatusBadRequest)
 	}

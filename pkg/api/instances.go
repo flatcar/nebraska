@@ -1,6 +1,7 @@
 package api
 
 import (
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -53,6 +54,10 @@ type Instance struct {
 	IP          string              `db:"ip" json:"ip"`
 	CreatedTs   time.Time           `db:"created_ts" json:"created_ts"`
 	Application InstanceApplication `db:"application" json:"application,omitempty"`
+}
+type InstancesWithTotal struct {
+	TotalInstances uint64      `json:"total"`
+	Instances      []*Instance `json:"instances"`
 }
 
 // InstanceApplication represents some details about an application running on
@@ -171,12 +176,30 @@ func (api *API) GetInstanceStatusHistory(instanceID, appID, groupID string, limi
 }
 
 // GetInstances returns all instances that match with the provided criteria.
-func (api *API) GetInstances(p InstancesQueryParams) ([]*Instance, error) {
+func (api *API) GetInstances(p InstancesQueryParams) (InstancesWithTotal, error) {
 	var instances []*Instance
-
-	err := api.instancesQuery(p).QueryStructs(&instances)
-
-	return instances, err
+	var totalCount uint64
+	var err error
+	p.Page, p.PerPage = validatePaginationParams(p.Page, p.PerPage)
+	err = api.instancesQuery(p).Paginate(p.Page, p.PerPage).QueryStructs(&instances)
+	if err == sql.ErrNoRows {
+		return InstancesWithTotal{
+			TotalInstances: 0,
+			Instances:      nil,
+		}, nil
+	}
+	if err != nil {
+		return InstancesWithTotal{}, err
+	}
+	err = api.getFilterInstancesQuery("COUNT (*)", p).QueryStruct(&totalCount)
+	if err != nil {
+		return InstancesWithTotal{}, err
+	}
+	result := InstancesWithTotal{
+		TotalInstances: totalCount,
+		Instances:      instances,
+	}
+	return result, nil
 }
 
 // validateApplicationAndGroup validates if the group provided belongs to the
@@ -253,7 +276,7 @@ func (api *API) instanceAppQuery(appID string) *dat.SelectDocBuilder {
 		SelectDoc("version", "status", "last_check_for_updates", "last_update_version", "update_in_progress", "application_id", "group_id").
 		From("instance_application").
 		Where("instance_id = instance.id AND application_id = $1", appID).
-		Where(fmt.Sprintf("last_check_for_updates > now() at time zone 'utc' - interval '%s'", validityInterval)).
+		Where("last_check_for_updates > now() at time zone 'utc' - interval $1", validityInterval).
 		Where(ignoreFakeInstanceCondition("instance_id"))
 }
 
@@ -261,26 +284,26 @@ func ignoreFakeInstanceCondition(instanceIDField string) string {
 	return fmt.Sprintf(`(%[1]s IS NULL OR %[1]s NOT SIMILAR TO '\{[a-fA-F0-9-]{36}\}')`, instanceIDField)
 }
 
+func (api *API) getFilterInstancesQuery(selectPart string, p InstancesQueryParams) *dat.SelectBuilder {
+	query := api.dbR.
+		Select(selectPart).
+		From("instance_application").
+		Where("application_id = $1 AND group_id = $2", p.ApplicationID, p.GroupID).
+		Where("last_check_for_updates > now() at time zone 'utc' - interval $1", validityInterval).
+		Where(ignoreFakeInstanceCondition("instance_id"))
+	if p.Status != 0 {
+		query.Where("status = $1", p.Status)
+	}
+	if p.Version != "" {
+		query.Where("version = $1", p.Version)
+	}
+	return query
+}
+
 // instancesQuery returns a SelectDocBuilder prepared to return all instances
 // that match the criteria provided in InstancesQueryParams.
 func (api *API) instancesQuery(p InstancesQueryParams) *dat.SelectDocBuilder {
-	p.Page, p.PerPage = validatePaginationParams(p.Page, p.PerPage)
-
-	instancesSubquery := api.dbR.
-		Select("instance_id").
-		From("instance_application").
-		Where("application_id = $1 AND group_id = $2", p.ApplicationID, p.GroupID).
-		Where(fmt.Sprintf("last_check_for_updates > now() at time zone 'utc' - interval '%s'", validityInterval)).
-		Where(ignoreFakeInstanceCondition("instance_id")).
-		Paginate(p.Page, p.PerPage)
-
-	if p.Status != 0 {
-		instancesSubquery.Where("status = $1", p.Status)
-	}
-
-	if p.Version != "" {
-		instancesSubquery.Where("version = $1", p.Version)
-	}
+	instancesSubquery := api.getFilterInstancesQuery("instance_id", p)
 
 	instancesSubquerySQL, instancesSubqueryParams := instancesSubquery.ToSQL()
 
