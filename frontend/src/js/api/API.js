@@ -125,7 +125,11 @@ class API {
 
     return API.getJSON(url);
   }
+  static getInstance(applicationID, groupID, instanceID){
+    const url = BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/instances/' + instanceID;
 
+    return API.getJSON(url);
+  }
   static getInstanceStatusHistory(applicationID, groupID, instanceID) {
     const url = BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/instances/' + instanceID + '/status_history';
 

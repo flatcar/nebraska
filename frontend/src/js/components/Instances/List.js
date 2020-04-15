@@ -11,6 +11,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import { useTheme } from '@material-ui/styles';
 import PropTypes from 'prop-types';
 import React from 'react';
+import API from '../../api/API';
 import { instancesStore } from '../../stores/Stores';
 import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
@@ -107,7 +108,7 @@ function ListView(props) {
       fetchFilters.status = statusDefs[fetchFilters.status]
         .queryValue;
     }
-    instancesStore.getInstances(application.id, group.id,
+    API.getInstances(application.id, group.id,
       {
         ...fetchFilters,
         page: page + 1,
