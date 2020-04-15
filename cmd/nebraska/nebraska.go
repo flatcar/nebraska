@@ -294,10 +294,10 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 	staticRouter := wrappedEngine.Group("/", "static")
 	staticRouter.Use(ctl.authenticate)
 	staticRouter.StaticFile("", filepath.Join(*httpStaticDir, "index.html"))
-	for _, file := range []string{"index.html", "favicon.png"} {
+	for _, file := range []string{"index.html", "favicon.png", "robots.txt"} {
 		staticRouter.StaticFile(file, filepath.Join(*httpStaticDir, file))
 	}
-	for _, dir := range []string{"js", "font", "img"} {
+	for _, dir := range []string{"static"} {
 		staticRouter.Static(dir, filepath.Join(*httpStaticDir, dir))
 	}
 
