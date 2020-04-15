@@ -13,8 +13,8 @@ import { Link as RouterLink } from 'react-router-dom';
 import semver from 'semver';
 import _ from 'underscore';
 import LoadingGif from '../../../img/mini_loading.gif';
+import API from '../../api/API';
 import { cleanSemverVersion, makeLocaleTime } from '../../constants/helpers';
-import { instancesStore } from '../../stores/Stores';
 import Label from '../Common/Label';
 import StatusHistoryContainer from './StatusHistoryContainer.react';
 
@@ -43,17 +43,16 @@ function Item(props) {
     const selected = props.selected;
 
     if (!selected) {
-      instancesStore.getInstanceStatusHistory(appID, groupID, instanceID)
-        .then(() => {
-          const cachedInstances = instancesStore.getCachedInstances(appID, groupID) || [];
-          const instance = cachedInstances.find(({id}) => id === props.instance.id);
-          if (instance)
-            setStatusHistory(instance.statusHistory);
+
+      API.getInstanceStatusHistory(appID, groupID, instanceID)
+        .then((statusHistory) => {
+          setStatusHistory(statusHistory);
           props.onToggle(instanceID);
         })
         .catch((error) => {
           if (error.status === 404) {
             props.onToggle(instanceID);
+            setStatusHistory([]);
           }
         });
     } else {

@@ -18,10 +18,11 @@ import { makeStyles, useTheme } from '@material-ui/styles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { makeLocaleTime } from '../../constants/helpers';
-import { instancesStore } from '../../stores/Stores';
+import API from '../../api/API';
+import { getInstanceStatus, makeLocaleTime } from '../../constants/helpers';
 import ChannelItem from '../Channels/Item.react';
 import { CardFeatureLabel, CardLabel } from '../Common/Card';
+import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
 import Loader from '../Common/Loader';
 import makeStatusDefs from './StatusDefs';
@@ -63,7 +64,7 @@ function StatusLabel(props) {
   const classes = useStatusStyles();
   const statusDefs = makeStatusDefs(useTheme());
   const {status, activated} = props;
-  const {icon = null, label = 'Unknown', color} = statusDefs[status.type] || {};
+  const {icon = null, label = 'Unknown', color} = status && statusDefs[status.type] || {};
   const iconSize = '22px';
 
   return (
@@ -99,7 +100,7 @@ function StatusRow(props) {
   const classes = useRowStyles();
   const {entry} = props;
   const time = makeLocaleTime(entry.created_ts);
-  const status = instancesStore.getInstanceStatus(entry.status, entry.version);
+  const status = getInstanceStatus(entry.status, entry.version);
   const [collapsed, setCollapsed] = React.useState(true);
 
   function onStatusClick() {
@@ -145,42 +146,40 @@ function StatusRow(props) {
 }
 
 function EventTable(props) {
-  return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell>Status</TableCell>
-          <TableCell>Version</TableCell>
-          <TableCell>Time{props.events && props.events.status}</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {props.events.map((entry, i) =>
-          <StatusRow key={i} entry={entry} />
-        )
-        }
-      </TableBody>
-    </Table>
-  );
+  return props.events.length === 0 ? (
+    <Empty>
+      No events to report for this instance yet.
+    </Empty>)
+    : (
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Status</TableCell>
+            <TableCell>Version</TableCell>
+            <TableCell>Time{props.events && props.events.status}</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {props.events.map((entry, i) =>
+            <StatusRow key={i} entry={entry} />
+          )
+          }
+        </TableBody>
+      </Table>
+    );
 }
 
 function DetailsView(props) {
   const classes = useDetailsStyles();
   const {application, group, instance} = props;
   const [eventHistory, setEventHistory] = React.useState([]);
-
-  function onChangeInstances() {
-    setEventHistory(instance.statusHistory || []);
-  }
-
   React.useEffect(() => {
-    onChangeInstances();
-    instancesStore.addChangeListener(onChangeInstances);
-    instancesStore.getInstanceStatusHistory(application.id, group.id, instance.id);
-
-    return function cleanup() {
-      instancesStore.removeChangeListener(onChangeInstances);
-    };
+    API.getInstanceStatusHistory(application.id, group.id, instance.id).then((statusHistory) => {
+      setEventHistory(statusHistory);
+    })
+      .catch(() => {
+        setEventHistory([]);
+      });
   },
   [instance]);
 
@@ -210,15 +209,15 @@ function DetailsView(props) {
                 </Grid>
                 <Grid item xs={12}>
                   <CardFeatureLabel>Status:</CardFeatureLabel>&nbsp;
-                  <StatusLabel status={instance.statusInfo} />
+                  <StatusLabel
+                    status={instance.statusInfo}
+                  />
                 </Grid>
                 <Grid item xs={12}>
                   <CardFeatureLabel>Last Update Check:</CardFeatureLabel>&nbsp;
-                  {instance.statusInfo &&
                   <CardLabel>
-                    {makeLocaleTime(instance.statusInfo.created_ts)}
+                    {makeLocaleTime(instance.application.last_check_for_updates)}
                   </CardLabel>
-                  }
                 </Grid>
                 <Grid item xs={12}><Divider className={classes.divider} /></Grid>
                 <Grid item xs={12}>
