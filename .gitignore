@@ -3,8 +3,6 @@
 *sublime*
 bin
 node_modules
-frontend/built/js/main.js
-frontend/built/css/styles.css
 frontend/yarn-error.log
 
 /tools/go-bindata
