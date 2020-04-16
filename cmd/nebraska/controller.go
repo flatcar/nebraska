@@ -18,11 +18,15 @@ import (
 	"github.com/kinvolk/nebraska/pkg/syncer"
 )
 
-const GithubAccessManagementURL = "https://github.com/settings/apps/authorizations"
+const (
+	GithubAccessManagementURL = "https://github.com/settings/apps/authorizations"
+	CurrentNebraskaVersion    = "2.0.5"
+)
 
 // ClientConfig represents Nebraska's configuration of interest for the client.
 type ClientConfig struct {
 	AccessManagementURL string `json:"access_management_url"`
+	NebraskaVersion     string `json:"nebraska_version"`
 }
 
 type controller struct {
@@ -105,6 +109,7 @@ func NewClientConfig(conf *controllerConfig) *ClientConfig {
 			config.AccessManagementURL = GithubAccessManagementURL
 		}
 	}
+	config.NebraskaVersion = CurrentNebraskaVersion
 
 	return config
 }
