@@ -18,7 +18,7 @@ RUN apk update && \
 	apk add ca-certificates tzdata
 
 COPY --from=nebraska-build /go/src/github.com/kinvolk/nebraska/bin/nebraska /nebraska/
-COPY --from=nebraska-build /go/src/github.com/kinvolk/nebraska/frontend/built/ /nebraska/static/
+COPY --from=nebraska-build /go/src/github.com/kinvolk/nebraska/frontend/build/ /nebraska/static/
 
 ENV NEBRASKA_DB_URL "postgres://postgres@postgres:5432/nebraska?sslmode=disable&connect_timeout=10"
 EXPOSE 8000

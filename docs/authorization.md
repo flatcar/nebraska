@@ -32,7 +32,7 @@ the `postgres` container as follows:
 
 - Start the Nebraska backend:
 
-  - `LOGXI=* nebraska -auth-mode noop -http-static-dir $PWD/frontend/built
+  - `LOGXI=* nebraska -auth-mode noop -http-static-dir $PWD/frontend/build
     -http-log`
 
 - In the browser, access `http://localhost:8000`
@@ -103,7 +103,7 @@ the `postgres` container as follows:
   - `LOGXI=* nebraska -auth-mode github -gh-client-id <CLIENT_ID>
     -gh-client-secret <CLIENT_SECRET> -gh-ro-teams <READ_ONLY_TEAMS>
     -gh-rw-teams <READ_WRITE_TEAMS> -gh-webhook-secret <WEBHOOK_SECRET>
-    -http-static-dir $PWD/frontend/built -http-log`
+    -http-static-dir $PWD/frontend/build -http-log`
 
     - Use the `-gh-rw-teams` and `-gh-ro-teams` to specify the list of
       read-write and read-only access teams.

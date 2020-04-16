@@ -6,7 +6,6 @@ VERSION ?= $(shell git describe --tags --always --dirty)
 DOCKER_CMD ?= "docker"
 DOCKER_REPO ?= "quay.io/flatcar"
 DOCKER_IMAGE_NEBRASKA ?= "nebraska"
-DOCKER_IMAGE_POSTGRES ?= "nebraska-postgres"
 
 .PHONY: all
 all: backend tools frontend
@@ -88,18 +87,10 @@ container-nebraska:
 		--no-cache \
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_NEBRASKA):$(VERSION)" \
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_NEBRASKA):latest" \
-		-f Dockerfile.nebraska .
-
-.PHONY: container-postgres
-container-postgres:
-	$(DOCKER_CMD) build \
-		--no-cache \
-		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_POSTGRES):$(VERSION)" \
-		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_POSTGRES):latest" \
-		-f Dockerfile.postgres .
+		-f Dockerfile .
 
 .PHONY: container
-container: container-nebraska container-postgres
+container: container-nebraska
 
 .PHONY: backend-ci
 backend-ci: backend test-clean-work-tree-backend check-backend-with-container
