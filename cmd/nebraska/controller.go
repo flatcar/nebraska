@@ -20,7 +20,7 @@ import (
 
 const (
 	GithubAccessManagementURL = "https://github.com/settings/apps/authorizations"
-	CurrentNebraskaVersion    = "2.0.5"
+	CurrentNebraskaVersion    = "2.0.6"
 )
 
 // ClientConfig represents Nebraska's configuration of interest for the client.
