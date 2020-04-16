@@ -53,7 +53,7 @@
   "scripts": {
     "build-icons": "node tools/build-icons.js ./src/img ./src/js/icons",
     "start": "npm run build-icons && react-scripts start",
-    "build": "react-scripts build",
+    "build": "npm run build-icons && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint 'src/**/*.{js,jsx}'",
