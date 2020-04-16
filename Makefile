@@ -87,7 +87,7 @@ container-nebraska:
 		--no-cache \
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_NEBRASKA):$(VERSION)" \
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_NEBRASKA):latest" \
-		-f Dockerfile.nebraska .
+		-f Dockerfile .
 
 .PHONY: container
 container: container-nebraska
