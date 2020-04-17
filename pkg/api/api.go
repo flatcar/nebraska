@@ -3,6 +3,7 @@ package api
 import (
 	"errors"
 	"os"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 	migrate "github.com/rubenv/sql-migrate"
@@ -75,6 +76,11 @@ func New(options ...func(*API) error) (*API, error) {
 	if err := api.db.Ping(); err != nil {
 		return nil, err
 	}
+
+	// XXX hotfix for database overload
+	api.db.SetMaxOpenConns(100)
+	api.db.SetMaxIdleConns(100)
+	api.db.SetConnMaxLifetime(5 * time.Minute)
 
 	dat.EnableInterpolation = true
 	api.dbR = runner.NewDBFromSqlx(api.db)
