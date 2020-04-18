@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	testsDbURL string = "postgres://postgres@127.0.0.1:5432/nebraska_tests?sslmode=disable&connect_timeout=10"
+	defaultTestDbURL string = "postgres://postgres:nebraska@127.0.0.1:5432/nebraska_tests?sslmode=disable&connect_timeout=10"
 )
 
 func newForTest(t *testing.T) *API {
@@ -26,12 +26,15 @@ func TestMain(m *testing.M) {
 		return
 	}
 
-	_ = os.Setenv("NEBRASKA_DB_URL", testsDbURL)
+	if _, ok := os.LookupEnv("NEBRASKA_DB_URL"); !ok {
+		log.Printf("NEBRASKA_DB_URL not set, setting to default %q\n", defaultTestDbURL)
+		_ = os.Setenv("NEBRASKA_DB_URL", defaultTestDbURL)
+	}
 
 	a, err := New(OptionInitDB)
 	if err != nil {
-		log.Println("These tests require PostgreSQL running and a tests database created, please adjust testsDbUrl as needed.")
-		log.Println("Default: postgres://postgres@127.0.0.1:5432/nebraska_tests?sslmode=disable&connect_timeout=10")
+		log.Printf("Failed to init DB: %v\n", err)
+		log.Println("These tests require PostgreSQL running and a tests database created, please adjust NEBRASKA_DB_URL as needed.")
 		os.Exit(1)
 	}
 	a.Close()
