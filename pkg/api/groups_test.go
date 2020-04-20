@@ -169,7 +169,9 @@ func TestGetGroupsFiltered(t *testing.T) {
 	assert.NoError(t, err)
 	if assert.Len(t, groups, 1) {
 		g := groups[0]
-		assert.Equal(t, 1, g.InstancesStats.Total)
+		stats, err := a.GetGroupInstancesStats(g.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, 1, stats.Total)
 		if assert.Len(t, g.VersionBreakdown, 1) {
 			vb := g.VersionBreakdown[0]
 			assert.Equal(t, "1.0.0", vb.Version)

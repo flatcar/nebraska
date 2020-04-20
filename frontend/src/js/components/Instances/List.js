@@ -95,6 +95,7 @@ function ListView(props) {
   const {application, group} = props;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [totalInstances, setTotalInstances] = React.useState(-1);
   const [instancesObj, setInstancesObj] = React.useState({instances: [], total: 0});
   const [instanceFetchLoading, setInstanceFetchLoading] = React.useState(false);
   const [filters, setFilters] = React.useState({status: '', version: ''});
@@ -115,6 +116,11 @@ function ListView(props) {
         perpage: perPage
       }).then((result) => {
       setInstanceFetchLoading(false);
+      // Since we have retrieved the instances without a filter (i.e. all instances)
+      // we update the total.
+      if (!fetchFilters.status && !fetchFilters.version) {
+        setTotalInstances(result.total);
+      }
       if (result.instances) {
         const massagedInstances = result.instances.map((instance) => {
           instance.statusInfo = getInstanceStatus(instance.application.status,
@@ -152,16 +158,34 @@ function ListView(props) {
   function resetFilters() {
     applyFilters();
   }
+
   React.useEffect(() => {
     fetchInstances(filters, page, rowsPerPage);
   },
   [filters, page, rowsPerPage]);
 
-  function getInstanceCount() {
-    if (!filters.status && !filters.version) {
-      return group.instances_stats.total;
+  React.useEffect(() => {
+    // We only want to run it once ATM.
+    if (totalInstances > 0) {
+      return;
     }
-    return `${instancesObj.total}/${group.instances_stats.total}`;
+
+    // We use this function without any filter to get the total number of instances
+    // in the group.
+    API.getInstances(application.id, group.id)
+      .then(result => {
+        setTotalInstances(result.total);
+      })
+      .catch(err => console.error('Error loading total instances in Instances/List', err));
+  },
+  [totalInstances]);
+
+  function getInstanceCount() {
+    const total = totalInstances > -1 ? totalInstances : '…';
+    if (!filters.status && !filters.version) {
+      return total;
+    }
+    return `${instancesObj.total}/${total}`;
   }
 
   function isFiltered() {

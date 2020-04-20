@@ -388,6 +388,23 @@ func (ctl *controller) getGroupStatusCountTimeline(c *gin.Context) {
 	}
 }
 
+func (ctl *controller) getGroupInstancesStats(c *gin.Context) {
+	groupID := c.Params.ByName("group_id")
+
+	instancesStats, err := ctl.api.GetGroupInstancesStats(groupID)
+	switch err {
+	case nil:
+		if err := json.NewEncoder(c.Writer).Encode(instancesStats); err != nil {
+			logger.Error("getGroupInstancesStats - encoding group", "error", err.Error(), "instancesStats", instancesStats)
+		}
+	case sql.ErrNoRows:
+		httpError(c, http.StatusNotFound)
+	default:
+		logger.Error("getGroupInstancesStats - getting instances stats", "error", err.Error(), "groupID", groupID)
+		httpError(c, http.StatusBadRequest)
+	}
+}
+
 // ----------------------------------------------------------------------------
 // API: channels CRUD
 //

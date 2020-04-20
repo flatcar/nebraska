@@ -202,16 +202,18 @@ func TestGetUpdatePackage_RolloutStats(t *testing.T) {
 
 	group, _ := a.GetGroup(tGroup.ID)
 	assert.True(t, group.RolloutInProgress)
-	assert.Equal(t, 3, group.InstancesStats.Total)
-	assert.Equal(t, 1, group.InstancesStats.UpdateGranted)
-	assert.Equal(t, 2, group.InstancesStats.OnHold)
+	stats, _ := a.GetGroupInstancesStats(group.ID)
+	assert.Equal(t, 3, stats.Total)
+	assert.Equal(t, 1, stats.UpdateGranted)
+	assert.Equal(t, 2, stats.OnHold)
 
 	_ = a.RegisterEvent(instance1.ID, tApp.ID, tGroup.ID, EventUpdateDownloadStarted, ResultSuccess, "", "")
 
 	group, _ = a.GetGroup(tGroup.ID)
 	assert.True(t, group.RolloutInProgress)
-	assert.Equal(t, 1, group.InstancesStats.Downloading)
-	assert.Equal(t, 2, group.InstancesStats.OnHold)
+	stats, _ = a.GetGroupInstancesStats(group.ID)
+	assert.Equal(t, 1, stats.Downloading)
+	assert.Equal(t, 2, stats.OnHold)
 
 	_ = a.RegisterEvent(instance1.ID, tApp.ID, tGroup.ID, EventUpdateComplete, ResultSuccessReboot, "", "")
 	_, _ = a.GetUpdatePackage(instance2.ID, "10.0.0.2", "12.0.0", tApp.ID, tGroup.ID)
@@ -219,23 +221,26 @@ func TestGetUpdatePackage_RolloutStats(t *testing.T) {
 
 	group, _ = a.GetGroup(tGroup.ID)
 	assert.True(t, group.RolloutInProgress)
-	assert.Equal(t, 1, group.InstancesStats.Complete)
-	assert.Equal(t, 2, group.InstancesStats.UpdateGranted)
+	stats, _ = a.GetGroupInstancesStats(group.ID)
+	assert.Equal(t, 1, stats.Complete)
+	assert.Equal(t, 2, stats.UpdateGranted)
 
 	_ = a.RegisterEvent(instance2.ID, tApp.ID, tGroup.ID, EventUpdateComplete, ResultSuccessReboot, "", "")
 	_ = a.RegisterEvent(instance3.ID, tApp.ID, tGroup.ID, EventUpdateComplete, ResultFailed, "", "")
 
 	group, _ = a.GetGroup(tGroup.ID)
 	assert.True(t, group.RolloutInProgress)
-	assert.Equal(t, 2, group.InstancesStats.Complete)
-	assert.Equal(t, 1, group.InstancesStats.Error)
+	stats, _ = a.GetGroupInstancesStats(group.ID)
+	assert.Equal(t, 2, stats.Complete)
+	assert.Equal(t, 1, stats.Error)
 
 	_, _ = a.GetUpdatePackage(instance3.ID, "10.0.0.3", "12.0.0", tApp.ID, tGroup.ID)
 	_ = a.RegisterEvent(instance3.ID, tApp.ID, tGroup.ID, EventUpdateComplete, ResultSuccessReboot, "", "")
 
 	group, _ = a.GetGroup(tGroup.ID)
 	assert.False(t, group.RolloutInProgress)
-	assert.Equal(t, 3, group.InstancesStats.Complete)
+	stats, _ = a.GetGroupInstancesStats(group.ID)
+	assert.Equal(t, 3, stats.Complete)
 }
 
 func TestGetUpdatePackage_UpdateInProgressOnInstance(t *testing.T) {

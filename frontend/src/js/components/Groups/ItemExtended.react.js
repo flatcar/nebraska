@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import _ from 'underscore';
+import API from '../../api/API';
 import { applicationsStore } from '../../stores/Stores';
 import ChannelItem from '../Channels/Item.react';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
@@ -27,6 +28,7 @@ const useStyles = makeStyles({
 function ItemExtended(props) {
   const [application, setApplication] = React.useState(null);
   const [group, setGroup] = React.useState(null);
+  const [instancesStats, setInstancesStats] = React.useState({});
   const classes = useStyles();
   function onChange() {
     const app = applicationsStore.getCachedApplication(props.appID);
@@ -59,6 +61,20 @@ function ItemExtended(props) {
     };
   },
   [application, group]);
+
+  React.useEffect(() => {
+    if (group) {
+      API.getGroupInstancesStats(group.application_id, group.id)
+        .then(stats => {
+          setInstancesStats(stats);
+        })
+        .catch(err => {
+          console.error('Error getting instances stats in Groups/ItemExtended', err);
+          setInstancesStats({});
+        });
+    }
+  },
+  [group]);
 
   return (
     <Grid
@@ -138,7 +154,7 @@ function ItemExtended(props) {
           <Paper className={classes.instancesChartPaper}>
             <ListHeader
               title="Update Progress"
-              actions={group.instances_stats.total > 0 ? [
+              actions={instancesStats.total > 0 ? [
                 <Link
                   className={classes.link}
                   to={{pathname: `/apps/${props.appID}/groups/${props.groupID}/instances`}}
@@ -152,12 +168,12 @@ function ItemExtended(props) {
               }
             />
             <Box padding="1em">
-              <InstanceStatusArea instanceStats={group.instances_stats} />
+              <InstanceStatusArea instanceStats={instancesStats} />
             </Box>
           </Paper>
         }
       </Grid>
-      { (group && group.instances_stats.total > 0) &&
+      { instancesStats.total > 0 &&
         <Grid item xs={12}>
           <Paper>
             <Grid

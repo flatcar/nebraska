@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import API from '../../api/API';
 
 const useStyles = makeStyles(theme => ({
   groupLink: {
@@ -12,7 +13,19 @@ const useStyles = makeStyles(theme => ({
 
 function ApplicationItemGroupItem(props) {
   const classes = useStyles();
-  const instances_total = props.group.instances_stats.total ? '(' + props.group.instances_stats.total + ')' : '';
+  const {group} = props;
+  const [totalInstances, setTotalInstances] = React.useState(-1);
+
+  React.useEffect(() => {
+    // We use this function without any filter to get the total number of instances
+    // in the group.
+    API.getInstances(group.application_id, group.id)
+      .then(result => {
+        setTotalInstances(result.total);
+      })
+      .catch(err => console.error('Error loading total instances in Instances/List', err));
+  },
+  [group]);
 
   return (
     <Link
@@ -20,7 +33,7 @@ function ApplicationItemGroupItem(props) {
       to={{pathname: `/apps/${props.group.application_id}/groups/${props.group.id}`}}
       component={RouterLink}
     >
-      {props.group.name} {instances_total}
+      {props.group.name} {(totalInstances > 0) && `(${totalInstances})`}
     </Link>
   );
 }
