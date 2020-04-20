@@ -300,6 +300,9 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 	for _, dir := range []string{"static"} {
 		staticRouter.Static(dir, filepath.Join(*httpStaticDir, dir))
 	}
-
+	// catch all route with static middleware
+	engine.NoRoute(func(c *gin.Context) {
+		c.File(filepath.Join(*httpStaticDir, "index.html"))
+	})
 	return engine
 }
