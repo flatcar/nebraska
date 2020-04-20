@@ -11,6 +11,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import { useTheme } from '@material-ui/styles';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import API from '../../api/API';
 import { getInstanceStatus, useGroupVersionBreakdown } from '../../constants/helpers';
 import Empty from '../Common/EmptyContent';
@@ -100,6 +101,48 @@ function ListView(props) {
   const [instancesObj, setInstancesObj] = React.useState({instances: [], total: 0});
   const [instanceFetchLoading, setInstanceFetchLoading] = React.useState(false);
   const [filters, setFilters] = React.useState({status: '', version: ''});
+  const location = useLocation();
+  const history = useHistory();
+
+  function fetchFiltersFromURL() {
+    let status = '';
+    const queryParams = new URLSearchParams(location.search);
+    if (queryParams.has('status')) {
+      const statusValue = queryParams.get('status');
+      if (statusValue !== 'ShowAll') {
+        for (const key in statusDefs) {
+          if (statusDefs[key].label === statusValue) {
+            status = key;
+            break;
+          }
+        }
+      }
+    }
+    const version = queryParams.get('version') || '';
+    const pageQueryParam = (parseInt(queryParams.get('page')) || 1) - 1;
+    const perPage = parseInt(queryParams.get('perPage')) || 10;
+    setFilters({status, version});
+    setPage(pageQueryParam);
+    setRowsPerPage(perPage);
+  }
+
+  function addQuery(queryObj) {
+    const pathname = location.pathname;
+    const searchParams = new URLSearchParams(location.search);
+    for (const key in queryObj) {
+      const value = queryObj[key];
+      if (value) {
+        searchParams.set(key, value);
+      } else {
+        searchParams.delete(key);
+      }
+    }
+
+    history.push({
+      pathname: pathname,
+      search: searchParams.toString()
+    });
+  };
 
   function fetchInstances(filters, page, perPage) {
     setInstanceFetchLoading(true);
@@ -107,7 +150,8 @@ function ListView(props) {
     if (filters.status === '') {
       fetchFilters.status = '0';
     } else {
-      fetchFilters.status = statusDefs[fetchFilters.status]
+      const statusDefinition = statusDefs[fetchFilters.status];
+      fetchFilters.status = statusDefinition
         .queryValue;
     }
     API.getInstances(application.id, group.id,
@@ -137,13 +181,13 @@ function ListView(props) {
         setInstanceFetchLoading(false);
       });
   }
+
   function handleChangePage(event, newPage) {
-    setPage(newPage);
+    addQuery({ page: newPage + 1 });
   }
 
   function handleChangeRowsPerPage(event) {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
+    addQuery({ page: 1, perPage: +event.target.value });
   }
 
   function onFiltersChanged(newFilters) {
@@ -153,6 +197,8 @@ function ListView(props) {
   function applyFilters(_filters = {}) {
     const newFilters = Object.keys(_filters).length !== 0 ?
       _filters : {status: '', version: ''};
+    const statusQueryParam = newFilters.status ? statusDefs[newFilters.status].label : '';
+    addQuery({ status: statusQueryParam, version: newFilters.version });
     setFilters(newFilters);
   }
 
@@ -161,25 +207,13 @@ function ListView(props) {
   }
 
   React.useEffect(() => {
+    fetchFiltersFromURL();
+  }, [location]);
+
+  React.useEffect(() => {
     fetchInstances(filters, page, rowsPerPage);
   },
   [filters, page, rowsPerPage]);
-
-  React.useEffect(() => {
-    // We only want to run it once ATM.
-    if (totalInstances > 0) {
-      return;
-    }
-
-    // We use this function without any filter to get the total number of instances
-    // in the group.
-    API.getInstances(application.id, group.id)
-      .then(result => {
-        setTotalInstances(result.total);
-      })
-      .catch(err => console.error('Error loading total instances in Instances/List', err));
-  },
-  [totalInstances]);
 
   React.useEffect(() => {
     // We only want to run it once ATM.
