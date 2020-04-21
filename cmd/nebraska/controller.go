@@ -405,6 +405,23 @@ func (ctl *controller) getGroupInstancesStats(c *gin.Context) {
 	}
 }
 
+func (ctl *controller) getGroupVersionBreakdown(c *gin.Context) {
+	groupID := c.Params.ByName("group_id")
+
+	versionBreakdown, err := ctl.api.GetGroupVersionBreakdown(groupID)
+	switch err {
+	case nil:
+		if err := json.NewEncoder(c.Writer).Encode(versionBreakdown); err != nil {
+			logger.Error("getVersionBreakdown - encoding group", "error", err.Error(), "version_breakdown", versionBreakdown)
+		}
+	case sql.ErrNoRows:
+		httpError(c, http.StatusNotFound)
+	default:
+		logger.Error("getVersionBreakdown - getting version breakdown", "error", err.Error(), "groupID", groupID)
+		httpError(c, http.StatusBadRequest)
+	}
+}
+
 // ----------------------------------------------------------------------------
 // API: channels CRUD
 //

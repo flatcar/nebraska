@@ -69,7 +69,7 @@ function ItemExtended(props) {
           setInstancesStats(stats);
         })
         .catch(err => {
-          console.error('Error getting instances stats in Groups/ItemExtended', err);
+          console.error('Error getting instances stats in Groups/ItemExtended. Group:', group, '\nError:', err);
           setInstancesStats({});
         });
     }

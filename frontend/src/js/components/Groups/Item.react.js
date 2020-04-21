@@ -6,6 +6,7 @@ import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import _ from 'underscore';
 import API from '../../api/API';
+import { useGroupVersionBreakdown } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import ChannelItem from '../Channels/Item.react';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
@@ -24,8 +25,7 @@ function Item(props) {
   const classes = useStyles();
   const [totalInstances, setTotalInstances] = React.useState(-1);
 
-  const version_breakdown = (props.group &&
-    props.group.version_breakdown) ? props.group.version_breakdown : [];
+  const version_breakdown = useGroupVersionBreakdown(props.group);
   const description = props.group.description || 'No description provided';
   const channel = props.group.channel || {};
 

@@ -12,7 +12,7 @@ import { useTheme } from '@material-ui/styles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import API from '../../api/API';
-import { getInstanceStatus } from '../../constants/helpers';
+import { getInstanceStatus, useGroupVersionBreakdown } from '../../constants/helpers';
 import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
 import Loader from '../Common/Loader';
@@ -94,6 +94,7 @@ function ListView(props) {
   const statusDefs = makeStatusDefs(useTheme());
   const {application, group} = props;
   const [page, setPage] = React.useState(0);
+  const versionBreakdown = useGroupVersionBreakdown(group);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [totalInstances, setTotalInstances] = React.useState(-1);
   const [instancesObj, setInstancesObj] = React.useState({instances: [], total: 0});
@@ -180,6 +181,22 @@ function ListView(props) {
   },
   [totalInstances]);
 
+  React.useEffect(() => {
+    // We only want to run it once ATM.
+    if (totalInstances > 0) {
+      return;
+    }
+
+    // We use this function without any filter to get the total number of instances
+    // in the group.
+    API.getInstances(application.id, group.id)
+      .then(result => {
+        setTotalInstances(result.total);
+      })
+      .catch(err => console.error('Error loading total instances in Instances/List', err));
+  },
+  [totalInstances]);
+
   function getInstanceCount() {
     const total = totalInstances > -1 ? totalInstances : '…';
     if (!filters.status && !filters.version) {
@@ -215,7 +232,7 @@ function ListView(props) {
             </Grid>
             <Grid item md>
               <InstanceFilter
-                versions={group.version_breakdown}
+                versions={versionBreakdown}
                 onFiltersChanged={onFiltersChanged}
                 filter={filters}
               />
