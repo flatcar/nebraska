@@ -16,20 +16,22 @@ check:
 
 container_id:
 	set -e; \
-	docker build \
-		--file Dockerfile.postgres-test \
-		--tag kinvolk/nebraska-postgres-test \
-		.; \
 	trap "rm -f container_id.tmp container_id" ERR; \
 	docker run \
-		--privileged \
 		--detach \
 		--publish 127.0.0.1:5432:5432 \
-		kinvolk/nebraska-postgres-test \
+		-e POSTGRES_PASSWORD=nebraska \
+		postgres \
 		>container_id.tmp; \
+	until docker exec \
+		$$(cat container_id.tmp) \
+		pg_isready -h localhost; do sleep 3; done
 	docker exec \
 		$$(cat container_id.tmp) \
-		/wait_for_db_ready.sh; \
+		psql -h localhost -U postgres -c 'create database nebraska_tests;'
+	docker exec \
+		$$(cat container_id.tmp) \
+		psql -h localhost -U postgres -d nebraska_tests -c 'set timezone = "utc";'
 	mv container_id.tmp container_id
 
 .PHONY: check-backend-with-container
