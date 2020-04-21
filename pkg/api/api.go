@@ -11,6 +11,9 @@ import (
 
 	// Postgresql driver
 	_ "github.com/lib/pq"
+
+	"strconv"
+	"time"
 )
 
 // To re-generate the bindata.go file, use go-bindata from
@@ -23,8 +26,10 @@ import (
 //go:generate go-bindata -ignore=\.swp -pkg=api -modtime=1 db db/migrations
 
 const (
-	defaultDbURL = "postgres://postgres@127.0.0.1:5432/nebraska?sslmode=disable&connect_timeout=10"
-	nowUTC       = dat.UnsafeString("now() at time zone 'utc'")
+	defaultDbURL          = "postgres://postgres@127.0.0.1:5432/nebraska?sslmode=disable&connect_timeout=10"
+	nowUTC                = dat.UnsafeString("now() at time zone 'utc'")
+	maxOpenAndIdleDbConns = 25
+	dBConnMaxLifetime     = 5 * 60 // seconds
 )
 
 var (
@@ -75,6 +80,30 @@ func New(options ...func(*API) error) (*API, error) {
 	if err := api.db.Ping(); err != nil {
 		return nil, err
 	}
+
+	var (
+		maxOpenConns    int
+		maxIdleConns    int
+		connMaxLifetime int
+	)
+
+	maxOpenConns, err = strconv.Atoi(os.Getenv("NEBRASKA_DB_MAX_OPEN_CONNS"))
+	if err != nil {
+		maxOpenConns = maxOpenAndIdleDbConns
+	}
+	maxIdleConns, err = strconv.Atoi(os.Getenv("NEBRASKA_DB_MAX_IDLE_CONNS"))
+	if err != nil {
+		maxIdleConns = maxOpenConns
+	}
+
+	connMaxLifetime, err = strconv.Atoi(os.Getenv("NEBRASKA_DB_CONN_MAX_LIFETIME"))
+	if err != nil {
+		connMaxLifetime = dBConnMaxLifetime
+	}
+
+	api.db.SetMaxOpenConns(maxOpenConns)
+	api.db.SetMaxIdleConns(maxIdleConns)
+	api.db.SetConnMaxLifetime(time.Duration(connMaxLifetime) * time.Second)
 
 	dat.EnableInterpolation = true
 	api.dbR = runner.NewDBFromSqlx(api.db)
