@@ -16,11 +16,11 @@ import (
 	"github.com/kinvolk/nebraska/pkg/api"
 	"github.com/kinvolk/nebraska/pkg/omaha"
 	"github.com/kinvolk/nebraska/pkg/syncer"
+	"github.com/kinvolk/nebraska/pkg/version"
 )
 
 const (
 	GithubAccessManagementURL = "https://github.com/settings/apps/authorizations"
-	CurrentNebraskaVersion    = "2.0.6"
 )
 
 // ClientConfig represents Nebraska's configuration of interest for the client.
@@ -109,7 +109,7 @@ func NewClientConfig(conf *controllerConfig) *ClientConfig {
 			config.AccessManagementURL = GithubAccessManagementURL
 		}
 	}
-	config.NebraskaVersion = CurrentNebraskaVersion
+	config.NebraskaVersion = version.Version
 
 	return config
 }

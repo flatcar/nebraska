@@ -1,12 +1,22 @@
 GO111MODULE=on
 export GO111MODULE
 
+TAG := `git describe --tags --always`
+VERSION :=
 SHELL = /bin/bash
 VERSION ?= $(shell git describe --tags --always --dirty)
 DOCKER_CMD ?= "docker"
 DOCKER_REPO ?= "quay.io/flatcar"
 DOCKER_IMAGE_NEBRASKA ?= "nebraska"
+## Adds a '-dirty' suffix to version string if there are uncommitted changes
+changes := $(shell git status --porcelain)
+ifeq ($(changes),)
+	VERSION := $(TAG)
+else
+	VERSION := $(TAG)-dirty
+endif
 
+LDFLAGS := "-X github.com/kinvolk/nebraska/pkg/version.Version=$(VERSION) -extldflags "-static""
 .PHONY: all
 all: backend tools frontend
 
@@ -103,7 +113,7 @@ run-generators: tools/go-bindata
 
 .PHONY: build-backend-binary
 build-backend-binary:
-	go build -o bin/nebraska ./cmd/nebraska
+	go build -ldflags ${LDFLAGS} -o bin/nebraska ./cmd/nebraska
 
 .PHONY: backend-code-checks
 backend-code-checks: tools/golangci-lint
