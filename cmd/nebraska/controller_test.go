@@ -74,4 +74,7 @@ func TestClientConfig(t *testing.T) {
 
 	assert.Equal(t, phonyURL+"/settings/apps/authorizations",
 		ctl.clientConfig.AccessManagementURL)
+
+	// Check that a version is set in the client configuration
+	assert.NotEmpty(t, ctl.clientConfig.NebraskaVersion)
 }
