@@ -68,10 +68,10 @@ class ApplicationLayout extends React.Component {
           spacing={1}
           justify="space-between"
         >
-          <Grid item xs={8}>
+          <Grid item xs={12} md={8}>
             <GroupsList appID={this.state.appID} />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={12} md={4}>
             <Grid
               container
               direction="column"

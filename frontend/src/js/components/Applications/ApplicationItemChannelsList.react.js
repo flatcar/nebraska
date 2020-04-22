@@ -22,7 +22,7 @@ function ApplicationItemChannelsList(props) {
       justify="space-between"
     >
       {entries.map((entry, i) =>
-        <Grid item xs={4} key={i}>
+        <Grid item xs={6} md={4} key={i}>
           {entry}
         </Grid>
       )}

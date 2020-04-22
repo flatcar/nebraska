@@ -1,3 +1,4 @@
+import { useMediaQuery } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
@@ -5,7 +6,7 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { useTheme } from '@material-ui/styles';
 import React from 'react';
-import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import semver from 'semver';
 import _ from 'underscore';
 import { cleanSemverVersion, getInstanceStatus, getMinuteDifference, makeColorsForVersions, makeLocaleTime, useGroupVersionBreakdown } from '../../constants/helpers';
@@ -15,7 +16,9 @@ import SimpleTable from '../Common/SimpleTable';
 import makeStatusDefs from '../Instances/StatusDefs';
 
 function TimelineChart(props) {
-  const {width = 500, height = 400, interpolation = 'monotone'} = props;
+  const theme = useTheme();
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
+  const {width = isSmall ? '95%' : 500, height = 400, interpolation = 'monotone'} = props;
   let ticks = {};
 
   function getTickValues(tickCount) {
@@ -88,40 +91,40 @@ function TimelineChart(props) {
   }
 
   return (
-    <AreaChart
-      width={width}
-      height={height}
-      data={props.data}
-      margin={{
-        top: 10, right: 30, left: 0, bottom: 0,
-      }}
-      onClick={(obj) => obj && props.onSelect(obj.activeLabel)}
-    >
-      <CartesianGrid strokeDasharray="3 3" />
-      <Tooltip content={<TimelineTooltip data={props.data} />} />
-      <XAxis
-        dataKey="index"
-        type="number"
-        interval={0}
-        domain={[0, 'dataMax']}
-        ticks={Object.keys(getTickValues(4))}
-        tickFormatter={index => {
-          return ticks[index];
+    <ResponsiveContainer width={width} height={height}>
+      <AreaChart
+        data={props.data}
+        margin={{
+          top: 10, right: 30, left: 0, bottom: 0,
         }}
-      />
-      <YAxis />
-      {props.keys.map((key, i) =>
-        <Area
-          type={interpolation}
-          key={i}
-          dataKey={key}
-          stackId="1"
-          stroke={props.colors[key]}
-          cursor="pointer"
-          fill={props.colors[key]}
+        onClick={(obj) => obj && props.onSelect(obj.activeLabel)}
+      >
+        <CartesianGrid strokeDasharray="3 3" />
+        <Tooltip content={<TimelineTooltip data={props.data} />} />
+        <XAxis
+          dataKey="index"
+          type="number"
+          interval={0}
+          domain={[0, 'dataMax']}
+          ticks={Object.keys(getTickValues(4))}
+          tickFormatter={index => {
+            return ticks[index];
+          }}
         />
-      )}
-    </AreaChart>
+        <YAxis />
+        {props.keys.map((key, i) =>
+          <Area
+            type={interpolation}
+            key={i}
+            dataKey={key}
+            stackId="1"
+            stroke={props.colors[key]}
+            cursor="pointer"
+            fill={props.colors[key]}
+          />
+        )}
+      </AreaChart>
+    </ResponsiveContainer>
   );
 }
 
@@ -287,7 +290,7 @@ export function VersionCountTimeline(props) {
       </Grid>
       <Grid item xs={12} container>
         <Grid item xs={12}>
-          <Box width={500}>
+          <Box>
             { selectedEntry !== -1 ?
               <React.Fragment>
                 <Typography component="span">
@@ -481,7 +484,7 @@ export function StatusCountTimeline(props) {
       </Grid>
       <Grid item xs={12} container>
         <Grid item xs={12}>
-          <Box width={500}>
+          <Box>
             { selectedEntry !== -1 ?
               <React.Fragment>
                 <Typography component="span">

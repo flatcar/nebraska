@@ -37,7 +37,7 @@ function Item(props) {
   return (
     <ListItem>
       <Grid container>
-        <Grid item xs={12}>
+        <Grid item xs={10} sm={12}>
           <CardHeader
             cardMainLinkLabel={props.application.name}
             cardMainLinkPath={{pathname: `/apps/${appID}`}}

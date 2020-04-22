@@ -223,14 +223,15 @@ function ListView(props) {
             item
             container
             md={12}
+            xs={12}
             alignItems="stretch"
           >
-            <Grid item md>
+            <Grid item xs={12} md>
               <InstanceCountLabel
                 countText={getInstanceCount()}
               />
             </Grid>
-            <Grid item md>
+            <Grid item xs={12} md>
               <InstanceFilter
                 versions={versionBreakdown}
                 onFiltersChanged={onFiltersChanged}
@@ -251,7 +252,7 @@ function ListView(props) {
               </Grid>
             </Grid>
           }
-          <Grid item md={12}>
+          <Grid item xs={12} md={12}>
             {!instanceFetchLoading ?
               (instancesObj.instances.length > 0 ?
                 <React.Fragment>

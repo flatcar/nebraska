@@ -2,7 +2,7 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -82,10 +82,10 @@ function ItemExtended(props) {
       spacing={2}
       alignItems="stretch"
     >
-      <Grid item xs={5}>
+      <Grid item xs={12} md={5} lg={5}>
         <Paper>
           <Grid container>
-            <Grid item xs={12}>
+            <Grid item xs={10} sm={12}>
               <CardHeader
                 cardMainLinkLabel={group ? group.name : '…'}
                 cardId={group ? group.id : '…'}
@@ -149,7 +149,7 @@ function ItemExtended(props) {
           </Grid>
         </Paper>
       </Grid>
-      <Grid item xs={7}>
+      <Grid item xs={12} md={7}>
         {group &&
           <Paper className={classes.instancesChartPaper}>
             <ListHeader

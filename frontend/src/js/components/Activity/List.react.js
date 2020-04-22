@@ -1,3 +1,4 @@
+import { Box } from '@material-ui/core';
 import MuiList from '@material-ui/core/List';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -19,10 +20,12 @@ function List(props) {
   return (
     <React.Fragment>
       <Typography className={classes.listTitle}>
-        {makeLocaleTime(props.timestamp, {
-          showTime: false,
-          dateFormat: {weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'}
-        })}
+        <Box padding="1em">
+          {makeLocaleTime(props.timestamp, {
+            showTime: false,
+            dateFormat: {weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'}
+          })}
+        </Box>
       </Typography>
       <MuiList>
         {entries.map((entry, i) =>

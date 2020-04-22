@@ -1,3 +1,4 @@
+import { TableContainer } from '@material-ui/core';
 import MuiTable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -27,29 +28,32 @@ function Table(props) {
   }
 
   return (
-    <MuiTable>
-      <TableHead>
-        <TableRow>
-          <TableCell>IP</TableCell>
-          <TableCell>Instance ID</TableCell>
-          <TableCell>Current Status</TableCell>
-          <TableCell>Version</TableCell>
-          <TableCell>Last Check</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {props.instances.map((instance, i) =>
-          <Item
-            key={'instance_' + i}
-            instance={instance}
-            lastVersionChannel={lastVersionChannel}
-            versionNumbers={versionNumbers}
-            selected={selectedInstance === instance.id}
-            onToggle={onItemToggle}
-          />
-        )}
-      </TableBody>
-    </MuiTable>
+    <TableContainer>
+      <MuiTable>
+        <TableHead>
+          <TableRow>
+            <TableCell>IP</TableCell>
+            <TableCell>Instance ID</TableCell>
+            <TableCell>Current Status</TableCell>
+            <TableCell>Version</TableCell>
+            <TableCell>Last Check</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {props.instances.map((instance, i) =>
+            <Item
+              key={'instance_' + i}
+              instance={instance}
+              lastVersionChannel={lastVersionChannel}
+              versionNumbers={versionNumbers}
+              selected={selectedInstance === instance.id}
+              onToggle={onItemToggle}
+            />
+          )}
+        </TableBody>
+      </MuiTable>
+    </TableContainer>
+
   );
 }
 

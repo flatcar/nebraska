@@ -1,5 +1,6 @@
 import squareIcon from '@iconify/icons-mdi/square';
 import { InlineIcon } from '@iconify/react';
+import { makeStyles } from '@material-ui/core';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -9,7 +10,13 @@ import TableRow from '@material-ui/core/TableRow';
 import React from 'react';
 import Empty from '../Common/EmptyContent';
 
+const useStyles = makeStyles(() => ({
+  spacer:{
+    padding:0
+  }
+}));
 export default function SimpleTable(props) {
+  const classes = useStyles();
   const {columns} = props;
   const [page, setPage] = React.useState(0);
   const rowsPerPageOptions = [5, 10, 50];
@@ -84,6 +91,7 @@ export default function SimpleTable(props) {
             nextIconButtonProps={{
               'aria-label': 'next page',
             }}
+            className={classes.spacer}
             onChangePage={handleChangePage}
             onChangeRowsPerPage={handleChangeRowsPerPage}
           />

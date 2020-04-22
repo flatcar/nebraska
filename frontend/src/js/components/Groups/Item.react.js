@@ -59,7 +59,7 @@ function Item(props) {
       <Grid
         container
       >
-        <Grid item xs={12}>
+        <Grid item xs={10} sm={12}>
           <CardHeader
             cardMainLinkLabel={props.group.name}
             cardMainLinkPath={groupPath}

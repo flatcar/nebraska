@@ -2,7 +2,9 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import TablePagination from '@material-ui/core/TablePagination';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import React from 'react';
 import _ from 'underscore';
 import { activityStore } from '../../stores/Stores';
@@ -24,6 +26,8 @@ const useStyles = makeStyles({
 });
 
 function Container(props) {
+  const theme = useTheme();
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
   const classes = useStyles();
   const [activity, setActivity] = React.useState(getActivityEntries());
   const rowsOptions = [5, 10, 50];
@@ -89,28 +93,28 @@ function Container(props) {
   return (
     <Paper>
       <ListHeader title="Activity" />
-      <Box padding="1em">
-        { _.isNull(activity) ?
-          <Loader />
-          : _.isEmpty(activity) ?
-            <Empty>
-              No activity found for the last week.
-              <br/><br/>
-              You will see here important events related to the rollout of your updates. Stay tuned!
-            </Empty>
-            :
-            <Grid
-              container
-              direction="column"
-            >
-              <Grid item>
-                {Object.values(
+      { _.isNull(activity) ?
+        <Loader />
+        : _.isEmpty(activity) ?
+          <Empty>
+            No activity found for the last week.
+            <br/><br/>
+            You will see here important events related to the rollout of your updates. Stay tuned!
+          </Empty>
+          :
+          <Grid
+            container
+            direction="column"
+          >
+            <Grid item xs={10} sm={12} md={12}>
+              {Object.values(
                 _.mapObject(getPagedActivity(), (entry, timestamp) => {
                   return <List timestamp={timestamp} entries={entry} key={timestamp} />;
                 })
-                )}
-              </Grid>
-              <Grid item>
+              )}
+            </Grid>
+            <Grid item>
+              <Box padding={isSmall ? '0' : '1em'}>
                 <TablePagination
                   classes={classes}
                   rowsPerPageOptions={rowsOptions}
@@ -127,10 +131,11 @@ function Container(props) {
                   onChangePage={handleChangePage}
                   onChangeRowsPerPage={handleChangeRowsPerPage}
                 />
-              </Grid>
+              </Box>
             </Grid>
-        }
-      </Box>
+
+          </Grid>
+      }
     </Paper>
   );
 }

@@ -241,7 +241,7 @@ function DetailsView(props) {
           </Box>
         </Paper>
       </Grid>
-      <Grid item md>
+      <Grid item sm={12} md>
         <Paper>
           <ListHeader title="Event Timeline" />
           {eventHistory ?
