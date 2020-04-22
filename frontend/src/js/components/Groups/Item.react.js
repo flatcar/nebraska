@@ -5,6 +5,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import _ from 'underscore';
+import API from '../../api/API';
+import { useGroupVersionBreakdown } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import ChannelItem from '../Channels/Item.react';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
@@ -21,13 +23,9 @@ const useStyles = makeStyles(theme => ({
 
 function Item(props) {
   const classes = useStyles();
+  const [totalInstances, setTotalInstances] = React.useState(-1);
 
-  const version_breakdown = (props.group &&
-    props.group.version_breakdown) ? props.group.version_breakdown : [];
-  const noInstancesLabel = 'None';
-  const instances_total = props.group.instances_stats ?
-    (props.group.instances_stats.total || noInstancesLabel)
-    : noInstancesLabel;
+  const version_breakdown = useGroupVersionBreakdown(props.group);
   const description = props.group.description || 'No description provided';
   const channel = props.group.channel || {};
 
@@ -46,6 +44,15 @@ function Item(props) {
   function updateGroup() {
     props.handleUpdateGroup(props.group.application_id, props.group.id);
   }
+
+  React.useEffect(() => {
+    API.getInstances(props.group.application_id, props.group.id)
+      .then(result => {
+        setTotalInstances(result.total);
+      })
+      .catch(err => console.error('Error getting total instances in Group/Item', err));
+  },
+  []);
 
   return (
     <ListItem disableGutters>
@@ -87,7 +94,10 @@ function Item(props) {
                   to={groupPath}
                   component={RouterLink}
                 >
-                  {instances_total}
+                  {totalInstances === -1 ? '…'
+                    :
+                    totalInstances > 0 ? totalInstances : 'None'
+                  }
                 </Link>
               </CardLabel>
             </Grid>

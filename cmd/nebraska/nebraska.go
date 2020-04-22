@@ -245,6 +245,8 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 	apiRouter.GET("/apps/:app_id/groups", ctl.getGroups)
 	apiRouter.GET("/apps/:app_id/groups/:group_id/version_timeline", ctl.getGroupVersionCountTimeline)
 	apiRouter.GET("/apps/:app_id/groups/:group_id/status_timeline", ctl.getGroupStatusCountTimeline)
+	apiRouter.GET("/apps/:app_id/groups/:group_id/instances_stats", ctl.getGroupInstancesStats)
+	apiRouter.GET("/apps/:app_id/groups/:group_id/version_breakdown", ctl.getGroupVersionBreakdown)
 
 	// Channels
 	apiRouter.POST("/apps/:app_id/channels", ctl.addChannel)

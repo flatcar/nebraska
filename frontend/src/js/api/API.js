@@ -70,6 +70,14 @@ class API {
     return API.getJSON(BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/status_timeline');
   }
 
+  static getGroupInstancesStats(applicationID, groupID) {
+    return API.getJSON(BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/instances_stats');
+  }
+
+  static getGroupVersionBreakdown(applicationID, groupID) {
+    return API.getJSON(BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/version_breakdown');
+  }
+
   // Channels
 
   static deleteChannel(applicationID, channelID) {

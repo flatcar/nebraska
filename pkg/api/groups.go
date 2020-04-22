@@ -20,23 +20,21 @@ var (
 
 // Group represents a Nebraska application's group.
 type Group struct {
-	ID                        string                   `db:"id" json:"id"`
-	Name                      string                   `db:"name" json:"name"`
-	Description               string                   `db:"description" json:"description"`
-	CreatedTs                 time.Time                `db:"created_ts" json:"created_ts"`
-	RolloutInProgress         bool                     `db:"rollout_in_progress" json:"rollout_in_progress"`
-	ApplicationID             string                   `db:"application_id" json:"application_id"`
-	ChannelID                 dat.NullString           `db:"channel_id" json:"channel_id"`
-	PolicyUpdatesEnabled      bool                     `db:"policy_updates_enabled" json:"policy_updates_enabled"`
-	PolicySafeMode            bool                     `db:"policy_safe_mode" json:"policy_safe_mode"`
-	PolicyOfficeHours         bool                     `db:"policy_office_hours" json:"policy_office_hours"`
-	PolicyTimezone            dat.NullString           `db:"policy_timezone" json:"policy_timezone"`
-	PolicyPeriodInterval      string                   `db:"policy_period_interval" json:"policy_period_interval"`
-	PolicyMaxUpdatesPerPeriod int                      `db:"policy_max_updates_per_period" json:"policy_max_updates_per_period"`
-	PolicyUpdateTimeout       string                   `db:"policy_update_timeout" json:"policy_update_timeout"`
-	VersionBreakdown          []*VersionBreakdownEntry `db:"version_breakdown" json:"version_breakdown,omitempty"`
-	Channel                   *Channel                 `db:"channel" json:"channel,omitempty"`
-	InstancesStats            InstancesStatusStats     `db:"instances_stats" json:"instances_stats,omitempty"`
+	ID                        string         `db:"id" json:"id"`
+	Name                      string         `db:"name" json:"name"`
+	Description               string         `db:"description" json:"description"`
+	CreatedTs                 time.Time      `db:"created_ts" json:"created_ts"`
+	RolloutInProgress         bool           `db:"rollout_in_progress" json:"rollout_in_progress"`
+	ApplicationID             string         `db:"application_id" json:"application_id"`
+	ChannelID                 dat.NullString `db:"channel_id" json:"channel_id"`
+	PolicyUpdatesEnabled      bool           `db:"policy_updates_enabled" json:"policy_updates_enabled"`
+	PolicySafeMode            bool           `db:"policy_safe_mode" json:"policy_safe_mode"`
+	PolicyOfficeHours         bool           `db:"policy_office_hours" json:"policy_office_hours"`
+	PolicyTimezone            dat.NullString `db:"policy_timezone" json:"policy_timezone"`
+	PolicyPeriodInterval      string         `db:"policy_period_interval" json:"policy_period_interval"`
+	PolicyMaxUpdatesPerPeriod int            `db:"policy_max_updates_per_period" json:"policy_max_updates_per_period"`
+	PolicyUpdateTimeout       string         `db:"policy_update_timeout" json:"policy_update_timeout"`
+	Channel                   *Channel       `db:"channel" json:"channel,omitempty"`
 }
 
 // VersionBreakdownEntry represents the distribution of the versions currently
@@ -264,33 +262,39 @@ func (api *API) setGroupRolloutInProgress(groupID string, inProgress bool) error
 func (api *API) groupsQuery() *dat.SelectDocBuilder {
 	return api.dbR.
 		SelectDoc("*").
-		One("instances_stats", api.groupInstancesStatusQuery()).
 		One("channel", api.channelsQuery().Where("id = groups.channel_id")).
-		Many("version_breakdown", api.groupVersionBreakdownQuery()).
 		From("groups").
 		OrderBy("created_ts DESC")
 }
 
-// groupVersionBreakdownQuery returns a SQL query prepared to return the version
-// breakdown of all instances running on a given group.
-func (api *API) groupVersionBreakdownQuery() string {
-	return fmt.Sprintf(`
+// GetGroupVersionBreakdown returns a version breakdown of all instances running on a given group.
+func (api *API) GetGroupVersionBreakdown(groupID string) ([]*VersionBreakdownEntry, error) {
+	var entryList []*VersionBreakdownEntry
+	query := fmt.Sprintf(`
 	SELECT version, count(*) as instances, (count(*) * 100.0 / total) as percentage
 	FROM instance_application, (
-		SELECT count(*) as total 
-		FROM instance_application 
-		WHERE group_id=groups.id AND last_check_for_updates > now() at time zone 'utc' - interval '%s'
+		SELECT count(*) as total
+		FROM instance_application
+		WHERE group_id=$1 AND last_check_for_updates > now() at time zone 'utc' - interval '%[1]s'
 		) totals
-	WHERE group_id=groups.id AND last_check_for_updates > now() at time zone 'utc' - interval '%s' AND %s
+	WHERE group_id=$1 AND last_check_for_updates > now() at time zone 'utc' - interval '%[1]s' AND %[2]s
 	GROUP BY version, total
 	ORDER BY regexp_matches(version, '(\d+)\.(\d+)\.(\d+)')::int[] DESC
-	`, validityInterval, validityInterval, ignoreFakeInstanceCondition("instance_id"))
+	`, validityInterval, ignoreFakeInstanceCondition("instance_id"))
+
+	err := api.dbR.SQL(query, groupID).QueryStructs(&entryList)
+	if err != nil {
+		return nil, err
+	}
+
+	return entryList, nil
 }
 
-// groupInstancesStatusQuery returns a SQL query prepared to return a summary
-// of the status of the instances that belong to a given group.
-func (api *API) groupInstancesStatusQuery() string {
-	return fmt.Sprintf(`
+// getGroupInstancesStats returns a summary of the status of the
+// instances that belong to a given group.
+func (api *API) GetGroupInstancesStats(groupID string) (*InstancesStatusStats, error) {
+	var instancesStats InstancesStatusStats
+	query := fmt.Sprintf(`
 	SELECT
 		count(*) total,
 		sum(case when status IS NULL then 1 else 0 end) undefined,
@@ -302,9 +306,16 @@ func (api *API) groupInstancesStatusQuery() string {
 		sum(case when status = %d then 1 else 0 end) downloading,
 		sum(case when status = %d then 1 else 0 end) onhold
 	FROM instance_application
-	WHERE group_id=groups.id AND last_check_for_updates > now() at time zone 'utc' - interval '%s' AND %s`,
+	WHERE group_id=$1 AND last_check_for_updates > now() at time zone 'utc' - interval '%s' AND %s`,
 		InstanceStatusError, InstanceStatusUpdateGranted, InstanceStatusComplete, InstanceStatusInstalled,
 		InstanceStatusDownloaded, InstanceStatusDownloading, InstanceStatusOnHold, validityInterval, ignoreFakeInstanceCondition("instance_id"))
+
+	err := api.dbR.SQL(query, groupID).QueryStruct(&instancesStats)
+	if err != nil {
+		return nil, err
+	}
+
+	return &instancesStats, nil
 }
 
 func (api *API) GetGroupVersionCountTimeline(groupID string) (map[time.Time](VersionCountMap), error) {

@@ -8,7 +8,7 @@ import React from 'react';
 import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 import semver from 'semver';
 import _ from 'underscore';
-import { cleanSemverVersion, getInstanceStatus, getMinuteDifference, makeColorsForVersions, makeLocaleTime } from '../../constants/helpers';
+import { cleanSemverVersion, getInstanceStatus, getMinuteDifference, makeColorsForVersions, makeLocaleTime, useGroupVersionBreakdown } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import Loader from '../Common/Loader';
 import SimpleTable from '../Common/SimpleTable';
@@ -126,6 +126,7 @@ function TimelineChart(props) {
 }
 
 export function VersionCountTimeline(props) {
+  const groupVersionBreakdown = useGroupVersionBreakdown(props.group);
   const [selectedEntry, setSelectedEntry] = React.useState(-1);
   const [timelineChartData, setTimelineChartData] = React.useState({
     data: [],
@@ -189,7 +190,7 @@ export function VersionCountTimeline(props) {
     // If there is no timeline or no specific time is selected,
     // use the version breakdown (the whole period breakdown).
     if (timelineChartData.data.length === 0 || selectedEntry === -1) {
-      version_breakdown = [...props.group.version_breakdown];
+      version_breakdown = [...groupVersionBreakdown];
     }
 
     let total = 0;

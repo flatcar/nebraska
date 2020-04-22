@@ -3,6 +3,8 @@ import deepOrange from '@material-ui/core/colors/deepOrange';
 import lime from '@material-ui/core/colors/lime';
 import orange from '@material-ui/core/colors/orange';
 import red from '@material-ui/core/colors/red';
+import React from 'react';
+import API from '../api/API';
 
 // Indexes/keys for the architectures need to match the ones in
 // pkg/api/arches.go.
@@ -161,4 +163,25 @@ export function getInstanceStatus(statusID, version) {
   const statusDetails = statusID ? status[statusID] : status[1];
 
   return statusDetails;
+}
+
+export function useGroupVersionBreakdown(group) {
+  const [versionBreakdown, setVersionBreakdown] = React.useState([]);
+
+  React.useEffect(() => {
+    if (!group) {
+      return;
+    }
+
+    const version_breakdown = API.getGroupVersionBreakdown(group.application_id, group.id)
+      .then(version_breakdown => {
+        setVersionBreakdown(version_breakdown || []);
+      })
+      .catch(err => {
+        console.error('Error getting version breakdown for group', group.id, '\nError:', err);
+      });
+  },
+  [group]);
+
+  return versionBreakdown;
 }
