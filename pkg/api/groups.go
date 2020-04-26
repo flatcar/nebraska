@@ -8,6 +8,26 @@ import (
 	"gopkg.in/mgutz/dat.v1"
 )
 
+type (
+	durationParam    string
+	durationCode     int
+	postgresDuration string
+	postgresInterval string
+)
+
+const (
+	oneHour durationCode = iota
+	oneDay
+	sevenDays
+	thirtyDays
+)
+
+var durationParamToCode = map[durationParam]durationCode{
+	"1h":  oneHour,
+	"1d":  oneDay,
+	"7d":  sevenDays,
+	"30d": thirtyDays,
+}
 var (
 	// ErrInvalidChannel error indicates that a channel doesn't belong to the
 	// application it was supposed to belong to.
@@ -317,22 +337,47 @@ func (api *API) GetGroupInstancesStats(groupID string) (*InstancesStatusStats, e
 
 	return &instancesStats, nil
 }
+func durationCodeToPostgresTimings(code durationCode) (postgresDuration, postgresInterval, error) {
+	switch code {
+	case thirtyDays:
+		return "30 days", "3 days", nil
+	case sevenDays:
+		return "7 days", "1 days", nil
+	case oneDay:
+		return "1days", "1 hour", nil
+	case oneHour:
+		return "1hour", "15 minute", nil
+	default:
+		return "", "", fmt.Errorf("invalid duration enumeration value %d", code)
+	}
+}
 
-func (api *API) GetGroupVersionCountTimeline(groupID string) (map[time.Time](VersionCountMap), error) {
+func durationParamToPostgresTimings(duration durationParam) (postgresDuration, postgresInterval, error) {
+	code, ok := durationParamToCode[duration]
+	if !ok {
+		return "", "", fmt.Errorf("invalid duration param %s", duration)
+	}
+	return durationCodeToPostgresTimings(code)
+}
+
+func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (map[time.Time](VersionCountMap), error) {
 	var timelineEntry []VersionCountTimelineEntry
+	durationString, interval, err := durationParamToPostgresTimings(durationParam(duration))
 	// Get the number of instances per version until each of the time-interval
 	// divisions. This is done only for the instances that pinged the server in
 	// the last time-interval.
+	if err != nil {
+		return nil, err
+	}
 	query := fmt.Sprintf(`
-	WITH time_series AS (SELECT * FROM generate_series(now() - interval '%[1]s', now(), INTERVAL '1 hour') AS ts),
-		 recent_instances AS (SELECT instance_id, (CASE WHEN last_update_granted_ts IS NOT NULL THEN last_update_granted_ts ELSE created_ts END), version, 4 status FROM instance_application WHERE group_id=$1 AND last_check_for_updates >= now() - interval '%[1]s' AND %[2]s ORDER BY last_update_granted_ts DESC),
+	WITH time_series AS (SELECT * FROM generate_series(now() - interval '%[1]s', now(), INTERVAL '%[2]s') AS ts),
+		 recent_instances AS (SELECT instance_id, (CASE WHEN last_update_granted_ts IS NOT NULL THEN last_update_granted_ts ELSE created_ts END), version, 4 status FROM instance_application WHERE group_id=$1 AND last_check_for_updates >= now() - interval '%[1]s' AND %[3]s ORDER BY last_update_granted_ts DESC),
 		 instance_versions AS (SELECT instance_id, created_ts, version, status FROM instance_status_history WHERE instance_id IN (SELECT instance_id FROM recent_instances) AND status = 4 UNION (SELECT * FROM recent_instances) ORDER BY created_ts DESC)
-	SELECT ts, (CASE WHEN version IS NULL THEN '' ELSE version END), sum(CASE WHEN version IS NOT null THEN 1 ELSE 0 END) total FROM (SELECT * FROM time_series LEFT JOIN LATERAL(SELECT distinct ON (instance_id) instance_Id, version, created_ts FROM instance_versions WHERE %[3]s AND created_ts <= time_series.ts ORDER BY instance_Id, created_ts DESC) _ ON true) AS _
+	SELECT ts, (CASE WHEN version IS NULL THEN '' ELSE version END), sum(CASE WHEN version IS NOT null THEN 1 ELSE 0 END) total FROM (SELECT * FROM time_series LEFT JOIN LATERAL(SELECT distinct ON (instance_id) instance_Id, version, created_ts FROM instance_versions WHERE %[4]s AND created_ts <= time_series.ts ORDER BY instance_Id, created_ts DESC) _ ON true) AS _
 	GROUP BY 1,2
 	ORDER BY ts DESC;
-	`, validityInterval, ignoreFakeInstanceCondition("instance_id"),
+	`, durationString, interval, ignoreFakeInstanceCondition("instance_id"),
 		ignoreFakeInstanceCondition("instance_Id"))
-
 	if err := api.dbR.SQL(query, groupID).QueryStructs(&timelineEntry); err != nil {
 		return nil, err
 	}
@@ -377,16 +422,20 @@ func (api *API) GetGroupVersionCountTimeline(groupID string) (map[time.Time](Ver
 	return timelineCount, nil
 }
 
-func (api *API) GetGroupStatusCountTimeline(groupID string) (map[time.Time](map[int](VersionCountMap)), error) {
+func (api *API) GetGroupStatusCountTimeline(groupID string, duration string) (map[time.Time](map[int](VersionCountMap)), error) {
 	var timelineEntry []StatusVersionCountTimelineEntry
+	durationString, interval, err := durationParamToPostgresTimings(durationParam(duration))
+	if err != nil {
+		return nil, err
+	}
 	// Get the versions and their number of instances per status within each of the given time intervals.
 	query := fmt.Sprintf(`
-	WITH time_series AS (SELECT * FROM generate_series(now() - interval '%[1]s', now(), INTERVAL '1 hour') AS ts)
+	WITH time_series AS (SELECT * FROM generate_series(now() - interval '%[1]s', now(), INTERVAL '%[2]s') AS ts)
 	SELECT ts, (CASE WHEN status IS NULL THEN 0 ELSE status END), (CASE WHEN version IS NULL THEN '' ELSE version END), count(instance_id) as total FROM (SELECT * FROM time_series
-		LEFT JOIN LATERAL(SELECT * FROM instance_status_history WHERE group_id=$1 AND %[2]s AND created_ts BETWEEN time_series.ts - INTERVAL '1 hour' + INTERVAL '1 sec' AND time_series.ts) _ ON TRUE) AS _
+		LEFT JOIN LATERAL(SELECT * FROM instance_status_history WHERE group_id=$1 AND %[3]s AND created_ts BETWEEN time_series.ts - INTERVAL '1 hour' + INTERVAL '1 sec' AND time_series.ts) _ ON TRUE) AS _
 	GROUP BY 1,2,3
 	ORDER BY ts DESC;
-	`, validityInterval, ignoreFakeInstanceCondition("instance_id"))
+	`, durationString, interval, ignoreFakeInstanceCondition("instance_id"))
 
 	if err := api.dbR.SQL(query, groupID).QueryStructs(&timelineEntry); err != nil {
 		return nil, err
