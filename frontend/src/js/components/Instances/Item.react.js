@@ -67,7 +67,7 @@ function Item(props) {
   if (!_.isEmpty(props.lastVersionChannel)) {
     if (version === props.lastVersionChannel) {
       versionStyle = 'success';
-    } else if (semver.gt(version, props.lastVersionChannel)) {
+    } else if (semver.valid(version) && semver.gt(version, props.lastVersionChannel)) {
       versionStyle = 'info';
     } else {
       const indexDiff = _.indexOf(props.versionNumbers, version) - currentVersionIndex;
