@@ -101,6 +101,7 @@ function ListView(props) {
   const [instancesObj, setInstancesObj] = React.useState({instances: [], total: 0});
   const [instanceFetchLoading, setInstanceFetchLoading] = React.useState(false);
   const [filters, setFilters] = React.useState({status: '', version: ''});
+  const [totalInstancesWithoutFilter, setTotalInstancesWithoutFilter] = React.useState(-1);
   const location = useLocation();
   const history = useHistory();
 
@@ -144,7 +145,7 @@ function ListView(props) {
     });
   };
 
-  function fetchInstances(filters, page, perPage) {
+  function fetchInstances(filters, page, perPage, duration) {
     setInstanceFetchLoading(true);
     const fetchFilters = {...filters};
     if (filters.status === '') {
@@ -158,7 +159,8 @@ function ListView(props) {
       {
         ...fetchFilters,
         page: page + 1,
-        perpage: perPage
+        perpage: perPage,
+        duration
       }).then((result) => {
       setInstanceFetchLoading(false);
       // Since we have retrieved the instances without a filter (i.e. all instances)
@@ -175,6 +177,9 @@ function ListView(props) {
         setInstancesObj({instances: massagedInstances, total: result.total});
       } else {
         setInstancesObj({instances: [], total: result.total});
+      }
+      if (!filters.status && !filters.version) {
+        setTotalInstancesWithoutFilter(result.total);
       }
     })
       .catch(() => {
@@ -211,7 +216,9 @@ function ListView(props) {
   }, [location]);
 
   React.useEffect(() => {
-    fetchInstances(filters, page, rowsPerPage);
+    const queryParams = new URLSearchParams(window.location.search);
+    const duration = queryParams.get('period');
+    fetchInstances(filters, page, rowsPerPage, duration);
   },
   [filters, page, rowsPerPage]);
 

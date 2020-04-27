@@ -176,6 +176,29 @@ function ItemExtended(props) {
             <Box padding="1em">
               <InstanceStatusArea instanceStats={instancesStats} />
             </Box>
+
+            <Grid container alignItems="flex-end" justify="flex-end">
+              <Grid item>
+                {updateProgressChartData && updateProgressChartData.total > 0 ?
+                  <Box m={2}>
+                    {!loadingUpdateProgressChart &&
+                    <Link
+                      className={classes.link}
+                      to={{pathname: `/apps/${props.appID}/groups/${props.groupID}/instances`,
+                           search: `period=${updateProgressChartDuration.queryValue}`
+                      }}
+                      component={RouterLink}
+                    >
+                      See instances
+                    </Link>
+                    }
+                  </Box>
+
+                  :
+                  []
+                }
+              </Grid>
+            </Grid>
           </Paper>
         }
       </Grid>
