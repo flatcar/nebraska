@@ -312,8 +312,12 @@ func (api *API) GetGroupVersionBreakdown(groupID string) ([]*VersionBreakdownEnt
 
 // getGroupInstancesStats returns a summary of the status of the
 // instances that belong to a given group.
-func (api *API) GetGroupInstancesStats(groupID string) (*InstancesStatusStats, error) {
+func (api *API) GetGroupInstancesStats(groupID, duration string) (*InstancesStatusStats, error) {
 	var instancesStats InstancesStatusStats
+	durationString, _, err := durationParamToPostgresTimings(durationParam(duration))
+	if err != nil {
+		return nil, err
+	}
 	query := fmt.Sprintf(`
 	SELECT
 		count(*) total,
@@ -328,9 +332,9 @@ func (api *API) GetGroupInstancesStats(groupID string) (*InstancesStatusStats, e
 	FROM instance_application
 	WHERE group_id=$1 AND last_check_for_updates > now() at time zone 'utc' - interval '%s' AND %s`,
 		InstanceStatusError, InstanceStatusUpdateGranted, InstanceStatusComplete, InstanceStatusInstalled,
-		InstanceStatusDownloaded, InstanceStatusDownloading, InstanceStatusOnHold, validityInterval, ignoreFakeInstanceCondition("instance_id"))
+		InstanceStatusDownloaded, InstanceStatusDownloading, InstanceStatusOnHold, durationString, ignoreFakeInstanceCondition("instance_id"))
 
-	err := api.dbR.SQL(query, groupID).QueryStruct(&instancesStats)
+	err = api.dbR.SQL(query, groupID).QueryStruct(&instancesStats)
 	if err != nil {
 		return nil, err
 	}

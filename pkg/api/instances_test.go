@@ -107,22 +107,22 @@ func TestGetInstances(t *testing.T) {
 	_, _ = a.RegisterInstance(uuid.New().String(), "10.0.0.2", "1.0.1", tApp.ID, tGroup.ID)
 	_, _ = a.RegisterInstance(uuid.New().String(), "10.0.0.3", "1.0.2", tApp.ID, tGroup2.ID)
 
-	result, err := a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Version: "1.0.0", Page: 1, PerPage: 10})
+	result, err := a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Version: "1.0.0", Page: 1, PerPage: 10}, testDuration)
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(result.Instances))
 	assert.Equal(t, 1, (int)(result.TotalInstances))
 
-	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Page: 1, PerPage: 10})
+	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Page: 1, PerPage: 10}, testDuration)
 	assert.NoError(t, err)
 	assert.Equal(t, 2, len(result.Instances))
 	assert.Equal(t, 2, (int)(result.TotalInstances))
 
-	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Page: 1, PerPage: 1})
+	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Page: 1, PerPage: 1}, testDuration)
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(result.Instances))
 	assert.Equal(t, 2, (int)(result.TotalInstances))
 
-	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup2.ID, Page: 1, PerPage: 10})
+	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup2.ID, Page: 1, PerPage: 10}, testDuration)
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(result.Instances))
 	assert.Equal(t, 1, (int)(result.TotalInstances))
@@ -130,20 +130,20 @@ func TestGetInstances(t *testing.T) {
 	_, _ = a.GetUpdatePackage(tInstance.ID, "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
 	_ = a.RegisterEvent(tInstance.ID, tApp.ID, tGroup.ID, EventUpdateComplete, ResultSuccessReboot, "", "")
 
-	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Status: InstanceStatusComplete, Page: 1, PerPage: 10})
+	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Status: InstanceStatusComplete, Page: 1, PerPage: 10}, testDuration)
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(result.Instances))
 
-	_, err = a.GetInstances(InstancesQueryParams{GroupID: tGroup.ID, Version: "1.0.0", Page: 1, PerPage: 10})
+	_, err = a.GetInstances(InstancesQueryParams{GroupID: tGroup.ID, Version: "1.0.0", Page: 1, PerPage: 10}, testDuration)
 	assert.Error(t, err, "Application id must be provided.")
 
-	_, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, Version: "1.0.0", Page: 1, PerPage: 10})
+	_, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, Version: "1.0.0", Page: 1, PerPage: 10}, testDuration)
 	assert.Error(t, err, "Group id must be provided.")
 
-	_, err = a.GetInstances(InstancesQueryParams{Version: "1.0.0", Page: 1, PerPage: 10})
+	_, err = a.GetInstances(InstancesQueryParams{Version: "1.0.0", Page: 1, PerPage: 10}, testDuration)
 	assert.Error(t, err, "Application id and group id are required and must be valid uuids.")
 
-	_, err = a.GetInstances(InstancesQueryParams{ApplicationID: "invalidApplicationID", GroupID: "invalidGroupID", Version: "1.0.0", Page: 1, PerPage: 10})
+	_, err = a.GetInstances(InstancesQueryParams{ApplicationID: "invalidApplicationID", GroupID: "invalidGroupID", Version: "1.0.0", Page: 1, PerPage: 10}, testDuration)
 	assert.Error(t, err, "Application id and group id are required and must be valid uuids.")
 }
 
@@ -165,7 +165,7 @@ func TestGetInstancesFiltered(t *testing.T) {
 		_, _ = a.RegisterInstance(id, ip, "1.0.0", tApp.ID, tGroup.ID)
 	}
 
-	result, err := a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Version: "1.0.0", Page: 1, PerPage: 10})
+	result, err := a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Version: "1.0.0", Page: 1, PerPage: 10}, testDuration)
 	assert.NoError(t, err)
 	expectedIDs := map[string]struct{}{
 		instanceID2: {},
