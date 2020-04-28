@@ -1,6 +1,6 @@
 import { Grid, Link, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
-import timeIntervals, { defaultTimeInterval } from '../../constants/timeInterval';
+import { defaultTimeInterval, timeIntervals } from '../../constants/helpers';
 
 const useStyles = makeStyles(() => ({
   title: {
