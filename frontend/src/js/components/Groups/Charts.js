@@ -69,7 +69,15 @@ function TimelineChart(props) {
 
         const tick = getMinuteDifference(tickDate, startTs) * dimension / lengthMinutes;
         // Show only the time.
-        ticks[tick] = makeLocaleTime(tickDate, dateFormat);
+        if (lengthMinutes === 30 * DAY) {
+          if (tickDate.getMonth() - startTs.getMonth() === 1) {
+            ticks[tick] = makeLocaleTime(tickDate, {showTime: false, dateFormat: {month: 'short', day: 'numeric'}});
+          } else {
+            ticks[tick] = makeLocaleTime(tickDate, dateFormat);
+          }
+        } else {
+          ticks[tick] = makeLocaleTime(tickDate, dateFormat);
+        }
       }
     }
     // The midnight tick just gets the date, not the hours (since they're zero)
@@ -305,7 +313,7 @@ export function VersionCountTimeline(props) {
               </React.Fragment>
               :
               <Typography>
-                Showing for the last 24 hours
+                Showing for the last {duration.displayValue}
                 (click the chart to choose a different time point).
               </Typography>
             }
