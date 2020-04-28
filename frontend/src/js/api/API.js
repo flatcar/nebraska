@@ -70,8 +70,8 @@ class API {
     return API.getJSON(`${BASE_URL}/apps/${applicationID}/groups/${groupID}/status_timeline?duration=${duration}`);
   }
 
-  static getGroupInstancesStats(applicationID, groupID) {
-    return API.getJSON(BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/instances_stats');
+  static getGroupInstancesStats(applicationID, groupID, duration) {
+    return API.getJSON(`${BASE_URL}/apps/${applicationID}/groups/${groupID}/instances_stats?duration=${duration}`);
   }
 
   static getGroupVersionBreakdown(applicationID, groupID) {
@@ -130,6 +130,11 @@ class API {
     if (!_.isEmpty(queryOptions)) {
       url += '?' + queryString.stringify(queryOptions);
     }
+
+    return API.getJSON(url);
+  }
+  static getInstancesCount(applicationID, groupID, duration) {
+    const url = `${BASE_URL}/apps/${applicationID}/groups/${groupID}/instancescount?duration=${duration}`;
 
     return API.getJSON(url);
   }

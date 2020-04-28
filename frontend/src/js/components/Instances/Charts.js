@@ -9,6 +9,7 @@ import React from 'react';
 import { VictoryAnimation, VictoryLabel, VictoryPie } from 'victory';
 import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
+import Loader from '../Common/Loader';
 import { InstanceCountLabel } from './Common';
 import makeStatusDefs from './StatusDefs';
 
@@ -186,7 +187,7 @@ export default function InstanceStatusArea(props) {
   const theme = useTheme();
   const statusDefs = makeStatusDefs(theme);
 
-  const {instanceStats} = props;
+  const {instanceStats, loading} = props;
   const instanceStateCount = [
     {
       status: 'InstanceStatusComplete',
@@ -224,7 +225,6 @@ export default function InstanceStatusArea(props) {
   statusDefs['InstanceStatusOther'].label = 'Other';
 
   const totalInstances = instanceStats ? instanceStats.total : 0;
-
   return (
     totalInstances > 0 ?
       <Grid

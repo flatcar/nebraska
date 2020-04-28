@@ -29,8 +29,11 @@ const useStyles = makeStyles({
 
 function ItemExtended(props) {
   const [application, setApplication] = React.useState(null);
+  const [loadingUpdateProgressChart, setLoadingUpdateProgressChart] = React.useState(false);
   const [group, setGroup] = React.useState(null);
   const [instancesStats, setInstancesStats] = React.useState({});
+  const [updateProgressChartDuration, setUpdateProgressChartDuration] =
+    React.useState(defaultTimeInterval);
   const [versionChartSelectedDuration, setVersionChartSelectedDuration] =
     React.useState(defaultTimeInterval);
   const [statusChartDuration, setStatusChartDuration] =
@@ -53,34 +56,35 @@ function ItemExtended(props) {
       setGroup(groupFound);
     }
   }
-
   function updateGroup() {
     props.handleUpdateGroup(props.groupId, props.appID);
   }
 
   React.useEffect(() => {
+
     applicationsStore.addChangeListener(onChange);
     onChange();
 
-    return function cleanup() {
-      applicationsStore.removeChangeListener(onChange);
-    };
   },
-  [application, group]);
+  []);
 
   React.useEffect(() => {
     if (group) {
-      API.getGroupInstancesStats(group.application_id, group.id)
+      setLoadingUpdateProgressChart(true);
+      API.getGroupInstancesStats(group.application_id, group.id,
+            updateProgressChartDuration.queryValue)
         .then(stats => {
           setInstancesStats(stats);
+          setLoadingUpdateProgressChart(false);
         })
         .catch(err => {
           console.error('Error getting instances stats in Groups/ItemExtended. Group:', group, '\nError:', err);
           setInstancesStats({});
+          setLoadingUpdateProgressChart(false);
         });
     }
   },
-  [group]);
+  [group, updateProgressChartDuration]);
 
   return (
     <Grid
@@ -158,28 +162,27 @@ function ItemExtended(props) {
       <Grid item xs={7}>
         {group &&
           <Paper className={classes.instancesChartPaper}>
-            <ListHeader
-              title="Update Progress"
-              actions={instancesStats.total > 0 ? [
-                <Link
-                  className={classes.link}
-                  to={{pathname: `/apps/${props.appID}/groups/${props.groupID}/instances`}}
-                  component={RouterLink}
-                >
-                  See instances
-                </Link>
-              ]
-                :
-                []
-              }
-            />
+            <Grid container alignItems="center" justify="space-between">
+              <Grid item>
+                <ListHeader title="Update Progress" />
+              </Grid>
+              <Grid item>
+                <Box m={2}>
+                  <TimeIntervalLinks intervalChangeHandler={(duration) =>
+                    setUpdateProgressChartDuration(duration)}
+                  />
+                </Box>
+              </Grid>
+            </Grid>
             <Box padding="1em">
-              <InstanceStatusArea instanceStats={instancesStats} />
+              <InstanceStatusArea instanceStats={instancesStats}
+                loading={loadingUpdateProgressChart}
+              />
             </Box>
 
             <Grid container alignItems="flex-end" justify="flex-end">
               <Grid item>
-                {updateProgressChartData && updateProgressChartData.total > 0 ?
+                {instancesStats.total > 0 ?
                   <Box m={2}>
                     {!loadingUpdateProgressChart &&
                     <Link

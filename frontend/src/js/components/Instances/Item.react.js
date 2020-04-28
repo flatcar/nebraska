@@ -77,8 +77,8 @@ function Item(props) {
         versionStyle = 'danger';
     }
   }
-
-  const instancePath = `/apps/${appID}/groups/${groupID}/instances/${instanceID}`;
+  const searchParams = new URLSearchParams(window.location.search).toString();
+  const instancePath = `/apps/${appID}/groups/${groupID}/instances/${instanceID}?${searchParams}`;
 
   return (
     <React.Fragment>
