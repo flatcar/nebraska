@@ -251,6 +251,7 @@ export function VersionCountTimeline(props) {
 
   // Make the timeline data again when needed.
   React.useEffect(() => {
+    let canceled = false;
     async function getVersionTimeline(group) {
       // Check if we should update the timeline or it's too early.
       const lastUpdate = new Date(timeline.lastUpdate);
@@ -258,10 +259,12 @@ export function VersionCountTimeline(props) {
       try {
         const versionCountTimeline = await groupChartStore
           .getGroupVersionCountTimeline(group.application_id, group.id, duration.queryValue);
-        setTimeline({
-          timeline: versionCountTimeline,
-          lastUpdate: lastUpdate.toUTCString(),
-        });
+        if (!canceled) {
+          setTimeline({
+            timeline: versionCountTimeline,
+            lastUpdate: lastUpdate.toUTCString(),
+          });
+        }
         makeChartData(group, versionCountTimeline || []);
         setSelectedEntry(-1);
       } catch (error) {
@@ -270,6 +273,7 @@ export function VersionCountTimeline(props) {
 
     }
     getVersionTimeline(props.group);
+    return () => (canceled = true);
   },
   [duration]);
 
