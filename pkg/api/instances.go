@@ -291,7 +291,9 @@ func (api *API) getFilterInstancesQuery(selectPart string, p InstancesQueryParam
 		Where("application_id = $1 AND group_id = $2", p.ApplicationID, p.GroupID).
 		Where("last_check_for_updates > now() at time zone 'utc' - interval $1", validityInterval).
 		Where(ignoreFakeInstanceCondition("instance_id"))
-	if p.Status != 0 {
+	if p.Status == InstanceStatusUndefined {
+		query.Where("status IS NULL")
+	} else if p.Status != 0 {
 		query.Where("status = $1", p.Status)
 	}
 	if p.Version != "" {
