@@ -33,9 +33,15 @@ function EditDialog(props) {
   const classes = useStyles();
   const defaultColor = props.data && props.data.channel ? props.data.channel.color : '';
   const [channelColor, setChannelColor] = React.useState(defaultColor);
-  const [arch, setArch] = React.useState(props.data.channel ? props.data.channel.arch : 1);
+  const defaultArch = 1;
+  const [arch, setArch] = React.useState(defaultArch);
   const isCreation = Boolean(props.create);
   const {channel} = props.data;
+
+  React.useEffect(() => {
+    setArch(props.data.channel ? props.data.channel.arch : defaultArch);
+  }, [props.data]);
+
   function handleSubmit(values, actions) {
     const data = {
       name: values.name,
