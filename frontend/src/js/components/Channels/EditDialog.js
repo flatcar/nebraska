@@ -31,7 +31,7 @@ const useStyles = makeStyles(theme => ({
 
 function EditDialog(props) {
   const classes = useStyles();
-  const defaultColor = props.data && props.data.channel ? props.data.channel.color : '';
+  const defaultColor = '';
   const [channelColor, setChannelColor] = React.useState(defaultColor);
   const defaultArch = 1;
   const [arch, setArch] = React.useState(defaultArch);
@@ -40,6 +40,7 @@ function EditDialog(props) {
 
   React.useEffect(() => {
     setArch(props.data.channel ? props.data.channel.arch : defaultArch);
+    setChannelColor(props.data.channel ? props.data.channel.color : defaultColor);
   }, [props.data]);
 
   function handleSubmit(values, actions) {
