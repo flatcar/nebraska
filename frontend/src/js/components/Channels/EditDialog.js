@@ -181,7 +181,7 @@ function EditDialog(props) {
                   const date = new Date(packageItem.created_ts);
                   return {
                     primary: packageItem.version,
-                    secondary:`created: ${date.toLocaleString('default', {day: '2-digit', month:'2-digit', year:'numeric'})}`
+                    secondary: `created: ${date.toLocaleString('default', {day: '2-digit', month: '2-digit', year: 'numeric'})}`
                   };
                 })
             }

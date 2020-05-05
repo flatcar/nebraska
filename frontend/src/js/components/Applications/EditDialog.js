@@ -12,7 +12,7 @@ import React from 'react';
 import * as Yup from 'yup';
 import { applicationsStore } from '../../stores/Stores';
 
-function EditDialog(props){
+function EditDialog(props) {
   const isCreation = Boolean(props.create);
 
   function handleSubmit(values, actions) {

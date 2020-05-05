@@ -101,7 +101,7 @@ function ListView(props) {
   const [instanceFetchLoading, setInstanceFetchLoading] = React.useState(false);
   const [filters, setFilters] = React.useState({status: '', version: ''});
 
-  function fetchInstances(filters, page, perPage){
+  function fetchInstances(filters, page, perPage) {
     setInstanceFetchLoading(true);
     const fetchFilters = {...filters};
     if (filters.status === '') {
