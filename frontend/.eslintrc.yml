@@ -26,6 +26,12 @@ rules:
     ignoreTemplateLiterals: true
     ignoreStrings: true
     ignoreUrls: true
+  key-spacing:
+  - 1
+  - afterColon: true    
+  space-before-blocks:
+  - 1
+  - always    
   space-in-parens:
   - 0
   - always
