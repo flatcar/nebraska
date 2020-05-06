@@ -44,6 +44,13 @@ function TimelineChart(props) {
       return ticks;
     }
 
+    if (lengthMinutes === 30 * DAY) {
+      for (let i = 0; i < props.data.length; i += 2) {
+        const tickDate = new Date(props.data[i].timestamp);
+        ticks[i] = makeLocaleTime(tickDate, {showTime: false, dateFormat: {month: 'short', day: 'numeric'}});
+      }
+      return ticks;
+    }
     // Set up a tick marking the 0 hours of the day contained in the range
     const nextDay = new Date(startTs);
     nextDay.setHours(24, 0, 0, 0);
@@ -69,15 +76,7 @@ function TimelineChart(props) {
 
         const tick = getMinuteDifference(tickDate, startTs) * dimension / lengthMinutes;
         // Show only the time.
-        if (lengthMinutes === 30 * DAY) {
-          if (tickDate.getMonth() - startTs.getMonth() === 1) {
-            ticks[tick] = makeLocaleTime(tickDate, {showTime: false, dateFormat: {month: 'short', day: 'numeric'}});
-          } else {
-            ticks[tick] = makeLocaleTime(tickDate, dateFormat);
-          }
-        } else {
-          ticks[tick] = makeLocaleTime(tickDate, dateFormat);
-        }
+        ticks[tick] = makeLocaleTime(tickDate, dateFormat);
       }
     }
     // The midnight tick just gets the date, not the hours (since they're zero)
