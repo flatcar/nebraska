@@ -19,9 +19,9 @@ function ApplicationItemGroupItem(props) {
   React.useEffect(() => {
     // We use this function without any filter to get the total number of instances
     // in the group.
-    API.getInstances(group.application_id, group.id)
+    API.getInstancesCount(group.application_id, group.id, '1d')
       .then(result => {
-        setTotalInstances(result.total);
+        setTotalInstances(result);
       })
       .catch(err => console.error('Error loading total instances in Instances/List', err));
   },

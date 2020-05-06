@@ -97,10 +97,10 @@ function ListView(props) {
   const [page, setPage] = React.useState(0);
   const versionBreakdown = useGroupVersionBreakdown(group);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [totalInstances, setTotalInstances] = React.useState(-1);
-  const [instancesObj, setInstancesObj] = React.useState({instances: [], total: 0});
+  const [instancesObj, setInstancesObj] = React.useState({instances: [], total: -1});
   const [instanceFetchLoading, setInstanceFetchLoading] = React.useState(false);
   const [filters, setFilters] = React.useState({status: '', version: ''});
+  const [totalInstances, setTotalInstances] = React.useState(-1);
   const location = useLocation();
   const history = useHistory();
 
@@ -144,7 +144,7 @@ function ListView(props) {
     });
   };
 
-  function fetchInstances(filters, page, perPage) {
+  function fetchInstances(filters, page, perPage, duration) {
     setInstanceFetchLoading(true);
     const fetchFilters = {...filters};
     if (filters.status === '') {
@@ -158,7 +158,8 @@ function ListView(props) {
       {
         ...fetchFilters,
         page: page + 1,
-        perpage: perPage
+        perpage: perPage,
+        duration
       }).then((result) => {
       setInstanceFetchLoading(false);
       // Since we have retrieved the instances without a filter (i.e. all instances)
@@ -211,7 +212,9 @@ function ListView(props) {
   }, [location]);
 
   React.useEffect(() => {
-    fetchInstances(filters, page, rowsPerPage);
+    const queryParams = new URLSearchParams(window.location.search);
+    const duration = queryParams.get('period');
+    fetchInstances(filters, page, rowsPerPage, duration);
   },
   [filters, page, rowsPerPage]);
 
@@ -223,9 +226,11 @@ function ListView(props) {
 
     // We use this function without any filter to get the total number of instances
     // in the group.
-    API.getInstances(application.id, group.id)
+    const queryParams = new URLSearchParams(window.location.search);
+    const duration = queryParams.get('period');
+    API.getInstancesCount(application.id, group.id, duration)
       .then(result => {
-        setTotalInstances(result.total);
+        setTotalInstances(result);
       })
       .catch(err => console.error('Error loading total instances in Instances/List', err));
   },
@@ -233,10 +238,11 @@ function ListView(props) {
 
   function getInstanceCount() {
     const total = totalInstances > -1 ? totalInstances : '…';
-    if (!filters.status && !filters.version) {
+    const instancesTotal = instancesObj.total > -1 ? instancesObj.total : '...';
+    if (!filters.status && !filters.version || instancesTotal === total) {
       return total;
     }
-    return `${instancesObj.total}/${total}`;
+    return `${instancesTotal}/${total}`;
   }
 
   function isFiltered() {

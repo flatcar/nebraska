@@ -46,9 +46,9 @@ function Item(props) {
   }
 
   React.useEffect(() => {
-    API.getInstances(props.group.application_id, props.group.id)
+    API.getInstancesCount(props.group.application_id, props.group.id, '1d')
       .then(result => {
-        setTotalInstances(result.total);
+        setTotalInstances(result);
       })
       .catch(err => console.error('Error getting total instances in Group/Item', err));
   },

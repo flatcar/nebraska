@@ -8,11 +8,13 @@ import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import _ from 'underscore';
 import API from '../../api/API';
+import { defaultTimeInterval } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import ChannelItem from '../Channels/Item.react';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
 import ListHeader from '../Common/ListHeader';
 import MoreMenu from '../Common/MoreMenu';
+import TimeIntervalLinks from '../Common/TimeIntervalLinks';
 import InstanceStatusArea from '../Instances/Charts';
 import { StatusCountTimeline, VersionCountTimeline } from './Charts';
 
@@ -27,8 +29,15 @@ const useStyles = makeStyles({
 
 function ItemExtended(props) {
   const [application, setApplication] = React.useState(null);
+  const [loadingUpdateProgressChart, setLoadingUpdateProgressChart] = React.useState(false);
   const [group, setGroup] = React.useState(null);
   const [instancesStats, setInstancesStats] = React.useState({});
+  const [updateProgressChartDuration, setUpdateProgressChartDuration] =
+    React.useState(defaultTimeInterval);
+  const [versionChartSelectedDuration, setVersionChartSelectedDuration] =
+    React.useState(defaultTimeInterval);
+  const [statusChartDuration, setStatusChartDuration] =
+    React.useState(defaultTimeInterval);
   const classes = useStyles();
   function onChange() {
     const app = applicationsStore.getCachedApplication(props.appID);
@@ -47,34 +56,35 @@ function ItemExtended(props) {
       setGroup(groupFound);
     }
   }
-
   function updateGroup() {
     props.handleUpdateGroup(props.groupId, props.appID);
   }
 
   React.useEffect(() => {
+
     applicationsStore.addChangeListener(onChange);
     onChange();
 
-    return function cleanup() {
-      applicationsStore.removeChangeListener(onChange);
-    };
   },
-  [application, group]);
+  []);
 
   React.useEffect(() => {
     if (group) {
-      API.getGroupInstancesStats(group.application_id, group.id)
+      setLoadingUpdateProgressChart(true);
+      API.getGroupInstancesStats(group.application_id, group.id,
+            updateProgressChartDuration.queryValue)
         .then(stats => {
           setInstancesStats(stats);
+          setLoadingUpdateProgressChart(false);
         })
         .catch(err => {
           console.error('Error getting instances stats in Groups/ItemExtended. Group:', group, '\nError:', err);
           setInstancesStats({});
+          setLoadingUpdateProgressChart(false);
         });
     }
   },
-  [group]);
+  [group, updateProgressChartDuration]);
 
   return (
     <Grid
@@ -152,24 +162,46 @@ function ItemExtended(props) {
       <Grid item xs={7}>
         {group &&
           <Paper className={classes.instancesChartPaper}>
-            <ListHeader
-              title="Update Progress"
-              actions={instancesStats.total > 0 ? [
-                <Link
-                  className={classes.link}
-                  to={{pathname: `/apps/${props.appID}/groups/${props.groupID}/instances`}}
-                  component={RouterLink}
-                >
-                  See instances
-                </Link>
-              ]
-                :
-                []
-              }
-            />
+            <Grid container alignItems="center" justify="space-between">
+              <Grid item>
+                <ListHeader title="Update Progress" />
+              </Grid>
+              <Grid item>
+                <Box m={2}>
+                  <TimeIntervalLinks intervalChangeHandler={(duration) =>
+                    setUpdateProgressChartDuration(duration)}
+                  />
+                </Box>
+              </Grid>
+            </Grid>
             <Box padding="1em">
-              <InstanceStatusArea instanceStats={instancesStats} />
+              <InstanceStatusArea instanceStats={instancesStats}
+                loading={loadingUpdateProgressChart}
+              />
             </Box>
+
+            <Grid container alignItems="flex-end" justify="flex-end">
+              <Grid item>
+                {instancesStats.total > 0 ?
+                  <Box m={2}>
+                    {!loadingUpdateProgressChart &&
+                    <Link
+                      className={classes.link}
+                      to={{pathname: `/apps/${props.appID}/groups/${props.groupID}/instances`,
+                           search: `period=${updateProgressChartDuration.queryValue}`
+                      }}
+                      component={RouterLink}
+                    >
+                      See instances
+                    </Link>
+                    }
+                  </Box>
+
+                  :
+                  []
+                }
+              </Grid>
+            </Grid>
           </Paper>
         }
       </Grid>
@@ -186,9 +218,18 @@ function ItemExtended(props) {
                 container
                 direction="column"
               >
-                <ListHeader title="Version Breakdown" />
+                <Grid container alignItems="center" spacing={10}>
+                  <Grid item>
+                    <ListHeader title="Version Breakdown" />
+                  </Grid>
+                  <Grid item>
+                    <TimeIntervalLinks intervalChangeHandler={(duration) =>
+                      setVersionChartSelectedDuration(duration)}
+                    />
+                  </Grid>
+                </Grid>
                 <Box padding="1em">
-                  <VersionCountTimeline group={group} />
+                  <VersionCountTimeline group={group} duration={versionChartSelectedDuration}/>
                 </Box>
               </Grid>
               <Grid
@@ -198,9 +239,18 @@ function ItemExtended(props) {
                 container
                 direction="column"
               >
-                <ListHeader title="Status Breakdown" />
+                <Grid container alignItems="center" spacing={10}>
+                  <Grid item>
+                    <ListHeader title="Status Breakdown" />
+                  </Grid>
+                  <Grid item>
+                    <TimeIntervalLinks intervalChangeHandler={(duration) =>
+                      setStatusChartDuration(duration)}
+                    />
+                  </Grid>
+                </Grid>
                 <Box padding="1em">
-                  <StatusCountTimeline group={group} />
+                  <StatusCountTimeline group={group} duration={statusChartDuration}/>
                 </Box>
               </Grid>
             </Grid>

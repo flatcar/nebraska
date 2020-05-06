@@ -356,8 +356,8 @@ func (ctl *controller) getGroups(c *gin.Context) {
 
 func (ctl *controller) getGroupVersionCountTimeline(c *gin.Context) {
 	groupID := c.Params.ByName("group_id")
-
-	versionCountTimeline, err := ctl.api.GetGroupVersionCountTimeline(groupID)
+	duration := c.Query("duration")
+	versionCountTimeline, err := ctl.api.GetGroupVersionCountTimeline(groupID, duration)
 	switch err {
 	case nil:
 		if err := json.NewEncoder(c.Writer).Encode(versionCountTimeline); err != nil {
@@ -373,8 +373,8 @@ func (ctl *controller) getGroupVersionCountTimeline(c *gin.Context) {
 
 func (ctl *controller) getGroupStatusCountTimeline(c *gin.Context) {
 	groupID := c.Params.ByName("group_id")
-
-	statusCountTimeline, err := ctl.api.GetGroupStatusCountTimeline(groupID)
+	duration := c.Query("duration")
+	statusCountTimeline, err := ctl.api.GetGroupStatusCountTimeline(groupID, duration)
 	switch err {
 	case nil:
 		if err := json.NewEncoder(c.Writer).Encode(statusCountTimeline); err != nil {
@@ -390,8 +390,8 @@ func (ctl *controller) getGroupStatusCountTimeline(c *gin.Context) {
 
 func (ctl *controller) getGroupInstancesStats(c *gin.Context) {
 	groupID := c.Params.ByName("group_id")
-
-	instancesStats, err := ctl.api.GetGroupInstancesStats(groupID)
+	duration := c.Query("duration")
+	instancesStats, err := ctl.api.GetGroupInstancesStats(groupID, duration)
 	switch err {
 	case nil:
 		if err := json.NewEncoder(c.Writer).Encode(instancesStats); err != nil {
@@ -674,8 +674,8 @@ func (ctl *controller) getInstances(c *gin.Context) {
 	p.Status, _ = strconv.Atoi(c.Query("status"))
 	p.Page, _ = strconv.ParseUint(c.Query("page"), 10, 64)
 	p.PerPage, _ = strconv.ParseUint(c.Query("perpage"), 10, 64)
-
-	result, err := ctl.api.GetInstances(p)
+	duration := c.Query("duration")
+	result, err := ctl.api.GetInstances(p, duration)
 	if err == nil {
 		if err := json.NewEncoder(c.Writer).Encode(result); err != nil {
 			logger.Error("getInstances - encoding instances", "error", err.Error(), "params", p)
@@ -685,7 +685,25 @@ func (ctl *controller) getInstances(c *gin.Context) {
 		httpError(c, http.StatusBadRequest)
 	}
 }
+func (ctl *controller) getInstancesCount(c *gin.Context) {
+	appID := c.Params.ByName("app_id")
+	groupID := c.Params.ByName("group_id")
 
+	p := api.InstancesQueryParams{
+		ApplicationID: appID,
+		GroupID:       groupID,
+	}
+	duration := c.Query("duration")
+	result, err := ctl.api.GetInstancesCount(p, duration)
+	if err == nil {
+		if err := json.NewEncoder(c.Writer).Encode(result); err != nil {
+			logger.Error("getInstances - encoding instances", "error", err.Error(), "params", p)
+		}
+	} else {
+		logger.Error("getInstances - getting instances", "error", err.Error(), "params", p)
+		httpError(c, http.StatusBadRequest)
+	}
+}
 func (ctl *controller) getInstance(c *gin.Context) {
 	appID := c.Params.ByName("app_id")
 	instanceID := c.Params.ByName("instance_id")

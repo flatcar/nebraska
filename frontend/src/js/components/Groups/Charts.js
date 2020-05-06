@@ -9,7 +9,7 @@ import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts'
 import semver from 'semver';
 import _ from 'underscore';
 import { cleanSemverVersion, getInstanceStatus, getMinuteDifference, makeColorsForVersions, makeLocaleTime, useGroupVersionBreakdown } from '../../constants/helpers';
-import { applicationsStore } from '../../stores/Stores';
+import { applicationsStore, groupChartStore } from '../../stores/Stores';
 import Loader from '../Common/Loader';
 import SimpleTable from '../Common/SimpleTable';
 import makeStatusDefs from '../Instances/StatusDefs';
@@ -18,7 +18,10 @@ function TimelineChart(props) {
   const {width = 500, height = 400, interpolation = 'monotone'} = props;
   let ticks = {};
 
-  function getTickValues(tickCount) {
+  function getTickValues() {
+    const DAY = 24 * 60;
+    let tickCount = 4;
+    let dateFormat = {useDate: false};
     const startTs = new Date(props.data[0].timestamp);
     const endTs = new Date(props.data[props.data.length - 1].timestamp);
     const lengthMinutes = getMinuteDifference(endTs, startTs);
@@ -28,13 +31,16 @@ function TimelineChart(props) {
     // Reset the ticks for the chart
     ticks = {};
 
-    // If it's the same day, just add a tick every quarter.
-    if (lengthMinutes / 60 < 24) {
+    if (lengthMinutes === 7 * DAY) {
+      tickCount = 7;
+      dateFormat = {useDate: true, showTime: false};
+    }
+    if (lengthMinutes === 60) {
       for (let i = 0; i < 4; i++) {
-        const index = lengthMinutes / 4 * i;
-        ticks[index] = makeLocaleTime(props.data[index].timestamp, {useDate: false});
+        const minuteValue = lengthMinutes / 4 * i;
+        startTs.setMinutes(new Date(props.data[0].timestamp).getMinutes() + minuteValue);
+        ticks[i] = makeLocaleTime(startTs, {useDate: false});
       }
-
       return ticks;
     }
 
@@ -63,7 +69,15 @@ function TimelineChart(props) {
 
         const tick = getMinuteDifference(tickDate, startTs) * dimension / lengthMinutes;
         // Show only the time.
-        ticks[tick] = makeLocaleTime(tickDate, {useDate: false});
+        if (lengthMinutes === 30 * DAY) {
+          if (tickDate.getMonth() - startTs.getMonth() === 1) {
+            ticks[tick] = makeLocaleTime(tickDate, {showTime: false, dateFormat: {month: 'short', day: 'numeric'}});
+          } else {
+            ticks[tick] = makeLocaleTime(tickDate, dateFormat);
+          }
+        } else {
+          ticks[tick] = makeLocaleTime(tickDate, dateFormat);
+        }
       }
     }
     // The midnight tick just gets the date, not the hours (since they're zero)
@@ -104,7 +118,7 @@ function TimelineChart(props) {
         type="number"
         interval={0}
         domain={[0, 'dataMax']}
-        ticks={Object.keys(getTickValues(4))}
+        ticks={Object.keys(getTickValues())}
         tickFormatter={index => {
           return ticks[index];
         }}
@@ -128,6 +142,7 @@ function TimelineChart(props) {
 export function VersionCountTimeline(props) {
   const groupVersionBreakdown = useGroupVersionBreakdown(props.group);
   const [selectedEntry, setSelectedEntry] = React.useState(-1);
+  const { duration } = props;
   const [timelineChartData, setTimelineChartData] = React.useState({
     data: [],
     keys: [],
@@ -233,31 +248,6 @@ export function VersionCountTimeline(props) {
     return version_breakdown;
   }
 
-  function getVersionTimeline(group) {
-    // Check if we should update the timeline or it's too early.
-    const lastUpdate = new Date(timeline.lastUpdate);
-    const currentDate = new Date();
-    if (Object.keys(timeline.timeline).length > 0 &&
-        getMinuteDifference(lastUpdate, currentDate) < 5) {
-      return;
-    }
-
-    applicationsStore
-      .getGroupVersionCountTimeline(group.application_id, group.id)
-      .then(versionCountTimeline => {
-        setTimeline({
-          timeline: versionCountTimeline,
-          lastUpdate: lastUpdate.toUTCString(),
-        });
-
-        makeChartData(group, versionCountTimeline || []);
-        setSelectedEntry(-1);
-      })
-      .catch(error => {
-        console.log('Error getting version count timeline', error);
-      });
-  }
-
   function getSelectedTime() {
     const data = timelineChartData.data;
     if (selectedEntry < 0 || data.length === 0) {
@@ -269,9 +259,31 @@ export function VersionCountTimeline(props) {
 
   // Make the timeline data again when needed.
   React.useEffect(() => {
+    let canceled = false;
+    async function getVersionTimeline(group) {
+      // Check if we should update the timeline or it's too early.
+      const lastUpdate = new Date(timeline.lastUpdate);
+      setTimelineChartData({data: [], keys: [], colors: []});
+      try {
+        const versionCountTimeline = await groupChartStore
+          .getGroupVersionCountTimeline(group.application_id, group.id, duration.queryValue);
+        if (!canceled) {
+          setTimeline({
+            timeline: versionCountTimeline,
+            lastUpdate: lastUpdate.toUTCString(),
+          });
+        }
+        makeChartData(group, versionCountTimeline || []);
+        setSelectedEntry(-1);
+      } catch (error) {
+        console.error(error);
+      }
+
+    }
     getVersionTimeline(props.group);
+    return () => (canceled = true);
   },
-  [props.group, timeline]);
+  [duration]);
 
   return (
     <Grid container alignItems="center" spacing={2}>
@@ -301,7 +313,7 @@ export function VersionCountTimeline(props) {
               </React.Fragment>
               :
               <Typography>
-                Showing for the last 24 hours
+                Showing for the last {duration.displayValue}
                 (click the chart to choose a different time point).
               </Typography>
             }
@@ -321,6 +333,7 @@ export function VersionCountTimeline(props) {
 
 export function StatusCountTimeline(props) {
   const [selectedEntry, setSelectedEntry] = React.useState(-1);
+  const { duration } = props;
   const [timelineChartData, setTimelineChartData] = React.useState({
     data: [],
     keys: [],
@@ -427,30 +440,6 @@ export function StatusCountTimeline(props) {
     return status_breakdown;
   }
 
-  function getStatusTimeline(group) {
-    // Check if we should update the timeline or it's too early.
-    const lastUpdate = new Date(timeline.lastUpdate);
-    const currentDate = new Date();
-    if (Object.keys(timeline.timeline).length > 0 &&
-        getMinuteDifference(lastUpdate, currentDate) < 5) {
-      return;
-    }
-
-    applicationsStore.getGroupStatusCountTimeline(group.application_id, group.id)
-      .then(statusCountTimeline => {
-        setTimeline({
-          timeline: statusCountTimeline,
-          lastUpdate: new Date().toUTCString(),
-        });
-
-        makeChartData(statusCountTimeline || []);
-        setSelectedEntry(-1);
-      })
-      .catch(error => {
-        console.log('Error getting status count timeline', error);
-      });
-  }
-
   function getSelectedTime() {
     const data = timelineChartData.data;
     if (selectedEntry < 0 || data.length === 0) {
@@ -462,9 +451,25 @@ export function StatusCountTimeline(props) {
 
   // Make the timeline data again when needed.
   React.useEffect(() => {
+    async function getStatusTimeline(group) {
+      setTimelineChartData({data: [], keys: [], colors: []});
+      try {
+        const statusCountTimeline = await groupChartStore
+          .getGroupStatusCountTimeline(group.application_id, group.id, duration.queryValue);
+        setTimeline({
+          timeline: statusCountTimeline,
+          lastUpdate: new Date().toUTCString(),
+        });
+
+        makeChartData(statusCountTimeline || []);
+        setSelectedEntry(-1);
+      } catch (error) {
+        console.error(error);
+      }
+    }
     getStatusTimeline(props.group);
   },
-  [props.group, timeline]);
+  [props.duration]);
 
   return (
     <Grid container alignItems="center" spacing={2}>
@@ -495,7 +500,8 @@ export function StatusCountTimeline(props) {
               </React.Fragment>
               :
               <Typography>
-                Showing data for the last hour (click the chart to choose a different time point).
+                Showing data for the {duration.displayValue}
+                (click the chart to choose a different time point).
               </Typography>
             }
           </Box>

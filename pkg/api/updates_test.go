@@ -9,6 +9,8 @@ import (
 	"gopkg.in/mgutz/dat.v1"
 )
 
+const testDuration = "1d"
+
 func TestGetUpdatePackage(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
@@ -202,7 +204,7 @@ func TestGetUpdatePackage_RolloutStats(t *testing.T) {
 
 	group, _ := a.GetGroup(tGroup.ID)
 	assert.True(t, group.RolloutInProgress)
-	stats, _ := a.GetGroupInstancesStats(group.ID)
+	stats, _ := a.GetGroupInstancesStats(group.ID, testDuration)
 	assert.Equal(t, 3, stats.Total)
 	assert.Equal(t, 1, stats.UpdateGranted)
 	assert.Equal(t, 2, stats.OnHold)
@@ -211,7 +213,7 @@ func TestGetUpdatePackage_RolloutStats(t *testing.T) {
 
 	group, _ = a.GetGroup(tGroup.ID)
 	assert.True(t, group.RolloutInProgress)
-	stats, _ = a.GetGroupInstancesStats(group.ID)
+	stats, _ = a.GetGroupInstancesStats(group.ID, testDuration)
 	assert.Equal(t, 1, stats.Downloading)
 	assert.Equal(t, 2, stats.OnHold)
 
@@ -221,7 +223,7 @@ func TestGetUpdatePackage_RolloutStats(t *testing.T) {
 
 	group, _ = a.GetGroup(tGroup.ID)
 	assert.True(t, group.RolloutInProgress)
-	stats, _ = a.GetGroupInstancesStats(group.ID)
+	stats, _ = a.GetGroupInstancesStats(group.ID, testDuration)
 	assert.Equal(t, 1, stats.Complete)
 	assert.Equal(t, 2, stats.UpdateGranted)
 
@@ -230,7 +232,7 @@ func TestGetUpdatePackage_RolloutStats(t *testing.T) {
 
 	group, _ = a.GetGroup(tGroup.ID)
 	assert.True(t, group.RolloutInProgress)
-	stats, _ = a.GetGroupInstancesStats(group.ID)
+	stats, _ = a.GetGroupInstancesStats(group.ID, testDuration)
 	assert.Equal(t, 2, stats.Complete)
 	assert.Equal(t, 1, stats.Error)
 
@@ -239,7 +241,7 @@ func TestGetUpdatePackage_RolloutStats(t *testing.T) {
 
 	group, _ = a.GetGroup(tGroup.ID)
 	assert.False(t, group.RolloutInProgress)
-	stats, _ = a.GetGroupInstancesStats(group.ID)
+	stats, _ = a.GetGroupInstancesStats(group.ID, testDuration)
 	assert.Equal(t, 3, stats.Complete)
 }
 

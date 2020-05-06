@@ -265,6 +265,7 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 	// Instances
 	apiRouter.GET("/apps/:app_id/groups/:group_id/instances/:instance_id/status_history", ctl.getInstanceStatusHistory)
 	apiRouter.GET("/apps/:app_id/groups/:group_id/instances", ctl.getInstances)
+	apiRouter.GET("/apps/:app_id/groups/:group_id/instancescount", ctl.getInstancesCount)
 	apiRouter.GET("/apps/:app_id/groups/:group_id/instances/:instance_id", ctl.getInstance)
 
 	// Activity

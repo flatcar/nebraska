@@ -44,7 +44,7 @@ const (
 )
 
 const (
-	validityInterval = "1 days"
+	validityInterval postgresDuration = "1 days"
 )
 
 // Instance represents an instance running one or more applications for which
@@ -154,7 +154,7 @@ func (api *API) GetInstance(instanceID, appID string) (*Instance, error) {
 	err := api.dbR.
 		SelectDoc("*").
 		From("instance").
-		One("application", api.instanceAppQuery(appID)).
+		One("application", api.instanceAppQuery(appID, validityInterval)).
 		Where("id = $1", instanceID).
 		QueryStruct(&instance)
 
@@ -176,12 +176,18 @@ func (api *API) GetInstanceStatusHistory(instanceID, appID, groupID string, limi
 }
 
 // GetInstances returns all instances that match with the provided criteria.
-func (api *API) GetInstances(p InstancesQueryParams) (InstancesWithTotal, error) {
+func (api *API) GetInstances(p InstancesQueryParams, duration string) (InstancesWithTotal, error) {
 	var instances []*Instance
 	var totalCount uint64
 	var err error
+
 	p.Page, p.PerPage = validatePaginationParams(p.Page, p.PerPage)
-	err = api.instancesQuery(p).Paginate(p.Page, p.PerPage).QueryStructs(&instances)
+	var dbDuration postgresDuration
+	dbDuration, _, err = durationParamToPostgresTimings(durationParam(duration))
+	if err != nil {
+		return InstancesWithTotal{}, err
+	}
+	err = api.getFilterInstancesQuery("COUNT (*)", p, dbDuration).QueryStruct(&totalCount)
 	if err == sql.ErrNoRows {
 		return InstancesWithTotal{
 			TotalInstances: 0,
@@ -191,7 +197,13 @@ func (api *API) GetInstances(p InstancesQueryParams) (InstancesWithTotal, error)
 	if err != nil {
 		return InstancesWithTotal{}, err
 	}
-	err = api.getFilterInstancesQuery("COUNT (*)", p).QueryStruct(&totalCount)
+	err = api.instancesQuery(p, dbDuration).Paginate(p.Page, p.PerPage).QueryStructs(&instances)
+	if err == sql.ErrNoRows {
+		return InstancesWithTotal{
+			TotalInstances: 0,
+			Instances:      nil,
+		}, nil
+	}
 	if err != nil {
 		return InstancesWithTotal{}, err
 	}
@@ -200,6 +212,25 @@ func (api *API) GetInstances(p InstancesQueryParams) (InstancesWithTotal, error)
 		Instances:      instances,
 	}
 	return result, nil
+}
+
+func (api *API) GetInstancesCount(p InstancesQueryParams, duration string) (uint64, error) {
+	var totalCount uint64
+	var err error
+
+	var dbDuration postgresDuration
+	dbDuration, _, err = durationParamToPostgresTimings(durationParam(duration))
+	if err != nil {
+		return totalCount, err
+	}
+	err = api.getFilterInstancesQuery("COUNT (*)", p, dbDuration).QueryStruct(&totalCount)
+	if err == sql.ErrNoRows {
+		return totalCount, nil
+	}
+	if err != nil {
+		return totalCount, err
+	}
+	return totalCount, nil
 }
 
 // validateApplicationAndGroup validates if the group provided belongs to the
@@ -271,12 +302,12 @@ func (api *API) updateInstanceStatus(instanceID, appID string, newStatus int) er
 
 // instanceAppQuery returns a SelectDocBuilder prepared to return the app status
 // of the app identified by the application id provided for a given instance.
-func (api *API) instanceAppQuery(appID string) *dat.SelectDocBuilder {
+func (api *API) instanceAppQuery(appID string, duration postgresDuration) *dat.SelectDocBuilder {
 	return api.dbR.
 		SelectDoc("version", "status", "last_check_for_updates", "last_update_version", "update_in_progress", "application_id", "group_id").
 		From("instance_application").
 		Where("instance_id = instance.id AND application_id = $1", appID).
-		Where("last_check_for_updates > now() at time zone 'utc' - interval $1", validityInterval).
+		Where("last_check_for_updates > now() at time zone 'utc' - interval $1", duration).
 		Where(ignoreFakeInstanceCondition("instance_id"))
 }
 
@@ -284,12 +315,12 @@ func ignoreFakeInstanceCondition(instanceIDField string) string {
 	return fmt.Sprintf(`(%[1]s IS NULL OR %[1]s NOT SIMILAR TO '\{[a-fA-F0-9-]{36}\}')`, instanceIDField)
 }
 
-func (api *API) getFilterInstancesQuery(selectPart string, p InstancesQueryParams) *dat.SelectBuilder {
+func (api *API) getFilterInstancesQuery(selectPart string, p InstancesQueryParams, duration postgresDuration) *dat.SelectBuilder {
 	query := api.dbR.
 		Select(selectPart).
 		From("instance_application").
 		Where("application_id = $1 AND group_id = $2", p.ApplicationID, p.GroupID).
-		Where("last_check_for_updates > now() at time zone 'utc' - interval $1", validityInterval).
+		Where("last_check_for_updates > now() at time zone 'utc' - interval $1", duration).
 		Where(ignoreFakeInstanceCondition("instance_id"))
 	if p.Status == InstanceStatusUndefined {
 		query.Where("status IS NULL")
@@ -304,14 +335,12 @@ func (api *API) getFilterInstancesQuery(selectPart string, p InstancesQueryParam
 
 // instancesQuery returns a SelectDocBuilder prepared to return all instances
 // that match the criteria provided in InstancesQueryParams.
-func (api *API) instancesQuery(p InstancesQueryParams) *dat.SelectDocBuilder {
-	instancesSubquery := api.getFilterInstancesQuery("instance_id", p)
-
+func (api *API) instancesQuery(p InstancesQueryParams, duration postgresDuration) *dat.SelectDocBuilder {
+	instancesSubquery := api.getFilterInstancesQuery("instance_id", p, duration)
 	instancesSubquerySQL, instancesSubqueryParams := instancesSubquery.ToSQL()
-
 	return api.dbR.
 		SelectDoc("*").
-		One("application", api.instanceAppQuery(p.ApplicationID)).
+		One("application", api.instanceAppQuery(p.ApplicationID, duration)).
 		From("instance").
 		Where(fmt.Sprintf("id IN (%s)", instancesSubquerySQL), instancesSubqueryParams...)
 }

@@ -48,6 +48,7 @@ export default function InstanceLayout(props) {
   const applicationName = application ? application.name : '…';
   const groupName = group ? group.name : '…';
 
+  const searchParams = new URLSearchParams(window.location.search).toString();
   return (
     <React.Fragment>
       <SectionHeader
@@ -66,7 +67,7 @@ export default function InstanceLayout(props) {
             label: groupName
           },
           {
-            path: `/apps/${appID}/groups/${groupID}/instances`,
+            path: `/apps/${appID}/groups/${groupID}/instances?${searchParams}`,
             label: 'Instances'
           },
         ]}

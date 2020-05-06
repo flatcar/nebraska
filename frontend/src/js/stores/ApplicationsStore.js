@@ -169,16 +169,16 @@ class ApplicationsStore extends Store {
       });
   }
 
-  getGroupVersionCountTimeline(applicationID, groupID) {
+  getGroupVersionCountTimeline(applicationID, groupID, duration) {
     // Not much value here, but we still abstract the API call in case we
     // want to e.g. cache the results in the future.
-    return API.getGroupVersionCountTimeline(applicationID, groupID);
+    return API.getGroupVersionCountTimeline(applicationID, groupID, duration);
   }
 
-  getGroupStatusCountTimeline(applicationID, groupID) {
+  getGroupStatusCountTimeline(applicationID, groupID, duration) {
     // Not much value here, but we still abstract the API call in case we
     // want to e.g. cache the results in the future.
-    return API.getGroupStatusCountTimeline(applicationID, groupID);
+    return API.getGroupStatusCountTimeline(applicationID, groupID, duration);
   }
 
   // Channels
