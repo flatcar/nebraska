@@ -109,7 +109,7 @@ function EditDialog(props) {
   function renderForm({values, status, isSubmitting}) {
     const channels = props.data.channels ? props.data.channels : [];
     return (
-      <Form>
+      <Form data-testid="package-edit-form">
         <DialogContent>
           {status && status.statusMessage &&
           <DialogContentText color="error">

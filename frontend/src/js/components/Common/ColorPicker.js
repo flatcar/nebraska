@@ -41,7 +41,10 @@ export function ColorPickerButton(props) {
 
   return (
     <div>
-      <IconButton className={classes.iconButton} onClick={handleColorButtonClick}>
+      <IconButton className={classes.iconButton}
+        onClick={handleColorButtonClick}
+        data-testid="icon-button"
+      >
         {props.children ?
           React.cloneElement(props.children, componentProps)
           :
@@ -50,6 +53,7 @@ export function ColorPickerButton(props) {
       </IconButton>
       {displayColorPicker &&
       <Popover
+        data-testid="popover"
         open={displayColorPicker}
         anchorEl={anchorEl}
         onClose={handleClose}

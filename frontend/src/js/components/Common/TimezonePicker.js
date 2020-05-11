@@ -36,6 +36,7 @@ function renderInput(inputProps) {
         ...InputProps,
       }}
       {...other}
+      data-testid="timezone-input"
     />
   );
 }
@@ -168,6 +169,7 @@ export default function TimzonePicker(props) {
           }}
           placeholder="Pick a timezone"
           readOnly
+          data-testid="timezone-readonly-input"
         />
       </FormControl>
       <Dialog open={showPicker}>

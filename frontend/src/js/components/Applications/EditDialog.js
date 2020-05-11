@@ -45,7 +45,7 @@ function EditDialog(props) {
 
   function renderForm({status, isSubmitting}) {
     return (
-      <Form>
+      <Form data-testid="app-edit-form">
         <DialogContent>
           {status && status.statusMessage &&
           <DialogContentText color="error">
@@ -78,7 +78,6 @@ function EditDialog(props) {
               helperText="Clone channels and groups from another other application"
               margin="normal"
               component={TextField}
-              displayEmpty
               InputLabelProps={{
                 shrink: true,
               }}
