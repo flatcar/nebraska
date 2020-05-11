@@ -74,7 +74,7 @@ function EditDialog(props) {
     const channels = props.data.channels ? props.data.channels : [];
 
     return (
-      <Form>
+      <Form data-testid="group-edit-form">
         <DialogContent>
           {status && status.statusMessage &&
           <DialogContentText color="error">

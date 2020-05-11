@@ -7,7 +7,7 @@ export default function Empty(props) {
     <Box padding={2}>
       {React.Children.map(props.children, child => {
         if (typeof child === 'string') {
-          return <Typography color="textSecondary" align="center">{child}</Typography>;
+          return <Typography color="textSecondary" align="center" data-testid="empty">{child}</Typography>;
         }
         return child;
       })

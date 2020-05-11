@@ -45,7 +45,7 @@ function ModalButton(props) {
   // case it should be set from the caller).
   return (
     <div>
-      <Fab size="small" aria-label="add" onClick={open}>
+      <Fab size="small" aria-label="add" onClick={open} data-testid="modal-button">
         <AddIcon />
       </Fab>
       {modal}

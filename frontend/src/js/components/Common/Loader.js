@@ -19,7 +19,7 @@ export default function Loader(props) {
     return progress;
 
   return (
-    <Box className={classes.loaderContainer}>
+    <Box className={classes.loaderContainer} data-testid="loader-container">
       {progress}
     </Box>
   );
