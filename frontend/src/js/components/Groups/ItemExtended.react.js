@@ -5,10 +5,10 @@ import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useHistory, useLocation } from 'react-router-dom';
 import _ from 'underscore';
 import API from '../../api/API';
-import { defaultTimeInterval } from '../../constants/helpers';
+import { defaultTimeInterval, timeIntervals } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import ChannelItem from '../Channels/Item.react';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
@@ -38,6 +38,8 @@ function ItemExtended(props) {
     React.useState(defaultTimeInterval);
   const [statusChartDuration, setStatusChartDuration] =
     React.useState(defaultTimeInterval);
+  const location = useLocation();
+  const history = useHistory();
   const classes = useStyles();
   function onChange() {
     const app = applicationsStore.getCachedApplication(props.appID);
@@ -60,6 +62,15 @@ function ItemExtended(props) {
     props.handleUpdateGroup(props.groupId, props.appID);
   }
 
+  function setDurationToURL(key, duration) {
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set(key, duration);
+    history.push({
+      pathname: location.pathname,
+      search: searchParams.toString()
+    });
+  }
+
   React.useEffect(() => {
 
     applicationsStore.addChangeListener(onChange);
@@ -67,6 +78,19 @@ function ItemExtended(props) {
 
   },
   []);
+
+  function setDurationStateForCharts(key, setState) {
+    const searchParams = new URLSearchParams(location.search);
+    const period = searchParams.get(key);
+    const selectedInterval = timeIntervals.find((intervals) => intervals.queryValue === period );
+    setState(selectedInterval || defaultTimeInterval);
+  }
+
+  React.useEffect(() => {
+    setDurationStateForCharts('version_timeline_period', setVersionChartSelectedDuration);
+    setDurationStateForCharts('status_timeline_period', setStatusChartDuration);
+    setDurationStateForCharts('stats_period', setUpdateProgressChartDuration);
+  }, [location]);
 
   React.useEffect(() => {
     if (group) {
@@ -168,8 +192,8 @@ function ItemExtended(props) {
               </Grid>
               <Grid item>
                 <Box m={2}>
-                  <TimeIntervalLinks intervalChangeHandler={(duration) =>
-                    setUpdateProgressChartDuration(duration)}
+                  <TimeIntervalLinks intervalChangeHandler={(duration) => setDurationToURL('stats_period', duration.queryValue)}
+                    selectedInterval = {updateProgressChartDuration}
                   />
                 </Box>
               </Grid>
@@ -223,8 +247,8 @@ function ItemExtended(props) {
                     <ListHeader title="Version Breakdown" />
                   </Grid>
                   <Grid item>
-                    <TimeIntervalLinks intervalChangeHandler={(duration) =>
-                      setVersionChartSelectedDuration(duration)}
+                    <TimeIntervalLinks intervalChangeHandler={(duration) => setDurationToURL('version_timeline_period', duration.queryValue)}
+                      selectedInterval = {versionChartSelectedDuration}
                     />
                   </Grid>
                 </Grid>
@@ -244,8 +268,8 @@ function ItemExtended(props) {
                     <ListHeader title="Status Breakdown" />
                   </Grid>
                   <Grid item>
-                    <TimeIntervalLinks intervalChangeHandler={(duration) =>
-                      setStatusChartDuration(duration)}
+                    <TimeIntervalLinks intervalChangeHandler={(duration) => setDurationToURL('status_timeline_period', duration.queryValue)}
+                      selectedInterval = {statusChartDuration}
                     />
                   </Grid>
                 </Grid>
