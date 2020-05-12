@@ -187,7 +187,7 @@ export default function InstanceStatusArea(props) {
   const theme = useTheme();
   const statusDefs = makeStatusDefs(theme);
 
-  const {instanceStats, loading} = props;
+  const {instanceStats, loading, period} = props;
   const instanceStateCount = [
     {
       status: 'InstanceStatusComplete',
@@ -275,9 +275,9 @@ export default function InstanceStatusArea(props) {
       </Grid>
       :
       <Empty>
-        No instances have yet registered with this group.
+        No instances have registered with this group for the past {period}.
         <br/><br/>
-        Registration will happen automatically the first time the instance requests an update.
+        Instances will be shown here automatically the next time they request an update.
       </Empty>
   );
 }
