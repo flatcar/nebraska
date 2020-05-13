@@ -55,6 +55,7 @@
     "start": "npm run build-icons && react-scripts start",
     "build": "npm run build-icons && react-scripts build",
     "test": "react-scripts test",
+    "test:coverage": "react-scripts test --watchAll=false --env=jsdom --coverage  --reporters=default --coverageDirectory=coverage/report",
     "eject": "react-scripts eject",
     "lint": "eslint 'src/**/*.{js,jsx}'",
     "lint:fix": "eslint --fix 'src/**/*.{js,jsx}'"
