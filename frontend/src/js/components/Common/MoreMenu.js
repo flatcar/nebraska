@@ -18,7 +18,12 @@ export default function MoreMenu(props) {
 
   return (
     <div>
-      <IconButton edge="end" aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+      <IconButton edge="end"
+        aria-controls="simple-menu"
+        aria-haspopup="true"
+        onClick={handleClick}
+        data-testid="more-menu-open-button"
+      >
         <MoreVertIcon />
       </IconButton>
       <Menu
@@ -35,6 +40,7 @@ export default function MoreMenu(props) {
               handleClose(event);
               action();
             }}
+            data-testid="more-menu-item"
           >
             {label}
           </MenuItem>

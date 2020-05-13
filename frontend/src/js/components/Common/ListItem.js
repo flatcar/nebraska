@@ -14,8 +14,8 @@ export default function ListItem(props) {
 
   return (
     <React.Fragment>
-      <Divider className={classes.outterDivider} />
-      <MuiListItem disableGutters {...props} />
+      <Divider className={classes.outterDivider} data-testid="list-item-divider"/>
+      <MuiListItem disableGutters {...props} data-testid="list-item"/>
     </React.Fragment>
   );
 }
