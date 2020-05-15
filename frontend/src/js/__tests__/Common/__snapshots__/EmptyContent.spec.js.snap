@@ -9,13 +9,7 @@ exports[`Empty renders correct content 1`] = `
       class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary MuiTypography-alignCenter"
       data-testid="empty"
     >
-      abc
-    </p>
-    <p
-      class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary MuiTypography-alignCenter"
-      data-testid="empty"
-    >
-      def
+      Some Dummy Content
     </p>
   </div>
 </DocumentFragment>
