@@ -16,14 +16,14 @@ export const ARCHES = {
 };
 
 const colors = makeColors();
-export const timeIntervals = [
-  {displayValue: '30 days', queryValue: '30d'},
-  {displayValue: '7 days', queryValue: '7d'},
-  {displayValue: '1 day', queryValue: '1d'},
-  {displayValue: '1 hour', queryValue: '1h'}
+export const timeIntervalsDefault = [
+  {displayValue: '30 days', queryValue: '30d', disabled: false},
+  {displayValue: '7 days', queryValue: '7d', disabled: false},
+  {displayValue: '1 day', queryValue: '1d', disabled: false},
+  {displayValue: '1 hour', queryValue: '1h', disabled: false}
 ];
 
-export const defaultTimeInterval = timeIntervals
+export const defaultTimeInterval = timeIntervalsDefault
   .find((interval) => interval.queryValue === '1d');
 
 function makeColors() {

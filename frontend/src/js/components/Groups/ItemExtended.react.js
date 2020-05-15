@@ -8,7 +8,7 @@ import React from 'react';
 import { Link as RouterLink, useHistory, useLocation } from 'react-router-dom';
 import _ from 'underscore';
 import API from '../../api/API';
-import { defaultTimeInterval, timeIntervals } from '../../constants/helpers';
+import { defaultTimeInterval, timeIntervalsDefault } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import ChannelItem from '../Channels/Item.react';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
@@ -82,7 +82,8 @@ function ItemExtended(props) {
   function setDurationStateForCharts(key, setState) {
     const searchParams = new URLSearchParams(location.search);
     const period = searchParams.get(key);
-    const selectedInterval = timeIntervals.find((intervals) => intervals.queryValue === period );
+    const selectedInterval = timeIntervalsDefault
+      .find((intervals) => intervals.queryValue === period );
     setState(selectedInterval || defaultTimeInterval);
   }
 
@@ -194,6 +195,8 @@ function ItemExtended(props) {
                 <Box m={2}>
                   <TimeIntervalLinks intervalChangeHandler={(duration) => setDurationToURL('stats_period', duration.queryValue)}
                     selectedInterval = {updateProgressChartDuration}
+                    appID = {props.appID}
+                    groupID = {props.groupID}
                   />
                 </Box>
               </Grid>
@@ -201,6 +204,7 @@ function ItemExtended(props) {
             <Box padding="1em">
               <InstanceStatusArea instanceStats={instancesStats}
                 loading={loadingUpdateProgressChart}
+                period={updateProgressChartDuration.displayValue}
               />
             </Box>
 
@@ -249,6 +253,8 @@ function ItemExtended(props) {
                   <Grid item>
                     <TimeIntervalLinks intervalChangeHandler={(duration) => setDurationToURL('version_timeline_period', duration.queryValue)}
                       selectedInterval = {versionChartSelectedDuration}
+                      appID = {props.appID}
+                      groupID = {props.groupID}
                     />
                   </Grid>
                 </Grid>
@@ -270,6 +276,8 @@ function ItemExtended(props) {
                   <Grid item>
                     <TimeIntervalLinks intervalChangeHandler={(duration) => setDurationToURL('status_timeline_period', duration.queryValue)}
                       selectedInterval = {statusChartDuration}
+                      appID = {props.appID}
+                      groupID = {props.groupID}
                     />
                   </Grid>
                 </Grid>
