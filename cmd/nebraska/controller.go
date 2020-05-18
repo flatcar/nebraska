@@ -821,6 +821,8 @@ func (ctl *controller) getMetrics(c *gin.Context) {
 
 func (ctl *controller) processOmahaRequest(c *gin.Context) {
 	c.Writer.Header().Set("Content-Type", "text/xml")
+
+	logger.Info("process omaha request", "omaha-request-size", c.Request.ContentLength)
 	if err := ctl.omahaHandler.Handle(c.Request.Body, c.Writer, getRequestIP(c.Request)); err != nil {
 		logger.Error("process omaha request", "error", err)
 	}
