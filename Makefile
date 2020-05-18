@@ -62,6 +62,10 @@ frontend-watch:
 frontend-install:
 	cd frontend && npm install
 
+.PHONY: frontend-test
+frontend-test:
+	cd frontend && npm run test
+
 .PHONY: frontend-lint
 frontend-lint:
 	cd frontend && npm run lint
