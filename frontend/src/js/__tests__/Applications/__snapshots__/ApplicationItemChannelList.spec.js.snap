@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Application Channel List  should render channel item if there are channels 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiGrid-root MuiGrid-container MuiGrid-justify-xs-space-between"
+  >
+    <div
+      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+    >
+      <div
+        class="MuiListItem-root MuiListItem-gutters"
+      >
+        <div
+          class="MuiListItemAvatar-root"
+        >
+          <div
+            class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar-220 makeStyles-colorAvatar-221 MuiAvatar-colorDefault"
+          >
+            m
+          </div>
+        </div>
+        <div
+          class="MuiListItemText-root MuiListItemText-multiline"
+        >
+          <span
+            class="MuiTypography-root MuiListItemText-primary MuiTypography-body1"
+          >
+            main
+          </span>
+          <p
+            class="MuiTypography-root MuiListItemText-secondary MuiTypography-body2 MuiTypography-colorTextSecondary"
+          >
+            1.11.3 (ALL)
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

@@ -1,0 +1,152 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Application Item should render item correctly for no data 1`] = `
+<DocumentFragment>
+  <hr
+    class="MuiDivider-root makeStyles-outterDivider-2"
+    data-testid="list-item-divider"
+  />
+  <li
+    class="MuiListItem-root"
+    data-testid="list-item"
+  >
+    <div
+      class="MuiGrid-root MuiGrid-container"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiGrid-root makeStyles-gridHeader-124 MuiGrid-container MuiGrid-justify-xs-space-between"
+        >
+          <div
+            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+          >
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+            >
+              <a
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-mainLink-125 MuiTypography-colorPrimary"
+                href="/apps/123"
+              >
+                ABC
+              </a>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-true"
+            >
+              <p
+                arial-label="group-id"
+                class="MuiTypography-root makeStyles-idLabel-128 MuiTypography-body1 MuiTypography-noWrap"
+              >
+                123
+              </p>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+            >
+              <span
+                class="MuiTypography-root makeStyles-descriptionLabel-127 MuiTypography-body1"
+              >
+                No description provided
+              </span>
+            </div>
+          </div>
+          <div
+            class="MuiGrid-root MuiGrid-item"
+          >
+            <div>
+              <button
+                aria-controls="simple-menu"
+                aria-haspopup="true"
+                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd"
+                data-testid="more-menu-open-button"
+                tabindex="0"
+                type="button"
+              >
+                <span
+                  class="MuiIconButton-label"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root"
+                    focusable="false"
+                    role="presentation"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                    />
+                  </svg>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+        <hr
+          class="MuiDivider-root makeStyles-innerDivider-129 MuiDivider-light"
+        />
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiGrid-root makeStyles-itemSection-1 MuiGrid-container MuiGrid-spacing-xs-2 MuiGrid-justify-xs-space-between"
+        >
+          <div
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+          >
+            <span
+              class="MuiTypography-root makeStyles-featureLabel-126 MuiTypography-body1"
+            >
+              Instances:
+            </span>
+             
+            <span
+              class="MuiTypography-root makeStyles-label-130 makeStyles-label-195 MuiTypography-body1"
+            >
+              None
+            </span>
+          </div>
+          <div
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+          >
+            <span
+              class="MuiTypography-root makeStyles-featureLabel-126 MuiTypography-body1"
+            >
+              Groups:
+            </span>
+             
+            <span
+              class="MuiTypography-root makeStyles-label-130 makeStyles-label-197 MuiTypography-body1"
+            >
+              None
+            </span>
+            <div
+              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+            />
+          </div>
+          <div
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+          >
+            <span
+              class="MuiTypography-root makeStyles-featureLabel-126 MuiTypography-body1"
+            >
+              Channels:
+            </span>
+             
+            <span
+              class="MuiTypography-root makeStyles-label-130 makeStyles-label-199 MuiTypography-body1"
+            >
+              None
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </li>
+</DocumentFragment>
+`;
