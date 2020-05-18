@@ -28,6 +28,11 @@ jobs:
         make frontend-install
         make frontend-lint
 
+    - name: Run test
+      run: |
+        make frontend-install
+        make frontend-test
+                
     - name: Build Frontend
       run: |
         make frontend
