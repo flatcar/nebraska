@@ -1,0 +1,235 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Application List should render list correctly with data 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+  >
+    <div
+      class="MuiGrid-root makeStyles-sectionHeader-29 MuiGrid-container MuiGrid-align-items-xs-flex-start MuiGrid-justify-xs-space-between"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item"
+      >
+        <h5
+          class="MuiTypography-root MuiTypography-h5"
+        >
+          Applications
+        </h5>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item"
+      >
+        <div>
+          <button
+            aria-label="add"
+            class="MuiButtonBase-root MuiFab-root MuiFab-sizeSmall"
+            data-testid="modal-button"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiFab-label"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root"
+                focusable="false"
+                role="presentation"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"
+                />
+              </svg>
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+      </div>
+    </div>
+    <ul
+      class="MuiList-root MuiList-padding"
+    >
+      <hr
+        class="MuiDivider-root makeStyles-outterDivider-205"
+        data-testid="list-item-divider"
+      />
+      <li
+        class="MuiListItem-root"
+        data-testid="list-item"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-container"
+        >
+          <div
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+          >
+            <div
+              class="MuiGrid-root makeStyles-gridHeader-224 MuiGrid-container MuiGrid-justify-xs-space-between"
+            >
+              <div
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+              >
+                <div
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+                >
+                  <a
+                    class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-mainLink-225 MuiTypography-colorPrimary"
+                    href="/apps/123"
+                  >
+                    ABC
+                  </a>
+                </div>
+                <div
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-true"
+                >
+                  <p
+                    arial-label="group-id"
+                    class="MuiTypography-root makeStyles-idLabel-228 MuiTypography-body1 MuiTypography-noWrap"
+                  >
+                    123
+                  </p>
+                </div>
+                <div
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+                >
+                  <span
+                    class="MuiTypography-root makeStyles-descriptionLabel-227 MuiTypography-body1"
+                  >
+                    App Item Description
+                  </span>
+                </div>
+              </div>
+              <div
+                class="MuiGrid-root MuiGrid-item"
+              >
+                <div>
+                  <button
+                    aria-controls="simple-menu"
+                    aria-haspopup="true"
+                    class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd"
+                    data-testid="more-menu-open-button"
+                    tabindex="0"
+                    type="button"
+                  >
+                    <span
+                      class="MuiIconButton-label"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="MuiSvgIcon-root"
+                        focusable="false"
+                        role="presentation"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                        />
+                      </svg>
+                    </span>
+                    <span
+                      class="MuiTouchRipple-root"
+                    />
+                  </button>
+                </div>
+              </div>
+            </div>
+            <hr
+              class="MuiDivider-root makeStyles-innerDivider-229 MuiDivider-light"
+            />
+          </div>
+          <div
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+          >
+            <div
+              class="MuiGrid-root makeStyles-itemSection-204 MuiGrid-container MuiGrid-spacing-xs-2 MuiGrid-justify-xs-space-between"
+            >
+              <div
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+              >
+                <span
+                  class="MuiTypography-root makeStyles-featureLabel-226 MuiTypography-body1"
+                >
+                  Instances:
+                </span>
+                 
+                <span
+                  class="MuiTypography-root makeStyles-label-230 makeStyles-label-253 MuiTypography-body1"
+                >
+                  1
+                </span>
+              </div>
+              <div
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
+              >
+                <span
+                  class="MuiTypography-root makeStyles-featureLabel-226 MuiTypography-body1"
+                >
+                  Groups:
+                </span>
+                 
+                <span
+                  class="MuiTypography-root makeStyles-label-230 makeStyles-label-255 MuiTypography-body1"
+                >
+                  None
+                </span>
+                <div
+                  class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+                />
+              </div>
+              <div
+                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              >
+                <span
+                  class="MuiTypography-root makeStyles-featureLabel-226 MuiTypography-body1"
+                >
+                  Channels:
+                </span>
+                 
+                <div
+                  class="MuiGrid-root MuiGrid-container MuiGrid-justify-xs-space-between"
+                >
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+                  >
+                    <div
+                      class="MuiListItem-root MuiListItem-gutters"
+                    >
+                      <div
+                        class="MuiListItemAvatar-root"
+                      >
+                        <div
+                          class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar-259 makeStyles-colorAvatar-260 MuiAvatar-colorDefault"
+                        >
+                          m
+                        </div>
+                      </div>
+                      <div
+                        class="MuiListItemText-root MuiListItemText-multiline"
+                      >
+                        <span
+                          class="MuiTypography-root MuiListItemText-primary MuiTypography-body1"
+                        >
+                          main
+                        </span>
+                        <p
+                          class="MuiTypography-root MuiListItemText-secondary MuiTypography-body2 MuiTypography-colorTextSecondary"
+                        >
+                          1.11.3 (ALL)
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</DocumentFragment>
+`;
