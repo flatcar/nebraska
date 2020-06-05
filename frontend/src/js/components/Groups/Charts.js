@@ -252,7 +252,7 @@ export function VersionCountTimeline(props) {
     if (selectedEntry < 0 || data.length === 0) {
       return '';
     }
-    const timestamp = data[selectedEntry].timestamp;
+    const timestamp = data[selectedEntry] ? data[selectedEntry].timestamp : '';
     return makeLocaleTime(timestamp);
   }
 
