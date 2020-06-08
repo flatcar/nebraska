@@ -79,12 +79,12 @@ func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID,
 		return nil, ErrNoPackageFound
 	}
 
-	if updateAlreadyGranted {
-		return group.Channel.Package, nil
-	}
-
 	for _, blacklistedChannelID := range group.Channel.Package.ChannelsBlacklist {
 		if blacklistedChannelID == group.Channel.ID {
+			if updateAlreadyGranted {
+				// TODO: Log any error
+				_ = api.updateInstanceStatus(instance.ID, appID, InstanceStatusComplete)
+			}
 			return nil, ErrNoUpdatePackageAvailable
 		}
 	}
@@ -92,7 +92,15 @@ func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID,
 	instanceSemver, _ := semver.Make(instanceVersion)
 	packageSemver, _ := semver.Make(group.Channel.Package.Version)
 	if !instanceSemver.LT(packageSemver) {
+		if updateAlreadyGranted {
+			// TODO: Log any error
+			_ = api.updateInstanceStatus(instance.ID, appID, InstanceStatusComplete)
+		}
 		return nil, ErrNoUpdatePackageAvailable
+	}
+
+	if updateAlreadyGranted {
+		return group.Channel.Package, nil
 	}
 
 	updatesStats, err := api.getGroupUpdatesStats(group)
