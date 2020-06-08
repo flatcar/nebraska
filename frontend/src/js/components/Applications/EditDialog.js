@@ -23,6 +23,9 @@ function EditDialog(props) {
 
     let appFunctionCall;
     if (isCreation) {
+      if (values.appToClone === 'none') {
+        values.appToClone = '';
+      }
       appFunctionCall = applicationsStore.createApplication(data, values.appToClone);
     } else {
       appFunctionCall = applicationsStore.updateApplication(props.data.id, data);

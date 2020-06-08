@@ -1,6 +1,10 @@
 package api
 
-import "time"
+import (
+	"time"
+
+	"github.com/doug-martin/goqu/v9"
+)
 
 // Team represents a Nebraska team.
 type Team struct {
@@ -11,58 +15,93 @@ type Team struct {
 
 func (api *API) GetTeams() ([]*Team, error) {
 	var teams []*Team
-
-	err := api.dbR.
-		SelectDoc("id, name, created_ts").
-		From("team").
-		OrderBy("name").
-		QueryStructs(&teams)
-
+	query, _, err := goqu.From("team").
+		Select("id", "name", "created_ts").
+		Order(goqu.C("name").Asc()).
+		ToSQL()
 	if err != nil {
+		return nil, err
+	}
+	rows, err := api.db.Queryx(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var team Team
+		err := rows.StructScan(&team)
+		if err != nil {
+			return nil, err
+		}
+		teams = append(teams, &team)
+	}
+	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 	return teams, nil
 }
 
 func (api *API) GetTeam() (*Team, error) {
-	var team *Team
-
-	err := api.dbR.
-		SelectDoc("id, name, created_ts").
-		From("team").
+	var team = &Team{}
+	query, _, err := goqu.From("team").
+		Select("id", "name", "created_ts").
 		Limit(1).
-		QueryStruct(&team)
-
+		ToSQL()
 	if err != nil {
 		return nil, err
 	}
-
+	err = api.db.QueryRowx(query).StructScan(team)
+	if err != nil {
+		return nil, err
+	}
 	return team, nil
 }
 
 func (api *API) UpdateTeam(team *Team) error {
-	result, err := api.dbR.
-		Update("team").
-		SetWhitelist(team, "name").
-		Where("id = $1", team.ID).
-		Exec()
-
-	if err == nil && result.RowsAffected == 0 {
-		return ErrNoRowsAffected
+	query, _, err := goqu.Update("team").
+		Set(goqu.Record{"name": team.Name}).
+		Where(goqu.C("id").Eq(team.ID)).
+		ToSQL()
+	if err != nil {
+		return err
+	}
+	result, err := api.db.Exec(query)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return err
 	}
 
-	return err
+	return nil
 }
 
 // AddTeam registers a team.
 func (api *API) AddTeam(team *Team) (*Team, error) {
-	var err error
-
+	var query *goqu.InsertDataset
 	if team.ID != "" {
-		err = api.dbR.InsertInto("team").Whitelist("id", "name").Record(team).Returning("*").QueryStruct(team)
+		query = goqu.Insert("team").
+			Cols("id", "name").
+			Vals(goqu.Vals{team.ID, team.Name}).
+			Returning(goqu.T("team").All())
 	} else {
-		err = api.dbR.InsertInto("team").Whitelist("name").Record(team).Returning("*").QueryStruct(team)
+		query = goqu.Insert("team").
+			Cols("name").
+			Vals(goqu.Vals{team.Name}).
+			Returning(goqu.T("team").All())
 	}
+	insertQuery, _, err := query.ToSQL()
+	if err != nil {
+		return nil, err
+	}
+	err = api.db.QueryRowx(insertQuery).StructScan(team)
 
+	if err != nil {
+		return nil, err
+	}
 	return team, err
 }

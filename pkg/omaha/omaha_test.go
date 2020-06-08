@@ -12,7 +12,7 @@ import (
 	omahaSpec "github.com/coreos/go-omaha/omaha"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"gopkg.in/mgutz/dat.v1"
+	"gopkg.in/guregu/null.v4"
 )
 
 const (
@@ -62,8 +62,8 @@ func TestInvalidRequests(t *testing.T) {
 	tTeam, _ := a.AddTeam(&api.Team{Name: "test_team"})
 	tApp, _ := a.AddApp(&api.Application{Name: "test_app", Description: "Test app", TeamID: tTeam.ID})
 	tPkg, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "640.0.0", ApplicationID: tApp.ID})
-	tChannel, _ := a.AddChannel(&api.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: dat.NullStringFrom(tPkg.ID)})
-	tGroup, _ := a.AddGroup(&api.Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: dat.NullStringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tChannel, _ := a.AddChannel(&api.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := a.AddGroup(&api.Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
 	validUnregisteredIP := "127.0.0.1"
 	validUnregisteredMachineID := "some-id"
@@ -92,8 +92,8 @@ func TestAppNoUpdateForAppWithChannelAndPackageName(t *testing.T) {
 
 	tAppFlatcar, _ := a.GetApp(flatcarAppID)
 	tPkgFlatcar640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "640.0.0", ApplicationID: tAppFlatcar.ID})
-	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppFlatcar.ID, PackageID: dat.NullStringFrom(tPkgFlatcar640.ID)})
-	tGroup, _ := a.AddGroup(&api.Group{Name: "Production", ApplicationID: tAppFlatcar.ID, ChannelID: dat.NullStringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppFlatcar.ID, PackageID: null.StringFrom(tPkgFlatcar640.ID)})
+	tGroup, _ := a.AddGroup(&api.Group{Name: "Production", ApplicationID: tAppFlatcar.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
 	validUnregisteredIP := "127.0.0.1"
 	validUnregisteredMachineID := "65e1266d-6f54-4b87-9080-23b99ca9c12f"
@@ -144,8 +144,8 @@ func TestAppRegistrationForAppWithChannelAndPackageName(t *testing.T) {
 
 	tAppFlatcar, _ := a.GetApp(flatcarAppID)
 	tPkgFlatcar640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "640.0.0", ApplicationID: tAppFlatcar.ID})
-	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppFlatcar.ID, PackageID: dat.NullStringFrom(tPkgFlatcar640.ID)})
-	tGroup, _ := a.AddGroup(&api.Group{Name: "Production", ApplicationID: tAppFlatcar.ID, ChannelID: dat.NullStringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppFlatcar.ID, PackageID: null.StringFrom(tPkgFlatcar640.ID)})
+	tGroup, _ := a.AddGroup(&api.Group{Name: "Production", ApplicationID: tAppFlatcar.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
 	validUnregisteredIP := "127.0.0.1"
 	validUnregisteredMachineID := "65e1266d-6f54-4b87-9080-23b99ca9c12f"
@@ -172,9 +172,9 @@ func TestAppUpdateForAppWithChannelAndPackageName(t *testing.T) {
 
 	tAppFlatcar, _ := a.GetApp(flatcarAppID)
 	tFilenameFlatcar := "flatcarupdate.tgz"
-	tPkgFlatcar640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Filename: dat.NullStringFrom(tFilenameFlatcar), Version: "99640.0.0", ApplicationID: tAppFlatcar.ID})
-	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppFlatcar.ID, PackageID: dat.NullStringFrom(tPkgFlatcar640.ID)})
-	tGroup, _ := a.AddGroup(&api.Group{Name: "Production", ApplicationID: tAppFlatcar.ID, ChannelID: dat.NullStringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tPkgFlatcar640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Filename: null.StringFrom(tFilenameFlatcar), Version: "99640.0.0", ApplicationID: tAppFlatcar.ID})
+	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppFlatcar.ID, PackageID: null.StringFrom(tPkgFlatcar640.ID)})
+	tGroup, _ := a.AddGroup(&api.Group{Name: "Production", ApplicationID: tAppFlatcar.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	flatcarAction, _ := a.AddFlatcarAction(&api.FlatcarAction{Event: "postinstall", Sha256: "fsdkjjfghsdakjfgaksdjfasd", PackageID: tPkgFlatcar640.ID})
 
 	validUnregisteredIP := "127.0.0.1"

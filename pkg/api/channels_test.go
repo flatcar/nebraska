@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/mgutz/dat.v1"
+	"gopkg.in/guregu/null.v4"
 )
 
 func TestAddChannel(t *testing.T) {
@@ -18,7 +18,7 @@ func TestAddChannel(t *testing.T) {
 	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
 	tPkg2, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp2.ID})
 
-	channel, err := a.AddChannel(&Channel{Name: "channel1", Color: "blue", ApplicationID: tApp.ID, PackageID: dat.NullStringFrom(tPkg.ID)})
+	channel, err := a.AddChannel(&Channel{Name: "channel1", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
 	assert.NoError(t, err)
 
 	channelX, err := a.GetChannel(channel.ID)
@@ -33,7 +33,7 @@ func TestAddChannel(t *testing.T) {
 	assert.NoError(t, err, "A channel may not have a package associated yet.")
 	assert.Equal(t, "channel2", channel2.Name)
 	assert.Equal(t, "green", channel2.Color)
-	assert.Equal(t, dat.NullString{}, channel2.PackageID)
+	assert.Equal(t, null.String{}, channel2.PackageID)
 
 	_, err = a.AddChannel(&Channel{Name: "channel3"})
 	assert.Error(t, err, "App id is required")
@@ -44,19 +44,19 @@ func TestAddChannel(t *testing.T) {
 	_, err = a.AddChannel(&Channel{Name: "channel3", ApplicationID: uuid.New().String()})
 	assert.Error(t, err, "App used must exist.")
 
-	_, err = a.AddChannel(&Channel{Name: "channel3", ApplicationID: tApp.ID, PackageID: dat.NullStringFrom("invalidPackageID")})
+	_, err = a.AddChannel(&Channel{Name: "channel3", ApplicationID: tApp.ID, PackageID: null.StringFrom("invalidPackageID")})
 	assert.Error(t, err, "Package id must be a valid uuid.")
 
-	_, err = a.AddChannel(&Channel{Name: "channel3", ApplicationID: tApp.ID, PackageID: dat.NullStringFrom(uuid.New().String())})
+	_, err = a.AddChannel(&Channel{Name: "channel3", ApplicationID: tApp.ID, PackageID: null.StringFrom(uuid.New().String())})
 	assert.Error(t, err, "Package used must exist.")
 
-	_, err = a.AddChannel(&Channel{Name: "channel3", ApplicationID: tApp.ID, PackageID: dat.NullStringFrom(tPkg2.ID)})
+	_, err = a.AddChannel(&Channel{Name: "channel3", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg2.ID)})
 	assert.Equal(t, ErrInvalidPackage, err, "Package used must belong to the same application as the channel.")
 
 	_, err = a.AddChannel(&Channel{Name: "channel3", ApplicationID: tApp.ID, Arch: Arch(77777)})
 	assert.Equal(t, ErrInvalidArch, err, "Channel must have a valid arch")
 
-	_, err = a.AddChannel(&Channel{Name: "channel3", ApplicationID: tApp.ID, PackageID: dat.NullStringFrom(tPkg.ID), Arch: ArchAArch64})
+	_, err = a.AddChannel(&Channel{Name: "channel3", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID), Arch: ArchAArch64})
 	assert.Equal(t, ErrArchMismatch, err, "Channel and its package must have a matching arch")
 }
 
@@ -68,12 +68,12 @@ func TestUpdateChannel(t *testing.T) {
 	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
 	tApp2, _ := a.AddApp(&Application{Name: "test_app2", TeamID: tTeam.ID})
 	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: dat.NullStringFrom(tPkg.ID)})
+	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
 	tPkg2, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.1", ApplicationID: tApp.ID})
 	tPkg3, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.2", ApplicationID: tApp2.ID})
 	tPkg4, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.3", ApplicationID: tApp.ID, ChannelsBlacklist: []string{tChannel.ID}})
 
-	err := a.UpdateChannel(&Channel{ID: tChannel.ID, Name: "test_channel_updated", PackageID: dat.NullStringFrom(tPkg2.ID)})
+	err := a.UpdateChannel(&Channel{ID: tChannel.ID, Name: "test_channel_updated", PackageID: null.StringFrom(tPkg2.ID)})
 	assert.NoError(t, err)
 
 	channel, err := a.GetChannel(tChannel.ID)
@@ -82,10 +82,10 @@ func TestUpdateChannel(t *testing.T) {
 	assert.Equal(t, "", channel.Color, "Color was set to an empty string in the last update.")
 	assert.Equal(t, "12.1.1", channel.Package.Version)
 
-	err = a.UpdateChannel(&Channel{ID: tChannel.ID, Name: "test_channel_updated", PackageID: dat.NullStringFrom(tPkg3.ID)})
+	err = a.UpdateChannel(&Channel{ID: tChannel.ID, Name: "test_channel_updated", PackageID: null.StringFrom(tPkg3.ID)})
 	assert.Equal(t, ErrInvalidPackage, err, "Package used must belong to the same application as the channel.")
 
-	err = a.UpdateChannel(&Channel{ID: tChannel.ID, PackageID: dat.NullStringFrom(tPkg4.ID)})
+	err = a.UpdateChannel(&Channel{ID: tChannel.ID, PackageID: null.StringFrom(tPkg4.ID)})
 	assert.Equal(t, ErrBlacklistedChannel, err, "Package used must not have blacklisted this channel.")
 }
 
@@ -154,5 +154,5 @@ func TestGetChannels(t *testing.T) {
 	assert.Error(t, err, "Add id must be a valid uuid.")
 
 	_, err = a.GetChannels(uuid.New().String(), 0, 0)
-	assert.Error(t, err, "App id used must exist.")
+	assert.NoError(t, err, "no error for a non existing appID")
 }

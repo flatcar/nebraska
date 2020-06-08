@@ -1,6 +1,10 @@
 package api
 
-import "time"
+import (
+	"time"
+
+	"github.com/doug-martin/goqu/v9"
+)
 
 // FlatcarAction represents an Omaha action with some Flatcar specific fields.
 type FlatcarAction struct {
@@ -20,29 +24,44 @@ type FlatcarAction struct {
 
 // AddFlatcarAction registers the provided Omaha Flatcar action.
 func (api *API) AddFlatcarAction(action *FlatcarAction) (*FlatcarAction, error) {
-	err := api.dbR.
-		InsertInto("flatcar_action").
-		Whitelist("event", "chromeos_version", "sha256", "needs_admin", "is_delta", "disable_payload_backoff", "metadata_signature_rsa", "metadata_size", "deadline", "package_id").
-		Record(action).
-		Returning("*").
-		QueryStruct(action)
-
+	query, _, err := goqu.Insert("flatcar_action").
+		Cols("event", "chromeos_version", "sha256", "needs_admin", "is_delta", "disable_payload_backoff", "metadata_signature_rsa", "metadata_size", "deadline", "package_id").
+		Vals(goqu.Vals{
+			action.Event,
+			action.ChromeOSVersion,
+			action.Sha256,
+			action.NeedsAdmin,
+			action.IsDelta,
+			action.DisablePayloadBackoff,
+			action.MetadataSignatureRsa,
+			action.MetadataSize,
+			action.Deadline,
+			action.PackageID,
+		}).
+		Returning(goqu.T("flatcar_action").All()).
+		ToSQL()
+	if err != nil {
+		return nil, err
+	}
+	err = api.db.QueryRowx(query).StructScan(action)
+	if err != nil {
+		return nil, err
+	}
 	return action, err
 }
 
 // GetFlatcarAction returns the Flatcar action entry associated to the package id
 // provided.
 func (api *API) GetFlatcarAction(packageID string) (*FlatcarAction, error) {
-	var action FlatcarAction
-
-	err := api.dbR.SelectDoc("*").
-		From("flatcar_action").
-		Where("package_id = $1", packageID).
-		QueryStruct(&action)
-
+	action := FlatcarAction{}
+	query, _, err := goqu.From("flatcar_action").
+		Where(goqu.C("package_id").Eq(packageID)).ToSQL()
 	if err != nil {
 		return nil, err
 	}
-
+	err = api.db.QueryRowx(query).StructScan(&action)
+	if err != nil {
+		return nil, err
+	}
 	return &action, nil
 }

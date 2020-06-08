@@ -4,7 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"gopkg.in/mgutz/dat.v1"
+	"github.com/doug-martin/goqu/v9"
+	"gopkg.in/guregu/null.v4"
 )
 
 const (
@@ -73,13 +74,13 @@ var (
 
 // Event represents an event posted by an instance to Nebraska.
 type Event struct {
-	ID              int            `db:"id" json:"id"`
-	CreatedTs       time.Time      `db:"created_ts" json:"created_ts"`
-	PreviousVersion dat.NullString `db:"previous_version" json:"previous_version"`
-	ErrorCode       dat.NullString `db:"error_code" json:"error_code"`
-	InstanceID      string         `db:"instance_id" json:"instance_id"`
-	ApplicationID   string         `db:"application_id" json:"application_id"`
-	EventTypeID     string         `db:"event_type_id" json:"event_type_id"`
+	ID              int         `db:"id" json:"id"`
+	CreatedTs       time.Time   `db:"created_ts" json:"created_ts"`
+	PreviousVersion null.String `db:"previous_version" json:"previous_version"`
+	ErrorCode       null.String `db:"error_code" json:"error_code"`
+	InstanceID      string      `db:"instance_id" json:"instance_id"`
+	ApplicationID   string      `db:"application_id" json:"application_id"`
+	EventTypeID     string      `db:"event_type_id" json:"event_type_id"`
 }
 
 // RegisterEvent registers an event posted by an instance in Nebraska. The
@@ -89,7 +90,6 @@ func (api *API) RegisterEvent(instanceID, appID, groupID string, etype, eresult 
 	if appID, groupID, err = api.validateApplicationAndGroup(appID, groupID); err != nil {
 		return err
 	}
-
 	instance, err := api.GetInstance(instanceID, appID)
 	if err != nil {
 		return ErrInvalidInstance
@@ -109,20 +109,26 @@ func (api *API) RegisterEvent(instanceID, appID, groupID string, etype, eresult 
 	}
 
 	var eventTypeID int
-	err = api.dbR.
+	query, _, err := goqu.From("event_type").
 		Select("id").
-		From("event_type").
-		Where("type = $1 and result = $2", etype, eresult).
-		QueryScalar(&eventTypeID)
+		Where(goqu.C("type").Eq(etype), goqu.C("result").Eq(eresult)).
+		ToSQL()
+	if err != nil {
+		return err
+	}
+	err = api.db.QueryRow(query).Scan(&eventTypeID)
 	if err != nil {
 		return ErrInvalidEventTypeOrResult
 	}
 
-	_, err = api.dbR.
-		InsertInto("event").
-		Columns("event_type_id", "instance_id", "application_id", "previous_version", "error_code").
-		Values(eventTypeID, instanceID, appID, previousVersion, errorCode).
-		Exec()
+	insertQuery, _, err := goqu.Insert("event").
+		Cols("event_type_id", "instance_id", "application_id", "previous_version", "error_code").
+		Vals(goqu.Vals{eventTypeID, instanceID, appID, previousVersion, errorCode}).
+		ToSQL()
+	if err != nil {
+		return err
+	}
+	_, err = api.db.Exec(insertQuery)
 
 	if err != nil {
 		return ErrEventRegistrationFailed

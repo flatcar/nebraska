@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"time"
+
+	"github.com/doug-martin/goqu/v9"
 )
 
 const (
@@ -30,25 +32,31 @@ type User struct {
 
 // AddTeam registers a team.
 func (api *API) AddUser(user *User) (*User, error) {
-	err := api.dbR.
-		InsertInto("users").
-		Whitelist("username", "team_id", "secret").
-		Record(user).
-		Returning("*").
-		QueryStruct(user)
-
-	return user, err
+	query, _, err := goqu.Insert("users").
+		Cols("username", "team_id", "secret").
+		Vals(goqu.Vals{user.Username, user.TeamID, user.Secret}).
+		Returning(goqu.T("users").All()).
+		ToSQL()
+	if err != nil {
+		return nil, err
+	}
+	err = api.db.QueryRowx(query).StructScan(&user)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 // GetUser returns the user identified by the username provided.
 func (api *API) GetUser(username string) (*User, error) {
 	var user User
-
-	err := api.dbR.SelectDoc("*").
-		From("users").
-		Where("username = $1", username).
-		QueryStruct(&user)
-
+	query, _, err := goqu.From("users").
+		Where(goqu.C("username").Eq(username)).
+		ToSQL()
+	if err != nil {
+		return nil, err
+	}
+	err = api.db.QueryRowx(query).StructScan(&user)
 	if err != nil {
 		return nil, err
 	}
@@ -58,17 +66,28 @@ func (api *API) GetUser(username string) (*User, error) {
 
 func (api *API) GetUsersInTeam(teamID string) ([]*User, error) {
 	var users []*User
-
-	err := api.dbR.
-		SelectDoc("*").
-		From("users").
-		Where("team_id = $1", teamID).
-		QueryStructs(&users)
-
+	query, _, err := goqu.From("users").
+		Where(goqu.C("team_id").Eq(teamID)).
+		ToSQL()
 	if err != nil {
 		return nil, err
 	}
-
+	rows, err := api.db.Queryx(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var user User
+		err := rows.StructScan(&user)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, &user)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	return users, nil
 }
 
@@ -78,14 +97,22 @@ func (api *API) UpdateUserPassword(username, newPassword string) error {
 	if err != nil {
 		return err
 	}
-
-	result, err := api.dbR.
-		Update("users").
-		Set("secret", secret).
-		Where("username = $1", username).
-		Exec()
-
-	if err != nil || result.RowsAffected == 0 {
+	query, _, err := goqu.Update("users").
+		Set(goqu.Record{"secret": secret}).
+		Where(goqu.C("username").Eq(username)).
+		ToSQL()
+	if err != nil {
+		return err
+	}
+	result, err := api.db.Exec(query)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
 		return ErrUpdatingPassword
 	}
 

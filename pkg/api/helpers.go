@@ -46,3 +46,7 @@ func isValidSemver(version string) bool {
 	}
 	return true
 }
+
+func sqlPaginate(page, perPage uint64) (uint, uint) {
+	return uint(perPage), uint(page-1) * uint(perPage)
+}
