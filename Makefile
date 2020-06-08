@@ -23,7 +23,10 @@ all: backend tools frontend
 .PHONY: check
 check:
 	go test -p 1 ./...
-
+check-code-coverage:
+	go test -p 1 -coverprofile=coverage.out ./...
+print-code-coverage: 
+	go tool cover -html=coverage.out
 container_id:
 	set -e; \
 	trap "rm -f container_id.tmp container_id" ERR; \
