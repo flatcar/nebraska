@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/doug-martin/goqu/v9"
+	"github.com/doug-martin/goqu/v9/exp"
 	"github.com/google/uuid"
-	"gopkg.in/mgutz/dat.v1"
+	"gopkg.in/guregu/null.v4"
 )
 
 const (
@@ -64,16 +66,16 @@ type InstancesWithTotal struct {
 // a given instance: current version of the app, last time the instance checked
 // for updates for this app, etc.
 type InstanceApplication struct {
-	InstanceID          string         `db:"instance_id" json:"instance_id,omitempty"`
-	ApplicationID       string         `db:"application_id" json:"application_id"`
-	GroupID             dat.NullString `db:"group_id" json:"group_id"`
-	Version             string         `db:"version" json:"version"`
-	CreatedTs           time.Time      `db:"created_ts" json:"created_ts"`
-	Status              dat.NullInt64  `db:"status" json:"status"`
-	LastCheckForUpdates time.Time      `db:"last_check_for_updates" json:"last_check_for_updates"`
-	LastUpdateGrantedTs dat.NullTime   `db:"last_update_granted_ts" json:"last_update_granted_ts"`
-	LastUpdateVersion   dat.NullString `db:"last_update_version" json:"last_update_version"`
-	UpdateInProgress    bool           `db:"update_in_progress" json:"update_in_progress"`
+	InstanceID          string      `db:"instance_id" json:"instance_id,omitempty"`
+	ApplicationID       string      `db:"application_id" json:"application_id"`
+	GroupID             null.String `db:"group_id" json:"group_id"`
+	Version             string      `db:"version" json:"version"`
+	CreatedTs           time.Time   `db:"created_ts" json:"created_ts"`
+	Status              null.Int    `db:"status" json:"status"`
+	LastCheckForUpdates time.Time   `db:"last_check_for_updates" json:"last_check_for_updates"`
+	LastUpdateGrantedTs null.Time   `db:"last_update_granted_ts" json:"last_update_granted_ts"`
+	LastUpdateVersion   null.String `db:"last_update_version" json:"last_update_version"`
+	UpdateInProgress    bool        `db:"update_in_progress" json:"update_in_progress"`
 }
 
 // InstanceStatusHistoryEntry represents an entry in the instance status
@@ -104,107 +106,173 @@ func (api *API) RegisterInstance(instanceID, instanceIP, instanceVersion, appID,
 	if !isValidSemver(instanceVersion) {
 		return nil, ErrInvalidSemver
 	}
-
 	var err error
 	if appID, groupID, err = api.validateApplicationAndGroup(appID, groupID); err != nil {
 		return nil, err
 	}
-
-	tx, err := api.dbR.Begin()
+	tx, err := api.db.Begin()
 	if err != nil {
 		return nil, err
 	}
 	defer func() {
-		_ = tx.AutoRollback()
+		//TODO log the failed rollback if err != sql.ErrTxDone
+		_ = tx.Rollback()
 	}()
-
-	result, err := tx.
-		Upsert("instance").
-		Columns("id", "ip").
-		Values(instanceID, instanceIP).
-		Where("id = $1", instanceID).
-		Exec()
-
-	if err != nil || result.RowsAffected == 0 {
+	query, _, err := goqu.Insert("instance").
+		Cols("id", "ip").
+		Vals(goqu.Vals{instanceID, instanceIP}).
+		OnConflict(goqu.DoUpdate("id", goqu.Record{"id": instanceID, "ip": instanceIP})).
+		ToSQL()
+	if err != nil {
 		return nil, err
 	}
-
-	result, err = tx.
-		Upsert("instance_application").
-		Columns("instance_id", "application_id", "group_id", "version", "last_check_for_updates").
-		Values(instanceID, appID, groupID, instanceVersion, nowUTC).
-		Where("instance_id = $1 AND application_id = $2", instanceID, appID).
-		Exec()
-
-	if err != nil || result.RowsAffected == 0 {
+	result, err := tx.Exec(query)
+	if err != nil {
 		return nil, err
 	}
-
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return nil, err
+	}
+	if rowsAffected == 0 {
+		return nil, fmt.Errorf("RegisterInstance instance insert failed")
+	}
+	upsertQuery, _, err := goqu.Insert("instance_application").
+		Cols("instance_id", "application_id", "group_id", "version", "last_check_for_updates").
+		Vals(goqu.Vals{instanceID, appID, groupID, instanceVersion, nowUTC()}).
+		OnConflict(goqu.DoUpdate("ON CONSTRAINT instance_application_pkey", goqu.Record{"group_id": groupID, "version": instanceVersion, "last_check_for_updates": nowUTC()})).
+		ToSQL()
+	if err != nil {
+		return nil, err
+	}
+	result, err = tx.Exec(upsertQuery)
+	if err != nil {
+		return nil, err
+	}
+	rowsAffected, err = result.RowsAffected()
+	if err != nil {
+		return nil, err
+	}
+	if rowsAffected == 0 {
+		return nil, fmt.Errorf("RegisterInstance upsert for instance_application failed")
+	}
 	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
-
 	return api.GetInstance(instanceID, appID)
 }
 
 // GetInstance returns the instance identified by the id provided.
 func (api *API) GetInstance(instanceID, appID string) (*Instance, error) {
 	var instance Instance
-
-	err := api.dbR.
-		SelectDoc("*").
-		From("instance").
-		One("application", api.instanceAppQuery(appID, validityInterval)).
-		Where("id = $1", instanceID).
-		QueryStruct(&instance)
-
+	query, _, err := goqu.From("instance").
+		Where(goqu.C("id").Eq(instanceID)).
+		ToSQL()
 	if err != nil {
+		return nil, err
+	}
+	err = api.db.QueryRowx(query).StructScan(&instance)
+	if err != nil {
+		return nil, err
+	}
+	instanceApplication, err := api.getInstanceApp(appID, instance.ID, validityInterval)
+	switch err {
+	case nil:
+		instance.Application = *instanceApplication
+	case sql.ErrNoRows:
+		instance.Application = InstanceApplication{}
+	default:
 		return nil, err
 	}
 
 	return &instance, nil
 }
 
+func (api *API) getInstanceApp(appID, instanceID string, duration postgresDuration) (*InstanceApplication, error) {
+	var instanceApp InstanceApplication
+	query, _, err := api.instanceAppQuery(appID, instanceID, duration).ToSQL()
+	if err != nil {
+		return nil, err
+	}
+	err = api.db.QueryRowx(query).StructScan(&instanceApp)
+	if err != nil {
+		return nil, err
+	}
+	return &instanceApp, nil
+}
+
 // GetInstanceStatusHistory returns the status history of an instance in the
 // context of the application/group provided.
 func (api *API) GetInstanceStatusHistory(instanceID, appID, groupID string, limit uint64) ([]*InstanceStatusHistoryEntry, error) {
 	var instanceStatusHistory []*InstanceStatusHistoryEntry
-
-	err := api.instanceStatusHistoryQuery(instanceID, appID, groupID, limit).QueryStructs(&instanceStatusHistory)
-
-	return instanceStatusHistory, err
+	query, _, err := api.instanceStatusHistoryQuery(instanceID, appID, groupID, limit).ToSQL()
+	if err != nil {
+		return nil, err
+	}
+	rows, err := api.db.Queryx(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var instanceStatusHistoryEntity InstanceStatusHistoryEntry
+		err = rows.StructScan(&instanceStatusHistoryEntity)
+		if err != nil {
+			return nil, err
+		}
+		instanceStatusHistory = append(instanceStatusHistory, &instanceStatusHistoryEntity)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return instanceStatusHistory, nil
 }
 
 // GetInstances returns all instances that match with the provided criteria.
 func (api *API) GetInstances(p InstancesQueryParams, duration string) (InstancesWithTotal, error) {
 	var instances []*Instance
-	var totalCount uint64
 	var err error
-
+	totalCount, err := api.GetInstancesCount(p, duration)
+	if err != nil {
+		return InstancesWithTotal{}, err
+	}
 	p.Page, p.PerPage = validatePaginationParams(p.Page, p.PerPage)
 	var dbDuration postgresDuration
 	dbDuration, _, err = durationParamToPostgresTimings(durationParam(duration))
 	if err != nil {
 		return InstancesWithTotal{}, err
 	}
-	err = api.getFilterInstancesQuery("COUNT (*)", p, dbDuration).QueryStruct(&totalCount)
-	if err == sql.ErrNoRows {
-		return InstancesWithTotal{
-			TotalInstances: 0,
-			Instances:      nil,
-		}, nil
-	}
+	limit, offset := sqlPaginate(p.Page, p.PerPage)
+	query, _, err := api.instancesQuery(p, dbDuration).
+		Limit(limit).
+		Offset(offset).
+		ToSQL()
 	if err != nil {
 		return InstancesWithTotal{}, err
 	}
-	err = api.instancesQuery(p, dbDuration).Paginate(p.Page, p.PerPage).QueryStructs(&instances)
-	if err == sql.ErrNoRows {
-		return InstancesWithTotal{
-			TotalInstances: 0,
-			Instances:      nil,
-		}, nil
-	}
+	rows, err := api.db.Queryx(query)
 	if err != nil {
+		return InstancesWithTotal{}, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var instance Instance
+		err := rows.StructScan(&instance)
+		if err != nil {
+			return InstancesWithTotal{}, err
+		}
+		application, err := api.getInstanceApp(p.ApplicationID, instance.ID, dbDuration)
+		switch err {
+		case nil:
+			instance.Application = *application
+		case sql.ErrNoRows:
+			instance.Application = InstanceApplication{}
+		default:
+			return InstancesWithTotal{}, err
+		}
+		instances = append(instances, &instance)
+	}
+	if err := rows.Err(); err != nil {
 		return InstancesWithTotal{}, err
 	}
 	result := InstancesWithTotal{
@@ -221,14 +289,15 @@ func (api *API) GetInstancesCount(p InstancesQueryParams, duration string) (uint
 	var dbDuration postgresDuration
 	dbDuration, _, err = durationParamToPostgresTimings(durationParam(duration))
 	if err != nil {
-		return totalCount, err
+		return 0, err
 	}
-	err = api.getFilterInstancesQuery("COUNT (*)", p, dbDuration).QueryStruct(&totalCount)
-	if err == sql.ErrNoRows {
-		return totalCount, nil
-	}
+	countQuery, _, err := api.getFilterInstancesQuery(goqu.L("COUNT (*)"), p, dbDuration).ToSQL()
 	if err != nil {
-		return totalCount, err
+		return 0, err
+	}
+	err = api.db.QueryRow(countQuery).Scan(&totalCount)
+	if err != nil {
+		return 0, err
 	}
 	return totalCount, nil
 }
@@ -270,94 +339,91 @@ func (api *API) updateInstanceStatus(instanceID, appID string, newStatus int) er
 	if instance.Application.Status.Valid && instance.Application.Status.Int64 == int64(newStatus) {
 		return nil
 	}
-
-	query := api.dbR.
-		Update("instance_application").
-		Set("status", newStatus).
-		Where("instance_id = $1 AND application_id = $2", instanceID, appID).
-		Returning("last_update_version", "group_id")
-
+	var insertData = make(map[string]interface{})
+	insertData["status"] = newStatus
 	if newStatus == InstanceStatusComplete {
-		query.Set("version", dat.UnsafeString("CASE WHEN last_update_version IS NOT NULL THEN last_update_version ELSE version END"))
+		insertData["version"] = goqu.L("CASE WHEN last_update_version IS NOT NULL THEN last_update_version ELSE version END")
 	}
 
 	if newStatus == InstanceStatusComplete || newStatus == InstanceStatusError {
-		query.Set("update_in_progress", false)
+		insertData["update_in_progress"] = false
 	}
 
-	var lastUpdateVersion, groupID dat.NullString
-
-	if err := query.QueryScalar(&lastUpdateVersion, &groupID); err != nil {
+	var lastUpdateVersion, groupID null.String
+	updateQuery, _, err := goqu.Update("instance_application").
+		Set(insertData).
+		Where(goqu.C("instance_id").Eq(instanceID), goqu.C("application_id").Eq(appID)).
+		Returning("last_update_version", "group_id").
+		ToSQL()
+	if err != nil {
 		return err
 	}
-
-	_, err = api.dbR.
-		InsertInto("instance_status_history").
-		Columns("status", "version", "instance_id", "application_id", "group_id").
-		Values(newStatus, lastUpdateVersion, instanceID, appID, groupID).
-		Exec()
-
+	err = api.db.QueryRow(updateQuery).Scan(&lastUpdateVersion, &groupID)
+	if err != nil {
+		return err
+	}
+	insertQuery, _, err := goqu.Insert("instance_status_history").
+		Cols("status", "version", "instance_id", "application_id", "group_id").
+		Vals(goqu.Vals{newStatus, lastUpdateVersion, instanceID, appID, groupID}).
+		ToSQL()
+	if err != nil {
+		return err
+	}
+	_, err = api.db.Exec(insertQuery)
 	return err
 }
 
-// instanceAppQuery returns a SelectDocBuilder prepared to return the app status
+// instanceAppQuery returns a SelectDataset prepared to return the app status
 // of the app identified by the application id provided for a given instance.
-func (api *API) instanceAppQuery(appID string, duration postgresDuration) *dat.SelectDocBuilder {
-	return api.dbR.
-		SelectDoc("version", "status", "last_check_for_updates", "last_update_version", "update_in_progress", "application_id", "group_id").
-		From("instance_application").
-		Where("instance_id = instance.id AND application_id = $1", appID).
-		Where("last_check_for_updates > now() at time zone 'utc' - interval $1", duration).
-		Where(ignoreFakeInstanceCondition("instance_id"))
+func (api *API) instanceAppQuery(appID, instanceID string, duration postgresDuration) *goqu.SelectDataset {
+	query := goqu.From("instance_application").
+		Select("version", "status", "last_check_for_updates", "last_update_version", "update_in_progress", "application_id", "group_id").
+		Where(goqu.C("instance_id").Eq(instanceID), goqu.C("application_id").Eq(appID)).
+		Where(goqu.L("last_check_for_updates > now() at time zone 'utc' - interval ?", duration)).
+		Where(goqu.L(ignoreFakeInstanceCondition("instance_id")))
+	return query
 }
 
 func ignoreFakeInstanceCondition(instanceIDField string) string {
 	return fmt.Sprintf(`(%[1]s IS NULL OR %[1]s NOT SIMILAR TO '\{[a-fA-F0-9-]{36}\}')`, instanceIDField)
 }
 
-func (api *API) getFilterInstancesQuery(selectPart string, p InstancesQueryParams, duration postgresDuration) *dat.SelectBuilder {
-	query := api.dbR.
+func (api *API) getFilterInstancesQuery(selectPart exp.LiteralExpression, p InstancesQueryParams, duration postgresDuration) *goqu.SelectDataset {
+	query := goqu.From("instance_application").
 		Select(selectPart).
-		From("instance_application").
-		Where("application_id = $1 AND group_id = $2", p.ApplicationID, p.GroupID).
-		Where("last_check_for_updates > now() at time zone 'utc' - interval $1", duration).
-		Where(ignoreFakeInstanceCondition("instance_id"))
+		Where(goqu.C("application_id").Eq(p.ApplicationID), goqu.C("group_id").Eq(p.GroupID)).
+		Where(goqu.L("last_check_for_updates > now() at time zone 'utc' - interval ?", duration),
+			goqu.L(ignoreFakeInstanceCondition("instance_id")))
+
 	if p.Status == InstanceStatusUndefined {
-		query.Where("status IS NULL")
+		query = query.Where(goqu.L("status IS NULL"))
 	} else if p.Status != 0 {
-		query.Where("status = $1", p.Status)
+		query = query.Where(goqu.C("status").Eq(p.Status))
 	}
 	if p.Version != "" {
-		query.Where("version = $1", p.Version)
+		query = query.Where(goqu.C("version").Eq(p.Version))
 	}
 	return query
 }
 
-// instancesQuery returns a SelectDocBuilder prepared to return all instances
+// instancesQuery returns a SelectDataset prepared to return all instances
 // that match the criteria provided in InstancesQueryParams.
-func (api *API) instancesQuery(p InstancesQueryParams, duration postgresDuration) *dat.SelectDocBuilder {
-	instancesSubquery := api.getFilterInstancesQuery("instance_id", p, duration)
-	instancesSubquerySQL, instancesSubqueryParams := instancesSubquery.ToSQL()
-	return api.dbR.
-		SelectDoc("*").
-		One("application", api.instanceAppQuery(p.ApplicationID, duration)).
-		From("instance").
-		Where(fmt.Sprintf("id IN (%s)", instancesSubquerySQL), instancesSubqueryParams...)
+func (api *API) instancesQuery(p InstancesQueryParams, duration postgresDuration) *goqu.SelectDataset {
+	instancesSubquery := api.getFilterInstancesQuery(goqu.L("instance_id"), p, duration)
+
+	return goqu.From("instance").
+		Where(goqu.L("id IN ?", instancesSubquery))
 }
 
-// instanceStatusHistoryQuery returns a SelectDocBuilder prepared to return the
+// instanceStatusHistoryQuery returns a SelectDataset prepared to return the
 // status history of a given instance in the context of an application/group.
-func (api *API) instanceStatusHistoryQuery(instanceID, appID, groupID string, limit uint64) *dat.SelectDocBuilder {
+func (api *API) instanceStatusHistoryQuery(instanceID, appID, groupID string, limit uint64) *goqu.SelectDataset {
 	if limit == 0 {
 		limit = 20
 	}
-
-	return api.dbR.
-		SelectDoc("status", "version", "created_ts").
-		From("instance_status_history").
-		Where("instance_id = $1", instanceID).
-		Where("application_id = $1", appID).
-		Where("group_id = $1", groupID).
-		OrderBy("created_ts DESC").
-		Limit(limit)
+	return goqu.From("instance_status_history").Where(goqu.C("instance_id").Eq(instanceID)).
+		Where(goqu.C("application_id").Eq(appID)).
+		Where(goqu.C("group_id").Eq(groupID)).
+		Order(goqu.C("created_ts").Desc()).
+		Limit(uint(limit))
 }

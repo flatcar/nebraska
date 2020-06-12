@@ -4,10 +4,10 @@ import (
 	"errors"
 	"os"
 
+	//register "pgx" sql driver
+	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/jmoiron/sqlx"
 	migrate "github.com/rubenv/sql-migrate"
-	"gopkg.in/mgutz/dat.v1"
-	runner "gopkg.in/mgutz/dat.v1/sqlx-runner"
 
 	// Postgresql driver
 	_ "github.com/lib/pq"
@@ -27,10 +27,13 @@ import (
 
 const (
 	defaultDbURL          = "postgres://postgres@127.0.0.1:5432/nebraska?sslmode=disable&connect_timeout=10"
-	nowUTC                = dat.UnsafeString("now() at time zone 'utc'")
 	maxOpenAndIdleDbConns = 25
 	dBConnMaxLifetime     = 5 * 60 // seconds
 )
+
+func nowUTC() time.Time {
+	return time.Now().UTC()
+}
 
 var (
 	// ErrNoRowsAffected indicates that no rows were affected in an update or
@@ -51,7 +54,6 @@ var (
 // API represents an api instance used to interact with Nebraska entities.
 type API struct {
 	db       *sqlx.DB
-	dbR      *runner.DB
 	dbDriver string
 	dbURL    string
 
@@ -64,7 +66,7 @@ type API struct {
 // applying db migrations available.
 func New(options ...func(*API) error) (*API, error) {
 	api := &API{
-		dbDriver: "postgres",
+		dbDriver: "pgx",
 		dbURL:    os.Getenv("NEBRASKA_DB_URL"),
 	}
 
@@ -104,9 +106,6 @@ func New(options ...func(*API) error) (*API, error) {
 	api.db.SetMaxOpenConns(maxOpenConns)
 	api.db.SetMaxIdleConns(maxIdleConns)
 	api.db.SetConnMaxLifetime(time.Duration(connMaxLifetime) * time.Second)
-
-	dat.EnableInterpolation = true
-	api.dbR = runner.NewDBFromSqlx(api.db)
 
 	for _, option := range options {
 		err := option(api)

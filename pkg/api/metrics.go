@@ -1,7 +1,6 @@
 package api
 
 import (
-	"database/sql"
 	"fmt"
 )
 
@@ -32,15 +31,23 @@ type AppInstancesPerChannelMetric struct {
 
 func (api *API) GetAppInstancesPerChannelMetrics(teamID string) ([]AppInstancesPerChannelMetric, error) {
 	var metrics []AppInstancesPerChannelMetric
-
-	switch err := api.dbR.SQL(appInstancesPerChannelMetricSQL, teamID).QueryStructs(&metrics); err {
-	case nil:
-		return metrics, nil
-	case sql.ErrNoRows:
-		return metrics, nil
-	default:
+	rows, err := api.db.Queryx(appInstancesPerChannelMetricSQL, teamID)
+	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
+	for rows.Next() {
+		var metric AppInstancesPerChannelMetric
+		err := rows.StructScan(&metric)
+		if err != nil {
+			return nil, err
+		}
+		metrics = append(metrics, metric)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return metrics, nil
 }
 
 type FailedUpdatesMetric struct {
@@ -50,13 +57,21 @@ type FailedUpdatesMetric struct {
 
 func (api *API) GetFailedUpdatesMetrics(teamID string) ([]FailedUpdatesMetric, error) {
 	var metrics []FailedUpdatesMetric
-
-	switch err := api.dbR.SQL(failedUpdatesSQL, teamID).QueryStructs(&metrics); err {
-	case nil:
-		return metrics, nil
-	case sql.ErrNoRows:
-		return metrics, nil
-	default:
+	rows, err := api.db.Queryx(failedUpdatesSQL, teamID)
+	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
+	for rows.Next() {
+		var metric FailedUpdatesMetric
+		err := rows.StructScan(&metric)
+		if err != nil {
+			return nil, err
+		}
+		metrics = append(metrics, metric)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return metrics, nil
 }

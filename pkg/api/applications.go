@@ -1,10 +1,11 @@
 package api
 
 import (
-	"fmt"
+	"database/sql"
 	"time"
 
-	"gopkg.in/mgutz/dat.v1"
+	"github.com/doug-martin/goqu/v9"
+	"gopkg.in/guregu/null.v4"
 )
 
 const (
@@ -29,14 +30,20 @@ type Application struct {
 
 // AddApp registers the provided application.
 func (api *API) AddApp(app *Application) (*Application, error) {
-	err := api.dbR.
-		InsertInto("application").
-		Whitelist("name", "description", "team_id").
-		Record(app).
-		Returning("*").
-		QueryStruct(app)
+	query, _, err := goqu.Insert("application").
+		Cols("name", "description", "team_id").
+		Vals(goqu.Vals{app.Name, app.Description, app.TeamID}).
+		Returning(goqu.T("application").All()).
+		ToSQL()
+	if err != nil {
+		return nil, err
+	}
+	err = api.db.QueryRowx(query).StructScan(app)
+	if err != nil {
+		return nil, err
+	}
 
-	return app, err
+	return app, nil
 }
 
 // AddAppCloning registers the provided application, cloning the groups and
@@ -56,17 +63,17 @@ func (api *API) AddAppCloning(app *Application, sourceAppID string) (*Applicatio
 			return app, nil
 		}
 
-		channelsIDsMappings := make(map[string]dat.NullString)
+		channelsIDsMappings := make(map[string]null.String)
 
 		for _, channel := range sourceApp.Channels {
 			originalChannelID := channel.ID
 			channel.ApplicationID = app.ID
-			channel.PackageID = dat.NullString{}
+			channel.PackageID = null.String{}
 			channelCopy, err := api.AddChannel(channel)
 			if err != nil {
 				return app, nil // FIXME - think about what we should return to the caller
 			}
-			channelsIDsMappings[originalChannelID] = dat.NullStringFrom(channelCopy.ID)
+			channelsIDsMappings[originalChannelID] = null.StringFrom(channelCopy.ID)
 		}
 
 		for _, group := range sourceApp.Groups {
@@ -87,42 +94,80 @@ func (api *API) AddAppCloning(app *Application, sourceAppID string) (*Applicatio
 // UpdateApp updates an existing application using the content of the
 // application provided.
 func (api *API) UpdateApp(app *Application) error {
-	result, err := api.dbR.
-		Update("application").
-		SetWhitelist(app, "name", "description").
-		Where("id = $1", app.ID).
-		Exec()
-
-	if err == nil && result.RowsAffected == 0 {
+	query, _, err := goqu.Update("application").
+		Set(
+			goqu.Record{
+				"name":        app.Name,
+				"description": app.Description,
+			},
+		).
+		Where(goqu.C("id").Eq(app.ID)).
+		ToSQL()
+	if err != nil {
+		return err
+	}
+	result, err := api.db.Exec(query)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
 		return ErrNoRowsAffected
 	}
-
-	return err
+	return nil
 }
 
 // DeleteApp removes the application identified by the id provided.
 func (api *API) DeleteApp(appID string) error {
-	result, err := api.dbR.
-		DeleteFrom("application").
-		Where("id = $1", appID).
-		Exec()
-
-	if err == nil && result.RowsAffected == 0 {
+	query, _, err := goqu.Delete("application").Where(goqu.C("id").Eq(appID)).ToSQL()
+	if err != nil {
+		return err
+	}
+	result, err := api.db.Exec(query)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
 		return ErrNoRowsAffected
 	}
 
-	return err
+	return nil
 }
 
 // GetApp returns the application identified by the id provided.
 func (api *API) GetApp(appID string) (*Application, error) {
 	var app Application
-
-	err := api.appsQuery().
-		Where("id = $1", appID).
-		QueryStruct(&app)
-
+	query, _, err := api.appsQuery().
+		Where(goqu.C("id").Eq(appID)).ToSQL()
 	if err != nil {
+		return nil, err
+	}
+	if err := api.db.QueryRowx(query).StructScan(&app); err != nil {
+		return nil, err
+	}
+	groups, err := api.getGroups(app.ID)
+	if err == nil || err == sql.ErrNoRows {
+		app.Groups = groups
+	} else {
+		return nil, err
+	}
+	channels, err := api.getChannels(app.ID)
+	if err == nil || err == sql.ErrNoRows {
+		app.Channels = channels
+	} else {
+		return nil, err
+	}
+	packages, err := api.getPackages(app.ID)
+	if err == nil || err == sql.ErrNoRows {
+		app.Packages = packages
+	} else {
 		return nil, err
 	}
 
@@ -132,40 +177,95 @@ func (api *API) GetApp(appID string) (*Application, error) {
 // GetApps returns all applications that belong to the team id provided.
 func (api *API) GetApps(teamID string, page, perPage uint64) ([]*Application, error) {
 	page, perPage = validatePaginationParams(page, perPage)
-
 	var apps []*Application
-
-	err := api.appsQuery().
-		Where("team_id = $1", teamID).
-		Paginate(page, perPage).
-		QueryStructs(&apps)
-
-	return apps, err
+	limit, offset := sqlPaginate(page, perPage)
+	query, _, err := api.appsQuery().
+		Where(goqu.C("team_id").Eq(teamID)).
+		Limit(limit).
+		Offset(offset).
+		ToSQL()
+	if err != nil {
+		return nil, err
+	}
+	rows, err := api.db.Queryx(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		app := Application{}
+		err := rows.StructScan(&app)
+		if err != nil {
+			return nil, err
+		}
+		groups, err := api.getGroups(app.ID)
+		if err == nil || err == sql.ErrNoRows {
+			app.Groups = groups
+		} else {
+			return nil, err
+		}
+		channels, err := api.getChannels(app.ID)
+		if err == nil || err == sql.ErrNoRows {
+			app.Channels = channels
+		} else {
+			return nil, err
+		}
+		packages, err := api.getPackages(app.ID)
+		if err == nil || err == sql.ErrNoRows {
+			app.Packages = packages
+		} else {
+			return nil, err
+		}
+		app.Instances.Count, err = api.getInstanceCount(app.ID, "", validityInterval)
+		if err != nil {
+			return nil, err
+		}
+		apps = append(apps, &app)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return apps, nil
 }
 
-// appsQuery returns a SelectDocBuilder prepared to return all applications.
+// appsQuery returns a SelectDataset prepared to return all applications.
 // This query is meant to be extended later in the methods using it to filter
 // by a specific application id, all applications that belong to a given team,
 // specify how to query the rows or their destination.
-func (api *API) appsQuery() *dat.SelectDocBuilder {
-	return api.dbR.
-		SelectDoc("id, name, description, created_ts").
-		One("instances", api.appInstancesCountQuery()).
-		Many("groups", api.groupsQuery().Where("application_id = application.id")).
-		Many("channels", api.channelsQuery().Where("application_id = application.id")).
-		Many("packages", api.packagesQuery().Where("application_id = application.id")).
-		From("application").
-		OrderBy("created_ts DESC")
+func (api *API) appsQuery() *goqu.SelectDataset {
+	query := goqu.From("application").
+		Select("id", "name", "description", "created_ts").
+		Order(goqu.I("created_ts").Desc())
+	return query
 }
 
-// appInstancesCountQuery returns a SQL query prepared to return the number of
+func (api *API) getInstanceCount(appID, groupID string, duration postgresDuration) (int, error) {
+	query, _, err := api.appInstancesCountQuery(appID, groupID, duration).ToSQL()
+	if err != nil {
+		return 0, err
+	}
+	count := 0
+	if err := api.db.QueryRow(query).Scan(&count); err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
+// appInstancesCountQuery returns a SelectDataset prepared to return the number of
 // instances running a given application.
-func (api *API) appInstancesCountQuery() string {
-	return fmt.Sprintf(`
-	SELECT count(*)
-	FROM instance_application
-	WHERE application_id = application.id AND
-	      last_check_for_updates > now() at time zone 'utc' - interval '%s' AND
-	      %s
-	`, validityInterval, ignoreFakeInstanceCondition("instance_id"))
+func (api *API) appInstancesCountQuery(appID, groupID string, duration postgresDuration) *goqu.SelectDataset {
+	query := goqu.From("instance_application").
+		Select(goqu.COUNT("*")).
+		Where(
+			goqu.L("last_check_for_updates > now() at time zone 'utc' - interval ?", duration),
+			goqu.L(ignoreFakeInstanceCondition("instance_id")),
+		)
+	if appID != "" {
+		query = query.Where(goqu.C("application_id").Eq(appID))
+	}
+	if groupID != "" {
+		query = query.Where(goqu.C("group_id").Eq(groupID))
+	}
+	return query
 }

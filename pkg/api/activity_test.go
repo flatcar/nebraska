@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/mgutz/dat.v1"
+	"gopkg.in/guregu/null.v4"
 )
 
 func TestGetActivity(t *testing.T) {
@@ -17,8 +17,8 @@ func TestGetActivity(t *testing.T) {
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
 	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
 	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: tVersion, ApplicationID: tApp.ID})
-	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: dat.NullStringFrom(tPkg.ID)})
-	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: dat.NullStringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	tGroup2, _ := a.AddGroup(&Group{Name: "group2", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	tInstance, _ := a.RegisterInstance(uuid.New().String(), "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
 	tInstance2, _ := a.RegisterInstance(uuid.New().String(), "10.0.0.2", "1.0.0", tApp.ID, tGroup2.ID)
@@ -58,6 +58,7 @@ func TestGetActivity(t *testing.T) {
 	_, err = a.GetActivity("invalidTeamID", ActivityQueryParams{})
 	assert.Error(t, err, "Team id used must be a valid uuid.")
 
-	_, err = a.GetActivity(uuid.New().String(), ActivityQueryParams{})
-	assert.Error(t, err, "Team id used must exist.")
+	activityEntries, err = a.GetActivity(uuid.New().String(), ActivityQueryParams{})
+	assert.NoError(t, err)
+	assert.Nil(t, activityEntries, "Team with this id doesn't exist")
 }

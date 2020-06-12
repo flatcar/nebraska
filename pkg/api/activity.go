@@ -8,7 +8,8 @@ import (
 	"os"
 	"time"
 
-	"gopkg.in/mgutz/dat.v1"
+	"github.com/doug-martin/goqu/v9"
+	"gopkg.in/guregu/null.v4"
 )
 
 const (
@@ -27,10 +28,6 @@ const (
 	activityError
 )
 
-const (
-	pgDateFormat = "2006-01-02 150405.000"
-)
-
 // activityContext represents the context of a given activity entry.
 type activityContext struct {
 	appID      string
@@ -41,14 +38,14 @@ type activityContext struct {
 
 // Activity represents a Nebraska activity entry.
 type Activity struct {
-	CreatedTs       time.Time      `db:"created_ts" json:"created_ts"`
-	Class           int            `db:"class" json:"class"`
-	Severity        int            `db:"severity" json:"severity"`
-	Version         string         `db:"version" json:"version"`
-	ApplicationName string         `db:"application_name" json:"application_name"`
-	GroupName       dat.NullString `db:"group_name" json:"group_name"`
-	ChannelName     dat.NullString `db:"channel_name" json:"channel_name"`
-	InstanceID      dat.NullString `db:"instance_id" json:"instance_id"`
+	CreatedTs       time.Time   `db:"created_ts" json:"created_ts"`
+	Class           int         `db:"class" json:"class"`
+	Severity        int         `db:"severity" json:"severity"`
+	Version         string      `db:"version" json:"version"`
+	ApplicationName string      `db:"application_name" json:"application_name"`
+	GroupName       null.String `db:"group_name" json:"group_name"`
+	ChannelName     null.String `db:"channel_name" json:"channel_name"`
+	InstanceID      null.String `db:"instance_id" json:"instance_id"`
 }
 
 // ActivityQueryParams represents a helper structure used to pass a set of
@@ -70,15 +67,32 @@ type ActivityQueryParams struct {
 // criteria in the query parameters.
 func (api *API) GetActivity(teamID string, p ActivityQueryParams) ([]*Activity, error) {
 	var activityEntries []*Activity
-
-	err := api.activityQuery(teamID, p).QueryStructs(&activityEntries)
-
-	return activityEntries, err
+	query, _, err := api.activityQuery(teamID, p).ToSQL()
+	if err != nil {
+		return nil, err
+	}
+	rows, err := api.db.Queryx(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		activityEntry := &Activity{}
+		err := rows.StructScan(activityEntry)
+		if err != nil {
+			return nil, err
+		}
+		activityEntries = append(activityEntries, activityEntry)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return activityEntries, nil
 }
 
-// activityQuery returns a SelectDocBuilder prepared to return all activity
+// activityQuery returns a SelectDataset prepared to return all activity
 // entries that match the criteria provided in ActivityQueryParams.
-func (api *API) activityQuery(teamID string, p ActivityQueryParams) *dat.SelectDocBuilder {
+func (api *API) activityQuery(teamID string, p ActivityQueryParams) *goqu.SelectDataset {
 	p.Page, p.PerPage = validatePaginationParams(p.Page, p.PerPage)
 
 	var start, end time.Time
@@ -92,45 +106,43 @@ func (api *API) activityQuery(teamID string, p ActivityQueryParams) *dat.SelectD
 	} else {
 		end = time.Now().UTC()
 	}
-
-	query := api.dbR.
-		SelectDoc("a.created_ts", "a.class", "a.severity", "a.version", "a.instance_id", "app.name as application_name", "g.name as group_name", "c.name as channel_name").
-		From(`
-			activity a 
-			INNER JOIN application app ON (a.application_id = app.id)
-			LEFT JOIN groups g ON (a.group_id = g.id)
-			LEFT JOIN channel c ON (a.channel_id = c.id)
-		`).
-		Where("app.team_id = $1", teamID).
-		Where(fmt.Sprintf("a.created_ts BETWEEN '%s' AND '%s'", start.Format(pgDateFormat), end.Format(pgDateFormat))).
-		Paginate(p.Page, p.PerPage).
-		OrderBy("a.created_ts DESC")
+	query := goqu.From(goqu.L(`
+	activity AS a 
+	INNER JOIN application AS app ON (a.application_id = app.id)
+	LEFT JOIN groups AS g ON (a.group_id = g.id)
+	LEFT JOIN channel AS c ON (a.channel_id = c.id)
+`)).Select("a.created_ts", "a.class", "a.severity", "a.version", "a.instance_id", goqu.I("app.name").As("application_name"), goqu.I("g.name").As("group_name"), goqu.I("c.name").As("channel_name")).
+		Where(goqu.I("app.team_id").Eq(teamID), goqu.And(goqu.I("a.created_ts").Gte(start),
+			goqu.I("a.created_ts").Lt(end)))
 
 	if p.AppID != "" {
-		query.Where("app.id = $1", p.AppID)
+		query = query.Where(goqu.I("app.id").Eq(p.AppID))
 	}
 
 	if p.GroupID != "" {
-		query.Where("g.id = $1", p.GroupID)
+		query = query.Where(goqu.I("g.id").Eq(p.GroupID))
 	}
 
 	if p.ChannelID != "" {
-		query.Where("c.id = $1", p.ChannelID)
+		query = query.Where(goqu.I("c.id").Eq(p.ChannelID))
 	}
 
 	if p.InstanceID != "" {
-		query.Where("a.instance_id = $1", p.InstanceID)
+		query = query.Where(goqu.I("a.instance_id").Eq(p.InstanceID))
 	} else {
-		query.Where(ignoreFakeInstanceCondition("a.instance_id"))
+		query = query.Where(goqu.L(ignoreFakeInstanceCondition("a.instance_id")))
 	}
 
 	if p.Version != "" {
-		query.Where("a.version = $1", p.Version)
+		query = query.Where(goqu.I("a.version").Eq(p.Version))
 	}
 
 	if p.Severity != 0 {
-		query.Where("a.severity = $1", p.Severity)
+		query = query.Where(goqu.I("a.severity").Eq(p.Severity))
 	}
+	limit, offset := sqlPaginate(p.Page, p.PerPage)
+	query = query.Limit(limit).
+		Offset(offset).Order(goqu.I("a.created_ts").Desc())
 
 	return query
 }
@@ -138,10 +150,14 @@ func (api *API) activityQuery(teamID string, p ActivityQueryParams) *dat.SelectD
 // newGroupActivityEntry creates a new activity entry related to a specific
 // group.
 func (api *API) newGroupActivityEntry(class int, severity int, version, appID, groupID string) error {
-	_, err := api.dbR.InsertInto("activity").
-		Columns("class", "severity", "version", "application_id", "group_id").
-		Values(class, severity, version, appID, groupID).
-		Exec()
+	query, _, err := goqu.Insert("activity").
+		Cols("class", "severity", "version", "application_id", "group_id").
+		Vals(goqu.Vals{class, severity, version, appID, groupID}).
+		ToSQL()
+	if err != nil {
+		return err
+	}
+	_, err = api.db.Exec(query)
 
 	if err != nil {
 		return err
@@ -159,10 +175,14 @@ func (api *API) newGroupActivityEntry(class int, severity int, version, appID, g
 // newChannelActivityEntry creates a new activity entry related to a specific
 // channel.
 func (api *API) newChannelActivityEntry(class int, severity int, version, appID, channelID string) error {
-	_, err := api.dbR.InsertInto("activity").
-		Columns("class", "severity", "version", "application_id", "channel_id").
-		Values(class, severity, version, appID, channelID).
-		Exec()
+	query, _, err := goqu.Insert("activity").
+		Cols("class", "severity", "version", "application_id", "channel_id").
+		Vals(goqu.Vals{class, severity, version, appID, channelID}).
+		ToSQL()
+	if err != nil {
+		return err
+	}
+	_, err = api.db.Exec(query)
 
 	if err != nil {
 		return err
@@ -180,10 +200,14 @@ func (api *API) newChannelActivityEntry(class int, severity int, version, appID,
 // newInstanceActivityEntry creates a new activity entry related to a specific
 // instance.
 func (api *API) newInstanceActivityEntry(class int, severity int, version, appID, groupID, instanceID string) error {
-	_, err := api.dbR.InsertInto("activity").
-		Columns("class", "severity", "version", "application_id", "group_id", "instance_id").
-		Values(class, severity, version, appID, groupID, instanceID).
-		Exec()
+	query, _, err := goqu.Insert("activity").
+		Cols("class", "severity", "version", "application_id", "group_id", "instance_id").
+		Vals(goqu.Vals{class, severity, version, appID, groupID, instanceID}).
+		ToSQL()
+	if err != nil {
+		return err
+	}
+	_, err = api.db.Exec(query)
 
 	if err != nil {
 		return err

@@ -21,7 +21,7 @@ import (
 	"github.com/coreos/go-omaha/omaha"
 	"github.com/google/uuid"
 	log "github.com/mgutz/logxi/v1"
-	"gopkg.in/mgutz/dat.v1"
+	"gopkg.in/guregu/null.v4"
 
 	"github.com/kinvolk/nebraska/pkg/api"
 )
@@ -262,9 +262,9 @@ func (s *Syncer) processUpdate(descriptor channelDescriptor, update *omaha.Updat
 			Type:          api.PkgTypeFlatcar,
 			URL:           url,
 			Version:       update.Manifest.Version,
-			Filename:      dat.NullStringFrom(filename),
-			Size:          dat.NullStringFrom(strconv.FormatUint(update.Manifest.Packages[0].Size, 10)),
-			Hash:          dat.NullStringFrom(update.Manifest.Packages[0].SHA1),
+			Filename:      null.StringFrom(filename),
+			Size:          null.StringFrom(strconv.FormatUint(update.Manifest.Packages[0].Size, 10)),
+			Hash:          null.StringFrom(update.Manifest.Packages[0].SHA1),
 			ApplicationID: flatcarAppID,
 			Arch:          descriptor.arch,
 		}
@@ -297,7 +297,7 @@ func (s *Syncer) processUpdate(descriptor channelDescriptor, update *omaha.Updat
 		logger.Error("processUpdate, getting channel to update", "error", err, "channel", descriptor.name, "arch", descriptor.arch.String())
 		return err
 	}
-	channel.PackageID = dat.NullStringFrom(pkg.ID)
+	channel.PackageID = null.StringFrom(pkg.ID)
 	if err = s.api.UpdateChannel(channel); err != nil {
 		logger.Error("processUpdate, updating channel", "error", err, "channel", descriptor.name, "arch", descriptor.arch.String())
 		return err

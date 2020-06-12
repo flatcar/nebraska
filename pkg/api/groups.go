@@ -1,11 +1,13 @@
 package api
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"time"
 
-	"gopkg.in/mgutz/dat.v1"
+	"github.com/doug-martin/goqu/v9"
+	"gopkg.in/guregu/null.v4"
 )
 
 type (
@@ -40,21 +42,21 @@ var (
 
 // Group represents a Nebraska application's group.
 type Group struct {
-	ID                        string         `db:"id" json:"id"`
-	Name                      string         `db:"name" json:"name"`
-	Description               string         `db:"description" json:"description"`
-	CreatedTs                 time.Time      `db:"created_ts" json:"created_ts"`
-	RolloutInProgress         bool           `db:"rollout_in_progress" json:"rollout_in_progress"`
-	ApplicationID             string         `db:"application_id" json:"application_id"`
-	ChannelID                 dat.NullString `db:"channel_id" json:"channel_id"`
-	PolicyUpdatesEnabled      bool           `db:"policy_updates_enabled" json:"policy_updates_enabled"`
-	PolicySafeMode            bool           `db:"policy_safe_mode" json:"policy_safe_mode"`
-	PolicyOfficeHours         bool           `db:"policy_office_hours" json:"policy_office_hours"`
-	PolicyTimezone            dat.NullString `db:"policy_timezone" json:"policy_timezone"`
-	PolicyPeriodInterval      string         `db:"policy_period_interval" json:"policy_period_interval"`
-	PolicyMaxUpdatesPerPeriod int            `db:"policy_max_updates_per_period" json:"policy_max_updates_per_period"`
-	PolicyUpdateTimeout       string         `db:"policy_update_timeout" json:"policy_update_timeout"`
-	Channel                   *Channel       `db:"channel" json:"channel,omitempty"`
+	ID                        string      `db:"id" json:"id"`
+	Name                      string      `db:"name" json:"name"`
+	Description               string      `db:"description" json:"description"`
+	CreatedTs                 time.Time   `db:"created_ts" json:"created_ts"`
+	RolloutInProgress         bool        `db:"rollout_in_progress" json:"rollout_in_progress"`
+	ApplicationID             string      `db:"application_id" json:"application_id"`
+	ChannelID                 null.String `db:"channel_id" json:"channel_id"`
+	PolicyUpdatesEnabled      bool        `db:"policy_updates_enabled" json:"policy_updates_enabled"`
+	PolicySafeMode            bool        `db:"policy_safe_mode" json:"policy_safe_mode"`
+	PolicyOfficeHours         bool        `db:"policy_office_hours" json:"policy_office_hours"`
+	PolicyTimezone            null.String `db:"policy_timezone" json:"policy_timezone"`
+	PolicyPeriodInterval      string      `db:"policy_period_interval" json:"policy_period_interval"`
+	PolicyMaxUpdatesPerPeriod int         `db:"policy_max_updates_per_period" json:"policy_max_updates_per_period"`
+	PolicyUpdateTimeout       string      `db:"policy_update_timeout" json:"policy_update_timeout"`
+	Channel                   *Channel    `db:"channel" json:"channel,omitempty"`
 }
 
 // VersionBreakdownEntry represents the distribution of the versions currently
@@ -118,16 +120,32 @@ func (api *API) AddGroup(group *Group) (*Group, error) {
 			return nil, err
 		}
 	}
-
-	err := api.dbR.
-		InsertInto("groups").
-		Whitelist("name", "description", "application_id", "channel_id", "policy_updates_enabled", "policy_safe_mode", "policy_office_hours",
+	query, _, err := goqu.Insert("groups").
+		Cols("name", "description", "application_id", "channel_id", "policy_updates_enabled", "policy_safe_mode", "policy_office_hours",
 			"policy_timezone", "policy_period_interval", "policy_max_updates_per_period", "policy_update_timeout").
-		Record(group).
-		Returning("*").
-		QueryStruct(group)
-
-	return group, err
+		Vals(goqu.Vals{
+			group.Name,
+			group.Description,
+			group.ApplicationID,
+			group.ChannelID,
+			group.PolicyUpdatesEnabled,
+			group.PolicySafeMode,
+			group.PolicyOfficeHours,
+			group.PolicyTimezone,
+			group.PolicyPeriodInterval,
+			group.PolicyMaxUpdatesPerPeriod,
+			group.PolicyUpdateTimeout,
+		}).
+		Returning(goqu.T("groups").All()).
+		ToSQL()
+	if err != nil {
+		return nil, err
+	}
+	err = api.db.QueryRowx(query).StructScan(group)
+	if err != nil {
+		return nil, err
+	}
+	return group, nil
 }
 
 // UpdateGroup updates an existing group using the context of the group
@@ -147,73 +165,156 @@ func (api *API) UpdateGroup(group *Group) error {
 			return err
 		}
 	}
-
-	result, err := api.dbR.
-		Update("groups").
-		SetWhitelist(group, "name", "description", "channel_id", "policy_updates_enabled", "policy_safe_mode", "policy_office_hours",
-			"policy_timezone", "policy_period_interval", "policy_max_updates_per_period", "policy_update_timeout").
-		Where("id = $1", group.ID).
-		Exec()
-
-	if err == nil && result.RowsAffected == 0 {
-		return ErrNoRowsAffected
+	query, _, err := goqu.Update("groups").
+		Set(
+			goqu.Record{
+				"name":                          group.Name,
+				"description":                   group.Description,
+				"channel_id":                    group.ChannelID,
+				"policy_updates_enabled":        group.PolicyUpdatesEnabled,
+				"policy_safe_mode":              group.PolicySafeMode,
+				"policy_office_hours":           group.PolicyOfficeHours,
+				"policy_timezone":               group.PolicyTimezone,
+				"policy_period_interval":        group.PolicyPeriodInterval,
+				"policy_max_updates_per_period": group.PolicyMaxUpdatesPerPeriod,
+				"policy_update_timeout":         group.PolicyUpdateTimeout,
+			},
+		).
+		Where(goqu.C("id").Eq(group.ID)).
+		ToSQL()
+	if err != nil {
+		return err
+	}
+	result, err := api.db.Exec(query)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
 	}
 
-	return err
+	if rowsAffected == 0 {
+		return ErrNoRowsAffected
+	}
+	return nil
 }
 
 // DeleteGroup removes the group identified by the id provided.
 func (api *API) DeleteGroup(groupID string) error {
-	result, err := api.dbR.
-		DeleteFrom("groups").
-		Where("id = $1", groupID).
-		Exec()
-
-	if err == nil && result.RowsAffected == 0 {
-		return ErrNoRowsAffected
+	query, _, err := goqu.Delete("groups").Where(goqu.C("id").Eq(groupID)).ToSQL()
+	if err != nil {
+		return err
+	}
+	result, err := api.db.Exec(query)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
 	}
 
-	return err
+	if rowsAffected == 0 {
+		return ErrNoRowsAffected
+	}
+	return nil
 }
 
 // GetGroup returns the group identified by the id provided.
 func (api *API) GetGroup(groupID string) (*Group, error) {
 	var group Group
 
-	err := api.groupsQuery().
-		Where("id = $1", groupID).
-		QueryStruct(&group)
-
+	query, _, err := api.groupsQuery().
+		Where(goqu.C("id").Eq(groupID)).
+		ToSQL()
 	if err != nil {
 		return nil, err
 	}
-
+	err = api.db.QueryRowx(query).StructScan(&group)
+	if err != nil {
+		return nil, err
+	}
+	if group.ChannelID.String == "" {
+		group.Channel = nil
+	} else {
+		channel, err := api.GetChannel(group.ChannelID.String)
+		switch err {
+		case nil:
+			group.Channel = channel
+		case sql.ErrNoRows:
+			group.Channel = nil
+		default:
+			return nil, err
+		}
+	}
 	return &group, nil
 }
 
 // GetGroups returns all groups that belong to the application provided.
 func (api *API) GetGroups(appID string, page, perPage uint64) ([]*Group, error) {
 	page, perPage = validatePaginationParams(page, perPage)
+	limit, offset := sqlPaginate(page, perPage)
+	query, _, err := api.groupsQuery().Where(goqu.C("application_id").Eq(appID)).
+		Limit(limit).
+		Offset(offset).
+		ToSQL()
+	if err != nil {
+		return nil, err
+	}
+	return api.getGroupsFromQuery(query)
+}
 
+func (api *API) getGroups(appID string) ([]*Group, error) {
+	query, _, err := api.groupsQuery().Where(goqu.C("application_id").Eq(appID)).ToSQL()
+	if err != nil {
+		return nil, err
+	}
+	return api.getGroupsFromQuery(query)
+}
+
+func (api *API) getGroupsFromQuery(query string) ([]*Group, error) {
 	var groups []*Group
-
-	err := api.groupsQuery().
-		Where("application_id = $1", appID).
-		Paginate(page, perPage).
-		QueryStructs(&groups)
-
-	return groups, err
+	rows, err := api.db.Queryx(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		group := Group{}
+		if err := rows.StructScan(&group); err != nil {
+			return nil, err
+		}
+		if group.ChannelID.String == "" {
+			group.Channel = nil
+		} else {
+			channel, err := api.GetChannel(group.ChannelID.String)
+			switch err {
+			case nil:
+				group.Channel = channel
+			case sql.ErrNoRows:
+				group.Channel = nil
+			default:
+				return nil, err
+			}
+		}
+		groups = append(groups, &group)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return groups, nil
 }
 
 // validateChannel checks if a channel belongs to the application provided.
 func (api *API) validateChannel(channelID, appID string) error {
 	channel, err := api.GetChannel(channelID)
-	if err == nil {
-		if channel.ApplicationID != appID {
-			return ErrInvalidChannel
-		}
+	if err != nil {
+		return err
 	}
-
+	if channel.ApplicationID != appID {
+		return ErrInvalidChannel
+	}
 	return nil
 }
 
@@ -226,27 +327,25 @@ func (api *API) getGroupUpdatesStats(group *Group) (*UpdatesStats, error) {
 	if group.Channel.Package != nil {
 		packageVersion = group.Channel.Package.Version
 	}
-
-	query := fmt.Sprintf(`
-	SELECT
-		count(*) total_instances,
-		sum(case when last_update_version = $1 then 1 else 0 end) updates_to_current_version_granted,
-		sum(case when update_in_progress = 'false' and last_update_version = $1 then 1 else 0 end) updates_to_current_version_attempted,
-		sum(case when update_in_progress = 'false' and last_update_version = $1 and last_update_version = version then 1 else 0 end) updates_to_current_version_succeeded,
-		sum(case when update_in_progress = 'false' and last_update_version = $1 and last_update_version != version then 1 else 0 end) updates_to_current_version_failed,
-		sum(case when last_update_granted_ts > now() at time zone 'utc' - interval $2 then 1 else 0 end) updates_granted_in_last_period,
-		sum(case when update_in_progress = 'true' and now() at time zone 'utc' - last_update_granted_ts <= interval $3 then 1 else 0 end) updates_in_progress,
-		sum(case when update_in_progress = 'true' and now() at time zone 'utc' - last_update_granted_ts > interval $4 then 1 else 0 end) updates_timed_out
-	FROM instance_application
-	WHERE group_id=$5 AND last_check_for_updates > now() at time zone 'utc' - interval '%s' AND %s
-	`, validityInterval, ignoreFakeInstanceCondition("instance_id"))
-
-	err := api.dbR.SQL(query, packageVersion, group.PolicyPeriodInterval, group.PolicyUpdateTimeout, group.PolicyUpdateTimeout, group.ID).
-		QueryStruct(&updatesStats)
+	query, _, err := goqu.From("instance_application").Select(
+		goqu.COUNT("*").As("total_instances"),
+		goqu.SUM(goqu.L("case when last_update_version = ? then 1 else 0 end", packageVersion)).As("updates_to_current_version_granted"),
+		goqu.SUM(goqu.L("case when update_in_progress = 'false' and last_update_version = ? then 1 else 0 end", packageVersion)).As("updates_to_current_version_attempted"),
+		goqu.SUM(goqu.L("case when update_in_progress = 'false' and last_update_version = ? and last_update_version = version then 1 else 0 end", packageVersion)).As("updates_to_current_version_succeeded"),
+		goqu.SUM(goqu.L("case when update_in_progress = 'false' and last_update_version = ? and last_update_version != version then 1 else 0 end", packageVersion)).As("updates_to_current_version_failed"),
+		goqu.SUM(goqu.L("case when last_update_granted_ts > now() at time zone 'utc' - interval ? then 1 else 0 end", group.PolicyPeriodInterval)).As("updates_granted_in_last_period"),
+		goqu.SUM(goqu.L("case when update_in_progress = 'true' and now() at time zone 'utc' - last_update_granted_ts <= interval ? then 1 else 0 end", group.PolicyUpdateTimeout)).As("updates_in_progress"),
+		goqu.SUM(goqu.L("case when update_in_progress = 'true' and now() at time zone 'utc' - last_update_granted_ts > interval ? then 1 else 0 end", group.PolicyUpdateTimeout)).As("updates_timed_out"),
+	).Where(goqu.C("group_id").Eq(group.ID), goqu.L("last_check_for_updates > now() at time zone 'utc' - interval ?", validityInterval),
+		goqu.L(ignoreFakeInstanceCondition("instance_id")),
+	).ToSQL()
 	if err != nil {
 		return nil, err
 	}
-
+	err = api.db.QueryRowx(query).StructScan(&updatesStats)
+	if err != nil {
+		return nil, err
+	}
 	return &updatesStats, nil
 }
 
@@ -254,11 +353,14 @@ func (api *API) getGroupUpdatesStats(group *Group) (*UpdatesStats, error) {
 // field to false. This usually happens when the first instance in a group
 // processing an update to a specific version fails if safe mode is enabled.
 func (api *API) disableUpdates(groupID string) error {
-	_, err := api.dbR.
-		Update("groups").
-		Set("policy_updates_enabled", false).
-		Where("id = $1", groupID).
-		Exec()
+	query, _, err := goqu.Update("groups").
+		Set(goqu.Record{"policy_updates_enabled": false}).
+		Where(goqu.C("id").Eq(groupID)).
+		ToSQL()
+	if err != nil {
+		return err
+	}
+	_, err = api.db.Exec(query)
 
 	return err
 }
@@ -266,25 +368,26 @@ func (api *API) disableUpdates(groupID string) error {
 // setGroupRolloutInProgress updates the value of the rollout_in_progress flag
 // for a given group, indicating if a rollout is taking place now or not.
 func (api *API) setGroupRolloutInProgress(groupID string, inProgress bool) error {
-	_, err := api.dbR.
-		Update("groups").
-		Set("rollout_in_progress", inProgress).
-		Where("id = $1", groupID).
-		Exec()
+	query, _, err := goqu.Update("groups").
+		Set(goqu.Record{"rollout_in_progress": inProgress}).
+		Where(goqu.C("id").Eq(groupID)).
+		ToSQL()
+	if err != nil {
+		return err
+	}
+	_, err = api.db.Exec(query)
 
 	return err
 }
 
-// groupsQuery returns a SelectDocBuilder prepared to return all groups. This
+// groupsQuery returns a SelectDataset prepared to return all groups. This
 // query is meant to be extended later in the methods using it to filter by a
 // specific group id, all groups of a given app, specify how to query the rows
 // or their destination.
-func (api *API) groupsQuery() *dat.SelectDocBuilder {
-	return api.dbR.
-		SelectDoc("*").
-		One("channel", api.channelsQuery().Where("id = groups.channel_id")).
-		From("groups").
-		OrderBy("created_ts DESC")
+func (api *API) groupsQuery() *goqu.SelectDataset {
+	query := goqu.From("groups").Order(goqu.I("created_ts").Desc())
+
+	return query
 }
 
 // GetGroupVersionBreakdown returns a version breakdown of all instances running on a given group.
@@ -301,12 +404,22 @@ func (api *API) GetGroupVersionBreakdown(groupID string) ([]*VersionBreakdownEnt
 	GROUP BY version, total
 	ORDER BY regexp_matches(version, '(\d+)\.(\d+)\.(\d+)')::int[] DESC
 	`, validityInterval, ignoreFakeInstanceCondition("instance_id"))
-
-	err := api.dbR.SQL(query, groupID).QueryStructs(&entryList)
+	rows, err := api.db.Queryx(query, groupID)
 	if err != nil {
 		return nil, err
 	}
-
+	defer rows.Close()
+	for rows.Next() {
+		var entry VersionBreakdownEntry
+		err := rows.StructScan(&entry)
+		if err != nil {
+			return nil, err
+		}
+		entryList = append(entryList, &entry)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	return entryList, nil
 }
 
@@ -333,8 +446,7 @@ func (api *API) GetGroupInstancesStats(groupID, duration string) (*InstancesStat
 	WHERE group_id=$1 AND last_check_for_updates > now() at time zone 'utc' - interval '%s' AND %s`,
 		InstanceStatusError, InstanceStatusUpdateGranted, InstanceStatusComplete, InstanceStatusInstalled,
 		InstanceStatusDownloaded, InstanceStatusDownloading, InstanceStatusOnHold, durationString, ignoreFakeInstanceCondition("instance_id"))
-
-	err = api.dbR.SQL(query, groupID).QueryStruct(&instancesStats)
+	err = api.db.QueryRowx(query, groupID).StructScan(&instancesStats)
 	if err != nil {
 		return nil, err
 	}
@@ -382,10 +494,22 @@ func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (m
 	ORDER BY ts DESC;
 	`, durationString, interval, ignoreFakeInstanceCondition("instance_id"),
 		ignoreFakeInstanceCondition("instance_Id"))
-	if err := api.dbR.SQL(query, groupID).QueryStructs(&timelineEntry); err != nil {
+	rows, err := api.db.Queryx(query, groupID)
+	if err != nil {
 		return nil, err
 	}
-
+	defer rows.Close()
+	for rows.Next() {
+		var timelineEntryEntity VersionCountTimelineEntry
+		err := rows.StructScan(&timelineEntryEntity)
+		if err != nil {
+			return nil, err
+		}
+		timelineEntry = append(timelineEntry, timelineEntryEntity)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	allVersions := make(map[string]struct{})
 	timelineCount := make(map[time.Time]VersionCountMap)
 
@@ -440,11 +564,22 @@ func (api *API) GetGroupStatusCountTimeline(groupID string, duration string) (ma
 	GROUP BY 1,2,3
 	ORDER BY ts DESC;
 	`, durationString, interval, ignoreFakeInstanceCondition("instance_id"))
-
-	if err := api.dbR.SQL(query, groupID).QueryStructs(&timelineEntry); err != nil {
+	rows, err := api.db.Queryx(query, groupID)
+	if err != nil {
 		return nil, err
 	}
-
+	defer rows.Close()
+	for rows.Next() {
+		var timelineEntryEntity StatusVersionCountTimelineEntry
+		err := rows.StructScan(&timelineEntryEntity)
+		if err != nil {
+			return nil, err
+		}
+		timelineEntry = append(timelineEntry, timelineEntryEntity)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	allStatuses := make(map[int]struct{})
 	timelineCount := make(map[time.Time](map[int](VersionCountMap)))
 

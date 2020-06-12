@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/blang/semver"
+	"github.com/doug-martin/goqu/v9"
 )
 
 var (
@@ -172,13 +173,16 @@ func (api *API) enforceRolloutPolicy(instance *Instance, group *Group, updatesSt
 // grantUpdate grants an update for the provided instance in the context of the
 // given application.
 func (api *API) grantUpdate(instanceID, appID, version string) error {
-	_, err := api.dbR.
-		Update("instance_application").
-		Set("last_update_granted_ts", nowUTC).
-		Set("last_update_version", version).
-		Set("update_in_progress", true).
-		Where("instance_id = $1 AND application_id = $2", instanceID, appID).
-		Exec()
+	query, _, err := goqu.Update("instance_application").
+		Set(goqu.Record{"last_update_granted_ts": nowUTC(),
+			"last_update_version": version,
+			"update_in_progress":  true}).
+		Where(goqu.C("instance_id").Eq(instanceID), goqu.C("application_id").Eq(appID)).
+		ToSQL()
+	if err != nil {
+		return err
+	}
+	_, err = api.db.Exec(query)
 
 	return err
 }

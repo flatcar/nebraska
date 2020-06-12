@@ -3,7 +3,7 @@ package api
 import (
 	"testing"
 
-	"gopkg.in/mgutz/dat.v1"
+	"gopkg.in/guregu/null.v4"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -72,10 +72,10 @@ func TestAddPackageFlatcar(t *testing.T) {
 	pkg := &Package{
 		Type:          PkgTypeFlatcar,
 		URL:           "https://commondatastorage.googleapis.com/update-storage.core-os.net/amd64-usr/766.3.0/",
-		Filename:      dat.NullStringFrom("update.gz"),
+		Filename:      null.StringFrom("update.gz"),
 		Version:       "2016.6.6",
-		Size:          dat.NullStringFrom("123456"),
-		Hash:          dat.NullStringFrom("sha1:blablablabla"),
+		Size:          null.StringFrom("123456"),
+		Hash:          null.StringFrom("sha1:blablablabla"),
 		ApplicationID: flatcarAppID,
 		FlatcarAction: &FlatcarAction{
 			Sha256: "sha256:blablablabla",
@@ -102,7 +102,7 @@ func TestUpdatePackage(t *testing.T) {
 
 	tChannel2, _ := a.AddChannel(&Channel{Name: "test_channel2", Color: "green", ApplicationID: tApp.ID})
 	tChannel3, _ := a.AddChannel(&Channel{Name: "test_channel3", Color: "red", ApplicationID: tApp.ID})
-	tChannel4, _ := a.AddChannel(&Channel{Name: "test_channel4", Color: "yellow", ApplicationID: tApp.ID, PackageID: dat.NullStringFrom(tPkg.ID)})
+	tChannel4, _ := a.AddChannel(&Channel{Name: "test_channel4", Color: "yellow", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
 
 	err = a.UpdatePackage(&Package{ID: tPkg.ID, Type: PkgTypeOther, URL: "http://sample.url/pkg_updated", Version: "12.2.0", ChannelsBlacklist: []string{tChannel2.ID, tChannel3.ID}})
 	assert.NoError(t, err)
@@ -133,13 +133,13 @@ func TestUpdatePackageFlatcar(t *testing.T) {
 	pkg := &Package{
 		Type:          PkgTypeFlatcar,
 		URL:           "https://commondatastorage.googleapis.com/update-storage.core-os.net/amd64-usr/766.3.0/",
-		Filename:      dat.NullStringFrom("update.gz"),
+		Filename:      null.StringFrom("update.gz"),
 		Version:       "2016.6.6",
-		Size:          dat.NullStringFrom("123456"),
-		Hash:          dat.NullStringFrom("sha1:blablablabla"),
+		Size:          null.StringFrom("123456"),
+		Hash:          null.StringFrom("sha1:blablablabla"),
 		ApplicationID: flatcarAppID,
 	}
-	_, err := a.AddPackage(pkg)
+	pkg, err := a.AddPackage(pkg)
 	assert.NoError(t, err)
 	assert.Nil(t, pkg.FlatcarAction)
 
@@ -195,7 +195,7 @@ func TestGetPackage(t *testing.T) {
 	assert.Equal(t, "http://sample.url/pkg", pkg.URL)
 	assert.Equal(t, "12.1.0", pkg.Version)
 	assert.Equal(t, tApp.ID, pkg.ApplicationID)
-	assert.Equal(t, []string{tChannel.ID}, pkg.ChannelsBlacklist)
+	assert.Equal(t, StringArray([]string{tChannel.ID}), pkg.ChannelsBlacklist)
 	assert.Equal(t, ArchAll, pkg.Arch)
 
 	_, err = a.GetPackage("invalidPackageID")
@@ -269,5 +269,5 @@ func TestGetPackages(t *testing.T) {
 	assert.Error(t, err, "Add id must be a valid uuid.")
 
 	_, err = a.GetPackages(uuid.New().String(), 0, 0)
-	assert.Error(t, err, "App id used must exist.")
+	assert.NoError(t, err, "should be no error for non existing appID")
 }
