@@ -61,7 +61,7 @@ export default function SimpleTable(props) {
                        height="15"
                        width="15"
                      />
-                      &nbsp;
+                     &nbsp;
                    </React.Fragment>
                    }
                    {row[column]}
