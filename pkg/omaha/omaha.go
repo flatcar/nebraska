@@ -3,6 +3,7 @@ package omaha
 import (
 	"encoding/xml"
 	"errors"
+	"fmt"
 	"io"
 	"strconv"
 
@@ -69,7 +70,7 @@ func (h *Handler) Handle(rawReq io.Reader, respWriter io.Writer, ip string) erro
 
 	if err := xml.NewDecoder(rawReq).Decode(&omahaReq); err != nil {
 		logger.Warn("Handle - malformed omaha request", "error", err.Error())
-		return ErrMalformedRequest
+		return fmt.Errorf("%s: %w", ErrMalformedRequest, err)
 	}
 	trace(omahaReq)
 

@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -825,6 +826,9 @@ func (ctl *controller) processOmahaRequest(c *gin.Context) {
 	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, UpdateMaxRequestSize)
 	if err := ctl.omahaHandler.Handle(c.Request.Body, c.Writer, getRequestIP(c.Request)); err != nil {
 		logger.Error("process omaha request", "error", err)
+		if uerr := errors.Unwrap(err); uerr != nil && uerr.Error() == "http: request body too large" {
+			httpError(c, http.StatusBadRequest)
+		}
 	}
 }
 
