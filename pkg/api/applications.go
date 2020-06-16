@@ -170,7 +170,10 @@ func (api *API) GetApp(appID string) (*Application, error) {
 	} else {
 		return nil, err
 	}
-
+	app.Instances.Count, err = api.getInstanceCount(app.ID, "", validityInterval)
+	if err != nil {
+		return nil, err
+	}
 	return &app, nil
 }
 
