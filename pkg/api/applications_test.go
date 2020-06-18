@@ -111,11 +111,14 @@ func TestGetApp(t *testing.T) {
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
 	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
 	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID})
+	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	_, _ = a.RegisterInstance(uuid.New().String(), "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
 
 	app, err := a.GetApp(tApp.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, tApp.Name, app.Name)
 	assert.Equal(t, tChannel.Name, app.Channels[0].Name)
+	assert.Equal(t, 1, app.Instances.Count)
 
 	_, err = a.GetApp(uuid.New().String())
 	assert.Error(t, err, "Trying to get non existent app.")
