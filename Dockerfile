@@ -1,4 +1,4 @@
-FROM alpine:3.10 as nebraska-build
+FROM alpine:3.12.0 as nebraska-build
 
 ENV GOPATH=/go \
     GOPROXY=https://proxy.golang.org
@@ -12,7 +12,7 @@ RUN cd /go/src/github.com/kinvolk/nebraska && \
 	rm -rf frontend/node_modules tools/go-bindata tools/golangci-lint bin/nebraska && \
 	make frontend backend-binary
 
-FROM alpine:3.10
+FROM alpine:3.12.0
 
 RUN apk update && \
 	apk add ca-certificates tzdata
