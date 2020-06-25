@@ -3,23 +3,23 @@
 exports[`Section Header renders section header correctly 1`] = `
 <DocumentFragment>
   <div
-    class="MuiPaper-root makeStyles-sectionContainer-1 MuiPaper-elevation0 MuiPaper-rounded"
+    class="MuiGrid-root makeStyles-sectionContainer-1 MuiGrid-container MuiGrid-align-items-xs-center"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-align-items-xs-center"
+      class="MuiGrid-root MuiGrid-item"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item"
+      <nav
+        aria-label="breadcrumbs"
+        class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
       >
-        <nav
-          aria-label="breadcrumbs"
-          class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+        <ol
+          class="MuiBreadcrumbs-ol"
         >
-          <ol
-            class="MuiBreadcrumbs-ol"
+          <li
+            class="MuiBreadcrumbs-li"
           >
-            <li
-              class="MuiBreadcrumbs-li"
+            <span
+              class="MuiBox-root MuiBox-root-141 makeStyles-breadCrumbsItem-2"
             >
               <a
                 class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiTypography-colorPrimary"
@@ -27,25 +27,35 @@ exports[`Section Header renders section header correctly 1`] = `
               >
                 Applications
               </a>
-            </li>
-            <li
+            </span>
+          </li>
+          <li
+            aria-hidden="true"
+            class="MuiBreadcrumbs-separator"
+          >
+            <svg
               aria-hidden="true"
-              class="MuiBreadcrumbs-separator"
+              class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+              focusable="false"
+              role="presentation"
+              viewBox="0 0 24 24"
             >
-              /
-            </li>
-            <li
-              class="MuiBreadcrumbs-li"
+              <path
+                d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"
+              />
+            </svg>
+          </li>
+          <li
+            class="MuiBreadcrumbs-li"
+          >
+            <p
+              class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextPrimary"
             >
-              <p
-                class="MuiTypography-root MuiTypography-body1"
-              >
-                Flatcar
-              </p>
-            </li>
-          </ol>
-        </nav>
-      </div>
+              Flatcar
+            </p>
+          </li>
+        </ol>
+      </nav>
     </div>
   </div>
 </DocumentFragment>

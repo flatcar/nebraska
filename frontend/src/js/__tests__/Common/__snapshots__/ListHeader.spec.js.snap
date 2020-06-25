@@ -3,7 +3,7 @@
 exports[`List Header should render correct List Header actions 1`] = `
 <DocumentFragment>
   <div
-    class="MuiGrid-root makeStyles-sectionHeader-135 MuiGrid-container MuiGrid-align-items-xs-flex-start MuiGrid-justify-xs-space-between"
+    class="MuiGrid-root makeStyles-sectionHeader-137 MuiGrid-container MuiGrid-align-items-xs-flex-start MuiGrid-justify-xs-space-between"
   >
     <div
       class="MuiGrid-root MuiGrid-item"
@@ -11,17 +11,18 @@ exports[`List Header should render correct List Header actions 1`] = `
       <div>
         <button
           aria-label="add"
-          class="MuiButtonBase-root MuiFab-root MuiFab-sizeSmall"
+          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall"
           data-testid="modal-button"
           tabindex="0"
           type="button"
+          variant="extended"
         >
           <span
-            class="MuiFab-label"
+            class="MuiIconButton-label"
           >
             <svg
               aria-hidden="true"
-              class="MuiSvgIcon-root"
+              class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge"
               focusable="false"
               role="presentation"
               viewBox="0 0 24 24"
