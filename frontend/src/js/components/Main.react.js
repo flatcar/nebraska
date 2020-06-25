@@ -22,10 +22,23 @@ const nebraskaTheme = createMuiTheme({
       main: green['500'],
       ...green
     },
+    titleColor: '#000000',
+    lightSilverShade: '#F0F0F0',
+    greyShadeColor: '#474747'
   },
   typography: {
     fontFamily: 'Overpass, sans-serif',
+    h4: {
+      fontSize: '1.875rem',
+      fontWeight: 900
+    },
+    subtitle1: {
+      fontSize: '14px'
+    }
   },
+  shape: {
+    borderRadius: 0
+  }
 });
 
 export default function Main() {

@@ -19,13 +19,14 @@ const useStyles = makeStyles(theme => ({
   title: {
     flexGrow: 1,
     display: 'none',
+    color: theme.palette.titleColor,
     [theme.breakpoints.up('sm')]: {
       display: 'block',
     },
   },
   header: {
     marginBottom: theme.spacing(1),
-    background: process.env.REACT_APP_APPBAR_BG || theme.palette.primary.main,
+    background: process.env.REACT_APP_APPBAR_BG || theme.palette.primary.contrastText,
   },
 }));
 
@@ -64,9 +65,6 @@ export default function Header() {
         {projectLogo &&
           <Icon icon={projectLogo} height={45} />
         }
-        <Typography variant='h6' className={classes.title}>
-          {process.env.REACT_APP_PROJECT_NAME}
-        </Typography>
         {config && config.access_management_url &&
           <IconButton
             aria-label='User menu'

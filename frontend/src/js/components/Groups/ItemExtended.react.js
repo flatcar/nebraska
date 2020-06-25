@@ -1,11 +1,13 @@
+import { Divider, Typography } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import CheckIcon from '@material-ui/icons/Check';
+import CloseIcon from '@material-ui/icons/Close';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Link as RouterLink, useHistory, useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import _ from 'underscore';
 import API from '../../api/API';
 import { defaultTimeInterval, timeIntervalsDefault } from '../../constants/helpers';
@@ -18,14 +20,17 @@ import TimeIntervalLinks from '../Common/TimeIntervalLinks';
 import InstanceStatusArea from '../Instances/Charts';
 import { StatusCountTimeline, VersionCountTimeline } from './Charts';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   link: {
     fontSize: '1rem'
   },
   instancesChartPaper: {
     height: '100%',
   },
-});
+  success: {
+    color: theme.palette.success.main
+  }
+}));
 
 function ItemExtended(props) {
   const [application, setApplication] = React.useState(null);
@@ -41,6 +46,7 @@ function ItemExtended(props) {
   const location = useLocation();
   const history = useHistory();
   const classes = useStyles();
+  const theme = useTheme();
   function onChange() {
     const app = applicationsStore.getCachedApplication(props.appID);
 
@@ -112,184 +118,204 @@ function ItemExtended(props) {
   [group, updateProgressChartDuration]);
 
   return (
-    <Grid
-      container
-      spacing={2}
-      alignItems="stretch"
-    >
-      <Grid item xs={5}>
-        <Paper>
+    <Paper>
+      <Grid
+        container
+        alignItems="stretch"
+        justify="space-between"
+      >
+        <Grid item xs={12}>
+          <CardHeader
+            cardMainLinkLabel={group ? group.name : '…'}
+            cardId={group ? group.id : '…'}
+            cardDescription={group ? group.description : ''}
+          >
+            <MoreMenu options={[
+              {
+                'label': 'Edit',
+                'action': updateGroup,
+              }
+            ]}
+            />
+          </CardHeader>
+        </Grid>
+        <Grid item xs={4}>
           <Grid container>
-            <Grid item xs={12}>
-              <CardHeader
-                cardMainLinkLabel={group ? group.name : '…'}
-                cardId={group ? group.id : '…'}
-                cardDescription={group ? group.description : ''}
-              >
-                <MoreMenu options={[
-                  {
-                    'label': 'Edit',
-                    'action': updateGroup,
-                  }
-                ]}
-                />
-              </CardHeader>
-            </Grid>
             {group &&
-              <Grid item xs={12}>
-                <Box padding="1em">
-                  <Grid
-                    container
-                    direction="column"
-                    justify="space-between"
-                    spacing={1}
-                  >
-                    <Grid item>
-                      <CardFeatureLabel>Channel:</CardFeatureLabel>
-                      {_.isEmpty(group.channel) ?
-                        <CardLabel>No channel provided</CardLabel>
-                        :
-                        <ChannelItem
-                          channel={group.channel}
-                        />
-                      }
-                    </Grid>
-                    <Grid item>
-                      <CardFeatureLabel>Updates:</CardFeatureLabel>&nbsp;
-                      <CardLabel>{group.policy_updates_enabled ? 'Enabled' : 'Disabled'}</CardLabel>
-                    </Grid>
-                    <Grid item>
-                      <CardFeatureLabel>Only Office Hours:</CardFeatureLabel>&nbsp;
+            <Grid item xs={12}>
+              <Box p={2}>
+                <Grid
+                  container
+                  direction="column"
+                  justify="space-between"
+                >
+                  <Grid item>
+                    <CardFeatureLabel>Channel</CardFeatureLabel>
+                    {_.isEmpty(group.channel) ?
+                      <CardLabel>No channel provided</CardLabel>
+                      :
+                      <ChannelItem
+                        channel={group.channel}
+                      />
+                    }
+                  </Grid>
+                  <Grid item>
+                    <CardFeatureLabel>Updates</CardFeatureLabel>
+                    <Box my={1}>
+                      <CardLabel>
+                        <Box display="flex">
+                          {group.policy_updates_enabled ? <><Box>Enabled</Box><Box pl={1}>
+                            <CheckIcon className={classes.success} fontSize="small"/></Box></>
+                            : <><Box>Disabled</Box>
+                              <Box>
+                                <CloseIcon color="error"/>
+                              </Box>
+                            </>}
+                        </Box></CardLabel>
+                    </Box>
+                  </Grid>
+                  <Grid item>
+                    <CardFeatureLabel>Only Office Hours</CardFeatureLabel>
+                    <Box my={1}>
                       <CardLabel>{group.policy_office_hours ? 'Yes' : 'No'}</CardLabel>
-                    </Grid>
-                    <Grid item>
-                      <CardFeatureLabel>Safe Mode:</CardFeatureLabel>&nbsp;
+                    </Box>
+                  </Grid>
+                  <Grid item>
+                    <CardFeatureLabel>Safe Mode</CardFeatureLabel>
+                    <Box my={1}>
                       <CardLabel>{group.policy_safe_mode ? 'Yes' : 'No'}</CardLabel>
-                    </Grid>
-                    <Grid item>
-                      <CardFeatureLabel>Updates Policy:</CardFeatureLabel>&nbsp;
+                    </Box>
+                  </Grid>
+                  <Grid item>
+                    <CardFeatureLabel>Updates Policy</CardFeatureLabel>
+                    <Box my={1}>
                       <CardLabel>
                         Max {group.policy_max_updates_per_period || 0}
                         updates per {group.policy_period_interval || 0}
                       </CardLabel>
-                    </Grid>
-                    <Grid item>
-                      <CardFeatureLabel>Updates Timeout:</CardFeatureLabel>&nbsp;
-                      <CardLabel>{group.policy_update_timeout}</CardLabel>
-                    </Grid>
+                    </Box>
                   </Grid>
-                </Box>
-              </Grid>
+                  <Grid item>
+                    <CardFeatureLabel>Updates Timeout</CardFeatureLabel>
+                    <Box my={1}>
+                      <CardLabel>{group.policy_update_timeout}</CardLabel>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Box>
+            </Grid>
             }
           </Grid>
-        </Paper>
-      </Grid>
-      <Grid item xs={7}>
-        {group &&
-          <Paper className={classes.instancesChartPaper}>
+        </Grid>
+        <Box>
+          <Divider orientation="vertical"/>
+        </Box>
+        <Grid item xs={7}>
+          <Box mt={1} ml={-3}>
+            {group &&
+            <>
+              <Grid container alignItems="center" justify="space-between" spacing={2}>
+                <Grid item>
+                  <Box color={theme.palette.greyShadeColor} fontSize={18} fontWeight={700}>
+                    Update Progress
+                  </Box>
+                </Grid>
+                <Grid item>
+                  <Box m={2}>
+                    <TimeIntervalLinks intervalChangeHandler={(duration) => setDurationToURL('stats_period', duration.queryValue)}
+                      selectedInterval = {updateProgressChartDuration}
+                      appID = {props.appID}
+                      groupID = {props.groupID}
+                    />
+                  </Box>
+                </Grid>
+              </Grid>
+              <Box padding="1em">
+                <InstanceStatusArea instanceStats={instancesStats}
+                  period={updateProgressChartDuration.displayValue}
+                  href={{
+                    pathname: `/apps/${props.appID}/groups/${props.groupID}/instances`,
+                    search: `period=${updateProgressChartDuration.queryValue}`
+                  }}
+                />
+              </Box>
+            </>
+            }
+          </Box>
+        </Grid>
+        <Grid item xs={12}>
+          <Divider variant="fullWidth"/>
+        </Grid>
+        { instancesStats.total > 0 &&
+        <Grid item xs={12} container>
+          <Grid
+            item
+            md
+            xs={12}
+            container
+            direction="column"
+          >
             <Grid container alignItems="center" justify="space-between">
               <Grid item>
-                <ListHeader title="Update Progress" />
+                <Box pl={4} pt={4}>
+                  <Box fontSize={18} fontWeight={700} color={theme.palette.greyShadeColor}>
+                    Version Breakdown
+                  </Box>
+                </Box>
               </Grid>
               <Grid item>
-                <Box m={2}>
-                  <TimeIntervalLinks intervalChangeHandler={(duration) => setDurationToURL('stats_period', duration.queryValue)}
-                    selectedInterval = {updateProgressChartDuration}
+                <Box pt={4} pr={2}>
+                  <TimeIntervalLinks intervalChangeHandler={(duration) => setDurationToURL('version_timeline_period', duration.queryValue)}
+                    selectedInterval = {versionChartSelectedDuration}
                     appID = {props.appID}
                     groupID = {props.groupID}
                   />
                 </Box>
               </Grid>
             </Grid>
-            <Box padding="1em">
-              <InstanceStatusArea instanceStats={instancesStats}
-                loading={loadingUpdateProgressChart}
-                period={updateProgressChartDuration.displayValue}
-              />
+            <Box padding="2em">
+              <VersionCountTimeline group={group} duration={versionChartSelectedDuration}/>
             </Box>
-
-            <Grid container alignItems="flex-end" justify="flex-end">
+          </Grid>
+          <Box width="1%">
+            <Divider orientation="vertical"/>
+          </Box>
+          <Grid
+            item
+            md
+            xs={12}
+            container
+            direction="column"
+          >
+            <Grid container alignItems="center" justify="space-between">
               <Grid item>
-                {instancesStats.total > 0 ?
-                  <Box m={2}>
-                    {!loadingUpdateProgressChart &&
-                    <Link
-                      className={classes.link}
-                      to={{pathname: `/apps/${props.appID}/groups/${props.groupID}/instances`,
-                           search: `period=${updateProgressChartDuration.queryValue}`
-                      }}
-                      component={RouterLink}
-                    >
-                      See instances
-                    </Link>
-                    }
-                  </Box>
-
-                  :
-                  []
-                }
+                <Box pl={2}
+                  color={theme.palette.greyShadeColor}
+                  fontSize={18}
+                  fontWeight={700}
+                  pt={4}
+                >
+                  Status Breakdown
+                </Box>
+              </Grid>
+              <Grid item>
+                <Box pt={4} pr={2}>
+                  <TimeIntervalLinks intervalChangeHandler={(duration) => setDurationToURL('status_timeline_period', duration.queryValue)}
+                    selectedInterval = {statusChartDuration}
+                    appID = {props.appID}
+                    groupID = {props.groupID}
+                  />
+                </Box>
               </Grid>
             </Grid>
-          </Paper>
+            <Box padding="2em">
+              <StatusCountTimeline group={group} duration={statusChartDuration}/>
+            </Box>
+          </Grid>
+          </Grid>
         }
       </Grid>
-      { instancesStats.total > 0 &&
-        <Grid item xs={12}>
-          <Paper>
-            <Grid
-              container
-            >
-              <Grid
-                item
-                md
-                xs={12}
-                container
-                direction="column"
-              >
-                <Grid container alignItems="center" spacing={10}>
-                  <Grid item>
-                    <ListHeader title="Version Breakdown" />
-                  </Grid>
-                  <Grid item>
-                    <TimeIntervalLinks intervalChangeHandler={(duration) => setDurationToURL('version_timeline_period', duration.queryValue)}
-                      selectedInterval = {versionChartSelectedDuration}
-                      appID = {props.appID}
-                      groupID = {props.groupID}
-                    />
-                  </Grid>
-                </Grid>
-                <Box padding="1em">
-                  <VersionCountTimeline group={group} duration={versionChartSelectedDuration}/>
-                </Box>
-              </Grid>
-              <Grid
-                item
-                md
-                xs={12}
-                container
-                direction="column"
-              >
-                <Grid container alignItems="center" spacing={10}>
-                  <Grid item>
-                    <ListHeader title="Status Breakdown" />
-                  </Grid>
-                  <Grid item>
-                    <TimeIntervalLinks intervalChangeHandler={(duration) => setDurationToURL('status_timeline_period', duration.queryValue)}
-                      selectedInterval = {statusChartDuration}
-                      appID = {props.appID}
-                      groupID = {props.groupID}
-                    />
-                  </Grid>
-                </Grid>
-                <Box padding="1em">
-                  <StatusCountTimeline group={group} duration={statusChartDuration}/>
-                </Box>
-              </Grid>
-            </Grid>
-          </Paper>
-        </Grid>
-      }
-    </Grid>
+    </Paper>
   );
 }
 

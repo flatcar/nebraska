@@ -1,3 +1,4 @@
+import { Box } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -12,7 +13,6 @@ const useStyles = makeStyles(theme => ({
 export default function ListHeader(props) {
   const classes = useStyles();
   const actions = props.actions || [];
-
   return (
     <Grid
       container
@@ -22,7 +22,9 @@ export default function ListHeader(props) {
     >
       {props.title &&
       <Grid item>
-        <Typography variant="h5">{props.title}</Typography>
+        <Box p={0.5}>
+          <Typography variant="h4">{props.title}</Typography>
+        </Box>
       </Grid>
       }
       {actions &&

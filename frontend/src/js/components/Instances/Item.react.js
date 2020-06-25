@@ -1,6 +1,7 @@
-import menuDown from '@iconify/icons-mdi/menu-down';
-import menuUp from '@iconify/icons-mdi/menu-up';
+import chevronDown from '@iconify/icons-mdi/chevron-down';
+import chevronUp from '@iconify/icons-mdi/chevron-up';
 import { InlineIcon } from '@iconify/react';
+import { Box } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Collapse from '@material-ui/core/Collapse';
 import Link from '@material-ui/core/Link';
@@ -18,17 +19,21 @@ import { cleanSemverVersion, makeLocaleTime } from '../../constants/helpers';
 import Label from '../Common/Label';
 import StatusHistoryContainer from './StatusHistoryContainer.react';
 
-const TableLabel = styled(Label)({
-  lineHeight: '45px',
-});
+const TableLabel = function(props){
+  return (<Box bgcolor={props.bgColor} color={props.textColor} display="inline-block" py={1} px={2}>
 
+    {props.children}
+  </Box>);
+};
 function Item(props) {
   const date = props.instance.application.last_check_for_updates;
   const downloadingIcon = props.instance.statusInfo.spinning ? <img src={LoadingGif} /> : '';
-  const statusIcon = props.instance.statusInfo.icon ? <i className={props.instance.statusInfo.icon}></i> : '';
+  const statusDescription = props.instance.statusInfo.description;
   const instanceLabel = props.instance.statusInfo.className ?
-    <TableLabel>
-      {statusIcon} {downloadingIcon} {props.instance.statusInfo.description}
+    <TableLabel bgColor={props.instance.statusInfo.bgColor}
+      textColor={props.instance.statusInfo.textColor}
+    >
+      {statusDescription}
     </TableLabel> : <div>&nbsp;</div>;
   const version = cleanSemverVersion(props.instance.application.version);
   const currentVersionIndex = props.lastVersionChannel ?
@@ -84,13 +89,10 @@ function Item(props) {
     <React.Fragment>
       <TableRow>
         <TableCell>
-          <Button size="small" onClick={onToggle}>
-            {props.instance.ip}&nbsp;
-            <InlineIcon icon={ props.selected ? menuUp : menuDown } />
-          </Button>
+          <Link to={instancePath} component={RouterLink}>{props.instance.id}</Link>
         </TableCell>
         <TableCell>
-          <Link to={instancePath} component={RouterLink}>{props.instance.id}</Link>
+          {props.instance.ip}
         </TableCell>
         <TableCell>
           {instanceLabel}
@@ -99,7 +101,20 @@ function Item(props) {
           <span className={'box--' + versionStyle}>{version}</span>
         </TableCell>
         <TableCell>
-          {makeLocaleTime(date)}
+          <Box display="flex" justifyContent="space-between">
+            <Box>
+              {makeLocaleTime(date)}
+            </Box>
+            <Box>
+              <InlineIcon icon={ props.selected ? chevronUp : chevronDown }
+                onClick={onToggle}
+                height="25"
+                width="25"
+                color="#808080"
+                style={{cursor: 'pointer'}}
+              />
+            </Box>
+          </Box>
         </TableCell>
       </TableRow>
       <TableRow>

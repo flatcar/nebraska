@@ -1,16 +1,26 @@
+import { Box, Grid, makeStyles, Tooltip, Typography, useTheme } from '@material-ui/core';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
+import ScheduleIcon from '@material-ui/icons/Schedule';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { ARCHES, cleanSemverVersion } from '../../constants/helpers';
+import { ARCHES, cleanSemverVersion, makeLocaleTime } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import MoreMenu from '../Common/MoreMenu';
 import ChannelAvatar from './ChannelAvatar';
 
+const useStyles = makeStyles(({
+  root: {
+    margin: '0px'
+  }
+}));
 function Item(props) {
-  const {channel, packages, handleUpdateChannel, showArch = true, ...others} = props;
+  const theme = useTheme();
+  const classes = useStyles();
+  const {channel, packages, handleUpdateChannel,
+         showArch = true, isAppView = false, ...others} = props;
   const name = channel.name;
   const version = channel.package ? cleanSemverVersion(channel.package.version) : 'No package';
 
@@ -39,20 +49,47 @@ function Item(props) {
 
       text += `(${ARCHES[channel.arch]})`;
     }
-
-    return text;
+    const date = new Date(channel.created_ts);
+    const calendarDate = `${date.getDate()}/${date.getMonth() + 1}`;
+    const time = `${date.getHours()}:${date.getMinutes()}`;
+    return (
+      <Box display="flex" ml={1}>
+        <Box>
+          {text}
+        </Box>
+        <Box pl={2}>
+          <Box display="flex">
+            <Box>
+              <Tooltip title="Release date">
+                <ScheduleIcon fontSize="small"/>
+              </Tooltip>
+            </Box>
+            <Box pl={1}>
+              {`${time}, ${calendarDate}`}
+            </Box>
+          </Box>
+        </Box>
+      </Box>);
   }
-
   return (
     <ListItem component="div" {...others}>
-      <ListItemAvatar>
-        <ChannelAvatar color={channel.color}>{name[0]}</ChannelAvatar>
-      </ListItemAvatar>
-      <ListItemText
-        primary={name}
-
-        secondary={getSecondaryText()}
-      />
+      <Grid container spacing={2}>
+        <Grid item>
+          {isAppView ?
+            <ChannelAvatar color={channel.color} size={theme.spacing(1)}/> :
+            <ChannelAvatar color={channel.color}>{name[0]}</ChannelAvatar>
+          }
+        </Grid>
+        <Grid item>
+          <ListItemText
+            primary={<Box display="flex" alignItems="center">
+              <Box pl={1} display="inline-block">{name}</Box>
+            </Box>}
+            secondary={getSecondaryText()}
+            className={classes.root}
+          />
+        </Grid>
+      </Grid>
       {props.handleUpdateChannel &&
         <ListItemSecondaryAction>
           <MoreMenu options={[

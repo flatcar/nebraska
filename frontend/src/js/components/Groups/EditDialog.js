@@ -1,4 +1,4 @@
-import { ListItemText } from '@material-ui/core';
+import { Box, Checkbox, Divider, FormLabel, Hidden, ListItemText, makeStyles, Tooltip, Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -11,6 +11,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import { Field, Form, Formik } from 'formik';
 import { Select, Switch, TextField } from 'formik-material-ui';
 import PropTypes from 'prop-types';
@@ -20,8 +21,15 @@ import { ARCHES } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import TimezonePicker, { DEFAULT_TIMEZONE } from '../Common/TimezonePicker';
 
+const useStyles = makeStyles(({
+  root: {
+    padding: '0.5em 0em',
+    overflow: 'hidden'
+  }
+}));
 function EditDialog(props) {
   const isCreation = Boolean(props.create);
+  const classes = useStyles();
 
   function handleSubmit(values, actions) {
     const updatesPeriodPolicy = values.updatesPeriodRange.toString() + ' '
@@ -75,169 +83,225 @@ function EditDialog(props) {
 
     return (
       <Form data-testid="group-edit-form">
-        <DialogContent>
+        <DialogContent className={classes.root}>
           {status && status.statusMessage &&
           <DialogContentText color="error">
             {status.statusMessage}
           </DialogContentText>
           }
-          <Field
-            name="name"
-            component={TextField}
-            margin="dense"
-            label="Name"
-            required
-            fullWidth
-          />
-          <Field
-            name="description"
-            component={TextField}
-            margin="dense"
-            label="Description"
-            fullWidth
-          />
-          <FormControl margin="dense" fullWidth>
-            <InputLabel shrink>Channel</InputLabel>
-            <Field
-              name="channel"
-              component={Select}
-              displayEmpty
-            >
-              <MenuItem value="" key="">
-                None yet
-              </MenuItem>
-              {channels.map((channelItem) =>
-                <MenuItem value={channelItem.id} key={channelItem.id}>
-                  <ListItemText primary={channelItem.name}
-                    secondary={ARCHES[channelItem.arch]}
-                  />
-                </MenuItem>)
-              }
-            </Field>
-          </FormControl>
-          <Grid container
-            justify="space-between"
-            spacing={4}
-          >
-            <Grid item xs={6}>
-              <FormControlLabel
-                label="Updates enabled"
-                control={
-                  <Field
-                    name="updatesEnabled"
-                    component={Switch}
-                    color="primary"
-                  />
-                }
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <FormControlLabel
-                label="Safe mode"
-                control={
-                  <Field
-                    name="safeMode"
-                    component={Switch}
-                    color="primary"
-                  />
-                }
-              />
-              <FormHelperText>
-                Only update 1 instance at a time, and stop if an update fails.
-              </FormHelperText>
-            </Grid>
-          </Grid>
-          <Field
-            component={TimezonePicker}
-            name="timezone"
-            value={values.timezone}
-            onSelect={timezone => {
-              setFieldValue('timezone', timezone);
-            }}
-          />
-          <FormControl fullWidth>
-            <FormControlLabel
-              label="Only office hours"
-              control={
+          <Grid container spacing={2}>
+            <Grid item xs={8}>
+              <Box pl={2}>
                 <Field
-                  name="onlyOfficeHours"
-                  component={Switch}
-                  color="primary"
+                  name="name"
+                  component={TextField}
+                  margin="dense"
+                  label="Name"
+                  required
+                  fullWidth
                 />
-              }
-            />
-            <FormHelperText>Only update from 9am to 5pm.</FormHelperText>
-          </FormControl>
-          <Grid container
-            justify="space-between"
-            spacing={4}
-          >
-            <Grid item xs={6}>
-              <Field
-                name="maxUpdates"
-                label="Max number of updates"
-                component={TextField}
-                margin="dense"
-                type="number"
-                fullWidth
-              />
+              </Box>
             </Grid>
-            <Grid item xs={3}>
-              <Field
-                name="updatesPeriodRange"
-                label="Period range"
-                component={TextField}
-                margin="dense"
-                type="number"
-                fullWidth
-              />
-            </Grid>
-            <Grid item xs={3}>
-              <Field
-                name="updatesPeriodUnit"
-                label="Period unit"
-                component={TextField}
-                margin="dense"
-                select
-                fullWidth
-              >
-                {['hours', 'minutes', 'days'].map((unit) => {
-                  return (<MenuItem value={unit} key={unit}>
-                    {unit}
-                  </MenuItem>);
-                })
-                }
-              </Field>
+            <Grid item xs={4}>
+              <Box pr={2}>
+                <FormControl margin="dense" fullWidth>
+                  <InputLabel shrink>Channel</InputLabel>
+                  <Field
+                    name="channel"
+                    component={Select}
+                    displayEmpty
+                  >
+                    <MenuItem value="" key="">
+                      None yet
+                    </MenuItem>
+                    {channels.map((channelItem) =>
+                      <MenuItem value={channelItem.id} key={channelItem.id}>
+                        {`${channelItem.name}(${ARCHES[channelItem.arch]})`}
+                      </MenuItem>)
+                    }
+                  </Field>
+                </FormControl>
+              </Box>
             </Grid>
           </Grid>
-          <Grid container
-            spacing={1}
-          >
-            <Grid item xs={6}>
-              <Field
-                name="updatesTimeout"
-                label="Updates timeout range"
-                component={TextField}
-                margin="dense"
-                type="number"
-              />
+          <Box mt={2} px={2}>
+            <Field
+              name="description"
+              component={TextField}
+              margin="dense"
+              label="Description"
+              fullWidth
+            />
+          </Box>
+          <Box mt={2}>
+            <Divider/>
+          </Box>
+          <Box mt={2} px={2}>
+            <Grid container
+              justify="space-between"
+              spacing={4}
+            >
+              <Grid item xs={12}>
+                <Box mt={1}><FormLabel component="legend">Update</FormLabel></Box>
+                <Grid container>
+                  <Grid item xs={6}>
+                    <FormControlLabel
+                      label="Updates enabled"
+                      control={
+                        <Field
+                          name="updatesEnabled"
+                          component={Switch}
+                          color="primary"
+                        />
+                      }
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <FormControlLabel
+                      label="Safe mode"
+                      control={
+                        <Field
+                          name="safeMode"
+                          component={Switch}
+                          color="primary"
+                        />
+                      }
+                    />
+                    <FormHelperText>
+                      Only update 1 instance at a time, and stop if an update fails.
+                    </FormHelperText>
+                  </Grid>
+                </Grid>
+              </Grid>
             </Grid>
-            <Grid item xs={6}>
-              <Field
-                name="updatesTimeoutUnit"
-                label="Timeout unit"
-                component={TextField}
-                margin="dense"
-                select
-                fullWidth
-              >
-                {['hours', 'minutes', 'days'].map((unit) => {
-                  return (<MenuItem value={unit} key={unit}>
-                    {unit}
-                  </MenuItem>);
-                })
-                }
-              </Field>
+          </Box>
+          <Box mt={2}>
+            <Divider/>
+          </Box>
+          <Box mt={1} pl={2}>
+            <FormLabel component="legend">
+              {'Update Limits'}
+            </FormLabel>
+          </Box>
+          <Box m={1}>
+            <Grid container>
+              <Grid item xs={6}>
+
+                <FormControlLabel
+                  label={<Box display="flex" alignItems="center">
+                    <Box pr={0.5}>
+                      Only office hours
+                    </Box>
+                    <Box pt={0.1} color="#808080">
+                      <Tooltip title="Only update from 9am to 5pm.">
+                        <HelpOutlineIcon fontSize="small"/>
+                      </Tooltip>
+                    </Box>
+                  </Box>}
+                  control={
+                    <Box pl={1}>
+                      <Field
+                        name="onlyOfficeHours"
+                        component={Switch}
+                        color="primary"
+                      />
+                    </Box>
+                  }
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <Field
+                  component={TimezonePicker}
+                  name="timezone"
+                  value={values.timezone}
+                  onSelect={timezone => {
+                    setFieldValue('timezone', timezone);
+                  }}
+                />
+              </Grid>
+            </Grid>
+          </Box>
+          <Grid container >
+            <Grid item xs={12} container spacing={2} justify="space-between" alignItems="center">
+              <Grid item xs={4}>
+                <Box pl={2}>
+                  <Field
+                    name="maxUpdates"
+                    component={TextField}
+                    label="Max number of updates"
+                    margin="dense"
+                    type="number"
+                    fullWidth
+                  />
+                </Box>
+              </Grid>
+              <Grid item>
+                <Typography color="textSecondary">
+                  {'per'}
+                </Typography>
+              </Grid>
+              <Grid item xs={3}>
+                <Box mt={1}>
+                  <Field
+                    name="updatesPeriodRange"
+                    component={TextField}
+                    margin="dense"
+                    type="number"
+                    fullWidth
+                  />
+                </Box>
+              </Grid>
+              <Grid item xs={3}>
+                <Box mt={2} mr={2}>
+                  <Field
+                    name="updatesPeriodUnit"
+                    component={TextField}
+                    margin="dense"
+                    select
+                    fullWidth
+                  >
+                    {['hours', 'minutes', 'days'].map((unit) => {
+                      return (<MenuItem value={unit} key={unit}>
+                        {unit}
+                      </MenuItem>);
+                    })
+                    }
+                  </Field>
+                </Box>
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <Box mt={2} pl={2}>
+                <FormLabel>Updates timeout </FormLabel>
+                <Grid container spacing={2}>
+                  <Grid item xs={4}>
+                    <Field
+                      name="updatesTimeout"
+                      component={TextField}
+                      margin="dense"
+                      type="number"
+                    />
+                  </Grid>
+                  <Grid item xs={3}>
+                    <Box pr={2}>
+                      <Field
+                        name="updatesTimeoutUnit"
+                        component={TextField}
+                        margin="dense"
+                        select
+                        fullWidth
+                      >
+                        {['hours', 'minutes', 'days'].map((unit) => {
+                          return (<MenuItem value={unit} key={unit}>
+                            {unit}
+                          </MenuItem>);
+                        })
+                        }
+                      </Field>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </Box>
             </Grid>
           </Grid>
         </DialogContent>

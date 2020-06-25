@@ -8,7 +8,7 @@ function MainLayout() {
   return (
     <Grid
       container
-      spacing={1}
+      spacing={2}
       justify="center"
       alignItems="flex-start"
     >

@@ -1,4 +1,4 @@
-import Fab from '@material-ui/core/Fab';
+import { IconButton, makeStyles, useTheme } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -9,6 +9,7 @@ import PackageEditDialog from '../Packages/EditDialog';
 
 function ModalButton(props) {
   const [showModal, setShowModal] = React.useState(false);
+  const theme = useTheme();
 
   function close() {
     setShowModal(false);
@@ -45,9 +46,9 @@ function ModalButton(props) {
   // case it should be set from the caller).
   return (
     <div>
-      <Fab size="small" aria-label="add" onClick={open} data-testid="modal-button">
-        <AddIcon />
-      </Fab>
+      <IconButton size="small" variant="extended" aria-label="add" onClick={open} data-testid="modal-button" >
+        <AddIcon fontSize="large" color={theme.palette.titleColor}/>
+      </IconButton>
       {modal}
     </div>
   );

@@ -1,7 +1,8 @@
+import { Box } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -11,8 +12,14 @@ const useStyles = makeStyles(theme => ({
     padding: '1rem',
     flexWrap: 'nowrap',
   },
+  cardTitle: {
+    color: '#474747',
+    fontSize: '1.8rem',
+    fontWeight: 'bold'
+  },
   mainLink: {
-    fontSize: '2.2rem',
+    fontSize: '1.8rem',
+    fontWeight: 'bold'
   },
   featureLabel: {
     color: theme.palette.text.secondary,
@@ -21,7 +28,7 @@ const useStyles = makeStyles(theme => ({
   },
   descriptionLabel: {
     color: theme.palette.text.secondary,
-    fontSize: '1rem',
+    fontSize: '0.875rem',
   },
   idLabel: {
     color: theme.palette.text.secondary,
@@ -47,7 +54,9 @@ export function CardFeatureLabel(props) {
 export function CardDescriptionLabel(props) {
   const classes = useStyles();
   return (
-    <Typography component='span' className={classes.descriptionLabel}>{props.children}</Typography>
+    <Box mt={2}>
+      <Typography component='span' className={classes.descriptionLabel}>{props.children}</Typography>
+    </Box>
   );
 }
 
@@ -61,6 +70,7 @@ export function CardLabel(props) {
 
 export function CardHeader(props) {
   const classes = useStyles();
+  const theme = useTheme();
   return (
     <React.Fragment>
       <Grid
@@ -74,23 +84,23 @@ export function CardHeader(props) {
           alignItems="center"
           justify="space-between"
         >
-          <Grid item xs={6}>
+          <Grid item xs={12}>
             { props.cardMainLinkPath ? (
               <Link component={RouterLink} to={props.cardMainLinkPath} className={classes.mainLink}>
                 {props.cardMainLinkLabel}
               </Link>
             ) : (
-              <Typography className={classes.mainLink}>
+              <Typography className={classes.cardTitle}>
                 {props.cardMainLinkLabel}
               </Typography>
             )
             }
           </Grid>
-          <Grid item xs>
-            <Typography className={classes.idLabel} arial-label="group-id" noWrap>{props.cardId}</Typography>
-          </Grid>
           <Grid item xs={12}>
-            <CardDescriptionLabel variant="h5">{props.cardDescription}</CardDescriptionLabel>
+            <Box bgcolor={theme.palette.lightSilverShade} px={1} display="inline-block">
+              <Typography className={classes.idLabel} arial-label="group-id" noWrap>{props.cardId}</Typography>
+            </Box>
+            <CardDescriptionLabel>{props.cardDescription}</CardDescriptionLabel>
           </Grid>
         </Grid>
         {props.children &&

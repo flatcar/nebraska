@@ -1,4 +1,4 @@
-import { Grid, Link, makeStyles, Typography } from '@material-ui/core';
+import { Box, Grid, Link, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
 import API from '../../api/API';
 import { timeIntervalsDefault } from '../../constants/helpers';
@@ -37,18 +37,21 @@ export default function TimeIntervalLinks(props) {
   return (
     <Grid container spacing={1}>
       {
-        timeIntervals.map((link) =>
-          <Grid key={link.queryValue} item>
-            <Link underline="none"
-              component="button"
-              onClick={(e) => intervalChangeHandler(link)}
-              color={link.disabled ? 'textSecondary' : link.displayValue === selectedInterval.displayValue ? 'inherit' : 'primary'}
-            >
-              <Typography className={classes.title} >
-                {link.displayValue}
-              </Typography>
-            </Link>
-          </Grid>)
+        timeIntervals.map((link, index) =>
+          <>
+            <Grid key={link.queryValue} item>
+              <Link underline="none"
+                component="button"
+                onClick={(e) => intervalChangeHandler(link)}
+                color={link.disabled ? 'textSecondary' : link.displayValue === selectedInterval.displayValue ? 'inherit' : 'primary'}
+              >
+                <Typography className={classes.title} >
+                  {link.displayValue}
+                </Typography>
+              </Link>
+            </Grid>
+            {(index < timeIntervals.length - 1) && <Grid item><Box color="text.disabled">{'.'}</Box></Grid>}
+          </>)
       }
     </Grid>
   );

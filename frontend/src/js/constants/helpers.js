@@ -84,7 +84,7 @@ export function makeColorsForVersions(theme, versions, channel = null) {
     const cleanVersion = cleanSemverVersion(version);
 
     if (cleanVersion === latestVersion) {
-      versionColors[cleanVersion] = theme.palette.success.main;
+      versionColors[cleanVersion] = theme.palette.primary.main;
     } else {
       versionColors[cleanVersion] = colors[colorIndex++ % colors.length];
     }
@@ -110,6 +110,8 @@ export function getInstanceStatus(statusID, version) {
       spinning: true,
       icon: '',
       description: 'Updating: granted',
+      textColor: '#061751',
+      bgColor: 'rgba(6, 23, 81, 0.1)',
       status: 'Granted',
       explanation: 'The instance has received an update package -version ' + version + '- and the update process is about to start'
     },
@@ -119,6 +121,8 @@ export function getInstanceStatus(statusID, version) {
       spinning: false,
       icon: 'glyphicon glyphicon-remove',
       description: 'Error updating',
+      bgColor: 'rgba(244, 67, 54, 0.1)',
+      textColor: '#F44336',
       status: 'Error',
       explanation: 'The instance reported an error while updating to version ' + version
     },
@@ -129,6 +133,8 @@ export function getInstanceStatus(statusID, version) {
       icon: 'glyphicon glyphicon-ok',
       description: 'Update completed',
       status: 'Completed',
+      textColor: '#26B640',
+      bgColor: 'rgba(38, 182, 64, 0.1)',
       explanation: 'The instance has been updated successfully and is now running version ' + version
     },
     5: {
@@ -146,6 +152,8 @@ export function getInstanceStatus(statusID, version) {
       spinning: true,
       icon: '',
       description: 'Updating: downloaded',
+      bgColor: 'rgba(44, 152, 240, 0.1)',
+      textColor: '#2C98F0',
       status: 'Downloaded',
       explanation: 'The instance has downloaded the update package -version ' + version + '- and will install it now'
     },
@@ -155,6 +163,8 @@ export function getInstanceStatus(statusID, version) {
       spinning: true,
       icon: '',
       description: 'Updating: downloading',
+      textColor: '#808080',
+      bgColor: 'rgba(128, 128, 128, 0.1)',
       status: 'Downloading',
       explanation: 'The instance has just started downloading the update package -version ' + version + '-'
     },

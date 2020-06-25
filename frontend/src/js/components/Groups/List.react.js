@@ -1,3 +1,4 @@
+import { withStyles } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import MuiList from '@material-ui/core/List';
 import Paper from '@material-ui/core/Paper';
@@ -12,6 +13,14 @@ import Loader from '../Common/Loader';
 import ModalButton from '../Common/ModalButton.react';
 import EditDialog from './EditDialog';
 import Item from './Item.react';
+
+const styles = theme => ({
+  root: {
+    '& > hr:first-child': {
+      display: 'none'
+    }
+  }
+});
 
 class List extends React.Component {
 
@@ -114,9 +123,10 @@ class List extends React.Component {
     const groupToUpdate = !_.isEmpty(groups) &&
       this.state.updateGroupIDModal ?
       _.findWhere(groups, {id: this.state.updateGroupIDModal}) : null;
+    const {classes} = this.props;
 
     return (
-      <Paper>
+      <>
         <ListHeader
           title="Groups"
           actions={[
@@ -130,17 +140,19 @@ class List extends React.Component {
             />
           ]}
         />
-        <MuiList>
-          {entries}
-        </MuiList>
-        {groupToUpdate &&
-        <EditDialog
-          data={{group: groupToUpdate, channels: channels}}
-          show={this.state.updateGroupModalVisible}
-          onHide={this.closeUpdateGroupModal}
-        />
-        }
-      </Paper>
+        <Paper>
+          <MuiList className={classes.root}>
+            {entries}
+          </MuiList>
+          {groupToUpdate &&
+          <EditDialog
+            data={{group: groupToUpdate, channels: channels}}
+            show={this.state.updateGroupModalVisible}
+            onHide={this.closeUpdateGroupModal}
+          />
+          }
+        </Paper>
+      </>
     );
   }
 
@@ -150,4 +162,4 @@ List.propTypes = {
   appID: PropTypes.string.isRequired
 };
 
-export default List;
+export default withStyles(styles)(List);
