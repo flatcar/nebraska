@@ -11,12 +11,16 @@ begin
 
         -- stable channel update
         insert into package values ('84b4c599-9b6b-44a8-b13c-d4263fff0403', 1, '2191.5.0', 'https://update.release.flatcar-linux.net/amd64-usr/2191.5.0/', 'flatcar_production_update.gz', 'Flatcar Container Linux 2191.5.0', '465881871', 'r3nufcxgMTZaxYEqL+x2zIoeClk=', '2019-09-05 10:41:09.265687+00', 'e96281a6-d1af-4bde-9a0a-97b76e56dc57');
+        insert into flatcar_action values ('1f6e1bcf-4ebb-4fe6-8ca3-2cb6ad90d5dd', 'postinstall', '', 'LIkAKVZY2EJFiwTmltiJZLFLA5xT/FodbjVgqkyF/y8=', false, false, true, '', '', '', '2019-08-20 00:12:37.532281', '84b4c599-9b6b-44a8-b13c-d4263fff0403');
         -- beta channel update
         insert into package values ('cbc1ca68-f739-43de-91bc-542aec9eeac5', 1, '2247.2.0', 'https://update.release.flatcar-linux.net/amd64-usr/2247.2.0/', 'flatcar_production_update.gz', 'Flatcar Container Linux 2247.2.0', '467048659', 'Oa9u83Dxc+kbZnu6wEaxzocVvJo=', '2019-09-13 13:39:32.794613+00', 'e96281a6-d1af-4bde-9a0a-97b76e56dc57');
+        insert into flatcar_action values ('021b5853-26fb-4833-b5d9-a9fa040841a9', 'postinstall', '', 'Zs9u/PomrPzR6JuixoajzZY6rPn1lOXpFUONrvwuaw0=', false, false, true, '', '', '', '2019-08-20 00:12:37.532281', 'cbc1ca68-f739-43de-91bc-542aec9eeac5');
         -- alpha channel update
         insert into package values ('0c2635c7-4ef8-4e4b-b768-6292508f9700', 1, '2261.0.0', 'https://update.release.flatcar-linux.net/amd64-usr/2261.0.0/', 'flatcar_production_update.gz', 'Flatcar Container Linux 2261.0.0', '467500954', 'GTNbHomjMXq/x2OU3B9vMtaBYXw=', '2019-09-13 13:52:45.275675+00', 'e96281a6-d1af-4bde-9a0a-97b76e56dc57');
+        insert into flatcar_action values ('86703e7d-4fa8-4359-8e6a-8c68bb1eaacb', 'postinstall', '', '2T/RPs3fe46Ogt3obgb3jsSfNLp1b94erg16ejudymg=', false, false, true, '', '', '', '2019-08-20 00:12:37.532281', '0c2635c7-4ef8-4e4b-b768-6292508f9700');
         -- edge channel update
         insert into package values ('b6cd0aa9-6d5c-4818-ae0e-10c07aca4c3a', 1, '2247.99.0', 'https://update.release.flatcar-linux.net/amd64-usr/2247.99.0/', 'flatcar_production_update.gz', 'Flatcar Container Linux 2247.99.0', '486809098', 'tGBe5k1+n/9Xw2oRdw58JNUrzEk=', '2019-09-05 11:25:35.210186+00', 'e96281a6-d1af-4bde-9a0a-97b76e56dc57');
+        insert into flatcar_action values ('96d04b09-609f-4f42-8aa5-c4f6609db416', 'postinstall', '', 'sql8QQ4UEN8N6niHlCHtNLo8IYnncpoF2pNnrzZ5Lcc=', false, false, true, '', '', '', '2019-08-20 00:12:37.532281', 'b6cd0aa9-6d5c-4818-ae0e-10c07aca4c3a');
 
         insert into channel values ('e06064ad-4414-4904-9a6e-fd465593d1b2', 'stable', '#14b9d6', '2015-09-19 05:09:34.261241', 'e96281a6-d1af-4bde-9a0a-97b76e56dc57', '84b4c599-9b6b-44a8-b13c-d4263fff0403');
         insert into channel values ('128b8c29-5058-4643-8e67-a1a0e3c641c9', 'beta', '#fc7f33', '2015-09-19 05:09:34.264334', 'e96281a6-d1af-4bde-9a0a-97b76e56dc57', 'cbc1ca68-f739-43de-91bc-542aec9eeac5');
