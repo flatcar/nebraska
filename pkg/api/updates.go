@@ -159,7 +159,7 @@ func (api *API) enforceRolloutPolicy(instance *Instance, group *Group, updatesSt
 		return ErrMaxConcurrentUpdatesLimitReached
 	}
 
-	if updatesStats.UpdatesTimedOut >= effectiveMaxUpdates {
+	if group.PolicySafeMode && updatesStats.UpdatesTimedOut >= effectiveMaxUpdates {
 		if group.PolicyUpdatesEnabled {
 			_ = api.disableUpdates(group.ID)
 		}
