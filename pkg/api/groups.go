@@ -85,15 +85,15 @@ type VersionCountMap = map[string]uint64
 // InstancesStatusStats represents a set of statistics about the status of the
 // instances that belong to a given group.
 type InstancesStatusStats struct {
-	Total         int `db:"total" json:"total"`
-	Undefined     int `db:"undefined" json:"undefined"`
-	UpdateGranted int `db:"update_granted" json:"update_granted"`
-	Error         int `db:"error" json:"error"`
-	Complete      int `db:"complete" json:"complete"`
-	Installed     int `db:"installed" json:"installed"`
-	Downloaded    int `db:"downloaded" json:"downloaded"`
-	Downloading   int `db:"downloading" json:"downloading"`
-	OnHold        int `db:"onhold" json:"onhold"`
+	Total         int      `db:"total" json:"total"`
+	Undefined     null.Int `db:"undefined" json:"undefined"`
+	UpdateGranted null.Int `db:"update_granted" json:"update_granted"`
+	Error         null.Int `db:"error" json:"error"`
+	Complete      null.Int `db:"complete" json:"complete"`
+	Installed     null.Int `db:"installed" json:"installed"`
+	Downloaded    null.Int `db:"downloaded" json:"downloaded"`
+	Downloading   null.Int `db:"downloading" json:"downloading"`
+	OnHold        null.Int `db:"onhold" json:"onhold"`
 }
 
 // UpdatesStats represents a set of statistics about the status of the updates
