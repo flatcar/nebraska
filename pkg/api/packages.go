@@ -73,8 +73,9 @@ func (api *API) AddPackage(pkg *Package) (*Package, error) {
 		return nil, err
 	}
 	defer func() {
-		//TODO log a failed rollback if err != ErrTxDone
-		_ = tx.Rollback()
+		if err := tx.Rollback(); err != nil && err != sql.ErrTxDone {
+			logger.Error("AddPackage - could not roll back", err)
+		}
 	}()
 
 	query, _, err := goqu.Insert("package").
@@ -154,8 +155,9 @@ func (api *API) UpdatePackage(pkg *Package) error {
 		return err
 	}
 	defer func() {
-		//TODO log a failed rollback if err != ErrTxDone
-		_ = tx.Rollback()
+		if err := tx.Rollback(); err != nil && err != sql.ErrTxDone {
+			logger.Error("UpdatePackage - could not roll back", err)
+		}
 	}()
 	query, _, err := goqu.Update("package").
 		Set(goqu.Record{

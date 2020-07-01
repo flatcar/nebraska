@@ -92,6 +92,7 @@ func (api *API) RegisterEvent(instanceID, appID, groupID string, etype, eresult 
 	}
 	instance, err := api.GetInstance(instanceID, appID)
 	if err != nil {
+		logger.Error("RegisterEvent - could not get instance (propagates as ErrInvalidInstance)", err)
 		return ErrInvalidInstance
 	}
 	if instance.Application.ApplicationID != appID {
@@ -135,7 +136,9 @@ func (api *API) RegisterEvent(instanceID, appID, groupID string, etype, eresult 
 	}
 
 	lastUpdateVersion := instance.Application.LastUpdateVersion.String
-	_ = api.triggerEventConsequences(instanceID, appID, groupID, lastUpdateVersion, etype, eresult)
+	if err := api.triggerEventConsequences(instanceID, appID, groupID, lastUpdateVersion, etype, eresult); err != nil {
+		logger.Error("RegisterEvent - could not trigger event consequences", err)
+	}
 
 	return nil
 }
@@ -151,33 +154,49 @@ func (api *API) triggerEventConsequences(instanceID, appID, groupID, lastUpdateV
 
 	// TODO: should we also consider ResultSuccess in the next check? Flatcar ~ generic conflicts?
 	if etype == EventUpdateComplete && result == ResultSuccessReboot {
-		_ = api.updateInstanceStatus(instanceID, appID, InstanceStatusComplete)
+		if err := api.updateInstanceStatus(instanceID, appID, InstanceStatusComplete); err != nil {
+			logger.Error("triggerEventConsequences - could not update instance status", err)
+		}
 
 		updatesStats, err := api.getGroupUpdatesStats(group)
 		if err != nil {
 			return err
 		}
 		if updatesStats.UpdatesToCurrentVersionSucceeded == updatesStats.TotalInstances {
-			_ = api.setGroupRolloutInProgress(groupID, false)
-			_ = api.newGroupActivityEntry(activityRolloutFinished, activitySuccess, lastUpdateVersion, appID, groupID)
+			if err := api.setGroupRolloutInProgress(groupID, false); err != nil {
+				logger.Error("triggerEventConsequences - could not set rollout progress", err)
+			}
+			if err := api.newGroupActivityEntry(activityRolloutFinished, activitySuccess, lastUpdateVersion, appID, groupID); err != nil {
+				logger.Error("triggerEventConsequences - could not add group activity", err)
+			}
 		}
 	}
 
 	if etype == EventUpdateDownloadStarted && result == ResultSuccess {
-		_ = api.updateInstanceStatus(instanceID, appID, InstanceStatusDownloading)
+		if err := api.updateInstanceStatus(instanceID, appID, InstanceStatusDownloading); err != nil {
+			logger.Error("triggerEventConsequences - could not update instance status", err)
+		}
 	}
 
 	if etype == EventUpdateDownloadFinished && result == ResultSuccess {
-		_ = api.updateInstanceStatus(instanceID, appID, InstanceStatusDownloaded)
+		if err := api.updateInstanceStatus(instanceID, appID, InstanceStatusDownloaded); err != nil {
+			logger.Error("triggerEventConsequences - could not update instance status", err)
+		}
 	}
 
 	if etype == EventUpdateInstalled && result == ResultSuccess {
-		_ = api.updateInstanceStatus(instanceID, appID, InstanceStatusInstalled)
+		if err := api.updateInstanceStatus(instanceID, appID, InstanceStatusInstalled); err != nil {
+			logger.Error("triggerEventConsequences - could not update instance status", err)
+		}
 	}
 
 	if result == ResultFailed {
-		_ = api.updateInstanceStatus(instanceID, appID, InstanceStatusError)
-		_ = api.newInstanceActivityEntry(activityInstanceUpdateFailed, activityError, lastUpdateVersion, appID, groupID, instanceID)
+		if err := api.updateInstanceStatus(instanceID, appID, InstanceStatusError); err != nil {
+			logger.Error("triggerEventConsequences - could not update instance status", err)
+		}
+		if err := api.newInstanceActivityEntry(activityInstanceUpdateFailed, activityError, lastUpdateVersion, appID, groupID, instanceID); err != nil {
+			logger.Error("triggerEventConsequences - could not add instance activity", err)
+		}
 
 		updatesStats, err := api.getGroupUpdatesStats(group)
 		if err != nil {
@@ -185,9 +204,15 @@ func (api *API) triggerEventConsequences(instanceID, appID, groupID, lastUpdateV
 		}
 		if updatesStats.UpdatesToCurrentVersionAttempted == 1 {
 			if api.disableUpdatesOnFailedRollout {
-				_ = api.disableUpdates(groupID)
-				_ = api.setGroupRolloutInProgress(groupID, false)
-				_ = api.newGroupActivityEntry(activityRolloutFailed, activityError, lastUpdateVersion, appID, groupID)
+				if err := api.disableUpdates(groupID); err != nil {
+					logger.Error("triggerEventConsequences - could not disable updates", err)
+				}
+				if err := api.setGroupRolloutInProgress(groupID, false); err != nil {
+					logger.Error("triggerEventConsequences - could not set rollout progress", err)
+				}
+				if err := api.newGroupActivityEntry(activityRolloutFailed, activityError, lastUpdateVersion, appID, groupID); err != nil {
+					logger.Error("triggerEventConsequences - could not add group activity", err)
+				}
 			}
 		}
 	}

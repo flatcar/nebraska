@@ -7,6 +7,7 @@ import (
 	//register "pgx" sql driver
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/jmoiron/sqlx"
+	log "github.com/mgutz/logxi/v1"
 	migrate "github.com/rubenv/sql-migrate"
 
 	// Postgresql driver
@@ -36,6 +37,8 @@ func nowUTC() time.Time {
 }
 
 var (
+	logger = log.New("api")
+
 	// ErrNoRowsAffected indicates that no rows were affected in an update or
 	// delete database operation.
 	ErrNoRowsAffected = errors.New("nebraska: no rows affected")
