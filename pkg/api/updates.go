@@ -57,6 +57,7 @@ var (
 func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID, groupID string) (*Package, error) {
 	instance, err := api.RegisterInstance(instanceID, instanceIP, instanceVersion, appID, groupID)
 	if err != nil {
+		logger.Error("GetUpdatePackage - could not register instance (propagates as ErrRegisterInstanceFailed)", err)
 		return nil, ErrRegisterInstanceFailed
 	}
 	updateAlreadyGranted := false
@@ -76,15 +77,18 @@ func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID,
 	}
 
 	if group.Channel == nil || group.Channel.Package == nil {
-		_ = api.newGroupActivityEntry(activityPackageNotFound, activityWarning, "0.0.0", appID, groupID)
+		if err := api.newGroupActivityEntry(activityPackageNotFound, activityWarning, "0.0.0", appID, groupID); err != nil {
+			logger.Error("GetUpdatePackage - could not add new group activity entry", err)
+		}
 		return nil, ErrNoPackageFound
 	}
 
 	for _, blacklistedChannelID := range group.Channel.Package.ChannelsBlacklist {
 		if blacklistedChannelID == group.Channel.ID {
 			if updateAlreadyGranted {
-				// TODO: Log any error
-				_ = api.updateInstanceStatus(instance.ID, appID, InstanceStatusComplete)
+				if err := api.updateInstanceStatus(instance.ID, appID, InstanceStatusComplete); err != nil {
+					logger.Error("GetUpdatePackage - could not update instance status", err)
+				}
 			}
 			return nil, ErrNoUpdatePackageAvailable
 		}
@@ -94,8 +98,9 @@ func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID,
 	packageSemver, _ := semver.Make(group.Channel.Package.Version)
 	if !instanceSemver.LT(packageSemver) {
 		if updateAlreadyGranted {
-			// TODO: Log any error
-			_ = api.updateInstanceStatus(instance.ID, appID, InstanceStatusComplete)
+			if err := api.updateInstanceStatus(instance.ID, appID, InstanceStatusComplete); err != nil {
+				logger.Error("GetUpdatePackage - could not update instance status", err)
+			}
 		}
 		return nil, ErrNoUpdatePackageAvailable
 	}
@@ -106,6 +111,7 @@ func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID,
 
 	updatesStats, err := api.getGroupUpdatesStats(group)
 	if err != nil {
+		logger.Error("GetUpdatePackage - getGroupUpdatesStats error (propagates as ErrGetUpdatesStatsFailed):", err)
 		return nil, ErrGetUpdatesStatsFailed
 	}
 
@@ -114,18 +120,25 @@ func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID,
 	}
 
 	if err := api.grantUpdate(instance.ID, appID, group.Channel.Package.Version); err != nil {
+		logger.Error("GetUpdatePackage - grantUpdate error (propagates as ErrGrantingUpdate):", err)
 		return nil, ErrGrantingUpdate
 	}
 
 	if updatesStats.UpdatesToCurrentVersionGranted == 0 {
-		_ = api.newGroupActivityEntry(activityRolloutStarted, activityInfo, group.Channel.Package.Version, appID, group.ID)
+		if err := api.newGroupActivityEntry(activityRolloutStarted, activityInfo, group.Channel.Package.Version, appID, group.ID); err != nil {
+			logger.Error("GetUpdatePackage - could not add new group activity entry", err)
+		}
 	}
 
 	if !group.RolloutInProgress {
-		_ = api.setGroupRolloutInProgress(groupID, true)
+		if err := api.setGroupRolloutInProgress(groupID, true); err != nil {
+			logger.Error("GetUpdatePackage - could not set rollout progress", err)
+		}
 	}
 
-	_ = api.updateInstanceStatus(instance.ID, appID, InstanceStatusUpdateGranted)
+	if err := api.updateInstanceStatus(instance.ID, appID, InstanceStatusUpdateGranted); err != nil {
+		logger.Error("GetUpdatePackage - could not update instance status", err)
+	}
 
 	return group.Channel.Package, nil
 }
@@ -150,20 +163,28 @@ func (api *API) enforceRolloutPolicy(instance *Instance, group *Group, updatesSt
 	}
 
 	if updatesStats.UpdatesGrantedInLastPeriod >= effectiveMaxUpdates {
-		_ = api.updateInstanceStatus(instance.ID, appID, InstanceStatusOnHold)
+		if err := api.updateInstanceStatus(instance.ID, appID, InstanceStatusOnHold); err != nil {
+			logger.Error("enforceRolloutPolicy - could not update instance status", err)
+		}
 		return ErrMaxUpdatesPerPeriodLimitReached
 	}
 
 	if updatesStats.UpdatesInProgress >= effectiveMaxUpdates {
-		_ = api.updateInstanceStatus(instance.ID, appID, InstanceStatusOnHold)
+		if err := api.updateInstanceStatus(instance.ID, appID, InstanceStatusOnHold); err != nil {
+			logger.Error("enforceRolloutPolicy - could not update instance status", err)
+		}
 		return ErrMaxConcurrentUpdatesLimitReached
 	}
 
 	if group.PolicySafeMode && updatesStats.UpdatesTimedOut >= effectiveMaxUpdates {
 		if group.PolicyUpdatesEnabled {
-			_ = api.disableUpdates(group.ID)
+			if err := api.disableUpdates(group.ID); err != nil {
+				logger.Error("enforceRolloutPolicy - could not disable updates", err)
+			}
 		}
-		_ = api.updateInstanceStatus(instance.ID, appID, InstanceStatusOnHold)
+		if err := api.updateInstanceStatus(instance.ID, appID, InstanceStatusOnHold); err != nil {
+			logger.Error("enforceRolloutPolicy - could not update instance status", err)
+		}
 		return ErrMaxTimedOutUpdatesLimitReached
 	}
 

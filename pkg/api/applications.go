@@ -60,6 +60,7 @@ func (api *API) AddAppCloning(app *Application, sourceAppID string) (*Applicatio
 	if sourceAppID != "" {
 		sourceApp, err := api.GetApp(sourceAppID)
 		if err != nil {
+			logger.Error("AddAppCloning - could not get source app", err)
 			return app, nil
 		}
 
@@ -71,6 +72,7 @@ func (api *API) AddAppCloning(app *Application, sourceAppID string) (*Applicatio
 			channel.PackageID = null.String{}
 			channelCopy, err := api.AddChannel(channel)
 			if err != nil {
+				logger.Error("AddAppCloning - could not add channel", err)
 				return app, nil // FIXME - think about what we should return to the caller
 			}
 			channelsIDsMappings[originalChannelID] = null.StringFrom(channelCopy.ID)
@@ -83,6 +85,7 @@ func (api *API) AddAppCloning(app *Application, sourceAppID string) (*Applicatio
 			}
 			group.PolicyUpdatesEnabled = true
 			if _, err := api.AddGroup(group); err != nil {
+				logger.Error("AddAppCloning - could not add group", err)
 				return app, nil // FIXME - think about what we should return to the caller
 			}
 		}

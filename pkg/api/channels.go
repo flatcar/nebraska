@@ -99,7 +99,9 @@ func (api *API) UpdateChannel(channel *Channel) error {
 	}
 
 	if channelBeforeUpdate.PackageID.String != channel.PackageID.String && pkg != nil {
-		_ = api.newChannelActivityEntry(activityChannelPackageUpdated, activityInfo, pkg.Version, pkg.ApplicationID, channel.ID)
+		if err := api.newChannelActivityEntry(activityChannelPackageUpdated, activityInfo, pkg.Version, pkg.ApplicationID, channel.ID); err != nil {
+			logger.Error("UpdateChannel - could not add channel activity", err)
+		}
 	}
 
 	return nil

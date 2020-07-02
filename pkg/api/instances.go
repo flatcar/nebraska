@@ -115,8 +115,9 @@ func (api *API) RegisterInstance(instanceID, instanceIP, instanceVersion, appID,
 		return nil, err
 	}
 	defer func() {
-		//TODO log the failed rollback if err != sql.ErrTxDone
-		_ = tx.Rollback()
+		if err := tx.Rollback(); err != nil && err != sql.ErrTxDone {
+			logger.Error("RegisterInstance - could not roll back", err)
+		}
 	}()
 	query, _, err := goqu.Insert("instance").
 		Cols("id", "ip").
