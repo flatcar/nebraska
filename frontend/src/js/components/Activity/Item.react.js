@@ -5,7 +5,6 @@ import { Icon } from '@iconify/react';
 import { Box, makeStyles } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -93,7 +92,14 @@ class Item extends React.Component {
     const stateIcon = stateIcons[this.state.entrySeverity.className || 'info'];
 
     return (
-      <ListItem alignItems="flex-start">
+      <ListItem
+        alignItems="flex-start"
+        disableGutters
+        style={{
+          paddingTop: '15px',
+          paddingLeft: '15px',
+        }}
+      >
         <Grid container alignItems="center" justify="space-between">
           <Grid item xs={10}>
             <Box display="flex" alignItems="center" justifyContent="flex-start">
@@ -101,13 +107,32 @@ class Item extends React.Component {
                 <ActivityItemIcon {...stateIcon} time={time} />
               </Box>
               <Box>
-                <Typography variant="h6">{this.state.entryClass.appName}</Typography>
+                <Typography
+                  // @todo: Move this into a classes object once we convert this component to a
+                  // functional one.
+                  style={{
+                    fontWeight: 'bold',
+                    fontSize: '1.1rem',
+                    color: '#474747',
+                  }}
+                >
+                  {this.state.entryClass.appName}
+                </Typography>
               </Box>
             </Box>
           </Grid>
 
           <Grid item xs={2}>
-            <Typography color="textSecondary" variant="subtitle1">{time}</Typography>
+            <Typography
+              color="textSecondary"
+              // @todo: Move this into a classes object once we convert this component to a
+              // functional one.
+              style={{
+                fontSize: '.7rem',
+              }}
+            >
+              {time}
+            </Typography>
           </Grid>
           {subtitle && <Grid item container spacing={2} xs={12}>
             <Grid item>
