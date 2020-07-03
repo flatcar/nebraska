@@ -324,7 +324,7 @@ func (api *API) getGroupUpdatesStats(group *Group) (*UpdatesStats, error) {
 	var updatesStats UpdatesStats
 
 	packageVersion := ""
-	if group.Channel.Package != nil {
+	if group.Channel != nil && group.Channel.Package != nil {
 		packageVersion = group.Channel.Package.Version
 	}
 	query, _, err := goqu.From("instance_application").Select(
