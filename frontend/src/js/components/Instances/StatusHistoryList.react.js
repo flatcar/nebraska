@@ -1,3 +1,4 @@
+import { makeStyles } from '@material-ui/core';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -7,12 +8,20 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import StatusHistoryItem from './StatusHistoryItem.react';
 
+const useStyles = makeStyles({
+  root: {
+    '& .MuiTableCell-root': {
+      borderBottom: 'none'
+    }
+  }
+});
 function StatusHistoryList(props) {
   const entries = props.entries || [];
+  const classes = useStyles();
 
   // @todo: Virtualize the table.
   return (
-    <Table>
+    <Table className={classes.root}>
       <TableHead>
         <TableRow>
           <TableCell>Instances</TableCell>

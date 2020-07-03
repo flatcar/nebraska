@@ -138,27 +138,25 @@ function EditDialog(props) {
                   fullWidth
                 />
               </Grid>
-              <Grid item>
-                <FormControl
-                  margin="dense"
-                  disabled={!isCreation}
-                >
-                  <InputLabel>Architecture</InputLabel>
-                  <MuiSelect
-                    value={arch}
-                    autoWidth
-                    onChange={handleArchChange}
-                  >
-                    {Object.keys(ARCHES).map(key => {
-                      const archName = ARCHES[key];
-                      return <MenuItem value={parseInt(key)} key={key}>{archName}</MenuItem>;
-                    })}
-                  </MuiSelect>
-                  <FormHelperText>Cannot be changed once created.</FormHelperText>
-                </FormControl>
-              </Grid>
             </Grid>
           </Grid>
+          <FormControl
+            margin="dense"
+            disabled={!isCreation}
+            fullWidth
+          >
+            <InputLabel>Architecture</InputLabel>
+            <MuiSelect
+              value={arch}
+              onChange={handleArchChange}
+            >
+              {Object.keys(ARCHES).map(key => {
+                const archName = ARCHES[key];
+                return <MenuItem value={parseInt(key)} key={key}>{archName}</MenuItem>;
+              })}
+            </MuiSelect>
+            <FormHelperText>Cannot be changed once created.</FormHelperText>
+          </FormControl>
           <Field
             type="text"
             name="package"

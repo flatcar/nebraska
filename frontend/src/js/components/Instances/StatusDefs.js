@@ -1,24 +1,23 @@
-import alertOctagon from '@iconify/icons-mdi/alert-octagon';
-import boxDownload from '@iconify/icons-mdi/box-download';
-import checkboxMarked from '@iconify/icons-mdi/checkbox-marked';
-import clipboardCheck from '@iconify/icons-mdi/clipboard-check';
+import alertCircleOutline from '@iconify/icons-mdi/alert-circle-outline';
+import checkCircleOutline from '@iconify/icons-mdi/check-circle-outline';
+import downloadCircleOutline from '@iconify/icons-mdi/download-circle-outline';
+import helpCircleOutline from '@iconify/icons-mdi/help-circle-outline';
+import packageVariantClosed from '@iconify/icons-mdi/package-variant-closed';
 import pauseCircle from '@iconify/icons-mdi/pause-circle';
 import playCircle from '@iconify/icons-mdi/play-circle';
 import progressDownload from '@iconify/icons-mdi/progress-download';
-import questionMarkCircle from '@iconify/icons-mdi/question-mark-circle';
-
 function makeStatusDefs(theme) {
   return {
     InstanceStatusComplete: {
       label: 'Complete',
-      color: theme.palette.success.main,
-      icon: clipboardCheck,
+      color: theme.palette.titleColor,
+      icon: checkCircleOutline,
       queryValue: '4'
     },
     InstanceStatusDownloaded: {
       label: 'Downloaded',
-      color: theme.palette.success['A700'],
-      icon: boxDownload,
+      color: theme.palette.success.main,
+      icon: downloadCircleOutline,
       queryValue: '6'
     },
     InstanceStatusOnHold: {
@@ -29,31 +28,31 @@ function makeStatusDefs(theme) {
     },
     InstanceStatusInstalled: {
       label: 'Installed',
-      color: theme.palette.success['300'],
-      icon: checkboxMarked,
+      color: theme.palette.primary.main,
+      icon: packageVariantClosed,
       queryValue: '5'
     },
     InstanceStatusDownloading: {
       label: 'Downloading',
-      color: theme.palette.success['700'],
+      color: theme.palette.primary.main,
       icon: progressDownload,
       queryValue: '7'
     },
     InstanceStatusError: {
       label: 'Error',
       color: theme.palette.error.main,
-      icon: alertOctagon,
+      icon: alertCircleOutline,
       queryValue: '3'
     },
     InstanceStatusUndefined: {
       label: 'Unknown',
-      color: theme.palette.grey['500'],
-      icon: questionMarkCircle,
+      color: theme.palette.titleColor,
+      icon: helpCircleOutline,
       queryValue: '1'
     },
     InstanceStatusUpdateGranted: {
       label: 'Update Granted',
-      color: theme.palette.success['500'],
+      color: theme.palette.primary.main,
       icon: playCircle,
       queryValue: '2'
     },

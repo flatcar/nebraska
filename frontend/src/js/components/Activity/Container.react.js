@@ -87,51 +87,54 @@ function Container(props) {
   }
 
   return (
-    <Paper>
-      <ListHeader title="Activity" />
-      <Box padding="1em">
-        { _.isNull(activity) ?
-          <Loader />
-          : _.isEmpty(activity) ?
-            <Empty>
-              No activity found for the last week.
-              <br/><br/>
-              You will see here important events related to the rollout of your updates. Stay tuned!
-            </Empty>
-            :
-            <Grid
-              container
-              direction="column"
-            >
-              <Grid item>
-                {Object.values(
+    <>
+      <ListHeader title="Activity"/>
+      <Paper>
+        <Box padding="1em">
+          { _.isNull(activity) ?
+            <Loader />
+            : _.isEmpty(activity) ?
+              <Empty>
+                No activity found for the last week.
+                <br/><br/>
+                You will see here important events related to the rollout of your updates.
+                Stay tuned!
+              </Empty>
+              :
+              <Grid
+                container
+                direction="column"
+              >
+                <Grid item>
+                  {Object.values(
                 _.mapObject(getPagedActivity(), (entry, timestamp) => {
                   return <List timestamp={timestamp} entries={entry} key={timestamp} />;
                 })
-                )}
+                  )}
+                </Grid>
+                <Grid item>
+                  <TablePagination
+                    classes={classes}
+                    rowsPerPageOptions={rowsOptions}
+                    component="div"
+                    count={activity.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    backIconButtonProps={{
+                      'aria-label': 'previous page',
+                    }}
+                    nextIconButtonProps={{
+                      'aria-label': 'next page',
+                    }}
+                    onChangePage={handleChangePage}
+                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                  />
+                </Grid>
               </Grid>
-              <Grid item>
-                <TablePagination
-                  classes={classes}
-                  rowsPerPageOptions={rowsOptions}
-                  component="div"
-                  count={activity.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
-                  backIconButtonProps={{
-                    'aria-label': 'previous page',
-                  }}
-                  nextIconButtonProps={{
-                    'aria-label': 'next page',
-                  }}
-                  onChangePage={handleChangePage}
-                  onChangeRowsPerPage={handleChangeRowsPerPage}
-                />
-              </Grid>
-            </Grid>
-        }
-      </Box>
-    </Paper>
+          }
+        </Box>
+      </Paper>
+    </>
   );
 }
 

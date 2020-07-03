@@ -1,6 +1,10 @@
+import { Box, Divider, Typography, useTheme } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
+import CheckIcon from '@material-ui/icons/Check';
+import CloseIcon from '@material-ui/icons/Close';
+import ScheduleIcon from '@material-ui/icons/Schedule';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -16,9 +20,15 @@ import MoreMenu from '../Common/MoreMenu';
 import VersionProgressBar from '../Common/VersionBreakdownBar';
 
 const useStyles = makeStyles(theme => ({
+  root: {
+    paddingBottom: 0
+  },
   itemSection: {
     padding: '1em'
   },
+  success: {
+    color: theme.palette.success.main
+  }
 }));
 
 function Item(props) {
@@ -55,7 +65,7 @@ function Item(props) {
   []);
 
   return (
-    <ListItem disableGutters>
+    <ListItem disableGutters className={classes.root}>
       <Grid
         container
       >
@@ -84,39 +94,60 @@ function Item(props) {
           xs={12}
           container
           justify="space-between"
-          className={classes.itemSection}
         >
-          <Grid item xs={6} container direction="column">
+          <Grid item xs={4} container direction="column" className={classes.itemSection}>
             <Grid item>
-              <CardFeatureLabel>Instances:</CardFeatureLabel>&nbsp;
-              <CardLabel labelStyle={{fontSize: '1.5rem'}}>
-                <Link
-                  to={groupPath}
-                  component={RouterLink}
-                >
-                  {totalInstances === -1 ? '…'
-                    :
-                    totalInstances > 0 ? totalInstances : 'None'
+              <CardFeatureLabel>Instances</CardFeatureLabel>
+              <Box>
+                <CardLabel labelStyle={{fontSize: '1.5rem'}}>
+
+                  {totalInstances > 0 ? totalInstances : 'None'
                   }
-                </Link>
-              </CardLabel>
-            </Grid>
-            <Grid item>
-              <CardFeatureLabel>Channel:</CardFeatureLabel>
-              {groupChannel}
+
+                </CardLabel>
+                <Box display="flex" mr={2}>
+                  <ScheduleIcon color="disabled"/>
+                  <Box pl={1} color="text.disabled">
+                    <Typography variant="subtitle1">
+                      {'in last 24 hours'}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
             </Grid>
           </Grid>
-          <Grid item xs={6} container direction="column">
+          <Box width="1%">
+            <Divider orientation="vertical" variant="fullWidth"/>
+          </Box>
+          <Grid item xs={7} container direction="column" className={classes.itemSection}>
             <Grid item>
-              <CardFeatureLabel>Updates:</CardFeatureLabel>&nbsp;
-              <CardLabel>{props.group.policy_updates_enabled ? 'Enabled' : 'Disabled'}</CardLabel>
+              <CardFeatureLabel>Channel</CardFeatureLabel>
+              {groupChannel}
             </Grid>
             <Grid item>
-              <CardFeatureLabel>Rollout Policy:</CardFeatureLabel>&nbsp;
-              <CardLabel>
-                Max {props.group.policy_max_updates_per_period}
-                updates per {props.group.policy_period_interval}
-              </CardLabel>
+              <CardFeatureLabel>Updates</CardFeatureLabel>
+              <Box p={1} mb={1}>
+                <CardLabel>
+                  <Box display="flex">
+                    {props.group.policy_updates_enabled ? <><Box>Enabled</Box><Box>
+                      <CheckIcon className={classes.success} fontSize={'small'}/></Box></>
+                      : <><Box>Disabled</Box>
+                        <Box>
+                          <CloseIcon color="error"/>
+                        </Box>
+                      </>}
+                  </Box>
+                </CardLabel>
+              </Box>
+            </Grid>
+            <Grid item>
+              <CardFeatureLabel>Rollout Policy</CardFeatureLabel>
+              <Box p={1} mb={1}>
+                <CardLabel>
+                  Max {props.group.policy_max_updates_per_period}
+                  updates per {props.group.policy_period_interval}
+                </CardLabel>
+              </Box>
             </Grid>
             <Grid item container>
               <Grid item xs={12}>

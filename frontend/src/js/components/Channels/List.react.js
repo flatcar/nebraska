@@ -1,3 +1,4 @@
+import { Box } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import MuiList from '@material-ui/core/List';
 import ListSubheader from '@material-ui/core/ListSubheader';
@@ -13,8 +14,17 @@ import SectionPaper from '../Common/SectionPaper';
 import EditDialog from './EditDialog';
 import Item from './Item.react';
 
+const useStyles = theme => ({
+  root: {
+    '& > hr:first-child': {
+      display: 'none'
+    }
+  }
+});
+
 function ChannelList(props) {
   const {application, onEdit} = props;
+  const classes = useStyles();
 
   function getChannelsPerArch() {
     const perArch = {};
@@ -35,6 +45,7 @@ function ChannelList(props) {
           key={arch}
           subheader={<ListSubheader disableSticky >{ARCHES[arch]}</ListSubheader>}
           dense
+          className={classes.root}
         >
           {channels.map(channel =>
             <Item
@@ -103,41 +114,45 @@ class List extends React.Component {
       _.findWhere(channels, {id: this.state.updateChannelIDModal}) : null;
 
     return (
-      <SectionPaper>
-        <Grid
-          container
-          alignItems="center"
-          justify="space-between"
-        >
-          <Grid item>
-            <Typography variant="h5">Channels</Typography>
+      <Box mt={2}>
+        <Box mb={2}>
+          <Grid
+            container
+            alignItems="center"
+            justify="space-between"
+          >
+            <Grid item>
+              <Typography variant="h4">Channels</Typography>
+            </Grid>
+            <Grid item>
+              <ModalButton
+                modalToOpen="AddChannelModal"
+                data={{
+                  packages: packages,
+                  applicationID: this.props.appID
+                }}
+              />
+            </Grid>
           </Grid>
-          <Grid item>
-            <ModalButton
-              modalToOpen="AddChannelModal"
-              data={{
-                packages: packages,
-                applicationID: this.props.appID
-              }}
+        </Box>
+        <SectionPaper>
+          {!application ?
+            <Loader />
+            :
+            <ChannelList
+              application={application}
+              onEdit={this.openUpdateChannelModal}
             />
-          </Grid>
-        </Grid>
-        {!application ?
-          <Loader />
-          :
-          <ChannelList
-            application={application}
-            onEdit={this.openUpdateChannelModal}
-          />
-        }
-        {channelToUpdate &&
+          }
+          {channelToUpdate &&
           <EditDialog
             data={{packages: packages, applicationID: this.props.appID, channel: channelToUpdate}}
             show={this.state.updateChannelModalVisible}
             onHide={this.closeUpdateChannelModal}
           />
-        }
-      </SectionPaper>
+          }
+        </SectionPaper>
+      </Box>
     );
   }
 }

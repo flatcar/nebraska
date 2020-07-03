@@ -311,14 +311,17 @@ export function VersionCountTimeline(props) {
                 />
               </React.Fragment>
               :
-              <Typography>
-                Showing for the last {duration.displayValue}
-                (click the chart to choose a different time point).
-              </Typography>
+              <Box color="text.secondary" fontSize={14} textAlign="center" lineHeight={1.5}>
+                Showing data for the last {duration.displayValue}
+                (Click the Chart
+                <Box>
+                  to choose a different time point).
+                </Box>
+              </Box>
             }
           </Box>
         </Grid>
-        <Grid item xs={12}>
+        <Grid item xs={11}>
           <SimpleTable
             emptyMessage="No data to show for this time point."
             columns={{version: 'Version', instances: 'Count', percentage: 'Percentage'}}
@@ -498,10 +501,13 @@ export function StatusCountTimeline(props) {
                 />
               </React.Fragment>
               :
-              <Typography>
+              <Box color="text.secondary" fontSize={14} textAlign="center" lineHeight={1.5}>
                 Showing data for the {duration.displayValue}
-                (click the chart to choose a different time point).
-              </Typography>
+                (Click the Chart
+                <Box>
+                  to choose a different time point).
+                </Box>
+              </Box>
             }
           </Box>
         </Grid>

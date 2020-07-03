@@ -20,7 +20,10 @@ describe('Application Channel List ', () => {
                   'filename': '', 'description': '', 'size': '', 'hash': '', 'created_ts': '2019-07-18T20:10:39.163326+05:30',
                   'channels_blacklist': null, 'application_id': 'df1c8bbb-f525-49ee-8c94-3ca548b42059', 'flatcar_action': null, 'arch': 0},
       'arch': 0}];
-    const {asFragment} = render(<ApplicationItemChannelsList channels={channels}/>);
-    expect(asFragment()).toMatchSnapshot();
+    const {getByText} = render(<ApplicationItemChannelsList channels={channels}/>);
+    expect(getByText(channels[0].name[0])).toBeInTheDocument();
+    expect(getByText(channels[0].name)).toBeInTheDocument();
+    expect(getByText(`${channels[0].package.version} (ALL)`)).toBeInTheDocument();
+
   });
 });

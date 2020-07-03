@@ -1,3 +1,4 @@
+import { makeStyles, Typography } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
@@ -21,6 +22,12 @@ import { InstanceCountLabel } from './Common';
 import makeStatusDefs from './StatusDefs';
 import Table from './Table';
 
+const useStyles = makeStyles(theme => ({
+  root: {
+    backgroundColor: theme.palette.lightSilverShade
+  }
+}));
+
 function InstanceFilter(props) {
   const statusDefs = makeStatusDefs(useTheme());
   const {onFiltersChanged, versions} = props;
@@ -37,61 +44,65 @@ function InstanceFilter(props) {
   }
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={6}>
-        <FormControl
-          fullWidth
-          disabled={props.disabled}
-        >
-          <InputLabel htmlFor="select-status" shrink>Filter Status</InputLabel>
-          <Select
-            onChange={event => changeFilter('status', event.target.value) }
-            input={<Input id="select-status" />}
-            renderValue={selected =>
-              selected ? statusDefs[selected].label : 'Show All'
-            }
-            value={props.filter.status}
-            displayEmpty
+    <Box pr={2}>
+      <Grid container spacing={2} justify="flex-end">
+        <Grid item xs={5}>
+          <FormControl
+            fullWidth
+            disabled={props.disabled}
           >
-            <MenuItem key="" value="">Show All</MenuItem>
-            {
-              Object.keys(statusDefs).map(statusType => {
-                const label = statusDefs[statusType].label;
-                return <MenuItem key={statusType} value={statusType}>{label}</MenuItem>;
-              })
-            }
-          </Select>
-        </FormControl>
-      </Grid>
-      <Grid item xs={6}>
-        <FormControl
-          fullWidth
-          disabled={props.disabled}
-        >
-          <InputLabel htmlFor="select-versions" shrink>Filter Version</InputLabel>
-          <Select
-            onChange={event => changeFilter('version', event.target.value) }
-            input={<Input id="select-versions" />}
-            renderValue={selected =>
-              selected ? selected : 'Show All'
-            }
-            value={props.filter.version}
-            displayEmpty
+            <InputLabel htmlFor="select-status" shrink>Filter Status</InputLabel>
+            <Select
+              onChange={event => changeFilter('status', event.target.value) }
+              input={<Input id="select-status" />}
+              renderValue={selected =>
+                selected ? statusDefs[selected].label : 'Show All'
+              }
+              value={props.filter.status}
+              displayEmpty
+            >
+              <MenuItem key="" value="">Show All</MenuItem>
+              {
+                Object.keys(statusDefs).map(statusType => {
+                  const label = statusDefs[statusType].label;
+                  return <MenuItem key={statusType} value={statusType}>{label}</MenuItem>;
+                })
+              }
+            </Select>
+          </FormControl>
+        </Grid>
+        <Grid item xs={5}>
+          <FormControl
+            fullWidth
+            disabled={props.disabled}
           >
-            <MenuItem key="" value="">Show All</MenuItem>
-            {
-              (versions || []).map(({version}) => {
-                return <MenuItem key={version} value={version}>{version}</MenuItem>;
-              })
-            }
-          </Select>
-        </FormControl>
+            <InputLabel htmlFor="select-versions" shrink>Filter Version</InputLabel>
+            <Select
+              onChange={event => changeFilter('version', event.target.value) }
+              input={<Input id="select-versions" />}
+              renderValue={selected =>
+                selected ? selected : 'Show All'
+              }
+              value={props.filter.version}
+              displayEmpty
+            >
+              <MenuItem key="" value="">Show All</MenuItem>
+              {
+                (versions || []).map(({version}) => {
+                  return <MenuItem key={version} value={version}>{version}</MenuItem>;
+                })
+              }
+            </Select>
+          </FormControl>
+        </Grid>
       </Grid>
-    </Grid>
+    </Box>
   );
 }
 
 function ListView(props) {
+  const classes = useStyles();
+  const theme = useTheme();
   const statusDefs = makeStatusDefs(useTheme());
   const {application, group} = props;
   const [page, setPage] = React.useState(0);
@@ -248,37 +259,50 @@ function ListView(props) {
   function isFiltered() {
     return filters.status || filters.version;
   }
-
   return (
-    <Paper>
+    <>
       <ListHeader
         title="Instance List"
       />
-      <Box padding="1em">
-        <Grid
-          container
-          spacing={1}
-        >
+      <Paper>
+        <Box padding="1em">
           <Grid
-            item
             container
-            md={12}
-            alignItems="stretch"
+            spacing={1}
           >
-            <Grid item md>
-              <InstanceCountLabel
-                countText={getInstanceCount()}
-              />
+            <Grid item md={12}>
+              <Box mb={2} color={theme.palette.greyShadeColor} fontSize={30} fontWeight={700}>
+                {group.name}
+              </Box>
             </Grid>
-            <Grid item md>
-              <InstanceFilter
-                versions={versionBreakdown}
-                onFiltersChanged={onFiltersChanged}
-                filter={filters}
-              />
-            </Grid>
-          </Grid>
-          {isFiltered() &&
+            <Box width="100%" borderTop={1} borderColor={'#E0E0E0'} className={classes.root}>
+              <Grid
+                item
+                container
+                md={12}
+                alignItems="stretch"
+                justify="space-between"
+              >
+                <Grid item md>
+                  <Box ml={2}>
+                    <InstanceCountLabel
+                      countText={getInstanceCount()}
+                      instanceListView
+                    />
+                  </Box>
+                </Grid>
+                <Grid item md>
+                  <Box mt={2}>
+                    <InstanceFilter
+                      versions={versionBreakdown}
+                      onFiltersChanged={onFiltersChanged}
+                      filter={filters}
+                    />
+                  </Box>
+                </Grid>
+              </Grid>
+            </Box>
+            {isFiltered() &&
             <Grid item md={12} container justify="center">
               <Grid item>
                 <Button
@@ -290,42 +314,43 @@ function ListView(props) {
                 </Button>
               </Grid>
             </Grid>
-          }
-          <Grid item md={12}>
-            {!instanceFetchLoading ?
-              (instancesObj.instances.length > 0 ?
-                <React.Fragment>
-                  <Table
-                    group={group}
-                    channel={group.channel}
-                    instances={instancesObj.instances}
-                  />
-                  <TablePagination
-                    rowsPerPageOptions={[10, 25, 50, 100]}
-                    component="div"
-                    count={instancesObj.total}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    backIconButtonProps={{
-                      'aria-label': 'previous page',
-                    }}
-                    nextIconButtonProps={{
-                      'aria-label': 'next page',
-                    }}
-                    onChangePage={handleChangePage}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                  />
-                </React.Fragment>
-                :
-                <Empty>No instances.</Empty>
-              )
-              :
-                <Loader />
             }
+            <Grid item md={12}>
+              {!instanceFetchLoading ?
+                (instancesObj.instances.length > 0 ?
+                  <React.Fragment>
+                    <Table
+                      group={group}
+                      channel={group.channel}
+                      instances={instancesObj.instances}
+                    />
+                    <TablePagination
+                      rowsPerPageOptions={[10, 25, 50, 100]}
+                      component="div"
+                      count={instancesObj.total}
+                      rowsPerPage={rowsPerPage}
+                      page={page}
+                      backIconButtonProps={{
+                        'aria-label': 'previous page',
+                      }}
+                      nextIconButtonProps={{
+                        'aria-label': 'next page',
+                      }}
+                      onChangePage={handleChangePage}
+                      onChangeRowsPerPage={handleChangeRowsPerPage}
+                    />
+                  </React.Fragment>
+                  :
+                  <Empty>No instances.</Empty>
+                )
+                :
+                  <Loader />
+              }
+            </Grid>
           </Grid>
-        </Grid>
-      </Box>
-    </Paper>
+        </Box>
+      </Paper>
+    </>
   );
 }
 

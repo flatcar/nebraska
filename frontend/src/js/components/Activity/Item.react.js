@@ -1,23 +1,16 @@
-import warningIcon from '@iconify/icons-mdi/alert';
-import errorIcon from '@iconify/icons-mdi/alert-circle';
-import successIcon from '@iconify/icons-mdi/checkbox-marked-circle';
-import infoIcon from '@iconify/icons-mdi/information';
+import alertCircleOutline from '@iconify/icons-mdi/alert-circle-outline';
+import alertOutline from '@iconify/icons-mdi/alert-outline';
+import checkCircleOutline from '@iconify/icons-mdi/check-circle-outline';
 import { Icon } from '@iconify/react';
+import { Box, makeStyles } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { activityStore } from '../../stores/Stores';
 
 const useStyles = makeStyles(theme => ({
-  stateIcon: {
-    minWidth: '65px',
-    marginTop: '10px',
-  },
   timeText: {
     color: theme.palette.text.secondary,
     fontSize: '.9em',
@@ -25,42 +18,32 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function ActivityItemIcon(props) {
-  const classes = useStyles();
-  const {children, icon, color, time, ...other} = props;
+  const {icon, color} = props;
   return (
-    <ListItemIcon className={classes.stateIcon} {...other}>
-      <Grid container direction="column" alignItems="center">
-        <Grid item>
-          <Icon
-            icon={icon}
-            color={color}
-            width="30px"
-            height="30px"
-          />
-        </Grid>
-        <Grid item>
-          <Typography align="center" className={classes.timeText}>{time}</Typography>
-        </Grid>
-      </Grid>
-    </ListItemIcon>
+    <Icon
+      icon={icon}
+      color={color}
+      width="30px"
+      height="30px"
+    />
   );
 }
 
 const stateIcons = {
   warning: {
-    icon: warningIcon,
+    icon: alertOutline,
     color: '#ff5500'
   },
   info: {
-    icon: infoIcon,
+    icon: alertCircleOutline,
     color: '#00d3ff'
   },
   error: {
-    icon: errorIcon,
-    color: '#b40000'
+    icon: alertCircleOutline,
+    color: '#F44336'
   },
   success: {
-    icon: successIcon,
+    icon: checkCircleOutline,
     color: '#22bb00'
   },
 };
@@ -102,33 +85,70 @@ class Item extends React.Component {
     let name = '';
 
     if (this.state.entryClass.type !== 'activityChannelPackageUpdated') {
-      subtitle = 'GROUP:';
+      subtitle = 'GROUP';
       name = this.state.entryClass.groupName;
     }
 
     const stateIcon = stateIcons[this.state.entrySeverity.className || 'info'];
 
     return (
-      <ListItem alignItems="flex-start">
-        <ActivityItemIcon {...stateIcon} time={time} />
-        <ListItemText
-          primary={
-            <Grid container justify="space-between">
-              <Grid item>
-                {this.state.entryClass.appName}
-              </Grid>
-              {subtitle &&
-                <Grid item>
-                  <Typography color="textSecondary" display="inline">
-                    {subtitle}
-                  </Typography>&nbsp;
-                  {name}
-                </Grid>
-              }
+      <ListItem
+        alignItems="flex-start"
+        disableGutters
+        style={{
+          paddingTop: '15px',
+          paddingLeft: '15px',
+        }}
+      >
+        <Grid container alignItems="center" justify="space-between">
+          <Grid item xs={10}>
+            <Box display="flex" alignItems="center" justifyContent="flex-start">
+              <Box mr={1}>
+                <ActivityItemIcon {...stateIcon} time={time} />
+              </Box>
+              <Box>
+                <Typography
+                  // @todo: Move this into a classes object once we convert this component to a
+                  // functional one.
+                  style={{
+                    fontWeight: 'bold',
+                    fontSize: '1.1rem',
+                    color: '#474747',
+                  }}
+                >
+                  {this.state.entryClass.appName}
+                </Typography>
+              </Box>
+            </Box>
+          </Grid>
+
+          <Grid item xs={2}>
+            <Typography
+              color="textSecondary"
+              // @todo: Move this into a classes object once we convert this component to a
+              // functional one.
+              style={{
+                fontSize: '.7rem',
+              }}
+            >
+              {time}
+            </Typography>
+          </Grid>
+          {subtitle && <Grid item container spacing={2} xs={12}>
+            <Grid item>
+              <Typography color="textSecondary" display="inline">
+                {subtitle}
+              </Typography>
             </Grid>
+            <Grid item>
+              {name}
+            </Grid>
+          </Grid>
           }
-          secondary={this.state.entryClass.description}
-        />
+          <Grid item>
+            {this.state.entryClass.description}
+          </Grid>
+        </Grid>
       </ListItem>
     );
   }

@@ -1,5 +1,5 @@
-import menuDown from '@iconify/icons-mdi/menu-down';
-import menuUp from '@iconify/icons-mdi/menu-up';
+import chevronDown from '@iconify/icons-mdi/chevron-down';
+import chevronUp from '@iconify/icons-mdi/chevron-up';
 import { InlineIcon } from '@iconify/react';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -44,6 +44,11 @@ const useDetailsStyles = makeStyles(theme => ({
 const useRowStyles = makeStyles(theme => ({
   statusExplanation: {
     padding: theme.spacing(2),
+  },
+  root: {
+    '& .MuiTableCell-root': {
+      padding: '0.5rem'
+    }
   }
 }));
 
@@ -69,14 +74,6 @@ function StatusLabel(props) {
 
   return (
     <span>
-      {icon !== null &&
-        <InlineIcon
-          icon={icon}
-          color={color}
-          width={iconSize}
-          height={iconSize}
-        />
-      }
       {/* If there is no onClick passed to it, then we're not a button */}
       {props.onClick ?
         <Button
@@ -84,8 +81,14 @@ function StatusLabel(props) {
           onClick={props.onClick}
           className={classes.statusButton}
         >
-          {label}
-          <InlineIcon icon={ activated ? menuUp : menuDown } />
+          <Box bgcolor={status.bgColor} color={status.textColor} p={0.8} display="inline-block" mr={1}>
+            {label}
+          </Box>
+          <InlineIcon icon={ activated ? chevronUp : chevronDown }
+            height="25"
+            width="25"
+            color="#808080"
+          />
         </Button>
         :
         <Typography className={classes.statusText}>
@@ -109,7 +112,7 @@ function StatusRow(props) {
 
   return (
     <React.Fragment>
-      <TableRow>
+      <TableRow className={classes.root}>
         <TableCell>
           <StatusLabel
             onClick={onStatusClick}
@@ -171,6 +174,7 @@ function EventTable(props) {
 
 function DetailsView(props) {
   const classes = useDetailsStyles();
+  const theme = useTheme();
   const {application, group, instance} = props;
   const [eventHistory, setEventHistory] = React.useState([]);
   React.useEffect(() => {
@@ -184,78 +188,113 @@ function DetailsView(props) {
   [instance]);
 
   return (
-    <Grid
-      container
-      spacing={1}
-    >
-      <Grid item md>
-        <Paper>
-          <ListHeader title="Instance Information" />
-          <Box padding="1em">
-            {application && group && instance &&
-              <Grid container>
-                <Grid item xs={12}>
-                  <CardFeatureLabel>ID:</CardFeatureLabel>&nbsp;
-                  <CardLabel>{instance.id}</CardLabel>
+    <>
+      <ListHeader title="Instance Information" />
+      <Paper>
+        <Box p={2}>
+          <Grid
+            container
+            spacing={1}
+          >
+            <Grid item xs={12}>
+              <Box fontWeight={700} fontSize={30} color={theme.palette.greyShadeColor}>
+                {instance.id}
+              </Box>
+            </Grid>
+            <Grid item md>
+
+              <Box mt={2}>
+                {application && group && instance &&
+                <Grid container>
+                  <Grid item xs={12} container>
+                    <Grid item container>
+                      <Grid item xs={6}>
+                        <CardFeatureLabel>IP</CardFeatureLabel>
+                        <Box mt={1}>
+                          <CardLabel>{instance.ip}</CardLabel>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <CardFeatureLabel>Version</CardFeatureLabel>
+                        <Box mt={1}>
+                          <CardLabel>{instance.application.version}</CardLabel>
+                        </Box>
+                      </Grid>
+                    </Grid>
+                    <Grid item xs={12}><Divider className={classes.divider} /></Grid>
+
+                    <Grid item xs={12} container>
+                      <Grid item xs={6}>
+                        <CardFeatureLabel>Status</CardFeatureLabel>
+                        <Box mt={1}>
+                          <StatusLabel
+                            status={instance.statusInfo}
+                          />
+                        </Box>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <CardFeatureLabel>Last Update Check</CardFeatureLabel>
+                        <Box mt={1}>
+                          <CardLabel>
+                            {makeLocaleTime(instance.application.last_check_for_updates)}
+                          </CardLabel>
+                        </Box>
+                      </Grid>
+                    </Grid>
+
+                    <Grid item xs={12}><Divider className={classes.divider} /></Grid>
+                    <Grid item xs={12} container>
+                      <Grid item xs={6}>
+                        <CardFeatureLabel>Application</CardFeatureLabel>
+                        <Box mt={1}>
+                          <Link className={classes.link} to={`/apps/${application.id}`} component={RouterLink}>{application.name}</Link>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <CardFeatureLabel>Group</CardFeatureLabel>
+                        <Box mt={1}>
+                          <Link className={classes.link} to={`/apps/${application.id}/groups/${group.id}`} component={RouterLink}>{group.name}</Link>
+                        </Box>
+                      </Grid>
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      <Box mt={2}>
+                        <CardFeatureLabel>Channel</CardFeatureLabel>&nbsp;
+                        {group.channel ?
+                          <ChannelItem channel={group.channel} />
+                          :
+                          <CardLabel>None</CardLabel>
+                        }
+                      </Box>
+                    </Grid>
+                  </Grid>
+
                 </Grid>
-                <Grid item xs={12}>
-                  <CardFeatureLabel>IP:</CardFeatureLabel>&nbsp;
-                  <CardLabel>{instance.ip}</CardLabel>
-                </Grid>
-                <Grid item xs={12}><Divider className={classes.divider} /></Grid>
-                <Grid item xs={12}>
-                  <CardFeatureLabel>Version:</CardFeatureLabel>&nbsp;
-                  <CardLabel>{instance.application.version}</CardLabel>
-                </Grid>
-                <Grid item xs={12}>
-                  <CardFeatureLabel>Status:</CardFeatureLabel>&nbsp;
-                  <StatusLabel
-                    status={instance.statusInfo}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <CardFeatureLabel>Last Update Check:</CardFeatureLabel>&nbsp;
-                  <CardLabel>
-                    {makeLocaleTime(instance.application.last_check_for_updates)}
-                  </CardLabel>
-                </Grid>
-                <Grid item xs={12}><Divider className={classes.divider} /></Grid>
-                <Grid item xs={12}>
-                  <CardFeatureLabel>Application:</CardFeatureLabel>&nbsp;
-                  <Link className={classes.link} to={`/apps/${application.id}`} component={RouterLink}>{application.name}</Link>
-                </Grid>
-                <Grid item xs={12}>
-                  <CardFeatureLabel>Group:</CardFeatureLabel>&nbsp;
-                  <Link className={classes.link} to={`/apps/${application.id}/groups/${group.id}`} component={RouterLink}>{group.name}</Link>
-                </Grid>
-                <Grid item xs={12}>
-                  <CardFeatureLabel>Channel:</CardFeatureLabel>&nbsp;
-                  {group.channel ?
-                    <ChannelItem channel={group.channel} />
-                    :
-                    <CardLabel>None</CardLabel>
-                  }
-                </Grid>
-              </Grid>
-            }
-          </Box>
-        </Paper>
-      </Grid>
-      <Grid item md>
-        <Paper>
-          <ListHeader title="Event Timeline" />
-          {eventHistory ?
-            <Box padding="1em">
-              <div className={classes.timelineContainer}>
-                <EventTable events={eventHistory} />
-              </div>
+                }
+              </Box>
+            </Grid>
+            <Box width="1%">
+              <Divider orientation="vertical" variant="fullWidth"/>
             </Box>
-            :
-            <Loader />
-          }
-        </Paper>
-      </Grid>
-    </Grid>
+            <Grid item md>
+              <Box mt={2} fontSize={18} fontWeight={700} color={theme.palette.greyShadeColor}>
+                Event Timeline
+                {eventHistory ?
+                  <Box padding="1em">
+                    <div className={classes.timelineContainer}>
+                      <EventTable events={eventHistory} />
+                    </div>
+                  </Box>
+                  :
+                  <Loader />
+                }
+              </Box>
+            </Grid>
+          </Grid>
+        </Box>
+      </Paper>
+    </>
   );
 }
 

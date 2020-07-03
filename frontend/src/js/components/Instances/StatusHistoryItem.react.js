@@ -1,3 +1,4 @@
+import { Box } from '@material-ui/core';
 import Chip from '@material-ui/core/Chip';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
@@ -25,7 +26,12 @@ class StatusHistoryItem extends React.Component {
 
   render() {
     const time = makeLocaleTime(this.props.entry.created_ts);
-    const instanceLabel = this.state.status.className ? <Chip size='small' label={this.state.status.status} /> : <div>&nbsp;</div>;
+    const {className, bgColor, textColor, status} = this.state.status;
+    const instanceLabel = className ?
+      <Box p={1} bgcolor={bgColor} color={textColor} textAlign="center">
+        {status}
+      </Box> :
+      <div>&nbsp;</div>;
 
     return (
       <TableRow>

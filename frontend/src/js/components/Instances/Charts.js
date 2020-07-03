@@ -1,15 +1,11 @@
 import { InlineIcon } from '@iconify/react';
-import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme, withStyles } from '@material-ui/styles';
 import React from 'react';
-import { VictoryAnimation, VictoryLabel, VictoryPie } from 'victory';
+import { VictoryLabel, VictoryPie } from 'victory';
 import Empty from '../Common/EmptyContent';
-import ListHeader from '../Common/ListHeader';
-import Loader from '../Common/Loader';
 import { InstanceCountLabel } from './Common';
 import makeStatusDefs from './StatusDefs';
 
@@ -95,7 +91,7 @@ function ProgressDoughnut(props) {
             height={pieSize}
             data={dataSet}
             radius={radius}
-            innerRadius={radius * .6}
+            innerRadius={radius * .8}
             padAngle={.5}
             labels={() => null}
             style={{
@@ -187,7 +183,7 @@ export default function InstanceStatusArea(props) {
   const theme = useTheme();
   const statusDefs = makeStatusDefs(theme);
 
-  const {instanceStats, loading, period} = props;
+  const {instanceStats, href, period} = props;
   const instanceStateCount = [
     {
       status: 'InstanceStatusComplete',
@@ -233,7 +229,9 @@ export default function InstanceStatusArea(props) {
         alignItems="center"
       >
         <Grid item xs={4}>
-          <InstanceCountLabel countText={totalInstances}/>
+          <InstanceCountLabel countText={totalInstances}
+            href={href}
+          />
         </Grid>
         <Grid
           item
@@ -264,8 +262,8 @@ export default function InstanceStatusArea(props) {
                       description: `${statusLabel}: ${instanceStats[key]} instances.`,
                     };
                   })}
-                  width={125}
-                  height={125}
+                  width={140}
+                  height={140}
                   {...statusDefs[status]}
                 />
               </Grid>

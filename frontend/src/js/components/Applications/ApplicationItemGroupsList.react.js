@@ -1,17 +1,16 @@
+import { Box, Divider } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Item from './ApplicationItemGroupItem.react';
 
 function ApplicationItemGroupsList(props) {
-  return (
-    <Grid container spacing={2}>
-      {props.groups.map((group, i) =>
-        <Grid item key={'group_' + i}>
-          <Item group={group} appID={props.appID} appName={props.appName} />
-        </Grid>
-      )}
-    </Grid>
+  return props.groups.map((group, i) => <>
+    {i > 0 && <Divider variant="fullWidth"/>}
+    <Box mt={1}>
+      <Item group={group} appID={props.appID} appName={props.appName} key={'group_' + i}/>
+    </Box>
+  </>
   );
 }
 

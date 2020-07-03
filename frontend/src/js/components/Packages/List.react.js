@@ -52,7 +52,7 @@ function List(props) {
   }
 
   return (
-    <Paper>
+    <>
       <ListHeader
         title="Packages"
         actions={application ?
@@ -69,52 +69,55 @@ function List(props) {
           []
         }
       />
-      <Box padding="1em">
-        {application ?
-          _.isEmpty(application.packages || []) ?
-            <Empty>This application does not have any package yet</Empty>
-            :
-            <React.Fragment>
-              <MuiList>
-                {
-                  application.packages.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map(packageItem =>
-                      <Item
-                        key={'packageItemID_' + packageItem.id}
-                        packageItem={packageItem}
-                        channels={application.channels}
-                        handleUpdatePackage={openEditDialog}
-                      />
-                    )
-                }
-              </MuiList>
-              {packageToUpdate &&
+      <Paper>
+
+        <Box padding="1em">
+          {application ?
+            _.isEmpty(application.packages || []) ?
+              <Empty>This application does not have any package yet</Empty>
+              :
+              <React.Fragment>
+                <MuiList>
+                  {
+                    application.packages.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .map(packageItem =>
+                        <Item
+                          key={'packageItemID_' + packageItem.id}
+                          packageItem={packageItem}
+                          channels={application.channels}
+                          handleUpdatePackage={openEditDialog}
+                        />
+                      )
+                  }
+                </MuiList>
+                {packageToUpdate &&
                 <EditDialog
                   data={{channels: application.channels, channel: packageToUpdate}}
                   show={packageToUpdate}
                   onHide={onCloseEditDialog}
                 />
-              }
-              <TablePagination
-                rowsPerPageOptions={[]}
-                component="div"
-                count={application.packages.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                backIconButtonProps={{
-                  'aria-label': 'previous page',
-                }}
-                nextIconButtonProps={{
-                  'aria-label': 'next page',
-                }}
-                onChangePage={handleChangePage}
-              />
-            </React.Fragment>
-          :
-            <Loader />
-        }
-      </Box>
-    </Paper>
+                }
+                <TablePagination
+                  rowsPerPageOptions={[]}
+                  component="div"
+                  count={application.packages.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  backIconButtonProps={{
+                    'aria-label': 'previous page',
+                  }}
+                  nextIconButtonProps={{
+                    'aria-label': 'next page',
+                  }}
+                  onChangePage={handleChangePage}
+                />
+              </React.Fragment>
+            :
+              <Loader />
+          }
+        </Box>
+      </Paper>
+    </>
   );
 }
 

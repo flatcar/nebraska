@@ -1,15 +1,22 @@
-import MuiList from '@material-ui/core/List';
+import {List as MuiList, withStyles} from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import React from 'react';
 import _ from 'underscore';
 import { applicationsStore, modalStore } from '../../stores/Stores';
 import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
-import SearchInput from '../Common/ListSearch';
 import Loader from '../Common/Loader';
 import ModalButton from '../Common/ModalButton.react';
 import EditDialog from './EditDialog';
 import Item from './Item.react';
+
+const styles = theme => ({
+  root: {
+    '& > hr:first-child': {
+      display: 'none'
+    }
+  }
+});
 
 class List extends React.Component {
 
@@ -58,6 +65,7 @@ class List extends React.Component {
   render() {
     let applications = this.state.applications;
     let entries = '';
+    const {classes} = this.props;
 
     if (this.state.searchTerm) {
       applications = applications.filter(app => app.name
@@ -90,9 +98,8 @@ class List extends React.Component {
     const appToUpdate = applications &&
       this.state.updateAppIDModal ?
       _.findWhere(applications, {id: this.state.updateAppIDModal}) : null;
-
     return (
-      <Paper>
+      <>
         <ListHeader
           title="Applications"
           actions={[
@@ -102,20 +109,22 @@ class List extends React.Component {
             />
           ]}
         />
-        <MuiList>
-          {entries}
-        </MuiList>
-        {appToUpdate &&
+        <Paper>
+          <MuiList className={classes.root}>
+            {entries}
+          </MuiList>
+          {appToUpdate &&
           <EditDialog
             data={appToUpdate}
             show={this.state.updateAppModalVisible}
             onHide={this.closeUpdateAppModal}
           />
-        }
-      </Paper>
+          }
+        </Paper>
+      </>
     );
   }
 
 }
 
-export default List;
+export default withStyles(styles)(List);
