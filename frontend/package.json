@@ -15,6 +15,7 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
+    "dompurify": "^2.0.12",
     "downshift": "^3.4.7",
     "formik": "^1.5.8",
     "formik-material-ui": "^0.0.20",
