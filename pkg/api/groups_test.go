@@ -35,6 +35,9 @@ func TestAddGroup(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, true, group.PolicyUpdatesEnabled)
 
+	_, err = a.getGroupUpdatesStats(group)
+	assert.NoError(t, err)
+
 	groupX, err := a.GetGroup(group.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, group.Name, groupX.Name)
@@ -70,6 +73,9 @@ func TestUpdateGroup(t *testing.T) {
 	group.PolicyUpdatesEnabled = true
 	group.ChannelID = null.StringFrom(tChannel2.ID)
 	err := a.UpdateGroup(group)
+	assert.NoError(t, err)
+
+	_, err = a.getGroupUpdatesStats(group)
 	assert.NoError(t, err)
 
 	groupX, _ := a.GetGroup(group.ID)
