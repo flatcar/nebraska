@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -123,13 +124,15 @@ func TestGetUpdatePackage_MaxUpdatesLimitsReached(t *testing.T) {
 	defer a.Close()
 
 	maxUpdatesPerPeriod := 2
-	periodInterval := "100 milliseconds"
+	periodInterval := 500 * time.Millisecond
+	periodIntervalSetting := fmt.Sprintf("%d milliseconds", periodInterval.Milliseconds())
+	extraWaitPeriod := 10 * time.Millisecond // to avoid a race
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
 	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
 	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
 	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := a.AddGroup(&Group{Name: "group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: periodInterval, PolicyMaxUpdatesPerPeriod: maxUpdatesPerPeriod, PolicyUpdateTimeout: "60 minutes"})
+	tGroup, _ := a.AddGroup(&Group{Name: "group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: periodIntervalSetting, PolicyMaxUpdatesPerPeriod: maxUpdatesPerPeriod, PolicyUpdateTimeout: "60 minutes"})
 
 	newInstance1ID := uuid.New().String()
 
@@ -142,7 +145,7 @@ func TestGetUpdatePackage_MaxUpdatesLimitsReached(t *testing.T) {
 	_, err = a.GetUpdatePackage(uuid.New().String(), "10.0.0.3", "12.0.0", tApp.ID, tGroup.ID)
 	assert.Equal(t, ErrMaxUpdatesPerPeriodLimitReached, err)
 
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(periodInterval + extraWaitPeriod) // ensure that period interval is over but update timeout isn't
 
 	_, err = a.GetUpdatePackage(uuid.New().String(), "10.0.0.3", "12.0.0", tApp.ID, tGroup.ID)
 	assert.Equal(t, ErrMaxConcurrentUpdatesLimitReached, err, "Period interval is over, but there are still two updates not completed or failed.")
@@ -157,24 +160,27 @@ func TestGetUpdatePackage_MaxTimedOutUpdatesLimitReached_SafeMode(t *testing.T) 
 	a := newForTest(t)
 	defer a.Close()
 
-	periodInterval := "100 milliseconds"
-	updateTimeout := "200 milliseconds"
+	periodInterval := 10 * time.Millisecond
+	periodIntervalSetting := fmt.Sprintf("%d milliseconds", periodInterval.Milliseconds())
+	updateTimeout := 500 * time.Millisecond
+	updateTimeoutSetting := fmt.Sprintf("%d milliseconds", updateTimeout.Milliseconds())
+	extraWaitPeriod := 10 * time.Millisecond // to avoid a race
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
 	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
 	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
 	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := a.AddGroup(&Group{Name: "group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: periodInterval, PolicyMaxUpdatesPerPeriod: 1, PolicyUpdateTimeout: updateTimeout})
+	tGroup, _ := a.AddGroup(&Group{Name: "group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: periodIntervalSetting, PolicyMaxUpdatesPerPeriod: 1, PolicyUpdateTimeout: updateTimeoutSetting})
 
 	_, err := a.GetUpdatePackage(uuid.New().String(), "10.0.0.1", "12.0.0", tApp.ID, tGroup.ID)
 	assert.NoError(t, err)
 
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(periodInterval + extraWaitPeriod) // ensure that period interval is over but update timeout isn't
 
 	_, err = a.GetUpdatePackage(uuid.New().String(), "10.0.0.3", "12.0.0", tApp.ID, tGroup.ID)
 	assert.Equal(t, ErrMaxConcurrentUpdatesLimitReached, err)
 
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(updateTimeout - periodInterval + extraWaitPeriod) // ensure that update timeout is over
 
 	_, err = a.GetUpdatePackage(uuid.New().String(), "10.0.0.3", "12.0.0", tApp.ID, tGroup.ID)
 	assert.Equal(t, ErrMaxTimedOutUpdatesLimitReached, err)
@@ -188,14 +194,17 @@ func TestGetUpdatePackage_ResumeUpdates(t *testing.T) {
 	defer a.Close()
 
 	maxUpdatesPerPeriod := 2
-	periodInterval := "100 milliseconds"
-	updateTimeout := "200 milliseconds"
+	periodInterval := 10 * time.Millisecond
+	periodIntervalSetting := fmt.Sprintf("%d milliseconds", periodInterval.Milliseconds())
+	updateTimeout := 500 * time.Millisecond
+	updateTimeoutSetting := fmt.Sprintf("%d milliseconds", updateTimeout.Milliseconds())
+	extraWaitPeriod := 10 * time.Millisecond // to avoid a race
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
 	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
 	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
 	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := a.AddGroup(&Group{Name: "group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: periodInterval, PolicyMaxUpdatesPerPeriod: maxUpdatesPerPeriod, PolicyUpdateTimeout: updateTimeout})
+	tGroup, _ := a.AddGroup(&Group{Name: "group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: periodIntervalSetting, PolicyMaxUpdatesPerPeriod: maxUpdatesPerPeriod, PolicyUpdateTimeout: updateTimeoutSetting})
 
 	_, err := a.GetUpdatePackage(uuid.New().String(), "10.0.0.1", "12.0.0", tApp.ID, tGroup.ID)
 	assert.NoError(t, err)
@@ -203,12 +212,12 @@ func TestGetUpdatePackage_ResumeUpdates(t *testing.T) {
 	_, err = a.GetUpdatePackage(uuid.New().String(), "10.0.0.2", "12.0.0", tApp.ID, tGroup.ID)
 	assert.NoError(t, err)
 
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(periodInterval + extraWaitPeriod) // ensure that period interval is over but update timeout isn't
 
 	_, err = a.GetUpdatePackage(uuid.New().String(), "10.0.0.3", "12.0.0", tApp.ID, tGroup.ID)
 	assert.Equal(t, ErrMaxConcurrentUpdatesLimitReached, err)
 
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(updateTimeout - periodInterval + extraWaitPeriod) // ensure that update timeout is over
 
 	_, err = a.GetUpdatePackage(uuid.New().String(), "10.0.0.3", "12.0.0", tApp.ID, tGroup.ID)
 	assert.NoError(t, err)
