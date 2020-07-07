@@ -1,15 +1,17 @@
 import { Icon } from '@iconify/react';
+import { Box } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import IconButton from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { makeStyles } from '@material-ui/core/styles';
+import { createMuiTheme, makeStyles, ThemeProvider, useTheme } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import CreateOutlined from '@material-ui/icons/CreateOutlined';
+import DOMPurify from 'dompurify';
 import React from 'react';
 import _ from 'underscore';
 import API from '../api/API';
@@ -26,45 +28,49 @@ const useStyles = makeStyles(theme => ({
   },
   header: {
     marginBottom: theme.spacing(1),
-    background: process.env.REACT_APP_APPBAR_BG || theme.palette.primary.contrastText,
+    backgroundColor: theme.palette.type === 'dark' ?
+      theme.palette.common.black : theme.palette.common.white
+
   },
+  svgContainer: {
+    '& svg': {maxHeight: '3rem'}
+  }
 }));
 
-export default function Header() {
-  const classes = useStyles();
-  const [config, setConfig] = React.useState(null);
-  const projectLogo = _.isEmpty(nebraskaLogo) ? null : nebraskaLogo;
+function prepareDarkTheme(theme){
+  return (
+    createMuiTheme({
+      ...theme,
+      palette: {
+        type: 'dark',
+        primary: {
+          contrastText: '#fff',
+          main: '#000'
+        }
+      }
+    })
+  );
+}
 
-  const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
-
-  function handleMenu(event) {
-    setMenuAnchorEl(event.currentTarget);
-  }
-
-  function handleClose() {
-    setMenuAnchorEl(null);
-  }
-
-  // @todo: This should be abstracted but we should do it when we integrate Redux.
-  React.useEffect(() => {
-    if (!config) {
-      API.getConfig()
-        .then(config => {
-          setConfig(config);
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    }
-  },
-  [config]);
+function Appbar(props) {
+  const {cachedConfig, menuAnchorEl, projectLogo, config, handleClose, handleMenu} = props;
+  const classes = useStyles(cachedConfig);
 
   return (
     <AppBar position='static' className={classes.header}>
       <Toolbar>
-        {projectLogo &&
+        {cachedConfig && cachedConfig.logo ?
+          <Box className={classes.svgContainer}>
+            <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(cachedConfig.logo)}}/>
+          </Box> :
           <Icon icon={projectLogo} height={45} />
         }
+        {cachedConfig && cachedConfig.title !== '' &&
+          <Typography variant='h6' className={classes.title}>
+            {cachedConfig.title}
+          </Typography>
+        }
+
         {config && config.access_management_url &&
           <IconButton
             aria-label='User menu'
@@ -104,5 +110,53 @@ export default function Header() {
         </Menu>
       </Toolbar>
     </AppBar>
+  );
+}
+
+export default function Header(){
+  const [config, setConfig] = React.useState(null);
+  const theme = useTheme();
+  const projectLogo = _.isEmpty(nebraskaLogo) ? null : nebraskaLogo;
+
+  const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
+  const [cachedConfig, setCachedConfig] = React.useState(JSON.parse(localStorage.getItem('nebraska_config')));
+
+  function handleMenu(event) {
+    setMenuAnchorEl(event.currentTarget);
+  }
+
+  function handleClose() {
+    setMenuAnchorEl(null);
+  }
+
+  // @todo: This should be abstracted but we should do it when we integrate Redux.
+  React.useEffect(() => {
+    if (!config) {
+      API.getConfig()
+        .then(config => {
+          const cacheConfig = {
+            title: config.title,
+            logo: config.logo,
+            appBarColor: config.header_style
+          };
+          localStorage.setItem('nebraska_config', JSON.stringify(cacheConfig));
+          setCachedConfig(cacheConfig);
+          setConfig(config);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+  },
+  [config]);
+  const appBarProps = {cachedConfig, menuAnchorEl, projectLogo, config, handleClose, handleMenu};
+  const appBar = (<Appbar {...appBarProps}/>);
+  return (
+    cachedConfig && cachedConfig.appBarColor === 'dark' ?
+      <ThemeProvider theme={prepareDarkTheme(theme)}>
+        {appBar}
+      </ThemeProvider>
+      :
+      appBar
   );
 }

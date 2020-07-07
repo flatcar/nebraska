@@ -44,6 +44,9 @@ var (
 	ghReadOnlyTeams     = flag.String("gh-ro-teams", "", "comma-separated list of read-only GitHub teams in the org/team format")
 	ghEnterpriseURL     = flag.String("gh-enterprise-url", "", fmt.Sprintf("base URL of the enterprise instance if using GHE; can be taken from %s env var too", ghEnterpriseURLEnvName))
 	logger              = log.New("nebraska")
+	appLogoPath         = flag.String("client-logo", "", fmt.Sprintf("Client app logo, should be a path to svg file"))
+	appTitle            = flag.String("client-title", "", fmt.Sprintf("Client app title"))
+	appHeaderStyle      = flag.String("client-header-style", "light", fmt.Sprintf("Client app header style, should be either dark or light"))
 )
 
 func main() {

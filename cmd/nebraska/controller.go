@@ -3,8 +3,10 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"encoding/xml"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net"
 	"net/http"
 	"strconv"
@@ -29,6 +31,9 @@ const (
 type ClientConfig struct {
 	AccessManagementURL string `json:"access_management_url"`
 	NebraskaVersion     string `json:"nebraska_version"`
+	Logo                string `json:"logo"`
+	Title               string `json:"title"`
+	HeaderStyle         string `json:"header_style"`
 }
 
 type controller struct {
@@ -112,7 +117,21 @@ func NewClientConfig(conf *controllerConfig) *ClientConfig {
 		}
 	}
 	config.NebraskaVersion = version.Version
-
+	config.Title = *appTitle
+	config.HeaderStyle = *appHeaderStyle
+	if *appLogoPath != "" {
+		svg, err := ioutil.ReadFile(*appLogoPath)
+		if err != nil {
+			logger.Error("Reading svg from path in config", err.Error())
+			return nil
+		}
+		if err := xml.Unmarshal(svg, &struct{}{}); err != nil {
+			logger.Error("Invalid format for SVG", err)
+			return nil
+		}
+		config.Logo = string(svg)
+		return config
+	}
 	return config
 }
 
