@@ -19,6 +19,7 @@ RUN apk update && \
 
 COPY --from=nebraska-build /go/src/github.com/kinvolk/nebraska/bin/nebraska /nebraska/
 COPY --from=nebraska-build /go/src/github.com/kinvolk/nebraska/frontend/build/ /nebraska/static/
+COPY --from=nebraska-build /go/src/github.com/kinvolk/nebraska/kinvolk_logo.svg /nebraska/assets/
 
 ENV NEBRASKA_DB_URL "postgres://postgres@postgres:5432/nebraska?sslmode=disable&connect_timeout=10"
 EXPOSE 8000
