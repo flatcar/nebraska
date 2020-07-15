@@ -54,7 +54,7 @@ function prepareDarkTheme(theme){
 
 function Appbar(props) {
   const {cachedConfig, menuAnchorEl, projectLogo, config, handleClose, handleMenu} = props;
-  const classes = useStyles(cachedConfig);
+  const classes = useStyles();
 
   return (
     <AppBar position='static' className={classes.header}>
