@@ -21,7 +21,7 @@ class ActivityStore extends Store {
   getActivity() {
     API.getActivity()
       .then(activity => {
-        this.activity = this.sortActivityByDate(activity);
+        this.activity = _.isNull(activity) ? [] : this.sortActivityByDate(activity);
         this.emitChange();
       })
       .catch((error) => {
