@@ -5,6 +5,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import PropTypes from 'prop-types';
 import React from 'react';
 import _ from 'underscore';
+import API from '../../api/API';
 import { applicationsStore } from '../../stores/Stores';
 import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
@@ -16,6 +17,7 @@ import Item from './Item.react';
 function List(props) {
   const [application, setApplication] =
     React.useState(applicationsStore.getCachedApplication(props.appID) || null);
+  const [packages, setPackages] = React.useState(null);
   const [packageToUpdate, setPackageToUpdate] = React.useState(null);
   const rowsPerPage = 10;
   const [page, setPage] = React.useState(0);
@@ -26,6 +28,17 @@ function List(props) {
 
   React.useEffect(() => {
     applicationsStore.addChangeListener(onChange);
+    if (!packages){
+      API.getPackages(props.appID)
+        .then((result) => {
+          if (_.isNull(result)) {
+            setPackages([]);
+            return;
+          }
+          setPackages(result);
+        });
+    }
+
     if (application === null) {
       applicationsStore.getApplication(props.appID);
     }
@@ -34,14 +47,14 @@ function List(props) {
       applicationsStore.removeChangeListener(onChange);
     };
   },
-  [application]);
+  [application, packages]);
 
   function onCloseEditDialog() {
     setPackageToUpdate(null);
   }
 
   function openEditDialog(packageID) {
-    const pkg = (application.packages || []).find(({id}) => id === packageID) || null;
+    const pkg = packages.find(({id}) => id === packageID) || null;
     if (pkg !== packageToUpdate) {
       setPackageToUpdate(pkg);
     }
@@ -72,14 +85,14 @@ function List(props) {
       <Paper>
 
         <Box padding="1em">
-          {application ?
-            _.isEmpty(application.packages || []) ?
+          {application && !_.isNull(packages) ?
+            _.isEmpty(packages) ?
               <Empty>This application does not have any package yet</Empty>
               :
               <React.Fragment>
                 <MuiList>
                   {
-                    application.packages.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    packages.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                       .map(packageItem =>
                         <Item
                           key={'packageItemID_' + packageItem.id}
@@ -100,7 +113,7 @@ function List(props) {
                 <TablePagination
                   rowsPerPageOptions={[]}
                   component="div"
-                  count={application.packages.length}
+                  count={packages.length}
                   rowsPerPage={rowsPerPage}
                   page={page}
                   backIconButtonProps={{
