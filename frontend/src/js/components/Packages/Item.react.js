@@ -45,9 +45,7 @@ const containerIcons = {
 function Item(props) {
   const classes = useStyles();
   const createdDate = new Date(props.packageItem.created_ts);
-  const time = createdDate.toLocaleString('default', { hour: '2-digit', minute: '2-digit'});
-  const dateAndMonth = createdDate.toLocaleString('default', {day: 'numeric', month: 'numeric'});
-  const date = `${time}, ${dateAndMonth}`;
+  const date = createdDate.toLocaleString('default', {timeStyle: 'short', dateStyle: 'short'});
   const type = props.packageItem.type || 1;
   const processedChannels = _.where(props.channels, {package_id: props.packageItem.id});
   let blacklistInfo = null;
