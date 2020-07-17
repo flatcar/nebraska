@@ -49,26 +49,26 @@ function Item(props) {
 
       text += `(${ARCHES[channel.arch]})`;
     }
-    const date = new Date(channel.created_ts);
-    const calendarDate = `${date.getDate()}/${date.getMonth() + 1}`;
-    const time = `${date.getHours()}:${date.getMinutes()}`;
+    const date = channel.package ? new Date(channel.package.created_ts) : null;
     return (
       <Box display="flex" ml={1}>
         <Box>
           {text}
         </Box>
-        <Box pl={2}>
-          <Box display="flex">
-            <Box>
-              <Tooltip title="Release date">
-                <ScheduleIcon fontSize="small"/>
-              </Tooltip>
-            </Box>
-            <Box pl={1}>
-              {`${time}, ${calendarDate}`}
+        {date &&
+          <Box pl={2}>
+            <Box display="flex">
+              <Box>
+                <Tooltip title="Release date">
+                  <ScheduleIcon fontSize="small"/>
+                </Tooltip>
+              </Box>
+              <Box pl={1}>
+                {date.toLocaleDateString()}
+              </Box>
             </Box>
           </Box>
-        </Box>
+        }
       </Box>);
   }
   return (
