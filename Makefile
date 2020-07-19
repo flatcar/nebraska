@@ -28,23 +28,10 @@ check-code-coverage:
 print-code-coverage:
 	go tool cover -html=coverage.out
 container_id:
-	set -e; \
-	trap "rm -f container_id.tmp container_id" ERR; \
-	docker run \
-		--detach \
-		--publish 127.0.0.1:5432:5432 \
-		-e POSTGRES_PASSWORD=nebraska \
-		postgres \
-		>container_id.tmp; \
-	until docker exec \
-		$$(cat container_id.tmp) \
-		pg_isready -h localhost; do sleep 3; done; \
-	docker exec \
-		$$(cat container_id.tmp) \
-		psql -h localhost -U postgres -c 'create database nebraska_tests;'; \
-	docker exec \
-		$$(cat container_id.tmp) \
-		psql -h localhost -U postgres -d nebraska_tests -c 'set timezone = "utc";'; \
+	./tools/setup_local_db.sh \
+		--id-file container_id.tmp \
+		--db-name nebraska_tests \
+		--password nebraska
 	mv container_id.tmp container_id
 
 .PHONY: check-backend-with-container
