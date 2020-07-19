@@ -25,7 +25,7 @@ check:
 	go test -p 1 ./...
 check-code-coverage:
 	go test -p 1 -coverprofile=coverage.out ./...
-print-code-coverage: 
+print-code-coverage:
 	go tool cover -html=coverage.out
 container_id:
 	set -e; \
@@ -38,13 +38,13 @@ container_id:
 		>container_id.tmp; \
 	until docker exec \
 		$$(cat container_id.tmp) \
-		pg_isready -h localhost; do sleep 3; done
+		pg_isready -h localhost; do sleep 3; done; \
 	docker exec \
 		$$(cat container_id.tmp) \
-		psql -h localhost -U postgres -c 'create database nebraska_tests;'
+		psql -h localhost -U postgres -c 'create database nebraska_tests;'; \
 	docker exec \
 		$$(cat container_id.tmp) \
-		psql -h localhost -U postgres -d nebraska_tests -c 'set timezone = "utc";'
+		psql -h localhost -U postgres -d nebraska_tests -c 'set timezone = "utc";'; \
 	mv container_id.tmp container_id
 
 .PHONY: check-backend-with-container
