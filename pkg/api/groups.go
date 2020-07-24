@@ -570,15 +570,16 @@ func (api *API) GetGroupStatusCountTimeline(groupID string, duration string) (ma
 	// Get the versions and their number of instances per status within each of the given time intervals.
 	query := fmt.Sprintf(`
 	WITH time_series AS (SELECT * FROM generate_series(now() - interval '%[1]s', now(), INTERVAL '%[2]s') AS ts),
-	min_time AS (SELECT min(ts) FROM time_series)
+	min_time AS (SELECT min(ts) AS min_ts FROM time_series),
+	filtered_status_history AS (SELECT instance_status_history.* FROM instance_status_history,
+		 min_time WHERE group_id=$1 AND %[3]s AND created_ts >= min_time.min_ts - INTERVAL '1 hour')
 	SELECT ts, (CASE WHEN status IS NULL THEN 0 ELSE status END), 
 	  (CASE WHEN version IS NULL THEN '' ELSE version END), count(instance_id) as total 
 	FROM 
 	(
 		  SELECT * FROM time_series
-		  LEFT JOIN(SELECT instance_status_history.* FROM instance_status_history,
-			  min_time WHERE group_id=$1 AND %[3]s AND created_ts>= min_time.min - INTERVAL '1 hour' + INTERVAL '1 sec') 
-		  _ ON created_ts BETWEEN time_series.ts - INTERVAL '1 hour' + INTERVAL '1 sec' AND time_series.ts
+		  LEFT JOIN(SELECT * FROM filtered_status_history) 
+		  _ ON created_ts >= time_series.ts - INTERVAL '1 hour' AND created_ts < time_series.ts
 	) AS _
 	GROUP BY 1,2,3
 	ORDER BY ts DESC;
