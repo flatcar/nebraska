@@ -487,9 +487,20 @@ func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (m
 	}
 	query := fmt.Sprintf(`
 	WITH time_series AS (SELECT * FROM generate_series(now() - interval '%[1]s', now(), INTERVAL '%[2]s') AS ts),
-		 recent_instances AS (SELECT instance_id, (CASE WHEN last_update_granted_ts IS NOT NULL THEN last_update_granted_ts ELSE created_ts END), version, 4 status FROM instance_application WHERE group_id=$1 AND last_check_for_updates >= now() - interval '%[1]s' AND %[3]s ORDER BY last_update_granted_ts DESC),
-		 instance_versions AS (SELECT instance_id, created_ts, version, status FROM instance_status_history WHERE instance_id IN (SELECT instance_id FROM recent_instances) AND status = 4 UNION (SELECT * FROM recent_instances) ORDER BY created_ts DESC)
-	SELECT ts, (CASE WHEN version IS NULL THEN '' ELSE version END), sum(CASE WHEN version IS NOT null THEN 1 ELSE 0 END) total FROM (SELECT * FROM time_series LEFT JOIN (SELECT distinct ON (instance_id) instance_Id, version, created_ts FROM instance_versions WHERE %[4]s ORDER BY instance_Id, created_ts DESC) _ ON created_ts <= time_series.ts) AS _
+		 recent_instances AS (SELECT instance_id, (CASE WHEN last_update_granted_ts 
+			IS NOT NULL THEN last_update_granted_ts ELSE created_ts END), version, 4 status FROM 
+			instance_application WHERE group_id=$1 AND 
+			last_check_for_updates >= now() - interval '%[1]s' AND %[3]s ORDER BY last_update_granted_ts DESC),
+		 instance_versions AS (SELECT instance_id, created_ts, version, status 
+			FROM instance_status_history WHERE instance_id IN (SELECT instance_id FROM recent_instances) 
+			AND status = 4 UNION (SELECT * FROM recent_instances) ORDER BY created_ts DESC)
+	SELECT ts, (CASE WHEN version IS NULL THEN '' ELSE version END), 
+	  sum(CASE WHEN version IS NOT null THEN 1 ELSE 0 END) total 
+	FROM (SELECT * FROM time_series 
+		LEFT JOIN (SELECT distinct ON (instance_id) instance_Id, version, 
+		  created_ts FROM instance_versions WHERE %[4]s ORDER BY instance_Id, 
+		  created_ts DESC) _ 
+		ON created_ts <= time_series.ts) AS _
 	GROUP BY 1,2
 	ORDER BY ts DESC;
 	`, durationString, interval, ignoreFakeInstanceCondition("instance_id"),
@@ -560,8 +571,15 @@ func (api *API) GetGroupStatusCountTimeline(groupID string, duration string) (ma
 	query := fmt.Sprintf(`
 	WITH time_series AS (SELECT * FROM generate_series(now() - interval '%[1]s', now(), INTERVAL '%[2]s') AS ts),
 	min_time AS (SELECT min(ts) FROM time_series)
-	SELECT ts, (CASE WHEN status IS NULL THEN 0 ELSE status END), (CASE WHEN version IS NULL THEN '' ELSE version END), count(instance_id) as total FROM (SELECT * FROM time_series
-		LEFT JOIN(SELECT instance_status_history.* FROM instance_status_history,min_time WHERE group_id=$1 AND %[3]s AND created_ts>= min_time.min - INTERVAL '1 hour' + INTERVAL '1 sec') _ ON created_ts BETWEEN time_series.ts - INTERVAL '1 hour' + INTERVAL '1 sec' AND time_series.ts) AS _
+	SELECT ts, (CASE WHEN status IS NULL THEN 0 ELSE status END), 
+	  (CASE WHEN version IS NULL THEN '' ELSE version END), count(instance_id) as total 
+	FROM 
+	(
+		  SELECT * FROM time_series
+		  LEFT JOIN(SELECT instance_status_history.* FROM instance_status_history,
+			  min_time WHERE group_id=$1 AND %[3]s AND created_ts>= min_time.min - INTERVAL '1 hour' + INTERVAL '1 sec') 
+		  _ ON created_ts BETWEEN time_series.ts - INTERVAL '1 hour' + INTERVAL '1 sec' AND time_series.ts
+	) AS _
 	GROUP BY 1,2,3
 	ORDER BY ts DESC;
 	`, durationString, interval, ignoreFakeInstanceCondition("instance_id"))
