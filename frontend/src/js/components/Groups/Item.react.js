@@ -144,7 +144,7 @@ function Item(props) {
               <CardFeatureLabel>Rollout Policy</CardFeatureLabel>
               <Box p={1} mb={1}>
                 <CardLabel>
-                  {`Max ${props.group.policy_max_updates_per_period || 0} updates per ${props.group.policy_period_interval || 0}`}
+                  {`Max ${props.group.policy_max_updates_per_period || 0} updates per ${props.group.policy_period_interval || '0 minutes'}`}
                 </CardLabel>
               </Box>
             </Grid>
