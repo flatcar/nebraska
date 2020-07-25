@@ -142,6 +142,10 @@ func TestUpdatePackageFlatcar(t *testing.T) {
 	pkg, err := a.AddPackage(pkg)
 	assert.NoError(t, err)
 	assert.Nil(t, pkg.FlatcarAction)
+	pkg.Version = "2016.6.7"
+	err = a.UpdatePackage(pkg)
+	assert.NoError(t, err)
+	assert.Nil(t, pkg.FlatcarAction)
 
 	pkg.FlatcarAction = &FlatcarAction{
 		Sha256: "sha256:blablablabla",
@@ -154,10 +158,31 @@ func TestUpdatePackageFlatcar(t *testing.T) {
 	assert.Equal(t, true, pkg.FlatcarAction.DisablePayloadBackoff)
 	assert.Equal(t, "sha256:blablablabla", pkg.FlatcarAction.Sha256)
 
+	err = a.DeletePackage(pkg.ID)
+	assert.NoError(t, err)
+
+	pkg = &Package{
+		Type:          PkgTypeFlatcar,
+		URL:           "https://commondatastorage.googleapis.com/update-storage.core-os.net/amd64-usr/766.3.0/",
+		Filename:      null.StringFrom("update.gz"),
+		Version:       "2016.6.6",
+		Size:          null.StringFrom("123456"),
+		Hash:          null.StringFrom("sha1:blablablabla"),
+		ApplicationID: flatcarAppID,
+	}
+	pkg.FlatcarAction = &FlatcarAction{
+		Sha256: "sha256:blablablabla",
+	}
+	pkg, err = a.AddPackage(pkg)
+	assert.NoError(t, err)
+	assert.NotEqual(t, pkg.FlatcarAction.ID, "")
+
+	flatcarActionID := pkg.FlatcarAction.ID
 	pkg.FlatcarAction.Sha256 = "sha256:bleblebleble"
 	err = a.UpdatePackage(pkg)
 	assert.NoError(t, err)
 	assert.Equal(t, "sha256:bleblebleble", pkg.FlatcarAction.Sha256)
+	assert.Equal(t, flatcarActionID, pkg.FlatcarAction.ID)
 }
 
 func TestDeletePackage(t *testing.T) {
