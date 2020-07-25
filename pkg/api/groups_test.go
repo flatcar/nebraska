@@ -187,3 +187,95 @@ func TestGetGroupsFiltered(t *testing.T) {
 		}
 	}
 }
+
+func TestGetVersionCountTimeline(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	version := "4.0.0"
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := a.AddGroup(&Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	instanceID := uuid.New().String()
+
+	_, _ = a.RegisterInstance(instanceID, "10.0.0.1", version, tApp.ID, tGroup.ID)
+	_ = a.grantUpdate(instanceID, tApp.ID, version)
+	_ = a.updateInstanceStatus(instanceID, tApp.ID, InstanceStatusComplete)
+
+	// get VersionCountTimeline from 1 hr before now
+	versionTimelineMap, err := a.GetGroupVersionCountTimeline(tGroup.ID, "1h")
+	assert.NoError(t, err)
+	var totalInstances uint64
+	for _, versionMap := range versionTimelineMap {
+		totalInstances += versionMap[version]
+	}
+	assert.Equal(t, totalInstances, uint64(1))
+	// for 1h we generate timestamp for every 15 minute so total timeline should have 5 timestamps
+	assert.Equal(t, len(versionTimelineMap), 5)
+
+	versionTimelineMap, err = a.GetGroupVersionCountTimeline(tGroup.ID, "1d")
+	assert.NoError(t, err)
+	// for 1d we generate timestamp for each hour so total timeline should have 25 timestamps
+	assert.Equal(t, len(versionTimelineMap), 25)
+
+	versionTimelineMap, err = a.GetGroupVersionCountTimeline(tGroup.ID, "7d")
+	assert.NoError(t, err)
+	// for 7d we generate timestamp for each day so total timeline should have 8 timestamps
+	assert.Equal(t, len(versionTimelineMap), 8)
+
+	versionTimelineMap, err = a.GetGroupVersionCountTimeline(tGroup.ID, "30d")
+	assert.NoError(t, err)
+	// for 30d we generate timestamp after each 3days so total timeline should have 11 timestamps
+	assert.Equal(t, len(versionTimelineMap), 11)
+}
+
+func TestGetStatusCountTimeline(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	version := "4.0.0"
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := a.AddGroup(&Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	instanceID1 := uuid.New().String()
+	instanceID2 := uuid.New().String()
+
+	_, _ = a.RegisterInstance(instanceID1, "10.0.0.1", version, tApp.ID, tGroup.ID)
+	_ = a.grantUpdate(instanceID1, tApp.ID, version)
+	_ = a.updateInstanceStatus(instanceID1, tApp.ID, InstanceStatusComplete)
+	_, _ = a.RegisterInstance(instanceID2, "10.0.0.2", version, tApp.ID, tGroup.ID)
+	_ = a.grantUpdate(instanceID2, tApp.ID, version)
+	_ = a.updateInstanceStatus(instanceID2, tApp.ID, InstanceStatusDownloading)
+
+	// get StatusCountTimeline from 1 hr before now
+	statusTimelineMap, err := a.GetGroupStatusCountTimeline(tGroup.ID, "1h")
+	assert.NoError(t, err)
+	// for 1h we generate timestamp for every 15 minute so total timeline should have 5 timestamps
+	assert.Equal(t, len(statusTimelineMap), 5)
+	var statusInstanceCountMap = make(map[int]uint64)
+	for _, statusMap := range statusTimelineMap {
+		statusInstanceCountMap[InstanceStatusComplete] += statusMap[InstanceStatusComplete][version]
+		statusInstanceCountMap[InstanceStatusDownloading] += statusMap[InstanceStatusDownloading][version]
+	}
+	// as we registered two instances with version 4.0.0 with statuses 4 and 7
+	// so our status breakdown should have count 1 for both status 4 and 7
+	assert.Equal(t, statusInstanceCountMap[InstanceStatusComplete], uint64(1))
+	assert.Equal(t, statusInstanceCountMap[InstanceStatusDownloading], uint64(1))
+
+	statusTimelineMap, err = a.GetGroupStatusCountTimeline(tGroup.ID, "1d")
+	assert.NoError(t, err)
+	// for 1d we generate timestamp for each hour so total timeline should have 25 timestamps
+	assert.Equal(t, len(statusTimelineMap), 25)
+
+	statusTimelineMap, err = a.GetGroupStatusCountTimeline(tGroup.ID, "7d")
+	assert.NoError(t, err)
+	// for 7d we generate timestamp for each day so total timeline should have 8 timestamps
+	assert.Equal(t, len(statusTimelineMap), 8)
+
+	statusTimelineMap, err = a.GetGroupStatusCountTimeline(tGroup.ID, "30d")
+	assert.NoError(t, err)
+	// for 30d we generate timestamp after each 3days so total timeline should have 11 timestamps
+	assert.Equal(t, len(statusTimelineMap), 11)
+}
