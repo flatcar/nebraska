@@ -17,6 +17,7 @@ type (
 	postgresInterval string
 )
 
+const nearestXTimeFactor = 5
 const (
 	oneHour durationCode = iota
 	oneDay
@@ -485,8 +486,13 @@ func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (m
 	if err != nil {
 		return nil, err
 	}
+	currentTime := time.Now().UTC()
+	roundedMinutes := currentTime.Minute() - (currentTime.Minute() % nearestXTimeFactor)
+	currentTimeRoundedToNearestLowerXMinuteDivision := time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), currentTime.Hour(),
+		roundedMinutes, 0, 0, time.UTC)
+
 	query := fmt.Sprintf(`
-	WITH time_series AS (SELECT * FROM generate_series(now() - interval '%[1]s', now(), INTERVAL '%[2]s') AS ts),
+	WITH time_series AS (SELECT * FROM generate_series(timestamp '%[5]s' - interval '%[1]s', '%[5]s', INTERVAL '%[2]s') AS ts),
 		 recent_instances AS (SELECT instance_id, (CASE WHEN last_update_granted_ts 
 			IS NOT NULL THEN last_update_granted_ts ELSE created_ts END), version, 4 status FROM 
 			instance_application WHERE group_id=$1 AND 
@@ -504,7 +510,7 @@ func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (m
 	GROUP BY 1,2
 	ORDER BY ts DESC;
 	`, durationString, interval, ignoreFakeInstanceCondition("instance_id"),
-		ignoreFakeInstanceCondition("instance_Id"))
+		ignoreFakeInstanceCondition("instance_Id"), currentTimeRoundedToNearestLowerXMinuteDivision.Format(time.RFC3339))
 	rows, err := api.db.Queryx(query, groupID)
 	if err != nil {
 		return nil, err
@@ -567,9 +573,13 @@ func (api *API) GetGroupStatusCountTimeline(groupID string, duration string) (ma
 	if err != nil {
 		return nil, err
 	}
+	currentTime := time.Now().UTC()
+	roundedMinutes := currentTime.Minute() - (currentTime.Minute() % nearestXTimeFactor)
+	currentTimeRoundedToNearestLowestXMinuteDivision := time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), currentTime.Hour(),
+		roundedMinutes, 0, 0, time.UTC)
 	// Get the versions and their number of instances per status within each of the given time intervals.
 	query := fmt.Sprintf(`
-	WITH time_series AS (SELECT * FROM generate_series(now() - interval '%[1]s', now(), INTERVAL '%[2]s') AS ts),
+	WITH time_series AS (SELECT * FROM generate_series(timestamp '%[4]s' - interval '%[1]s', '%[4]s', INTERVAL '%[2]s') AS ts),
 	min_time AS (SELECT min(ts) AS min_ts FROM time_series),
 	filtered_status_history AS (SELECT instance_status_history.* FROM instance_status_history,
 		 min_time WHERE group_id=$1 AND %[3]s AND created_ts >= min_time.min_ts - INTERVAL '1 hour')
@@ -583,7 +593,8 @@ func (api *API) GetGroupStatusCountTimeline(groupID string, duration string) (ma
 	) AS _
 	GROUP BY 1,2,3
 	ORDER BY ts DESC;
-	`, durationString, interval, ignoreFakeInstanceCondition("instance_id"))
+	`, durationString, interval, ignoreFakeInstanceCondition("instance_id"),
+		currentTimeRoundedToNearestLowestXMinuteDivision.Format(time.RFC3339))
 	rows, err := api.db.Queryx(query, groupID)
 	if err != nil {
 		return nil, err
