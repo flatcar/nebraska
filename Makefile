@@ -37,7 +37,7 @@ container_id:
 .PHONY: check-backend-with-container
 check-backend-with-container: container_id
 	set -e; \
-	trap "docker kill $$(cat container_id); docker rm $$(cat container_id); rm -f container_id" EXIT; \
+	trap "$(DOCKER_CMD) kill $$(cat container_id); $(DOCKER_CMD) rm $$(cat container_id); rm -f container_id" EXIT; \
 	go test -p 1 ./...
 
 .PHONY: frontend
