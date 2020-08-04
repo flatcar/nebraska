@@ -71,7 +71,7 @@ func TestAddPackageFlatcar(t *testing.T) {
 
 	pkg := &Package{
 		Type:          PkgTypeFlatcar,
-		URL:           "https://commondatastorage.googleapis.com/update-storage.core-os.net/amd64-usr/766.3.0/",
+		URL:           "https://update.release.flatcar-linux.net/amd64-usr/XYZ/",
 		Filename:      null.StringFrom("update.gz"),
 		Version:       "2016.6.6",
 		Size:          null.StringFrom("123456"),
@@ -132,7 +132,7 @@ func TestUpdatePackageFlatcar(t *testing.T) {
 
 	pkg := &Package{
 		Type:          PkgTypeFlatcar,
-		URL:           "https://commondatastorage.googleapis.com/update-storage.core-os.net/amd64-usr/766.3.0/",
+		URL:           "https://update.release.flatcar-linux.net/amd64-usr/XYZ/",
 		Filename:      null.StringFrom("update.gz"),
 		Version:       "2016.6.6",
 		Size:          null.StringFrom("123456"),
@@ -163,7 +163,7 @@ func TestUpdatePackageFlatcar(t *testing.T) {
 
 	pkg = &Package{
 		Type:          PkgTypeFlatcar,
-		URL:           "https://commondatastorage.googleapis.com/update-storage.core-os.net/amd64-usr/766.3.0/",
+		URL:           "https://update.release.flatcar-linux.net/amd64-usr/XYZ/",
 		Filename:      null.StringFrom("update.gz"),
 		Version:       "2016.6.6",
 		Size:          null.StringFrom("123456"),
