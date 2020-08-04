@@ -21,7 +21,6 @@ type Application struct {
 	TeamID      string     `db:"team_id" json:"-"`
 	Groups      []*Group   `db:"groups" json:"groups"`
 	Channels    []*Channel `db:"channels" json:"channels"`
-	Packages    []*Package `db:"packages" json:"packages"`
 
 	Instances struct {
 		Count int `db:"count" json:"count"`
@@ -167,12 +166,6 @@ func (api *API) GetApp(appID string) (*Application, error) {
 	} else {
 		return nil, err
 	}
-	packages, err := api.getPackages(app.ID)
-	if err == nil || err == sql.ErrNoRows {
-		app.Packages = packages
-	} else {
-		return nil, err
-	}
 	app.Instances.Count, err = api.getInstanceCount(app.ID, "", validityInterval)
 	if err != nil {
 		return nil, err
@@ -213,12 +206,6 @@ func (api *API) GetApps(teamID string, page, perPage uint64) ([]*Application, er
 		channels, err := api.getChannels(app.ID)
 		if err == nil || err == sql.ErrNoRows {
 			app.Channels = channels
-		} else {
-			return nil, err
-		}
-		packages, err := api.getPackages(app.ID)
-		if err == nil || err == sql.ErrNoRows {
-			app.Packages = packages
 		} else {
 			return nil, err
 		}
