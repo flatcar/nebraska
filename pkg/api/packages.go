@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/doug-martin/goqu/v9"
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"gopkg.in/guregu/null.v4"
 )
@@ -190,30 +191,17 @@ func (api *API) UpdatePackage(pkg *Package) error {
 	}
 
 	if pkg.Type == PkgTypeFlatcar && pkg.FlatcarAction != nil {
-		flatcarAction, err := api.GetFlatcarAction(pkg.ID)
-		var query string
-		if flatcarAction == nil || err == sql.ErrNoRows {
-			query, _, err = goqu.Insert("flatcar_action").
-				Cols("package_id", "sha256").
-				Vals(goqu.Vals{pkg.ID, pkg.FlatcarAction.Sha256}).
-				Returning(goqu.T("flatcar_action").All()).
-				ToSQL()
-			if err != nil {
-				return err
-			}
+		if pkg.FlatcarAction.ID == "" {
+			pkg.FlatcarAction.ID = uuid.New().String()
 		}
+		query, _, err = goqu.Insert("flatcar_action").
+			Cols("id", "package_id", "sha256").
+			Vals(goqu.Vals{pkg.FlatcarAction.ID, pkg.ID, pkg.FlatcarAction.Sha256}).
+			OnConflict(goqu.DoUpdate("id", goqu.Record{"sha256": pkg.FlatcarAction.Sha256, "package_id": pkg.ID})).
+			Returning(goqu.T("flatcar_action").All()).
+			ToSQL()
 		if err != nil {
 			return err
-		}
-		if flatcarAction != nil {
-			query, _, err = goqu.Update("flatcar_action").
-				Set(goqu.Record{"sha256": pkg.FlatcarAction.Sha256}).
-				Where(goqu.C("package_id").Eq(pkg.ID)).
-				Returning(goqu.T("flatcar_action").All()).
-				ToSQL()
-			if err != nil {
-				return err
-			}
 		}
 		err = tx.QueryRowx(query).StructScan(pkg.FlatcarAction)
 		if err != nil {
