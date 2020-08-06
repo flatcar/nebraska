@@ -56,6 +56,10 @@ function Appbar(props) {
   const {cachedConfig, menuAnchorEl, projectLogo, config, handleClose, handleMenu} = props;
   const classes = useStyles();
 
+  React.useEffect(() => {
+    document.title = (cachedConfig && cachedConfig.title) || 'Nebraska';
+  }, [cachedConfig]);
+
   return (
     <AppBar position='static' className={classes.header}>
       <Toolbar>

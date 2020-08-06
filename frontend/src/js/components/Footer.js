@@ -3,13 +3,13 @@ import React from 'react';
 import API from '../api/API';
 
 function Footer() {
-  const [nebraskaVersion, setNebraskaVersion] = React.useState(null);
+  const [nebraskaConfig, setNebraskaConfig] = React.useState(null);
   React.useEffect(() => {
     API.getConfig().then((config) => {
-      setNebraskaVersion(config.nebraska_version);
+      setNebraskaConfig(config);
     });
   });
-  return <Box mt={1} color="text.secondary">{nebraskaVersion && `Nebraska v${nebraskaVersion}`}</Box>;
+  return <Box mt={1} color="text.secondary">{nebraskaConfig && `${nebraskaConfig.title || 'Nebraska'} ${nebraskaConfig.nebraska_version}`}</Box>;
 }
 
 export default Footer;
