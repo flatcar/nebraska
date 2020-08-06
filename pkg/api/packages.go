@@ -288,16 +288,6 @@ func (api *API) GetPackages(appID string, page, perPage uint64) ([]*Package, err
 	return api.getPackagesFromQuery(query)
 }
 
-func (api *API) getPackages(appID string) ([]*Package, error) {
-	query, _, err := api.packagesQuery().
-		Where(goqu.C("application_id").Eq(appID)).
-		ToSQL()
-	if err != nil {
-		return nil, err
-	}
-	return api.getPackagesFromQuery(query)
-}
-
 func (api *API) getPackagesFromQuery(query string) ([]*Package, error) {
 	var pkgs []*Package
 	rows, err := api.db.Queryx(query)

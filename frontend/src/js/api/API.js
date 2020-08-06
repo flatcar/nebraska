@@ -101,6 +101,11 @@ class API {
   }
 
   // Packages
+  static getPackages(applicationID){
+    const url = BASE_URL + '/apps/' + applicationID + '/packages/';
+
+    return API.doRequest('GET', url);
+  }
 
   static deletePackage(applicationID, packageID) {
     const url = BASE_URL + '/apps/' + applicationID + '/packages/' + packageID;
