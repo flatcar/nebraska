@@ -43,11 +43,6 @@ const nebraskaTheme = createMuiTheme({
 });
 
 export default function Main() {
-  React.useEffect(() => {
-    document.title = process.env.REACT_APP_PROJECT_NAME;
-  },
-  []);
-
   return (
     <ThemeProvider theme={nebraskaTheme}>
       <CssBaseline />
