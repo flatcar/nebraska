@@ -299,23 +299,26 @@ export function VersionCountTimeline(props) {
       <Grid item xs={12} container>
         <Grid item xs={12}>
           <Box width={500}>
-            { selectedEntry !== -1 ?
-              <React.Fragment>
-                <Typography component="span">
-                  Showing for:
-                </Typography>
-                &nbsp;
-                <Chip
-                  label={getSelectedTime()}
-                  onDelete={() => {setSelectedEntry(-1);}}
-                />
-              </React.Fragment>
+            { timelineChartData.data.length > 0 ?
+              selectedEntry !== -1 ?
+                <React.Fragment>
+                  <Typography component="span">
+                    Showing for:
+                  </Typography>
+                  &nbsp;
+                  <Chip
+                    label={getSelectedTime()}
+                    onDelete={() => {setSelectedEntry(-1);}}
+                  />
+                </React.Fragment>
+                :
+                <Box color="text.secondary" fontSize={14} textAlign="center" lineHeight={1.5}>
+                  Showing data for the last time point.
+                  <br />
+                  Click the chart to choose a different time point.
+                </Box>
               :
-              <Box color="text.secondary" fontSize={14} textAlign="center" lineHeight={1.5}>
-                Showing data for the last time point.
-                <br />
-                Click the chart to choose a different time point.
-              </Box>
+              null
             }
           </Box>
         </Grid>
@@ -487,23 +490,26 @@ export function StatusCountTimeline(props) {
       <Grid item xs={12} container>
         <Grid item xs={12}>
           <Box width={500}>
-            { selectedEntry !== -1 ?
-              <React.Fragment>
-                <Typography component="span">
-                  Showing for:
-                </Typography>
-                &nbsp;
-                <Chip
-                  label={getSelectedTime()}
-                  onDelete={() => {setSelectedEntry(-1);}}
-                />
-              </React.Fragment>
+            { timelineChartData.data.length > 0 ?
+              selectedEntry !== -1 ?
+                <React.Fragment>
+                  <Typography component="span">
+                    Showing for:
+                  </Typography>
+                  &nbsp;
+                  <Chip
+                    label={getSelectedTime()}
+                    onDelete={() => {setSelectedEntry(-1);}}
+                  />
+                </React.Fragment>
+                :
+                <Box color="text.secondary" fontSize={14} textAlign="center" lineHeight={1.5}>
+                  Showing data for the last time point.
+                  <br />
+                  Click the chart to choose a different time point.
+                </Box>
               :
-              <Box color="text.secondary" fontSize={14} textAlign="center" lineHeight={1.5}>
-                Showing data for the last time point.
-                <br />
-                Click the chart to choose a different time point.
-              </Box>
+              null
             }
           </Box>
         </Grid>
