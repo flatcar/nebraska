@@ -312,11 +312,9 @@ export function VersionCountTimeline(props) {
               </React.Fragment>
               :
               <Box color="text.secondary" fontSize={14} textAlign="center" lineHeight={1.5}>
-                Showing data for the last {duration.displayValue}
-                (Click the Chart
-                <Box>
-                  to choose a different time point).
-                </Box>
+                Showing data for the last time point.
+                <br />
+                Click the chart to choose a different time point.
               </Box>
             }
           </Box>
@@ -502,11 +500,9 @@ export function StatusCountTimeline(props) {
               </React.Fragment>
               :
               <Box color="text.secondary" fontSize={14} textAlign="center" lineHeight={1.5}>
-                Showing data for the {duration.displayValue}
-                (Click the Chart
-                <Box>
-                  to choose a different time point).
-                </Box>
+                Showing data for the last time point.
+                <br />
+                Click the chart to choose a different time point.
               </Box>
             }
           </Box>
