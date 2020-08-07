@@ -109,7 +109,7 @@ function Item(props) {
                   <ScheduleIcon color="disabled"/>
                   <Box pl={1} color="text.disabled">
                     <Typography variant="subtitle1">
-                      {'in last 24 hours'}
+                      last 24 hours
                     </Typography>
                   </Box>
                 </Box>
