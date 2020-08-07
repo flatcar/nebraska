@@ -6,6 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
 import React from 'react';
 import _ from 'underscore';
+import API from '../../api/API';
 import { ARCHES } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import Loader from '../Common/Loader';
@@ -72,6 +73,7 @@ class List extends React.Component {
 
     this.state = {
       application: applicationsStore.getCachedApplication(props.appID),
+      packages: [],
       updateChannelModalVisible: false,
       updateChannelIDModal: null
     };
@@ -87,6 +89,18 @@ class List extends React.Component {
 
   componentDidMount() {
     applicationsStore.addChangeListener(this.onChange);
+
+    // Fetch packages
+    if (_.isEmpty(this.state.packages)) {
+      API.getPackages(this.props.appID)
+        .then((result) => {
+          if (_.isNull(result)) {
+            this.setState({packages: []});
+            return;
+          }
+          this.setState({packages: result});
+        });
+    }
   }
 
   componentWillUnmount() {
@@ -102,11 +116,10 @@ class List extends React.Component {
   render() {
     const application = this.state.application;
     let channels = [];
-    let packages = [];
+    const packages = this.state.packages;
 
     if (application) {
       channels = application.channels ? application.channels : [];
-      packages = application.packages ? application.packages : [];
     }
 
     const channelToUpdate = !_.isEmpty(channels) &&
