@@ -323,11 +323,13 @@ export function VersionCountTimeline(props) {
           </Box>
         </Grid>
         <Grid item xs={11}>
-          <SimpleTable
-            emptyMessage="No data to show for this time point."
-            columns={{version: 'Version', instances: 'Count', percentage: 'Percentage'}}
-            instances={getInstanceCount(selectedEntry)}
-          />
+          {timelineChartData.data.length > 0 &&
+            <SimpleTable
+              emptyMessage="No data to show for this time point."
+              columns={{version: 'Version', instances: 'Count', percentage: 'Percentage'}}
+              instances={getInstanceCount(selectedEntry)}
+            />
+          }
         </Grid>
       </Grid>
     </Grid>
@@ -514,11 +516,13 @@ export function StatusCountTimeline(props) {
           </Box>
         </Grid>
         <Grid item xs={12}>
-          <SimpleTable
-            emptyMessage="No data to show for this time point."
-            columns={{status: 'Status', version: 'Version', instances: 'Instances'}}
-            instances={getInstanceCount(selectedEntry)}
-          />
+          {timelineChartData.data.length > 0 &&
+            <SimpleTable
+              emptyMessage="No data to show for this time point."
+              columns={{status: 'Status', version: 'Version', instances: 'Instances'}}
+              instances={getInstanceCount(selectedEntry)}
+            />
+          }
         </Grid>
       </Grid>
     </Grid>
