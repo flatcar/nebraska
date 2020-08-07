@@ -6,6 +6,7 @@ import { makeStyles, useTheme, withStyles } from '@material-ui/styles';
 import React from 'react';
 import { VictoryLabel, VictoryPie } from 'victory';
 import Empty from '../Common/EmptyContent';
+import Loader from '../Common/Loader';
 import { InstanceCountLabel } from './Common';
 import makeStatusDefs from './StatusDefs';
 
@@ -221,6 +222,11 @@ export default function InstanceStatusArea(props) {
   statusDefs['InstanceStatusOther'].label = 'Other';
 
   const totalInstances = instanceStats ? instanceStats.total : 0;
+
+  if (!instanceStats) {
+    return <Loader />;
+  }
+
   return (
     totalInstances > 0 ?
       <Grid

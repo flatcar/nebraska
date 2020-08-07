@@ -36,7 +36,7 @@ function ItemExtended(props) {
   const [application, setApplication] = React.useState(null);
   const [loadingUpdateProgressChart, setLoadingUpdateProgressChart] = React.useState(false);
   const [group, setGroup] = React.useState(null);
-  const [instancesStats, setInstancesStats] = React.useState({});
+  const [instancesStats, setInstancesStats] = React.useState(null);
   const [updateProgressChartDuration, setUpdateProgressChartDuration] =
     React.useState(defaultTimeInterval);
   const [versionChartSelectedDuration, setVersionChartSelectedDuration] =
@@ -245,7 +245,7 @@ function ItemExtended(props) {
         <Grid item xs={12}>
           <Divider variant="fullWidth"/>
         </Grid>
-        { instancesStats.total > 0 &&
+        { instancesStats && instancesStats.total > 0 &&
         <Grid item xs={12} container>
           <Grid
             item

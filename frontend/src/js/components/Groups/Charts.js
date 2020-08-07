@@ -299,34 +299,37 @@ export function VersionCountTimeline(props) {
       <Grid item xs={12} container>
         <Grid item xs={12}>
           <Box width={500}>
-            { selectedEntry !== -1 ?
-              <React.Fragment>
-                <Typography component="span">
-                  Showing for:
-                </Typography>
-                &nbsp;
-                <Chip
-                  label={getSelectedTime()}
-                  onDelete={() => {setSelectedEntry(-1);}}
-                />
-              </React.Fragment>
-              :
-              <Box color="text.secondary" fontSize={14} textAlign="center" lineHeight={1.5}>
-                Showing data for the last {duration.displayValue}
-                (Click the Chart
-                <Box>
-                  to choose a different time point).
+            { timelineChartData.data.length > 0 ?
+              selectedEntry !== -1 ?
+                <React.Fragment>
+                  <Typography component="span">
+                    Showing for:
+                  </Typography>
+                  &nbsp;
+                  <Chip
+                    label={getSelectedTime()}
+                    onDelete={() => {setSelectedEntry(-1);}}
+                  />
+                </React.Fragment>
+                :
+                <Box color="text.secondary" fontSize={14} textAlign="center" lineHeight={1.5}>
+                  Showing data for the last time point.
+                  <br />
+                  Click the chart to choose a different time point.
                 </Box>
-              </Box>
+              :
+              null
             }
           </Box>
         </Grid>
         <Grid item xs={11}>
-          <SimpleTable
-            emptyMessage="No data to show for this time point."
-            columns={{version: 'Version', instances: 'Count', percentage: 'Percentage'}}
-            instances={getInstanceCount(selectedEntry)}
-          />
+          {timelineChartData.data.length > 0 &&
+            <SimpleTable
+              emptyMessage="No data to show for this time point."
+              columns={{version: 'Version', instances: 'Count', percentage: 'Percentage'}}
+              instances={getInstanceCount(selectedEntry)}
+            />
+          }
         </Grid>
       </Grid>
     </Grid>
@@ -489,34 +492,37 @@ export function StatusCountTimeline(props) {
       <Grid item xs={12} container>
         <Grid item xs={12}>
           <Box width={500}>
-            { selectedEntry !== -1 ?
-              <React.Fragment>
-                <Typography component="span">
-                  Showing for:
-                </Typography>
-                &nbsp;
-                <Chip
-                  label={getSelectedTime()}
-                  onDelete={() => {setSelectedEntry(-1);}}
-                />
-              </React.Fragment>
-              :
-              <Box color="text.secondary" fontSize={14} textAlign="center" lineHeight={1.5}>
-                Showing data for the {duration.displayValue}
-                (Click the Chart
-                <Box>
-                  to choose a different time point).
+            { timelineChartData.data.length > 0 ?
+              selectedEntry !== -1 ?
+                <React.Fragment>
+                  <Typography component="span">
+                    Showing for:
+                  </Typography>
+                  &nbsp;
+                  <Chip
+                    label={getSelectedTime()}
+                    onDelete={() => {setSelectedEntry(-1);}}
+                  />
+                </React.Fragment>
+                :
+                <Box color="text.secondary" fontSize={14} textAlign="center" lineHeight={1.5}>
+                  Showing data for the last time point.
+                  <br />
+                  Click the chart to choose a different time point.
                 </Box>
-              </Box>
+              :
+              null
             }
           </Box>
         </Grid>
         <Grid item xs={12}>
-          <SimpleTable
-            emptyMessage="No data to show for this time point."
-            columns={{status: 'Status', version: 'Version', instances: 'Instances'}}
-            instances={getInstanceCount(selectedEntry)}
-          />
+          {timelineChartData.data.length > 0 &&
+            <SimpleTable
+              emptyMessage="No data to show for this time point."
+              columns={{status: 'Status', version: 'Version', instances: 'Instances'}}
+              instances={getInstanceCount(selectedEntry)}
+            />
+          }
         </Grid>
       </Grid>
     </Grid>

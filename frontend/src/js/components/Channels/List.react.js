@@ -3,9 +3,9 @@ import Grid from '@material-ui/core/Grid';
 import MuiList from '@material-ui/core/List';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import Typography from '@material-ui/core/Typography';
-import PropTypes from 'prop-types';
 import React from 'react';
 import _ from 'underscore';
+import API from '../../api/API';
 import { ARCHES } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import Loader from '../Common/Loader';
@@ -62,103 +62,100 @@ function ChannelList(props) {
   );
 }
 
-class List extends React.Component {
+function List(props) {
+  const { appID } = props;
+  const [application, setApplication] =
+    React.useState(applicationsStore.getCachedApplication(appID));
+  const [packages, setPackages] = React.useState(null);
+  const [channelToEdit, setChannelToEdit] = React.useState(null);
 
-  constructor(props) {
-    super(props);
-    this.onChange = this.onChange.bind(this);
-    this.closeUpdateChannelModal = this.closeUpdateChannelModal.bind(this);
-    this.openUpdateChannelModal = this.openUpdateChannelModal.bind(this);
+  React.useEffect(() => {
+    applicationsStore.addChangeListener(onStoreChange);
 
-    this.state = {
-      application: applicationsStore.getCachedApplication(props.appID),
-      updateChannelModalVisible: false,
-      updateChannelIDModal: null
-    };
-  }
-
-  closeUpdateChannelModal() {
-    this.setState({updateChannelModalVisible: false});
-  }
-
-  openUpdateChannelModal(channelID) {
-    this.setState({updateChannelModalVisible: true, updateChannelIDModal: channelID});
-  }
-
-  componentDidMount() {
-    applicationsStore.addChangeListener(this.onChange);
-  }
-
-  componentWillUnmount() {
-    applicationsStore.removeChangeListener(this.onChange);
-  }
-
-  onChange() {
-    this.setState({
-      application: applicationsStore.getCachedApplication(this.props.appID)
-    });
-  }
-
-  render() {
-    const application = this.state.application;
-    let channels = [];
-    let packages = [];
-
-    if (application) {
-      channels = application.channels ? application.channels : [];
-      packages = application.packages ? application.packages : [];
+    // In case the application was not yet cached, we fetch it here
+    if (application === null) {
+      applicationsStore.getApplication(props.appID);
     }
 
-    const channelToUpdate = !_.isEmpty(channels) &&
-      this.state.updateChannelIDModal ?
-      _.findWhere(channels, {id: this.state.updateChannelIDModal}) : null;
+    // Fetch packages
+    if (!packages){
+      API.getPackages(props.appID)
+        .then((result) => {
+          if (_.isNull(result)) {
+            setPackages([]);
+            return;
+          }
+          setPackages(result);
+        });
+    }
 
-    return (
-      <Box mt={2}>
-        <Box mb={2}>
-          <Grid
-            container
-            alignItems="center"
-            justify="space-between"
-          >
-            <Grid item>
-              <Typography variant="h4">Channels</Typography>
-            </Grid>
-            <Grid item>
-              <ModalButton
-                modalToOpen="AddChannelModal"
-                data={{
-                  packages: packages,
-                  applicationID: this.props.appID
-                }}
-              />
-            </Grid>
-          </Grid>
-        </Box>
-        <SectionPaper>
-          {!application ?
-            <Loader />
-            :
-            <ChannelList
-              application={application}
-              onEdit={this.openUpdateChannelModal}
-            />
-          }
-          {channelToUpdate &&
-          <EditDialog
-            data={{packages: packages, applicationID: this.props.appID, channel: channelToUpdate}}
-            show={this.state.updateChannelModalVisible}
-            onHide={this.closeUpdateChannelModal}
-          />
-          }
-        </SectionPaper>
-      </Box>
-    );
+    return function cleanup() {
+      applicationsStore.removeChangeListener(onStoreChange);
+    };
+  },
+  [appID]);
+
+  function onStoreChange() {
+    setApplication(applicationsStore.getCachedApplication(appID));
   }
-}
 
-List.propTypes = {
-  appID: PropTypes.string.isRequired
-};
+  function onChannelEditOpen(channelID) {
+    let channels = [];
+    if (application) {
+      channels = application.channels ? application.channels : [];
+    }
+
+    const channelToUpdate = (!_.isEmpty(channels) && channelID) ?
+      _.findWhere(channels, {id: channelID}) : null;
+
+    setChannelToEdit(channelToUpdate);
+  }
+
+  function onChannelEditClose() {
+    setChannelToEdit(null);
+  }
+
+  return (
+    <Box mt={2}>
+      <Box mb={2}>
+        <Grid
+          container
+          alignItems="center"
+          justify="space-between"
+        >
+          <Grid item>
+            <Typography variant="h4">Channels</Typography>
+          </Grid>
+          <Grid item>
+            <ModalButton
+              modalToOpen="AddChannelModal"
+              data={{
+                packages: packages,
+                applicationID: appID
+              }}
+            />
+          </Grid>
+        </Grid>
+      </Box>
+      <SectionPaper>
+        {!application ?
+          <Loader />
+          :
+          <ChannelList
+            application={application}
+            onEdit={onChannelEditOpen}
+          />
+        }
+        {channelToEdit &&
+        <EditDialog
+          data={{packages: packages, applicationID: appID, channel: channelToEdit}}
+          show={channelToEdit !== null}
+          onHide={onChannelEditClose}
+        />
+        }
+      </SectionPaper>
+    </Box>
+  );
+}
 
 export default List;

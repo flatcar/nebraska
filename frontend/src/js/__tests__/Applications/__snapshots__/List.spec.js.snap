@@ -198,7 +198,7 @@ exports[`Application List should render list correctly with data 1`] = `
                         <h6
                           class="MuiTypography-root MuiTypography-subtitle1"
                         >
-                          in last 24 hours
+                          last 24 hours
                         </h6>
                       </div>
                     </div>
