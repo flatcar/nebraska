@@ -1,4 +1,4 @@
-import { Box } from '@material-ui/core';
+import { Box, makeStyles } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import MuiList from '@material-ui/core/List';
 import ListSubheader from '@material-ui/core/ListSubheader';
@@ -14,7 +14,7 @@ import SectionPaper from '../Common/SectionPaper';
 import EditDialog from './EditDialog';
 import Item from './Item.react';
 
-const useStyles = theme => ({
+const useStyles = makeStyles({
   root: {
     '& > hr:first-child': {
       display: 'none'
