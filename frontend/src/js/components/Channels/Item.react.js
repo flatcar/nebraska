@@ -86,6 +86,7 @@ function Item(props) {
             </Box>}
             secondary={getSecondaryText()}
             className={classes.root}
+            disableTypography
           />
         </Grid>
       </Grid>
