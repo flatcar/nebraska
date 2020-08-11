@@ -81,6 +81,9 @@ function ItemExtended(props) {
     applicationsStore.addChangeListener(onChange);
     onChange();
 
+    return function cleanup() {
+      applicationsStore.removeChangeListener(onChange);
+    };
   },
   []);
 
