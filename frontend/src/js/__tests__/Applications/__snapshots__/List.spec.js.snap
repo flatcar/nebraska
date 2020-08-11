@@ -35,7 +35,7 @@ exports[`Application List should render list correctly with data 1`] = `
           >
             <svg
               aria-hidden="true"
-              class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge"
+              class="MuiSvgIcon-root makeStyles-root-138 MuiSvgIcon-fontSizeLarge"
               focusable="false"
               role="presentation"
               viewBox="0 0 24 24"
@@ -59,11 +59,11 @@ exports[`Application List should render list correctly with data 1`] = `
       class="MuiList-root List-root-1 MuiList-padding"
     >
       <hr
-        class="MuiDivider-root makeStyles-outterDivider-208"
+        class="MuiDivider-root makeStyles-outterDivider-209"
         data-testid="list-item-divider"
       />
       <li
-        class="MuiListItem-root makeStyles-root-206"
+        class="MuiListItem-root makeStyles-root-207"
         data-testid="list-item"
       >
         <div
@@ -73,7 +73,7 @@ exports[`Application List should render list correctly with data 1`] = `
             class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
           >
             <div
-              class="MuiGrid-root makeStyles-gridHeader-227 MuiGrid-container MuiGrid-justify-xs-space-between"
+              class="MuiGrid-root makeStyles-gridHeader-228 MuiGrid-container MuiGrid-justify-xs-space-between"
             >
               <div
                 class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
@@ -82,7 +82,7 @@ exports[`Application List should render list correctly with data 1`] = `
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                 >
                   <a
-                    class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-mainLink-229 MuiTypography-colorPrimary"
+                    class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-mainLink-230 MuiTypography-colorPrimary"
                     href="/apps/123"
                   >
                     ABC
@@ -92,20 +92,20 @@ exports[`Application List should render list correctly with data 1`] = `
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-242"
+                    class="MuiBox-root MuiBox-root-243"
                   >
                     <p
                       arial-label="group-id"
-                      class="MuiTypography-root makeStyles-idLabel-232 MuiTypography-body1 MuiTypography-noWrap"
+                      class="MuiTypography-root makeStyles-idLabel-233 MuiTypography-body1 MuiTypography-noWrap"
                     >
                       123
                     </p>
                   </div>
                   <div
-                    class="MuiBox-root MuiBox-root-244"
+                    class="MuiBox-root MuiBox-root-245"
                   >
                     <span
-                      class="MuiTypography-root makeStyles-descriptionLabel-231 MuiTypography-body1"
+                      class="MuiTypography-root makeStyles-descriptionLabel-232 MuiTypography-body1"
                     >
                       App Item Description
                     </span>
@@ -147,28 +147,28 @@ exports[`Application List should render list correctly with data 1`] = `
               </div>
             </div>
             <hr
-              class="MuiDivider-root makeStyles-innerDivider-233 MuiDivider-light"
+              class="MuiDivider-root makeStyles-innerDivider-234 MuiDivider-light"
             />
           </div>
           <div
             class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
           >
             <div
-              class="MuiGrid-root makeStyles-itemSection-207 MuiGrid-container"
+              class="MuiGrid-root makeStyles-itemSection-208 MuiGrid-container"
             >
               <div
                 class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
               >
                 <div
-                  class="MuiBox-root MuiBox-root-249"
+                  class="MuiBox-root MuiBox-root-250"
                 >
                   <span
-                    class="MuiTypography-root makeStyles-featureLabel-230 MuiTypography-body1"
+                    class="MuiTypography-root makeStyles-featureLabel-231 MuiTypography-body1"
                   >
                     INSTANCES
                   </span>
                   <span
-                    class="MuiTypography-root makeStyles-label-234 makeStyles-label-251 MuiTypography-body1"
+                    class="MuiTypography-root makeStyles-label-235 makeStyles-label-252 MuiTypography-body1"
                   >
                     <h5
                       class="MuiTypography-root MuiTypography-h5"
@@ -176,7 +176,7 @@ exports[`Application List should render list correctly with data 1`] = `
                       1
                     </h5>
                     <div
-                      class="MuiBox-root MuiBox-root-252"
+                      class="MuiBox-root MuiBox-root-253"
                     >
                       <svg
                         aria-hidden="true"
@@ -193,7 +193,7 @@ exports[`Application List should render list correctly with data 1`] = `
                         />
                       </svg>
                       <div
-                        class="MuiBox-root MuiBox-root-253"
+                        class="MuiBox-root MuiBox-root-254"
                       >
                         <h6
                           class="MuiTypography-root MuiTypography-subtitle1"
@@ -206,7 +206,7 @@ exports[`Application List should render list correctly with data 1`] = `
                 </div>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-254"
+                class="MuiBox-root MuiBox-root-255"
               >
                 <hr
                   class="MuiDivider-root MuiDivider-vertical"
@@ -216,18 +216,18 @@ exports[`Application List should render list correctly with data 1`] = `
                 class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-7"
               >
                 <div
-                  class="MuiBox-root MuiBox-root-255"
+                  class="MuiBox-root MuiBox-root-256"
                 >
                   <span
-                    class="MuiTypography-root makeStyles-featureLabel-230 MuiTypography-body1"
+                    class="MuiTypography-root makeStyles-featureLabel-231 MuiTypography-body1"
                   >
                     Groups
                   </span>
                   <div
-                    class="MuiBox-root MuiBox-root-257"
+                    class="MuiBox-root MuiBox-root-258"
                   >
                     <span
-                      class="MuiTypography-root makeStyles-label-234 makeStyles-label-258 MuiTypography-body1"
+                      class="MuiTypography-root makeStyles-label-235 makeStyles-label-259 MuiTypography-body1"
                     >
                       None
                     </span>

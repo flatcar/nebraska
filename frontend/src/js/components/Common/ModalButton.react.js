@@ -1,4 +1,4 @@
-import { IconButton, useTheme } from '@material-ui/core';
+import { IconButton, makeStyles, useTheme } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -7,9 +7,14 @@ import ChannelEditDialog from '../Channels/EditDialog';
 import GroupEditDialog from '../Groups/EditDialog';
 import PackageEditDialog from '../Packages/EditDialog';
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    color: theme.palette.titleColor
+  }}));
+
 function ModalButton(props) {
   const [showModal, setShowModal] = React.useState(false);
-  const theme = useTheme();
+  const classes = useStyles();
 
   function close() {
     setShowModal(false);
@@ -47,7 +52,7 @@ function ModalButton(props) {
   return (
     <div>
       <IconButton size="small" variant="extended" aria-label="add" onClick={open} data-testid="modal-button" >
-        <AddIcon fontSize="large" color={theme.palette.titleColor}/>
+        <AddIcon fontSize="large" className={classes.root}/>
       </IconButton>
       {modal}
     </div>
