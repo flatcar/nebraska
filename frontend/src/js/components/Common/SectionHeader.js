@@ -36,14 +36,14 @@ export default function SectionHeader(props) {
               breadcrumbs.map(({path = null, label}, index) => {
                 if (path)
                   return (
-                    <Box component="span" className={classes.breadCrumbsItem}>
-                      <Link to={path} component={RouterLink} key={index}>
+                    <Box component="span" className={classes.breadCrumbsItem} key={'breadcrumb_' + index}>
+                      <Link to={path} component={RouterLink}>
                         {label}
                       </Link>
                     </Box>
                   );
                 else
-                  return <Typography key={index} color="textPrimary">{label}</Typography>;
+                  return <Typography key={'breadcrumb_' + index} color="textPrimary">{label}</Typography>;
               }
               )}
           {title &&
