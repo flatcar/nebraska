@@ -11,6 +11,7 @@ class ApplicationLayout extends React.Component {
 
   constructor(props) {
     super(props);
+    applicationsStore.getApplication(this.props.match.params.appID);
     this.onChange = this.onChange.bind(this);
 
     const appID = props.match.params.appID;
@@ -18,10 +19,6 @@ class ApplicationLayout extends React.Component {
       appID: appID,
       applications: applicationsStore.getCachedApplications()
     };
-  }
-
-  componentWillMount() {
-    applicationsStore.getApplication(this.props.match.params.appID);
   }
 
   componentDidMount() {
