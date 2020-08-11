@@ -9,7 +9,7 @@ import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts'
 import semver from 'semver';
 import _ from 'underscore';
 import { cleanSemverVersion, getInstanceStatus, getMinuteDifference, makeColorsForVersions, makeLocaleTime, useGroupVersionBreakdown } from '../../constants/helpers';
-import { applicationsStore, groupChartStore } from '../../stores/Stores';
+import { groupChartStore } from '../../stores/Stores';
 import Loader from '../Common/Loader';
 import SimpleTable from '../Common/SimpleTable';
 import makeStatusDefs from '../Instances/StatusDefs';

@@ -1,12 +1,7 @@
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
-import Typography from '@material-ui/core/Typography';
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import _ from 'underscore';
 import { applicationsStore } from '../../stores/Stores';
-import ApplicationsList from '../Applications/List.react';
 import ChannelsList from '../Channels/List.react';
 import SectionHeader from '../Common/SectionHeader';
 import GroupsList from '../Groups/List.react';

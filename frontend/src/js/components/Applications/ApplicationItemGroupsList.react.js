@@ -1,5 +1,4 @@
 import { Box, Divider } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Item from './ApplicationItemGroupItem.react';

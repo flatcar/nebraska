@@ -1,13 +1,11 @@
-import { Box, Divider, Typography, useTheme } from '@material-ui/core';
+import { Box, Divider, Typography } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import _ from 'underscore';
 import API from '../../api/API';
 import { useGroupVersionBreakdown } from '../../constants/helpers';
