@@ -22,7 +22,7 @@ exports[`List Header should render correct List Header actions 1`] = `
           >
             <svg
               aria-hidden="true"
-              class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge"
+              class="MuiSvgIcon-root makeStyles-root-241 MuiSvgIcon-fontSizeLarge"
               focusable="false"
               role="presentation"
               viewBox="0 0 24 24"

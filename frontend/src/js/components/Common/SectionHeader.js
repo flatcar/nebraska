@@ -2,7 +2,6 @@ import { Box } from '@material-ui/core';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
@@ -37,14 +36,14 @@ export default function SectionHeader(props) {
               breadcrumbs.map(({path = null, label}, index) => {
                 if (path)
                   return (
-                    <Box component="span" className={classes.breadCrumbsItem}>
-                      <Link to={path} component={RouterLink} key={index}>
+                    <Box component="span" className={classes.breadCrumbsItem} key={'breadcrumb_' + index}>
+                      <Link to={path} component={RouterLink}>
                         {label}
                       </Link>
                     </Box>
                   );
                 else
-                  return <Typography key={index} color="textPrimary">{label}</Typography>;
+                  return <Typography key={'breadcrumb_' + index} color="textPrimary">{label}</Typography>;
               }
               )}
           {title &&

@@ -1,6 +1,5 @@
 import { Box, Grid, makeStyles, Tooltip, Typography, useTheme } from '@material-ui/core';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import ScheduleIcon from '@material-ui/icons/Schedule';
@@ -87,6 +86,7 @@ function Item(props) {
             </Box>}
             secondary={getSecondaryText()}
             className={classes.root}
+            disableTypography
           />
         </Grid>
       </Grid>

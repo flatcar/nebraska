@@ -1,4 +1,4 @@
-import { Divider, Typography } from '@material-ui/core';
+import { Divider } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -14,7 +14,6 @@ import { defaultTimeInterval, timeIntervalsDefault } from '../../constants/helpe
 import { applicationsStore } from '../../stores/Stores';
 import ChannelItem from '../Channels/Item.react';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
-import ListHeader from '../Common/ListHeader';
 import MoreMenu from '../Common/MoreMenu';
 import TimeIntervalLinks from '../Common/TimeIntervalLinks';
 import InstanceStatusArea from '../Instances/Charts';
@@ -82,6 +81,9 @@ function ItemExtended(props) {
     applicationsStore.addChangeListener(onChange);
     onChange();
 
+    return function cleanup() {
+      applicationsStore.removeChangeListener(onChange);
+    };
   },
   []);
 

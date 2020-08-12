@@ -9,6 +9,7 @@ class GroupLayout extends React.Component {
 
   constructor(props) {
     super(props);
+    applicationsStore.getApplication(this.props.match.params.appID);
     this.onChange = this.onChange.bind(this);
     this.openUpdateGroupModal = this.openUpdateGroupModal.bind(this);
     this.closeUpdateGroupModal = this.closeUpdateGroupModal.bind(this);
@@ -21,10 +22,6 @@ class GroupLayout extends React.Component {
       applications: applicationsStore.getCachedApplications(),
       updateGroupModalVisible: false,
     };
-  }
-
-  componentWillMount() {
-    applicationsStore.getApplication(this.props.match.params.appID);
   }
 
   componentDidMount() {
