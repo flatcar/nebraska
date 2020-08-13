@@ -1,4 +1,7 @@
-# Managing Flatcar updates
+---
+title: Managing Flatcar updates
+weight: 10
+---
 
 Once you have Nebraska up and running, a common use-case is to manage Flatcar Container Linux updates.
 

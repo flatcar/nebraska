@@ -1,4 +1,7 @@
-# Contributing
+---
+title: Contributing
+weight: 10
+---
 
 Nebraska is an Open Source project and contributions are welcome. It is usually a good idea to discuss new features or major changes before submitting any code. For doing that, please file a new [issue](https://github.com/Nebraska/Nebraska/issues).
 
