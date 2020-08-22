@@ -19,7 +19,7 @@ export default function InstanceLayout(props) {
     API.getInstance(appID, groupID, instanceID)
       .then((instance) => {
         instance.statusInfo = getInstanceStatus(instance.application.status,
-          instance.application.version);
+          instance.application.version, instance.application.error_code);
         setInstance(instance);
       });
     const apps = applicationsStore.getCachedApplications() || [];
