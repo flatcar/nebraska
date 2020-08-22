@@ -105,17 +105,18 @@ function ListView(props) {
   const theme = useTheme();
   const statusDefs = makeStatusDefs(useTheme());
   const {application, group} = props;
-  const [page, setPage] = React.useState(0);
   const versionBreakdown = useGroupVersionBreakdown(group);
+  /*TODO: use the URL as the single source of truth and remove states */
+  const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [filters, setFilters] = React.useState({status: '', version: ''});
   const [instancesObj, setInstancesObj] = React.useState({instances: [], total: -1});
   const [instanceFetchLoading, setInstanceFetchLoading] = React.useState(false);
-  const [filters, setFilters] = React.useState({status: '', version: ''});
   const [totalInstances, setTotalInstances] = React.useState(-1);
   const location = useLocation();
   const history = useHistory();
 
-  function fetchFiltersFromURL() {
+  function fetchFiltersFromURL(callback) {
     let status = '';
     const queryParams = new URLSearchParams(location.search);
     if (queryParams.has('status')) {
@@ -132,9 +133,9 @@ function ListView(props) {
     const version = queryParams.get('version') || '';
     const pageQueryParam = (parseInt(queryParams.get('page')) || 1) - 1;
     const perPage = parseInt(queryParams.get('perPage')) || 10;
-    setFilters({status, version});
-    setPage(pageQueryParam);
-    setRowsPerPage(perPage);
+    const duration = queryParams.get('period') || '1d';
+
+    callback(status, version, pageQueryParam, perPage, duration);
   }
 
   function addQuery(queryObj) {
@@ -219,15 +220,13 @@ function ListView(props) {
   }
 
   React.useEffect(() => {
-    fetchFiltersFromURL();
+    fetchFiltersFromURL((status, version, pageParam, perPageParam, duration) => {
+      setFilters({status, version});
+      setPage(pageParam);
+      setRowsPerPage(perPageParam);
+      fetchInstances({status, version}, pageParam, perPageParam, duration);
+    });
   }, [location]);
-
-  React.useEffect(() => {
-    const queryParams = new URLSearchParams(window.location.search);
-    const duration = queryParams.get('period');
-    fetchInstances(filters, page, rowsPerPage, duration);
-  },
-  [filters, page, rowsPerPage]);
 
   React.useEffect(() => {
     // We only want to run it once ATM.
