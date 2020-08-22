@@ -4,7 +4,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { getInstanceStatus, makeLocaleTime } from '../../constants/helpers';
+import { ERROR_STATUS_CODE, getErrorAndFlags, getInstanceStatus, makeLocaleTime, prepareErrorMessage } from '../../constants/helpers';
 
 class StatusHistoryItem extends React.Component {
 
@@ -26,7 +26,14 @@ class StatusHistoryItem extends React.Component {
 
   render() {
     const time = makeLocaleTime(this.props.entry.created_ts);
-    const {className, bgColor, textColor, status} = this.state.status;
+    const {className, bgColor, textColor} = this.state.status;
+    const {status} = this.state.status;
+    const errorCode = this.props.entry.error_code;
+    let extendedErrorExplanation = '';
+    if (this.props.entry.status === ERROR_STATUS_CODE) {
+      const [errorMessages, flags] = getErrorAndFlags(errorCode);
+      extendedErrorExplanation = prepareErrorMessage(errorMessages, flags);
+    }
     const instanceLabel = className ?
       <Box p={1} bgcolor={bgColor} color={textColor} textAlign="center">
         {status}
@@ -43,6 +50,15 @@ class StatusHistoryItem extends React.Component {
         </TableCell>
         <TableCell>
           {this.state.status.explanation}
+          {
+            extendedErrorExplanation &&
+            <>
+              {':'}
+              <Box>
+                {extendedErrorExplanation}
+              </Box>
+            </>
+          }
         </TableCell>
       </TableRow>
     );
