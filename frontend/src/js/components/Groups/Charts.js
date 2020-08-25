@@ -139,7 +139,6 @@ function TimelineChart(props) {
 }
 
 export function VersionCountTimeline(props) {
-  const groupVersionBreakdown = useGroupVersionBreakdown(props.group);
   const [selectedEntry, setSelectedEntry] = React.useState(-1);
   const { duration } = props;
   const [timelineChartData, setTimelineChartData] = React.useState({
@@ -199,21 +198,22 @@ export function VersionCountTimeline(props) {
   }
 
   function getInstanceCount(selectedEntry) {
-    let version_breakdown = [];
+    const version_breakdown = [];
+    let selectedEntryPoint = selectedEntry;
 
     // If there is no timeline or no specific time is selected,
-    // use the version breakdown (the whole period breakdown).
-    if (timelineChartData.data.length === 0 || selectedEntry === -1) {
-      version_breakdown = [...groupVersionBreakdown];
+    // show the timeline for the last time point.
+    if (selectedEntry === -1) {
+      selectedEntryPoint = timelineChartData.data.length - 1;
     }
 
     let total = 0;
 
     // If we're not using the default group version breakdown,
     // let's populate it from the selected time one.
-    if (version_breakdown.length === 0 && selectedEntry > -1) {
+    if (version_breakdown.length === 0 && selectedEntryPoint > -1) {
       // Create the version breakdown from the timeline
-      const entries = timelineChartData.data[selectedEntry] || [];
+      const entries = timelineChartData.data[selectedEntryPoint] || [];
 
       for (const version of timelineChartData.keys) {
         const versionCount = entries[version];
