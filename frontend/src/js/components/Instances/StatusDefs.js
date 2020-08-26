@@ -52,7 +52,7 @@ function makeStatusDefs(theme) {
     },
     InstanceStatusUpdateGranted: {
       label: 'Update Granted',
-      color: theme.palette.primary.main,
+      color: theme.palette.sapphireColor,
       icon: playCircle,
       queryValue: '2'
     },
