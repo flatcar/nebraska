@@ -1,5 +1,6 @@
 import {render} from '@testing-library/react';
 import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import List from '../../components/Activity/List.react';
 import { makeLocaleTime } from '../../constants/helpers';
 
@@ -30,7 +31,11 @@ describe('Activity List', () => {
     const time = makeLocaleTime(minProps.timestamp, {showTime: false,
                                                      dateFormat: {weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'}
     });
-    const {getByText} = render(<List {...minProps}/>);
+    const {getByText} = render(
+      <BrowserRouter>
+        <List {...minProps}/>
+      </BrowserRouter>
+    );
     expect(getByText(time)).toBeInTheDocument();
     minProps.entries.forEach((entry) => {
       expect(getByText(entry.application_name)).toBeInTheDocument();

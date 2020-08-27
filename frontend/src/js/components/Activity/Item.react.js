@@ -4,10 +4,12 @@ import checkCircleOutline from '@iconify/icons-mdi/check-circle-outline';
 import { Icon } from '@iconify/react';
 import { Box, makeStyles } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
+import Link from '@material-ui/core/Link';
 import ListItem from '@material-ui/core/ListItem';
 import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { activityStore } from '../../stores/Stores';
 
 const useStyles = makeStyles(theme => ({
@@ -85,8 +87,10 @@ class Item extends React.Component {
     let name = '';
 
     if (this.state.entryClass.type !== 'activityChannelPackageUpdated') {
+      const {app_id, group_id} = this.props.entry;
+      const groupPath = `apps/${app_id}/groups/${group_id}`;
       subtitle = 'GROUP';
-      name = this.state.entryClass.groupName;
+      name = <Link component={RouterLink} to={groupPath}>{this.state.entryClass.groupName}</Link>;
     }
 
     const stateIcon = stateIcons[this.state.entrySeverity.className || 'info'];

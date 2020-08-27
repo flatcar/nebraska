@@ -1,3 +1,6 @@
+import Link from '@material-ui/core/Link';
+import React from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import _ from 'underscore';
 import API from '../api/API';
 import Store from './BaseStore';
@@ -50,6 +53,7 @@ class ActivityStore extends Store {
   }
 
   getActivityEntryClass(classID, entry) {
+    const instancePath = `/apps/${entry.app_id}/groups/${entry.group_id}/instances/${entry.instance_id}?period=1d`;
 
     const classType = {
       1: {
@@ -85,7 +89,12 @@ class ActivityStore extends Store {
         appName: entry.application_name,
         groupName: entry.group_name,
         channelName: entry.channel_name,
-        description: 'Instance ' + entry.instance_id + ' reported an error while processing update to version ' + entry.version
+        description: (
+          <React.Fragment>
+            Instance <Link component={RouterLink} to={instancePath}>{entry.instance_id}</Link>
+            {' '} reported an error while processing update to version {entry.version}
+          </React.Fragment>
+        )
       },
       6: {
         type: 'activityChannelPackageUpdated',

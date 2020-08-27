@@ -15,6 +15,8 @@ export const ARCHES = {
   3: 'X86',
 };
 
+export const ERROR_STATUS_CODE = 3;
+
 const colors = makeColors();
 export const timeIntervalsDefault = [
   {displayValue: '30 days', queryValue: '30d', disabled: false},
@@ -203,4 +205,88 @@ export function useGroupVersionBreakdown(group) {
   [group]);
 
   return versionBreakdown;
+}
+
+// Keep in sync with https://github.com/flatcar-linux/update_engine/blob/flatcar-master/src/update_engine/action_processor.h#L25
+const actionCodes = {
+  '1': 'Error',
+  '2': 'OmahaRequestError',
+  '3': 'OmahaResponseHandlerError',
+  '4': 'FilesystemCopierError',
+  '5': 'PostinstallRunnerError',
+  '6': 'SetBootableFlagError',
+  '7': 'InstallDeviceOpenError',
+  '8': 'KernelDeviceOpenError',
+  '9': 'DownloadTransferError',
+  '10': 'PayloadHashMismatchError',
+  '11': 'PayloadSizeMismatchError',
+  '12': 'DownloadPayloadVerificationError',
+  '13': 'DownloadNewPartitionInfoError',
+  '14': 'DownloadWriteError',
+  '15': 'NewRootfsVerificationError',
+  '16': 'NewKernelVerificationError',
+  '17': 'SignedDeltaPayloadExpectedError',
+  '18': 'DownloadPayloadPubKeyVerificationError',
+  '19': 'PostinstallBootedFromFirmwareB',
+  '20': 'DownloadStateInitializationError',
+  '21': 'DownloadInvalidMetadataMagicString',
+  '22': 'DownloadSignatureMissingInManifest',
+  '23': 'DownloadManifestParseError',
+  '24': 'DownloadMetadataSignatureError',
+  '25': 'DownloadMetadataSignatureVerificationError',
+  '26': 'DownloadMetadataSignatureMismatch',
+  '27': 'DownloadOperationHashVerificationError',
+  '28': 'DownloadOperationExecutionError',
+  '29': 'DownloadOperationHashMismatch',
+  '30': 'OmahaRequestEmptyResponseError',
+  '31': 'OmahaRequestXMLParseError',
+  '32': 'DownloadInvalidMetadataSize',
+  '33': 'DownloadInvalidMetadataSignature',
+  '34': 'OmahaResponseInvalid',
+  '35': 'OmahaUpdateIgnoredPerPolicy',
+  '36': 'OmahaUpdateDeferredPerPolicy',
+  '37': 'OmahaErrorInHTTPResponse',
+  '38': 'DownloadOperationHashMissingError',
+  '39': 'DownloadMetadataSignatureMissingError',
+  '40': 'OmahaUpdateDeferredForBackoff',
+  '41': 'PostinstallPowerwashError',
+  '42': 'NewPCRPolicyVerificationError',
+  '43': 'NewPCRPolicyHTTPError',
+  '44': 'RollbackError',
+  '100': 'DownloadIncomplete',
+  '2000': 'OmahaRequestHTTPResponseBase'
+};
+
+const flagsCodes = {
+  [Math.pow(2, 31)]: 'DevModeFlag',
+  [Math.pow(2, 30)]: 'ResumedFlag',
+  [Math.pow(2, 29)]: 'TestImageFlag',
+  [Math.pow(2, 28)]: 'TestOmahaUrlFlag'
+};
+
+export function getErrorAndFlags(errorCode) {
+  const errorMessage = [];
+  let errorCodeVal = errorCode;
+  // Extract and remove flags from the error code
+  var flags = [];
+  for (const [flag, flagValue] of Object.entries(flagsCodes)) {
+    if (errorCodeVal & flag) {
+      errorCodeVal &= ~flag;
+      flags.push(flagValue);
+    }
+  }
+  if (actionCodes[errorCodeVal]) {
+    errorMessage.push(actionCodes[errorCodeVal]);
+  } else if (errorCodeVal > 2000 && errorCodeVal < 3000) {
+    errorMessage.push(`Http error code(${errorCodeVal - 2000})`);
+  } else {
+    errorMessage.push(`Unknown Error ${errorCodeVal}`);
+  }
+  return [errorMessage, flags];
+}
+
+export function prepareErrorMessage(errorMessages, flags) {
+  const enhancedErrorMessages = errorMessages.reduce((acc, val) => `${val} ${acc}`, '');
+  const enhancedFlags = flags.reduce((acc, val) => `${val} ${acc}`, '');
+  return `${enhancedErrorMessages} ${enhancedFlags.length > 0 ? ' with ' + enhancedFlags : ''}`;
 }

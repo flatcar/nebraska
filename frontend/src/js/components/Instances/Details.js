@@ -19,7 +19,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import API from '../../api/API';
-import { getInstanceStatus, makeLocaleTime } from '../../constants/helpers';
+import { ERROR_STATUS_CODE, getErrorAndFlags, getInstanceStatus, makeLocaleTime, prepareErrorMessage } from '../../constants/helpers';
 import ChannelItem from '../Channels/Item.react';
 import { CardFeatureLabel, CardLabel } from '../Common/Card';
 import Empty from '../Common/EmptyContent';
@@ -103,9 +103,14 @@ function StatusRow(props) {
   const classes = useRowStyles();
   const {entry} = props;
   const time = makeLocaleTime(entry.created_ts);
-  const status = getInstanceStatus(entry.status, entry.version);
+  const status = getInstanceStatus(entry.status, entry.version, entry.error_code);
   const [collapsed, setCollapsed] = React.useState(true);
-
+  let extendedErrorLabel = '';
+  const errorCode = entry.error_code;
+  if (entry.status === ERROR_STATUS_CODE && errorCode){
+    const [errorMessages, flags] = getErrorAndFlags(errorCode);
+    extendedErrorLabel = prepareErrorMessage(errorMessages, flags);
+  }
   function onStatusClick() {
     setCollapsed(!collapsed);
   }
@@ -140,6 +145,13 @@ function StatusRow(props) {
               className={classes.statusExplanation}
             >
               {status.explanation}
+              {extendedErrorLabel &&
+              <>
+                {':'}
+                <Box>
+                  {extendedErrorLabel}
+                </Box>
+              </>}
             </Typography>
           </Collapse>
         </TableCell>

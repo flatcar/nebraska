@@ -181,8 +181,7 @@ function ListView(props) {
       }
       if (result.instances) {
         const massagedInstances = result.instances.map((instance) => {
-          instance.statusInfo = getInstanceStatus(instance.application.status,
-              instance.application.version);
+          instance.statusInfo = getInstanceStatus(instance.application.status);
           return instance;
         });
         setInstancesObj({instances: massagedInstances, total: result.total});

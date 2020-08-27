@@ -1,5 +1,6 @@
 import {render} from '@testing-library/react';
 import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import Container from '../../components/Activity/Container.react';
 import { activityStore } from '../../stores/Stores';
 
@@ -25,7 +26,11 @@ describe('Activity Container', () => {
       instance_id: null
     }];
 
-    const {getByText} = render(<Container/>);
+    const {getByText} = render(
+      <BrowserRouter>
+        <Container/>
+      </BrowserRouter>
+    );
     expect(getByText('ABC')).toBeInTheDocument();
     expect(getByText('DBZ')).toBeInTheDocument();
     activityStore.activity = null;
