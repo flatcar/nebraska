@@ -81,13 +81,14 @@ type InstanceApplication struct {
 // InstanceStatusHistoryEntry represents an entry in the instance status
 // history.
 type InstanceStatusHistoryEntry struct {
-	ID            int       `db:"id" json:"-"`
-	Status        int       `db:"status" json:"status"`
-	Version       string    `db:"version" json:"version"`
-	CreatedTs     time.Time `db:"created_ts" json:"created_ts"`
-	InstanceID    string    `db:"instance_id" json:"-"`
-	ApplicationID string    `db:"application_id" json:"-"`
-	GroupID       string    `db:"group_id" json:"-"`
+	ID            int         `db:"id" json:"-"`
+	Status        int         `db:"status" json:"status"`
+	Version       string      `db:"version" json:"version"`
+	CreatedTs     time.Time   `db:"created_ts" json:"created_ts"`
+	InstanceID    string      `db:"instance_id" json:"-"`
+	ApplicationID string      `db:"application_id" json:"-"`
+	GroupID       string      `db:"group_id" json:"-"`
+	ErrorCode     null.String `db:"error_code" json:"error_code"`
 }
 
 // InstancesQueryParams represents a helper structure used to pass a set of
@@ -220,6 +221,12 @@ func (api *API) GetInstanceStatusHistory(instanceID, appID, groupID string, limi
 		err = rows.StructScan(&instanceStatusHistoryEntity)
 		if err != nil {
 			return nil, err
+		}
+		if instanceStatusHistoryEntity.Status == InstanceStatusError {
+			instanceStatusHistoryEntity.ErrorCode, err = api.GetEvent(instanceID, appID, instanceStatusHistoryEntity.CreatedTs)
+			if err != nil {
+				return nil, err
+			}
 		}
 		instanceStatusHistory = append(instanceStatusHistory, &instanceStatusHistoryEntity)
 	}
