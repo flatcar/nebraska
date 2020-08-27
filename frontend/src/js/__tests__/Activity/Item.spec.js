@@ -1,5 +1,6 @@
 import {render} from '@testing-library/react';
 import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import Item from '../../components/Activity/Item.react';
 
 describe('Activity Item', () => {
@@ -16,7 +17,11 @@ describe('Activity Item', () => {
         version: '0.0.0'
       }
     };
-    const {getByText} = render(<Item {...minProps}/>);
+    const {getByText} = render(
+      <BrowserRouter>
+        <Item {...minProps}/>
+      </BrowserRouter>
+    );
     expect(getByText(minProps.entry.application_name)).toBeInTheDocument();
   });
 });
