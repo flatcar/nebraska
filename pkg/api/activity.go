@@ -38,6 +38,8 @@ type activityContext struct {
 
 // Activity represents a Nebraska activity entry.
 type Activity struct {
+	AppID           string      `db:"application_id" json:"app_id"`
+	GroupID         string      `db:"group_id" json:"group_id"`
 	CreatedTs       time.Time   `db:"created_ts" json:"created_ts"`
 	Class           int         `db:"class" json:"class"`
 	Severity        int         `db:"severity" json:"severity"`
@@ -111,7 +113,9 @@ func (api *API) activityQuery(teamID string, p ActivityQueryParams) *goqu.Select
 	INNER JOIN application AS app ON (a.application_id = app.id)
 	LEFT JOIN groups AS g ON (a.group_id = g.id)
 	LEFT JOIN channel AS c ON (a.channel_id = c.id)
-`)).Select("a.created_ts", "a.class", "a.severity", "a.version", "a.instance_id", goqu.I("app.name").As("application_name"), goqu.I("g.name").As("group_name"), goqu.I("c.name").As("channel_name")).
+`)).Select("a.application_id", "a.group_id", "a.created_ts", "a.class", "a.severity", "a.version", "a.instance_id",
+		goqu.I("app.name").As("application_name"), goqu.I("g.name").
+			As("group_name"), goqu.I("c.name").As("channel_name")).
 		Where(goqu.I("app.team_id").Eq(teamID), goqu.And(goqu.I("a.created_ts").Gte(start),
 			goqu.I("a.created_ts").Lt(end)))
 
