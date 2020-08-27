@@ -25,7 +25,8 @@ const nebraskaTheme = createMuiTheme({
     },
     titleColor: '#000000',
     lightSilverShade: '#F0F0F0',
-    greyShadeColor: '#474747'
+    greyShadeColor: '#474747',
+    sapphireColor: '#061751'
   },
   typography: {
     fontFamily: 'Overpass, sans-serif',
