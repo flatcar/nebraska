@@ -579,7 +579,7 @@ func (api *API) GetGroupStatusCountTimeline(groupID string, duration string) (ma
 	(
 		  SELECT * FROM time_series
 		  LEFT JOIN(SELECT * FROM filtered_status_history) 
-		  _ ON created_ts >= time_series.ts - INTERVAL '1 hour' AND created_ts < time_series.ts
+		  _ ON created_ts >= time_series.ts - INTERVAL '%[2]s' AND created_ts < time_series.ts
 	) AS _
 	GROUP BY 1,2,3
 	ORDER BY ts DESC;
