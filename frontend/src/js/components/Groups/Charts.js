@@ -472,6 +472,7 @@ export function StatusCountTimeline(props) {
         console.error(error);
       }
     }
+    setSelectedEntry(-1);
     getStatusTimeline(props.group);
   },
   [props.duration]);
