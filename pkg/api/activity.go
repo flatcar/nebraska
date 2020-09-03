@@ -38,8 +38,8 @@ type activityContext struct {
 
 // Activity represents a Nebraska activity entry.
 type Activity struct {
-	AppID           string      `db:"application_id" json:"app_id"`
-	GroupID         string      `db:"group_id" json:"group_id"`
+	AppID           null.String `db:"application_id" json:"app_id"`
+	GroupID         null.String `db:"group_id" json:"group_id"`
 	CreatedTs       time.Time   `db:"created_ts" json:"created_ts"`
 	Class           int         `db:"class" json:"class"`
 	Severity        int         `db:"severity" json:"severity"`
