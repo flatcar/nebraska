@@ -17,7 +17,7 @@
     "@testing-library/user-event": "^7.2.1",
     "dompurify": "^2.0.12",
     "downshift": "^3.4.7",
-    "formik": "^1.5.8",
+    "formik": "^2.1.5",
     "formik-material-ui": "^0.0.20",
     "moment-timezone": "^0.5.27",
     "prop-types": "^15.7.2",
