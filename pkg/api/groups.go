@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/doug-martin/goqu/v9"
@@ -38,7 +39,25 @@ var (
 	// ErrExpectingValidTimezone error indicates that a valid timezone wasn't
 	// provided when enabling the flag PolicyOfficeHours.
 	ErrExpectingValidTimezone = errors.New("nebraska: expecting valid timezone")
+
+	// flatcarGroups caches the mapping of Flatcar track names and
+	// architectures to groups. It must not be modified directly but
+	// replaced (atomically or via lock) by a new map to prevent data races.
+	// An update must be triggered through updateFlatcarGroups() each time
+	// a group entry changes (channel architectures are not modified after
+	// creation, thus changes to the channel don't need to trigger an
+	// update). A RW lock was chosen to prevent data races over the pointer
+	// itself. An alternative is to use atomic loads instead of RLock()
+	// and using atomic stores inside Lock() of a normal Mutex to serialize
+	// the writes (or use channel handshakes instead of a mutex).
+	flatcarGroups     map[ChannelDescriptor]string
+	flatcarGroupsLock sync.RWMutex
 )
+
+type ChannelDescriptor struct {
+	Name string
+	Arch Arch
+}
 
 // Group represents a Nebraska application's group.
 type Group struct {
@@ -145,6 +164,7 @@ func (api *API) AddGroup(group *Group) (*Group, error) {
 	if err != nil {
 		return nil, err
 	}
+	api.updateFlatcarGroups()
 	return group, nil
 }
 
@@ -197,6 +217,7 @@ func (api *API) UpdateGroup(group *Group) error {
 	if rowsAffected == 0 {
 		return ErrNoRowsAffected
 	}
+	api.updateFlatcarGroups()
 	return nil
 }
 
@@ -218,6 +239,7 @@ func (api *API) DeleteGroup(groupID string) error {
 	if rowsAffected == 0 {
 		return ErrNoRowsAffected
 	}
+	api.updateFlatcarGroups()
 	return nil
 }
 
@@ -383,7 +405,8 @@ func (api *API) setGroupRolloutInProgress(groupID string, inProgress bool) error
 // groupsQuery returns a SelectDataset prepared to return all groups. This
 // query is meant to be extended later in the methods using it to filter by a
 // specific group id, all groups of a given app, specify how to query the rows
-// or their destination.
+// or their destination. The ordering is descending by the creation time,
+// meaning that the newest groups come first.
 func (api *API) groupsQuery() *goqu.SelectDataset {
 	query := goqu.From("groups").Order(goqu.I("created_ts").Desc())
 
@@ -646,4 +669,54 @@ func (api *API) GetGroupStatusCountTimeline(groupID string, duration string) (ma
 	}
 
 	return timelineCount, nil
+}
+
+// lookupGroupFromTrack finds the group for a Flatcar track name using
+// Group.Channel.Name and maintains its own cache in flatcarGroups.
+func (api *API) LookupGroupFromTrack(descriptor ChannelDescriptor) (string, bool) {
+	var flatcarGroupsRef map[ChannelDescriptor]string
+	flatcarGroupsLock.RLock()
+	if flatcarGroups != nil {
+		// Keep a reference to the map that we found.
+		flatcarGroupsRef = flatcarGroups
+	}
+	flatcarGroupsLock.RUnlock()
+	// Generate map on startup or if invalidated.
+	if flatcarGroupsRef == nil {
+		flatcarGroupsLock.Lock()
+		flatcarGroups := make(map[ChannelDescriptor]string)
+		groups, err := api.getGroups(flatcarAppID)
+		if err != nil {
+			logger.Error("LookupGroupFromTrack", "error", err.Error())
+		} else {
+			for _, group := range groups {
+				if group.Channel != nil {
+					descriptor := ChannelDescriptor{Name: group.Channel.Name, Arch: group.Channel.Arch}
+					// The groups are sorted descendingly by the creation time.
+					// The oldest group with the channel wins.
+					if _, ok := flatcarGroups[descriptor]; ok {
+						// Log a warning for others.
+						logger.Warn("LookupGroupFromTrack - another group already uses the same channel as track name, use the ID as track name for this group", "group", group.ID, "channel", group.Channel.Name)
+					}
+					flatcarGroups[descriptor] = group.ID
+				}
+			}
+		}
+		// Keep a reference to the map we created.
+		flatcarGroupsRef = flatcarGroups
+		flatcarGroupsLock.Unlock()
+	}
+
+	flatcarGroupID, ok := flatcarGroupsRef[descriptor]
+	return flatcarGroupID, ok
+}
+
+// updateFlatcarGroups invalidates the cached track names in flatcarGroups and
+// must be called whenever the group entries are modified.
+func (api *API) updateFlatcarGroups() {
+	flatcarGroupsLock.Lock()
+	flatcarGroups = nil
+	// Generating the map is not always possible here because the database
+	// can be closed.
+	flatcarGroupsLock.Unlock()
 }

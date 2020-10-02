@@ -153,6 +153,8 @@ func TestGetGroups(t *testing.T) {
 	assert.Equal(t, tChannel.Name, groups[1].Channel.Name)
 	assert.Equal(t, tPkg.ID, groups[1].Channel.PackageID.String)
 	assert.Equal(t, tPkg.Version, groups[1].Channel.Package.Version)
+	// Should be sorted descendingly.
+	assert.Equal(t, true, groups[0].CreatedTs.After(groups[1].CreatedTs))
 }
 
 func TestGetGroupsFiltered(t *testing.T) {
