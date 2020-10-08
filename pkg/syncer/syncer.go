@@ -27,9 +27,7 @@ import (
 )
 
 const (
-	flatcarUpdatesURL = "https://public.update.flatcar-linux.net/v1/update/"
-	flatcarAppID      = "{e96281a6-d1af-4bde-9a0a-97b76e56dc57}"
-	checkFrequency    = 1 * time.Hour
+	flatcarAppID = "{e96281a6-d1af-4bde-9a0a-97b76e56dc57}"
 )
 
 var (
@@ -51,25 +49,29 @@ type channelDescriptor struct {
 // to them). When hostPackages is enabled, packages payloads will be downloaded
 // into packagesPath and package url/filename will be rewritten.
 type Syncer struct {
-	api          *api.API
-	hostPackages bool
-	packagesPath string
-	packagesURL  string
-	stopCh       chan struct{}
-	machinesIDs  map[channelDescriptor]string
-	bootIDs      map[channelDescriptor]string
-	versions     map[channelDescriptor]string
-	channelsIDs  map[channelDescriptor]string
-	httpClient   *http.Client
-	ticker       *time.Ticker
+	api               *api.API
+	hostPackages      bool
+	packagesPath      string
+	packagesURL       string
+	checkFrequency    time.Duration
+	flatcarUpdatesURL string
+	stopCh            chan struct{}
+	machinesIDs       map[channelDescriptor]string
+	bootIDs           map[channelDescriptor]string
+	versions          map[channelDescriptor]string
+	channelsIDs       map[channelDescriptor]string
+	httpClient        *http.Client
+	ticker            *time.Ticker
 }
 
 // Config represents the configuration used to create a new Syncer instance.
 type Config struct {
-	API          *api.API
-	HostPackages bool
-	PackagesPath string
-	PackagesURL  string
+	API               *api.API
+	HostPackages      bool
+	PackagesPath      string
+	PackagesURL       string
+	FlatcarUpdatesURL string
+	CheckFrequency    time.Duration
 }
 
 // New creates a new Syncer instance.
@@ -79,16 +81,18 @@ func New(conf *Config) (*Syncer, error) {
 	}
 
 	s := &Syncer{
-		api:          conf.API,
-		hostPackages: conf.HostPackages,
-		packagesPath: conf.PackagesPath,
-		packagesURL:  conf.PackagesURL,
-		stopCh:       make(chan struct{}),
-		machinesIDs:  make(map[channelDescriptor]string, 8),
-		bootIDs:      make(map[channelDescriptor]string, 8),
-		channelsIDs:  make(map[channelDescriptor]string, 8),
-		versions:     make(map[channelDescriptor]string, 8),
-		httpClient:   &http.Client{},
+		api:               conf.API,
+		hostPackages:      conf.HostPackages,
+		packagesPath:      conf.PackagesPath,
+		packagesURL:       conf.PackagesURL,
+		flatcarUpdatesURL: conf.FlatcarUpdatesURL,
+		checkFrequency:    conf.CheckFrequency,
+		stopCh:            make(chan struct{}),
+		machinesIDs:       make(map[channelDescriptor]string, 8),
+		bootIDs:           make(map[channelDescriptor]string, 8),
+		channelsIDs:       make(map[channelDescriptor]string, 8),
+		versions:          make(map[channelDescriptor]string, 8),
+		httpClient:        &http.Client{},
 	}
 
 	if err := s.initialize(); err != nil {
@@ -102,7 +106,7 @@ func New(conf *Config) (*Syncer, error) {
 // checkFrequency until it's asked to stop.
 func (s *Syncer) Start() {
 	logger.Debug("syncer ready!")
-	s.ticker = time.NewTicker(checkFrequency)
+	s.ticker = time.NewTicker(s.checkFrequency)
 
 	_ = s.checkForUpdates()
 
@@ -214,7 +218,7 @@ func (s *Syncer) doOmahaRequest(descriptor channelDescriptor, currentVersion str
 	}
 	logger.Debug("doOmahaRequest", "request", string(payload))
 
-	resp, err := s.httpClient.Post(flatcarUpdatesURL, "text/xml", bytes.NewReader(payload))
+	resp, err := s.httpClient.Post(s.flatcarUpdatesURL, "text/xml", bytes.NewReader(payload))
 	if err != nil {
 		logger.Error("checkForUpdates, posting omaha response", "error", err)
 		return nil, err

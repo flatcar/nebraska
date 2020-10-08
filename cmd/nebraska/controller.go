@@ -52,6 +52,8 @@ type controllerConfig struct {
 	nebraskaURL         string
 	noopAuthConfig      *auth.NoopAuthConfig
 	githubAuthConfig    *auth.GithubAuthConfig
+	flatcarUpdatesURL   string
+	checkFrequency      time.Duration
 }
 
 func newController(conf *controllerConfig) (*controller, error) {
@@ -67,10 +69,12 @@ func newController(conf *controllerConfig) (*controller, error) {
 
 	if conf.enableSyncer {
 		syncerConf := &syncer.Config{
-			API:          conf.api,
-			HostPackages: conf.hostFlatcarPackages,
-			PackagesPath: conf.flatcarPackagesPath,
-			PackagesURL:  conf.nebraskaURL + "/flatcar/",
+			API:               conf.api,
+			HostPackages:      conf.hostFlatcarPackages,
+			PackagesPath:      conf.flatcarPackagesPath,
+			PackagesURL:       conf.nebraskaURL + "/flatcar/",
+			FlatcarUpdatesURL: conf.flatcarUpdatesURL,
+			CheckFrequency:    conf.checkFrequency,
 		}
 		syncer, err := syncer.New(syncerConf)
 		if err != nil {
