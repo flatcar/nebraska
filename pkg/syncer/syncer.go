@@ -184,7 +184,7 @@ func (s *Syncer) checkForUpdates() error {
 		}
 
 		select {
-		case <-time.After(1 * time.Minute):
+		case <-time.After(5 * time.Second):
 		case <-s.stopCh:
 			break
 		}
