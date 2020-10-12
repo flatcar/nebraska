@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/mgutz/logxi/v1"
@@ -44,6 +45,8 @@ var (
 	ghReadOnlyTeams     = flag.String("gh-ro-teams", "", "comma-separated list of read-only GitHub teams in the org/team format")
 	ghEnterpriseURL     = flag.String("gh-enterprise-url", "", fmt.Sprintf("base URL of the enterprise instance if using GHE; can be taken from %s env var too", ghEnterpriseURLEnvName))
 	logger              = log.New("nebraska")
+	flatcarUpdatesURL   = flag.String("sync-update-url", "https://public.update.flatcar-linux.net/v1/update/", "Flatcar update URL to sync from")
+	checkFrequencyVal   = flag.String("sync-interval", "1h", "Sync check interval (the minimum depends on the number of channels to sync, e.g., 8m for 8 channels incl. different architectures)")
 	appLogoPath         = flag.String("client-logo", "", fmt.Sprintf("Client app logo, should be a path to svg file"))
 	appTitle            = flag.String("client-title", "", fmt.Sprintf("Client app title"))
 	appHeaderStyle      = flag.String("client-header-style", "light", fmt.Sprintf("Client app header style, should be either dark or light"))
@@ -115,6 +118,11 @@ func mainWithError() error {
 	default:
 		return fmt.Errorf("unknown auth mode %q", *authMode)
 	}
+
+	checkFrequency, err := time.ParseDuration(*checkFrequencyVal)
+	if err != nil {
+		return err
+	}
 	conf := &controllerConfig{
 		api:                 api,
 		enableSyncer:        *enableSyncer,
@@ -123,6 +131,8 @@ func mainWithError() error {
 		nebraskaURL:         *nebraskaURL,
 		noopAuthConfig:      noopAuthConfig,
 		githubAuthConfig:    ghAuthConfig,
+		flatcarUpdatesURL:   *flatcarUpdatesURL,
+		checkFrequency:      checkFrequency,
 	}
 	ctl, err := newController(conf)
 	if err != nil {
