@@ -140,7 +140,7 @@ func (s *Syncer) initialize() error {
 	}
 
 	for _, c := range flatcarApp.Channels {
-		if c.Name == "stable" || c.Name == "beta" || c.Name == "alpha" || c.Name == "edge" {
+		if c.Name == "stable" || c.Name == "beta" || c.Name == "alpha" || c.Name == "edge" || strings.HasPrefix(c.Name, "lts-") {
 			descriptor := channelDescriptor{
 				name: c.Name,
 				arch: c.Arch,
