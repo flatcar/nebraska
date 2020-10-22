@@ -2,10 +2,10 @@ package api
 
 import (
 	"errors"
-	"time"
+	// "time"
 
 	"github.com/blang/semver"
-	"github.com/doug-martin/goqu/v9"
+	// "github.com/doug-martin/goqu/v9"
 )
 
 var (
@@ -109,123 +109,123 @@ func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID,
 		return group.Channel.Package, nil
 	}
 
-	updatesStats, err := api.getGroupUpdatesStats(group)
-	if err != nil {
-		logger.Error("GetUpdatePackage - getGroupUpdatesStats error (propagates as ErrGetUpdatesStatsFailed):", err)
-		return nil, ErrGetUpdatesStatsFailed
-	}
+	// updatesStats, err := api.getGroupUpdatesStats(group)
+	// if err != nil {
+	// 	logger.Error("GetUpdatePackage - getGroupUpdatesStats error (propagates as ErrGetUpdatesStatsFailed):", err)
+	// 	return nil, ErrGetUpdatesStatsFailed
+	// }
 
-	if err := api.enforceRolloutPolicy(instance, group, updatesStats); err != nil {
-		return nil, err
-	}
+	// if err := api.enforceRolloutPolicy(instance, group, updatesStats); err != nil {
+	// 	return nil, err
+	// }
 
-	if err := api.grantUpdate(instance.ID, appID, group.Channel.Package.Version); err != nil {
-		logger.Error("GetUpdatePackage - grantUpdate error (propagates as ErrGrantingUpdate):", err)
-		return nil, ErrGrantingUpdate
-	}
+	// if err := api.grantUpdate(instance.ID, appID, group.Channel.Package.Version); err != nil {
+	// 	logger.Error("GetUpdatePackage - grantUpdate error (propagates as ErrGrantingUpdate):", err)
+	// 	return nil, ErrGrantingUpdate
+	// }
 
-	if updatesStats.UpdatesToCurrentVersionGranted == 0 {
-		if err := api.newGroupActivityEntry(activityRolloutStarted, activityInfo, group.Channel.Package.Version, appID, group.ID); err != nil {
-			logger.Error("GetUpdatePackage - could not add new group activity entry", err)
-		}
-	}
+	// if updatesStats.UpdatesToCurrentVersionGranted == 0 {
+	// 	if err := api.newGroupActivityEntry(activityRolloutStarted, activityInfo, group.Channel.Package.Version, appID, group.ID); err != nil {
+	// 		logger.Error("GetUpdatePackage - could not add new group activity entry", err)
+	// 	}
+	// }
 
-	if !group.RolloutInProgress {
-		if err := api.setGroupRolloutInProgress(groupID, true); err != nil {
-			logger.Error("GetUpdatePackage - could not set rollout progress", err)
-		}
-	}
+	// if !group.RolloutInProgress {
+	// 	if err := api.setGroupRolloutInProgress(groupID, true); err != nil {
+	// 		logger.Error("GetUpdatePackage - could not set rollout progress", err)
+	// 	}
+	// }
 
-	if err := api.updateInstanceStatus(instance.ID, appID, InstanceStatusUpdateGranted); err != nil {
-		logger.Error("GetUpdatePackage - could not update instance status", err)
-	}
+	// if err := api.updateInstanceStatus(instance.ID, appID, InstanceStatusUpdateGranted); err != nil {
+	// 	logger.Error("GetUpdatePackage - could not update instance status", err)
+	// }
 
 	return group.Channel.Package, nil
 }
 
-// enforceRolloutPolicy validates if an update should be provided to the
-// requesting instance based on the group rollout policy and the current status
-// of the updates taking place in the group.
-func (api *API) enforceRolloutPolicy(instance *Instance, group *Group, updatesStats *UpdatesStats) error {
-	appID := instance.Application.ApplicationID
+// // enforceRolloutPolicy validates if an update should be provided to the
+// // requesting instance based on the group rollout policy and the current status
+// // of the updates taking place in the group.
+// func (api *API) enforceRolloutPolicy(instance *Instance, group *Group, updatesStats *UpdatesStats) error {
+// 	appID := instance.Application.ApplicationID
 
-	if !group.PolicyUpdatesEnabled {
-		return ErrUpdatesDisabled
-	}
+// 	if !group.PolicyUpdatesEnabled {
+// 		return ErrUpdatesDisabled
+// 	}
 
-	if group.PolicyOfficeHours && !inOfficeHoursNow(group.PolicyTimezone.String) {
-		return ErrUpdatesDisabled
-	}
+// 	if group.PolicyOfficeHours && !inOfficeHoursNow(group.PolicyTimezone.String) {
+// 		return ErrUpdatesDisabled
+// 	}
 
-	effectiveMaxUpdates := group.PolicyMaxUpdatesPerPeriod
-	if group.PolicySafeMode && updatesStats.UpdatesToCurrentVersionAttempted == 0 {
-		effectiveMaxUpdates = 1
-	}
+// 	effectiveMaxUpdates := group.PolicyMaxUpdatesPerPeriod
+// 	if group.PolicySafeMode && updatesStats.UpdatesToCurrentVersionAttempted == 0 {
+// 		effectiveMaxUpdates = 1
+// 	}
 
-	if updatesStats.UpdatesGrantedInLastPeriod >= effectiveMaxUpdates {
-		if err := api.updateInstanceStatus(instance.ID, appID, InstanceStatusOnHold); err != nil {
-			logger.Error("enforceRolloutPolicy - could not update instance status", err)
-		}
-		return ErrMaxUpdatesPerPeriodLimitReached
-	}
+// 	if updatesStats.UpdatesGrantedInLastPeriod >= effectiveMaxUpdates {
+// 		if err := api.updateInstanceStatus(instance.ID, appID, InstanceStatusOnHold); err != nil {
+// 			logger.Error("enforceRolloutPolicy - could not update instance status", err)
+// 		}
+// 		return ErrMaxUpdatesPerPeriodLimitReached
+// 	}
 
-	if updatesStats.UpdatesInProgress >= effectiveMaxUpdates {
-		if err := api.updateInstanceStatus(instance.ID, appID, InstanceStatusOnHold); err != nil {
-			logger.Error("enforceRolloutPolicy - could not update instance status", err)
-		}
-		return ErrMaxConcurrentUpdatesLimitReached
-	}
+// 	if updatesStats.UpdatesInProgress >= effectiveMaxUpdates {
+// 		if err := api.updateInstanceStatus(instance.ID, appID, InstanceStatusOnHold); err != nil {
+// 			logger.Error("enforceRolloutPolicy - could not update instance status", err)
+// 		}
+// 		return ErrMaxConcurrentUpdatesLimitReached
+// 	}
 
-	if group.PolicySafeMode && updatesStats.UpdatesTimedOut >= effectiveMaxUpdates {
-		if group.PolicyUpdatesEnabled {
-			if err := api.disableUpdates(group.ID); err != nil {
-				logger.Error("enforceRolloutPolicy - could not disable updates", err)
-			}
-		}
-		if err := api.updateInstanceStatus(instance.ID, appID, InstanceStatusOnHold); err != nil {
-			logger.Error("enforceRolloutPolicy - could not update instance status", err)
-		}
-		return ErrMaxTimedOutUpdatesLimitReached
-	}
+// 	if group.PolicySafeMode && updatesStats.UpdatesTimedOut >= effectiveMaxUpdates {
+// 		if group.PolicyUpdatesEnabled {
+// 			if err := api.disableUpdates(group.ID); err != nil {
+// 				logger.Error("enforceRolloutPolicy - could not disable updates", err)
+// 			}
+// 		}
+// 		if err := api.updateInstanceStatus(instance.ID, appID, InstanceStatusOnHold); err != nil {
+// 			logger.Error("enforceRolloutPolicy - could not update instance status", err)
+// 		}
+// 		return ErrMaxTimedOutUpdatesLimitReached
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
-// grantUpdate grants an update for the provided instance in the context of the
-// given application.
-func (api *API) grantUpdate(instanceID, appID, version string) error {
-	query, _, err := goqu.Update("instance_application").
-		Set(goqu.Record{"last_update_granted_ts": nowUTC(),
-			"last_update_version": version,
-			"update_in_progress":  true}).
-		Where(goqu.C("instance_id").Eq(instanceID), goqu.C("application_id").Eq(appID)).
-		ToSQL()
-	if err != nil {
-		return err
-	}
-	_, err = api.db.Exec(query)
+// // grantUpdate grants an update for the provided instance in the context of the
+// // given application.
+// func (api *API) grantUpdate(instanceID, appID, version string) error {
+// 	query, _, err := goqu.Update("instance_application").
+// 		Set(goqu.Record{"last_update_granted_ts": nowUTC(),
+// 			"last_update_version": version,
+// 			"update_in_progress":  true}).
+// 		Where(goqu.C("instance_id").Eq(instanceID), goqu.C("application_id").Eq(appID)).
+// 		ToSQL()
+// 	if err != nil {
+// 		return err
+// 	}
+// 	_, err = api.db.Exec(query)
 
-	return err
-}
+// 	return err
+// }
 
-// inOfficeHoursNow checks if the provided timezone is now in office hours.
-func inOfficeHoursNow(tz string) bool {
-	if tz == "" {
-		return false
-	}
+// // inOfficeHoursNow checks if the provided timezone is now in office hours.
+// func inOfficeHoursNow(tz string) bool {
+// 	if tz == "" {
+// 		return false
+// 	}
 
-	location, err := time.LoadLocation(tz)
-	if err != nil {
-		return false
-	}
+// 	location, err := time.LoadLocation(tz)
+// 	if err != nil {
+// 		return false
+// 	}
 
-	now := time.Now().In(location)
-	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
-		return false
-	}
-	if now.Hour() < 9 || now.Hour() >= 17 {
-		return false
-	}
+// 	now := time.Now().In(location)
+// 	if now.Weekday() == time.Saturday || now.Weekday() == time.Sunday {
+// 		return false
+// 	}
+// 	if now.Hour() < 9 || now.Hour() >= 17 {
+// 		return false
+// 	}
 
-	return true
-}
+// 	return true
+// }

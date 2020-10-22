@@ -132,15 +132,15 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 			respApp.AddPing()
 		}
 
-		// if reqApp.UpdateCheck != nil {
-		// 	pkg, err := h.crAPI.GetUpdatePackage(reqApp.MachineID, ip, reqApp.Version, reqApp.ID, group)
-		// 	if err != nil && err != api.ErrNoUpdatePackageAvailable {
-		// 		respApp.Status = h.getStatusMessage(err)
-		// 		respApp.AddUpdateCheck(omahaSpec.UpdateInternalError)
-		// 	} else {
-		// 		h.prepareUpdateCheck(respApp, pkg)
-		// 	}
-		// }
+		if reqApp.UpdateCheck != nil {
+			pkg, err := h.crAPI.GetUpdatePackage(reqApp.MachineID, ip, reqApp.Version, reqApp.ID, group)
+			if err != nil && err != api.ErrNoUpdatePackageAvailable {
+				respApp.Status = h.getStatusMessage(err)
+				respApp.AddUpdateCheck(omahaSpec.UpdateInternalError)
+			} else {
+				h.prepareUpdateCheck(respApp, pkg)
+			}
+		}
 	}
 
 	return omahaResp, nil
