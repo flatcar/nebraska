@@ -42,23 +42,23 @@ check-backend-with-container: container_id
 
 .PHONY: frontend
 frontend: frontend-install
-	cd frontend && yarn run build
+	cd frontend && npm run build
 
 .PHONY: frontend-watch
 frontend-watch:
-	cd frontend && yarn start
+	cd frontend && npm start
 
 .PHONY: frontend-install
 frontend-install:
-	cd frontend && yarn install
+	cd frontend && npm install
 
 .PHONY: frontend-test
 frontend-test:
-	cd frontend && yarn run test
+	cd frontend && npm run test
 
 .PHONY: frontend-lint
 frontend-lint:
-	cd frontend && yarn run lint
+	cd frontend && npm run lint
 
 .PHONY: backend
 backend: run-generators backend-code-checks build-backend-binary
