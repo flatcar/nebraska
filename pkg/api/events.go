@@ -92,7 +92,7 @@ func (api *API) RegisterEvent(instanceID, appID, groupID string, etype, eresult 
 	}
 	instance, err := api.GetInstance(instanceID, appID)
 	if err != nil {
-		logger.Error("RegisterEvent - could not get instance (propagates as ErrInvalidInstance)", err)
+		logger.Warn("RegisterEvent - could not get instance (propagates as ErrInvalidInstance)", err)
 		return ErrInvalidInstance
 	}
 	if instance.Application.ApplicationID != appID {

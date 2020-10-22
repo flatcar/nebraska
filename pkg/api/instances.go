@@ -357,27 +357,27 @@ func (api *API) updateInstanceStatus(instanceID, appID string, newStatus int) er
 		insertData["update_in_progress"] = false
 	}
 
-	var lastUpdateVersion, groupID null.String
 	updateQuery, _, err := goqu.Update("instance_application").
 		Set(insertData).
 		Where(goqu.C("instance_id").Eq(instanceID), goqu.C("application_id").Eq(appID)).
-		Returning("last_update_version", "group_id").
+		Returning("instance_id", "application_id", "last_update_version", "group_id").
 		ToSQL()
 	if err != nil {
 		return err
 	}
-	err = api.db.QueryRow(updateQuery).Scan(&lastUpdateVersion, &groupID)
-	if err != nil {
-		return err
-	}
+
+	const helperTableName = "inst_app"
 	insertQuery, _, err := goqu.Insert("instance_status_history").
-		Cols("status", "version", "instance_id", "application_id", "group_id").
-		Vals(goqu.Vals{newStatus, lastUpdateVersion, instanceID, appID, groupID}).
+		Cols("status", "instance_id", "application_id", "version", "group_id").
+		FromQuery(goqu.From(goqu.L(helperTableName)).
+			Select(goqu.V(2).As("version"), goqu.L("*"))).
 		ToSQL()
+
 	if err != nil {
 		return err
 	}
-	_, err = api.db.Exec(insertQuery)
+
+	_, err = api.db.Exec(fmt.Sprintf("WITH %1s as (%2s) %3s", helperTableName, updateQuery, insertQuery))
 	return err
 }
 
