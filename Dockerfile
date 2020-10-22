@@ -4,7 +4,7 @@ ENV GOPATH=/go \
     GOPROXY=https://proxy.golang.org
 
 RUN apk update && \
-	apk add git go nodejs npm ca-certificates make musl-dev bash
+	apk add git go nodejs npm yarn ca-certificates make musl-dev bash
 
 COPY . /go/src/github.com/kinvolk/nebraska/
 
