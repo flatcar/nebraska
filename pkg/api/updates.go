@@ -136,9 +136,9 @@ func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID,
 	// 	}
 	// }
 
-	// if err := api.updateInstanceStatus(instance.ID, appID, InstanceStatusUpdateGranted); err != nil {
-	// 	logger.Error("GetUpdatePackage - could not update instance status", err)
-	// }
+	if err := api.updateInstanceStatus(instance.ID, appID, InstanceStatusUpdateGranted); err != nil {
+		logger.Error("GetUpdatePackage - could not update instance status", err)
+	}
 
 	return group.Channel.Package, nil
 }
