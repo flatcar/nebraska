@@ -1,4 +1,4 @@
-import { Box, Divider } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
 import LayersOutlinedIcon from '@material-ui/icons/LayersOutlined';
@@ -60,7 +60,7 @@ function ApplicationItemGroupItem(props) {
             </Link> : instanceCountContent}
         </Box>
       </Box>
-      <ChannelItem channel={group.channel} isAppView/>
+      {group.channel && <ChannelItem channel={group.channel} isAppView/>}
     </>
   );
 }
