@@ -357,27 +357,33 @@ func (api *API) updateInstanceStatus(instanceID, appID string, newStatus int) er
 		insertData["update_in_progress"] = false
 	}
 
-	var lastUpdateVersion, groupID null.String
+	// We update the instance_application in this query but use it together with the insert below
 	updateQuery, _, err := goqu.Update("instance_application").
 		Set(insertData).
 		Where(goqu.C("instance_id").Eq(instanceID), goqu.C("application_id").Eq(appID)).
-		Returning("last_update_version", "group_id").
+		Returning("instance_id", "application_id", "last_update_version", "group_id").
 		ToSQL()
 	if err != nil {
 		return err
 	}
-	err = api.db.QueryRow(updateQuery).Scan(&lastUpdateVersion, &groupID)
-	if err != nil {
-		return err
-	}
+
+	const helperTableName = "inst_app"
+
+	// This insert is used with values returned from the update call, so we do one transaction
+	// in the DB only.
 	insertQuery, _, err := goqu.Insert("instance_status_history").
 		Cols("status", "version", "instance_id", "application_id", "group_id").
-		Vals(goqu.Vals{newStatus, lastUpdateVersion, instanceID, appID, groupID}).
+		FromQuery(goqu.From(goqu.L(helperTableName)).
+			Select(goqu.V(newStatus).As("status"), goqu.C("last_update_version").As("version"), goqu.C("instance_id"), goqu.C("application_id"), goqu.C("group_id"))).
 		ToSQL()
+
 	if err != nil {
 		return err
 	}
-	_, err = api.db.Exec(insertQuery)
+
+	// @todo: Unfortunately goqu doesn't seem to support "WITH" statements when they are used
+	// together with an "INSERT"; hence this semi-manual use of SQL below.
+	_, err = api.db.Exec(fmt.Sprintf("WITH %1s AS (%2s) %3s", helperTableName, updateQuery, insertQuery))
 	return err
 }
 
