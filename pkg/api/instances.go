@@ -344,6 +344,12 @@ func (api *API) updateInstanceStatus(instanceID, appID string, newStatus int) er
 	if err != nil {
 		return err
 	}
+	return api.updateInstanceObjStatus(instance, newStatus)
+}
+
+func (api *API) updateInstanceObjStatus(instance *Instance, newStatus int) error {
+	appID := instance.Application.ApplicationID
+
 	if instance.Application.Status.Valid && instance.Application.Status.Int64 == int64(newStatus) {
 		return nil
 	}
@@ -360,7 +366,7 @@ func (api *API) updateInstanceStatus(instanceID, appID string, newStatus int) er
 	// We update the instance_application in this query but use it together with the insert below
 	updateQuery, _, err := goqu.Update("instance_application").
 		Set(insertData).
-		Where(goqu.C("instance_id").Eq(instanceID), goqu.C("application_id").Eq(appID)).
+		Where(goqu.C("instance_id").Eq(instance.ID), goqu.C("application_id").Eq(appID)).
 		Returning("instance_id", "application_id", "last_update_version", "group_id").
 		ToSQL()
 	if err != nil {
