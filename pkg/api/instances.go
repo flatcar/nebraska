@@ -357,26 +357,22 @@ func (api *API) updateInstanceStatus(instanceID, appID string, newStatus int) er
 		insertData["update_in_progress"] = false
 	}
 
-	var lastUpdateVersion, groupID null.String
-	updateQuery, _, err := goqu.Update("instance_application").
-		Set(insertData).
-		Where(goqu.C("instance_id").Eq(instanceID), goqu.C("application_id").Eq(appID)).
-		Returning("last_update_version", "group_id").
-		ToSQL()
-	if err != nil {
-		return err
-	}
-	err = api.db.QueryRow(updateQuery).Scan(&lastUpdateVersion, &groupID)
-	if err != nil {
-		return err
-	}
+	// This insert is used with values returned from the update query that's executed together,
+	// so we do one transaction in the DB only.
 	insertQuery, _, err := goqu.Insert("instance_status_history").
 		Cols("status", "version", "instance_id", "application_id", "group_id").
-		Vals(goqu.Vals{newStatus, lastUpdateVersion, instanceID, appID, groupID}).
+		With("inst_app", goqu.Update("instance_application").
+			Set(insertData).
+			Where(goqu.C("instance_id").Eq(instance.ID), goqu.C("application_id").Eq(appID)).
+			Returning("instance_id", "application_id", "last_update_version", "group_id")).
+		FromQuery(goqu.From(goqu.L("inst_app")).
+			Select(goqu.V(newStatus).As("status"), goqu.C("last_update_version").As("version"), goqu.C("instance_id"), goqu.C("application_id"), goqu.C("group_id"))).
 		ToSQL()
+
 	if err != nil {
 		return err
 	}
+
 	_, err = api.db.Exec(insertQuery)
 	return err
 }
