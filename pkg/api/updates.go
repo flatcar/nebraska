@@ -86,7 +86,7 @@ func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID,
 	for _, blacklistedChannelID := range group.Channel.Package.ChannelsBlacklist {
 		if blacklistedChannelID == group.Channel.ID {
 			if updateAlreadyGranted {
-				if err := api.updateInstanceStatus(instance.ID, appID, InstanceStatusComplete); err != nil {
+				if err := api.updateInstanceObjStatus(instance, InstanceStatusComplete); err != nil {
 					logger.Error("GetUpdatePackage - could not update instance status", err)
 				}
 			}
@@ -98,7 +98,7 @@ func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID,
 	packageSemver, _ := semver.Make(group.Channel.Package.Version)
 	if !instanceSemver.LT(packageSemver) {
 		if updateAlreadyGranted {
-			if err := api.updateInstanceStatus(instance.ID, appID, InstanceStatusComplete); err != nil {
+			if err := api.updateInstanceObjStatus(instance, InstanceStatusComplete); err != nil {
 				logger.Error("GetUpdatePackage - could not update instance status", err)
 			}
 		}
@@ -136,7 +136,7 @@ func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID,
 		}
 	}
 
-	if err := api.updateInstanceStatus(instance.ID, appID, InstanceStatusUpdateGranted); err != nil {
+	if err := api.updateInstanceObjStatus(instance, InstanceStatusUpdateGranted); err != nil {
 		logger.Error("GetUpdatePackage - could not update instance status", err)
 	}
 

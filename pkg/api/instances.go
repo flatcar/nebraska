@@ -344,6 +344,12 @@ func (api *API) updateInstanceStatus(instanceID, appID string, newStatus int) er
 	if err != nil {
 		return err
 	}
+	return api.updateInstanceObjStatus(instance, newStatus)
+}
+
+func (api *API) updateInstanceObjStatus(instance *Instance, newStatus int) error {
+	appID := instance.Application.ApplicationID
+
 	if instance.Application.Status.Valid && instance.Application.Status.Int64 == int64(newStatus) {
 		return nil
 	}
