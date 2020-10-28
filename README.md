@@ -101,6 +101,10 @@ In the `updaters/lib` directory there are some sample helpers that can be useful
 
 In the `updaters/examples` you'll find a sample minimal application built using [grace](https://github.com/facebookgo/grace) that is able to update itself using Nebraska in a graceful way.
 
+## Code of Conduct
+
+Please refer to the Kinvolk [Code of Conduct](https://github.com/kinvolk/contribution/blob/master/CODE_OF_CONDUCT.md).
+
 ## Contributing
 
 Nebraska is an Open Source project and contributions are welcome. It is usually a good idea to discuss new features or major changes before submitting any code. For doing that, please file a new [issue](https://github.com/Nebraska/Nebraska/issues).
@@ -110,6 +114,12 @@ To build the whole project (backend + frontend), you can run:
     make
 
 Below you will find some introductory notes that should point you in the right direction to start playing with the Nebraska source code.
+
+### Commit guidelines
+
+For the general guidelines on making PRs/commits easier to review, please check
+out Kinvolk's
+[contribution guidelines on git](https://github.com/kinvolk/contribution/tree/master/topics/git.md).
 
 ### Backend
 
