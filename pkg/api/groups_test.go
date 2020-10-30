@@ -200,7 +200,10 @@ func TestGetVersionCountTimeline(t *testing.T) {
 	instanceID := uuid.New().String()
 
 	_, _ = a.RegisterInstance(instanceID, "10.0.0.1", version, tApp.ID, tGroup.ID)
-	_ = a.grantUpdate(instanceID, tApp.ID, version)
+
+	instance, err := a.GetInstance(instanceID, tApp.ID)
+	assert.NoError(t, err)
+	_ = a.grantUpdate(instance, version)
 	_ = a.updateInstanceStatus(instanceID, tApp.ID, InstanceStatusComplete)
 
 	// get VersionCountTimeline from 1 hr before now
@@ -243,10 +246,18 @@ func TestGetStatusCountTimeline(t *testing.T) {
 	instanceID2 := uuid.New().String()
 
 	_, _ = a.RegisterInstance(instanceID1, "10.0.0.1", version, tApp.ID, tGroup.ID)
-	_ = a.grantUpdate(instanceID1, tApp.ID, version)
+
+	instance1, err := a.GetInstance(instanceID1, tApp.ID)
+	assert.NoError(t, err)
+
+	_ = a.grantUpdate(instance1, version)
 	_ = a.updateInstanceStatus(instanceID1, tApp.ID, InstanceStatusComplete)
 	_, _ = a.RegisterInstance(instanceID2, "10.0.0.2", version, tApp.ID, tGroup.ID)
-	_ = a.grantUpdate(instanceID2, tApp.ID, version)
+
+	instance2, err := a.GetInstance(instanceID2, tApp.ID)
+	assert.NoError(t, err)
+
+	_ = a.grantUpdate(instance2, version)
 	_ = a.updateInstanceStatus(instanceID2, tApp.ID, InstanceStatusDownloading)
 
 	// get StatusCountTimeline from 1 hr before now

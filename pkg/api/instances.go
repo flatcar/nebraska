@@ -393,14 +393,16 @@ func (api *API) updateInstanceStatus(instanceID, appID string, newStatus int) er
 	return api.updateInstanceObjStatus(instance, newStatus)
 }
 
-func (api *API) updateInstanceObjStatus(instance *Instance, newStatus int) error {
+func (api *API) updateInstanceData(instance *Instance, data *map[string]interface{}) error {
 	appID := instance.Application.ApplicationID
+
+	insertData := *data
+	newStatus := insertData["status"].(int)
 
 	if instance.Application.Status.Valid && instance.Application.Status.Int64 == int64(newStatus) {
 		return nil
 	}
-	var insertData = make(map[string]interface{})
-	insertData["status"] = newStatus
+
 	if newStatus == InstanceStatusComplete {
 		insertData["version"] = goqu.L("CASE WHEN last_update_version IS NOT NULL THEN last_update_version ELSE version END")
 	}
@@ -437,6 +439,13 @@ func (api *API) updateInstanceObjStatus(instance *Instance, newStatus int) error
 	// together with an "INSERT"; hence this semi-manual use of SQL below.
 	_, err = api.db.Exec(fmt.Sprintf("WITH %1s AS (%2s) %3s", helperTableName, updateQuery, insertQuery))
 	return err
+}
+
+func (api *API) updateInstanceObjStatus(instance *Instance, newStatus int) error {
+	insertData := make(map[string]interface{})
+	insertData["status"] = newStatus
+
+	return api.updateInstanceData(instance, &insertData)
 }
 
 // instanceAppQuery returns a SelectDataset prepared to return the app status
