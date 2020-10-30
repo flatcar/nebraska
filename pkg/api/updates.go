@@ -7,6 +7,10 @@ import (
 	"github.com/blang/semver"
 )
 
+const (
+	MaxParallelUpdates = 900000
+)
+
 var (
 	// ErrRegisterInstanceFailed indicates that the instance registration did
 	// not succeed.
@@ -108,13 +112,7 @@ func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID,
 		return group.Channel.Package, nil
 	}
 
-	updatesStats, err := api.getGroupUpdatesStats(group)
-	if err != nil {
-		logger.Error("GetUpdatePackage - getGroupUpdatesStats error (propagates as ErrGetUpdatesStatsFailed):", err)
-		return nil, ErrGetUpdatesStatsFailed
-	}
-
-	if err := api.enforceRolloutPolicy(instance, group, updatesStats); err != nil {
+	if err := api.enforceRolloutPolicy(instance, group); err != nil {
 		return nil, err
 	}
 
@@ -142,7 +140,7 @@ func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID,
 // enforceRolloutPolicy validates if an update should be provided to the
 // requesting instance based on the group rollout policy and the current status
 // of the updates taking place in the group.
-func (api *API) enforceRolloutPolicy(instance *Instance, group *Group, updatesStats *UpdatesStats) error {
+func (api *API) enforceRolloutPolicy(instance *Instance, group *Group) error {
 	appID := instance.Application.ApplicationID
 
 	if !group.PolicyUpdatesEnabled {
@@ -154,6 +152,18 @@ func (api *API) enforceRolloutPolicy(instance *Instance, group *Group, updatesSt
 	}
 
 	effectiveMaxUpdates := group.PolicyMaxUpdatesPerPeriod
+
+	// If no policy enforcement is needed, then we skip getting the update stats below.
+	if effectiveMaxUpdates >= MaxParallelUpdates && !group.PolicySafeMode {
+		return nil
+	}
+
+	updatesStats, err := api.getGroupUpdatesStats(group)
+	if err != nil {
+		logger.Error("GetUpdatePackage - getGroupUpdatesStats error (propagates as ErrGetUpdatesStatsFailed):", err)
+		return ErrGetUpdatesStatsFailed
+	}
+
 	if group.PolicySafeMode && updatesStats.UpdatesToCurrentVersionAttempted == 0 {
 		effectiveMaxUpdates = 1
 	}
