@@ -111,6 +111,66 @@ func (api *API) RegisterInstance(instanceID, instanceIP, instanceVersion, appID,
 	if appID, groupID, err = api.validateApplicationAndGroup(appID, groupID); err != nil {
 		return nil, err
 	}
+
+	// We want to avoid having to create an unneeded DB transaction, so we check whether it
+	// is necessary (we need it when writing into the two tables, instance and
+	// instance_application).
+
+	updateInstance := true
+	updateInstanceApplication := true
+
+	instance, err := api.GetInstance(instanceID, appID)
+	if err == nil {
+		// The instance exists, so we just update it if its IP changed
+		updateInstance = instance.IP != instanceIP
+
+		recent := nowUTC().Add(-5 * time.Minute)
+
+		// And we only update the instance_application if the latest registry is outdated or
+		// older than what we establish as recent.
+		updateInstanceApplication = instance.Application.LastCheckForUpdates.UTC().Before(recent) ||
+			instance.Application.Version != instanceVersion || instance.Application.GroupID.String != groupID
+
+		// Skip updating anything unnecessary
+		if !updateInstance && !updateInstanceApplication {
+			return instance, nil
+		}
+	}
+
+	upsertInstance, _, err := goqu.Insert("instance").
+		Cols("id", "ip").
+		Vals(goqu.Vals{instanceID, instanceIP}).
+		OnConflict(goqu.DoUpdate("id", goqu.Record{"id": instanceID, "ip": instanceIP})).
+		ToSQL()
+	if err != nil {
+		return nil, err
+	}
+
+	upsertInstanceApplication, _, err := goqu.Insert("instance_application").
+		Cols("instance_id", "application_id", "group_id", "version", "last_check_for_updates").
+		Vals(goqu.Vals{instanceID, appID, groupID, instanceVersion, nowUTC()}).
+		OnConflict(goqu.DoUpdate("ON CONSTRAINT instance_application_pkey", goqu.Record{"group_id": groupID, "version": instanceVersion, "last_check_for_updates": nowUTC()})).
+		ToSQL()
+	if err != nil {
+		return nil, err
+	}
+
+	// If we only have one table to update, then we just do that here directly and avoid the
+	// transaction below.
+	if updateInstance != updateInstanceApplication {
+		queryToExec := upsertInstance
+		if updateInstanceApplication {
+			queryToExec = upsertInstanceApplication
+		}
+		_, err := api.db.Exec(queryToExec)
+		if err != nil {
+			return nil, err
+		}
+
+		return instance, nil
+	}
+
+	// If this is an instance we haven't seen yet, then we write into instance + instance_application
 	tx, err := api.db.Begin()
 	if err != nil {
 		return nil, err
@@ -120,15 +180,8 @@ func (api *API) RegisterInstance(instanceID, instanceIP, instanceVersion, appID,
 			logger.Error("RegisterInstance - could not roll back", err)
 		}
 	}()
-	query, _, err := goqu.Insert("instance").
-		Cols("id", "ip").
-		Vals(goqu.Vals{instanceID, instanceIP}).
-		OnConflict(goqu.DoUpdate("id", goqu.Record{"id": instanceID, "ip": instanceIP})).
-		ToSQL()
-	if err != nil {
-		return nil, err
-	}
-	result, err := tx.Exec(query)
+
+	result, err := tx.Exec(upsertInstance)
 	if err != nil {
 		return nil, err
 	}
@@ -139,15 +192,8 @@ func (api *API) RegisterInstance(instanceID, instanceIP, instanceVersion, appID,
 	if rowsAffected == 0 {
 		return nil, fmt.Errorf("RegisterInstance instance insert failed")
 	}
-	upsertQuery, _, err := goqu.Insert("instance_application").
-		Cols("instance_id", "application_id", "group_id", "version", "last_check_for_updates").
-		Vals(goqu.Vals{instanceID, appID, groupID, instanceVersion, nowUTC()}).
-		OnConflict(goqu.DoUpdate("ON CONSTRAINT instance_application_pkey", goqu.Record{"group_id": groupID, "version": instanceVersion, "last_check_for_updates": nowUTC()})).
-		ToSQL()
-	if err != nil {
-		return nil, err
-	}
-	result, err = tx.Exec(upsertQuery)
+
+	result, err = tx.Exec(upsertInstanceApplication)
 	if err != nil {
 		return nil, err
 	}
