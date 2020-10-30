@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/blang/semver"
-	"github.com/doug-martin/goqu/v9"
 )
 
 var (
@@ -119,9 +118,8 @@ func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID,
 		return nil, err
 	}
 
-	if err := api.grantUpdate(instance.ID, appID, group.Channel.Package.Version); err != nil {
+	if err := api.grantUpdate(instance, group.Channel.Package.Version); err != nil {
 		logger.Error("GetUpdatePackage - grantUpdate error (propagates as ErrGrantingUpdate):", err)
-		return nil, ErrGrantingUpdate
 	}
 
 	if updatesStats.UpdatesToCurrentVersionGranted == 0 {
@@ -134,10 +132,6 @@ func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID,
 		if err := api.setGroupRolloutInProgress(groupID, true); err != nil {
 			logger.Error("GetUpdatePackage - could not set rollout progress", err)
 		}
-	}
-
-	if err := api.updateInstanceObjStatus(instance, InstanceStatusUpdateGranted); err != nil {
-		logger.Error("GetUpdatePackage - could not update instance status", err)
 	}
 
 	return group.Channel.Package, nil
@@ -193,19 +187,14 @@ func (api *API) enforceRolloutPolicy(instance *Instance, group *Group, updatesSt
 
 // grantUpdate grants an update for the provided instance in the context of the
 // given application.
-func (api *API) grantUpdate(instanceID, appID, version string) error {
-	query, _, err := goqu.Update("instance_application").
-		Set(goqu.Record{"last_update_granted_ts": nowUTC(),
-			"last_update_version": version,
-			"update_in_progress":  true}).
-		Where(goqu.C("instance_id").Eq(instanceID), goqu.C("application_id").Eq(appID)).
-		ToSQL()
-	if err != nil {
-		return err
-	}
-	_, err = api.db.Exec(query)
+func (api *API) grantUpdate(instance *Instance, version string) error {
+	instanceData := make(map[string]interface{})
+	instanceData["last_update_granted_ts"] = nowUTC()
+	instanceData["last_update_version"] = version
+	instanceData["status"] = InstanceStatusUpdateGranted
+	instanceData["update_in_progress"] = true
 
-	return err
+	return api.updateInstanceData(instance, instanceData)
 }
 
 // inOfficeHoursNow checks if the provided timezone is now in office hours.
