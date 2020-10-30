@@ -151,6 +151,53 @@ func (api *API) activityQuery(teamID string, p ActivityQueryParams) *goqu.Select
 	return query
 }
 
+func (api *API) hasRecentActivity(class int, p ActivityQueryParams) bool {
+	recent := time.Now().UTC().Add(-24 * time.Hour)
+
+	query := goqu.From("activity").
+		Select("*").
+		Where(goqu.C("class").Eq(class)).
+		Where(goqu.C("created_ts").Gt(recent))
+
+	if p.Severity != 0 {
+		query = query.Where(goqu.C("severity").Eq(p.Severity))
+	}
+
+	if p.Version != "" {
+		query = query.Where(goqu.C("version").Eq(p.Version))
+	}
+
+	if p.GroupID != "" {
+		query = query.Where(goqu.C("group_id").Eq(p.GroupID))
+	}
+
+	if p.AppID != "" {
+		query = query.Where(goqu.I("application_id").Eq(p.AppID))
+	}
+
+	if p.ChannelID != "" {
+		query = query.Where(goqu.I("channel_id").Eq(p.ChannelID))
+	}
+
+	if p.InstanceID != "" {
+		query = query.Where(goqu.C("instance_id").Eq(p.InstanceID))
+	} else {
+		query = query.Where(goqu.L(ignoreFakeInstanceCondition("instance_id")))
+	}
+
+	sql, _, err := query.ToSQL()
+	if err != nil {
+		return false
+	}
+
+	rows, err := api.db.Queryx(sql)
+	if err != nil {
+		return false
+	}
+	defer rows.Close()
+	return rows.Next()
+}
+
 // newGroupActivityEntry creates a new activity entry related to a specific
 // group.
 func (api *API) newGroupActivityEntry(class int, severity int, version, appID, groupID string) error {

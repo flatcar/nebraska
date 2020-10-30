@@ -118,12 +118,14 @@ func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID,
 		return nil, err
 	}
 
-	if err := api.grantUpdate(instance, group.Channel.Package.Version); err != nil {
+	version := group.Channel.Package.Version
+
+	if err := api.grantUpdate(instance, version); err != nil {
 		logger.Error("GetUpdatePackage - grantUpdate error (propagates as ErrGrantingUpdate):", err)
 	}
 
-	if updatesStats.UpdatesToCurrentVersionGranted == 0 {
-		if err := api.newGroupActivityEntry(activityRolloutStarted, activityInfo, group.Channel.Package.Version, appID, group.ID); err != nil {
+	if !api.hasRecentActivity(activityRolloutStarted, ActivityQueryParams{Severity: activityInfo, AppID: appID, Version: version, GroupID: group.ID}) {
+		if err := api.newGroupActivityEntry(activityRolloutStarted, activityInfo, version, appID, group.ID); err != nil {
 			logger.Error("GetUpdatePackage - could not add new group activity entry", err)
 		}
 	}
