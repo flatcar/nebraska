@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"time"
+	"context"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/doug-martin/goqu/v9/exp"
@@ -435,9 +436,12 @@ func (api *API) updateInstanceData(instance *Instance, data *map[string]interfac
 		return err
 	}
 
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+    defer cancel()
+
 	// @todo: Unfortunately goqu doesn't seem to support "WITH" statements when they are used
 	// together with an "INSERT"; hence this semi-manual use of SQL below.
-	_, err = api.db.Exec(fmt.Sprintf("WITH %1s AS (%2s) %3s", helperTableName, updateQuery, insertQuery))
+	_, err = api.db.ExecContext(ctx, fmt.Sprintf("WITH %1s AS (%2s) %3s", helperTableName, updateQuery, insertQuery))
 	return err
 }
 
