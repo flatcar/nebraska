@@ -119,6 +119,10 @@ func New(options ...func(*API) error) (*API, error) {
 	api.db.SetMaxIdleConns(maxIdleConns)
 	api.db.SetConnMaxLifetime(time.Duration(connMaxLifetime) * time.Second)
 
+	api.readDb.SetMaxOpenConns(maxOpenConns)
+	api.readDb.SetMaxIdleConns(maxIdleConns)
+	api.readDb.SetConnMaxLifetime(time.Duration(connMaxLifetime) * time.Second)
+
 	for _, option := range options {
 		err := option(api)
 		if err != nil {
