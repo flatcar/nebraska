@@ -73,7 +73,7 @@ func (api *API) GetActivity(teamID string, p ActivityQueryParams) ([]*Activity, 
 	if err != nil {
 		return nil, err
 	}
-	rows, err := api.db.Queryx(query)
+	rows, err := api.readDb.Queryx(query)
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +109,7 @@ func (api *API) activityQuery(teamID string, p ActivityQueryParams) *goqu.Select
 		end = time.Now().UTC()
 	}
 	query := goqu.From(goqu.L(`
-	activity AS a 
+	activity AS a
 	INNER JOIN application AS app ON (a.application_id = app.id)
 	LEFT JOIN groups AS g ON (a.group_id = g.id)
 	LEFT JOIN channel AS c ON (a.channel_id = c.id)
@@ -190,7 +190,7 @@ func (api *API) hasRecentActivity(class int, p ActivityQueryParams) bool {
 		return false
 	}
 
-	rows, err := api.db.Queryx(sql)
+	rows, err := api.readDb.Queryx(sql)
 	if err == nil {
 		rows.Close()
 	}

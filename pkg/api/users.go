@@ -40,7 +40,7 @@ func (api *API) AddUser(user *User) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = api.db.QueryRowx(query).StructScan(&user)
+	err = api.readDb.QueryRowx(query).StructScan(&user)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (api *API) GetUser(username string) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = api.db.QueryRowx(query).StructScan(&user)
+	err = api.readDb.QueryRowx(query).StructScan(&user)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func (api *API) GetUsersInTeam(teamID string) ([]*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	rows, err := api.db.Queryx(query)
+	rows, err := api.readDb.Queryx(query)
 	if err != nil {
 		return nil, err
 	}

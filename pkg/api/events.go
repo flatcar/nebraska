@@ -117,7 +117,7 @@ func (api *API) RegisterEvent(instanceID, appID, groupID string, etype, eresult 
 	if err != nil {
 		return err
 	}
-	err = api.db.QueryRow(query).Scan(&eventTypeID)
+	err = api.readDb.QueryRow(query).Scan(&eventTypeID)
 	if err != nil {
 		return ErrInvalidEventTypeOrResult
 	}
@@ -233,7 +233,7 @@ func (api *API) GetEvent(instanceID string, appID string, timestamp time.Time) (
 		return null.NewString("", true), err
 	}
 	var errCode null.String
-	err = api.db.QueryRow(query).Scan(&errCode)
+	err = api.readDb.QueryRow(query).Scan(&errCode)
 	if err != nil {
 		return null.NewString("", true), err
 	}

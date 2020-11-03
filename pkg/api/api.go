@@ -57,6 +57,7 @@ var (
 // API represents an api instance used to interact with Nebraska entities.
 type API struct {
 	db       *sqlx.DB
+	readDb   *sqlx.DB
 	dbDriver string
 	dbURL    string
 
@@ -83,6 +84,14 @@ func New(options ...func(*API) error) (*API, error) {
 		return nil, err
 	}
 	if err := api.db.Ping(); err != nil {
+		return nil, err
+	}
+
+	api.readDb, err = sqlx.Open(api.dbDriver, api.dbURL)
+	if err != nil {
+		return nil, err
+	}
+	if err := api.readDb.Ping(); err != nil {
 		return nil, err
 	}
 
@@ -157,6 +166,7 @@ func OptionDisableUpdatesOnFailedRollout(api *API) error {
 // Close releases the connections to the database.
 func (api *API) Close() {
 	_ = api.db.DB.Close()
+	_ = api.readDb.DB.Close()
 }
 
 // NewForTest creates a new API instance with given options and fills

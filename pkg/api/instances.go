@@ -219,7 +219,7 @@ func (api *API) GetInstance(instanceID, appID string) (*Instance, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = api.db.QueryRowx(query).StructScan(&instance)
+	err = api.readDb.QueryRowx(query).StructScan(&instance)
 	if err != nil {
 		return nil, err
 	}
@@ -242,7 +242,7 @@ func (api *API) getInstanceApp(appID, instanceID string, duration postgresDurati
 	if err != nil {
 		return nil, err
 	}
-	err = api.db.QueryRowx(query).StructScan(&instanceApp)
+	err = api.readDb.QueryRowx(query).StructScan(&instanceApp)
 	if err != nil {
 		return nil, err
 	}
@@ -257,7 +257,7 @@ func (api *API) GetInstanceStatusHistory(instanceID, appID, groupID string, limi
 	if err != nil {
 		return nil, err
 	}
-	rows, err := api.db.Queryx(query)
+	rows, err := api.readDb.Queryx(query)
 	if err != nil {
 		return nil, err
 	}
@@ -304,7 +304,7 @@ func (api *API) GetInstances(p InstancesQueryParams, duration string) (Instances
 	if err != nil {
 		return InstancesWithTotal{}, err
 	}
-	rows, err := api.db.Queryx(query)
+	rows, err := api.readDb.Queryx(query)
 	if err != nil {
 		return InstancesWithTotal{}, err
 	}
@@ -349,7 +349,7 @@ func (api *API) GetInstancesCount(p InstancesQueryParams, duration string) (uint
 	if err != nil {
 		return 0, err
 	}
-	err = api.db.QueryRow(countQuery).Scan(&totalCount)
+	err = api.readDb.QueryRow(countQuery).Scan(&totalCount)
 	if err != nil {
 		return 0, err
 	}

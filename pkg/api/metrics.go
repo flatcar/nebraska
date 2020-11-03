@@ -31,7 +31,7 @@ type AppInstancesPerChannelMetric struct {
 
 func (api *API) GetAppInstancesPerChannelMetrics(teamID string) ([]AppInstancesPerChannelMetric, error) {
 	var metrics []AppInstancesPerChannelMetric
-	rows, err := api.db.Queryx(appInstancesPerChannelMetricSQL, teamID)
+	rows, err := api.readDb.Queryx(appInstancesPerChannelMetricSQL, teamID)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ type FailedUpdatesMetric struct {
 
 func (api *API) GetFailedUpdatesMetrics(teamID string) ([]FailedUpdatesMetric, error) {
 	var metrics []FailedUpdatesMetric
-	rows, err := api.db.Queryx(failedUpdatesSQL, teamID)
+	rows, err := api.readDb.Queryx(failedUpdatesSQL, teamID)
 	if err != nil {
 		return nil, err
 	}

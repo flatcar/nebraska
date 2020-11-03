@@ -54,7 +54,7 @@ func (api *API) AddChannel(channel *Channel) (*Channel, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = api.db.QueryRowx(query).StructScan(channel)
+	err = api.readDb.QueryRowx(query).StructScan(channel)
 	if err != nil {
 		return nil, err
 	}
@@ -140,7 +140,7 @@ func (api *API) GetChannel(channelID string) (*Channel, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = api.db.QueryRowx(query).StructScan(&channel)
+	err = api.readDb.QueryRowx(query).StructScan(&channel)
 	if err != nil {
 		return nil, err
 	}
@@ -165,7 +165,7 @@ func (api *API) getSpecificChannels(channelID ...string) ([]*Channel, error) {
 	if err != nil {
 		return nil, err
 	}
-	rows, err := api.db.Queryx(query)
+	rows, err := api.readDb.Queryx(query)
 	if err != nil {
 		return nil, err
 	}
@@ -222,7 +222,7 @@ func (api *API) getChannels(appID string) ([]*Channel, error) {
 
 func (api *API) getChannelsFromQuery(query string) ([]*Channel, error) {
 	var channels []*Channel
-	rows, err := api.db.Queryx(query)
+	rows, err := api.readDb.Queryx(query)
 	if err != nil {
 		return nil, err
 	}

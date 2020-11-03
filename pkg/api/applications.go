@@ -37,7 +37,7 @@ func (api *API) AddApp(app *Application) (*Application, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = api.db.QueryRowx(query).StructScan(app)
+	err = api.readDb.QueryRowx(query).StructScan(app)
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +151,7 @@ func (api *API) GetApp(appID string) (*Application, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := api.db.QueryRowx(query).StructScan(&app); err != nil {
+	if err := api.readDb.QueryRowx(query).StructScan(&app); err != nil {
 		return nil, err
 	}
 	groups, err := api.getGroups(app.ID)
@@ -186,7 +186,7 @@ func (api *API) GetApps(teamID string, page, perPage uint64) ([]*Application, er
 	if err != nil {
 		return nil, err
 	}
-	rows, err := api.db.Queryx(query)
+	rows, err := api.readDb.Queryx(query)
 	if err != nil {
 		return nil, err
 	}
@@ -238,7 +238,7 @@ func (api *API) getInstanceCount(appID, groupID string, duration postgresDuratio
 		return 0, err
 	}
 	count := 0
-	if err := api.db.QueryRow(query).Scan(&count); err != nil {
+	if err := api.readDb.QueryRow(query).Scan(&count); err != nil {
 		return 0, err
 	}
 

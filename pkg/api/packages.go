@@ -257,7 +257,7 @@ func (api *API) GetPackageByVersionAndArch(appID, version string, arch Arch) (*P
 	if err != nil {
 		return nil, err
 	}
-	err = api.db.QueryRowx(query).StructScan(&pkg)
+	err = api.readDb.QueryRowx(query).StructScan(&pkg)
 	if err != nil {
 		return nil, err
 	}
@@ -290,7 +290,7 @@ func (api *API) GetPackages(appID string, page, perPage uint64) ([]*Package, err
 
 func (api *API) getPackagesFromQuery(query string) ([]*Package, error) {
 	var pkgs []*Package
-	rows, err := api.db.Queryx(query)
+	rows, err := api.readDb.Queryx(query)
 	if err != nil {
 		return nil, err
 	}
@@ -344,7 +344,7 @@ func (api *API) getFlatcarAction(packageID string) (*FlatcarAction, error) {
 		return nil, err
 	}
 	flatcarAction := FlatcarAction{}
-	err = api.db.QueryRowx(query).StructScan(&flatcarAction)
+	err = api.readDb.QueryRowx(query).StructScan(&flatcarAction)
 	if err != nil {
 		return nil, err
 	}
@@ -357,7 +357,7 @@ func (api *API) getPackage(packageID null.String) (*Package, error) {
 		return nil, err
 	}
 	packageEntity := Package{}
-	err = api.db.QueryRowx(query).StructScan(&packageEntity)
+	err = api.readDb.QueryRowx(query).StructScan(&packageEntity)
 	if err != nil {
 		return nil, err
 	}

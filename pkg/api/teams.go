@@ -22,7 +22,7 @@ func (api *API) GetTeams() ([]*Team, error) {
 	if err != nil {
 		return nil, err
 	}
-	rows, err := api.db.Queryx(query)
+	rows, err := api.readDb.Queryx(query)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func (api *API) GetTeam() (*Team, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = api.db.QueryRowx(query).StructScan(team)
+	err = api.readDb.QueryRowx(query).StructScan(team)
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +98,7 @@ func (api *API) AddTeam(team *Team) (*Team, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = api.db.QueryRowx(insertQuery).StructScan(team)
+	err = api.readDb.QueryRowx(insertQuery).StructScan(team)
 
 	if err != nil {
 		return nil, err

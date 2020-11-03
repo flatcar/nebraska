@@ -43,7 +43,7 @@ func (api *API) AddFlatcarAction(action *FlatcarAction) (*FlatcarAction, error) 
 	if err != nil {
 		return nil, err
 	}
-	err = api.db.QueryRowx(query).StructScan(action)
+	err = api.readDb.QueryRowx(query).StructScan(action)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func (api *API) GetFlatcarAction(packageID string) (*FlatcarAction, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = api.db.QueryRowx(query).StructScan(&action)
+	err = api.readDb.QueryRowx(query).StructScan(&action)
 	if err != nil {
 		return nil, err
 	}
