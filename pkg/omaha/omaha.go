@@ -8,38 +8,25 @@ import (
 	"strconv"
 
 	omahaSpec "github.com/coreos/go-omaha/omaha"
-	"github.com/google/uuid"
 	log "github.com/mgutz/logxi/v1"
 
 	"github.com/kinvolk/nebraska/pkg/api"
 )
 
-type channelDescriptor struct {
-	name string
-	arch api.Arch
-}
-
-func chd(name string, arch api.Arch) channelDescriptor {
-	return channelDescriptor{
-		name: name,
-		arch: arch,
-	}
-}
-
 var (
 	logger = log.New("omaha")
 
-	flatcarAppID  = "e96281a6-d1af-4bde-9a0a-97b76e56dc57"
-	flatcarGroups = map[channelDescriptor]string{
-		chd("alpha", api.ArchAMD64):  "5b810680-e36a-4879-b98a-4f989e80b899",
-		chd("beta", api.ArchAMD64):   "3fe10490-dd73-4b49-b72a-28ac19acfcdc",
-		chd("stable", api.ArchAMD64): "9a2deb70-37be-4026-853f-bfdd6b347bbe",
-		chd("edge", api.ArchAMD64):   "72834a2b-ad86-4d6d-b498-e08a19ebe54e",
-
-		chd("alpha", api.ArchAArch64):  "e641708d-fb48-4260-8bdf-ba2074a1147a",
-		chd("beta", api.ArchAArch64):   "d112ec01-ba34-4a9e-9d4b-9814a685f266",
-		chd("stable", api.ArchAArch64): "11a585f6-9418-4df0-8863-78b2fd3240f8",
-		chd("edge", api.ArchAArch64):   "b4b2fa22-c1ea-498c-a8ac-c1dc0b1d7c17",
+	initialFlatcarGroups = map[string]string{
+		// amd64
+		"5b810680-e36a-4879-b98a-4f989e80b899": "alpha",
+		"3fe10490-dd73-4b49-b72a-28ac19acfcdc": "beta",
+		"9a2deb70-37be-4026-853f-bfdd6b347bbe": "stable",
+		"72834a2b-ad86-4d6d-b498-e08a19ebe54e": "edge",
+		// arm64
+		"e641708d-fb48-4260-8bdf-ba2074a1147a": "alpha",
+		"d112ec01-ba34-4a9e-9d4b-9814a685f266": "beta",
+		"11a585f6-9418-4df0-8863-78b2fd3240f8": "stable",
+		"b4b2fa22-c1ea-498c-a8ac-c1dc0b1d7c17": "edge",
 	}
 
 	// ErrMalformedRequest error indicates that the omaha request it has
@@ -106,16 +93,21 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 	for _, reqApp := range omahaReq.Apps {
 		respApp := omahaResp.AddApp(reqApp.ID, omahaSpec.AppOK)
 
-		// Use Track field as the group to ask CR for updates. For the Flatcar
-		// app, map group name to its id if available.
+		// Use the Omaha track field to find the group. It preferably contains the group's track name
+		// but also allows the old hard-coded CoreOS group UUIDs until we now that they are not used.
 		group := reqApp.Track
-		if reqAppUUID, err := uuid.Parse(reqApp.ID); err == nil {
-			if reqAppUUID.String() == flatcarAppID {
-				descriptor := chd(group, getArch(omahaReq.OS, reqApp))
-				if flatcarGroupID, ok := flatcarGroups[descriptor]; ok {
-					group = flatcarGroupID
-				}
-			}
+		if trackName, ok := initialFlatcarGroups[group]; ok {
+			logger.Info("buildOmahaResponse - found client using a hard-coded group UUID", "uuid", group)
+			group = trackName
+		}
+		groupID, err := h.crAPI.GetGroupID(group, getArch(omahaReq.OS, reqApp))
+		if err == nil {
+			group = groupID
+		} else {
+			logger.Info("buildOmahaResponse - no group found for track and arch", "error", err, "track", group)
+			respApp.Status = h.getStatusMessage(err)
+			respApp.AddUpdateCheck(omahaSpec.UpdateInternalError)
+			return omahaResp, nil
 		}
 
 		for _, event := range reqApp.Events {

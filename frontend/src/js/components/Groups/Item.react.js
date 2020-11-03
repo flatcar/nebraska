@@ -72,6 +72,7 @@ function Item(props) {
             cardMainLinkLabel={props.group.name}
             cardMainLinkPath={groupPath}
             cardId={props.group.id}
+            cardTrack={props.group.track}
             cardDescription={description}
           >
             <MoreMenu options={[

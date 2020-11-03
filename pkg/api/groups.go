@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/doug-martin/goqu/v9"
+	"github.com/google/uuid"
 	"gopkg.in/guregu/null.v4"
 )
 
@@ -57,6 +58,7 @@ type Group struct {
 	PolicyMaxUpdatesPerPeriod int         `db:"policy_max_updates_per_period" json:"policy_max_updates_per_period"`
 	PolicyUpdateTimeout       string      `db:"policy_update_timeout" json:"policy_update_timeout"`
 	Channel                   *Channel    `db:"channel" json:"channel,omitempty"`
+	Track                     string      `db:"track" json:"track"`
 }
 
 // VersionBreakdownEntry represents the distribution of the versions currently
@@ -120,10 +122,18 @@ func (api *API) AddGroup(group *Group) (*Group, error) {
 			return nil, err
 		}
 	}
+	// Instead of trying to solve this in the database, generate the ID beforehand to copy it to the track.
+	if group.ID == "" {
+		group.ID = uuid.New().String()
+	}
+	if group.Track == "" {
+		group.Track = group.ID
+	}
 	query, _, err := goqu.Insert("groups").
-		Cols("name", "description", "application_id", "channel_id", "policy_updates_enabled", "policy_safe_mode", "policy_office_hours",
-			"policy_timezone", "policy_period_interval", "policy_max_updates_per_period", "policy_update_timeout").
+		Cols("id", "name", "description", "application_id", "channel_id", "policy_updates_enabled", "policy_safe_mode", "policy_office_hours",
+			"policy_timezone", "policy_period_interval", "policy_max_updates_per_period", "policy_update_timeout", "track").
 		Vals(goqu.Vals{
+			group.ID,
 			group.Name,
 			group.Description,
 			group.ApplicationID,
@@ -135,6 +145,7 @@ func (api *API) AddGroup(group *Group) (*Group, error) {
 			group.PolicyPeriodInterval,
 			group.PolicyMaxUpdatesPerPeriod,
 			group.PolicyUpdateTimeout,
+			group.Track,
 		}).
 		Returning(goqu.T("groups").All()).
 		ToSQL()
@@ -165,6 +176,9 @@ func (api *API) UpdateGroup(group *Group) error {
 			return err
 		}
 	}
+	if group.Track == "" {
+		group.Track = group.ID
+	}
 	query, _, err := goqu.Update("groups").
 		Set(
 			goqu.Record{
@@ -178,6 +192,7 @@ func (api *API) UpdateGroup(group *Group) error {
 				"policy_period_interval":        group.PolicyPeriodInterval,
 				"policy_max_updates_per_period": group.PolicyMaxUpdatesPerPeriod,
 				"policy_update_timeout":         group.PolicyUpdateTimeout,
+				"track":                         group.Track,
 			},
 		).
 		Where(goqu.C("id").Eq(group.ID)).
@@ -249,6 +264,32 @@ func (api *API) GetGroup(groupID string) (*Group, error) {
 		}
 	}
 	return &group, nil
+}
+
+// GetGroupID returns the ID of the first group identified by the track name and the channel architecture.
+// The track names should be unique in combination with the group's channel architecture but this is not
+// enforced on the DB level and the newest entry wins.
+func (api *API) GetGroupID(trackName string, arch Arch) (string, error) {
+	var group Group
+
+	query, _, err := goqu.From("groups").Select(goqu.L("groups.*")).
+		Join(
+			goqu.T("channel"),
+			goqu.On(
+				goqu.I("groups.track").Eq(trackName),
+				goqu.I("groups.channel_id").Eq(goqu.I("channel.id")),
+				goqu.I("channel.arch").Eq(arch),
+			),
+		).
+		Order(goqu.I("created_ts").Desc()).ToSQL()
+	if err != nil {
+		return "", err
+	}
+	err = api.db.QueryRowx(query).StructScan(&group)
+	if err != nil {
+		return "", err
+	}
+	return group.ID, nil
 }
 
 // GetGroups returns all groups that belong to the application provided.

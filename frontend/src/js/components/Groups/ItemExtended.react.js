@@ -130,6 +130,7 @@ function ItemExtended(props) {
           <CardHeader
             cardMainLinkLabel={group ? group.name : '…'}
             cardId={group ? group.id : '…'}
+            cardTrack={group ? group.track : ''}
             cardDescription={group ? group.description : ''}
           >
             <MoreMenu options={[
