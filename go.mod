@@ -31,6 +31,7 @@ require (
 	github.com/stretchr/testify v1.5.1
 	github.com/ziutek/mymysql v1.5.4 // indirect
 	golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be
+	golang.org/x/text v0.3.4 // indirect
 	gopkg.in/gorp.v1 v1.7.1 // indirect
 	gopkg.in/guregu/null.v4 v4.0.0
 )
