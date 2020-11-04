@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/url"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -142,11 +143,20 @@ func mainWithError() error {
 
 	engine := setupRoutes(ctl, *httpLog)
 
-	var params []string
-	if os.Getenv("PORT") == "" {
-		params = append(params, ":8000")
+	// var params []string
+	port := os.Getenv("PORT")
+	if port == "" {
+			port = ":8000"
 	}
-	return engine.Run(params...)
+
+	s := &http.Server{
+			Addr: port,
+			Handler: engine,
+			ReadTimeout: 10 * time.Second,
+			WriteTimeout: 5 * time.Second,
+			MaxHeaderBytes: 1 << 20,
+	}
+	return s.ListenAndServe()//engine.Run(params...)
 }
 
 func obtainSessionAuthKey(potentialSecret string) []byte {
