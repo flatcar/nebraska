@@ -107,7 +107,7 @@ run-generators: tools/go-bindata
 
 .PHONY: build-backend-binary
 build-backend-binary:
-	go build -ldflags ${LDFLAGS} -o bin/nebraska ./cmd/nebraska
+	go build -trimpath -ldflags ${LDFLAGS} -o bin/nebraska ./cmd/nebraska
 
 .PHONY: backend-code-checks
 backend-code-checks: tools/golangci-lint
