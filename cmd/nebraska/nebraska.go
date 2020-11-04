@@ -47,9 +47,9 @@ var (
 	logger              = log.New("nebraska")
 	flatcarUpdatesURL   = flag.String("sync-update-url", "https://public.update.flatcar-linux.net/v1/update/", "Flatcar update URL to sync from")
 	checkFrequencyVal   = flag.String("sync-interval", "1h", "Sync check interval (the minimum depends on the number of channels to sync, e.g., 8m for 8 channels incl. different architectures)")
-	appLogoPath         = flag.String("client-logo", "", fmt.Sprintf("Client app logo, should be a path to svg file"))
-	appTitle            = flag.String("client-title", "", fmt.Sprintf("Client app title"))
-	appHeaderStyle      = flag.String("client-header-style", "light", fmt.Sprintf("Client app header style, should be either dark or light"))
+	appLogoPath         = flag.String("client-logo", "", "Client app logo, should be a path to svg file")
+	appTitle            = flag.String("client-title", "", "Client app title")
+	appHeaderStyle      = flag.String("client-header-style", "light", "Client app header style, should be either dark or light")
 )
 
 func main() {
