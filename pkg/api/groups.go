@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"time"
+	"context"
 
 	"github.com/doug-martin/goqu/v9"
 	"gopkg.in/guregu/null.v4"
@@ -231,7 +232,11 @@ func (api *API) GetGroup(groupID string) (*Group, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = api.readDb.QueryRowx(query).StructScan(&group)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	err = api.readDb.QueryRowxContext(ctx, query).StructScan(&group)
 	if err != nil {
 		return nil, err
 	}
