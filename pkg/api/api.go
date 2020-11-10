@@ -126,6 +126,7 @@ func New(options ...func(*API) error) (*API, error) {
 	if _, err := migrate.Exec(api.db.DB, "postgres", migrations, migrate.Up); err != nil {
 		return nil, err
 	}
+	api.updateCachedGroups()
 
 	return api, nil
 }
@@ -142,6 +143,7 @@ func OptionInitDB(api *API) error {
 	if _, err := api.db.Exec(string(sqlFile)); err != nil {
 		return err
 	}
+	api.updateCachedGroups()
 
 	return nil
 }
@@ -176,6 +178,7 @@ func NewForTest(options ...func(*API) error) (*API, error) {
 	if err != nil {
 		return nil, err
 	}
+	a.updateCachedGroups()
 
 	return a, nil
 }
