@@ -55,6 +55,9 @@ func TestGetActivity(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 5, len(activityEntries))
 
+	hasRecentActivity := a.hasRecentActivity(activityInstanceUpdateFailed, ActivityQueryParams{Severity: activitySuccess, AppID: tApp.ID, Version: tVersion, GroupID: tGroup.ID})
+	assert.True(t, hasRecentActivity)
+
 	_, err = a.GetActivity("invalidTeamID", ActivityQueryParams{})
 	assert.Error(t, err, "Team id used must be a valid uuid.")
 

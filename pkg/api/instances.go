@@ -111,6 +111,66 @@ func (api *API) RegisterInstance(instanceID, instanceIP, instanceVersion, appID,
 	if appID, groupID, err = api.validateApplicationAndGroup(appID, groupID); err != nil {
 		return nil, err
 	}
+
+	// We want to avoid having to create an unneeded DB transaction, so we check whether it
+	// is necessary (we need it when writing into the two tables, instance and
+	// instance_application).
+
+	updateInstance := true
+	updateInstanceApplication := true
+
+	instance, err := api.GetInstance(instanceID, appID)
+	if err == nil {
+		// The instance exists, so we just update it if its IP changed
+		updateInstance = instance.IP != instanceIP
+
+		recent := nowUTC().Add(-5 * time.Minute)
+
+		// And we only update the instance_application if the latest registry is outdated or
+		// older than what we establish as recent.
+		updateInstanceApplication = instance.Application.LastCheckForUpdates.UTC().Before(recent) ||
+			instance.Application.Version != instanceVersion || instance.Application.GroupID.String != groupID
+
+		// Skip updating anything unnecessary
+		if !updateInstance && !updateInstanceApplication {
+			return instance, nil
+		}
+	}
+
+	upsertInstance, _, err := goqu.Insert("instance").
+		Cols("id", "ip").
+		Vals(goqu.Vals{instanceID, instanceIP}).
+		OnConflict(goqu.DoUpdate("id", goqu.Record{"id": instanceID, "ip": instanceIP})).
+		ToSQL()
+	if err != nil {
+		return nil, err
+	}
+
+	upsertInstanceApplication, _, err := goqu.Insert("instance_application").
+		Cols("instance_id", "application_id", "group_id", "version", "last_check_for_updates").
+		Vals(goqu.Vals{instanceID, appID, groupID, instanceVersion, nowUTC()}).
+		OnConflict(goqu.DoUpdate("ON CONSTRAINT instance_application_pkey", goqu.Record{"group_id": groupID, "version": instanceVersion, "last_check_for_updates": nowUTC()})).
+		ToSQL()
+	if err != nil {
+		return nil, err
+	}
+
+	// If we only have one table to update, then we just do that here directly and avoid the
+	// transaction below.
+	if updateInstance != updateInstanceApplication {
+		queryToExec := upsertInstance
+		if updateInstanceApplication {
+			queryToExec = upsertInstanceApplication
+		}
+		_, err := api.db.Exec(queryToExec)
+		if err != nil {
+			return nil, err
+		}
+
+		return instance, nil
+	}
+
+	// If this is an instance we haven't seen yet, then we write into instance + instance_application
 	tx, err := api.db.Begin()
 	if err != nil {
 		return nil, err
@@ -120,15 +180,8 @@ func (api *API) RegisterInstance(instanceID, instanceIP, instanceVersion, appID,
 			logger.Error("RegisterInstance - could not roll back", err)
 		}
 	}()
-	query, _, err := goqu.Insert("instance").
-		Cols("id", "ip").
-		Vals(goqu.Vals{instanceID, instanceIP}).
-		OnConflict(goqu.DoUpdate("id", goqu.Record{"id": instanceID, "ip": instanceIP})).
-		ToSQL()
-	if err != nil {
-		return nil, err
-	}
-	result, err := tx.Exec(query)
+
+	result, err := tx.Exec(upsertInstance)
 	if err != nil {
 		return nil, err
 	}
@@ -139,15 +192,8 @@ func (api *API) RegisterInstance(instanceID, instanceIP, instanceVersion, appID,
 	if rowsAffected == 0 {
 		return nil, fmt.Errorf("RegisterInstance instance insert failed")
 	}
-	upsertQuery, _, err := goqu.Insert("instance_application").
-		Cols("instance_id", "application_id", "group_id", "version", "last_check_for_updates").
-		Vals(goqu.Vals{instanceID, appID, groupID, instanceVersion, nowUTC()}).
-		OnConflict(goqu.DoUpdate("ON CONSTRAINT instance_application_pkey", goqu.Record{"group_id": groupID, "version": instanceVersion, "last_check_for_updates": nowUTC()})).
-		ToSQL()
-	if err != nil {
-		return nil, err
-	}
-	result, err = tx.Exec(upsertQuery)
+
+	result, err = tx.Exec(upsertInstanceApplication)
 	if err != nil {
 		return nil, err
 	}
@@ -344,11 +390,19 @@ func (api *API) updateInstanceStatus(instanceID, appID string, newStatus int) er
 	if err != nil {
 		return err
 	}
+	return api.updateInstanceObjStatus(instance, newStatus)
+}
+
+func (api *API) updateInstanceData(instance *Instance, data map[string]interface{}) error {
+	appID := instance.Application.ApplicationID
+
+	insertData := data
+	newStatus := insertData["status"].(int)
+
 	if instance.Application.Status.Valid && instance.Application.Status.Int64 == int64(newStatus) {
 		return nil
 	}
-	var insertData = make(map[string]interface{})
-	insertData["status"] = newStatus
+
 	if newStatus == InstanceStatusComplete {
 		insertData["version"] = goqu.L("CASE WHEN last_update_version IS NOT NULL THEN last_update_version ELSE version END")
 	}
@@ -357,28 +411,31 @@ func (api *API) updateInstanceStatus(instanceID, appID string, newStatus int) er
 		insertData["update_in_progress"] = false
 	}
 
-	var lastUpdateVersion, groupID null.String
-	updateQuery, _, err := goqu.Update("instance_application").
-		Set(insertData).
-		Where(goqu.C("instance_id").Eq(instanceID), goqu.C("application_id").Eq(appID)).
-		Returning("last_update_version", "group_id").
-		ToSQL()
-	if err != nil {
-		return err
-	}
-	err = api.db.QueryRow(updateQuery).Scan(&lastUpdateVersion, &groupID)
-	if err != nil {
-		return err
-	}
+	// This insert is used with values returned from the update query that's executed together,
+	// so we do one transaction in the DB only.
 	insertQuery, _, err := goqu.Insert("instance_status_history").
 		Cols("status", "version", "instance_id", "application_id", "group_id").
-		Vals(goqu.Vals{newStatus, lastUpdateVersion, instanceID, appID, groupID}).
+		With("inst_app", goqu.Update("instance_application").
+			Set(insertData).
+			Where(goqu.C("instance_id").Eq(instance.ID), goqu.C("application_id").Eq(appID)).
+			Returning("instance_id", "application_id", "last_update_version", "group_id")).
+		FromQuery(goqu.From(goqu.L("inst_app")).
+			Select(goqu.V(newStatus).As("status"), goqu.C("last_update_version").As("version"), goqu.C("instance_id"), goqu.C("application_id"), goqu.C("group_id"))).
 		ToSQL()
+
 	if err != nil {
 		return err
 	}
+
 	_, err = api.db.Exec(insertQuery)
 	return err
+}
+
+func (api *API) updateInstanceObjStatus(instance *Instance, newStatus int) error {
+	insertData := make(map[string]interface{})
+	insertData["status"] = newStatus
+
+	return api.updateInstanceData(instance, insertData)
 }
 
 // instanceAppQuery returns a SelectDataset prepared to return the app status

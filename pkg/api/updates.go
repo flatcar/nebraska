@@ -5,7 +5,10 @@ import (
 	"time"
 
 	"github.com/blang/semver"
-	"github.com/doug-martin/goqu/v9"
+)
+
+const (
+	maxParallelUpdates = 900000
 )
 
 var (
@@ -86,7 +89,7 @@ func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID,
 	for _, blacklistedChannelID := range group.Channel.Package.ChannelsBlacklist {
 		if blacklistedChannelID == group.Channel.ID {
 			if updateAlreadyGranted {
-				if err := api.updateInstanceStatus(instance.ID, appID, InstanceStatusComplete); err != nil {
+				if err := api.updateInstanceObjStatus(instance, InstanceStatusComplete); err != nil {
 					logger.Error("GetUpdatePackage - could not update instance status", err)
 				}
 			}
@@ -98,7 +101,7 @@ func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID,
 	packageSemver, _ := semver.Make(group.Channel.Package.Version)
 	if !instanceSemver.LT(packageSemver) {
 		if updateAlreadyGranted {
-			if err := api.updateInstanceStatus(instance.ID, appID, InstanceStatusComplete); err != nil {
+			if err := api.updateInstanceObjStatus(instance, InstanceStatusComplete); err != nil {
 				logger.Error("GetUpdatePackage - could not update instance status", err)
 			}
 		}
@@ -109,23 +112,18 @@ func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID,
 		return group.Channel.Package, nil
 	}
 
-	updatesStats, err := api.getGroupUpdatesStats(group)
-	if err != nil {
-		logger.Error("GetUpdatePackage - getGroupUpdatesStats error (propagates as ErrGetUpdatesStatsFailed):", err)
-		return nil, ErrGetUpdatesStatsFailed
-	}
-
-	if err := api.enforceRolloutPolicy(instance, group, updatesStats); err != nil {
+	if err := api.enforceRolloutPolicy(instance, group); err != nil {
 		return nil, err
 	}
 
-	if err := api.grantUpdate(instance.ID, appID, group.Channel.Package.Version); err != nil {
+	version := group.Channel.Package.Version
+
+	if err := api.grantUpdate(instance, version); err != nil {
 		logger.Error("GetUpdatePackage - grantUpdate error (propagates as ErrGrantingUpdate):", err)
-		return nil, ErrGrantingUpdate
 	}
 
-	if updatesStats.UpdatesToCurrentVersionGranted == 0 {
-		if err := api.newGroupActivityEntry(activityRolloutStarted, activityInfo, group.Channel.Package.Version, appID, group.ID); err != nil {
+	if !api.hasRecentActivity(activityRolloutStarted, ActivityQueryParams{Severity: activityInfo, AppID: appID, Version: version, GroupID: group.ID}) {
+		if err := api.newGroupActivityEntry(activityRolloutStarted, activityInfo, version, appID, group.ID); err != nil {
 			logger.Error("GetUpdatePackage - could not add new group activity entry", err)
 		}
 	}
@@ -136,17 +134,13 @@ func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID,
 		}
 	}
 
-	if err := api.updateInstanceStatus(instance.ID, appID, InstanceStatusUpdateGranted); err != nil {
-		logger.Error("GetUpdatePackage - could not update instance status", err)
-	}
-
 	return group.Channel.Package, nil
 }
 
 // enforceRolloutPolicy validates if an update should be provided to the
 // requesting instance based on the group rollout policy and the current status
 // of the updates taking place in the group.
-func (api *API) enforceRolloutPolicy(instance *Instance, group *Group, updatesStats *UpdatesStats) error {
+func (api *API) enforceRolloutPolicy(instance *Instance, group *Group) error {
 	appID := instance.Application.ApplicationID
 
 	if !group.PolicyUpdatesEnabled {
@@ -158,6 +152,18 @@ func (api *API) enforceRolloutPolicy(instance *Instance, group *Group, updatesSt
 	}
 
 	effectiveMaxUpdates := group.PolicyMaxUpdatesPerPeriod
+
+	// If no policy enforcement is needed, then we skip getting the update stats below.
+	if effectiveMaxUpdates >= maxParallelUpdates && !group.PolicySafeMode {
+		return nil
+	}
+
+	updatesStats, err := api.getGroupUpdatesStats(group)
+	if err != nil {
+		logger.Error("GetUpdatePackage - getGroupUpdatesStats error (propagates as ErrGetUpdatesStatsFailed):", err)
+		return ErrGetUpdatesStatsFailed
+	}
+
 	if group.PolicySafeMode && updatesStats.UpdatesToCurrentVersionAttempted == 0 {
 		effectiveMaxUpdates = 1
 	}
@@ -193,19 +199,14 @@ func (api *API) enforceRolloutPolicy(instance *Instance, group *Group, updatesSt
 
 // grantUpdate grants an update for the provided instance in the context of the
 // given application.
-func (api *API) grantUpdate(instanceID, appID, version string) error {
-	query, _, err := goqu.Update("instance_application").
-		Set(goqu.Record{"last_update_granted_ts": nowUTC(),
-			"last_update_version": version,
-			"update_in_progress":  true}).
-		Where(goqu.C("instance_id").Eq(instanceID), goqu.C("application_id").Eq(appID)).
-		ToSQL()
-	if err != nil {
-		return err
-	}
-	_, err = api.db.Exec(query)
+func (api *API) grantUpdate(instance *Instance, version string) error {
+	instanceData := make(map[string]interface{})
+	instanceData["last_update_granted_ts"] = nowUTC()
+	instanceData["last_update_version"] = version
+	instanceData["status"] = InstanceStatusUpdateGranted
+	instanceData["update_in_progress"] = true
 
-	return err
+	return api.updateInstanceData(instance, instanceData)
 }
 
 // inOfficeHoursNow checks if the provided timezone is now in office hours.

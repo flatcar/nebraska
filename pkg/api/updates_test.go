@@ -303,6 +303,11 @@ func TestGetUpdatePackage_UpdateInProgressOnInstance(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, p1, p2)
 
+	instance, err := a.GetInstance(instanceID, tApp.ID)
+	assert.NoError(t, err)
+	assert.True(t, instance.Application.UpdateInProgress)
+	assert.Equal(t, "12.1.0", instance.Application.LastUpdateVersion.String)
+
 	err = a.updateInstanceStatus(instanceID, tApp.ID, InstanceStatusDownloading)
 	assert.NoError(t, err)
 	_, err = a.GetUpdatePackage(instanceID, "10.0.0.1", "12.0.0", tApp.ID, tGroup.ID)
@@ -323,6 +328,13 @@ func TestGetUpdatePackage_CheckVersionForGrantedUpdate(t *testing.T) {
 
 	_, err := a.GetUpdatePackage(instanceID, "10.0.0.1", "12.0.0", tApp.ID, tGroup.ID)
 	assert.NoError(t, err)
+
+	instance, err := a.GetInstance(instanceID, tApp.ID)
+	assert.NoError(t, err)
+	assert.True(t, instance.Application.UpdateInProgress)
+	assert.Equal(t, int64(InstanceStatusUpdateGranted), instance.Application.Status.Int64)
+	assert.Equal(t, "12.1.0", instance.Application.LastUpdateVersion.String)
+	assert.Equal(t, "12.0.0", instance.Application.Version)
 
 	_, err = a.GetUpdatePackage(instanceID, "10.0.0.1", "12.1.0", tApp.ID, tGroup.ID)
 	assert.Equal(t, ErrNoUpdatePackageAvailable, err)
