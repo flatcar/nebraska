@@ -1,4 +1,4 @@
-import { Box, Divider, FormLabel, makeStyles, Tooltip, Typography } from '@material-ui/core';
+import { Box, Divider, FormLabel, makeStyles, Switch, Tooltip, Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -13,7 +13,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import { Field, Form, Formik } from 'formik';
-import { Select, Switch, TextField } from 'formik-material-ui';
+import { Select, TextField } from 'formik-material-ui';
 import PropTypes from 'prop-types';
 import React from 'react';
 import * as Yup from 'yup';
@@ -152,6 +152,10 @@ function EditDialog(props) {
                           name="updatesEnabled"
                           component={Switch}
                           color="primary"
+                          checked={values.updatesEnabled}
+                          onChange={(e) => {
+                            setFieldValue('updatesEnabled', e.target.checked);
+                          }}
                         />
                       }
                     />
@@ -163,7 +167,11 @@ function EditDialog(props) {
                         <Field
                           name="safeMode"
                           component={Switch}
+                          checked={values.safeMode}
                           color="primary"
+                          onChange={(e) => {
+                            setFieldValue('safeMode', e.target.checked);
+                          }}
                         />
                       }
                     />
@@ -204,6 +212,10 @@ function EditDialog(props) {
                         name="onlyOfficeHours"
                         component={Switch}
                         color="primary"
+                        checked={values.onlyOfficeHours}
+                        onChange={(e) => {
+                          setFieldValue('onlyOfficeHours', e.target.checked);
+                        }}
                       />
                     </Box>
                   }
