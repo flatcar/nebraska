@@ -1,4 +1,7 @@
-# Nebraska Authorization
+---
+title: Nebraska Authorization
+weight: 10
+---
 
 Nebraska uses either a noop authentication, or OAuth or Bearer tokens
 to authenticate and authorize users. Currently, only GitHub is
