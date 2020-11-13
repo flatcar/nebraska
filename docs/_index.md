@@ -4,7 +4,7 @@ title: Nebraska
 main_menu: true
 weight: 40
 cascade:
-  github_edit_url: https://github.com/kinvolk/nebraska/edit/newdocs/
+  github_edit_url: https://github.com/kinvolk/nebraska/edit/master/
   issues_url: https://github.com/kinvolk/nebraska/issues/new
 ---
 
