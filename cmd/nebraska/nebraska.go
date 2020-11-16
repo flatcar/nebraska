@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"time"
@@ -50,6 +51,7 @@ var (
 	appLogoPath         = flag.String("client-logo", "", "Client app logo, should be a path to svg file")
 	appTitle            = flag.String("client-title", "", "Client app title")
 	appHeaderStyle      = flag.String("client-header-style", "light", "Client app header style, should be either dark or light")
+	apiEndpointSuffix   = flag.String("api-endpoint-suffix", "", "Additional suffix for the API endpoint to serve Omaha clients on; use a secret to only serve your clients, e.g., mysecret results in /v1/update/mysecret")
 )
 
 func main() {
@@ -287,7 +289,7 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 	// Omaha server router setup
 	omahaRouter := wrappedEngine.Group("/", "omaha")
 	omahaRouter.POST("/omaha", ctl.processOmahaRequest)
-	omahaRouter.POST("/v1/update", ctl.processOmahaRequest)
+	omahaRouter.POST(path.Join("/v1/update", *apiEndpointSuffix), ctl.processOmahaRequest)
 
 	// Config router setup
 	configRouter := wrappedEngine.Group("/config", "config")
