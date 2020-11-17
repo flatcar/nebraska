@@ -4,9 +4,11 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/doug-martin/goqu/v9"
+	"github.com/google/uuid"
 	"gopkg.in/guregu/null.v4"
 )
 
@@ -38,7 +40,25 @@ var (
 	// ErrExpectingValidTimezone error indicates that a valid timezone wasn't
 	// provided when enabling the flag PolicyOfficeHours.
 	ErrExpectingValidTimezone = errors.New("nebraska: expecting valid timezone")
+
+	// cachedGroups caches the mapping of group track names and
+	// architectures to groups. It must not be modified directly but
+	// replaced (atomically or via lock) by a new map to prevent data races.
+	// An update must be triggered through updateCachedGroups() each time
+	// a group entry changes (channel architectures are not modified after
+	// creation, thus changes to the channel don't need to trigger an
+	// update). A RW lock was chosen to prevent data races over the pointer
+	// itself. An alternative is to use atomic loads instead of RLock()
+	// and using atomic stores inside Lock() of a normal Mutex to serialize
+	// the writes (or use channel handshakes instead of a mutex).
+	cachedGroups     map[GroupDescriptor]string
+	cachedGroupsLock sync.RWMutex
 )
+
+type GroupDescriptor struct {
+	Track string
+	Arch  Arch
+}
 
 // Group represents a Nebraska application's group.
 type Group struct {
@@ -57,6 +77,7 @@ type Group struct {
 	PolicyMaxUpdatesPerPeriod int         `db:"policy_max_updates_per_period" json:"policy_max_updates_per_period"`
 	PolicyUpdateTimeout       string      `db:"policy_update_timeout" json:"policy_update_timeout"`
 	Channel                   *Channel    `db:"channel" json:"channel,omitempty"`
+	Track                     string      `db:"track" json:"track"`
 }
 
 // VersionBreakdownEntry represents the distribution of the versions currently
@@ -120,10 +141,18 @@ func (api *API) AddGroup(group *Group) (*Group, error) {
 			return nil, err
 		}
 	}
+	// Instead of trying to solve this in the database, generate the ID beforehand to copy it to the track.
+	if group.ID == "" {
+		group.ID = uuid.New().String()
+	}
+	if group.Track == "" {
+		group.Track = group.ID
+	}
 	query, _, err := goqu.Insert("groups").
-		Cols("name", "description", "application_id", "channel_id", "policy_updates_enabled", "policy_safe_mode", "policy_office_hours",
-			"policy_timezone", "policy_period_interval", "policy_max_updates_per_period", "policy_update_timeout").
+		Cols("id", "name", "description", "application_id", "channel_id", "policy_updates_enabled", "policy_safe_mode", "policy_office_hours",
+			"policy_timezone", "policy_period_interval", "policy_max_updates_per_period", "policy_update_timeout", "track").
 		Vals(goqu.Vals{
+			group.ID,
 			group.Name,
 			group.Description,
 			group.ApplicationID,
@@ -135,6 +164,7 @@ func (api *API) AddGroup(group *Group) (*Group, error) {
 			group.PolicyPeriodInterval,
 			group.PolicyMaxUpdatesPerPeriod,
 			group.PolicyUpdateTimeout,
+			group.Track,
 		}).
 		Returning(goqu.T("groups").All()).
 		ToSQL()
@@ -145,6 +175,7 @@ func (api *API) AddGroup(group *Group) (*Group, error) {
 	if err != nil {
 		return nil, err
 	}
+	api.updateCachedGroups()
 	return group, nil
 }
 
@@ -165,6 +196,9 @@ func (api *API) UpdateGroup(group *Group) error {
 			return err
 		}
 	}
+	if group.Track == "" {
+		group.Track = group.ID
+	}
 	query, _, err := goqu.Update("groups").
 		Set(
 			goqu.Record{
@@ -178,6 +212,7 @@ func (api *API) UpdateGroup(group *Group) error {
 				"policy_period_interval":        group.PolicyPeriodInterval,
 				"policy_max_updates_per_period": group.PolicyMaxUpdatesPerPeriod,
 				"policy_update_timeout":         group.PolicyUpdateTimeout,
+				"track":                         group.Track,
 			},
 		).
 		Where(goqu.C("id").Eq(group.ID)).
@@ -197,6 +232,7 @@ func (api *API) UpdateGroup(group *Group) error {
 	if rowsAffected == 0 {
 		return ErrNoRowsAffected
 	}
+	api.updateCachedGroups()
 	return nil
 }
 
@@ -218,6 +254,7 @@ func (api *API) DeleteGroup(groupID string) error {
 	if rowsAffected == 0 {
 		return ErrNoRowsAffected
 	}
+	api.updateCachedGroups()
 	return nil
 }
 
@@ -249,6 +286,73 @@ func (api *API) GetGroup(groupID string) (*Group, error) {
 		}
 	}
 	return &group, nil
+}
+
+// GetGroupID returns the ID of the first group identified by the track name and the channel architecture.
+// The track names should be unique in combination with the group's channel architecture but this is not
+// enforced on the DB level and the newest entry wins.
+func (api *API) GetGroupID(trackName string, arch Arch) (string, error) {
+	var cachedGroupsRef map[GroupDescriptor]string
+	cachedGroupsLock.RLock()
+	if cachedGroups != nil {
+		// Keep a reference to the map that we found.
+		cachedGroupsRef = cachedGroups
+	}
+	cachedGroupsLock.RUnlock()
+	// Generate map on startup or if invalidated.
+	if cachedGroupsRef == nil {
+		cachedGroupsLock.Lock()
+		cachedGroupsRef = cachedGroups
+		// If a concurrent execution generated it inbetween our RUnlock() and Lock(),
+		// we can use this because any invalidation inbetween must have happened
+		// before the generation because all writes are sequential.
+		if cachedGroupsRef == nil {
+			cachedGroups = make(map[GroupDescriptor]string)
+			query, _, err := api.groupsQuery().ToSQL()
+			var groups []*Group
+			if err == nil {
+				groups, err = api.getGroupsFromQuery(query)
+			}
+			// Checks boths errors above.
+			if err != nil {
+				logger.Error("GetGroupID", "error", err.Error())
+			} else {
+				for _, group := range groups {
+					if group.Channel != nil {
+						descriptor := GroupDescriptor{Track: group.Track, Arch: group.Channel.Arch}
+						// The groups are sorted descendingly by the creation time.
+						// The newest group with the track name and arch wins.
+						if otherID, ok := cachedGroups[descriptor]; ok {
+							// Log a warning for others.
+							logger.Warn("GetGroupID - another group already uses the same track name and architecture", "group", group.ID, "group2", otherID, "track", group.Track)
+						}
+						cachedGroups[descriptor] = group.ID
+					} else {
+						logger.Warn("GetGroupID - no channel found for group", "group", group.ID)
+					}
+				}
+			}
+			// Keep a reference to the map we created.
+			cachedGroupsRef = cachedGroups
+		}
+		cachedGroupsLock.Unlock()
+	}
+
+	cachedGroupID, ok := cachedGroupsRef[GroupDescriptor{Track: trackName, Arch: arch}]
+	if !ok {
+		return "", fmt.Errorf("no group found for track %v and architecture %v", trackName, arch)
+	}
+	return cachedGroupID, nil
+}
+
+// updateCachedGroups invalidates the cached track names in cachedGroups and
+// must be called whenever the group entries are modified.
+func (api *API) updateCachedGroups() {
+	cachedGroupsLock.Lock()
+	cachedGroups = nil
+	// Generating the map is not always possible here because the database
+	// can be closed.
+	cachedGroupsLock.Unlock()
 }
 
 // GetGroups returns all groups that belong to the application provided.

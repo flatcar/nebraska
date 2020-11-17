@@ -39,6 +39,7 @@ function EditDialog(props) {
 
     const data = {
       name: values.name,
+      track: values.track,
       description: values.description,
       policy_updates_enabled: values.updatesEnabled,
       policy_safe_mode: values.safeMode,
@@ -130,6 +131,15 @@ function EditDialog(props) {
               component={TextField}
               margin="dense"
               label="Description"
+              fullWidth
+            />
+          </Box>
+          <Box mt={2} px={2}>
+            <Field
+              name="track"
+              component={TextField}
+              margin="dense"
+              label="Track (identifier for clients, filled with the group ID if omitted)"
               fullWidth
             />
           </Box>
@@ -344,6 +354,7 @@ function EditDialog(props) {
 
   const validation = Yup.object().shape({
     name: maxCharacters(50, true),
+    track: maxCharacters(256),
     description: maxCharacters(250),
     maxUpdates: positiveNum(),
     updatesPeriodRange: positiveNum(),
@@ -371,6 +382,7 @@ function EditDialog(props) {
 
     initialValues = {
       name: group.name,
+      track: group.track,
       description: group.description,
       timezone: group.policy_timezone || DEFAULT_TIMEZONE,
       updatesEnabled: group.policy_updates_enabled,

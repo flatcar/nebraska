@@ -18,6 +18,8 @@ import (
 const (
 	defaultTestDbURL string = "postgres://postgres:nebraska@127.0.0.1:5432/nebraska_tests?sslmode=disable&connect_timeout=10"
 
+	flatcarAppID = "e96281a6-d1af-4bde-9a0a-97b76e56dc57"
+
 	reqVersion  string = "3"
 	reqPlatform string = "coreos"
 	reqSp       string = "linux"
@@ -61,8 +63,8 @@ func TestInvalidRequests(t *testing.T) {
 
 	tTeam, _ := a.AddTeam(&api.Team{Name: "test_team"})
 	tApp, _ := a.AddApp(&api.Application{Name: "test_app", Description: "Test app", TeamID: tTeam.ID})
-	tPkg, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "640.0.0", ApplicationID: tApp.ID})
-	tChannel, _ := a.AddChannel(&api.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tPkg, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "640.0.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64})
+	tChannel, _ := a.AddChannel(&api.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID), Arch: api.ArchAMD64})
 	tGroup, _ := a.AddGroup(&api.Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
 	validUnregisteredIP := "127.0.0.1"
@@ -73,7 +75,7 @@ func TestInvalidRequests(t *testing.T) {
 	noEventInfo := (*eventInfo)(nil)
 
 	omahaResp := doOmahaRequest(t, h, tApp.ID, validUnverifiedAppVersion, validUnregisteredMachineID, "invalid-track", validUnregisteredIP, addPing, updateCheck, noEventInfo)
-	checkOmahaResponse(t, omahaResp, tApp.ID, omahaSpec.AppStatus("error-instanceRegistrationFailed"))
+	checkOmahaResponse(t, omahaResp, tApp.ID, omahaSpec.AppStatus("error-failedToRetrieveUpdatePackageInfo"))
 
 	omahaResp = doOmahaRequest(t, h, tApp.ID, validUnverifiedAppVersion, validUnregisteredMachineID, tGroup.ID, "invalid-ip", addPing, updateCheck, noEventInfo)
 	checkOmahaResponse(t, omahaResp, tApp.ID, omahaSpec.AppStatus("error-instanceRegistrationFailed"))
@@ -91,8 +93,8 @@ func TestAppNoUpdateForAppWithChannelAndPackageName(t *testing.T) {
 	h := NewHandler(a)
 
 	tAppFlatcar, _ := a.GetApp(flatcarAppID)
-	tPkgFlatcar640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "640.0.0", ApplicationID: tAppFlatcar.ID})
-	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppFlatcar.ID, PackageID: null.StringFrom(tPkgFlatcar640.ID)})
+	tPkgFlatcar640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "640.0.0", ApplicationID: tAppFlatcar.ID, Arch: api.ArchAMD64})
+	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppFlatcar.ID, PackageID: null.StringFrom(tPkgFlatcar640.ID), Arch: api.ArchAMD64})
 	tGroup, _ := a.AddGroup(&api.Group{Name: "Production", ApplicationID: tAppFlatcar.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
 	validUnregisteredIP := "127.0.0.1"
@@ -143,8 +145,8 @@ func TestAppRegistrationForAppWithChannelAndPackageName(t *testing.T) {
 	h := NewHandler(a)
 
 	tAppFlatcar, _ := a.GetApp(flatcarAppID)
-	tPkgFlatcar640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "640.0.0", ApplicationID: tAppFlatcar.ID})
-	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppFlatcar.ID, PackageID: null.StringFrom(tPkgFlatcar640.ID)})
+	tPkgFlatcar640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "640.0.0", ApplicationID: tAppFlatcar.ID, Arch: api.ArchAMD64})
+	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppFlatcar.ID, PackageID: null.StringFrom(tPkgFlatcar640.ID), Arch: api.ArchAMD64})
 	tGroup, _ := a.AddGroup(&api.Group{Name: "Production", ApplicationID: tAppFlatcar.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
 	validUnregisteredIP := "127.0.0.1"
@@ -172,8 +174,8 @@ func TestAppUpdateForAppWithChannelAndPackageName(t *testing.T) {
 
 	tAppFlatcar, _ := a.GetApp(flatcarAppID)
 	tFilenameFlatcar := "flatcarupdate.tgz"
-	tPkgFlatcar640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Filename: null.StringFrom(tFilenameFlatcar), Version: "99640.0.0", ApplicationID: tAppFlatcar.ID})
-	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppFlatcar.ID, PackageID: null.StringFrom(tPkgFlatcar640.ID)})
+	tPkgFlatcar640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Filename: null.StringFrom(tFilenameFlatcar), Version: "99640.0.0", ApplicationID: tAppFlatcar.ID, Arch: api.ArchAMD64})
+	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppFlatcar.ID, PackageID: null.StringFrom(tPkgFlatcar640.ID), Arch: api.ArchAMD64})
 	tGroup, _ := a.AddGroup(&api.Group{Name: "Production", ApplicationID: tAppFlatcar.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	flatcarAction, _ := a.AddFlatcarAction(&api.FlatcarAction{Event: "postinstall", Sha256: "fsdkjjfghsdakjfgaksdjfasd", PackageID: tPkgFlatcar640.ID})
 
@@ -230,7 +232,7 @@ func TestFlatcarGroupNamesConversionToIds(t *testing.T) {
 	machineIP := "10.0.0.1"
 
 	omahaResp := doOmahaRequest(t, h, flatcarAppID, "2000.0.0", machineID, "invalid-group", machineIP, false, true, nil)
-	checkOmahaResponse(t, omahaResp, flatcarAppID, omahaSpec.AppStatus("error-instanceRegistrationFailed"))
+	checkOmahaResponse(t, omahaResp, flatcarAppID, omahaSpec.AppStatus("error-failedToRetrieveUpdatePackageInfo"))
 
 	omahaResp = doOmahaRequest(t, h, flatcarAppID, "2000.0.0", machineID, "alpha", machineIP, false, true, nil)
 	checkOmahaResponse(t, omahaResp, flatcarAppID, omahaSpec.AppOK)

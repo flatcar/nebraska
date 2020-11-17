@@ -83,6 +83,7 @@ func (api *API) AddAppCloning(app *Application, sourceAppID string) (*Applicatio
 				group.ChannelID = channelsIDsMappings[group.ChannelID.String]
 			}
 			group.PolicyUpdatesEnabled = true
+			group.ID = ""
 			if _, err := api.AddGroup(group); err != nil {
 				logger.Error("AddAppCloning - could not add group", err)
 				return app, nil // FIXME - think about what we should return to the caller

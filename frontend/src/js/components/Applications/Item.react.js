@@ -46,6 +46,7 @@ function Item(props) {
             cardMainLinkLabel={props.application.name}
             cardMainLinkPath={{pathname: `/apps/${appID}`}}
             cardId={appID}
+            cardTrack=''
             cardDescription={description}
           >
             <MoreMenu options={[

@@ -98,7 +98,7 @@ export function CardHeader(props) {
           </Grid>
           <Grid item xs={12}>
             <Box bgcolor={theme.palette.lightSilverShade} px={1} display="inline-block">
-              <Typography className={classes.idLabel} arial-label="group-id" noWrap>{props.cardId}</Typography>
+              <Typography className={classes.idLabel} arial-label="group-id" noWrap>{props.cardTrack ? props.cardTrack : props.cardId}</Typography>
             </Box>
             <CardDescriptionLabel>{props.cardDescription}</CardDescriptionLabel>
           </Grid>
