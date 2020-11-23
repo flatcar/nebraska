@@ -58,7 +58,7 @@ export function getMinuteDifference(date1, date2) {
 }
 
 export function makeLocaleTime(timestamp, opts = {}) {
-  const {useDate = true, showTime = true, dateFormat = {weekday: 'short', day: 'numeric'}} = opts;
+  const {useDate = true, showTime = true, dateFormat = {}} = opts;
   const date = new Date(timestamp);
   const formattedDate = date.toLocaleDateString('default', dateFormat);
   const timeFormat = date.toLocaleString('default', { hour: '2-digit', minute: '2-digit' });
