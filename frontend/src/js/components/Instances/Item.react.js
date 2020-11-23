@@ -81,12 +81,13 @@ function Item(props) {
   }
   const searchParams = new URLSearchParams(window.location.search).toString();
   const instancePath = `/apps/${appID}/groups/${groupID}/instances/${instanceID}?${searchParams}`;
+  const instanceName = props.instance.alias || props.instance.id;
 
   return (
     <React.Fragment>
       <TableRow>
         <TableCell>
-          <Link to={instancePath} component={RouterLink}>{props.instance.id}</Link>
+          <Link to={instancePath} component={RouterLink}>{instanceName}</Link>
         </TableCell>
         <TableCell>
           {props.instance.ip}

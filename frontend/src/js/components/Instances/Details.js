@@ -189,6 +189,9 @@ function DetailsView(props) {
   const theme = useTheme();
   const {application, group, instance} = props;
   const [eventHistory, setEventHistory] = React.useState([]);
+
+  const hasAlias = !!instance.alias;
+
   React.useEffect(() => {
     API.getInstanceStatusHistory(application.id, group.id, instance.id).then((statusHistory) => {
       setEventHistory(statusHistory);
@@ -210,7 +213,7 @@ function DetailsView(props) {
           >
             <Grid item xs={12}>
               <Box fontWeight={700} fontSize={30} color={theme.palette.greyShadeColor}>
-                {instance.id}
+                {instance.alias || instance.id}
               </Box>
             </Grid>
             <Grid item md>
@@ -220,6 +223,14 @@ function DetailsView(props) {
                 <Grid container>
                   <Grid item xs={12} container>
                     <Grid item container>
+                      { hasAlias &&
+                        <Grid item xs={12}>
+                          <CardFeatureLabel>ID</CardFeatureLabel>&nbsp;
+                          <Box mt={1} mb={1}>
+                            <CardLabel>{instance.id}</CardLabel>
+                          </Box>
+                        </Grid>
+                      }
                       <Grid item xs={6}>
                         <CardFeatureLabel>IP</CardFeatureLabel>
                         <Box mt={1}>
