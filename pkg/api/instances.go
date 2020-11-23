@@ -56,6 +56,7 @@ type Instance struct {
 	IP          string              `db:"ip" json:"ip"`
 	CreatedTs   time.Time           `db:"created_ts" json:"created_ts"`
 	Application InstanceApplication `db:"application" json:"application,omitempty"`
+	Alias       string              `db:"alias" json:"alias,omitempty"`
 }
 type InstancesWithTotal struct {
 	TotalInstances uint64      `json:"total"`
