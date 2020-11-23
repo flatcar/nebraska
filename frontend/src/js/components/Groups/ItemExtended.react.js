@@ -155,7 +155,9 @@ function ItemExtended(props) {
                   <Grid item>
                     <CardFeatureLabel>Channel</CardFeatureLabel>
                     {_.isEmpty(group.channel) ?
-                      <CardLabel>No channel provided</CardLabel>
+                      <Box my={1}>
+                        <CardLabel>No channel assigned</CardLabel>
+                      </Box>
                       :
                       <ChannelItem
                         channel={group.channel}
