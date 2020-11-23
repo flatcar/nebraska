@@ -60,7 +60,7 @@ function ApplicationItemGroupItem(props) {
             </Link> : instanceCountContent}
         </Box>
       </Box>
-      <ChannelItem channel={group.channel} isAppView/>
+      {group.channel && <ChannelItem channel={group.channel} isAppView/>}
     </>
   );
 }
