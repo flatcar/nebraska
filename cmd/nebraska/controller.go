@@ -710,6 +710,7 @@ func (ctl *controller) getInstances(c *gin.Context) {
 		httpError(c, http.StatusBadRequest)
 	}
 }
+
 func (ctl *controller) getInstancesCount(c *gin.Context) {
 	appID := c.Params.ByName("app_id")
 	groupID := c.Params.ByName("group_id")
@@ -729,6 +730,7 @@ func (ctl *controller) getInstancesCount(c *gin.Context) {
 		httpError(c, http.StatusBadRequest)
 	}
 }
+
 func (ctl *controller) getInstance(c *gin.Context) {
 	appID := c.Params.ByName("app_id")
 	instanceID := c.Params.ByName("instance_id")
