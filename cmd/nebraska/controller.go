@@ -745,6 +745,33 @@ func (ctl *controller) getInstance(c *gin.Context) {
 	}
 }
 
+func (ctl *controller) updateInstance(c *gin.Context) {
+	instanceID := c.Params.ByName("instance_id")
+	params := struct{ Alias string }{}
+
+	if err := json.NewDecoder(c.Request.Body).Decode(&params); err != nil {
+		logger.Error("updateInstance - decoding payload", "error", err.Error())
+		httpError(c, http.StatusBadRequest)
+		return
+	}
+
+	instance, err := ctl.api.UpdateInstance(instanceID, params.Alias)
+	if err != nil {
+		logger.Error("updateInstance - updating instance", "error", err.Error(), "instance", instanceID, "params", params)
+		httpError(c, http.StatusBadRequest)
+		return
+	}
+
+	if err == nil {
+		if err := json.NewEncoder(c.Writer).Encode(instance); err != nil {
+			logger.Error("updateInstance - encoding instance", "error", err.Error(), "instance", instanceID, "params", params)
+		}
+	} else {
+		logger.Error("updateInstance - getting instance", "error", err.Error(), "instance", instanceID, "params", params)
+		httpError(c, http.StatusBadRequest)
+	}
+}
+
 // ----------------------------------------------------------------------------
 // API: activity
 //

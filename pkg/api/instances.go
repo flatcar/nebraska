@@ -357,6 +357,27 @@ func (api *API) GetInstancesCount(p InstancesQueryParams, duration string) (uint
 	return totalCount, nil
 }
 
+func (api *API) UpdateInstance(instanceID string, alias string) (*Instance, error) {
+	instance := &Instance{}
+	query, _, err := goqu.Update("instance").
+		Set(
+			goqu.Record{
+				"alias": alias,
+			},
+		).
+		Where(goqu.C("id").Eq(instanceID)).
+		Returning(goqu.T("instance").All()).
+		ToSQL()
+	if err != nil {
+		return nil, err
+	}
+	err = api.db.QueryRowx(query).StructScan(instance)
+	if err != nil {
+		return nil, err
+	}
+	return instance, nil
+}
+
 // validateApplicationAndGroup validates if the group provided belongs to the
 // provided application, returning the normalized uuid version of the appID and
 // groupID provided if both are valid and the group belongs to the given
