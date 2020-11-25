@@ -4,6 +4,11 @@ import { InlineIcon } from '@iconify/react';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Collapse from '@material-ui/core/Collapse';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
@@ -15,9 +20,12 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/styles';
+import { Field, Form, Formik } from 'formik';
+import { TextField } from 'formik-material-ui';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import * as Yup from 'yup';
 import API from '../../api/API';
 import { ERROR_STATUS_CODE, getErrorAndFlags, getInstanceStatus, makeLocaleTime, prepareErrorMessage } from '../../constants/helpers';
 import ChannelItem from '../Channels/Item.react';
@@ -25,6 +33,7 @@ import { CardFeatureLabel, CardLabel } from '../Common/Card';
 import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
 import Loader from '../Common/Loader';
+import MoreMenu from '../Common/MoreMenu';
 import makeStatusDefs from './StatusDefs';
 
 const useDetailsStyles = makeStyles(theme => ({
@@ -184,11 +193,88 @@ function EventTable(props) {
     );
 }
 
+function EditDialog(props) {
+  const { show, onHide, instance } = props;
+
+  function handleClose() {
+    onHide();
+  }
+
+  function handleSubmit(values, actions) {
+    actions.setSubmitting(true);
+
+    API.updateInstance(instance.id, values.name)
+      .then((updatedInstance) => {
+        actions.setSubmitting(false);
+        onHide(updatedInstance);
+      })
+      .catch((err) => {
+        actions.setSubmitting(false);
+        actions.setStatus({
+          statusMessage: (err && err.message) ?
+            `Something went wrong: ${err.message}` : 'Something went wrong…',
+        });
+      });
+  }
+
+  function renderForm({values, status, setFieldValue, isSubmitting}) {
+    return (
+      <Form data-testid="instance-edit-form">
+        <DialogContent>
+          {status && status.statusMessage &&
+            <DialogContentText color="error">
+              {status.statusMessage}
+            </DialogContentText>
+          }
+          <Field
+            name="name"
+            component={TextField}
+            margin="dense"
+            label="Name"
+            type="text"
+            helperText="Leave empty for displaying the instance ID"
+            fullWidth
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">Cancel</Button>
+          <Button type="submit" disabled={isSubmitting} color="primary">Save</Button>
+        </DialogActions>
+      </Form>
+    );
+  }
+
+  const validation = Yup.object().shape({
+    name: Yup.string()
+      .max(256, 'Must enter a valid name (less than 256 characters)')
+  });
+
+  return (
+    <Dialog
+      open={show}
+      onClose={handleClose}
+      aria-labelledby="form-dialog-title"
+      fullWidth
+    >
+      <DialogTitle>Edit Instance</DialogTitle>
+      <Formik
+        initialValues={{
+          name: instance.alias || instance.id
+        }}
+        onSubmit={handleSubmit}
+        // validationSchema={validation}
+        render={renderForm}
+      />
+    </Dialog>
+  );
+}
+
 function DetailsView(props) {
   const classes = useDetailsStyles();
   const theme = useTheme();
-  const {application, group, instance} = props;
+  const {application, group, instance, onInstanceUpdated} = props;
   const [eventHistory, setEventHistory] = React.useState([]);
+  const [showEdit, setShowEdit] = React.useState(false);
 
   const hasAlias = !!instance.alias;
 
@@ -202,6 +288,17 @@ function DetailsView(props) {
   },
   [instance]);
 
+  function updateInstance() {
+    setShowEdit(true);
+  }
+
+  function onEditHide(newInstance) {
+    setShowEdit(false);
+    if (newInstance !== null) {
+      onInstanceUpdated();
+    }
+  }
+
   return (
     <>
       <ListHeader title="Instance Information" />
@@ -212,9 +309,26 @@ function DetailsView(props) {
             spacing={1}
           >
             <Grid item xs={12}>
-              <Box fontWeight={700} fontSize={30} color={theme.palette.greyShadeColor}>
-                {instance.alias || instance.id}
-              </Box>
+              <Grid
+                container
+                justify="space-between"
+              >
+                <Grid item>
+                  <Box fontWeight={700} fontSize={30} color={theme.palette.greyShadeColor}>
+                    {instance.alias || instance.id}
+                  </Box>
+                </Grid>
+                <Grid item>
+                  <MoreMenu options={[
+                    {
+                      'label': 'Rename',
+                      'action': updateInstance,
+                    }
+                  ]}
+                  />
+                </Grid>
+              </Grid>
+
             </Grid>
             <Grid item md>
 
@@ -317,6 +431,11 @@ function DetailsView(props) {
           </Grid>
         </Box>
       </Paper>
+      <EditDialog
+        show={showEdit}
+        onHide={onEditHide}
+        instance={instance}
+      />
     </>
   );
 }

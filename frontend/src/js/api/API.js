@@ -157,6 +157,12 @@ class API {
     return API.getJSON(url);
   }
 
+  static updateInstance(instanceID, alias) {
+    const url = BASE_URL + '/instances/' + instanceID;
+    const params = JSON.stringify({alias});
+    return API.doRequest('PUT', url, params);
+  }
+
   // Activity
 
   static getActivity() {

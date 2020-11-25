@@ -79,6 +79,7 @@ export default function InstanceLayout(props) {
         application={application}
         group={group}
         instance={instance}
+        onInstanceUpdated={() => onChange()}
       />
       }
     </React.Fragment>
