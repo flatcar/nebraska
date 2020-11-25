@@ -31,7 +31,7 @@ function Table(props) {
     <MuiTable>
       <TableHead>
         <TableRow>
-          <TableCell>Instance ID</TableCell>
+          <TableCell>Instance</TableCell>
           <TableCell>IP</TableCell>
           <TableCell>Current Status</TableCell>
           <TableCell>Version</TableCell>
