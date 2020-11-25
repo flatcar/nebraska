@@ -99,12 +99,24 @@ func (api *API) RegisterEvent(instanceID, appID, groupID string, etype, eresult 
 		return ErrInvalidApplicationOrGroup
 	}
 	if !instance.Application.UpdateInProgress {
+		// Do not log the event when we don't know about an update going on.
+		// There is no need to reset the instance state here because update_in_progress
+		// is only set to "false" for states in which we will grant an update.
 		return ErrNoUpdateInProgress
 	}
 
 	// Temporary hack to handle Flatcar updater specific behaviour
 	if appID == flatcarAppID && etype == EventUpdateComplete && eresult == ResultSuccessReboot {
-		if previousVersion == "" || previousVersion == "0.0.0.0" || previousVersion != instance.Application.Version {
+		if previousVersion == "" || previousVersion == "0.0.0.0" {
+			// Do not log the Complete event for already updated instances but reset the instance state to
+			// ensure it can update and is not stuck in some other state because according to the DB it,
+			// e.g., is updating and thus shouldn't be granted any update. The instance can't be in a Completed
+			// state because of the ErrNoUpdateInProgress check above, thus no need to cover this case here.
+			// The Undefined state is chosen because the instance did not tell that it updated from a previous
+			// version ("" and "0.0.0.0" are not valid but "0.0.0" is because it is used when forcing an update).
+			if err := api.updateInstanceObjStatus(instance, InstanceStatusUndefined); err != nil {
+				logger.Error("RegisterEvent - could not update instance status", err)
+			}
 			return ErrFlatcarEventIgnored
 		}
 	}
