@@ -2,9 +2,11 @@ module github.com/kinvolk/nebraska
 
 go 1.13
 
+replace github.com/coreos/go-omaha => github.com/kinvolk/go-omaha v0.0.0-20201126073937-801f305b087b
+
 require (
 	github.com/blang/semver v3.5.1+incompatible
-	github.com/coreos/go-omaha v0.0.0-20180327202221-e409d983eb60
+	github.com/coreos/go-omaha v0.0.0 // replaced with github.com/kinvolk/go-omaha
 	github.com/doug-martin/goqu/v9 v9.10.0
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
 	github.com/facebookgo/ensure v0.0.0-20160127193407-b4ab57deab51 // indirect
@@ -25,7 +27,6 @@ require (
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/kevinburke/go-bindata v3.16.0+incompatible
-	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/lib/pq v1.8.0
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect

@@ -118,14 +118,14 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 		}
 
 		if reqApp.Ping != nil {
-			if _, err := h.crAPI.RegisterInstance(reqApp.MachineID, ip, reqApp.Version, reqApp.ID, group); err != nil {
+			if _, err := h.crAPI.RegisterInstance(reqApp.MachineID, reqApp.MachineAlias, ip, reqApp.Version, reqApp.ID, group); err != nil {
 				logger.Warn("processPing", "error", err.Error())
 			}
 			respApp.AddPing()
 		}
 
 		if reqApp.UpdateCheck != nil {
-			pkg, err := h.crAPI.GetUpdatePackage(reqApp.MachineID, ip, reqApp.Version, reqApp.ID, group)
+			pkg, err := h.crAPI.GetUpdatePackage(reqApp.MachineID, reqApp.MachineAlias, ip, reqApp.Version, reqApp.ID, group)
 			if err != nil && err != api.ErrNoUpdatePackageAvailable {
 				respApp.Status = h.getStatusMessage(err)
 				respApp.AddUpdateCheck(omahaSpec.UpdateInternalError)
