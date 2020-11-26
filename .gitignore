@@ -4,6 +4,7 @@
 bin
 node_modules
 frontend/yarn-error.log
+frontend/src/js/icons/*.json
 
 coverage.out
 /tools/go-bindata
