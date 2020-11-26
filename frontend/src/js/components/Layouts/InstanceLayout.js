@@ -47,12 +47,13 @@ export default function InstanceLayout(props) {
 
   const applicationName = application ? application.name : '…';
   const groupName = group ? group.name : '…';
+  const instanceName = (instance && instance.alias) || instanceID;
 
   const searchParams = new URLSearchParams(window.location.search).toString();
   return (
     <React.Fragment>
       <SectionHeader
-        title={instanceID}
+        title={instanceName}
         breadcrumbs={[
           {
             path: '/apps',
@@ -78,6 +79,7 @@ export default function InstanceLayout(props) {
         application={application}
         group={group}
         instance={instance}
+        onInstanceUpdated={() => onChange()}
       />
       }
     </React.Fragment>

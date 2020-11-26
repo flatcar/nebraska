@@ -11,6 +11,7 @@
 // db/migrations/0007_add_package_arch.sql (1.558kB)
 // db/migrations/0008-arm-channels-groups.sql (3.854kB)
 // db/migrations/0009_group_track_names.sql (973B)
+// db/migrations/0010_add_instance_alias.sql (138B)
 
 package api
 
@@ -299,6 +300,26 @@ func dbMigrations0009_group_track_namesSql() (*asset, error) {
 	return a, nil
 }
 
+var _dbMigrations0010_add_instance_aliasSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x74\xcc\xb1\x0d\xc2\x40\x0c\x05\xd0\xde\x53\xfc\x2e\x20\x94\x06\x09\x9a\xb4\xac\xc0\x00\x9f\x3b\x03\x27\x39\xbe\xc8\x71\x60\x7d\x5a\x28\x58\xe0\x8d\x23\x0e\x73\x7b\x04\x53\x71\x5d\x44\x68\xa9\x81\xe4\xcd\x14\xcd\xd7\xa4\x17\x05\x6b\x45\xe9\xb6\xcd\x0e\x5a\xe3\x8a\x17\xa3\x3c\x19\xbb\xe3\xe9\xbc\x47\xd5\x3b\x37\x4b\x0c\xc3\x24\xf2\xed\x5d\xfa\xdb\xff\x88\x35\xfa\xf2\x43\x4e\xf2\x09\x00\x00\xff\xff\xbe\x58\x50\x30\x8a\x00\x00\x00")
+
+func dbMigrations0010_add_instance_aliasSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_dbMigrations0010_add_instance_aliasSql,
+		"db/migrations/0010_add_instance_alias.sql",
+	)
+}
+
+func dbMigrations0010_add_instance_aliasSql() (*asset, error) {
+	bytes, err := dbMigrations0010_add_instance_aliasSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "db/migrations/0010_add_instance_alias.sql", size: 138, mode: os.FileMode(0644), modTime: time.Unix(1, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xb1, 0x64, 0xa5, 0xe1, 0xe2, 0x15, 0x0, 0x34, 0x49, 0x9f, 0xf, 0x63, 0xd8, 0xa1, 0x1, 0x56, 0x66, 0x9c, 0x69, 0xa2, 0xa6, 0x1a, 0xc9, 0x3d, 0x8e, 0xc4, 0x2d, 0xff, 0x9d, 0x1b, 0x12, 0x8}}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -401,6 +422,7 @@ var _bindata = map[string]func() (*asset, error){
 	"db/migrations/0007_add_package_arch.sql":     dbMigrations0007_add_package_archSql,
 	"db/migrations/0008-arm-channels-groups.sql":  dbMigrations0008ArmChannelsGroupsSql,
 	"db/migrations/0009_group_track_names.sql":    dbMigrations0009_group_track_namesSql,
+	"db/migrations/0010_add_instance_alias.sql":   dbMigrations0010_add_instance_aliasSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -456,6 +478,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"0007_add_package_arch.sql":     &bintree{dbMigrations0007_add_package_archSql, map[string]*bintree{}},
 			"0008-arm-channels-groups.sql":  &bintree{dbMigrations0008ArmChannelsGroupsSql, map[string]*bintree{}},
 			"0009_group_track_names.sql":    &bintree{dbMigrations0009_group_track_namesSql, map[string]*bintree{}},
+			"0010_add_instance_alias.sql":   &bintree{dbMigrations0010_add_instance_aliasSql, map[string]*bintree{}},
 		}},
 		"sample_data.sql": &bintree{dbSample_dataSql, map[string]*bintree{}},
 	}},

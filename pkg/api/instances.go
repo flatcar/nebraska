@@ -56,6 +56,7 @@ type Instance struct {
 	IP          string              `db:"ip" json:"ip"`
 	CreatedTs   time.Time           `db:"created_ts" json:"created_ts"`
 	Application InstanceApplication `db:"application" json:"application,omitempty"`
+	Alias       string              `db:"alias" json:"alias,omitempty"`
 }
 type InstancesWithTotal struct {
 	TotalInstances uint64      `json:"total"`
@@ -103,7 +104,7 @@ type InstancesQueryParams struct {
 }
 
 // RegisterInstance registers an instance into Nebraska.
-func (api *API) RegisterInstance(instanceID, instanceIP, instanceVersion, appID, groupID string) (*Instance, error) {
+func (api *API) RegisterInstance(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID string) (*Instance, error) {
 	if !isValidSemver(instanceVersion) {
 		return nil, ErrInvalidSemver
 	}
@@ -121,8 +122,12 @@ func (api *API) RegisterInstance(instanceID, instanceIP, instanceVersion, appID,
 
 	instance, err := api.GetInstance(instanceID, appID)
 	if err == nil {
-		// The instance exists, so we just update it if its IP changed
-		updateInstance = instance.IP != instanceIP
+		// Give precedence to an existing alias over an omitted or empty alias field
+		if instanceAlias == "" {
+			instanceAlias = instance.Alias
+		}
+		// The instance exists, so we just update it if its IP or Alias changed
+		updateInstance = instance.IP != instanceIP || instance.Alias != instanceAlias
 
 		recent := nowUTC().Add(-5 * time.Minute)
 
@@ -138,9 +143,9 @@ func (api *API) RegisterInstance(instanceID, instanceIP, instanceVersion, appID,
 	}
 
 	upsertInstance, _, err := goqu.Insert("instance").
-		Cols("id", "ip").
-		Vals(goqu.Vals{instanceID, instanceIP}).
-		OnConflict(goqu.DoUpdate("id", goqu.Record{"id": instanceID, "ip": instanceIP})).
+		Cols("id", "ip", "alias").
+		Vals(goqu.Vals{instanceID, instanceIP, instanceAlias}).
+		OnConflict(goqu.DoUpdate("id", goqu.Record{"id": instanceID, "ip": instanceIP, "alias": instanceAlias})).
 		ToSQL()
 	if err != nil {
 		return nil, err
@@ -354,6 +359,27 @@ func (api *API) GetInstancesCount(p InstancesQueryParams, duration string) (uint
 		return 0, err
 	}
 	return totalCount, nil
+}
+
+func (api *API) UpdateInstance(instanceID string, alias string) (*Instance, error) {
+	instance := &Instance{}
+	query, _, err := goqu.Update("instance").
+		Set(
+			goqu.Record{
+				"alias": alias,
+			},
+		).
+		Where(goqu.C("id").Eq(instanceID)).
+		Returning(goqu.T("instance").All()).
+		ToSQL()
+	if err != nil {
+		return nil, err
+	}
+	err = api.db.QueryRowx(query).StructScan(instance)
+	if err != nil {
+		return nil, err
+	}
+	return instance, nil
 }
 
 // validateApplicationAndGroup validates if the group provided belongs to the

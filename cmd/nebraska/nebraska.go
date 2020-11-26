@@ -282,6 +282,7 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 	apiRouter.GET("/apps/:app_id/groups/:group_id/instances", ctl.getInstances)
 	apiRouter.GET("/apps/:app_id/groups/:group_id/instancescount", ctl.getInstancesCount)
 	apiRouter.GET("/apps/:app_id/groups/:group_id/instances/:instance_id", ctl.getInstance)
+	apiRouter.PUT("/instances/:instance_id", ctl.updateInstance)
 
 	// Activity
 	apiRouter.GET("/activity", ctl.getActivity)
