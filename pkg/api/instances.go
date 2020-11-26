@@ -433,7 +433,7 @@ func (api *API) updateInstanceData(instance *Instance, data map[string]interface
 		insertData["version"] = goqu.L("CASE WHEN last_update_version IS NOT NULL THEN last_update_version ELSE version END")
 	}
 
-	if newStatus == InstanceStatusComplete || newStatus == InstanceStatusError {
+	if newStatus == InstanceStatusComplete || newStatus == InstanceStatusError || newStatus == InstanceStatusUndefined || newStatus == InstanceStatusOnHold {
 		insertData["update_in_progress"] = false
 	}
 
