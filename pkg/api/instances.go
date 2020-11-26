@@ -104,7 +104,7 @@ type InstancesQueryParams struct {
 }
 
 // RegisterInstance registers an instance into Nebraska.
-func (api *API) RegisterInstance(instanceID, instanceIP, instanceVersion, appID, groupID string) (*Instance, error) {
+func (api *API) RegisterInstance(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID string) (*Instance, error) {
 	if !isValidSemver(instanceVersion) {
 		return nil, ErrInvalidSemver
 	}
@@ -122,8 +122,12 @@ func (api *API) RegisterInstance(instanceID, instanceIP, instanceVersion, appID,
 
 	instance, err := api.GetInstance(instanceID, appID)
 	if err == nil {
-		// The instance exists, so we just update it if its IP changed
-		updateInstance = instance.IP != instanceIP
+		// Give precedence to an existing alias over an omitted or empty alias field
+		if instanceAlias == "" {
+			instanceAlias = instance.Alias
+		}
+		// The instance exists, so we just update it if its IP or Alias changed
+		updateInstance = instance.IP != instanceIP || instance.Alias != instanceAlias
 
 		recent := nowUTC().Add(-5 * time.Minute)
 
@@ -139,9 +143,9 @@ func (api *API) RegisterInstance(instanceID, instanceIP, instanceVersion, appID,
 	}
 
 	upsertInstance, _, err := goqu.Insert("instance").
-		Cols("id", "ip").
-		Vals(goqu.Vals{instanceID, instanceIP}).
-		OnConflict(goqu.DoUpdate("id", goqu.Record{"id": instanceID, "ip": instanceIP})).
+		Cols("id", "ip", "alias").
+		Vals(goqu.Vals{instanceID, instanceIP, instanceAlias}).
+		OnConflict(goqu.DoUpdate("id", goqu.Record{"id": instanceID, "ip": instanceIP, "alias": instanceAlias})).
 		ToSQL()
 	if err != nil {
 		return nil, err

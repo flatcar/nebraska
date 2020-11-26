@@ -57,8 +57,8 @@ var (
 // GetUpdatePackage returns an update package for the instance/application
 // provided. The instance details and the application it's running will be
 // registered in Nebraska (or updated if it's already registered).
-func (api *API) GetUpdatePackage(instanceID, instanceIP, instanceVersion, appID, groupID string) (*Package, error) {
-	instance, err := api.RegisterInstance(instanceID, instanceIP, instanceVersion, appID, groupID)
+func (api *API) GetUpdatePackage(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID string) (*Package, error) {
+	instance, err := api.RegisterInstance(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID)
 	if err != nil {
 		logger.Error("GetUpdatePackage - could not register instance (propagates as ErrRegisterInstanceFailed)", err)
 		return nil, ErrRegisterInstanceFailed
