@@ -273,14 +273,14 @@ function DetailsView(props) {
   const classes = useDetailsStyles();
   const theme = useTheme();
   const {application, group, instance, onInstanceUpdated} = props;
-  const [eventHistory, setEventHistory] = React.useState([]);
+  const [eventHistory, setEventHistory] = React.useState(null);
   const [showEdit, setShowEdit] = React.useState(false);
 
   const hasAlias = !!instance.alias;
 
   React.useEffect(() => {
     API.getInstanceStatusHistory(application.id, group.id, instance.id).then((statusHistory) => {
-      setEventHistory(statusHistory);
+      setEventHistory(statusHistory || []);
     })
       .catch(() => {
         setEventHistory([]);
