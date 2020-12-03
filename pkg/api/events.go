@@ -210,12 +210,12 @@ func (api *API) triggerEventConsequences(instanceID, appID, groupID, lastUpdateV
 			logger.Error("triggerEventConsequences - could not add instance activity", err)
 		}
 
-		updatesStats, err := api.getGroupUpdatesStats(group)
-		if err != nil {
-			return err
-		}
-		if updatesStats.UpdatesToCurrentVersionAttempted == 1 {
-			if api.disableUpdatesOnFailedRollout {
+		if api.disableUpdatesOnFailedRollout {
+			updatesStats, err := api.getGroupUpdatesStats(group)
+			if err != nil {
+				return err
+			}
+			if updatesStats.UpdatesToCurrentVersionAttempted == 1 {
 				if err := api.disableUpdates(groupID); err != nil {
 					logger.Error("triggerEventConsequences - could not disable updates", err)
 				}
