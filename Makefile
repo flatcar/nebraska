@@ -45,7 +45,9 @@ frontend: frontend-install
 	cd frontend && npm run build
 
 .PHONY: frontend-watch
-frontend-watch:
+frontend-watch: run-frontend
+
+run-frontend:
 	cd frontend && npm start
 
 .PHONY: frontend-install
@@ -59,6 +61,9 @@ frontend-test:
 .PHONY: frontend-lint
 frontend-lint:
 	cd frontend && npm run lint
+
+run-backend: backend-binary
+	LOGXI=* ./bin/nebraska -auth-mode noop
 
 .PHONY: backend
 backend: run-generators backend-code-checks build-backend-binary
