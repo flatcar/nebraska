@@ -43,7 +43,7 @@ export default function TimeIntervalLinks(props) {
               <Link underline="none"
                 component="button"
                 onClick={(e) => intervalChangeHandler(link)}
-                color={link.disabled ? 'textSecondary' : link.displayValue === selectedInterval.displayValue ? 'inherit' : 'primary'}
+                color={link.disabled ? 'textSecondary' : link.queryValue === selectedInterval ? 'inherit' : 'primary'}
               >
                 <Typography className={classes.title} >
                   {link.displayValue}

@@ -227,7 +227,7 @@ function ItemExtended(props) {
                 <Grid item>
                   <Box m={2}>
                     <TimeIntervalLinks intervalChangeHandler={(duration) => setDurationToURL('stats_period', duration.queryValue)}
-                      selectedInterval = {updateProgressChartDuration}
+                      selectedInterval = {updateProgressChartDuration.queryValue}
                       appID = {props.appID}
                       groupID = {props.groupID}
                     />
@@ -270,7 +270,7 @@ function ItemExtended(props) {
               <Grid item>
                 <Box pt={4} pr={2}>
                   <TimeIntervalLinks intervalChangeHandler={(duration) => setDurationToURL('version_timeline_period', duration.queryValue)}
-                    selectedInterval = {versionChartSelectedDuration}
+                    selectedInterval = {versionChartSelectedDuration.queryValue}
                     appID = {props.appID}
                     groupID = {props.groupID}
                   />
@@ -305,7 +305,7 @@ function ItemExtended(props) {
               <Grid item>
                 <Box pt={4} pr={2}>
                   <TimeIntervalLinks intervalChangeHandler={(duration) => setDurationToURL('status_timeline_period', duration.queryValue)}
-                    selectedInterval = {statusChartDuration}
+                    selectedInterval = {statusChartDuration.queryValue}
                     appID = {props.appID}
                     groupID = {props.groupID}
                   />
