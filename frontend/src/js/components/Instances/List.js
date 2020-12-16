@@ -18,6 +18,7 @@ import { getInstanceStatus, useGroupVersionBreakdown } from '../../constants/hel
 import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
 import Loader from '../Common/Loader';
+import TimeIntervalLinks from '../Common/TimeIntervalLinks';
 import { InstanceCountLabel } from './Common';
 import makeStatusDefs from './StatusDefs';
 import Table from './Table';
@@ -116,6 +117,10 @@ function ListView(props) {
   const location = useLocation();
   const history = useHistory();
 
+  function getDuration() {
+    return (new URLSearchParams(location.search)).get('period') || '1d';
+  }
+
   function fetchFiltersFromURL(callback) {
     let status = '';
     const queryParams = new URLSearchParams(location.search);
@@ -133,7 +138,7 @@ function ListView(props) {
     const version = queryParams.get('version') || '';
     const pageQueryParam = (parseInt(queryParams.get('page')) || 1) - 1;
     const perPage = parseInt(queryParams.get('perPage')) || 10;
-    const duration = queryParams.get('period') || '1d';
+    const duration = getDuration();
 
     callback(status, version, pageQueryParam, perPage, duration);
   }
@@ -268,10 +273,25 @@ function ListView(props) {
             container
             spacing={1}
           >
-            <Grid item md={12}>
-              <Box mb={2} color={theme.palette.greyShadeColor} fontSize={30} fontWeight={700}>
-                {group.name}
-              </Box>
+            <Grid
+              item
+              container
+              justify="space-between"
+              alignItems="stretch"
+            >
+              <Grid item>
+                <Box mb={2} color={theme.palette.greyShadeColor} fontSize={30} fontWeight={700}>
+                  {group.name}
+                </Box>
+              </Grid>
+              <Grid item>
+                <TimeIntervalLinks
+                  intervalChangeHandler={(duration) => addQuery({period: duration.queryValue})}
+                  selectedInterval={getDuration()}
+                  appID={application.id}
+                  groupID={group.id}
+                />
+              </Grid>
             </Grid>
             <Box width="100%" borderTop={1} borderColor={'#E0E0E0'} className={classes.root}>
               <Grid
