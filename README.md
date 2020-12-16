@@ -37,22 +37,21 @@ the [Omaha](https://code.google.com/p/omaha/) protocol, with special functionali
 
 Please report any issues in [here](https://github.com/kinvolk/nebraska/issues).
 
-
-## Managing Updates
-
-Read the docs on [how to manage updates](./docs/managing-updates.md).
-
 ## Code of Conduct
 
 Please refer to the Kinvolk [Code of Conduct](https://github.com/kinvolk/contribution/blob/master/CODE_OF_CONDUCT.md).
 
 ## Contributing
 
-If you want to start contributing to Nebraska, please check out the [contributing](./docs/contributing.md) documentation.
+If you want to start contributing to Nebraska, please check out the [contributing](https://kinvolk.io/docs/nebraska/latest/contributing/) documentation.
+
+### Development
+
+For a quickstart on setting up a development environment, please check the [development documentation](https://kinvolk.io/docs/nebraska/latest/development/).
 
 ### User Access
 
-For instructions on how to set up user access, please check the [authorization documentation](./docs/authorization.md).
+For instructions on how to set up user access, please check the [authorization documentation](https://kinvolk.io/docs/nebraska/latest/authorization/).
 
 ## License
 

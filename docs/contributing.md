@@ -1,50 +1,53 @@
 ---
-title: Contributing
-weight: 10
+title: Contribution Guidelines
+linktitle: Contributing
 ---
 
-Nebraska is an Open Source project and contributions are welcome. It is usually a good idea to discuss new features or major changes before submitting any code. For doing that, please file a new [issue](https://github.com/Nebraska/Nebraska/issues).
+This section has information on how to contribute to Nebraska. It assumes you have cloned
+this repository (or your own Github fork).
 
-To build the whole project (backend + frontend), you can run:
+Any contributions to the project are accepted under the terms of the project's
+license ([AGPL v3](../LICENSE)).
 
-    make
+## Code of Conduct
 
-Below you will find some introductory notes that should point you in the right direction to start playing with the Nebraska source code.
+Please refer to the Kinvolk [Code of Conduct](https://github.com/kinvolk/contribution/blob/master/CODE_OF_CONDUCT.md).
 
-## Backend
+## Development practices
 
-The Nebraska backend is written in Go. The backend source code is structured as follows:
+The Nebraska project follows the [Kinvolk Contribution Guidelines](https://github.com/kinvolk/contribution)
+which promotes good and consistent contribution practises across Kinvolk's
+projects. Before start contributing, and in addition to this section, please
+read those guidelines.
 
-- **`pkg/api`**: provides functionality to do CRUD operations on all elements found in Nebraska (applications, groups, channels, packages, etc), abstracting the rest of the components from the underlying datastore (PostgreSQL). It also controls the groups' roll-out policy logic and the instances/events registration.
+## Filing an issue or feature request
 
-- **`pkg/omaha`**: provides functionality to validate, handle, process and reply to Omaha updates and events requests received from the Omaha clients. It relies on the `api` package to get update packages, store events, or register instances when needed.
+Please use the [project's issue tracker](https://github.com/kinvolk/nebraska/issues) for filing any bugs you find or features
+you think are useful.
 
-- **`pkg/syncer`**: provides some functionality to synchronize packages available in the official Flatcar Container Linux channels, storing the references to them in your Nebraska datastore and even downloading packages payloads when configured to do so. It's basically in charge of keeping up to date your the Flatcar Container Linux application in your Nebraska installation.
+### Complex contributions
 
-- **`cmd/nebraska`**: is the main backend process, exposing the functionality described above in the different packages through its http server. It provides several http endpoints used to drive most of the functionality of the dashboard as well as handling the Omaha updates and events requests received from your servers and applications.
+If you have a complex contribution in mind (meaning changes in the architecture
+or a lot of LOC changed), it is advisable to first file a Github issue and
+discuss the implementation with the project's maintainers.
 
-- **`cmd/initdb`**: is just a helper to reset your database, and causing the migrations to be re-run. `nebraska` will apply all database migrations automatically, so this process should only be used to wipe out all your data and start from a clean state (you should probably never need it).
+## Coding style
 
-To build the backend you can run:
+The coding style for `backend` and `frontend` should be consistent.
+For helping and verifying that, we have go and js linters.
 
-    make backend
+The `backend` linter runs automatically when using the `make backend`
+command.
+For linting the `frontend`, use `make frontend-lint`.
 
-### Backend database
+The linters are also run in the CI system, so any PRs you create will be
+tested for compliance with the coding style.
 
-Nebraska uses `PostgreSQL`. You can install it locally or use the docker image available in the quay.io registry (`quay.io/flatcar/nebraska-postgres`). If you don't use the docker image provided, you'll have to set up the database yourself. By default Nebraska uses a database with the name `nebraska`, and `nebraska_tests`
-for the tests, respectively. For the main database, the full URL (with a different database name if desired) can be overridden by the environment variable
-`NEBRASKA_DB_URL`.
+To speed up a review from the project's maintainers, please make sure that
+the CI checks are passing for your PR.
 
-Note: the timezone for the Nebraska database is expected to be UTC (`set timezone = 'utc';`).
+## Commit guidelines
 
-## Frontend
-
-The frontend side of Nebraska (dashboard) is a web application built using `react` and `material-ui`.
-
-To build the webapp you have to install `node.js`. After that, you can build it using:
-
-    make frontend
-
-It is very useful to be able to quickly build the frontend while changing it during development, and for that you can use the following make target:
-
-    make frontend-watch
+For the general guidelines on making PRs/commits easier to review, please check
+out Kinvolk's
+[contribution guidelines on git](https://github.com/kinvolk/contribution/tree/master/topics/git.md).
