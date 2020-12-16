@@ -1,9 +1,9 @@
 ---
-title: Nebraska Authorization
+title: Deployment & Authorization
 weight: 10
 ---
 
-Nebraska uses either a noop authentication, or OAuth or Bearer tokens
+Nebraska uses either a noop authentication, OAuth or Bearer tokens
 to authenticate and authorize users. Currently, only GitHub is
 supported as an OAuth authentication backend.  [GitHub personal access
 tokens](https://github.com/settings/tokens) can be used as bearer
@@ -29,7 +29,7 @@ the `postgres` container as follows:
 
 # Deploying Nebraska for testing on local computer (noop authentication)
 
-- Go to the nebraska project directory and run `make all`
+- Go to the nebraska project directory and run `make`
 
 - Start the database (see the section above if you need a quick setup).
 
