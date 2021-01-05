@@ -27,7 +27,7 @@ import (
 //go:generate go-bindata -mode 0644 -ignore=\.swp -pkg=api -modtime=1 db db/migrations
 
 const (
-	defaultDbURL          = "postgres://postgres@127.0.0.1:5432/nebraska?sslmode=disable&connect_timeout=10"
+	defaultDbURL          = "postgres://postgres:nebraska@127.0.0.1:5432/nebraska?sslmode=disable&connect_timeout=10"
 	maxOpenAndIdleDbConns = 25
 	dBConnMaxLifetime     = 5 * 60 // seconds
 )
