@@ -28,6 +28,12 @@ function ChannelList(props) {
 
   function getChannelsPerArch() {
     const perArch = {};
+
+    // If application doesn't have any channel return empty object.
+    if (application.channels === null) {
+      return perArch;
+    }
+
     application.channels.forEach(channel => {
       if (!perArch[channel.arch]) {
         perArch[channel.arch] = [];
