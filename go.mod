@@ -5,6 +5,7 @@ go 1.13
 replace github.com/coreos/go-omaha => github.com/kinvolk/go-omaha v0.0.0-20201126073937-801f305b087b
 
 require (
+	github.com/Depado/ginprom v1.5.0
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/coreos/go-omaha v0.0.0 // replaced with github.com/kinvolk/go-omaha
 	github.com/doug-martin/goqu/v9 v9.10.0

@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Depado/ginprom"
 	"github.com/gin-gonic/gin"
 	log "github.com/mgutz/logxi/v1"
 
@@ -230,7 +231,22 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 	if httpLog {
 		setupRequestLifetimeLogging(engine)
 	}
+
+	// Setup Middlewares
+
+	// Recovery middleware to recover from panics
 	engine.Use(gin.Recovery())
+
+	// Prometheus Metrics Middleware
+	setupRouter(engine, "top", httpLog)
+	p := ginprom.New(
+		ginprom.Engine(engine),
+		ginprom.Namespace("nebraska"),
+		ginprom.Subsystem("gin"),
+		ginprom.Path("/metrics"),
+	)
+	engine.Use(p.Instrument())
+
 	setupRouter(engine, "top", httpLog)
 	wrappedEngine := wrapRouter(engine, httpLog)
 
