@@ -303,12 +303,6 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 		flatcarPkgsRouter.Static("/", *flatcarPackagesPath)
 	}
 
-	// Metrics
-	metricsRouter := wrappedEngine.Group("/metrics", "metrics")
-	setupRouter(metricsRouter, "metrics", httpLog)
-	metricsRouter.Use(ctl.authenticate)
-	metricsRouter.GET("/", ctl.getMetrics)
-
 	// Serve frontend static content
 	staticRouter := wrappedEngine.Group("/", "static")
 	staticRouter.Use(ctl.authenticate)

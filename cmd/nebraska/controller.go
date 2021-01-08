@@ -807,69 +807,6 @@ func (ctl *controller) getActivity(c *gin.Context) {
 }
 
 // ----------------------------------------------------------------------------
-// Metrics
-//
-
-const (
-	appInstancesPerChannelMetricsProlog = `# HELP nebraska_application_instances_per_channel A number of applications from specific channel running on instances
-# TYPE nebraska_application_instances_per_channel gauge`
-	failedUpdatesMetricsProlog = `# HELP nebraska_failed_updates A number of failed updates of an application
-# TYPE nebraska_failed_updates gauge`
-)
-
-func escapeMetricString(str string) string {
-	str = strings.Replace(str, `\`, `\\`, -1)
-	str = strings.Replace(str, `"`, `\"`, -1)
-	str = strings.Replace(str, "\n", `\n`, -1)
-	return str
-}
-
-func (ctl *controller) getMetrics(c *gin.Context) {
-	teamID := c.GetString("team_id")
-
-	nowUnixMillis := time.Now().Unix() * 1000
-	aipcMetrics, err := ctl.api.GetAppInstancesPerChannelMetrics(teamID)
-	if err != nil {
-		logger.Error("getMetrics - getting app instances per channel metrics", "error", err.Error(), "teamID", teamID)
-		httpError(c, http.StatusBadRequest)
-		return
-	}
-	fuMetrics, err := ctl.api.GetFailedUpdatesMetrics(teamID)
-	if err != nil {
-		logger.Error("getMetrics - getting failed updates metrics", "error", err.Error(), "teamID", teamID)
-		httpError(c, http.StatusBadRequest)
-		return
-	}
-
-	// "version" specifies a version of prometheus text file
-	// format. For details see:
-	//
-	// https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md#basic-info
-	c.Writer.Header().Set("Content-Type", "text/plain; version=0.0.4")
-	c.Writer.WriteHeader(http.StatusOK)
-	needEmptyLine := false
-	if len(aipcMetrics) > 0 {
-		if needEmptyLine {
-			fmt.Fprintf(c.Writer, "\n")
-		}
-		fmt.Fprintf(c.Writer, "%s\n", appInstancesPerChannelMetricsProlog)
-		for _, metric := range aipcMetrics {
-			fmt.Fprintf(c.Writer, `nebraska_application_instances_per_channel{application="%s",version="%s",channel="%s"} %d %d%s`, escapeMetricString(metric.ApplicationName), escapeMetricString(metric.Version), escapeMetricString(metric.ChannelName), metric.InstancesCount, nowUnixMillis, "\n")
-		}
-		needEmptyLine = true
-	}
-	if len(fuMetrics) > 0 {
-		if needEmptyLine {
-			fmt.Fprintf(c.Writer, "\n")
-		}
-		fmt.Fprintf(c.Writer, "%s\n", failedUpdatesMetricsProlog)
-		for _, metric := range fuMetrics {
-			fmt.Fprintf(c.Writer, `nebraska_failed_updates{application="%s"} %d %d%s`, escapeMetricString(metric.ApplicationName), metric.FailureCount, nowUnixMillis, "\n")
-		}
-	}
-}
-
-// ----------------------------------------------------------------------------
 // OMAHA server
 //
 
