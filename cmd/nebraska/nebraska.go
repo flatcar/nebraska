@@ -145,6 +145,12 @@ func mainWithError() error {
 
 	engine := setupRoutes(ctl, *httpLog)
 
+	// Register Application metrics and Instrument.
+	err = registerAndInstrumentMetrics(ctl)
+	if err != nil {
+		return err
+	}
+
 	var params []string
 	if os.Getenv("PORT") == "" {
 		params = append(params, ":8000")
@@ -237,8 +243,9 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 	// Recovery middleware to recover from panics
 	engine.Use(gin.Recovery())
 
-	// Prometheus Metrics Middleware
 	setupRouter(engine, "top", httpLog)
+
+	// Prometheus Metrics Middleware
 	p := ginprom.New(
 		ginprom.Engine(engine),
 		ginprom.Namespace("nebraska"),
@@ -247,7 +254,6 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 	)
 	engine.Use(p.Instrument())
 
-	setupRouter(engine, "top", httpLog)
 	wrappedEngine := wrapRouter(engine, httpLog)
 
 	ctl.auth.SetupRouter(wrappedEngine)
