@@ -11,7 +11,7 @@ func TestGetAppInstancesPerChannelMetrics(t *testing.T) {
 	defer a.Close()
 
 	// defaultTeamID constant is defined in users_test.go
-	metrics, err := a.GetAppInstancesPerChannelMetrics(defaultTeamID)
+	metrics, err := a.GetAppInstancesPerChannelMetrics()
 	require.NoError(t, err)
 	expectedMetrics := []AppInstancesPerChannelMetric{
 		{
@@ -72,7 +72,7 @@ func TestGetFailedUpdatesMetrics(t *testing.T) {
 	defer a.Close()
 
 	// defaultTeamID constant is defined in users_test.go
-	metrics, err := a.GetFailedUpdatesMetrics(defaultTeamID)
+	metrics, err := a.GetFailedUpdatesMetrics()
 	require.NoError(t, err)
 	expectedMetrics := []FailedUpdatesMetric{
 		{
