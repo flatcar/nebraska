@@ -1,4 +1,4 @@
-# Nebraska  <img align="right" width=384 src="frontend/src/img/nebraska-logo.svg">
+# Nebraska  <img align="right" width=384 src="docs/nebraska-logo.svg">
 
 Nebraska is an update manager for [Flatcar Container Linux](https://www.flatcar-linux.org/).
 
