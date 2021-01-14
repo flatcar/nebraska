@@ -147,7 +147,7 @@ func (api *API) DeleteApp(appID string) error {
 // GetApp returns the application identified by the id provided.
 func (api *API) GetApp(appID string) (*Application, error) {
 	var app Application
-	query, _, err := api.appsQuery().
+	query, _, err := goqu.From("application").
 		Where(goqu.C("id").Eq(appID)).ToSQL()
 	if err != nil {
 		return nil, err

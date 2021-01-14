@@ -262,7 +262,7 @@ func (api *API) DeleteGroup(groupID string) error {
 func (api *API) GetGroup(groupID string) (*Group, error) {
 	var group Group
 
-	query, _, err := api.groupsQuery().
+	query, _, err := goqu.From("groups").
 		Where(goqu.C("id").Eq(groupID)).
 		ToSQL()
 	if err != nil {
@@ -308,7 +308,7 @@ func (api *API) GetGroupID(trackName string, arch Arch) (string, error) {
 		// before the generation because all writes are sequential.
 		if cachedGroupsRef == nil {
 			cachedGroups = make(map[GroupDescriptor]string)
-			query, _, err := api.groupsQuery().ToSQL()
+			query, _, err := goqu.From("groups").ToSQL()
 			var groups []*Group
 			if err == nil {
 				groups, err = api.getGroupsFromQuery(query)
