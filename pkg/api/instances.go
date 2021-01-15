@@ -470,8 +470,7 @@ func (api *API) instanceAppQuery(appID, instanceID string, duration postgresDura
 	query := goqu.From("instance_application").
 		Select("version", "status", "last_check_for_updates", "last_update_version", "update_in_progress", "application_id", "group_id").
 		Where(goqu.C("instance_id").Eq(instanceID), goqu.C("application_id").Eq(appID)).
-		Where(goqu.L("last_check_for_updates > now() at time zone 'utc' - interval ?", duration)).
-		Where(goqu.L(ignoreFakeInstanceCondition("instance_id")))
+		Where(goqu.L("last_check_for_updates > now() at time zone 'utc' - interval ?", duration))
 	return query
 }
 

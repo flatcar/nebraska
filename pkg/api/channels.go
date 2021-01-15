@@ -134,7 +134,7 @@ func (api *API) DeleteChannel(channelID string) error {
 func (api *API) GetChannel(channelID string) (*Channel, error) {
 	var channel Channel
 
-	query, _, err := api.channelsQuery().
+	query, _, err := goqu.From("channel").
 		Where(goqu.C("id").Eq(channelID)).
 		ToSQL()
 	if err != nil {
@@ -159,7 +159,7 @@ func (api *API) GetChannel(channelID string) (*Channel, error) {
 func (api *API) getSpecificChannels(channelID ...string) ([]*Channel, error) {
 	var channels []*Channel
 
-	query, _, err := api.channelsQuery().
+	query, _, err := goqu.From("channel").
 		Where(goqu.Ex{"id": channelID}).
 		ToSQL()
 	if err != nil {
