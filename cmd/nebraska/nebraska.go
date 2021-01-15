@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Depado/ginprom"
 	"github.com/gin-gonic/gin"
 	log "github.com/mgutz/logxi/v1"
 
@@ -144,6 +145,12 @@ func mainWithError() error {
 
 	engine := setupRoutes(ctl, *httpLog)
 
+	// Register Application metrics and Instrument.
+	err = registerAndInstrumentMetrics(ctl)
+	if err != nil {
+		return err
+	}
+
 	var params []string
 	if os.Getenv("PORT") == "" {
 		params = append(params, ":8000")
@@ -230,8 +237,23 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 	if httpLog {
 		setupRequestLifetimeLogging(engine)
 	}
+
+	// Setup Middlewares
+
+	// Recovery middleware to recover from panics
 	engine.Use(gin.Recovery())
+
 	setupRouter(engine, "top", httpLog)
+
+	// Prometheus Metrics Middleware
+	p := ginprom.New(
+		ginprom.Engine(engine),
+		ginprom.Namespace("nebraska"),
+		ginprom.Subsystem("gin"),
+		ginprom.Path("/metrics"),
+	)
+	engine.Use(p.Instrument())
+
 	wrappedEngine := wrapRouter(engine, httpLog)
 
 	ctl.auth.SetupRouter(wrappedEngine)
@@ -302,12 +324,6 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 		flatcarPkgsRouter := wrappedEngine.Group("/flatcar", "flatcar")
 		flatcarPkgsRouter.Static("/", *flatcarPackagesPath)
 	}
-
-	// Metrics
-	metricsRouter := wrappedEngine.Group("/metrics", "metrics")
-	setupRouter(metricsRouter, "metrics", httpLog)
-	metricsRouter.Use(ctl.authenticate)
-	metricsRouter.GET("/", ctl.getMetrics)
 
 	// Serve frontend static content
 	staticRouter := wrappedEngine.Group("/", "static")
