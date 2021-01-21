@@ -475,7 +475,7 @@ func (api *API) instanceAppQuery(appID, instanceID string, duration postgresDura
 }
 
 func ignoreFakeInstanceCondition(instanceIDField string) string {
-	return fmt.Sprintf(`(%[1]s IS NULL OR %[1]s NOT SIMILAR TO '\{[a-fA-F0-9-]{36}\}')`, instanceIDField)
+	return fmt.Sprintf(`(%[1]s IS NULL OR %[1]s NOT LIKE '{________-____-____-____-____________}')`, instanceIDField)
 }
 
 func (api *API) getFilterInstancesQuery(selectPart exp.LiteralExpression, p InstancesQueryParams, duration postgresDuration) *goqu.SelectDataset {

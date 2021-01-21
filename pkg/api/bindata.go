@@ -12,7 +12,8 @@
 // db/migrations/0008-arm-channels-groups.sql (3.854kB)
 // db/migrations/0009_group_track_names.sql (973B)
 // db/migrations/0010_add_instance_alias.sql (138B)
-// db/migrations/0011_add_index_instance_application.sql (447B)
+// db/migrations/0011_add_composite_indexes.sql (760B)
+// db/migrations/0012_drop_unused_indexes.sql (696B)
 
 package api
 
@@ -321,23 +322,43 @@ func dbMigrations0010_add_instance_aliasSql() (*asset, error) {
 	return a, nil
 }
 
-var _dbMigrations0011_add_index_instance_applicationSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xa4\x90\x31\xae\xc2\x30\x0c\x86\xf7\x9c\x22\xea\xd4\xa7\x97\x9e\xa0\x2b\x57\x60\xb6\xa2\xc4\xaa\x2c\x95\x24\xb2\x4d\x29\xb7\x47\x05\x02\x2d\xea\x04\x5b\x64\xeb\xfb\xf2\xfb\xef\x3a\xfb\x7f\xa2\x81\xbd\xa2\x3d\x16\x63\x02\xe3\xf2\xa4\x14\x71\xb6\x94\x44\x7d\x0a\x08\xbe\x94\x91\x82\x57\xca\x09\x5e\x43\x8a\xdb\x79\x04\x8a\xb3\xcd\x69\x17\xb3\xed\x8a\x73\x5b\xee\xaf\xff\xf8\xd7\x07\xa5\x89\xf4\x0a\x61\xf4\x22\xf0\xd8\x45\x50\x01\xc1\x09\x79\xd9\x4c\xc8\xb2\xd0\x03\xe7\x73\x59\x45\xa9\x19\xaa\xc2\xb6\x77\x87\x7b\x3b\x5c\x75\xb8\xe6\x29\x69\x5c\xb5\xec\x04\x5b\x17\x74\xc8\x97\x64\x4c\xe4\x5c\xbe\x2f\xa8\xdf\x08\x7e\xbc\xb4\xbf\x05\x00\x00\xff\xff\xc4\x32\x78\x87\xbf\x01\x00\x00")
+var _dbMigrations0011_add_composite_indexesSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xa4\x91\xc1\x4e\xc3\x30\x0c\x86\xef\x79\x0a\x6b\xa7\x22\xb2\x27\xe8\x95\x57\xe0\x6c\x59\x89\x37\x2c\x4a\x12\xc5\x5e\x29\x6f\x8f\x0a\x74\x6d\xa7\x6d\x12\xeb\x2d\x72\xe2\x4f\x5f\xfe\x7f\xbf\x87\xe7\x0f\x39\x56\x32\x86\xd7\xe2\x5c\xa8\x3c\x1e\x25\x45\x1e\x40\x0e\x90\xb2\x01\x0f\xa2\xa6\x20\x49\x8d\x52\x60\xa4\x52\x3a\x09\x64\x92\x13\x9e\x87\x12\xd7\xf3\x88\x12\x07\xc8\xe9\xea\x1a\x34\x8b\x3d\xbf\xde\x7b\x6a\xef\x5a\x50\x30\xe9\xc5\xbe\x30\x74\xa4\x8a\xbf\x2f\x23\x9a\xa2\x72\xcf\x75\xbc\xe9\xb9\xea\xc8\x3a\xd6\x7c\x2a\x0b\xb1\xc9\x68\x42\x40\xf3\xc3\xf0\x33\xc3\x4f\x0c\xbf\xfb\x83\xec\xfc\x44\xf9\x9f\xe6\xd5\xb0\x2e\x02\x3a\xfb\x75\xa4\x86\xe1\x8d\xc3\x3b\x1e\x72\xbd\x17\x5c\xb3\x46\xcc\x72\x17\x88\x53\x89\x64\xac\x7e\x11\xf3\x28\xbc\x6c\xfb\x25\x7f\x26\xe7\x62\xcd\x65\xfe\xc0\xe3\x4d\xb7\x37\x50\x1b\xeb\xba\x85\xdd\x18\x6f\xeb\xbe\x03\x00\x00\xff\xff\x53\x02\x0e\xe5\xf8\x02\x00\x00")
 
-func dbMigrations0011_add_index_instance_applicationSqlBytes() ([]byte, error) {
+func dbMigrations0011_add_composite_indexesSqlBytes() ([]byte, error) {
 	return bindataRead(
-		_dbMigrations0011_add_index_instance_applicationSql,
-		"db/migrations/0011_add_index_instance_application.sql",
+		_dbMigrations0011_add_composite_indexesSql,
+		"db/migrations/0011_add_composite_indexes.sql",
 	)
 }
 
-func dbMigrations0011_add_index_instance_applicationSql() (*asset, error) {
-	bytes, err := dbMigrations0011_add_index_instance_applicationSqlBytes()
+func dbMigrations0011_add_composite_indexesSql() (*asset, error) {
+	bytes, err := dbMigrations0011_add_composite_indexesSqlBytes()
 	if err != nil {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "db/migrations/0011_add_index_instance_application.sql", size: 447, mode: os.FileMode(0644), modTime: time.Unix(1, 0)}
-	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xea, 0xae, 0xcd, 0x92, 0xd3, 0xf9, 0x5, 0xd8, 0x82, 0x13, 0x6, 0xd5, 0x51, 0xfe, 0xac, 0x88, 0x40, 0xb1, 0xed, 0x75, 0xe8, 0x80, 0x87, 0x91, 0x12, 0xa0, 0x59, 0xcb, 0x72, 0xfc, 0x77, 0x80}}
+	info := bindataFileInfo{name: "db/migrations/0011_add_composite_indexes.sql", size: 760, mode: os.FileMode(0644), modTime: time.Unix(1, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x37, 0x6b, 0x97, 0xac, 0x35, 0x88, 0xf7, 0xc0, 0xb4, 0x16, 0xa6, 0xb5, 0x85, 0x35, 0xaa, 0xdf, 0xa6, 0x4c, 0x50, 0x65, 0xb0, 0x4b, 0xba, 0xc1, 0x74, 0x72, 0x93, 0x53, 0x99, 0xf1, 0x60, 0xbb}}
+	return a, nil
+}
+
+var _dbMigrations0012_drop_unused_indexesSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x94\x91\x41\x6e\x02\x31\x0c\x45\xf7\x73\x0a\x2f\x83\x2a\x4e\x30\xdb\x5e\xa1\x6b\xcb\x4a\x5c\xb0\x0a\x4e\x14\x9b\x76\xb8\x7d\x95\x32\x6a\x41\x22\x25\x6c\x22\xe5\xff\xaf\x67\xeb\x7b\xbb\x85\x97\xa3\xec\x2a\x39\xc3\x5b\x99\xa6\x54\x73\x01\xd1\xc4\x0b\xc8\x3b\xf0\x22\xe6\x06\x27\xe3\x6a\xe8\x4c\x47\x94\x84\x92\x96\xb9\x13\x14\x35\x27\x8d\x8c\xe6\xe4\x27\xc3\xbd\x98\xe7\x7a\x46\x2a\xe5\x20\x91\x5c\xb2\x3e\x20\xf0\x27\xab\xe3\xe5\xf5\x73\xe1\xa1\xf8\x38\x3e\xee\x49\x95\x0f\x58\x28\x7e\xd0\xee\x8a\x7e\xdd\xc3\x6b\xfe\xd2\x69\x8a\x95\xdb\xe7\x97\xa0\xd9\xbb\x7d\x40\xd6\x8b\x08\x61\x55\x37\xf3\xbf\x84\xf1\xa2\x1a\xba\x93\x86\x70\x1b\x7f\x30\xb3\x53\x6d\x1b\xf0\x23\x42\xb8\xf1\x86\x68\xf7\xf7\x5d\x71\x4f\x6d\x77\xff\x32\x8d\xb6\x3a\x10\xfe\xac\xcd\xfc\x1d\x00\x00\xff\xff\x1f\xfc\xbc\x08\xb8\x02\x00\x00")
+
+func dbMigrations0012_drop_unused_indexesSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_dbMigrations0012_drop_unused_indexesSql,
+		"db/migrations/0012_drop_unused_indexes.sql",
+	)
+}
+
+func dbMigrations0012_drop_unused_indexesSql() (*asset, error) {
+	bytes, err := dbMigrations0012_drop_unused_indexesSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "db/migrations/0012_drop_unused_indexes.sql", size: 696, mode: os.FileMode(0644), modTime: time.Unix(1, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xa1, 0x11, 0xfe, 0xc4, 0xb3, 0xce, 0xa1, 0xd2, 0x58, 0x8c, 0x62, 0xfa, 0x7f, 0xe2, 0x5b, 0xd9, 0xdc, 0xb0, 0x2b, 0x1f, 0xf5, 0xa5, 0xb, 0x4, 0x61, 0xf, 0x4, 0x8a, 0xb3, 0x6d, 0xbd, 0xf2}}
 	return a, nil
 }
 
@@ -432,19 +453,20 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"db/drop_all_tables.sql":                                dbDrop_all_tablesSql,
-	"db/sample_data.sql":                                    dbSample_dataSql,
-	"db/migrations/0001_initial.sql":                        dbMigrations0001_initialSql,
-	"db/migrations/0002_event_data.sql":                     dbMigrations0002_event_dataSql,
-	"db/migrations/0003_longer_team_names.sql":              dbMigrations0003_longer_team_namesSql,
-	"db/migrations/0004_rename_coreos_action.sql":           dbMigrations0004_rename_coreos_actionSql,
-	"db/migrations/0005_default_team_id.sql":                dbMigrations0005_default_team_idSql,
-	"db/migrations/0006_initial_application.sql":            dbMigrations0006_initial_applicationSql,
-	"db/migrations/0007_add_package_arch.sql":               dbMigrations0007_add_package_archSql,
-	"db/migrations/0008-arm-channels-groups.sql":            dbMigrations0008ArmChannelsGroupsSql,
-	"db/migrations/0009_group_track_names.sql":              dbMigrations0009_group_track_namesSql,
-	"db/migrations/0010_add_instance_alias.sql":             dbMigrations0010_add_instance_aliasSql,
-	"db/migrations/0011_add_index_instance_application.sql": dbMigrations0011_add_index_instance_applicationSql,
+	"db/drop_all_tables.sql":                       dbDrop_all_tablesSql,
+	"db/sample_data.sql":                           dbSample_dataSql,
+	"db/migrations/0001_initial.sql":               dbMigrations0001_initialSql,
+	"db/migrations/0002_event_data.sql":            dbMigrations0002_event_dataSql,
+	"db/migrations/0003_longer_team_names.sql":     dbMigrations0003_longer_team_namesSql,
+	"db/migrations/0004_rename_coreos_action.sql":  dbMigrations0004_rename_coreos_actionSql,
+	"db/migrations/0005_default_team_id.sql":       dbMigrations0005_default_team_idSql,
+	"db/migrations/0006_initial_application.sql":   dbMigrations0006_initial_applicationSql,
+	"db/migrations/0007_add_package_arch.sql":      dbMigrations0007_add_package_archSql,
+	"db/migrations/0008-arm-channels-groups.sql":   dbMigrations0008ArmChannelsGroupsSql,
+	"db/migrations/0009_group_track_names.sql":     dbMigrations0009_group_track_namesSql,
+	"db/migrations/0010_add_instance_alias.sql":    dbMigrations0010_add_instance_aliasSql,
+	"db/migrations/0011_add_composite_indexes.sql": dbMigrations0011_add_composite_indexesSql,
+	"db/migrations/0012_drop_unused_indexes.sql":   dbMigrations0012_drop_unused_indexesSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -491,17 +513,18 @@ var _bintree = &bintree{nil, map[string]*bintree{
 	"db": &bintree{nil, map[string]*bintree{
 		"drop_all_tables.sql": &bintree{dbDrop_all_tablesSql, map[string]*bintree{}},
 		"migrations": &bintree{nil, map[string]*bintree{
-			"0001_initial.sql":                        &bintree{dbMigrations0001_initialSql, map[string]*bintree{}},
-			"0002_event_data.sql":                     &bintree{dbMigrations0002_event_dataSql, map[string]*bintree{}},
-			"0003_longer_team_names.sql":              &bintree{dbMigrations0003_longer_team_namesSql, map[string]*bintree{}},
-			"0004_rename_coreos_action.sql":           &bintree{dbMigrations0004_rename_coreos_actionSql, map[string]*bintree{}},
-			"0005_default_team_id.sql":                &bintree{dbMigrations0005_default_team_idSql, map[string]*bintree{}},
-			"0006_initial_application.sql":            &bintree{dbMigrations0006_initial_applicationSql, map[string]*bintree{}},
-			"0007_add_package_arch.sql":               &bintree{dbMigrations0007_add_package_archSql, map[string]*bintree{}},
-			"0008-arm-channels-groups.sql":            &bintree{dbMigrations0008ArmChannelsGroupsSql, map[string]*bintree{}},
-			"0009_group_track_names.sql":              &bintree{dbMigrations0009_group_track_namesSql, map[string]*bintree{}},
-			"0010_add_instance_alias.sql":             &bintree{dbMigrations0010_add_instance_aliasSql, map[string]*bintree{}},
-			"0011_add_index_instance_application.sql": &bintree{dbMigrations0011_add_index_instance_applicationSql, map[string]*bintree{}},
+			"0001_initial.sql":               &bintree{dbMigrations0001_initialSql, map[string]*bintree{}},
+			"0002_event_data.sql":            &bintree{dbMigrations0002_event_dataSql, map[string]*bintree{}},
+			"0003_longer_team_names.sql":     &bintree{dbMigrations0003_longer_team_namesSql, map[string]*bintree{}},
+			"0004_rename_coreos_action.sql":  &bintree{dbMigrations0004_rename_coreos_actionSql, map[string]*bintree{}},
+			"0005_default_team_id.sql":       &bintree{dbMigrations0005_default_team_idSql, map[string]*bintree{}},
+			"0006_initial_application.sql":   &bintree{dbMigrations0006_initial_applicationSql, map[string]*bintree{}},
+			"0007_add_package_arch.sql":      &bintree{dbMigrations0007_add_package_archSql, map[string]*bintree{}},
+			"0008-arm-channels-groups.sql":   &bintree{dbMigrations0008ArmChannelsGroupsSql, map[string]*bintree{}},
+			"0009_group_track_names.sql":     &bintree{dbMigrations0009_group_track_namesSql, map[string]*bintree{}},
+			"0010_add_instance_alias.sql":    &bintree{dbMigrations0010_add_instance_aliasSql, map[string]*bintree{}},
+			"0011_add_composite_indexes.sql": &bintree{dbMigrations0011_add_composite_indexesSql, map[string]*bintree{}},
+			"0012_drop_unused_indexes.sql":   &bintree{dbMigrations0012_drop_unused_indexesSql, map[string]*bintree{}},
 		}},
 		"sample_data.sql": &bintree{dbSample_dataSql, map[string]*bintree{}},
 	}},
