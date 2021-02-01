@@ -33,7 +33,7 @@ function TimelineChart(props) {
 
     if (lengthMinutes === 7 * DAY) {
       tickCount = 7;
-      dateFormat = {useDate: true, showTime: false};
+      dateFormat = {dateFormat: {month: 'short', day: 'numeric'}, showTime: false};
     }
     if (lengthMinutes === 60) {
       for (let i = 0; i < 4; i++) {
@@ -80,8 +80,7 @@ function TimelineChart(props) {
       }
     }
     // The midnight tick just gets the date, not the hours (since they're zero)
-    ticks[midnightTick] = makeLocaleTime(midnightDay, {showTime: false});
-
+    ticks[midnightTick] = makeLocaleTime(midnightDay, {dateFormat: {month: 'short', day: 'numeric'}, showTime: false});
     return ticks;
   }
 
