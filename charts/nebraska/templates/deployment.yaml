@@ -1,0 +1,175 @@
+{{- $db := ( tpl .Values.config.database.dbname . ) }}
+{{- $host := .Values.config.database.host | default (include "nebraska.postgresql.fullname" .) }}
+{{- $port := .Values.config.database.port | toString }}
+{{- $user := ( tpl .Values.config.database.username . ) }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nebraska.fullname" . }}
+  labels:
+    {{- include "nebraska.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    {{- toYaml .Values.strategy | nindent 4 }}
+  selector:
+    matchLabels:
+      {{- include "nebraska.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "nebraska.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "nebraska.serviceAccountName" . }}
+      automountServiceAccountToken: false
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: {{ include "nebraska.image" ( dict "imageRoot" .Values.image "global" .Values.global "context" $) }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - "/nebraska/nebraska"
+          args:
+            {{- /* --- General settings --- */}}
+            {{- if .Values.config.app.title }}
+            - "-client-title={{ .Values.config.app.title }}"
+            {{- end }}
+            {{- if .Values.config.app.logoPath }}
+            - "-client-logo={{ .Values.config.app.logoPath }}"
+            {{- end }}
+            {{- if .Values.config.app.headerStyle }}
+            - "-client-header-style={{ .Values.config.app.headerStyle }}"
+            {{- end }}
+            {{- if .Values.config.app.httpStaticDir }}
+            - "-http-static-dir={{ .Values.config.app.httpStaticDir }}"
+            {{- end }}
+
+            {{- /* --- Syncer settings --- */}}
+            {{- if .Values.config.syncer.enabled }}
+            - "-enable-syncer"
+              {{- if .Values.config.syncer.interval }}
+            - "-sync-interval={{ .Values.config.syncer.interval }}"
+              {{- end }}
+              {{- if .Values.config.syncer.updateURL }}
+            - "-sync-update-url={{ .Values.config.syncer.updateURL }}"
+              {{- end }}
+            {{- end }}
+
+            {{- /* --- Host packages settings --- */}}
+            {{- if .Values.config.hostFlatcarPackages.enabled }}
+            - "-host-flatcar-packages"
+            - "-flatcar-packages-path={{ required "A valid 'packagesPath' is required when hosting Flatcar packages." .Values.config.hostFlatcarPackages.packagesPath }}"
+              {{- if .Values.ingress.enabled }}
+            - "-nebraska-url={{ printf "%s://%s"  (include "nebraska.ingressScheme" .) (index .Values.ingress.hosts 0) }}"
+              {{- else if .Values.config.hostFlatcarPackages.nebraskaURL }}
+            - "-nebraska-url={{ .Values.config.hostFlatcarPackages.nebraskaURL }}"
+              {{- end }}
+            {{- end }}
+
+            {{- /* --- Auth settings --- */}}
+            {{- if .Values.config.auth.mode }}
+            - "-auth-mode={{ .Values.config.auth.mode }}"
+            {{- end }}
+            {{- if and .Values.config.auth.github.readWriteTeams (not (eq .Values.config.auth.mode "noop")) }}
+            - "-gh-rw-teams={{ .Values.config.auth.github.readWriteTeams }}"
+            {{- end }}
+            {{- if and .Values.config.auth.github.readOnlyTeams (not (eq .Values.config.auth.mode "noop")) }}
+            - "-gh-ro-teams={{ .Values.config.auth.github.readOnlyTeams }}"
+            {{- end }}
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.config.database.passwordExistingSecret.enabled }}
+                  name: {{ tpl .Values.config.database.passwordExistingSecret.name . }}
+                  key: {{ .Values.config.database.passwordExistingSecret.key }}
+                  {{- else }}
+                  name: {{ include "nebraska.fullname" . }}
+                  key: dbPassword
+                  {{- end }}
+            - name: NEBRASKA_DB_URL
+              value: {{ printf "postgres://%s:$(DB_PASSWORD)@%s:%s/%s?sslmode=disable&connect_timeout=10" $user $host $port $db | quote }}
+            {{- if or (eq .Values.config.auth.mode "github") (not .Values.config.auth.mode) }}
+            - name: "NEBRASKA_GITHUB_OAUTH_CLIENT_ID"
+              value: "{{ .Values.config.auth.github.clientID }}"
+            - name: "NEBRASKA_GITHUB_OAUTH_CLIENT_SECRET"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "nebraska.fullname" . }}
+                  key: ghClientSecret
+            - name: "NEBRASKA_GITHUB_SESSION_SECRET"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "nebraska.fullname" . }}
+                  key: ghSessionAuthKey
+            - name: "NEBRASKA_GITHUB_SESSION_CRYPT_KEY"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "nebraska.fullname" . }}
+                  key: ghSessionCryptKey
+            - name: "NEBRASKA_GITHUB_WEBHOOK_SECRET"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "nebraska.fullname" . }}
+                  key: ghWebhookSecret
+              {{- if .Values.config.auth.github.enterpriseURL }}
+            - name: "NEBRASKA_GITHUB_ENTERPRISE_URL"
+              value: "{{ .Values.config.auth.github.enterpriseURL }}"
+              {{- end }}
+            {{- end }}
+            {{- range $key, $value := .Values.extraEnvVars }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          {{- if .Values.config.hostFlatcarPackages.enabled }}
+          volumeMounts:
+            - mountPath: {{ .Values.config.hostFlatcarPackages.packagesPath }}
+              name: packages
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.extraEnvVars.PORT | default 8000 }}
+              protocol: TCP
+          {{- if .Values.livenessProbe.enabled }}
+          livenessProbe:
+            {{- omit .Values.livenessProbe "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
+          readinessProbe:
+            {{- omit .Values.readinessProbe "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- if .Values.config.hostFlatcarPackages.enabled }}
+      volumes:
+        - name: packages
+          {{- if .Values.config.hostFlatcarPackages.persistence.enabled}}
+          persistentVolumeClaim:
+            claimName: {{ include "nebraska.fullname" . }}-packages
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
