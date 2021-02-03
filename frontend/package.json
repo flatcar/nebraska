@@ -19,6 +19,7 @@
     "@types/node": "^14.14.22",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "@types/react-router-dom": "^5.1.7",
     "dompurify": "^2.0.12",
     "downshift": "^3.4.7",
     "formik": "^2.1.5",
