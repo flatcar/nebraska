@@ -1,3 +1,4 @@
+import { Color, Theme } from '@material-ui/core';
 import amber from '@material-ui/core/colors/amber';
 import deepOrange from '@material-ui/core/colors/deepOrange';
 import lime from '@material-ui/core/colors/lime';
@@ -5,10 +6,13 @@ import orange from '@material-ui/core/colors/orange';
 import red from '@material-ui/core/colors/red';
 import React from 'react';
 import API from '../api/API';
+import { Channel, Group } from '../api/apiDataTypes';
 
 // Indexes/keys for the architectures need to match the ones in
 // pkg/api/arches.go.
-export const ARCHES = {
+export const ARCHES: {
+  [key: number]: string;
+} = {
   0: 'ALL',
   1: 'AMD64',
   2: 'ARM64',
@@ -26,18 +30,19 @@ export const timeIntervalsDefault = [
 ];
 
 export const defaultTimeInterval = timeIntervalsDefault
-  .find((interval) => interval.queryValue === '1d');
+  .filter((interval) => interval.queryValue === '1d')[0];
 
 function makeColors() {
-  const colors = [];
+  const colors: string[] = [];
 
   const colorScheme = [lime, amber, orange, deepOrange, red];
 
   // Create a color list for versions to pick from.
-  colorScheme.forEach(color => {
+  colorScheme.forEach((color: Color) => {
     // We choose the shades beyond 300 because they should not be too
     // light (in order to improve contrast).
     for (let i = 3; i <= 9; i += 2) {
+      //@ts-ignore
       colors.push(color[i * 100]);
     }
   });
@@ -45,7 +50,7 @@ function makeColors() {
   return colors;
 }
 
-export function cleanSemverVersion(version) {
+export function cleanSemverVersion(version: string) {
   let shortVersion = version;
   if (version.includes('+')) {
     shortVersion = version.split('+')[0];
@@ -53,11 +58,13 @@ export function cleanSemverVersion(version) {
   return shortVersion;
 }
 
-export function getMinuteDifference(date1, date2) {
+export function getMinuteDifference(date1: number, date2: number) {
   return (date1 - date2) / 1000 / 60;
 }
 
-export function makeLocaleTime(timestamp, opts = {}) {
+export function makeLocaleTime(timestamp: string |
+  Date | number, opts: {useDate?: boolean;
+    showTime?: boolean; dateFormat?: Intl.DateTimeFormatOptions;} = {}) {
   const {useDate = true, showTime = true, dateFormat = {}} = opts;
   const date = new Date(timestamp);
   const formattedDate = date.toLocaleDateString('default', dateFormat);
@@ -72,8 +79,9 @@ export function makeLocaleTime(timestamp, opts = {}) {
   return timeFormat;
 }
 
-export function makeColorsForVersions(theme, versions, channel = null) {
-  const versionColors = {};
+export function makeColorsForVersions(theme: Theme,
+                                      versions: string[], channel: Channel | null = null) {
+  const versionColors:{[key: string]: string} = {};
   let colorIndex = 0;
   let latestVersion = null;
 
@@ -95,8 +103,18 @@ export function makeColorsForVersions(theme, versions, channel = null) {
   return versionColors;
 }
 
-export function getInstanceStatus(statusID, version) {
-  const status = {
+export function getInstanceStatus(statusID: number, version?: string) {
+  const status: {[x: number]: {
+    type: string;
+    className: string;
+    spinning: boolean;
+    icon: string;
+    description: string;
+    status: string;
+    explanation: string;
+    textColor?: string;
+    bgColor?: string;
+  };} = {
     1: {
       type: 'InstanceStatusUndefined',
       className: '',
@@ -186,7 +204,7 @@ export function getInstanceStatus(statusID, version) {
   return statusDetails;
 }
 
-export function useGroupVersionBreakdown(group) {
+export function useGroupVersionBreakdown(group: Group) {
   const [versionBreakdown, setVersionBreakdown] = React.useState([]);
 
   React.useEffect(() => {
@@ -194,7 +212,7 @@ export function useGroupVersionBreakdown(group) {
       return;
     }
 
-    const version_breakdown = API.getGroupVersionBreakdown(group.application_id, group.id)
+    API.getGroupVersionBreakdown(group.application_id, group.id)
       .then(version_breakdown => {
         setVersionBreakdown(version_breakdown || []);
       })
@@ -208,7 +226,7 @@ export function useGroupVersionBreakdown(group) {
 }
 
 // Keep in sync with https://github.com/flatcar-linux/update_engine/blob/flatcar-master/src/update_engine/action_processor.h#L25
-const actionCodes = {
+const actionCodes: {[x: string]: string} = {
   '1': 'Error',
   '2': 'OmahaRequestError',
   '3': 'OmahaResponseHandlerError',
@@ -257,20 +275,20 @@ const actionCodes = {
   '2000': 'OmahaRequestHTTPResponseBase'
 };
 
-const flagsCodes = {
+const flagsCodes: {[x: number]: string} = {
   [Math.pow(2, 31)]: 'DevModeFlag',
   [Math.pow(2, 30)]: 'ResumedFlag',
   [Math.pow(2, 29)]: 'TestImageFlag',
   [Math.pow(2, 28)]: 'TestOmahaUrlFlag'
 };
 
-export function getErrorAndFlags(errorCode) {
+export function getErrorAndFlags(errorCode: number) {
   const errorMessage = [];
   let errorCodeVal = errorCode;
   // Extract and remove flags from the error code
   var flags = [];
   for (const [flag, flagValue] of Object.entries(flagsCodes)) {
-    if (errorCodeVal & flag) {
+    if (errorCodeVal & parseInt(flag)) {
       errorCodeVal &= ~flag;
       flags.push(flagValue);
     }
@@ -285,7 +303,7 @@ export function getErrorAndFlags(errorCode) {
   return [errorMessage, flags];
 }
 
-export function prepareErrorMessage(errorMessages, flags) {
+export function prepareErrorMessage(errorMessages: string[], flags: string[]) {
   const enhancedErrorMessages = errorMessages.reduce((acc, val) => `${val} ${acc}`, '');
   const enhancedFlags = flags.reduce((acc, val) => `${val} ${acc}`, '');
   return `${enhancedErrorMessages} ${enhancedFlags.length > 0 ? ' with ' + enhancedFlags : ''}`;
