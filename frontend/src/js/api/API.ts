@@ -117,13 +117,13 @@ class API {
     return API.doRequest('DELETE', url, '');
   }
 
-  static createPackage(packageData: Package) {
+  static createPackage(packageData: Partial<Package>) {
     const url = BASE_URL + '/apps/' + packageData.application_id + '/packages';
 
     return API.doRequest('POST', url, JSON.stringify(packageData));
   }
 
-  static updatePackage(packageData: Package) {
+  static updatePackage(packageData: Partial<Package>) {
     const keysToRemove = ['id', 'created_ts', 'package'];
     const processedPackage = API.removeKeysFromObject(packageData, keysToRemove);
     const url = BASE_URL + '/apps/' + packageData.application_id + '/packages/' + packageData.id;
@@ -189,7 +189,7 @@ class API {
   // Helpers
 
   static removeKeysFromObject(data: Package | Application |
-    Group | FlatcarAction | Channel, valuesToRemove: string[]) {
+    Group | FlatcarAction | Channel | Partial<Package>, valuesToRemove: string[]) {
     return _.omit(data, valuesToRemove);
   }
 

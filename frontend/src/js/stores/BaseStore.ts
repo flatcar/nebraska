@@ -13,11 +13,11 @@ class Store extends EventEmitter {
     this.emit(CHANGE_EVENT);
   }
 
-  addChangeListener(callback) {
+  addChangeListener(callback: () => void) {
     this.on(CHANGE_EVENT, callback);
   }
 
-  removeChangeListener(callback) {
+  removeChangeListener(callback: () => void) {
     this.removeListener(CHANGE_EVENT, callback);
   }
 }
