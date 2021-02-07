@@ -3,10 +3,11 @@ import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import _ from 'underscore';
 import API from '../api/API';
+import { Activity } from '../api/apiDataTypes';
 import Store from './BaseStore';
 
 class ActivityStore extends Store {
-
+  activity: {[key: string]: Activity[]} | null | never[];
   constructor() {
     super();
     this.activity = null;
@@ -35,8 +36,10 @@ class ActivityStore extends Store {
       });
   }
 
-  sortActivityByDate(entries) {
-    const sortedEntries = {};
+  sortActivityByDate(entries: Activity[]) {
+    const sortedEntries: {
+      [key: string]: Activity[];
+    } = {};
 
     entries.forEach(entry => {
       const createdDate = new Date(entry.created_ts);
@@ -52,10 +55,18 @@ class ActivityStore extends Store {
     return sortedEntries;
   }
 
-  getActivityEntryClass(classID, entry) {
+  getActivityEntryClass(classID: number, entry: Activity) {
     const instancePath = `/apps/${entry.app_id}/groups/${entry.group_id}/instances/${entry.instance_id}?period=1d`;
 
-    const classType = {
+    const classType: {
+      [key: string]: {
+        type: string;
+        appName: string;
+        groupName: string | null;
+        channelName: string | null;
+        description: string | React.ReactElement;
+      };
+    } = {
       1: {
         type: 'activityPackageNotFound',
         appName: entry.application_name,
@@ -109,9 +120,15 @@ class ActivityStore extends Store {
     return classDetails;
   }
 
-  getActivityEntrySeverity(severityID) {
+  getActivityEntrySeverity(severityID: number) {
 
-    const severityType = {
+    const severityType: {
+      [key: string]: {
+        type: string;
+        className: string;
+        icon: string;
+      };
+    } = {
       1: {
         type: 'activitySuccess',
         className: 'success',
