@@ -1,7 +1,7 @@
 import {render} from '@testing-library/react';
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import Item from '../../components/Activity/Item.react';
+import Item from '../../components/Activity/Item';
 
 describe('Activity Item', () => {
   it('should render acitivity item correctly', () => {
