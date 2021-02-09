@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { makeLocaleTime } from '../../constants/helpers';
-import Item from './Item.react';
+import Item from './Item';
 
 const useStyles = makeStyles(theme => ({
   listTitle: {
