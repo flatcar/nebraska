@@ -1,8 +1,8 @@
 import MuiList from '@material-ui/core/List';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import PropTypes from 'prop-types';
 import React from 'react';
+import { Activity } from '../../api/apiDataTypes';
 import { makeLocaleTime } from '../../constants/helpers';
 import Item from './Item';
 
@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function List(props) {
+function List(props: {entries?: Activity[]; timestamp: string}) {
   const classes = useStyles();
   const entries = props.entries ? props.entries : [];
 
@@ -25,17 +25,12 @@ function List(props) {
         })}
       </Typography>
       <MuiList>
-        {entries.map((entry, i) =>
+        {entries.map((entry: Activity, i: number) =>
           <Item key={i} entry={entry} />
         )}
       </MuiList>
     </React.Fragment>
   );
 }
-
-List.propTypes = {
-  timestamp: PropTypes.string.isRequired,
-  entries: PropTypes.array.isRequired
-};
 
 export default List;

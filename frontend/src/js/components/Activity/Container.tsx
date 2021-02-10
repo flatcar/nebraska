@@ -5,11 +5,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import TablePagination from '@material-ui/core/TablePagination';
 import React from 'react';
 import _ from 'underscore';
+import { Activity } from '../../api/apiDataTypes';
 import { activityStore } from '../../stores/Stores';
 import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
 import Loader from '../Common/Loader';
-import List from './List.react';
+import List from './List';
 
 const useStyles = makeStyles({
   toolbar: {
@@ -23,7 +24,7 @@ const useStyles = makeStyles({
   }
 });
 
-function Container(props) {
+function Container() {
   const classes = useStyles();
   const [activity, setActivity] = React.useState(getActivityEntries());
   const rowsOptions = [5, 10, 50];
@@ -44,18 +45,23 @@ function Container(props) {
     setPage(0);
   }
 
-  function handleChangePage(event, newPage) {
+  function handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
+                            newPage: number) {
     setPage(newPage);
   }
 
-  function handleChangeRowsPerPage(event) {
+  function handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement |
+     HTMLTextAreaElement>) {
     setRowsPerPage(+event.target.value);
     setPage(0);
   }
 
   function getPagedActivity() {
-    const entriesPerTime = {};
+    const entriesPerTime: {[key: string]: any} = {};
     let timestamp = null;
+    if (!activity) {
+      return entriesPerTime;
+    }
 
     for (let i = page * rowsPerPage;
       i < Math.min(activity.length, page * rowsPerPage + rowsPerPage); ++i) {
@@ -77,7 +83,7 @@ function Container(props) {
       return null;
     }
 
-    let entries = [];
+    let entries: Activity[] = [];
 
     Object.values(activityObj).forEach(value => {
       entries = entries.concat(value);
