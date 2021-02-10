@@ -1,7 +1,6 @@
 import Grid from '@material-ui/core/Grid';
-import PropTypes from 'prop-types';
 import React from 'react';
-import ActivityContainer from '../Activity/Container.react';
+import ActivityContainer from '../Activity/Container';
 import ApplicationsList from '../Applications/List.react';
 
 function MainLayout() {

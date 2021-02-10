@@ -1,7 +1,7 @@
 import {render} from '@testing-library/react';
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import List from '../../components/Activity/List.react';
+import List from '../../components/Activity/List';
 import { makeLocaleTime } from '../../constants/helpers';
 
 describe('Activity List', () => {
