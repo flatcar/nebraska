@@ -8,7 +8,7 @@ import { applicationsStore } from '../../stores/Stores';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
 import ListItem from '../Common/ListItem';
 import MoreMenu from '../Common/MoreMenu';
-import GroupsList from './ApplicationItemGroupsList.react';
+import GroupsList from './ApplicationItemGroupsList';
 
 const useStyles = makeStyles(theme => ({
   root: {
