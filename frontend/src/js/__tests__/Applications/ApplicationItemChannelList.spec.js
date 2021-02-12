@@ -1,6 +1,6 @@
 import {render} from '@testing-library/react';
 import React from 'react';
-import ApplicationItemChannelsList from '../../components/Applications/ApplicationItemChannelsList.react';
+import ApplicationItemChannelsList from '../../components/Applications/ApplicationItemChannelsList';
 
 describe('Application Channel List ', () => {
   it('should render no application channel for empty channels', () => {

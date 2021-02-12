@@ -7,15 +7,22 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Field, Form, Formik } from 'formik';
 import { TextField } from 'formik-material-ui';
-import PropTypes from 'prop-types';
 import React from 'react';
 import * as Yup from 'yup';
+import { Application } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 
-function EditDialog(props) {
+function EditDialog(props: {
+  create?: any;
+  data: any;
+  show: boolean;
+  onHide: () => void;
+}) {
   const isCreation = Boolean(props.create);
 
-  function handleSubmit(values, actions) {
+  function handleSubmit(values: {[key: string]: any}, actions: {
+    [key: string]: any;
+  }) {
     var data = {
       name: values.name,
       description: values.description
@@ -46,6 +53,7 @@ function EditDialog(props) {
     props.onHide();
   }
 
+  //@ts-ignore
   function renderForm({status, isSubmitting}) {
     return (
       <Form data-testid="app-edit-form">
@@ -87,7 +95,7 @@ function EditDialog(props) {
             >
               <MenuItem value="none" key="none">Do not copy</MenuItem>
               {props.data.applications &&
-                props.data.applications.map((application, i) => {
+                props.data.applications.map((application: Application, i: number) => {
                   return (
                     <MenuItem value={application.id} key={'app_' + i}>
                       {application.name}
@@ -122,15 +130,12 @@ function EditDialog(props) {
                          description: props.data.description }}
         onSubmit={handleSubmit}
         validationSchema={validation}
+        //@todo add better types for renderForm
+        //@ts-ignore
         render={renderForm}
       />
     </Dialog>
   );
 }
-
-EditDialog.propTypes = {
-  data: PropTypes.object.isRequired,
-  show: PropTypes.bool.isRequired
-};
 
 export default EditDialog;

@@ -2,8 +2,8 @@ import { Box, Divider, Typography } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import ScheduleIcon from '@material-ui/icons/Schedule';
-import PropTypes from 'prop-types';
 import React from 'react';
+import { Application } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
 import ListItem from '../Common/ListItem';
@@ -19,10 +19,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Item(props) {
+function Item(props: {application: Application; handleUpdateApplication: (appID: string) => void}) {
   const classes = useStyles();
   const description = props.application.description || 'No description provided';
-  const channels = props.application.channels || [];
   const groups = props.application.groups || [];
   const instances = props.application.instances.count || 'None';
   const appID = props.application ? props.application.id : '';
@@ -108,10 +107,5 @@ function Item(props) {
     </ListItem>
   );
 }
-
-Item.propTypes = {
-  application: PropTypes.object.isRequired,
-  handleUpdateApplication: PropTypes.func.isRequired
-};
 
 export default Item;

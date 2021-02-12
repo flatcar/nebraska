@@ -1,11 +1,11 @@
-import { Box, Divider } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
 import LayersOutlinedIcon from '@material-ui/icons/LayersOutlined';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import API from '../../api/API';
+import { Group } from '../../api/apiDataTypes';
 import ChannelItem from '../Channels/Item.react';
 
 const useStyles = makeStyles(({
@@ -14,7 +14,10 @@ const useStyles = makeStyles(({
   },
 }));
 
-function ApplicationItemGroupItem(props) {
+function ApplicationItemGroupItem(props: {
+  group: Group;
+  appName: string;
+}) {
   const classes = useStyles();
   const {group} = props;
   const [totalInstances, setTotalInstances] = React.useState(-1);
@@ -64,10 +67,5 @@ function ApplicationItemGroupItem(props) {
     </>
   );
 }
-
-ApplicationItemGroupItem.propTypes = {
-  group: PropTypes.object.isRequired,
-  appName: PropTypes.string.isRequired
-};
 
 export default ApplicationItemGroupItem;

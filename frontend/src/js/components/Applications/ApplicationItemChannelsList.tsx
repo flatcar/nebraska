@@ -1,11 +1,14 @@
 import Grid from '@material-ui/core/Grid';
-import PropTypes from 'prop-types';
 import React from 'react';
+import { Channel } from '../../api/apiDataTypes';
 import ChannelItem from '../Channels/Item.react';
 
-function ApplicationItemChannelsList(props) {
+function ApplicationItemChannelsList(props: {
+  channels?: Channel[];
+
+}) {
   const channels = props.channels || [];
-  let entries = '-';
+  let entries: React.ReactNode[] = [];
 
   if (channels) {
     entries = channels.map((channel, i) =>
@@ -21,7 +24,7 @@ function ApplicationItemChannelsList(props) {
       container
       justify="space-between"
     >
-      {entries.map((entry, i) =>
+      {entries.map((entry: React.ReactNode, i: number) =>
         <Grid item xs={4} key={i}>
           {entry}
         </Grid>
@@ -30,9 +33,5 @@ function ApplicationItemChannelsList(props) {
   );
 
 }
-
-ApplicationItemChannelsList.propTypes = {
-  channels: PropTypes.array.isRequired
-};
 
 export default ApplicationItemChannelsList;
