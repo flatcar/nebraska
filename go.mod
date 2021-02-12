@@ -6,7 +6,7 @@ replace github.com/coreos/go-omaha => github.com/kinvolk/go-omaha v0.0.0-2020112
 
 require (
 	github.com/Depado/ginprom v1.5.0
-	github.com/blang/semver v3.5.1+incompatible
+	github.com/blang/semver/v4 v4.0.0
 	github.com/coreos/go-omaha v0.0.0 // replaced with github.com/kinvolk/go-omaha
 	github.com/doug-martin/goqu/v9 v9.10.0
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
