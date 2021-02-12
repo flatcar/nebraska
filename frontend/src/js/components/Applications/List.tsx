@@ -2,15 +2,16 @@ import {List as MuiList, withStyles} from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import React from 'react';
 import _ from 'underscore';
-import { applicationsStore, modalStore } from '../../stores/Stores';
+import { Application } from '../../api/apiDataTypes';
+import { applicationsStore } from '../../stores/Stores';
 import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
 import Loader from '../Common/Loader';
 import ModalButton from '../Common/ModalButton.react';
 import EditDialog from './EditDialog';
-import Item from './Item.react';
+import Item from './Item';
 
-const styles = theme => ({
+const styles = () => ({
   root: {
     '& > hr:first-child': {
       display: 'none'
@@ -18,113 +19,97 @@ const styles = theme => ({
   }
 });
 
-class List extends React.Component {
+function List(props: {
+  classes: Record<'root', string>;
+}) {
+  const [applications, setApplications] = React.useState(applicationsStore.getCachedApplications());
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [updateAppModalVisible, setUpdateModalVisible] = React.useState(false);
+  const [updateAppIDModal, setUpdateAppIDModal] = React.useState<null | string>(null);
 
-  constructor(props) {
-    super(props);
-    this.onChange = this.onChange.bind(this);
-    this.searchUpdated = this.searchUpdated.bind(this);
-    this.openUpdateAppModal = this.openUpdateAppModal.bind(this);
-    this.closeUpdateAppModal = this.closeUpdateAppModal.bind(this);
+  function closeUpdateAppModal() {
+    setUpdateModalVisible(false);
+  }
 
-    this.state = {
-      applications: applicationsStore.getCachedApplications(),
-      searchTerm: '',
-      updateAppModalVisible: false,
-      updateAppIDModal: null
+  function openUpdateAppModal(appID: string) {
+    setUpdateModalVisible(true);
+    setUpdateAppIDModal(appID);
+  }
+
+  React.useEffect(() => {
+    applicationsStore.addChangeListener(onChange);
+    return () => {
+      applicationsStore.removeChangeListener(onChange);
     };
+  }, []);
+
+  function onChange() {
+    setApplications(applicationsStore.getCachedApplications());
   }
 
-  closeUpdateAppModal() {
-    this.setState({updateAppModalVisible: false});
-  }
+  let entries: React.ReactNode = '';
+  const {classes} = props;
 
-  openUpdateAppModal(appID) {
-    this.setState({updateAppModalVisible: true, updateAppIDModal: appID});
-  }
-
-  componentDidMount() {
-    applicationsStore.addChangeListener(this.onChange);
-  }
-
-  componentWillUnmount() {
-    applicationsStore.removeChangeListener(this.onChange);
-  }
-
-  onChange() {
-    this.setState({
-      applications: applicationsStore.getCachedApplications()
-    });
-  }
-
-  searchUpdated(event) {
-    const {name, value} = event.currentTarget;
-    this.setState({searchTerm: value.toLowerCase()});
-  }
-
-  render() {
-    let applications = this.state.applications;
-    let entries = '';
-    const {classes} = this.props;
-
-    if (this.state.searchTerm) {
-      applications = applications.filter(app => app.name
+  if (searchTerm) {
+    if (applications) {
+      setApplications(applications.filter(app => app.name
         .toLowerCase()
-        .includes(this.state.searchTerm));
+        .includes(searchTerm))
+      );
     }
 
-    if (_.isNull(applications)) {
-      entries = <Loader />;
-    } else {
-      if (_.isEmpty(applications)) {
-        if (this.state.searchTerm) {
-          entries = <Empty>No results found.</Empty>;
-        } else {
-          entries = <Empty>Ops, it looks like you have not created any
-            application yet..<br/><br/> Now is a great time to create your
-            first one, just click on the plus symbol above.</Empty>;
-        }
+  }
+
+  if (_.isNull(applications)) {
+    entries = <Loader />;
+  } else {
+    if (_.isEmpty(applications)) {
+      if (searchTerm) {
+        entries = <Empty>No results found.</Empty>;
       } else {
-        entries = _.map(applications, (application, i) => {
-          return (
-            <Item key={application.id}
-              application={application}
-              handleUpdateApplication={this.openUpdateAppModal}
-            />);
-        });
+        entries = <Empty>Ops, it looks like you have not created any
+          application yet..<br/><br/> Now is a great time to create your
+          first one, just click on the plus symbol above.</Empty>;
       }
+    } else {
+      entries = _.map(applications, (application: Application, i: number) => {
+        return (
+          <Item key={application.id}
+            application={application}
+            handleUpdateApplication={openUpdateAppModal}
+          />);
+      });
     }
+  }
 
-    const appToUpdate = applications &&
-      this.state.updateAppIDModal ?
-      _.findWhere(applications, {id: this.state.updateAppIDModal}) : null;
-    return (
-      <>
-        <ListHeader
-          title="Applications"
-          actions={[
-            <ModalButton
-              modalToOpen="AddApplicationModal"
-              data={{applications: applications}}
-            />
-          ]}
-        />
-        <Paper>
-          <MuiList className={classes.root}>
-            {entries}
-          </MuiList>
-          {appToUpdate &&
+  const appToUpdate = applications &&
+      updateAppIDModal ?
+    _.findWhere(applications, {id: updateAppIDModal}) : null;
+  return (
+    <>
+      <ListHeader
+        title="Applications"
+        actions={[
+          <ModalButton
+            modalToOpen="AddApplicationModal"
+            data={{applications: applications}}
+          />
+        ]}
+      />
+      <Paper>
+        <MuiList className={classes.root}>
+          {entries}
+        </MuiList>
+        {appToUpdate &&
           <EditDialog
             data={appToUpdate}
-            show={this.state.updateAppModalVisible}
-            onHide={this.closeUpdateAppModal}
+            show={updateAppModalVisible}
+            onHide={closeUpdateAppModal}
           />
-          }
-        </Paper>
-      </>
-    );
-  }
-
+        }
+      </Paper>
+    </>
+  );
 }
 
 export default withStyles(styles)(List);
