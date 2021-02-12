@@ -826,8 +826,8 @@ func (ctl *controller) processOmahaRequest(c *gin.Context) {
 //
 
 func getRequestIP(r *http.Request) string {
-	ips := strings.Split(r.Header.Get("X-FORWARDED-FOR"), ", ")
-	if ips[0] != "" && net.ParseIP(ips[0]) != nil {
+	ips := strings.Split(r.Header.Get("X-FORWARDED-FOR"), ",")
+	if ips[0] != "" && net.ParseIP(strings.TrimSpace(ips[0])) != nil {
 		return ips[0]
 	}
 	ip, _, _ := net.SplitHostPort(r.RemoteAddr)
