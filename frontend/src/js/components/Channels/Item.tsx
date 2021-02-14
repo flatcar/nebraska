@@ -1,11 +1,11 @@
-import { Box, Grid, makeStyles, Tooltip, Typography, useTheme } from '@material-ui/core';
+import { Box, Grid, makeStyles, Tooltip, useTheme } from '@material-ui/core';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import ScheduleIcon from '@material-ui/icons/Schedule';
-import PropTypes from 'prop-types';
 import React from 'react';
-import { ARCHES, cleanSemverVersion, makeLocaleTime } from '../../constants/helpers';
+import { Channel, Package } from '../../api/apiDataTypes';
+import { ARCHES, cleanSemverVersion } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import MoreMenu from '../Common/MoreMenu';
 import ChannelAvatar from './ChannelAvatar';
@@ -15,7 +15,14 @@ const useStyles = makeStyles(({
     margin: '0px'
   }
 }));
-function Item(props) {
+
+function Item(props: {
+  channel: Channel;
+  packages?: Package[];
+  showArch?: boolean;
+  isAppView?: boolean;
+  handleUpdateChannel?: (channelID: string) => void;
+}) {
   const theme = useTheme();
   const classes = useStyles();
   const {channel, packages, handleUpdateChannel,
@@ -31,7 +38,9 @@ function Item(props) {
   }
 
   function updateChannel() {
-    props.handleUpdateChannel(channel.id);
+    if (props.handleUpdateChannel) {
+      props.handleUpdateChannel(channel.id);
+    }
   }
 
   function getSecondaryText() {
@@ -102,9 +111,5 @@ function Item(props) {
     </ListItem>
   );
 }
-
-Item.propTypes = {
-  channel: PropTypes.object.isRequired,
-};
 
 export default Item;

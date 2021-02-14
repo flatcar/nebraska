@@ -2,7 +2,7 @@ import Grid from '@material-ui/core/Grid';
 import React from 'react';
 import _ from 'underscore';
 import { applicationsStore } from '../../stores/Stores';
-import ChannelsList from '../Channels/List.react';
+import ChannelsList from '../Channels/List';
 import SectionHeader from '../Common/SectionHeader';
 import GroupsList from '../Groups/List.react';
 import PackagesList from '../Packages/List.react';

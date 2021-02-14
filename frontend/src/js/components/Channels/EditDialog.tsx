@@ -1,4 +1,3 @@
-import { ListItemText } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -17,11 +16,12 @@ import { TextField } from 'formik-material-ui';
 import PropTypes from 'prop-types';
 import React from 'react';
 import * as Yup from 'yup';
+import { Channel, Package } from '../../api/apiDataTypes';
 import { ARCHES } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
-import ChannelAvatar from '../Channels/ChannelAvatar';
 import AutoCompletePicker from '../Common/AutoCompletePicker';
 import { ColorPickerButton } from '../Common/ColorPicker';
+import ChannelAvatar from './ChannelAvatar';
 
 const useStyles = makeStyles(theme => ({
   nameField: {
@@ -29,7 +29,12 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function EditDialog(props) {
+function EditDialog(props: {
+  data: any;
+  create?: boolean;
+  show: boolean;
+  onHide: () => void;
+}) {
   const classes = useStyles();
   const defaultColor = '';
   const [channelColor, setChannelColor] = React.useState(defaultColor);
@@ -43,10 +48,17 @@ function EditDialog(props) {
     setChannelColor(props.data.channel ? props.data.channel.color : defaultColor);
   }, [props.data]);
 
-  function handleSubmit(values, actions) {
-    const data = {
+  function handleSubmit(values: {[key: string]: any}, actions: {[key:string]: any}) {
+    const data: {
+      name: string;
+      arch: number;
+      color: any;
+      application_id: string;
+      package_id?: string;
+      id?: string;
+    } = {
       name: values.name,
-      arch: parseInt(arch),
+      arch: arch,
       color: channelColor,
       application_id: props.data.applicationID
     };
@@ -58,10 +70,10 @@ function EditDialog(props) {
 
     let channelFunctionCall;
     if (isCreation) {
-      channelFunctionCall = applicationsStore.createChannel(data);
+      channelFunctionCall = applicationsStore.createChannel(data as Channel);
     } else {
       data['id'] = props.data.channel.id;
-      channelFunctionCall = applicationsStore.updateChannel(data);
+      channelFunctionCall = applicationsStore.updateChannel(data as Channel);
     }
 
     channelFunctionCall
@@ -77,18 +89,19 @@ function EditDialog(props) {
       });
   }
 
-  function handleColorPicked(color) {
+  function handleColorPicked(color: {hex: string}) {
     setChannelColor(color.hex);
   }
 
-  function handleArchChange(event) {
+  function handleArchChange(event: React.ChangeEvent<{value: any}>) {
     setArch(event.target.value);
   }
 
   function handleClose() {
     props.onHide();
   }
-
+  //@todo add better types
+  //@ts-ignore
   function renderForm({values, status, setFieldValue, isSubmitting}) {
     const packages = props.data.packages ? props.data.packages : [];
     return (
@@ -150,8 +163,8 @@ function EditDialog(props) {
               value={arch}
               onChange={handleArchChange}
             >
-              {Object.keys(ARCHES).map(key => {
-                const archName = ARCHES[key];
+              {Object.keys(ARCHES).map((key: string) => {
+                const archName = ARCHES[parseInt(key)];
                 return <MenuItem value={parseInt(key)} key={key}>{archName}</MenuItem>;
               })}
             </MuiSelect>
@@ -166,15 +179,16 @@ function EditDialog(props) {
             component={AutoCompletePicker}
             helperText={`Showing only for the channel's architecture (${ARCHES[arch]}).`}
             fullWidth
-            onSelect={packageVersion => {
-              const selectedPackage = packages.filter(packageItem => packageItem.arch === arch)
-                .filter((packageItem) => packageItem.version === packageVersion
+            onSelect={(packageVersion: string) => {
+              const selectedPackage = packages.filter((packageItem: Package) =>
+                packageItem.arch === arch)
+                .filter((packageItem: Package) => packageItem.version === packageVersion
                 );
               setFieldValue('package', selectedPackage[0].id);
             }}
             getSuggestions={
-              packages.filter(packageItem => packageItem.arch === arch)
-                .map((packageItem, i) =>
+              packages.filter((packageItem: Package) => packageItem.arch === arch)
+                .map((packageItem: Package) =>
                 {
                   const date = new Date(packageItem.created_ts);
                   return {
@@ -185,8 +199,7 @@ function EditDialog(props) {
             }
             placeholder={'Pick a package'}
             pickerPlaceholder={'Start typing to search a package'}
-            data={packages.filter(packageItem => packageItem.arch === arch)}
-            label={'Package'}
+            data={packages.filter((packageItem: Package) => packageItem.arch === arch)}
             dialogTitle={'Choose a package'}
             defaultValue={channel && channel.package ? channel.package.version : ''}
           />
@@ -220,6 +233,8 @@ function EditDialog(props) {
         initialValues={initialValues}
         onSubmit={handleSubmit}
         validationSchema={validation}
+        //@todo add better types
+        //@ts-ignore
         render={renderForm}
       />
     </Dialog>

@@ -6,13 +6,14 @@ import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import _ from 'underscore';
 import API from '../../api/API';
+import { Application, Channel, Package } from '../../api/apiDataTypes';
 import { ARCHES } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import Loader from '../Common/Loader';
 import ModalButton from '../Common/ModalButton.react';
 import SectionPaper from '../Common/SectionPaper';
 import EditDialog from './EditDialog';
-import Item from './Item.react';
+import Item from './Item';
 
 const useStyles = makeStyles({
   root: {
@@ -22,19 +23,29 @@ const useStyles = makeStyles({
   }
 });
 
-function ChannelList(props) {
+interface PackageChannelApplication extends Application {
+  packages: Package[];
+  channels: Channel[];
+}
+
+function ChannelList(props: {
+  application: PackageChannelApplication;
+  onEdit: (channelId: string) => void;
+}) {
   const {application, onEdit} = props;
   const classes = useStyles();
 
   function getChannelsPerArch() {
-    const perArch = {};
+    const perArch: {
+      [key: number]: any[];
+    } = {};
 
     // If application doesn't have any channel return empty object.
     if (application.channels === null) {
       return perArch;
     }
 
-    application.channels.forEach(channel => {
+    application.channels.forEach((channel: Channel) => {
       if (!perArch[channel.arch]) {
         perArch[channel.arch] = [];
       }
@@ -49,7 +60,7 @@ function ChannelList(props) {
       {Object.entries(getChannelsPerArch()).map(([arch, channels]) =>
         <MuiList
           key={arch}
-          subheader={<ListSubheader disableSticky >{ARCHES[arch]}</ListSubheader>}
+          subheader={<ListSubheader disableSticky >{ARCHES[parseInt(arch)]}</ListSubheader>}
           dense
           className={classes.root}
         >
@@ -68,12 +79,14 @@ function ChannelList(props) {
   );
 }
 
-function List(props) {
+function List(props: {
+  appID: string;
+}) {
   const { appID } = props;
   const [application, setApplication] =
     React.useState(applicationsStore.getCachedApplication(appID));
-  const [packages, setPackages] = React.useState(null);
-  const [channelToEdit, setChannelToEdit] = React.useState(null);
+  const [packages, setPackages] = React.useState<null | Package[]>(null);
+  const [channelToEdit, setChannelToEdit] = React.useState<null | Channel>(null);
 
   React.useEffect(() => {
     applicationsStore.addChangeListener(onStoreChange);
@@ -105,7 +118,7 @@ function List(props) {
     setApplication(applicationsStore.getCachedApplication(appID));
   }
 
-  function onChannelEditOpen(channelID) {
+  function onChannelEditOpen(channelID: string) {
     let channels = [];
     if (application) {
       channels = application.channels ? application.channels : [];
