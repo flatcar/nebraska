@@ -1,6 +1,6 @@
 import {fireEvent, render} from '@testing-library/react';
 import React from 'react';
-import Item from '../../components/Channels/Item.react';
+import Item from '../../components/Channels/Item';
 
 describe('Channel Item', () => {
   const minProps = {

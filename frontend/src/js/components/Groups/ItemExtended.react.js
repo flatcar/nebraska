@@ -12,7 +12,7 @@ import _ from 'underscore';
 import API from '../../api/API';
 import { defaultTimeInterval, timeIntervalsDefault } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
-import ChannelItem from '../Channels/Item.react';
+import ChannelItem from '../Channels/Item';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
 import MoreMenu from '../Common/MoreMenu';
 import TimeIntervalLinks from '../Common/TimeIntervalLinks';

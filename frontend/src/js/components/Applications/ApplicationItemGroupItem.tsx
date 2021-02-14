@@ -6,7 +6,7 @@ import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import API from '../../api/API';
 import { Group } from '../../api/apiDataTypes';
-import ChannelItem from '../Channels/Item.react';
+import ChannelItem from '../Channels/Item';
 
 const useStyles = makeStyles(({
   groupLink: {

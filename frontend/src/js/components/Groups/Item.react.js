@@ -10,7 +10,7 @@ import _ from 'underscore';
 import API from '../../api/API';
 import { useGroupVersionBreakdown } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
-import ChannelItem from '../Channels/Item.react';
+import ChannelItem from '../Channels/Item';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
 import Empty from '../Common/EmptyContent';
 import ListItem from '../Common/ListItem';
