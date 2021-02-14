@@ -30,9 +30,8 @@ require (
 	github.com/kevinburke/go-bindata v3.16.0+incompatible
 	github.com/lib/pq v1.8.0
 	github.com/mattn/go-colorable v0.1.8 // indirect
-	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
-	github.com/mgutz/logxi v0.0.0-20161027140823-aebf8a7d67ab
 	github.com/prometheus/client_golang v1.5.0
+	github.com/rs/zerolog v1.20.0
 	github.com/rubenv/sql-migrate v0.0.0-20200616145509-8d140a17f351
 	github.com/stretchr/testify v1.6.1
 	github.com/ugorji/go v1.1.13 // indirect

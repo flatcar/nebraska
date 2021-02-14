@@ -62,7 +62,7 @@ func getMetricsRefreshInterval() time.Duration {
 
 	refreshInterval, err := time.ParseDuration(refreshIntervalEnvValue)
 	if err != nil || refreshInterval <= 0 {
-		logger.Warn("invalid NEBRASKA_METRICS_UPDATE_INTERVAL value, it must be acceptable by time.ParseDuration and positive", "value", refreshIntervalEnvValue)
+		logger.Warn().Str("value", refreshIntervalEnvValue).Msg("invalid NEBRASKA_METRICS_UPDATE_INTERVAL, it must be acceptable by time.ParseDuration and positive value")
 		return defaultMetricsUpdateInterval
 	}
 	return refreshInterval
@@ -85,7 +85,7 @@ func registerAndInstrumentMetrics(ctl *controller) error {
 			<-metricsTicker
 			err := calculateMetrics(ctl)
 			if err != nil {
-				logger.Error("registerAndInstrumentMetrics updating the metrics", "error", err.Error())
+				logger.Error().Err(err).Msg("registerAndInstrumentMetrics updating the metrics")
 			}
 		}
 	}()

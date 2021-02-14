@@ -18,9 +18,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/rs/zerolog"
+
 	"github.com/coreos/go-omaha/omaha"
 	"github.com/google/uuid"
-	log "github.com/mgutz/logxi/v1"
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/kinvolk/nebraska/pkg/api"
@@ -31,7 +32,10 @@ const (
 )
 
 var (
-	logger = log.New("syncer")
+	logger = zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr}).Hook(
+		zerolog.HookFunc(func(e *zerolog.Event, level zerolog.Level, message string) {
+			e.Str("context", "syncer")
+		}))
 
 	// ErrInvalidAPIInstance error indicates that no valid api instance was
 	// provided to the syncer constructor.
@@ -105,7 +109,7 @@ func New(conf *Config) (*Syncer, error) {
 // Start makes the syncer start working. It will check for updates every
 // checkFrequency until it's asked to stop.
 func (s *Syncer) Start() {
-	logger.Debug("syncer ready!")
+	logger.Debug().Msg("syncer ready!")
 	s.ticker = time.NewTicker(s.checkFrequency)
 
 	_ = s.checkForUpdates()
@@ -126,7 +130,7 @@ L:
 // Stop stops the polling for updates.
 func (s *Syncer) Stop() {
 	s.ticker.Stop()
-	logger.Debug("stopping syncer..")
+	logger.Debug().Msg("stopping syncer..")
 	s.stopCh <- struct{}{}
 }
 
@@ -166,21 +170,21 @@ func (s *Syncer) initialize() error {
 // in Nebraska as needed.
 func (s *Syncer) checkForUpdates() error {
 	for descriptor, currentVersion := range s.versions {
-		logger.Debug("checking for updates", "channel", descriptor.name, "arch", descriptor.arch.String(), "currentVersion", currentVersion)
+		logger.Debug().Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Str("currentVersion", currentVersion).Msg("checking for updates")
 
 		update, err := s.doOmahaRequest(descriptor, currentVersion)
 		if err != nil {
 			return err
 		}
 		if update != nil && update.Status == "ok" {
-			logger.Debug("checkForUpdates, got an update", "channel", descriptor.name, "arch", descriptor.arch.String(), "currentVersion", currentVersion, "availableVersion", update.Manifest.Version)
+			logger.Debug().Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Str("currentVersion", currentVersion).Str("availableVersion", update.Manifest.Version).Send()
 			if err := s.processUpdate(descriptor, update); err != nil {
 				return err
 			}
 			s.versions[descriptor] = update.Manifest.Version
 			s.bootIDs[descriptor] = "{" + uuid.New().String() + "}"
 		} else {
-			logger.Debug("checkForUpdates, no update available", "channel", descriptor.name, "arch", descriptor.arch.String(), "currentVersion", currentVersion, "updateStatus", update.Status)
+			logger.Debug().Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Str("currentVersion", currentVersion).Msgf("checkForUpdates, no update available updateStatus %v", update.Status)
 		}
 
 		select {
@@ -213,29 +217,29 @@ func (s *Syncer) doOmahaRequest(descriptor channelDescriptor, currentVersion str
 
 	payload, err := xml.Marshal(req)
 	if err != nil {
-		logger.Error("checkForUpdates, marshalling request xml", "error", err)
+		logger.Error().Err(err).Msg("checkForUpdates, marshalling request xml")
 		return nil, err
 	}
-	logger.Debug("doOmahaRequest", "request", string(payload))
+	logger.Debug().Str("request", string(payload)).Msg("doOmahaRequest")
 
 	resp, err := s.httpClient.Post(s.flatcarUpdatesURL, "text/xml", bytes.NewReader(payload))
 	if err != nil {
-		logger.Error("checkForUpdates, posting omaha response", "error", err)
+		logger.Error().Err(err).Msg("checkForUpdates, posting omaha response")
 		return nil, err
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		logger.Error("checkForUpdates, reading omaha response", "error", err)
+		logger.Error().Err(err).Msg("checkForUpdates, reading omaha response")
 		return nil, err
 	}
-	logger.Debug("doOmahaRequest", "response", string(body))
+	logger.Debug().Str("response", string(body)).Msg("doOmahaRequest")
 
 	oresp := &omaha.Response{}
 	err = xml.Unmarshal(body, oresp)
 	if err != nil {
-		logger.Error("checkForUpdates, unmarshalling omaha response", "error", err)
+		logger.Error().Err(err).Msg("checkForUpdates, unmarshalling omaha response")
 		return nil, err
 	}
 
@@ -257,7 +261,7 @@ func (s *Syncer) processUpdate(descriptor channelDescriptor, update *omaha.Updat
 			url = s.packagesURL
 			filename = fmt.Sprintf("flatcar-%s-%s.gz", getArchString(descriptor.arch), update.Manifest.Version)
 			if err := s.downloadPackage(update, filename); err != nil {
-				logger.Error("processUpdate, downloading package", "error", err, "channel", descriptor.name, "arch", descriptor.arch.String())
+				logger.Error().Err(err).Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Msg("processUpdate, downloading package")
 				return err
 			}
 		}
@@ -273,7 +277,7 @@ func (s *Syncer) processUpdate(descriptor channelDescriptor, update *omaha.Updat
 			Arch:          descriptor.arch,
 		}
 		if _, err = s.api.AddPackage(pkg); err != nil {
-			logger.Error("processUpdate, adding package", "error", err, "channel", descriptor.name, "arch", descriptor.arch.String())
+			logger.Error().Err(err).Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Msg("processUpdate, adding package")
 			return err
 		}
 
@@ -290,7 +294,7 @@ func (s *Syncer) processUpdate(descriptor channelDescriptor, update *omaha.Updat
 			PackageID:             pkg.ID,
 		}
 		if _, err = s.api.AddFlatcarAction(flatcarAction); err != nil {
-			logger.Error("processUpdate, adding flatcar action", "error", err, "channel", descriptor.name, "arch", descriptor.arch.String())
+			logger.Error().Err(err).Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Msgf("processUpdate, adding flatcar action")
 			return err
 		}
 	}
@@ -298,12 +302,12 @@ func (s *Syncer) processUpdate(descriptor channelDescriptor, update *omaha.Updat
 	// Update channel to point to the package with the new version
 	channel, err := s.api.GetChannel(s.channelsIDs[descriptor])
 	if err != nil {
-		logger.Error("processUpdate, getting channel to update", "error", err, "channel", descriptor.name, "arch", descriptor.arch.String())
+		logger.Error().Err(err).Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Msg("processUpdate, getting channel to update")
 		return err
 	}
 	channel.PackageID = null.StringFrom(pkg.ID)
 	if err = s.api.UpdateChannel(channel); err != nil {
-		logger.Error("processUpdate, updating channel", "error", err, "channel", descriptor.name, "arch", descriptor.arch.String())
+		logger.Error().Err(err).Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Msg("processUpdate, updating")
 		return err
 	}
 
@@ -342,7 +346,7 @@ func (s *Syncer) downloadPackage(update *omaha.UpdateResponse, filename string) 
 	defer resp.Body.Close()
 
 	hashSha256 := sha256.New()
-	logger.Debug("downloadPackage, downloading..", "url", pkgURL)
+	logger.Debug().Msgf("downloadPackage, downloading.. url %s", pkgURL)
 	if _, err := io.Copy(io.MultiWriter(tmpFile, hashSha256), resp.Body); err != nil {
 		return err
 	}
