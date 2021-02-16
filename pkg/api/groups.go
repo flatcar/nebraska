@@ -28,6 +28,12 @@ const (
 	thirtyDays
 )
 
+const (
+	// If an instance doesn't update its status for deadInstanceTimeSpan then the instance
+	// is considered dead.
+	deadInstanceTimeSpan = "6 months"
+)
+
 var durationParamToCode = map[durationParam]durationCode{
 	"1h":  oneHour,
 	"1d":  oneDay,
@@ -622,7 +628,7 @@ func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (m
 			last_check_for_updates >= now() - interval '%[1]s' AND %[3]s ORDER BY last_update_granted_ts DESC),
 		 instance_versions AS (SELECT instance_id, created_ts, version, status 
 			FROM instance_status_history WHERE instance_id = ANY (%[5]s) 
-			AND status = 4 UNION (SELECT * FROM recent_instances) ORDER BY created_ts DESC)
+			AND status = 4 AND created_ts >= now() - interval '%[6]s' UNION (SELECT * FROM recent_instances) ORDER BY created_ts DESC)
 	SELECT ts, (CASE WHEN version IS NULL THEN '' ELSE version END), 
 	  sum(CASE WHEN version IS NOT null THEN 1 ELSE 0 END) total 
 	FROM (SELECT * FROM time_series 
@@ -633,7 +639,8 @@ func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (m
 	GROUP BY 1,2
 	ORDER BY ts DESC;
 	`, durationString, interval, ignoreFakeInstanceCondition("instance_id"),
-		ignoreFakeInstanceCondition("instance_Id"), values)
+		ignoreFakeInstanceCondition("instance_Id"), values, deadInstanceTimeSpan)
+
 	rows, err := api.db.Queryx(query, groupID)
 	if err != nil {
 		return nil, err
