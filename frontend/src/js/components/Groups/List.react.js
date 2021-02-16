@@ -10,7 +10,7 @@ import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
 import SearchInput from '../Common/ListSearch';
 import Loader from '../Common/Loader';
-import ModalButton from '../Common/ModalButton.react';
+import ModalButton from '../Common/ModalButton';
 import EditDialog from './EditDialog';
 import Item from './Item.react';
 

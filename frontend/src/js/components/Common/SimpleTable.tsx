@@ -6,20 +6,28 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import React from 'react';
-import Empty from '../Common/EmptyContent';
+import React, { ReactChildren } from 'react';
+import Empty from './EmptyContent';
 
-export default function SimpleTable(props) {
+interface SimpleTableProps {
+ columns: {
+   [key: string]: string;
+ };
+ instances: any[];
+ emptyMessage: React.ReactNode;
+}
+
+export default function SimpleTable(props: SimpleTableProps) {
   const {columns} = props;
   const [page, setPage] = React.useState(0);
   const rowsPerPageOptions = [5, 10, 50];
   const [rowsPerPage, setRowsPerPage] = React.useState(rowsPerPageOptions[0]);
 
-  function handleChangePage(event, newPage) {
+  function handleChangePage(event: any, newPage: number) {
     setPage(newPage);
   }
 
-  function handleChangeRowsPerPage(event) {
+  function handleChangeRowsPerPage(event: any) {
     setRowsPerPage(+event.target.value);
     setPage(0);
   }

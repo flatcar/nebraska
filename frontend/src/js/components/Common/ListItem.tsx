@@ -9,7 +9,10 @@ const useStyles = makeStyles({
   },
 });
 
-export default function ListItem(props) {
+export default function ListItem(props: {
+  children: React.ReactNode;
+  [key: string]: any;
+}) {
   const classes = useStyles();
 
   return (

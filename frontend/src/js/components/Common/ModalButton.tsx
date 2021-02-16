@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.titleColor
   }}));
 
-function ModalButton(props) {
+function ModalButton(props: {data: object; modalToOpen: string; icon?: string}) {
   const [showModal, setShowModal] = React.useState(false);
   const classes = useStyles();
 
@@ -51,7 +51,7 @@ function ModalButton(props) {
   // case it should be set from the caller).
   return (
     <div>
-      <IconButton size="small" variant="extended" aria-label="add" onClick={open} data-testid="modal-button" >
+      <IconButton size="small" aria-label="add" onClick={open} data-testid="modal-button" >
         <AddIcon fontSize="large" className={classes.root}/>
       </IconButton>
       {modal}

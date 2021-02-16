@@ -1,3 +1,4 @@
+import { ListItemText } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -7,22 +8,33 @@ import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import Downshift from 'downshift';
-import moment from 'moment-timezone';
-import PropTypes from 'prop-types';
+import Downshift, { GetLabelPropsOptions } from 'downshift';
 import React from 'react';
 import { FixedSizeList } from 'react-window';
 
-const suggestions = moment.tz.names().map(timezone => {
-  return {label: timezone,
-          utcDiff: moment.tz(moment.utc(), timezone).utcOffset() / 60 // Hours from/to UTC
+interface RenderInputProps {
+  classes: {
+    inputRoot: string;
+    inputInput: string;
   };
-});
+  ref?: React.Ref<any>;
+  fullWidth: boolean;
+  autoFocus: boolean;
+  label: string;
+  placeholder: string;
+  InputLabelProps: (options?: GetLabelPropsOptions | undefined) => void;
+  InputProps: {
+    onBlur: () => void;
+    onChange: () => void;
+    onFocus: () => void;
+  };
+  inputProps: object;
+  variant: 'outlined';
+}
 
-function renderInput(inputProps) {
+function renderInput(inputProps: RenderInputProps) {
   const { InputProps, classes, ref, ...other } = inputProps;
 
   return (
@@ -36,51 +48,49 @@ function renderInput(inputProps) {
         ...InputProps,
       }}
       {...other}
-      data-testid="timezone-input"
     />
   );
 }
 
-renderInput.propTypes = {
-  classes: PropTypes.object.isRequired,
-  InputProps: PropTypes.object,
-};
+interface RenderSuggestionProps {
+  highlightedIndex: null | number;
+  index: number;
+  itemProps: object;
+  selectedItem: string;
+  suggestion: {
+    label: string;
+    primary: string;
+    secondary: string;
+  };
+  style?: object;
+  getSecondaryLabel?: () => {};
+}
 
-function renderSuggestion(suggestionProps) {
+function renderSuggestion(suggestionProps: RenderSuggestionProps) {
   const { suggestion, style, itemProps, selectedItem } = suggestionProps;
-  const isSelected = (selectedItem || '').indexOf(suggestion.label) > -1;
-
-  function getUtcLabel(utcDiff) {
-    return 'UTC ' + (utcDiff >= 0 ? '+' : '-') + Math.abs(utcDiff);
-  }
+  const isSelected = (selectedItem || '').indexOf(suggestion.primary) > -1;
 
   return (
     <ListItem
       {...itemProps}
       button
-      key={suggestion.label}
+      key={suggestion.primary}
       selected={isSelected}
       style={style}
     >
       <ListItemText
-        primary={suggestion.label}
-        secondary={getUtcLabel(suggestion.utcDiff)}
+        primary={suggestion.primary}
+        secondary={suggestion.secondary}
       />
     </ListItem>
   );
 }
 
-renderSuggestion.propTypes = {
-  highlightedIndex: PropTypes.oneOfType([PropTypes.oneOf([null]), PropTypes.number]).isRequired,
-  index: PropTypes.number.isRequired,
-  itemProps: PropTypes.object.isRequired,
-  selectedItem: PropTypes.string.isRequired,
-  suggestion: PropTypes.shape({
-    label: PropTypes.string.isRequired,
-  }).isRequired,
-};
+function getSuggestions(value: string | null, selectedItem: string, suggestions: RenderSuggestionProps['suggestion'][]) {
+  if (!value) {
+    return suggestions;
+  }
 
-function getSuggestions(value, selectedItem) {
   const inputValue = value.toLowerCase();
 
   if (value === selectedItem)
@@ -88,7 +98,7 @@ function getSuggestions(value, selectedItem) {
 
   return inputValue.length === 0 ? suggestions
     : suggestions.filter(suggestion => {
-      return suggestion.label.toLowerCase().includes(inputValue);
+      return suggestion.primary.toLowerCase().includes(inputValue);
     });
 }
 
@@ -109,19 +119,27 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function LazyList(props) {
+interface LazyListProps {
+ options: RenderSuggestionProps['suggestion'][];
+ itemData: any;
+ height: number;
+ itemSize: number;
+ width: number;
+}
+
+function LazyList(props: LazyListProps) {
   const {options, itemData, ...others} = props;
 
   itemData['suggestions'] = options;
 
-  function Row(props) {
+  function Row(props: {index: number; style: object; data: any}) {
     const {index, style, data} = props;
     const suggestion = data.suggestions[index];
     const getItemProps = data.getItemProps;
     data['index'] = index;
     return renderSuggestion({suggestion,
                              style,
-                             itemProps: getItemProps({item: suggestion.label}),
+                             itemProps: getItemProps({item: suggestion.primary}),
                              ...data});
   }
 
@@ -135,46 +153,52 @@ function LazyList(props) {
     </FixedSizeList>
   );
 }
+interface AutoCompletePickerProps {
+ defaultValue: string;
+ getSuggestions: RenderSuggestionProps['suggestion'][];
+ onSelect: (selectedValue: string) => void;
+ label: string;
+ placeholder: string;
+ dialogTitle: string;
+ pickerPlaceholder: string;
+}
 
-export const DEFAULT_TIMEZONE = moment.tz.guess(true);
-
-export default function TimzonePicker(props) {
+export default function AutoCompletePicker(props: AutoCompletePickerProps) {
   const [showPicker, setShowPicker] = React.useState(false);
-  const [selectedTimezone, setSelectedTimezone] =
-    React.useState(props.value ? props.value : DEFAULT_TIMEZONE);
-  const classes = useStyles();
+  const [selectedValue, setSelectedValue] = React.useState(props.defaultValue);
+  const suggestions = props.getSuggestions;
 
-  function onInputActivate(event) {
+  const classes = useStyles();
+  function onInputActivate() {
     setShowPicker(true);
   }
 
-  function handleClose(event) {
+  function handleClose() {
     setShowPicker(false);
   }
 
-  function handleSelect(event) {
+  function handleSelect() {
     setShowPicker(false);
-    props.onSelect(selectedTimezone);
+    props.onSelect(selectedValue);
   }
 
   return (
     <div>
       <FormControl fullWidth>
-        <InputLabel shrink>Timezone</InputLabel>
+        <InputLabel shrink>{props.label}</InputLabel>
         <Input
           onClick={onInputActivate}
-          value={selectedTimezone}
           inputProps={{
             className: classes.pickerButtonInput
           }}
-          placeholder="Pick a timezone"
+          value={selectedValue}
+          placeholder={props.placeholder}
           readOnly
-          data-testid="timezone-readonly-input"
         />
       </FormControl>
       <Dialog open={showPicker}>
         <DialogTitle>
-          Choose a Timezone
+          {props.dialogTitle}
         </DialogTitle>
         <DialogContent>
           <Downshift id="downshift-options">
@@ -186,7 +210,7 @@ export default function TimzonePicker(props) {
               inputValue,
               selectedItem,
             }) => {
-              setSelectedTimezone(selectedItem);
+              setSelectedValue(selectedItem);
 
               const { onBlur, onChange, onFocus, ...inputProps } = getInputProps();
 
@@ -196,18 +220,19 @@ export default function TimzonePicker(props) {
                     fullWidth: true,
                     autoFocus: true,
                     classes,
-                    label: 'Timezone',
-                    placeholder: 'Start typing to search a timezone',
-                    InputLabelProps: getLabelProps({ shrink: true }),
+                    label: props.label,
+                    placeholder: props.pickerPlaceholder,
+                    InputLabelProps: getLabelProps(),
                     InputProps: { onBlur, onChange, onFocus },
                     inputProps,
+                    variant: 'outlined'
                   })}
                   <LazyList
-                    options={getSuggestions(inputValue, selectedItem)}
+                    options={getSuggestions(inputValue, selectedItem, suggestions)}
                     itemData={{
                       getItemProps,
                       highlightedIndex,
-                      selectedItem,
+                      selectedItem
                     }}
                     height={400}
                     width={400}

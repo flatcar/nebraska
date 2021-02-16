@@ -1,7 +1,7 @@
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import {fireEvent, getAllByTestId, render} from '@testing-library/react';
 import React from 'react';
-import ModalButton from '../../components/Common/ModalButton.react';
+import ModalButton from '../../components/Common/ModalButton';
 import { theme } from '../../TestHelpers/theme.js';
 
 describe('Modal Button', () => {

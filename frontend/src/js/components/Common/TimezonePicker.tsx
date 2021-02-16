@@ -10,12 +10,38 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import Downshift from 'downshift';
-import PropTypes from 'prop-types';
+import Downshift, { GetLabelPropsOptions } from 'downshift';
+import moment from 'moment-timezone';
 import React from 'react';
 import { FixedSizeList } from 'react-window';
 
-function renderInput(inputProps) {
+const suggestions = moment.tz.names().map(timezone => {
+  return {label: timezone,
+          utcDiff: moment.tz(moment.utc(), timezone).utcOffset() / 60 // Hours from/to UTC
+  };
+});
+
+interface RenderInputProps {
+  classes: {
+    inputRoot: string;
+    inputInput: string;
+  };
+  ref?: React.Ref<any>;
+  InputProps: {
+    onBlur: () => void;
+    onChange: () => void;
+    onFocus: () => void;
+  };
+  fullWidth: boolean;
+  autoFocus: boolean;
+  label: string;
+  placeholder: string;
+  InputLabelProps: (options?: GetLabelPropsOptions | undefined) => void;
+  variant: 'outlined';
+  inputProps: object;
+}
+
+function renderInput(inputProps: RenderInputProps) {
   const { InputProps, classes, ref, ...other } = inputProps;
 
   return (
@@ -29,46 +55,51 @@ function renderInput(inputProps) {
         ...InputProps,
       }}
       {...other}
+      data-testid="timezone-input"
     />
   );
 }
 
-renderInput.propTypes = {
-  classes: PropTypes.object.isRequired,
-  InputProps: PropTypes.object,
-};
+interface RenderSuggestionProps {
+  highlightedIndex: null | number;
+  index: number;
+  itemProps: object;
+  selectedItem: string;
+  suggestion: {
+    utcDiff: number;
+    label: string;
+  };
+  style?: object;
+}
 
-function renderSuggestion(suggestionProps) {
-  const { suggestion, style, itemProps, selectedItem, getSecondaryLabel} = suggestionProps;
-  const isSelected = (selectedItem || '').indexOf(suggestion.primary) > -1;
+function renderSuggestion(suggestionProps: RenderSuggestionProps) {
+  const { suggestion, style, itemProps, selectedItem } = suggestionProps;
+  const isSelected = (selectedItem || '').indexOf(suggestion.label) > -1;
+
+  function getUtcLabel(utcDiff: number) {
+    return 'UTC ' + (utcDiff >= 0 ? '+' : '-') + Math.abs(utcDiff);
+  }
 
   return (
     <ListItem
       {...itemProps}
       button
-      key={suggestion.primary}
+      key={suggestion.label}
       selected={isSelected}
       style={style}
     >
       <ListItemText
-        primary={suggestion.primary}
-        secondary={suggestion.secondary}
+        primary={suggestion.label}
+        secondary={getUtcLabel(suggestion.utcDiff)}
       />
     </ListItem>
   );
 }
 
-renderSuggestion.propTypes = {
-  highlightedIndex: PropTypes.oneOfType([PropTypes.oneOf([null]), PropTypes.number]).isRequired,
-  index: PropTypes.number.isRequired,
-  itemProps: PropTypes.object.isRequired,
-  selectedItem: PropTypes.string.isRequired,
-  suggestion: PropTypes.shape({
-    label: PropTypes.string.isRequired,
-  }).isRequired,
-};
-
-function getSuggestions(value, selectedItem, suggestions) {
+function getSuggestions(value: string | null, selectedItem: string) {
+  if (!value) {
+    return suggestions;
+  }
   const inputValue = value.toLowerCase();
 
   if (value === selectedItem)
@@ -76,7 +107,7 @@ function getSuggestions(value, selectedItem, suggestions) {
 
   return inputValue.length === 0 ? suggestions
     : suggestions.filter(suggestion => {
-      return suggestion.primary.toLowerCase().includes(inputValue);
+      return suggestion.label.toLowerCase().includes(inputValue);
     });
 }
 
@@ -97,19 +128,34 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function LazyList(props) {
+interface LazyListProps {
+  options: string[];
+  itemData: any;
+
+}
+
+interface LazyListProps {
+  //@ts-ignore
+  options: RenderSuggestionProps['suggestion'][];
+  itemData: any;
+  height: number;
+  itemSize: number;
+  width: number;
+}
+
+function LazyList(props: LazyListProps) {
   const {options, itemData, ...others} = props;
 
   itemData['suggestions'] = options;
 
-  function Row(props) {
+  function Row(props: {index: number; style: object; data: any}) {
     const {index, style, data} = props;
     const suggestion = data.suggestions[index];
     const getItemProps = data.getItemProps;
     data['index'] = index;
     return renderSuggestion({suggestion,
                              style,
-                             itemProps: getItemProps({item: suggestion.primary}),
+                             itemProps: getItemProps({item: suggestion.label}),
                              ...data});
   }
 
@@ -124,42 +170,46 @@ function LazyList(props) {
   );
 }
 
-export default function AutoCompletePicker(props) {
-  const [showPicker, setShowPicker] = React.useState(false);
-  const [selectedValue, setSelectedValue] = React.useState(props.defaultValue);
-  const suggestions = props.getSuggestions;
+export const DEFAULT_TIMEZONE = moment.tz.guess(true);
 
+export default function TimzonePicker(props: {value: string;
+  onSelect: (selectedTimezone: string) => void;}) {
+  const [showPicker, setShowPicker] = React.useState(false);
+  const [selectedTimezone, setSelectedTimezone] =
+    React.useState(props.value ? props.value : DEFAULT_TIMEZONE);
   const classes = useStyles();
-  function onInputActivate(event) {
+
+  function onInputActivate() {
     setShowPicker(true);
   }
 
-  function handleClose(event) {
+  function handleClose() {
     setShowPicker(false);
   }
 
-  function handleSelect(event) {
+  function handleSelect() {
     setShowPicker(false);
-    props.onSelect(selectedValue);
+    props.onSelect(selectedTimezone);
   }
 
   return (
     <div>
       <FormControl fullWidth>
-        <InputLabel shrink>{props.label}</InputLabel>
+        <InputLabel shrink>Timezone</InputLabel>
         <Input
           onClick={onInputActivate}
+          value={selectedTimezone}
           inputProps={{
             className: classes.pickerButtonInput
           }}
-          value={selectedValue}
-          placeholder={props.placeholder}
+          placeholder="Pick a timezone"
           readOnly
+          data-testid="timezone-readonly-input"
         />
       </FormControl>
       <Dialog open={showPicker}>
         <DialogTitle>
-          {props.dialogTitle}
+          Choose a Timezone
         </DialogTitle>
         <DialogContent>
           <Downshift id="downshift-options">
@@ -171,7 +221,7 @@ export default function AutoCompletePicker(props) {
               inputValue,
               selectedItem,
             }) => {
-              setSelectedValue(selectedItem);
+              setSelectedTimezone(selectedItem);
 
               const { onBlur, onChange, onFocus, ...inputProps } = getInputProps();
 
@@ -181,18 +231,21 @@ export default function AutoCompletePicker(props) {
                     fullWidth: true,
                     autoFocus: true,
                     classes,
-                    label: props.label,
-                    placeholder: props.pickerPlaceholder,
-                    InputLabelProps: getLabelProps({ shrink: true }),
+                    label: 'Timezone',
+                    placeholder: 'Start typing to search a timezone',
+                    InputLabelProps: getLabelProps(),
                     InputProps: { onBlur, onChange, onFocus },
                     inputProps,
+                    variant: 'outlined'
                   })}
                   <LazyList
-                    options={getSuggestions(inputValue, selectedItem, suggestions)}
+                    //@todo add better types
+                    //@ts-ignore
+                    options={getSuggestions(inputValue, selectedItem)}
                     itemData={{
                       getItemProps,
                       highlightedIndex,
-                      selectedItem
+                      selectedItem,
                     }}
                     height={400}
                     width={400}
