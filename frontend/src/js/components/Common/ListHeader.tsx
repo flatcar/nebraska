@@ -10,7 +10,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function ListHeader(props) {
+export default function ListHeader(props: {title: string; actions?: React.ReactElement[]}) {
   const classes = useStyles();
   const actions = props.actions || [];
   return (
@@ -28,7 +28,7 @@ export default function ListHeader(props) {
       </Grid>
       }
       {actions &&
-              actions.map((action, i) =>
+              actions.map((action, i: number) =>
                 <Grid item key={i}>
                   {action}
                 </Grid>

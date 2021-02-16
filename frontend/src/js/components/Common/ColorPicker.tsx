@@ -14,22 +14,29 @@ const useStyles = makeStyles({
   },
 });
 
-export function ColorPickerButton(props) {
+interface ColorPickerButtonProps {
+  color: string;
+  onColorPicked: (color: {hex: string}) => void;
+  componentColorProp: string;
+  children: React.ReactElement<any>;
+}
+
+export function ColorPickerButton(props: ColorPickerButtonProps) {
   const classes = useStyles();
   const [channelColor, setChannelColor] = React.useState(props.color);
   const [displayColorPicker, setDisplayColorPicker] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const {onColorPicked, componentColorProp = null} = props;
+  const {onColorPicked, componentColorProp} = props;
 
-  const componentProps = {};
+  const componentProps: {[key: string]: string} = {};
   componentProps[componentColorProp] = channelColor;
 
-  function handleColorChange(color) {
+  function handleColorChange(color: {hex: string}) {
     setChannelColor(color.hex);
     onColorPicked(color);
   }
 
-  function handleColorButtonClick(event) {
+  function handleColorButtonClick(event: any) {
     setAnchorEl(event.currentTarget);
     setDisplayColorPicker(true);
   }
@@ -46,7 +53,7 @@ export function ColorPickerButton(props) {
         data-testid="icon-button"
       >
         {props.children ?
-          React.cloneElement(props.children, componentProps)
+          React.cloneElement(props.children as React.ReactElement<any>, componentProps)
           :
           <ChannelAvatar color={channelColor} />
         }

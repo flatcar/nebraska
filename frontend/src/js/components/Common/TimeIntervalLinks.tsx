@@ -9,7 +9,14 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-export default function TimeIntervalLinks(props) {
+interface TimeIntervalLinksProps {
+  selectedInterval: string;
+  appID: string;
+  groupID: string;
+  intervalChangeHandler: (value: any) => any;
+}
+
+export default function TimeIntervalLinks(props: TimeIntervalLinksProps) {
   const {selectedInterval, intervalChangeHandler} = props;
   const [timeIntervals, setTimeIntervals] = React.useState(timeIntervalsDefault);
   const { appID, groupID } = props;
@@ -42,7 +49,7 @@ export default function TimeIntervalLinks(props) {
             <Grid item>
               <Link underline="none"
                 component="button"
-                onClick={(e) => intervalChangeHandler(link)}
+                onClick={() => intervalChangeHandler(link)}
                 color={link.disabled ? 'textSecondary' : link.queryValue === selectedInterval ? 'inherit' : 'primary'}
               >
                 <Typography className={classes.title} >

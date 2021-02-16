@@ -1,43 +1,34 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import ApplicationsStore from '../../stores/ApplicationsStore';
+import { applicationsStore } from '../../stores/Stores';
 
-class ConfirmationContent extends React.Component {
-
-  constructor(props) {
-    super(props);
-    this.processClick = this.processClick.bind(this);
-  }
-
-  processClick() {
-    if (this.props.data.type === 'application') {
-      ApplicationsStore.deleteApplication(this.props.data.appID);
-    } else if (this.props.data.type === 'group') {
-      ApplicationsStore.deleteGroup(this.props.data.appID, this.props.data.groupID);
-    } else if (this.props.data.type === 'channel') {
-      ApplicationsStore.deleteChannel(this.props.data.appID, this.props.data.channelID);
-    } else if (this.props.data.type === 'package') {
-      ApplicationsStore.deletePackage(this.props.data.appID, this.props.data.packageID);
+function ConfirmationContent(props: {data: {
+  appID: string;
+  groupID?: string;
+  channelID?: string;
+  packageID?: string;
+  type: string;
+};}) {
+  function processClick() {
+    if (props.data.type === 'application') {
+      applicationsStore.deleteApplication(props.data.appID);
+    } else if (props.data.type === 'group') {
+      applicationsStore.deleteGroup(props.data.appID, props.data.groupID as string);
+    } else if (props.data.type === 'channel') {
+      applicationsStore.deleteChannel(props.data.appID, props.data.channelID as string);
+    } else if (props.data.type === 'package') {
+      applicationsStore.deletePackage(props.data.appID, props.data.packageID as string);
     }
   }
 
-  render() {
-    return (
-      <div className="popover-content" {...this.props}>
-        Are you sure ... ?
-        <p className="button-group">
-          <button type="button" className="confirm-dialog-btn-abord">No</button>
-          <button type="button" className="confirm-dialog-btn-confirm" onClick={this.processClick}>Yes</button>
-        </p>
-      </div>
-    );
-  }
-
+  return (
+    <div className="popover-content" {...props}>
+      Are you sure ... ?
+      <p className="button-group">
+        <button type="button" className="confirm-dialog-btn-abord">No</button>
+        <button type="button" className="confirm-dialog-btn-confirm" onClick={processClick}>Yes</button>
+      </p>
+    </div>
+  );
 }
-
-ConfirmationContent.propTypes = {
-  channel: PropTypes.object.isRequired,
-  data: PropTypes.object.isRequired
-};
 
 export default ConfirmationContent;

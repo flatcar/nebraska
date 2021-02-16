@@ -44,14 +44,14 @@ const useStyles = makeStyles(theme => ({
   }),
 }));
 
-export function CardFeatureLabel(props) {
+export function CardFeatureLabel(props: {children: React.ReactNode}) {
   const classes = useStyles();
   return (
     <Typography component='span' className={classes.featureLabel}>{props.children}</Typography>
   );
 }
 
-export function CardDescriptionLabel(props) {
+export function CardDescriptionLabel(props: {children: React.ReactNode}) {
   const classes = useStyles();
   return (
     <Box mt={2}>
@@ -60,7 +60,7 @@ export function CardDescriptionLabel(props) {
   );
 }
 
-export function CardLabel(props) {
+export function CardLabel(props: {children: React.ReactNode; labelStyle?: object}) {
   const {labelStyle = {}} = props;
   const classes = useStyles(labelStyle);
   return (
@@ -68,7 +68,16 @@ export function CardLabel(props) {
   );
 }
 
-export function CardHeader(props) {
+interface CardHeaderProps {
+  cardMainLinkPath?: string | {pathname: string};
+  cardMainLinkLabel?: string;
+  cardTrack?: string;
+  cardId?: string;
+  cardDescription: React.ReactNode;
+  children?: React.ReactNode;
+}
+
+export function CardHeader(props: CardHeaderProps) {
   const classes = useStyles();
   const theme = useTheme();
   return (

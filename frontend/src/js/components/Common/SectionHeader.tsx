@@ -23,7 +23,15 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function SectionHeader(props) {
+interface SectionHeaderProps {
+  breadcrumbs: {
+    label: string;
+    path: string | null;
+  }[];
+  title: string;
+}
+
+export default function SectionHeader(props: SectionHeaderProps) {
   const classes = useStyles();
   const breadcrumbs = props.breadcrumbs;
   const title = props.title;

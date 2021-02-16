@@ -1,7 +1,7 @@
 import {render} from '@testing-library/react';
 import React from 'react';
 import ListHeader from '../../components/Common/ListHeader';
-import ModalButton from '../../components/Common/ModalButton.react';
+import ModalButton from '../../components/Common/ModalButton';
 
 describe('List Header', () => {
   const minProps = {

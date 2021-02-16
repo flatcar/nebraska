@@ -10,7 +10,7 @@ import { Application, Channel, Package } from '../../api/apiDataTypes';
 import { ARCHES } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import Loader from '../Common/Loader';
-import ModalButton from '../Common/ModalButton.react';
+import ModalButton from '../Common/ModalButton';
 import SectionPaper from '../Common/SectionPaper';
 import EditDialog from './EditDialog';
 import Item from './Item';

@@ -4,11 +4,11 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import React from 'react';
 
-export default function MoreMenu(props) {
+export default function MoreMenu(props: {options: {label: string; action: () => void}[]}) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const options = props.options || [];
 
-  function handleClick(event) {
+  function handleClick(event: any) {
     setAnchorEl(event.currentTarget);
   }
 
@@ -36,8 +36,8 @@ export default function MoreMenu(props) {
         {options.map(({label, action}, i) =>
           <MenuItem
             key={i}
-            onClick={event => {
-              handleClose(event);
+            onClick={() => {
+              handleClose();
               action();
             }}
             data-testid="more-menu-item"

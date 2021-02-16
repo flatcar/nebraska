@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function Label(props) {
+export default function Label(props: {children: React.ReactChildren}) {
   const classes = useStyles();
   return (
     <span className={classes.label}>
