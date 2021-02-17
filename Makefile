@@ -63,7 +63,7 @@ frontend-lint:
 	cd frontend && npm run lint
 
 run-backend: backend-binary
-	LOGXI=* ./bin/nebraska -auth-mode noop
+	./bin/nebraska -auth-mode noop
 
 .PHONY: backend
 backend: run-generators backend-code-checks build-backend-binary

@@ -13,7 +13,6 @@ tools_dir="$(dirname "${0}")"
 binary="${tools_dir}/../bin/nebraska"
 static_dir="${tools_dir}/../frontend/build"
 
-LOGXI=* \
 "${binary}" \
     -auth-mode noop \
     -http-log \
