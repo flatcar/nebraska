@@ -348,6 +348,10 @@ func (gha *githubAuth) doLoginDance(c *gin.Context, oauthClient *http.Client) (r
 		Page:    1,
 		PerPage: 50,
 	}
+	isRO := false
+	isRW := false
+
+checkLoop:
 	for {
 		ghTeams, response, err := client.Teams.ListUserTeams(c.Request.Context(), &listOpts)
 		if err != nil {
@@ -373,11 +377,15 @@ func (gha *githubAuth) doLoginDance(c *gin.Context, oauthClient *http.Client) (r
 			fullGithubTeamName := makeTeamName(*ghTeam.Organization.Login, *ghTeam.Name)
 			logger.Debug("login dance", "trying to find a matching ro or rw team", fullGithubTeamName)
 			for _, roTeam := range roTeams {
+				if isRO {
+					break
+				}
 				if fullGithubTeamName == roTeam {
 					logger.Debug("login dance", "found matching ro team", fullGithubTeamName)
 					teamData.org = *ghTeam.Organization.Login
 					teamData.team = ghTeam.Name
 					teamID = gha.defaultTeamID
+					isRO = true
 					session.Set("accesslevel", "ro")
 					break
 				}
@@ -388,13 +396,11 @@ func (gha *githubAuth) doLoginDance(c *gin.Context, oauthClient *http.Client) (r
 					teamData.org = *ghTeam.Organization.Login
 					teamData.team = ghTeam.Name
 					teamID = gha.defaultTeamID
+					isRW = true
 					session.Set("accesslevel", "rw")
-					break
+					break checkLoop
 				}
 			}
-		}
-		if teamID != "" {
-			break
 		}
 		// Next page being zero means that we are on the last
 		// page.
@@ -403,9 +409,10 @@ func (gha *githubAuth) doLoginDance(c *gin.Context, oauthClient *http.Client) (r
 		}
 		listOpts.Page = response.NextPage
 	}
-	if teamID == "" {
+	if !isRW {
 		logger.Debug("login dance", "no matching teams found, trying orgs")
 		listOpts.Page = 1
+	checkLoop2:
 		for {
 			ghOrgs, response, err := client.Organizations.List(c.Request.Context(), "", &listOpts)
 			if err != nil {
@@ -422,10 +429,14 @@ func (gha *githubAuth) doLoginDance(c *gin.Context, oauthClient *http.Client) (r
 				logger.Debug("login dance", "trying to find a matching ro or rw team", *ghOrg.Login)
 				nebraskaOrgName := *ghOrg.Login
 				for _, roTeam := range roTeams {
+					if isRO {
+						break
+					}
 					if nebraskaOrgName == roTeam {
 						logger.Debug("login dance", "found matching ro team", nebraskaOrgName)
 						teamData.org = nebraskaOrgName
 						teamID = gha.defaultTeamID
+						isRO = true
 						session.Set("accesslevel", "ro")
 						break
 					}
@@ -436,12 +447,9 @@ func (gha *githubAuth) doLoginDance(c *gin.Context, oauthClient *http.Client) (r
 						teamData.org = nebraskaOrgName
 						teamID = gha.defaultTeamID
 						session.Set("accesslevel", "rw")
-						break
+						break checkLoop2
 					}
 				}
-			}
-			if teamID != "" {
-				break
 			}
 			// Next page being zero means that we are on the last
 			// page.
