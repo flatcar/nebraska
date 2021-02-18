@@ -4,7 +4,7 @@ import _ from 'underscore';
 import { applicationsStore } from '../../stores/Stores';
 import ChannelsList from '../Channels/List';
 import SectionHeader from '../Common/SectionHeader';
-import GroupsList from '../Groups/List.react';
+import GroupsList from '../Groups/List';
 import PackagesList from '../Packages/List.react';
 
 class ApplicationLayout extends React.Component {
