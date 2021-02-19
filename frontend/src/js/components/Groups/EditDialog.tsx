@@ -14,9 +14,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import { Field, Form, Formik } from 'formik';
 import { Select, TextField } from 'formik-material-ui';
-import PropTypes from 'prop-types';
 import React from 'react';
 import * as Yup from 'yup';
+import { Channel, Group } from '../../api/apiDataTypes';
 import { ARCHES } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import TimezonePicker, { DEFAULT_TIMEZONE } from '../Common/TimezonePicker';
@@ -27,17 +27,27 @@ const useStyles = makeStyles(({
     overflow: 'hidden'
   }
 }));
-function EditDialog(props) {
+
+function EditDialog(props: {
+  create?: boolean;
+  data: {
+    [key: string]: any;
+  };
+  onHide: () => void;
+  show: boolean;
+}) {
   const isCreation = Boolean(props.create);
   const classes = useStyles();
 
-  function handleSubmit(values, actions) {
+  function handleSubmit(values: {[key: string]: any}, actions: {[key: string]: any}) {
     const updatesPeriodPolicy = values.updatesPeriodRange.toString() + ' '
       + values.updatesPeriodUnit;
     const updatesTimeoutPolicy = values.updatesTimeout.toString() + ' '
       + values.updatesTimeoutUnit;
 
-    const data = {
+    const data: {
+      [key: string]: any;
+    } = {
       name: values.name,
       track: values.track,
       description: values.description,
@@ -58,10 +68,10 @@ function EditDialog(props) {
     let packageFunctionCall;
     if (isCreation) {
       data['application_id'] = props.data.appID;
-      packageFunctionCall = applicationsStore.createGroup(data);
+      packageFunctionCall = applicationsStore.createGroup(data as Group);
     } else {
       data['id'] = props.data.group.id;
-      packageFunctionCall = applicationsStore.updateGroup(data);
+      packageFunctionCall = applicationsStore.updateGroup(data as Group);
     }
 
     packageFunctionCall
@@ -79,6 +89,7 @@ function EditDialog(props) {
     props.onHide();
   }
 
+  //@ts-ignore
   function renderForm({values, status, setFieldValue, isSubmitting}) {
     const channels = props.data.channels ? props.data.channels : [];
 
@@ -115,7 +126,7 @@ function EditDialog(props) {
                     <MenuItem value="" key="">
                       None yet
                     </MenuItem>
-                    {channels.map((channelItem) =>
+                    {channels.map((channelItem: Channel) =>
                       <MenuItem value={channelItem.id} key={channelItem.id}>
                         {`${channelItem.name}(${ARCHES[channelItem.arch]})`}
                       </MenuItem>)
@@ -163,7 +174,7 @@ function EditDialog(props) {
                           component={Switch}
                           color="primary"
                           checked={values.updatesEnabled}
-                          onChange={(e) => {
+                          onChange={(e: any) => {
                             setFieldValue('updatesEnabled', e.target.checked);
                           }}
                         />
@@ -179,7 +190,7 @@ function EditDialog(props) {
                           component={Switch}
                           checked={values.safeMode}
                           color="primary"
-                          onChange={(e) => {
+                          onChange={(e: any) => {
                             setFieldValue('safeMode', e.target.checked);
                           }}
                         />
@@ -223,7 +234,7 @@ function EditDialog(props) {
                         component={Switch}
                         color="primary"
                         checked={values.onlyOfficeHours}
-                        onChange={(e) => {
+                        onChange={(e: any) => {
                           setFieldValue('onlyOfficeHours', e.target.checked);
                         }}
                       />
@@ -236,7 +247,7 @@ function EditDialog(props) {
                   component={TimezonePicker}
                   name="timezone"
                   value={values.timezone}
-                  onSelect={timezone => {
+                  onSelect={(timezone: string) => {
                     setFieldValue('timezone', timezone);
                   }}
                 />
@@ -342,7 +353,7 @@ function EditDialog(props) {
       .required('Required');
   }
 
-  function maxCharacters(maxChars, required = false) {
+  function maxCharacters(maxChars: number, required = false) {
     let validation = Yup.string()
       .max(maxChars, 'Must be less than $maxChars characters');
 
@@ -404,16 +415,12 @@ function EditDialog(props) {
         initialValues={initialValues}
         onSubmit={handleSubmit}
         validationSchema={validation}
+        //@todo add better types
+        //@ts-ignore
         render={renderForm}
       />
     </Dialog>
   );
 }
-
-EditDialog.propTypes = {
-  data: PropTypes.object,
-  show: PropTypes.bool,
-  create: PropTypes.bool,
-};
 
 export default EditDialog;

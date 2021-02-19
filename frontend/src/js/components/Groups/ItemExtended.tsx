@@ -5,11 +5,11 @@ import Paper from '@material-ui/core/Paper';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import _ from 'underscore';
 import API from '../../api/API';
+import { Group } from '../../api/apiDataTypes';
 import { defaultTimeInterval, timeIntervalsDefault } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import ChannelItem from '../Channels/Item';
@@ -31,11 +31,16 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function ItemExtended(props) {
+function ItemExtended(props: {
+  appID: string;
+  groupID: string;
+  handleUpdateGroup: (groupID: string, appID: string) => void;
+}) {
   const [application, setApplication] = React.useState(null);
   const [loadingUpdateProgressChart, setLoadingUpdateProgressChart] = React.useState(false);
-  const [group, setGroup] = React.useState(null);
-  const [instancesStats, setInstancesStats] = React.useState(null);
+  const [group, setGroup] = React.useState<Group | null>(null);
+  const [instancesStats, setInstancesStats] = React.useState<{[key: string] : any;
+    total: number;} | null>(null);
   const [updateProgressChartDuration, setUpdateProgressChartDuration] =
     React.useState(defaultTimeInterval);
   const [versionChartSelectedDuration, setVersionChartSelectedDuration] =
@@ -64,10 +69,10 @@ function ItemExtended(props) {
     }
   }
   function updateGroup() {
-    props.handleUpdateGroup(props.groupId, props.appID);
+    props.handleUpdateGroup(props.groupID, props.appID);
   }
 
-  function setDurationToURL(key, duration) {
+  function setDurationToURL(key: string, duration: string) {
     const searchParams = new URLSearchParams(location.search);
     searchParams.set(key, duration);
     history.push({
@@ -87,7 +92,11 @@ function ItemExtended(props) {
   },
   []);
 
-  function setDurationStateForCharts(key, setState) {
+  function setDurationStateForCharts(key: string, setState: React.Dispatch<React.SetStateAction<{
+    displayValue: string;
+    queryValue: string;
+    disabled: boolean;
+}>>) {
     const searchParams = new URLSearchParams(location.search);
     const period = searchParams.get(key);
     const selectedInterval = timeIntervalsDefault
@@ -112,7 +121,7 @@ function ItemExtended(props) {
         })
         .catch(err => {
           console.error('Error getting instances stats in Groups/ItemExtended. Group:', group, '\nError:', err);
-          setInstancesStats({});
+          setInstancesStats(null);
           setLoadingUpdateProgressChart(false);
         });
     }
@@ -322,10 +331,5 @@ function ItemExtended(props) {
     </Paper>
   );
 }
-
-ItemExtended.propTypes = {
-  appID: PropTypes.string.isRequired,
-  groupID: PropTypes.string.isRequired
-};
 
 export default ItemExtended;

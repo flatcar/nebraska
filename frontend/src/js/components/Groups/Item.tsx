@@ -4,10 +4,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 import ScheduleIcon from '@material-ui/icons/Schedule';
-import PropTypes from 'prop-types';
 import React from 'react';
 import _ from 'underscore';
 import API from '../../api/API';
+import { Channel, Group } from '../../api/apiDataTypes';
 import { useGroupVersionBreakdown } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import ChannelItem from '../Channels/Item';
@@ -29,7 +29,12 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Item(props) {
+function Item(props: {
+  group: Group;
+  appName: string;
+  channels: Channel[];
+  handleUpdateGroup: (appID: string, groupID: string) => void;
+}) {
   const classes = useStyles();
   const [totalInstances, setTotalInstances] = React.useState(-1);
 
@@ -167,12 +172,5 @@ function Item(props) {
     </ListItem>
   );
 }
-
-Item.propTypes = {
-  group: PropTypes.object.isRequired,
-  appName: PropTypes.string.isRequired,
-  channels: PropTypes.array.isRequired,
-  handleUpdateGroup: PropTypes.func.isRequired
-};
 
 export default Item;

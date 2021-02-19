@@ -1,3 +1,5 @@
+import { IconifyIcon } from '@iconify/react';
+import { Theme } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
@@ -5,26 +7,59 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { useTheme } from '@material-ui/styles';
 import React from 'react';
-import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
+import { Area, AreaChart, CartesianGrid, LineType, Tooltip, XAxis, YAxis } from 'recharts';
 import semver from 'semver';
 import _ from 'underscore';
+import { Group } from '../../api/apiDataTypes';
 import { cleanSemverVersion, getInstanceStatus, getMinuteDifference, makeColorsForVersions, makeLocaleTime, useGroupVersionBreakdown } from '../../constants/helpers';
 import { groupChartStore } from '../../stores/Stores';
 import Loader from '../Common/Loader';
 import SimpleTable from '../Common/SimpleTable';
 import makeStatusDefs from '../Instances/StatusDefs';
 
-function TimelineChart(props) {
+function TimelineTooltip(props: {
+  label?: string;
+  data: any;
+}) {
+  const {label, data} = props;
+  return (
+    <div className="custom-tooltip">
+      <Paper>
+        <Box padding={1}>
+          <Typography>
+            {label && data[label] && makeLocaleTime(data[label].timestamp)}
+          </Typography>
+        </Box>
+      </Paper>
+    </div>
+  );
+}
+
+function TimelineChart(props: {
+  width?: number;
+  height?: number;
+  interpolation?: LineType;
+  data: any;
+  onSelect: (activeLabel: any) => void;
+  colors: any;
+  keys: string[];
+}) {
   const {width = 500, height = 400, interpolation = 'monotone'} = props;
-  let ticks = {};
+  let ticks: {
+    [key: string]: string;
+  } = {};
 
   function getTickValues() {
     const DAY = 24 * 60;
     let tickCount = 4;
-    let dateFormat = {useDate: false};
+    let dateFormat: {
+      useDate?: boolean;
+      showTime?: boolean;
+      dateFormat?: Intl.DateTimeFormatOptions;
+    } = {useDate: false};
     const startTs = new Date(props.data[0].timestamp);
     const endTs = new Date(props.data[props.data.length - 1].timestamp);
-    const lengthMinutes = getMinuteDifference(endTs, startTs);
+    const lengthMinutes = getMinuteDifference(endTs.valueOf(), startTs.valueOf());
     // We remove 1 element since that's "0 hours"
     const dimension = props.data.length - 1;
 
@@ -55,7 +90,7 @@ function TimelineChart(props) {
     const nextDay = new Date(startTs);
     nextDay.setHours(24, 0, 0, 0);
     const midnightDay = new Date(nextDay);
-    const nextDayMinuteDiff = getMinuteDifference(nextDay, startTs);
+    const nextDayMinuteDiff = getMinuteDifference(nextDay.valueOf(), startTs.valueOf());
     const midnightTick = nextDayMinuteDiff * dimension / lengthMinutes;
 
     // Set up the remaining ticks according to the desired amount, separated
@@ -74,7 +109,8 @@ function TimelineChart(props) {
           break;
         }
 
-        const tick = getMinuteDifference(tickDate, startTs) * dimension / lengthMinutes;
+        const tick = getMinuteDifference(tickDate.valueOf(),
+        startTs.valueOf()) * dimension / lengthMinutes;
         // Show only the time.
         ticks[tick] = makeLocaleTime(tickDate, dateFormat);
       }
@@ -82,21 +118,6 @@ function TimelineChart(props) {
     // The midnight tick just gets the date, not the hours (since they're zero)
     ticks[midnightTick] = makeLocaleTime(midnightDay, {dateFormat: {month: 'short', day: 'numeric'}, showTime: false});
     return ticks;
-  }
-
-  function TimelineTooltip(props) {
-    const {label, data} = props;
-    return (
-      <div className="custom-tooltip">
-        <Paper>
-          <Box padding={1}>
-            <Typography>
-              {data[label] && makeLocaleTime(data[label].timestamp)}
-            </Typography>
-          </Box>
-        </Paper>
-      </div>
-    );
   }
 
   return (
@@ -117,12 +138,12 @@ function TimelineChart(props) {
         interval={0}
         domain={[0, 'dataMax']}
         ticks={Object.keys(getTickValues())}
-        tickFormatter={index => {
+        tickFormatter={(index: string) => {
           return ticks[index];
         }}
       />
       <YAxis />
-      {props.keys.map((key, i) =>
+      {props.keys.map((key: string, i: number) =>
         <Area
           type={interpolation}
           key={i}
@@ -137,10 +158,19 @@ function TimelineChart(props) {
   );
 }
 
-export function VersionCountTimeline(props) {
+export function VersionCountTimeline(props: {
+  group: Group | null;
+  duration: {
+    [key: string]: any;
+  };
+}) {
   const [selectedEntry, setSelectedEntry] = React.useState(-1);
   const { duration } = props;
-  const [timelineChartData, setTimelineChartData] = React.useState({
+  const [timelineChartData, setTimelineChartData] = React.useState<{
+    data: any[];
+    keys: any[];
+    colors: any;
+  }>({
     data: [],
     keys: [],
     colors: []
@@ -148,12 +178,12 @@ export function VersionCountTimeline(props) {
   const [timeline, setTimeline] = React.useState({
     timeline: {},
     // A long time ago, to force the first update...
-    lastUpdate: new Date(2000, 1, 1),
+    lastUpdate: new Date(2000, 1, 1).toUTCString(),
   });
 
   const theme = useTheme();
 
-  function makeChartData(group, groupTimeline) {
+  function makeChartData(group: Group, groupTimeline: {[key: string]: any}) {
     const data = Object.keys(groupTimeline).map((timestamp, i) => {
       const versions = groupTimeline[timestamp];
       return {
@@ -164,7 +194,9 @@ export function VersionCountTimeline(props) {
     });
 
     const versions = getVersionsFromTimeline(groupTimeline);
-    const versionColors = makeColorsForVersions(theme, versions, group.channel);
+    const versionColors: {
+      [key: string]: string;
+    } = makeColorsForVersions(theme as Theme, versions, group.channel);
 
     setTimelineChartData({
       data: data,
@@ -173,12 +205,14 @@ export function VersionCountTimeline(props) {
     });
   }
 
-  function getVersionsFromTimeline(timeline) {
+  function getVersionsFromTimeline(timeline: {
+    [key: string]: any;
+  }) {
     if (Object.keys(timeline).length === 0) {
       return [];
     }
 
-    const versions = [];
+    const versions: string[] = [];
 
     Object.keys(Object.values(timeline)[0]).forEach(version => {
       const cleanedVersion = cleanSemverVersion(version);
@@ -196,7 +230,7 @@ export function VersionCountTimeline(props) {
     return versions;
   }
 
-  function getInstanceCount(selectedEntry) {
+  function getInstanceCount(selectedEntry: number) {
     const version_breakdown = [];
     let selectedEntryPoint = selectedEntry;
 
@@ -227,7 +261,9 @@ export function VersionCountTimeline(props) {
       }
     }
 
-    version_breakdown.forEach((entry) => {
+    version_breakdown.forEach((entry: {
+      [key: string]: any;
+    }) => {
       entry.color = timelineChartData.colors[entry.version];
 
       // Calculate the percentage if needed.
@@ -258,28 +294,29 @@ export function VersionCountTimeline(props) {
   // Make the timeline data again when needed.
   React.useEffect(() => {
     let canceled = false;
-    async function getVersionTimeline(group) {
+    async function getVersionTimeline(group: Group | null) {
+      if (group) {
       // Check if we should update the timeline or it's too early.
-      const lastUpdate = new Date(timeline.lastUpdate);
-      setTimelineChartData({data: [], keys: [], colors: []});
-      try {
-        const versionCountTimeline = await groupChartStore
-          .getGroupVersionCountTimeline(group.application_id, group.id, duration.queryValue);
-        if (!canceled) {
-          setTimeline({
-            timeline: versionCountTimeline,
-            lastUpdate: lastUpdate.toUTCString(),
-          });
+        const lastUpdate = new Date(timeline.lastUpdate);
+        setTimelineChartData({data: [], keys: [], colors: []});
+        try {
+          const versionCountTimeline = await groupChartStore
+            .getGroupVersionCountTimeline(group.application_id, group.id, duration.queryValue);
+          if (!canceled) {
+            setTimeline({
+              timeline: versionCountTimeline,
+              lastUpdate: lastUpdate.toUTCString(),
+            });
+          }
+          makeChartData(group, versionCountTimeline || []);
+          setSelectedEntry(-1);
+        } catch (error) {
+          console.error(error);
         }
-        makeChartData(group, versionCountTimeline || []);
-        setSelectedEntry(-1);
-      } catch (error) {
-        console.error(error);
       }
-
     }
     getVersionTimeline(props.group);
-    return () => (canceled = true);
+    return () => {canceled = true;};
   },
   [duration]);
 
@@ -335,30 +372,61 @@ export function VersionCountTimeline(props) {
   );
 }
 
-export function StatusCountTimeline(props) {
+export function StatusCountTimeline(props: {
+  duration: {
+    [key: string]: any;
+  };
+  group: Group | null;
+}) {
   const [selectedEntry, setSelectedEntry] = React.useState(-1);
   const { duration } = props;
-  const [timelineChartData, setTimelineChartData] = React.useState({
+  const [timelineChartData, setTimelineChartData] = React.useState<{
+    data: {
+      index: number;
+      timestamp: string;
+  }[];
+  keys: string[];
+  colors: {
+    [key: string]: any;
+  };
+  }>({
     data: [],
     keys: [],
     colors: []
   });
-  const [timeline, setTimeline] = React.useState({
+
+  const [timeline, setTimeline] = React.useState<{
+    timeline: {
+      [key: string]: any;
+    };
+    lastUpdate: Date | string;
+  }>({
     timeline: {},
     // A long time ago, to force the first update...
     lastUpdate: new Date(2000, 1, 1),
   });
 
   const theme = useTheme();
-  const statusDefs = makeStatusDefs(theme);
+  const statusDefs: {
+    [key: string]: {
+      label: string;
+      color: any;
+      icon: IconifyIcon;
+      queryValue: string;
+    };
+  } = makeStatusDefs(theme as Theme);
 
-  function makeChartData(groupTimeline) {
+  function makeChartData(groupTimeline: {
+    [key: string]: any;
+  }) {
     const data = Object.keys(groupTimeline).map((timestamp, i) => {
       const status = groupTimeline[timestamp];
-      const statusCount = {};
-      Object.keys(status).forEach(st => {
+      const statusCount: {
+        [key: string]: any;
+      } = {};
+      Object.keys(status).forEach((st: string) => {
         const values = status[st];
-        const count = Object.values(values).reduce((a, b) => a + b, 0);
+        const count = Object.values(values).reduce((a: any, b: any) => a + b, 0);
         statusCount[st] = count;
       });
 
@@ -379,8 +447,13 @@ export function StatusCountTimeline(props) {
     });
   }
 
-  function makeStatusesColors(statuses) {
-    const colors = {};
+  function makeStatusesColors(statuses: {
+    [key: string]: any;
+  }) {
+    const colors: {
+      [key: string]: any;
+    } = {};
+
     Object.values(statuses).forEach(status => {
       const statusInfo = getInstanceStatus(status, '');
       colors[status] = statusDefs[statusInfo.type].color;
@@ -389,17 +462,25 @@ export function StatusCountTimeline(props) {
     return colors;
   }
 
-  function getStatusFromTimeline(timeline) {
+  function getStatusFromTimeline(timeline: {
+    [key: number]: number;
+  }) {
     if (Object.keys(timeline).length === 0) {
       return [];
     }
 
-    return Object.keys(Object.values(timeline)[0]).filter(status => status !== 0);
+    return Object.keys(Object.values(timeline)[0]).filter(status => parseInt(status) !== 0);
   }
 
-  function getInstanceCount(selectedEntry) {
-    const status_breakdown = [];
-    const statusTimeline = timeline.timeline;
+  function getInstanceCount(selectedEntry: number) {
+    const status_breakdown: {
+      status: string;
+      version: string;
+      instances: number;
+    }[] = [];
+    const statusTimeline: {
+      [key: string]: any;
+    } = timeline.timeline;
 
     // Populate it from the selected time one.
     if (!_.isEmpty(statusTimeline) && !_.isEmpty(timelineChartData.data)) {
@@ -411,7 +492,7 @@ export function StatusCountTimeline(props) {
       // Create the version breakdown from the timeline
       const entries = statusTimeline[ts] || [];
       for (const status in entries) {
-        if (status === 0) {
+        if (parseInt(status) === 0) {
           continue;
         }
 
@@ -428,8 +509,12 @@ export function StatusCountTimeline(props) {
       }
     }
 
-    status_breakdown.forEach((entry) => {
-      const statusInfo = getInstanceStatus(entry.status, entry.version);
+    status_breakdown.forEach((entry: {
+      status: string;
+      version: string;
+      [key: string]: any;
+    }) => {
+      const statusInfo = getInstanceStatus(parseInt(entry.status), entry.version);
       const statusTheme = statusDefs[statusInfo.type];
 
       entry.color = statusTheme.color;
@@ -455,20 +540,22 @@ export function StatusCountTimeline(props) {
 
   // Make the timeline data again when needed.
   React.useEffect(() => {
-    async function getStatusTimeline(group) {
-      setTimelineChartData({data: [], keys: [], colors: []});
-      try {
-        const statusCountTimeline = await groupChartStore
-          .getGroupStatusCountTimeline(group.application_id, group.id, duration.queryValue);
-        setTimeline({
-          timeline: statusCountTimeline,
-          lastUpdate: new Date().toUTCString(),
-        });
+    async function getStatusTimeline(group: Group | null) {
+      if (group) {
+        setTimelineChartData({data: [], keys: [], colors: []});
+        try {
+          const statusCountTimeline = await groupChartStore
+            .getGroupStatusCountTimeline(group.application_id, group.id, duration.queryValue);
+          setTimeline({
+            timeline: statusCountTimeline,
+            lastUpdate: new Date().toUTCString(),
+          });
 
-        makeChartData(statusCountTimeline || []);
-        setSelectedEntry(-1);
-      } catch (error) {
-        console.error(error);
+          makeChartData(statusCountTimeline || []);
+          setSelectedEntry(-1);
+        } catch (error) {
+          console.error(error);
+        }
       }
     }
     setSelectedEntry(-1);
