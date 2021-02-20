@@ -6,7 +6,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import PropTypes from 'prop-types';
 import React from 'react';
-import StatusHistoryItem from './StatusHistoryItem.react';
+import StatusHistoryItem from './StatusHistoryItem';
 
 const useStyles = makeStyles({
   root: {
