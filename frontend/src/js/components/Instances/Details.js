@@ -440,10 +440,14 @@ function DetailsView(props) {
   );
 }
 
+const nullable = propType => (props, propName, ...rest) =>
+  props[propName] === null ? null : propType(props, propName, ...rest);
+
 DetailsView.propTypes = {
   application: PropTypes.object.isRequired,
-  group: PropTypes.object.isRequired,
+  group: nullable(PropTypes.object.isRequired),
   instance: PropTypes.object,
+  onInstanceUpdated: PropTypes.func
 };
 
 export default DetailsView;

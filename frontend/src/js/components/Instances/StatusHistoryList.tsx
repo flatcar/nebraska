@@ -4,7 +4,6 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import PropTypes from 'prop-types';
 import React from 'react';
 import StatusHistoryItem from './StatusHistoryItem';
 
@@ -15,7 +14,14 @@ const useStyles = makeStyles({
     }
   }
 });
-function StatusHistoryList(props) {
+function StatusHistoryList(props: {
+  entries: {
+    status: number;
+    version?: string | undefined;
+    created_ts: string;
+    error_code: number;
+  }[];
+}) {
   const entries = props.entries || [];
   const classes = useStyles();
 
@@ -37,9 +43,5 @@ function StatusHistoryList(props) {
     </Table>
   );
 }
-
-StatusHistoryList.propTypes = {
-  entries: PropTypes.array.isRequired
-};
 
 export default StatusHistoryList;
