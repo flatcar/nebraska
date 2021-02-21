@@ -1,11 +1,11 @@
-import { Box, Link } from '@material-ui/core';
+import { Box, Link, Theme } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles';
 import React from 'react';
 import { Link as RouterLink} from 'react-router-dom';
 
-const useInstanceCountStyles = makeStyles(theme => ({
+const useInstanceCountStyles = makeStyles((theme: Theme) => ({
   instancesCount: {
     fontSize: '2rem;',
     fontWeight: 700,
@@ -22,7 +22,12 @@ const useInstanceCountStyles = makeStyles(theme => ({
   }
 }));
 
-export function InstanceCountLabel(props) {
+export function InstanceCountLabel(props: {
+  countText: string | number;
+  href?: object;
+  instanceListView?: boolean;
+  loading?: boolean;
+}) {
   const classes = useInstanceCountStyles();
   const {countText, href, instanceListView = false} = props;
 
@@ -45,7 +50,7 @@ export function InstanceCountLabel(props) {
               to={{...href}}
               component={RouterLink}
             >
-              <Typography className={classes.instancesLink}>See all instances</Typography>
+              <Typography className={classes.instanceLink}>See all instances</Typography>
             </Link>
             }
           </Box>

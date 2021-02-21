@@ -4,22 +4,29 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import PropTypes from 'prop-types';
 import React from 'react';
 import semver from 'semver';
 import _ from 'underscore';
+import { Channel } from '../../api/apiDataTypes';
 import { cleanSemverVersion } from '../../constants/helpers';
 import Item from './Item.react';
 
-function Table(props) {
-  const [selectedInstance, setSelectedInstance] = React.useState(null);
+function Table(props: {
+  version_breakdown? : any;
+  channel: Channel;
+  instances: {
+    id: string;
+    [key: string]: any;
+  }[];
+}) {
+  const [selectedInstance, setSelectedInstance] = React.useState<string | null>(null);
   const versions = props.version_breakdown || [];
   const lastVersionChannel = (props.channel && props.channel.package) ? cleanSemverVersion(props.channel.package.version) : '';
   const versionNumbers = (_.map(versions, (version) => {
     return cleanSemverVersion(version.version);
   })).sort(semver.rcompare);
 
-  function onItemToggle(id) {
+  function onItemToggle(id: string | null) {
     if (selectedInstance !== id) {
       setSelectedInstance(id);
     } else {
@@ -39,7 +46,10 @@ function Table(props) {
         </TableRow>
       </TableHead>
       <TableBody>
-        {props.instances.map((instance, i) =>
+        {props.instances.map((instance: {
+          id: string;
+          [key: string]: any;
+        }, i) =>
           <Item
             key={'instance_' + i}
             instance={instance}
@@ -53,11 +63,5 @@ function Table(props) {
     </MuiTable>
   );
 }
-
-Table.propTypes = {
-  instances: PropTypes.array.isRequired,
-  version_breakdown: PropTypes.array,
-  channel: PropTypes.object
-};
 
 export default Table;

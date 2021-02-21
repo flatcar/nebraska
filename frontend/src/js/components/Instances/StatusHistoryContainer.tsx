@@ -1,9 +1,8 @@
 import { makeStyles } from '@material-ui/core/styles';
-import PropTypes from 'prop-types';
 import React from 'react';
 import _ from 'underscore';
 import Empty from '../Common/EmptyContent';
-import StatusHistoryList from './StatusHistoryList.react';
+import StatusHistoryList from './StatusHistoryList';
 
 const useStyles = makeStyles({
   historyBox: {
@@ -14,9 +13,16 @@ const useStyles = makeStyles({
   },
 });
 
-function StatusHistoryContainer(props) {
+function StatusHistoryContainer(props: {
+  statusHistory: {
+  status: number;
+  version?: string | undefined;
+  created_ts: string;
+  error_code: number;
+  }[];
+}) {
   const classes = useStyles();
-  let entries = '';
+  let entries: React.ReactElement;
 
   if (_.isEmpty(props.statusHistory)) {
     entries = (
@@ -33,9 +39,5 @@ function StatusHistoryContainer(props) {
     </div>
   );
 }
-
-StatusHistoryContainer.propTypes = {
-  statusHistory: PropTypes.array.isRequired
-};
 
 export default StatusHistoryContainer;

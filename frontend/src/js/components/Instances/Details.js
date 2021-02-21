@@ -444,6 +444,7 @@ DetailsView.propTypes = {
   application: PropTypes.object.isRequired,
   group: PropTypes.object.isRequired,
   instance: PropTypes.object,
+  onInstanceUpdated: PropTypes.func
 };
 
 export default DetailsView;

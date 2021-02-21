@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, Theme } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
@@ -11,9 +11,10 @@ import Select from '@material-ui/core/Select';
 import TablePagination from '@material-ui/core/TablePagination';
 import { useTheme } from '@material-ui/styles';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import API from '../../api/API';
+import { Application, Group } from '../../api/apiDataTypes';
 import { getInstanceStatus, useGroupVersionBreakdown } from '../../constants/helpers';
 import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
@@ -29,11 +30,20 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function InstanceFilter(props) {
+interface InstanceFilterProps {
+  versions: any[];
+  onFiltersChanged: (newFilters: any) => void;
+  filter: {
+    [key: string]: any;
+  };
+  disabled?: boolean;
+}
+
+function InstanceFilter(props: InstanceFilterProps) {
   const statusDefs = makeStatusDefs(useTheme());
   const {onFiltersChanged, versions} = props;
 
-  function changeFilter(filterName, filterValue) {
+  function changeFilter(filterName: string, filterValue: string) {
     if (filterValue === props.filter[filterName]) {
       return;
     }
@@ -54,9 +64,9 @@ function InstanceFilter(props) {
           >
             <InputLabel htmlFor="select-status" shrink>Filter Status</InputLabel>
             <Select
-              onChange={event => changeFilter('status', event.target.value) }
+              onChange={(event: any) => changeFilter('status', event.target.value) }
               input={<Input id="select-status" />}
-              renderValue={selected =>
+              renderValue={(selected: any) =>
                 selected ? statusDefs[selected].label : 'Show All'
               }
               value={props.filter.status}
@@ -79,9 +89,9 @@ function InstanceFilter(props) {
           >
             <InputLabel htmlFor="select-versions" shrink>Filter Version</InputLabel>
             <Select
-              onChange={event => changeFilter('version', event.target.value) }
+              onChange={(event: ChangeEvent<{name?: string | undefined; value: any}>) => changeFilter('version', event.target.value) }
               input={<Input id="select-versions" />}
-              renderValue={selected =>
+              renderValue={(selected: any) =>
                 selected ? selected : 'Show All'
               }
               value={props.filter.version}
@@ -101,7 +111,7 @@ function InstanceFilter(props) {
   );
 }
 
-function ListView(props) {
+function ListView(props: {application: Application; group: Group}) {
   const classes = useStyles();
   const theme = useTheme();
   const statusDefs = makeStatusDefs(useTheme());
@@ -110,7 +120,7 @@ function ListView(props) {
   /*TODO: use the URL as the single source of truth and remove states */
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [filters, setFilters] = React.useState({status: '', version: ''});
+  const [filters, setFilters] = React.useState<{[key: string]: any}>({status: '', version: ''});
   const [instancesObj, setInstancesObj] = React.useState({instances: [], total: -1});
   const [instanceFetchLoading, setInstanceFetchLoading] = React.useState(false);
   const [totalInstances, setTotalInstances] = React.useState(-1);
@@ -121,7 +131,7 @@ function ListView(props) {
     return (new URLSearchParams(location.search)).get('period') || '1d';
   }
 
-  function fetchFiltersFromURL(callback) {
+  function fetchFiltersFromURL(callback: (...args: any) => void) {
     let status = '';
     const queryParams = new URLSearchParams(location.search);
     if (queryParams.has('status')) {
@@ -136,14 +146,14 @@ function ListView(props) {
       }
     }
     const version = queryParams.get('version') || '';
-    const pageQueryParam = (parseInt(queryParams.get('page')) || 1) - 1;
-    const perPage = parseInt(queryParams.get('perPage')) || 10;
+    const pageQueryParam = (parseInt(queryParams.get('page') as string) || 1) - 1;
+    const perPage = parseInt(queryParams.get('perPage') as string) || 10;
     const duration = getDuration();
 
     callback(status, version, pageQueryParam, perPage, duration);
   }
 
-  function addQuery(queryObj) {
+  function addQuery(queryObj: {[key: string]: any}) {
     const pathname = location.pathname;
     const searchParams = new URLSearchParams(location.search);
     for (const key in queryObj) {
@@ -161,7 +171,8 @@ function ListView(props) {
     });
   };
 
-  function fetchInstances(filters, page, perPage, duration) {
+  function fetchInstances(filters: {[key: string]: any}, page: number,
+                          perPage: number, duration: string) {
     setInstanceFetchLoading(true);
     const fetchFilters = {...filters};
     if (filters.status === '') {
@@ -185,7 +196,7 @@ function ListView(props) {
         setTotalInstances(result.total);
       }
       if (result.instances) {
-        const massagedInstances = result.instances.map((instance) => {
+        const massagedInstances = result.instances.map((instance: any) => {
           instance.statusInfo = getInstanceStatus(instance.application.status);
           return instance;
         });
@@ -199,20 +210,21 @@ function ListView(props) {
       });
   }
 
-  function handleChangePage(event, newPage) {
+  function handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
+                            newPage: number) {
     addQuery({ page: newPage + 1 });
   }
 
-  function handleChangeRowsPerPage(event) {
+  function handleChangeRowsPerPage(event: React.ChangeEvent<{value: string}>) {
     addQuery({ page: 1, perPage: +event.target.value });
   }
 
-  function onFiltersChanged(newFilters) {
+  function onFiltersChanged(newFilters: {[key: string]: any}) {
     applyFilters(newFilters);
   }
 
   function applyFilters(_filters = {}) {
-    const newFilters = Object.keys(_filters).length !== 0 ?
+    const newFilters: {[key: string]: any} = Object.keys(_filters).length !== 0 ?
       _filters : {status: '', version: ''};
     const statusQueryParam = newFilters.status ? statusDefs[newFilters.status].label : '';
     addQuery({ status: statusQueryParam, version: newFilters.version });
@@ -224,7 +236,8 @@ function ListView(props) {
   }
 
   React.useEffect(() => {
-    fetchFiltersFromURL((status, version, pageParam, perPageParam, duration) => {
+    fetchFiltersFromURL((status: string, version: string,
+                         pageParam: number, perPageParam: number, duration: string) => {
       setFilters({status, version});
       setPage(pageParam);
       setRowsPerPage(perPageParam);
@@ -242,7 +255,7 @@ function ListView(props) {
     // in the group.
     const queryParams = new URLSearchParams(window.location.search);
     const duration = queryParams.get('period');
-    API.getInstancesCount(application.id, group.id, duration)
+    API.getInstancesCount(application.id, group.id, duration as string)
       .then(result => {
         setTotalInstances(result);
       })
@@ -280,7 +293,11 @@ function ListView(props) {
               alignItems="stretch"
             >
               <Grid item>
-                <Box mb={2} color={theme.palette.greyShadeColor} fontSize={30} fontWeight={700}>
+                <Box mb={2}
+                  color={(theme as Theme).palette.greyShadeColor}
+                  fontSize={30}
+                  fontWeight={700}
+                >
                   {group.name}
                 </Box>
               </Grid>
@@ -338,7 +355,6 @@ function ListView(props) {
                 (instancesObj.instances.length > 0 ?
                   <React.Fragment>
                     <Table
-                      group={group}
                       channel={group.channel}
                       instances={instancesObj.instances}
                     />
