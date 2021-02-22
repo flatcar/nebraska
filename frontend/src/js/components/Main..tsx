@@ -13,20 +13,25 @@ import InstanceLayout from './Layouts/InstanceLayout';
 import InstanceListLayout from './Layouts/InstanceListLayout';
 import MainLayout from './Layouts/MainLayout.react';
 
+declare module '@material-ui/core/styles/createPalette' {
+  interface Palette {
+    titleColor: '#000000';
+    lightSilverShade: '#F0F0F0';
+    greyShadeColor: '#474747';
+    sapphireColor: '#061751';
+  }
+}
+
 const nebraskaTheme = createMuiTheme({
   palette: {
     primary: {
       contrastText: '#fff',
-      main: process.env.REACT_APP_PRIMARY_COLOR,
+      main: process.env.REACT_APP_PRIMARY_COLOR ? process.env.REACT_APP_PRIMARY_COLOR : '#2C98F0',
     },
     success: {
       main: green['500'],
       ...green
     },
-    titleColor: '#000000',
-    lightSilverShade: '#F0F0F0',
-    greyShadeColor: '#474747',
-    sapphireColor: '#061751'
   },
   typography: {
     fontFamily: 'Overpass, sans-serif',
