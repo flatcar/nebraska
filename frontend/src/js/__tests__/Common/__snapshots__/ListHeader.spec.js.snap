@@ -15,7 +15,6 @@ exports[`List Header should render correct List Header actions 1`] = `
           data-testid="modal-button"
           tabindex="0"
           type="button"
-          variant="extended"
         >
           <span
             class="MuiIconButton-label"
