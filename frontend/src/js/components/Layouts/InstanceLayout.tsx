@@ -1,25 +1,28 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
 import API from '../../api/API';
+import { Application, Group } from '../../api/apiDataTypes';
 import { getInstanceStatus } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import Loader from '../Common/Loader';
 import SectionHeader from '../Common/SectionHeader';
 import Details from '../Instances/Details';
 
-export default function InstanceLayout(props) {
-  const {appID, groupID, instanceID} = props.match.params;
+export default function InstanceLayout(props: {}) {
+  const {appID, groupID, instanceID} =
+    useParams<{appID: string; groupID: string; instanceID: string}>();
   const [application, setApplication] = React.useState(
     applicationsStore
       .getCachedApplication(appID)
   );
   const [group, setGroup] = React.useState(getGroupFromApplication(application));
-  const [instance, setInstance] = React.useState(null);
+  const [instance, setInstance] = React.useState<{[key: string]: any} | null>(null);
 
   function onChange() {
     API.getInstance(appID, groupID, instanceID)
       .then((instance) => {
         instance.statusInfo = getInstanceStatus(instance.application.status,
-          instance.application.version, instance.application.error_code);
+          instance.application.version);
         setInstance(instance);
       });
     const apps = applicationsStore.getCachedApplications() || [];
@@ -30,8 +33,12 @@ export default function InstanceLayout(props) {
     }
   }
 
-  function getGroupFromApplication(app) {
-    return app ? app.groups.find(({id}) => id === groupID) : null;
+  function getGroupFromApplication(app: Application | undefined) {
+    if (!app) {
+      return null;
+    }
+    const group = app.groups.find(({id}) => id === groupID);
+    return group || null;
   }
 
   React.useEffect(() => {

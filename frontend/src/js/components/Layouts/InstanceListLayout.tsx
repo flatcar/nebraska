@@ -1,14 +1,16 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
+import { Application, Group } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import Loader from '../Common/Loader';
 import SectionHeader from '../Common/SectionHeader';
 import List from '../Instances/List';
 
-export default function InstanceLayout(props) {
-  const {appID, groupID} = props.match.params;
+export default function InstanceLayout(props: {}) {
+  const {appID, groupID} = useParams<{appID: string; groupID: string}>();
   const [application, setApplication] =
     React.useState(applicationsStore.getCachedApplication(appID));
-  const [group, setGroup] = React.useState(getGroupFromApplication(application));
+  const [group, setGroup] = React.useState<Group | null>(getGroupFromApplication(application));
 
   function onChange() {
     const apps = applicationsStore.getCachedApplications() || [];
@@ -19,8 +21,12 @@ export default function InstanceLayout(props) {
     }
   }
 
-  function getGroupFromApplication(app) {
-    return app ? app.groups.find(({id}) => id === groupID) : null;
+  function getGroupFromApplication(app: Application | undefined) {
+    if (!app) {
+      return null;
+    }
+    const group = app.groups.find(({id}) => id === groupID);
+    return group || null;
   }
 
   React.useEffect(() => {

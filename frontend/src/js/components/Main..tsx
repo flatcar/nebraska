@@ -7,11 +7,11 @@ import React from 'react';
 import {Route, Switch } from 'react-router-dom';
 import Footer from './Footer';
 import Header from './Header.react';
-import ApplicationLayout from './Layouts/ApplicationLayout.react';
-import GroupLayout from './Layouts/GroupLayout.react';
+import ApplicationLayout from './Layouts/ApplicationLayout';
+import GroupLayout from './Layouts/GroupLayout';
 import InstanceLayout from './Layouts/InstanceLayout';
 import InstanceListLayout from './Layouts/InstanceListLayout';
-import MainLayout from './Layouts/MainLayout.react';
+import MainLayout from './Layouts/MainLayout';
 
 declare module '@material-ui/core/styles/createPalette' {
   interface Palette {
