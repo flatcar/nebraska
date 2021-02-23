@@ -1,27 +1,18 @@
 import React from 'react';
-import API from '../../api/API';
-import { getInstanceStatus } from '../../constants/helpers';
+import { useParams } from 'react-router-dom';
+import { Application, Group } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import Loader from '../Common/Loader';
 import SectionHeader from '../Common/SectionHeader';
-import Details from '../Instances/Details';
+import List from '../Instances/List';
 
-export default function InstanceLayout(props) {
-  const {appID, groupID, instanceID} = props.match.params;
-  const [application, setApplication] = React.useState(
-    applicationsStore
-      .getCachedApplication(appID)
-  );
+export default function InstanceLayout(props: {}) {
+  const {appID, groupID} = useParams<{appID: string; groupID: string}>();
+  const [application, setApplication] =
+    React.useState(applicationsStore.getCachedApplication(appID));
   const [group, setGroup] = React.useState(getGroupFromApplication(application));
-  const [instance, setInstance] = React.useState(null);
 
   function onChange() {
-    API.getInstance(appID, groupID, instanceID)
-      .then((instance) => {
-        instance.statusInfo = getInstanceStatus(instance.application.status,
-          instance.application.version, instance.application.error_code);
-        setInstance(instance);
-      });
     const apps = applicationsStore.getCachedApplications() || [];
     const app = apps.find(({id}) => id === appID);
     if (app !== application) {
@@ -30,13 +21,12 @@ export default function InstanceLayout(props) {
     }
   }
 
-  function getGroupFromApplication(app) {
+  function getGroupFromApplication(app: Application | undefined) {
     return app ? app.groups.find(({id}) => id === groupID) : null;
   }
 
   React.useEffect(() => {
     applicationsStore.addChangeListener(onChange);
-
     applicationsStore.getApplication(appID);
 
     return function cleanup() {
@@ -47,13 +37,11 @@ export default function InstanceLayout(props) {
 
   const applicationName = application ? application.name : '…';
   const groupName = group ? group.name : '…';
-  const instanceName = (instance && instance.alias) || instanceID;
 
-  const searchParams = new URLSearchParams(window.location.search).toString();
   return (
     <React.Fragment>
       <SectionHeader
-        title={instanceName}
+        title="Instances"
         breadcrumbs={[
           {
             path: '/apps',
@@ -66,20 +54,14 @@ export default function InstanceLayout(props) {
           {
             path: `/apps/${appID}/groups/${groupID}`,
             label: groupName
-          },
-          {
-            path: `/apps/${appID}/groups/${groupID}/instances?${searchParams}`,
-            label: 'Instances'
-          },
+          }
         ]}
       />
-      { !instance ? <Loader />
+      { group === null ? <Loader />
         :
-      <Details
+      <List
         application={application}
-        group={group}
-        instance={instance}
-        onInstanceUpdated={() => onChange()}
+        group={group as Group}
       />
       }
     </React.Fragment>
