@@ -6,7 +6,7 @@ import React from 'react';
 interface ChannelAvatarProps {
   backgroundColor?: string;
   color?: string;
-  size?: number;
+  size?: string | number;
   children?: React.ReactNode;
 }
 

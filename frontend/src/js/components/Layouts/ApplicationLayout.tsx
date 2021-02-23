@@ -6,7 +6,7 @@ import { applicationsStore } from '../../stores/Stores';
 import ChannelsList from '../Channels/List';
 import SectionHeader from '../Common/SectionHeader';
 import GroupsList from '../Groups/List';
-import PackagesList from '../Packages/List.react';
+import PackagesList from '../Packages/List';
 
 function ApplicationLayout(props: {}) {
   const {appID} = useParams<{appID: string}>();

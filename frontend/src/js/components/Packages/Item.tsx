@@ -1,6 +1,7 @@
 import cancelIcon from '@iconify/icons-mdi/cancel';
 import cubeOutline from '@iconify/icons-mdi/cube-outline';
 import { InlineIcon } from '@iconify/react';
+import { Theme } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -11,6 +12,7 @@ import makeStyles from '@material-ui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import _ from 'underscore';
+import { Channel, Package } from '../../api/apiDataTypes';
 import { ARCHES, cleanSemverVersion } from '../../constants/helpers';
 import flatcarIcon from '../../icons/flatcar-logo.json';
 import { applicationsStore } from '../../stores/Stores';
@@ -18,7 +20,9 @@ import ChannelAvatar from '../Channels/ChannelAvatar';
 import Label from '../Common/Label';
 import MoreMenu from '../Common/MoreMenu';
 
-const useStyles = makeStyles(theme => ({
+//@todo visit this again
+//@ts-ignore
+const useStyles = makeStyles((theme: Theme) => ({
   packageName: {
     fontSize: '1.1em',
   },
@@ -37,23 +41,29 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const containerIcons = {
+const containerIcons: {
+  [key: string]: any;
+} = {
   1: {icon: flatcarIcon, name: 'Flatcar'},
   other: {icon: cubeOutline, name: 'Other'},
 };
 
-function Item(props) {
+function Item(props: {
+  packageItem: Package;
+  channels: Channel[];
+  handleUpdatePackage: (pkgId: string) => void;
+}) {
   const classes = useStyles();
-  const createdDate = new Date(props.packageItem.created_ts);
-  const date = createdDate.toLocaleString('default', {timeStyle: 'short', dateStyle: 'short'});
+  const createdDate = new Date(props.packageItem.created_ts as string);
+  const date = createdDate.toLocaleString('default', {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'});
   const type = props.packageItem.type || 1;
   const processedChannels = _.where(props.channels, {package_id: props.packageItem.id});
-  let blacklistInfo = null;
+  let blacklistInfo: string | null = null;
   const item = type in containerIcons ? containerIcons[type] : containerIcons.other;
 
   if (props.packageItem.channels_blacklist) {
     const channelsList = _.map(props.packageItem.channels_blacklist, (channel, index) => {
-      return (_.findWhere(props.channels, {id: channel})).name;
+      return (_.findWhere(props.channels, {id: channel}))?.name;
     });
     blacklistInfo = channelsList.join(' - ');
   }
@@ -61,12 +71,13 @@ function Item(props) {
   function deletePackage() {
     const confirmationText = 'Are you sure you want to delete this package?';
     if (window.confirm(confirmationText)) {
-      applicationsStore.deletePackage(props.packageItem.application_id, props.packageItem.id);
+      applicationsStore.deletePackage(props.packageItem.application_id,
+        props.packageItem.id as string);
     }
   }
 
   function updatePackage() {
-    props.handleUpdatePackage(props.packageItem.id);
+    props.handleUpdatePackage(props.packageItem.id as string);
   }
 
   function makeItemSecondaryInfo() {
@@ -96,7 +107,9 @@ function Item(props) {
         {props.packageItem.channels_blacklist &&
           <Grid item>
             {props.packageItem.channels_blacklist &&
-              <Label><InlineIcon icon={cancelIcon} width="10" height="10" /> { blacklistInfo }</Label>
+              <Label>
+                <InlineIcon icon={cancelIcon} width="10" height="10" /> { blacklistInfo }
+              </Label>
             }
           </Grid>
         }
