@@ -28,7 +28,6 @@ exports[`Application List should render list correctly with data 1`] = `
           data-testid="modal-button"
           tabindex="0"
           type="button"
-          variant="extended"
         >
           <span
             class="MuiIconButton-label"
