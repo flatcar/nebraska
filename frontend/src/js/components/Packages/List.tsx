@@ -6,19 +6,22 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import _ from 'underscore';
 import API from '../../api/API';
+import { Package } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
 import Loader from '../Common/Loader';
 import ModalButton from '../Common/ModalButton';
 import EditDialog from './EditDialog';
-import Item from './Item.react';
+import Item from './Item';
 
-function List(props) {
+function List(props: {
+  appID: string;
+}) {
   const [application, setApplication] =
     React.useState(applicationsStore.getCachedApplication(props.appID) || null);
-  const [packages, setPackages] = React.useState(null);
-  const [packageToUpdate, setPackageToUpdate] = React.useState(null);
+  const [packages, setPackages] = React.useState<Package[] | null>(null);
+  const [packageToUpdate, setPackageToUpdate] = React.useState<Package | null>(null);
   const rowsPerPage = 10;
   const [page, setPage] = React.useState(0);
 
@@ -53,14 +56,15 @@ function List(props) {
     setPackageToUpdate(null);
   }
 
-  function openEditDialog(packageID) {
-    const pkg = packages.find(({id}) => id === packageID) || null;
+  function openEditDialog(packageID: string) {
+    const pkg = packages?.find(({id}) => id === packageID) || null;
     if (pkg !== packageToUpdate) {
       setPackageToUpdate(pkg);
     }
   }
 
-  function handleChangePage(event, newPage) {
+  function handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
+                            newPage: number) {
     setPage(newPage);
   }
 
@@ -106,7 +110,7 @@ function List(props) {
                 {packageToUpdate &&
                 <EditDialog
                   data={{channels: application.channels, channel: packageToUpdate}}
-                  show={packageToUpdate}
+                  show={Boolean(packageToUpdate)}
                   onHide={onCloseEditDialog}
                 />
                 }

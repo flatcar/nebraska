@@ -15,10 +15,10 @@ import MuiSelect from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
 import { Field, Form, Formik } from 'formik';
 import { Select, TextField } from 'formik-material-ui';
-import PropTypes from 'prop-types';
 import React from 'react';
 import _ from 'underscore';
 import * as Yup from 'yup';
+import { Channel, Package } from '../../api/apiDataTypes';
 import { ARCHES } from '../../constants/helpers';
 import {REGEX_SEMVER} from '../../constants/regex';
 import { applicationsStore } from '../../stores/Stores';
@@ -29,7 +29,12 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function EditDialog(props) {
+function EditDialog(props: {
+  data: any;
+  show: boolean;
+  create?: boolean;
+  onHide: () => void;
+}) {
   const classes = useStyles();
   const [flatcarType, otherType] = [1, 4];
   const [packageType, setPackageType] =
@@ -41,28 +46,29 @@ function EditDialog(props) {
     return props.data.channel.flatcar_action ? props.data.channel.flatcar_action.sha256 : '';
   }
 
-  function isFlatcarType(_type) {
+  function isFlatcarType(_type: number) {
     return _type === flatcarType;
   }
 
-  function getChannelsNames(channelIds) {
-    const channels = props.data.channels.filter((channel) => {
+  function getChannelsNames(channelIds: string[]) {
+    const channels = props.data.channels.filter((channel: Channel) => {
       return channelIds.includes(channel.id);
     });
-    return channels.map((channelObj) => { return channelObj.name; });
+    return channels.map((channelObj: Channel) => { return channelObj.name; });
   }
 
-  function handlePackageTypeChange(event) {
-    setPackageType(event.target.value);
+  function handlePackageTypeChange(event:React.ChangeEvent<{ name?: string; value: unknown }>) {
+    setPackageType(event.target.value as number);
   }
 
-  function handleArchChange(event) {
-    setArch(event.target.value);
+  function handleArchChange(event: React.ChangeEvent<{ name?: string; value: unknown }>) {
+    setArch(event.target.value as number);
   }
-
+  //@todo add better types
+  //@ts-ignore
   function handleSubmit(values, actions) {
-    const data = {
-      arch: parseInt(arch),
+    const data: Partial<Package> = {
+      arch: typeof arch === 'string' ? parseInt(arch) : arch,
       filename: values.filename,
       description: values.description,
       url: values.url,
@@ -70,12 +76,10 @@ function EditDialog(props) {
       type: packageType,
       size: values.size.toString(),
       hash: values.hash,
-      application_id: isCreation ? props.data.appID : props.data.channel.application_id,
-      channels_blacklist: values.channelsBlacklist ? values.channelsBlacklist : []
+      application_id: isCreation && props.data.appID ?
+        props.data.appID : props.data.channel.application_id,
+      channels_blacklist: values.channelsBlacklist ? values.channelsBlacklist : [],
     };
-
-    console.log(packageType);
-    console.log(packageType === otherType);
 
     if (isFlatcarType(packageType)) {
       data.flatcar_action = {sha256: values.flatcarHash};
@@ -106,6 +110,8 @@ function EditDialog(props) {
     props.onHide();
   }
 
+  //@todo add better types
+  //@ts-ignore
   function renderForm({values, status, isSubmitting}) {
     const channels = props.data.channels ? props.data.channels : [];
     return (
@@ -147,8 +153,8 @@ function EditDialog(props) {
                   value={arch}
                   onChange={handleArchChange}
                 >
-                  {Object.keys(ARCHES).map(key => {
-                    const archName = ARCHES[key];
+                  {Object.keys(ARCHES).map((key: string) => {
+                    const archName = ARCHES[parseInt(key)];
                     return <MenuItem value={parseInt(key)} key={key}>{archName}</MenuItem>;
                   })}
                 </MuiSelect>
@@ -240,9 +246,10 @@ function EditDialog(props) {
               name="channelsBlacklist"
               component={Select}
               multiple
-              renderValue={selected => getChannelsNames(selected).join(' / ')}
+              renderValue={(selected: string[]) => getChannelsNames(selected).join(' / ')}
             >
-              {channels.filter(channelItem => channelItem.arch === arch).map((packageItem) => {
+              {channels.filter((channelItem: Channel) =>
+                channelItem.arch === arch).map((packageItem: Channel) => {
                 const label = packageItem.name;
                 const isDisabled = !isCreation && packageItem.package &&
                   props.data.channel.version === packageItem.package.version;
@@ -270,7 +277,9 @@ function EditDialog(props) {
     );
   }
 
-  const validation = Yup.object().shape({
+  const validation: {
+    [key: string]: any;
+  } = Yup.object().shape({
     url: Yup.string().url(),
     filename: Yup.string()
       .max(100, 'Must enter a valid filename (less than 100 characters)')
@@ -289,7 +298,7 @@ function EditDialog(props) {
       .required('Required'),
   });
 
-  let initialValues = {channelsBlacklist: []};
+  let initialValues: {[key: string]: any} = {channelsBlacklist: []};
   if (!isCreation) {
     validation['flatcarHash'] = Yup.string()
       .max(64, 'Must be a valid hash (less than 64 characters)')
@@ -317,16 +326,12 @@ function EditDialog(props) {
         initialValues={initialValues}
         onSubmit={handleSubmit}
         validationSchema={validation}
+        //@todo add better types
+        //@ts-ignore
         render={renderForm}
       />
     </Dialog>
   );
 }
-
-EditDialog.propTypes = {
-  data: PropTypes.object,
-  show: PropTypes.bool,
-  create: PropTypes.bool,
-};
 
 export default EditDialog;

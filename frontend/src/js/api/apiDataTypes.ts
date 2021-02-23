@@ -31,7 +31,7 @@ export interface Channel {
 }
 
 export interface Package {
-    id: string;
+    id?: string;
     type: number;
     version: string;
     url: string;
@@ -42,23 +42,23 @@ export interface Package {
     created_ts: string;
     channels_blacklist: string[];
     application_id: string;
-    flatcar_action: FlatcarAction;
+    flatcar_action?: FlatcarAction;
     arch: Arch;
 }
 
 export interface FlatcarAction {
-    id: string;
-    event: string;
-    chromeos_version: string;
-    sha256: string;
-    needs_admin: boolean;
-    is_delta: boolean;
-    disable_payload_backoff: boolean;
-    metadata_signature_rsa: string;
-    metadata_size: string;
-    deadline: string;
-    created_ts: string;
-    package_id: string;
+    id?: string;
+    event?: string;
+    chromeos_version?: string;
+    sha256?: string;
+    needs_admin?: boolean;
+    is_delta?: boolean;
+    disable_payload_backoff?: boolean;
+    metadata_signature_rsa?: string;
+    metadata_size?: string;
+    deadline?: string;
+    created_ts?: string;
+    package_id?: string;
 }
 
 export interface Application {
