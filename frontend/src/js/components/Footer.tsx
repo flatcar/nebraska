@@ -2,8 +2,14 @@ import { Box } from '@material-ui/core';
 import React from 'react';
 import API from '../api/API';
 
+interface NebraskaConfig {
+  title: string;
+  nebraska_config: string;
+  nebraska_version: string;
+}
+
 function Footer() {
-  const [nebraskaConfig, setNebraskaConfig] = React.useState(null);
+  const [nebraskaConfig, setNebraskaConfig] = React.useState<null | NebraskaConfig>(null);
   React.useEffect(() => {
     API.getConfig().then((config) => {
       setNebraskaConfig(config);
