@@ -66,6 +66,14 @@ func main() {
 }
 
 func mainWithError() error {
+	debug := flag.Bool("debug", false, "sets log level to debug")
+
+	zerolog.SetGlobalLevel(zerolog.InfoLevel)
+
+	if *debug {
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	}
+
 	flag.Parse()
 
 	if err := checkArgs(); err != nil {
