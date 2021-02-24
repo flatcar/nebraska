@@ -315,7 +315,7 @@ func (api *API) GetGroupID(trackName string, arch Arch) (string, error) {
 			}
 			// Checks boths errors above.
 			if err != nil {
-				logger.Error("GetGroupID", "error", err.Error())
+				logger.Error().Err(err).Msg("GetGroupID error")
 			} else {
 				for _, group := range groups {
 					if group.Channel != nil {
@@ -324,11 +324,11 @@ func (api *API) GetGroupID(trackName string, arch Arch) (string, error) {
 						// The newest group with the track name and arch wins.
 						if otherID, ok := cachedGroups[descriptor]; ok {
 							// Log a warning for others.
-							logger.Warn("GetGroupID - another group already uses the same track name and architecture", "group", group.ID, "group2", otherID, "track", group.Track)
+							logger.Warn().Str("group", group.ID).Str("group2", otherID).Str("track", group.Track).Msg("GetGroupID - another group already uses the same track name and architecture")
 						}
 						cachedGroups[descriptor] = group.ID
 					} else {
-						logger.Warn("GetGroupID - no channel found for group", "group", group.ID)
+						logger.Warn().Str("group", group.ID).Msg("GetGroupID - no channel found for")
 					}
 				}
 			}

@@ -3,7 +3,7 @@ package api
 import (
 	"time"
 
-	"github.com/blang/semver"
+	"github.com/blang/semver/v4"
 )
 
 const (

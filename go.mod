@@ -6,7 +6,7 @@ replace github.com/coreos/go-omaha => github.com/kinvolk/go-omaha v0.0.0-2020112
 
 require (
 	github.com/Depado/ginprom v1.5.0
-	github.com/blang/semver v3.5.1+incompatible
+	github.com/blang/semver/v4 v4.0.0
 	github.com/coreos/go-omaha v0.0.0 // replaced with github.com/kinvolk/go-omaha
 	github.com/doug-martin/goqu/v9 v9.10.0
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
@@ -30,9 +30,8 @@ require (
 	github.com/kevinburke/go-bindata v3.16.0+incompatible
 	github.com/lib/pq v1.8.0
 	github.com/mattn/go-colorable v0.1.8 // indirect
-	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
-	github.com/mgutz/logxi v0.0.0-20161027140823-aebf8a7d67ab
 	github.com/prometheus/client_golang v1.5.0
+	github.com/rs/zerolog v1.20.0
 	github.com/rubenv/sql-migrate v0.0.0-20200616145509-8d140a17f351
 	github.com/stretchr/testify v1.6.1
 	github.com/ugorji/go v1.1.13 // indirect

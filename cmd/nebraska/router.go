@@ -20,10 +20,7 @@ func setupUsedRouterLogging(router gin.IRoutes, name string) {
 		if !ok {
 			reqID = -1
 		}
-		logger.Debug("router debug",
-			"request id", reqID,
-			"router name", name,
-		)
+		logger.Debug().Msgf("router debug request id %s router name %s", reqID, name)
 		c.Next()
 	})
 }
@@ -34,25 +31,14 @@ func setupRequestLifetimeLogging(router gin.IRoutes) {
 		c.Set(requestIDKey, reqID)
 
 		start := time.Now()
-		logger.Debug("request debug",
-			"request ID", reqID,
-			"start time", start,
-			"method", c.Request.Method,
-			"URL", c.Request.URL.String(),
-			"client IP", c.ClientIP(),
-		)
+		logger.Debug().Msgf("request debug request ID %d start time %s method %s URL %s client IP %s", reqID, start, c.Request.Method, c.Request.URL.String(), c.ClientIP())
 
 		// Process request
 		c.Next()
 
 		stop := time.Now()
 		latency := stop.Sub(start)
-		logger.Debug("request debug",
-			"request ID", reqID,
-			"stop time", stop,
-			"latency", latency,
-			"status", c.Writer.Status(),
-		)
+		logger.Debug().Msgf("request debug request ID %d stop time %s latency %s status %d", reqID, stop, latency, c.Writer.Status())
 	})
 }
 

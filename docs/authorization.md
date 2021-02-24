@@ -35,7 +35,7 @@ the `postgres` container as follows:
 
 - Start the Nebraska backend:
 
-  - `LOGXI=* nebraska -auth-mode noop -http-static-dir $PWD/frontend/build
+  - `nebraska -auth-mode noop -http-static-dir $PWD/frontend/build
     -http-log`
 
 - In the browser, access `http://localhost:8000`
@@ -103,7 +103,7 @@ the `postgres` container as follows:
 
 - Start the Nebraska backend:
 
-  - `LOGXI=* nebraska -auth-mode github -gh-client-id <CLIENT_ID>
+  - `nebraska -auth-mode github -gh-client-id <CLIENT_ID>
     -gh-client-secret <CLIENT_SECRET> -gh-ro-teams <READ_ONLY_TEAMS>
     -gh-rw-teams <READ_WRITE_TEAMS> -gh-webhook-secret <WEBHOOK_SECRET>
     -http-static-dir $PWD/frontend/build -http-log`
