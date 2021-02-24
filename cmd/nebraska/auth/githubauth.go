@@ -678,22 +678,38 @@ func (gha *githubAuth) loginWebhookMembershipEvent(c *gin.Context, payloadReader
 		return
 	}
 	logger.Debug().Str("got membership event with action", payload.Action).Msg("webhook")
-	if payload.Action != "removed" {
-		logger.Debug().Str("ignoring membership event with action", payload.Action).Msg("webhook")
-		return
-	}
-	logger.Debug().Str("got membership remove event with scope", payload.Scope).Msg("webhook")
+
+	logger.Debug().Str("got membership event with scope", payload.Scope).Msg("webhook")
 	if payload.Scope != "team" {
-		logger.Debug().Str("ignoring membership remove event with scope", payload.Scope).Msg("webhook")
+		logger.Debug().Str("ignoring membership event with scope", payload.Scope).Msg("webhook")
 		return
 	}
 	username := payload.Member.Login
 	org := payload.Org.Login
 	team := payload.Team.Name
-	sessionIDs := gha.stealUserSessionIDsForOrgAndTeam(username, org, team)
-	for _, sessionID := range sessionIDs {
-		logger.Debug().Str("dropping session", sessionID).Str("user", username).Msg("webhook")
-		gha.sessionsStore.MarkOrDestroySessionByID(sessionID)
+
+	if payload.Action == "added" {
+		for _, rwTeam := range gha.readWriteTeams {
+			teamName := makeTeamName(org, team)
+			if rwTeam == teamName {
+				logger.Debug().Str("action", payload.Action).Str("dropping all the sessions of user", username).Msg("webhook")
+				sessionIDs := gha.stealUserSessionIDs(username)
+				for _, sessionID := range sessionIDs {
+					logger.Debug().Str("action", payload.Action).Str("dropping session", sessionID).Str("user", username).Msg("webhook")
+					gha.sessionsStore.MarkOrDestroySessionByID(sessionID)
+				}
+				break
+			}
+		}
+	} else if payload.Action == "removed" {
+		sessionIDs := gha.stealUserSessionIDsForOrgAndTeam(username, org, team)
+		for _, sessionID := range sessionIDs {
+			logger.Debug().Str("action", payload.Action).Str("dropping session", sessionID).Str("user", username).Msg("webhook")
+			gha.sessionsStore.MarkOrDestroySessionByID(sessionID)
+		}
+	} else {
+		logger.Debug().Str("ignoring membership event with action", payload.Action).Msg("webhook")
+		return
 	}
 }
 
