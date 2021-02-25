@@ -14,6 +14,7 @@
 // db/migrations/0010_add_instance_alias.sql (138B)
 // db/migrations/0011_add_composite_indexes.sql (760B)
 // db/migrations/0012_drop_unused_indexes.sql (696B)
+// db/migrations/0013_add_stats_indexes.sql (426B)
 
 package api
 
@@ -362,6 +363,26 @@ func dbMigrations0012_drop_unused_indexesSql() (*asset, error) {
 	return a, nil
 }
 
+var _dbMigrations0013_add_stats_indexesSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xac\x90\x4d\x0a\xc2\x30\x10\x85\xf7\x39\x45\x96\x15\xdb\x13\x74\xeb\x15\x5c\x0f\x43\x26\xb6\x83\x35\x13\x32\x53\xac\xb7\x97\x52\xea\x0f\x56\x70\xe1\x2e\x0f\xf2\x7d\x79\x79\x4d\xe3\xf7\x17\xee\x0a\x5a\xf4\xc7\xec\x5c\x28\x71\x3e\x72\xa2\x38\x79\x4e\x6a\x98\x42\x04\xcc\x79\xe0\x80\xc6\x92\xa0\x2b\x32\x66\x60\x82\x01\xd5\x20\xf4\x31\x9c\xe1\x24\x05\xc6\x4c\x68\x51\x61\x81\x80\x69\xf2\x92\x36\x15\xd5\xaa\xa8\xb7\x15\xf5\x03\x62\xda\xb5\xdf\x3a\xa9\xa1\x8d\x0a\x3d\xab\x49\xb9\xad\x71\xb9\x4b\x60\xfa\xd1\xe0\x1d\xa8\x96\x58\x3f\x81\xf9\xa9\xd7\x39\x0e\x72\x4d\xce\x51\x91\xfc\x9f\x39\xda\x6d\xd9\x2f\xff\x68\x9d\x73\xf7\x00\x00\x00\xff\xff\xed\xea\xb4\xcb\xaa\x01\x00\x00")
+
+func dbMigrations0013_add_stats_indexesSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_dbMigrations0013_add_stats_indexesSql,
+		"db/migrations/0013_add_stats_indexes.sql",
+	)
+}
+
+func dbMigrations0013_add_stats_indexesSql() (*asset, error) {
+	bytes, err := dbMigrations0013_add_stats_indexesSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "db/migrations/0013_add_stats_indexes.sql", size: 426, mode: os.FileMode(0644), modTime: time.Unix(1, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xce, 0x3d, 0xd6, 0x1b, 0x3a, 0x65, 0xee, 0x1, 0x5a, 0x5a, 0x78, 0xa, 0xcd, 0xb5, 0xfe, 0x75, 0xd4, 0x88, 0xd5, 0x26, 0x78, 0x4, 0x8f, 0x12, 0x25, 0x50, 0xc7, 0x31, 0xc, 0x3c, 0x4f, 0x7b}}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -467,6 +488,7 @@ var _bindata = map[string]func() (*asset, error){
 	"db/migrations/0010_add_instance_alias.sql":    dbMigrations0010_add_instance_aliasSql,
 	"db/migrations/0011_add_composite_indexes.sql": dbMigrations0011_add_composite_indexesSql,
 	"db/migrations/0012_drop_unused_indexes.sql":   dbMigrations0012_drop_unused_indexesSql,
+	"db/migrations/0013_add_stats_indexes.sql":     dbMigrations0013_add_stats_indexesSql,
 }
 
 // AssetDir returns the file names below a certain
@@ -525,6 +547,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"0010_add_instance_alias.sql":    &bintree{dbMigrations0010_add_instance_aliasSql, map[string]*bintree{}},
 			"0011_add_composite_indexes.sql": &bintree{dbMigrations0011_add_composite_indexesSql, map[string]*bintree{}},
 			"0012_drop_unused_indexes.sql":   &bintree{dbMigrations0012_drop_unused_indexesSql, map[string]*bintree{}},
+			"0013_add_stats_indexes.sql":     &bintree{dbMigrations0013_add_stats_indexesSql, map[string]*bintree{}},
 		}},
 		"sample_data.sql": &bintree{dbSample_dataSql, map[string]*bintree{}},
 	}},
