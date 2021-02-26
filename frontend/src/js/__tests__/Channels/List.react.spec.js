@@ -1,6 +1,6 @@
 import {render} from '@testing-library/react';
 import React from 'react';
-import List from '../../components/Channels/List.react';
+import List from '../../components/Channels/List';
 
 describe('Channel List', () => {
   const minProps = {

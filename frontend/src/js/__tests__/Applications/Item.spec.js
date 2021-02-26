@@ -1,7 +1,7 @@
 import {render} from '@testing-library/react';
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import Item from '../../components/Applications/Item.react';
+import Item from '../../components/Applications/Item';
 
 describe('Application Item', () => {
   it('should render item correctly for no data', () => {

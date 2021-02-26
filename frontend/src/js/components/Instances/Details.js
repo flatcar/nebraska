@@ -28,7 +28,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import * as Yup from 'yup';
 import API from '../../api/API';
 import { ERROR_STATUS_CODE, getErrorAndFlags, getInstanceStatus, makeLocaleTime, prepareErrorMessage } from '../../constants/helpers';
-import ChannelItem from '../Channels/Item.react';
+import ChannelItem from '../Channels/Item';
 import { CardFeatureLabel, CardLabel } from '../Common/Card';
 import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
@@ -440,10 +440,14 @@ function DetailsView(props) {
   );
 }
 
+const nullable = propType => (props, propName, ...rest) =>
+  props[propName] === null ? null : propType(props, propName, ...rest);
+
 DetailsView.propTypes = {
   application: PropTypes.object.isRequired,
-  group: PropTypes.object.isRequired,
+  group: nullable(PropTypes.object.isRequired),
   instance: PropTypes.object,
+  onInstanceUpdated: PropTypes.func
 };
 
 export default DetailsView;

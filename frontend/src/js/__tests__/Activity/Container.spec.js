@@ -1,7 +1,7 @@
 import {render} from '@testing-library/react';
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import Container from '../../components/Activity/Container.react';
+import Container from '../../components/Activity/Container';
 import { activityStore } from '../../stores/Stores';
 
 describe('Activity Container', () => {

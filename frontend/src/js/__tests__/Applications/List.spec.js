@@ -1,7 +1,7 @@
 import {render, waitForDomChange} from '@testing-library/react';
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import List from '../../components/Applications/List.react';
+import List from '../../components/Applications/List';
 import { applicationsStore } from '../../stores/Stores';
 
 describe('Application List', () => {

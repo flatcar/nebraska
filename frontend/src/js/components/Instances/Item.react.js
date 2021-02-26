@@ -6,7 +6,6 @@ import Collapse from '@material-ui/core/Collapse';
 import Link from '@material-ui/core/Link';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import semver from 'semver';
@@ -14,7 +13,7 @@ import _ from 'underscore';
 import LoadingGif from '../../../img/mini_loading.gif';
 import API from '../../api/API';
 import { cleanSemverVersion, makeLocaleTime } from '../../constants/helpers';
-import StatusHistoryContainer from './StatusHistoryContainer.react';
+import StatusHistoryContainer from './StatusHistoryContainer';
 
 const TableLabel = function(props){
   return (<Box bgcolor={props.bgColor} color={props.textColor} display="inline-block" py={1} px={2}>
@@ -128,12 +127,5 @@ function Item(props) {
     </React.Fragment>
   );
 }
-
-Item.propTypes = {
-  instance: PropTypes.object.isRequired,
-  selected: PropTypes.bool,
-  versionNumbers: PropTypes.array,
-  lastVersionChannel: PropTypes.string
-};
 
 export default Item;
