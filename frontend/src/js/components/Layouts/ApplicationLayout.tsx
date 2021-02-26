@@ -9,9 +9,10 @@ import GroupsList from '../Groups/List';
 import PackagesList from '../Packages/List';
 
 function ApplicationLayout(props: {}) {
-  const {appID} = useParams<{appID: string}>();
-  const [applications, setApplications] =
-      React.useState(applicationsStore.getCachedApplications() || []);
+  const { appID } = useParams<{ appID: string }>();
+  const [applications, setApplications] = React.useState(
+    applicationsStore.getCachedApplications() || []
+  );
 
   function onChange() {
     setApplications(applications);
@@ -25,7 +26,7 @@ function ApplicationLayout(props: {}) {
   });
 
   let appName = '';
-  const application = _.findWhere(applications, {id: appID});
+  const application = _.findWhere(applications, { id: appID });
 
   if (application) {
     appName = application.name;
@@ -38,25 +39,16 @@ function ApplicationLayout(props: {}) {
         breadcrumbs={[
           {
             path: '/apps',
-            label: 'Applications'
-          }
+            label: 'Applications',
+          },
         ]}
       />
-      <Grid
-        container
-        spacing={1}
-        justify="space-between"
-      >
+      <Grid container spacing={1} justify="space-between">
         <Grid item xs={8}>
           <GroupsList appID={appID} />
         </Grid>
         <Grid item xs={4}>
-          <Grid
-            container
-            direction="column"
-            alignItems="stretch"
-            spacing={2}
-          >
+          <Grid container direction="column" alignItems="stretch" spacing={2}>
             <Grid item xs={12}>
               <ChannelsList appID={appID} />
             </Grid>

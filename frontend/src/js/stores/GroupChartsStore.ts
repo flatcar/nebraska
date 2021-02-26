@@ -1,17 +1,19 @@
 import { applicationsStore } from './Stores';
 export default class GroupChartsStore {
-  versionBreakdownChartData: {[key: string]: {
+  versionBreakdownChartData: {
     [key: string]: {
-      [key: string]: string;
+      [key: string]: {
+        [key: string]: string;
+      };
     };
   };
-};
-  statusBreakdownChartData: {[key: string]: {
+  statusBreakdownChartData: {
     [key: string]: {
-      [key: string]: string;
+      [key: string]: {
+        [key: string]: string;
+      };
     };
   };
-};
 
   constructor() {
     this.versionBreakdownChartData = {};
@@ -23,8 +25,11 @@ export default class GroupChartsStore {
     versionCountTimeline = this.getVersionChartData(groupID, duration);
     if (!versionCountTimeline) {
       try {
-        versionCountTimeline = await applicationsStore.
-          getGroupVersionCountTimeline(appID, groupID, duration);
+        versionCountTimeline = await applicationsStore.getGroupVersionCountTimeline(
+          appID,
+          groupID,
+          duration
+        );
         this.setVersionChartData(groupID, duration, versionCountTimeline);
       } catch (error) {
         throw new Error(`Error getting version count timeline ${error}`);
@@ -33,12 +38,18 @@ export default class GroupChartsStore {
     return versionCountTimeline;
   }
 
-  setVersionChartData(groupID: string, duration: string, data: {
+  setVersionChartData(
+    groupID: string,
+    duration: string,
+    data: {
       [key: string]: string;
-  }) {
-    if (duration === '1h' || (this.versionBreakdownChartData.hasOwnProperty(groupID)
-       && this.versionBreakdownChartData[groupID].hasOwnProperty(duration)))
-    {
+    }
+  ) {
+    if (
+      duration === '1h' ||
+      (this.versionBreakdownChartData.hasOwnProperty(groupID) &&
+        this.versionBreakdownChartData[groupID].hasOwnProperty(duration))
+    ) {
       return;
     }
     if (!this.versionBreakdownChartData[groupID]) {
@@ -59,8 +70,11 @@ export default class GroupChartsStore {
     statusCountTimeline = this.getStatusChartData(groupID, duration);
     if (!statusCountTimeline) {
       try {
-        statusCountTimeline = await applicationsStore.
-          getGroupStatusCountTimeline(appID, groupID, duration);
+        statusCountTimeline = await applicationsStore.getGroupStatusCountTimeline(
+          appID,
+          groupID,
+          duration
+        );
         this.setStatusChartData(groupID, duration, statusCountTimeline);
       } catch (error) {
         throw new Error(`Error getting status count timeline ${error}`);
@@ -69,11 +83,18 @@ export default class GroupChartsStore {
     return statusCountTimeline;
   }
 
-  setStatusChartData(groupID: string, duration: string, data: {
-    [key: string]: string;
-  }) {
-    if (duration === '1h' || (this.statusBreakdownChartData.hasOwnProperty(groupID)
-       && this.statusBreakdownChartData[groupID].hasOwnProperty(duration))) {
+  setStatusChartData(
+    groupID: string,
+    duration: string,
+    data: {
+      [key: string]: string;
+    }
+  ) {
+    if (
+      duration === '1h' ||
+      (this.statusBreakdownChartData.hasOwnProperty(groupID) &&
+        this.statusBreakdownChartData[groupID].hasOwnProperty(duration))
+    ) {
       return;
     }
     if (!this.statusBreakdownChartData[groupID]) {

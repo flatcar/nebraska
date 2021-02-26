@@ -12,14 +12,17 @@ import GroupsList from './ApplicationItemGroupsList';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    padding: '0px 8px'
+    padding: '0px 8px',
   },
   itemSection: {
-    padding: '0 1em'
-  }
+    padding: '0 1em',
+  },
 }));
 
-function Item(props: {application: Application; handleUpdateApplication: (appID: string) => void}) {
+function Item(props: {
+  application: Application;
+  handleUpdateApplication: (appID: string) => void;
+}) {
   const classes = useStyles();
   const description = props.application.description || 'No description provided';
   const groups = props.application.groups || [];
@@ -43,50 +46,43 @@ function Item(props: {application: Application; handleUpdateApplication: (appID:
         <Grid item xs={12}>
           <CardHeader
             cardMainLinkLabel={props.application.name}
-            cardMainLinkPath={{pathname: `/apps/${appID}`}}
+            cardMainLinkPath={{ pathname: `/apps/${appID}` }}
             cardId={appID}
-            cardTrack=''
+            cardTrack=""
             cardDescription={description}
           >
-            <MoreMenu options={[
-              {
-                'label': 'Edit',
-                'action': updateApplication,
-              },
-              {
-                'label': 'Delete',
-                'action': deleteApplication,
-              }
-            ]}
+            <MoreMenu
+              options={[
+                {
+                  label: 'Edit',
+                  action: updateApplication,
+                },
+                {
+                  label: 'Delete',
+                  action: deleteApplication,
+                },
+              ]}
             />
           </CardHeader>
         </Grid>
         <Grid item xs={12}>
-          <Grid
-            container
-            className={classes.itemSection}
-            spacing={0}
-          >
+          <Grid container className={classes.itemSection} spacing={0}>
             <Grid item xs={4}>
               <Box mt={2}>
                 <CardFeatureLabel>INSTANCES</CardFeatureLabel>
                 <CardLabel>
-                  <Typography variant="h5">
-                    {instances}
-                  </Typography>
+                  <Typography variant="h5">{instances}</Typography>
                   <Box display="flex" my={1}>
-                    <ScheduleIcon color="disabled"/>
+                    <ScheduleIcon color="disabled" />
                     <Box pl={1} color="text.disabled">
-                      <Typography variant="subtitle1">
-                        last 24 hours
-                      </Typography>
+                      <Typography variant="subtitle1">last 24 hours</Typography>
                     </Box>
                   </Box>
                 </CardLabel>
               </Box>
             </Grid>
             <Box width="1%">
-              <Divider orientation="vertical" variant="fullWidth"/>
+              <Divider orientation="vertical" variant="fullWidth" />
             </Box>
             <Grid item xs={7}>
               <Box mt={2} p={1}>

@@ -9,10 +9,10 @@ export const theme = createMuiTheme({
     },
     success: {
       main: green['500'],
-      ...green
+      ...green,
     },
   },
   typography: {
     fontFamily: 'Overpass, sans-serif',
-  }
+  },
 });

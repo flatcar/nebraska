@@ -3,7 +3,6 @@ import EventEmitter from 'events';
 var CHANGE_EVENT = 'change';
 
 class Store extends EventEmitter {
-
   constructor() {
     super();
     this.setMaxListeners(100);

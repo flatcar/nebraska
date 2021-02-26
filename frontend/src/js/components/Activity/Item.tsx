@@ -12,16 +12,9 @@ import { Link as RouterLink } from 'react-router-dom';
 import { Activity } from '../../api/apiDataTypes';
 import { activityStore } from '../../stores/Stores';
 
-function ActivityItemIcon(props: {icon: object; color?: string | undefined}) {
-  const {icon, color} = props;
-  return (
-    <Icon
-      icon={icon}
-      color={color}
-      width="30px"
-      height="30px"
-    />
-  );
+function ActivityItemIcon(props: { icon: object; color?: string | undefined }) {
+  const { icon, color } = props;
+  return <Icon icon={icon} color={color} width="30px" height="30px" />;
 }
 
 const stateIcons: {
@@ -30,34 +23,33 @@ const stateIcons: {
     color: string;
   };
 } = {
-  'warning': {
+  warning: {
     icon: alertOutline,
-    color: '#ff5500'
+    color: '#ff5500',
   },
-  'info': {
+  info: {
     icon: alertCircleOutline,
-    color: '#00d3ff'
+    color: '#00d3ff',
   },
-  'error': {
+  error: {
     icon: alertCircleOutline,
-    color: '#F44336'
+    color: '#F44336',
   },
-  'success': {
+  success: {
     icon: checkCircleOutline,
-    color: '#22bb00'
+    color: '#22bb00',
   },
 };
 
-function Item(props: {
-  entry: Activity;
-}) {
-  const [entryClass, setEntryClass] = React.useState<{[key: string]: any}>({});
-  const [entrySeverity, setEntrySeverity] =
-  React.useState<{className?: string;[key: string]: any}>({});
+function Item(props: { entry: Activity }) {
+  const [entryClass, setEntryClass] = React.useState<{ [key: string]: any }>({});
+  const [entrySeverity, setEntrySeverity] = React.useState<{
+    className?: string;
+    [key: string]: any;
+  }>({});
 
   function fetchEntryClassFromStore() {
-    const entryClass = activityStore
-      .getActivityEntryClass(props.entry.class, props.entry);
+    const entryClass = activityStore.getActivityEntryClass(props.entry.class, props.entry);
     setEntryClass(entryClass);
   }
 
@@ -69,18 +61,24 @@ function Item(props: {
   React.useEffect(() => {
     fetchEntryClassFromStore();
     fetchEntrySeverityFromStore();
-  },
-  []);
+  }, []);
 
-  const time = new Date(props.entry.created_ts).toLocaleString('default', {hour: '2-digit', minute: '2-digit'});
+  const time = new Date(props.entry.created_ts).toLocaleString('default', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
   let subtitle = '';
   let name: React.ReactNode = '';
 
   if (entryClass.type !== 'activityChannelPackageUpdated') {
-    const {app_id, group_id} = props.entry;
+    const { app_id, group_id } = props.entry;
     const groupPath = `apps/${app_id}/groups/${group_id}`;
     subtitle = 'GROUP';
-    name = <Link component={RouterLink} to={groupPath}>{entryClass.groupName}</Link>;
+    name = (
+      <Link component={RouterLink} to={groupPath}>
+        {entryClass.groupName}
+      </Link>
+    );
   }
 
   const stateIcon = stateIcons[entrySeverity.className || 'info'];
@@ -128,20 +126,17 @@ function Item(props: {
             {time}
           </Typography>
         </Grid>
-        {subtitle && <Grid item container spacing={2} xs={12}>
-          <Grid item>
-            <Typography color="textSecondary" display="inline">
-              {subtitle}
-            </Typography>
+        {subtitle && (
+          <Grid item container spacing={2} xs={12}>
+            <Grid item>
+              <Typography color="textSecondary" display="inline">
+                {subtitle}
+              </Typography>
+            </Grid>
+            <Grid item>{name}</Grid>
           </Grid>
-          <Grid item>
-            {name}
-          </Grid>
-          </Grid>
-        }
-        <Grid item>
-          {entryClass.description}
-        </Grid>
+        )}
+        <Grid item>{entryClass.description}</Grid>
       </Grid>
     </ListItem>
   );

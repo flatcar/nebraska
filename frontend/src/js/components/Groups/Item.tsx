@@ -19,14 +19,14 @@ import VersionProgressBar from '../Common/VersionBreakdownBar';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    paddingBottom: 0
+    paddingBottom: 0,
   },
   itemSection: {
-    padding: '1em'
+    padding: '1em',
   },
   success: {
-    color: theme.palette.success.main
-  }
+    color: theme.palette.success.main,
+  },
 }));
 
 function Item(props: {
@@ -42,8 +42,11 @@ function Item(props: {
   const description = props.group.description || 'No description provided';
   const channel = props.group.channel || {};
 
-  const groupChannel = _.isEmpty(props.group.channel) ? <CardLabel>No channel provided</CardLabel>
-    : <ChannelItem channel={props.group.channel} />;
+  const groupChannel = _.isEmpty(props.group.channel) ? (
+    <CardLabel>No channel provided</CardLabel>
+  ) : (
+    <ChannelItem channel={props.group.channel} />
+  );
   const styleGroupChannel = _.isEmpty(props.group.channel) ? 'italicText' : '';
   const groupPath = `/apps/${props.group.application_id}/groups/${props.group.id}`;
 
@@ -64,14 +67,11 @@ function Item(props: {
         setTotalInstances(result);
       })
       .catch(err => console.error('Error getting total instances in Group/Item', err));
-  },
-  []);
+  }, []);
 
   return (
     <ListItem disableGutters className={classes.root}>
-      <Grid
-        container
-      >
+      <Grid container>
         <Grid item xs={12}>
           <CardHeader
             cardMainLinkLabel={props.group.name}
@@ -80,48 +80,39 @@ function Item(props: {
             cardTrack={props.group.track}
             cardDescription={description}
           >
-            <MoreMenu options={[
-              {
-                'label': 'Edit',
-                'action': updateGroup,
-              },
-              {
-                'label': 'Delete',
-                'action': deleteGroup,
-              }
-            ]}
+            <MoreMenu
+              options={[
+                {
+                  label: 'Edit',
+                  action: updateGroup,
+                },
+                {
+                  label: 'Delete',
+                  action: deleteGroup,
+                },
+              ]}
             />
           </CardHeader>
         </Grid>
-        <Grid
-          item
-          xs={12}
-          container
-          justify="space-between"
-        >
+        <Grid item xs={12} container justify="space-between">
           <Grid item xs={4} container direction="column" className={classes.itemSection}>
             <Grid item>
               <CardFeatureLabel>Instances</CardFeatureLabel>
               <Box>
-                <CardLabel labelStyle={{fontSize: '1.5rem'}}>
-
-                  {totalInstances > 0 ? totalInstances : 'None'
-                  }
-
+                <CardLabel labelStyle={{ fontSize: '1.5rem' }}>
+                  {totalInstances > 0 ? totalInstances : 'None'}
                 </CardLabel>
                 <Box display="flex" mr={2}>
-                  <ScheduleIcon color="disabled"/>
+                  <ScheduleIcon color="disabled" />
                   <Box pl={1} color="text.disabled">
-                    <Typography variant="subtitle1">
-                      last 24 hours
-                    </Typography>
+                    <Typography variant="subtitle1">last 24 hours</Typography>
                   </Box>
                 </Box>
               </Box>
             </Grid>
           </Grid>
           <Box width="1%">
-            <Divider orientation="vertical" variant="fullWidth"/>
+            <Divider orientation="vertical" variant="fullWidth" />
           </Box>
           <Grid item xs={7} container direction="column" className={classes.itemSection}>
             <Grid item>
@@ -133,13 +124,21 @@ function Item(props: {
               <Box p={1} mb={1}>
                 <CardLabel>
                   <Box display="flex">
-                    {props.group.policy_updates_enabled ? <><Box>Enabled</Box><Box>
-                      <CheckIcon className={classes.success} fontSize={'small'}/></Box></>
-                      : <><Box>Disabled</Box>
+                    {props.group.policy_updates_enabled ? (
+                      <>
+                        <Box>Enabled</Box>
                         <Box>
-                          <CloseIcon color="error"/>
+                          <CheckIcon className={classes.success} fontSize={'small'} />
                         </Box>
-                      </>}
+                      </>
+                    ) : (
+                      <>
+                        <Box>Disabled</Box>
+                        <Box>
+                          <CloseIcon color="error" />
+                        </Box>
+                      </>
+                    )}
                   </Box>
                 </CardLabel>
               </Box>
@@ -154,16 +153,14 @@ function Item(props: {
             </Grid>
             <Grid item container>
               <Grid item xs={12}>
-                <CardFeatureLabel>
-                  Version breakdown
-                </CardFeatureLabel>
+                <CardFeatureLabel>Version breakdown</CardFeatureLabel>
               </Grid>
               <Grid item xs={12}>
-                {version_breakdown.length > 0 ?
+                {version_breakdown.length > 0 ? (
                   <VersionProgressBar version_breakdown={version_breakdown} channel={channel} />
-                  :
+                ) : (
                   <Empty>No instances available.</Empty>
-                }
+                )}
               </Grid>
             </Grid>
           </Grid>

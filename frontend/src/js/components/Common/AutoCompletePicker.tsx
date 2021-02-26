@@ -71,35 +71,30 @@ function renderSuggestion(suggestionProps: RenderSuggestionProps) {
   const isSelected = (selectedItem || '').indexOf(suggestion.primary) > -1;
 
   return (
-    <ListItem
-      {...itemProps}
-      button
-      key={suggestion.primary}
-      selected={isSelected}
-      style={style}
-    >
-      <ListItemText
-        primary={suggestion.primary}
-        secondary={suggestion.secondary}
-      />
+    <ListItem {...itemProps} button key={suggestion.primary} selected={isSelected} style={style}>
+      <ListItemText primary={suggestion.primary} secondary={suggestion.secondary} />
     </ListItem>
   );
 }
 
-function getSuggestions(value: string | null, selectedItem: string, suggestions: RenderSuggestionProps['suggestion'][]) {
+function getSuggestions(
+  value: string | null,
+  selectedItem: string,
+  suggestions: RenderSuggestionProps['suggestion'][]
+) {
   if (!value) {
     return suggestions;
   }
 
   const inputValue = value.toLowerCase();
 
-  if (value === selectedItem)
-    return suggestions;
+  if (value === selectedItem) return suggestions;
 
-  return inputValue.length === 0 ? suggestions
+  return inputValue.length === 0
+    ? suggestions
     : suggestions.filter(suggestion => {
-      return suggestion.primary.toLowerCase().includes(inputValue);
-    });
+        return suggestion.primary.toLowerCase().includes(inputValue);
+      });
 }
 
 const useStyles = makeStyles(theme => ({
@@ -120,47 +115,45 @@ const useStyles = makeStyles(theme => ({
 }));
 
 interface LazyListProps {
- options: RenderSuggestionProps['suggestion'][];
- itemData: any;
- height: number;
- itemSize: number;
- width: number;
+  options: RenderSuggestionProps['suggestion'][];
+  itemData: any;
+  height: number;
+  itemSize: number;
+  width: number;
 }
 
 function LazyList(props: LazyListProps) {
-  const {options, itemData, ...others} = props;
+  const { options, itemData, ...others } = props;
 
   itemData['suggestions'] = options;
 
-  function Row(props: {index: number; style: object; data: any}) {
-    const {index, style, data} = props;
+  function Row(props: { index: number; style: object; data: any }) {
+    const { index, style, data } = props;
     const suggestion = data.suggestions[index];
     const getItemProps = data.getItemProps;
     data['index'] = index;
-    return renderSuggestion({suggestion,
-                             style,
-                             itemProps: getItemProps({item: suggestion.primary}),
-                             ...data});
+    return renderSuggestion({
+      suggestion,
+      style,
+      itemProps: getItemProps({ item: suggestion.primary }),
+      ...data,
+    });
   }
 
   return (
-    <FixedSizeList
-      itemCount={options.length}
-      itemData={itemData}
-      {...others}
-    >
+    <FixedSizeList itemCount={options.length} itemData={itemData} {...others}>
       {Row}
     </FixedSizeList>
   );
 }
 interface AutoCompletePickerProps {
- defaultValue: string;
- getSuggestions: RenderSuggestionProps['suggestion'][];
- onSelect: (selectedValue: string) => void;
- label: string;
- placeholder: string;
- dialogTitle: string;
- pickerPlaceholder: string;
+  defaultValue: string;
+  getSuggestions: RenderSuggestionProps['suggestion'][];
+  onSelect: (selectedValue: string) => void;
+  label: string;
+  placeholder: string;
+  dialogTitle: string;
+  pickerPlaceholder: string;
 }
 
 export default function AutoCompletePicker(props: AutoCompletePickerProps) {
@@ -189,7 +182,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
         <Input
           onClick={onInputActivate}
           inputProps={{
-            className: classes.pickerButtonInput
+            className: classes.pickerButtonInput,
           }}
           value={selectedValue}
           placeholder={props.placeholder}
@@ -197,9 +190,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
         />
       </FormControl>
       <Dialog open={showPicker}>
-        <DialogTitle>
-          {props.dialogTitle}
-        </DialogTitle>
+        <DialogTitle>{props.dialogTitle}</DialogTitle>
         <DialogContent>
           <Downshift id="downshift-options">
             {({
@@ -225,14 +216,14 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
                     InputLabelProps: getLabelProps(),
                     InputProps: { onBlur, onChange, onFocus },
                     inputProps,
-                    variant: 'outlined'
+                    variant: 'outlined',
                   })}
                   <LazyList
                     options={getSuggestions(inputValue, selectedItem, suggestions)}
                     itemData={{
                       getItemProps,
                       highlightedIndex,
-                      selectedItem
+                      selectedItem,
                     }}
                     height={400}
                     width={400}
@@ -244,8 +235,12 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
           </Downshift>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">Cancel</Button>
-          <Button onClick={handleSelect} color="primary">Select</Button>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleSelect} color="primary">
+            Select
+          </Button>
         </DialogActions>
       </Dialog>
     </div>

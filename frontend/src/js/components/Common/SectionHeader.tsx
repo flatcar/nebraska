@@ -18,9 +18,9 @@ const useStyles = makeStyles(theme => ({
   },
   breadCrumbsItem: {
     '& > a': {
-      color: theme.palette.text.secondary
-    }
-  }
+      color: theme.palette.text.secondary,
+    },
+  },
 }));
 
 interface SectionHeaderProps {
@@ -41,22 +41,27 @@ export default function SectionHeader(props: SectionHeaderProps) {
       <Grid item>
         <Breadcrumbs aria-label="breadcrumbs" separator={<NavigateNextIcon fontSize="small" />}>
           {breadcrumbs &&
-              breadcrumbs.map(({path = null, label}, index) => {
-                if (path)
-                  return (
-                    <Box component="span" className={classes.breadCrumbsItem} key={'breadcrumb_' + index}>
-                      <Link to={path} component={RouterLink}>
-                        {label}
-                      </Link>
-                    </Box>
-                  );
-                else
-                  return <Typography key={'breadcrumb_' + index} color="textPrimary">{label}</Typography>;
-              }
-              )}
-          {title &&
-          <Typography color="textPrimary">{title}</Typography>
-          }
+            breadcrumbs.map(({ path = null, label }, index) => {
+              if (path)
+                return (
+                  <Box
+                    component="span"
+                    className={classes.breadCrumbsItem}
+                    key={'breadcrumb_' + index}
+                  >
+                    <Link to={path} component={RouterLink}>
+                      {label}
+                    </Link>
+                  </Box>
+                );
+              else
+                return (
+                  <Typography key={'breadcrumb_' + index} color="textPrimary">
+                    {label}
+                  </Typography>
+                );
+            })}
+          {title && <Typography color="textPrimary">{title}</Typography>}
         </Breadcrumbs>
       </Grid>
     </Grid>

@@ -27,11 +27,14 @@
     "@types/recharts": "^1.8.19",
     "@types/semver": "^7.3.4",
     "@types/yup": "^0.29.11",
-    "dompurify": "^2.0.12",
+    "dompurify": "^2.2.6",
     "downshift": "^3.4.7",
     "formik": "^2.1.5",
     "formik-material-ui": "^0.0.20",
+    "husky": "^5.0.9",
+    "lint-staged": "^10.5.4",
     "moment-timezone": "^0.5.32",
+    "prettier": "^2.2.1",
     "prop-types": "^15.7.2",
     "pubsub-js": "~1.5.3",
     "react": "^16.13.0",
@@ -54,13 +57,14 @@
     "@iconify/icons-mdi": "^1.0.112",
     "@iconify/react": "^1.1.3",
     "@iconify/tools": "^1.3.9",
-    "@kinvolk/eslint-config": "^0.2.0",
+    "@kinvolk/eslint-config": "^0.4.1",
     "@types/react-router-dom": "^5.1.7",
     "@types/underscore": "^1.10.24",
     "dotenv-webpack": "^1.7.0",
+    "eslint-config-prettier": "^7.2.0",
     "eslint-plugin-react": "^7.19.0",
     "eslint-plugin-react-hooks": "^3.0.0",
-    "eslint-plugin-simple-import-sort": "^5.0.2",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
     "http-proxy-middleware": "^1.0.3",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.10"
@@ -72,12 +76,9 @@
     "test": "react-scripts test --silent",
     "test:coverage": "react-scripts test --silent --watchAll=false --env=jsdom --coverage  --reporters=default --coverageDirectory=coverage/report",
     "eject": "react-scripts eject",
-    "lint": "eslint 'src/**/*.{js,jsx}'",
-    "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}'"
-  },
-  "eslintConfig": {
-    "extends": "react-app",
-    "rules": {}
+    "lint": "eslint -c package.json 'src/**/*.{js,jsx,ts,tsx}'",
+    "format": "prettier --config package.json --write src/",
+    "lint:fix": "eslint -c package.json --fix 'src/**/*.{js,jsx,ts,tsx}'"
   },
   "browserslist": {
     "production": [
@@ -90,5 +91,26 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx}": [
+      "eslint -c package.json --fix"
+    ],
+    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "prettier --config package.json --write"
+    ]
+  },
+  "eslintConfig": {
+    "extends": [
+      "@kinvolk",
+      "prettier",
+      "prettier/react"
+    ]
+  },
+  "prettier": "@kinvolk/eslint-config/prettier-config"
 }

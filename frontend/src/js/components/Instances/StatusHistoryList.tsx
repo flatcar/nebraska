@@ -10,9 +10,9 @@ import StatusHistoryItem from './StatusHistoryItem';
 const useStyles = makeStyles({
   root: {
     '& .MuiTableCell-root': {
-      borderBottom: 'none'
-    }
-  }
+      borderBottom: 'none',
+    },
+  },
 });
 function StatusHistoryList(props: {
   entries: {
@@ -36,9 +36,9 @@ function StatusHistoryList(props: {
         </TableRow>
       </TableHead>
       <TableBody>
-        {entries.map((entry, i) =>
+        {entries.map((entry, i) => (
           <StatusHistoryItem key={'statusHistory_' + i} entry={entry} />
-        )}
+        ))}
       </TableBody>
     </Table>
   );

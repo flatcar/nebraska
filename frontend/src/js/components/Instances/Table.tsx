@@ -12,7 +12,7 @@ import { cleanSemverVersion } from '../../constants/helpers';
 import Item from './Item.react';
 
 function Table(props: {
-  version_breakdown? : any;
+  version_breakdown?: any;
   channel: Channel;
   instances: {
     id: string;
@@ -21,10 +21,11 @@ function Table(props: {
 }) {
   const [selectedInstance, setSelectedInstance] = React.useState<string | null>(null);
   const versions = props.version_breakdown || [];
-  const lastVersionChannel = (props.channel && props.channel.package) ? cleanSemverVersion(props.channel.package.version) : '';
-  const versionNumbers = (_.map(versions, (version) => {
+  const lastVersionChannel =
+    props.channel && props.channel.package ? cleanSemverVersion(props.channel.package.version) : '';
+  const versionNumbers = _.map(versions, version => {
     return cleanSemverVersion(version.version);
-  })).sort(semver.rcompare);
+  }).sort(semver.rcompare);
 
   function onItemToggle(id: string | null) {
     if (selectedInstance !== id) {
@@ -46,10 +47,7 @@ function Table(props: {
         </TableRow>
       </TableHead>
       <TableBody>
-        {props.instances.map((instance: {
-          id: string;
-          [key: string]: any;
-        }, i) =>
+        {props.instances.map((instance: { id: string; [key: string]: any }, i) => (
           <Item
             key={'instance_' + i}
             instance={instance}
@@ -58,7 +56,7 @@ function Table(props: {
             selected={selectedInstance === instance.id}
             onToggle={onItemToggle}
           />
-        )}
+        ))}
       </TableBody>
     </MuiTable>
   );

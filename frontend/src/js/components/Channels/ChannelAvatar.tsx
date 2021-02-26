@@ -10,21 +10,18 @@ interface ChannelAvatarProps {
   children?: React.ReactNode;
 }
 
-const useStyles = makeStyles( (theme: Theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   colorAvatar: (props: ChannelAvatarProps) => ({
     color: '#fff',
-    backgroundColor: props.backgroundColor || props.color ||
-    theme.palette.secondary.main,
+    backgroundColor: props.backgroundColor || props.color || theme.palette.secondary.main,
     width: props.size,
     height: props.size,
-    display: 'inline-flex'
+    display: 'inline-flex',
   }),
 }));
 
 export default function ChannelAvatar(props: ChannelAvatarProps) {
   const classes = useStyles(props);
 
-  return (
-    <Avatar className={classes.colorAvatar}>{props.children || '' }</Avatar>
-  );
+  return <Avatar className={classes.colorAvatar}>{props.children || ''}</Avatar>;
 }

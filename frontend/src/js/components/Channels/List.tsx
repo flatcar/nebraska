@@ -18,9 +18,9 @@ import Item from './Item';
 const useStyles = makeStyles({
   root: {
     '& > hr:first-child': {
-      display: 'none'
-    }
-  }
+      display: 'none',
+    },
+  },
 });
 
 interface PackageChannelApplication extends Application {
@@ -32,7 +32,7 @@ function ChannelList(props: {
   application: PackageChannelApplication;
   onEdit: (channelId: string) => void;
 }) {
-  const {application, onEdit} = props;
+  const { application, onEdit } = props;
   const classes = useStyles();
 
   function getChannelsPerArch() {
@@ -57,14 +57,14 @@ function ChannelList(props: {
 
   return (
     <React.Fragment>
-      {Object.entries(getChannelsPerArch()).map(([arch, channels]) =>
+      {Object.entries(getChannelsPerArch()).map(([arch, channels]) => (
         <MuiList
           key={arch}
-          subheader={<ListSubheader disableSticky >{ARCHES[parseInt(arch)]}</ListSubheader>}
+          subheader={<ListSubheader disableSticky>{ARCHES[parseInt(arch)]}</ListSubheader>}
           dense
           className={classes.root}
         >
-          {channels.map(channel =>
+          {channels.map(channel => (
             <Item
               key={'channelID_' + channel.id}
               channel={channel}
@@ -72,19 +72,18 @@ function ChannelList(props: {
               showArch={false}
               handleUpdateChannel={onEdit}
             />
-          )}
+          ))}
         </MuiList>
-      )}
+      ))}
     </React.Fragment>
   );
 }
 
-function List(props: {
-  appID: string;
-}) {
+function List(props: { appID: string }) {
   const { appID } = props;
-  const [application, setApplication] =
-    React.useState(applicationsStore.getCachedApplication(appID));
+  const [application, setApplication] = React.useState(
+    applicationsStore.getCachedApplication(appID)
+  );
   const [packages, setPackages] = React.useState<null | Package[]>(null);
   const [channelToEdit, setChannelToEdit] = React.useState<null | Channel>(null);
 
@@ -97,22 +96,20 @@ function List(props: {
     }
 
     // Fetch packages
-    if (!packages){
-      API.getPackages(props.appID)
-        .then((result) => {
-          if (_.isNull(result)) {
-            setPackages([]);
-            return;
-          }
-          setPackages(result);
-        });
+    if (!packages) {
+      API.getPackages(props.appID).then(result => {
+        if (_.isNull(result)) {
+          setPackages([]);
+          return;
+        }
+        setPackages(result);
+      });
     }
 
     return function cleanup() {
       applicationsStore.removeChangeListener(onStoreChange);
     };
-  },
-  [appID]);
+  }, [appID]);
 
   function onStoreChange() {
     setApplication(applicationsStore.getCachedApplication(appID));
@@ -124,8 +121,8 @@ function List(props: {
       channels = application.channels ? application.channels : [];
     }
 
-    const channelToUpdate = (!_.isEmpty(channels) && channelID) ?
-      _.findWhere(channels, {id: channelID}) : null;
+    const channelToUpdate =
+      !_.isEmpty(channels) && channelID ? _.findWhere(channels, { id: channelID }) : null;
 
     setChannelToEdit(channelToUpdate);
   }
@@ -137,11 +134,7 @@ function List(props: {
   return (
     <Box mt={2}>
       <Box mb={2}>
-        <Grid
-          container
-          alignItems="center"
-          justify="space-between"
-        >
+        <Grid container alignItems="center" justify="space-between">
           <Grid item>
             <Typography variant="h4">Channels</Typography>
           </Grid>
@@ -150,28 +143,25 @@ function List(props: {
               modalToOpen="AddChannelModal"
               data={{
                 packages: packages,
-                applicationID: appID
+                applicationID: appID,
               }}
             />
           </Grid>
         </Grid>
       </Box>
       <SectionPaper>
-        {!application ?
+        {!application ? (
           <Loader />
-          :
-          <ChannelList
-            application={application}
-            onEdit={onChannelEditOpen}
+        ) : (
+          <ChannelList application={application} onEdit={onChannelEditOpen} />
+        )}
+        {channelToEdit && (
+          <EditDialog
+            data={{ packages: packages, applicationID: appID, channel: channelToEdit }}
+            show={channelToEdit !== null}
+            onHide={onChannelEditClose}
           />
-        }
-        {channelToEdit &&
-        <EditDialog
-          data={{packages: packages, applicationID: appID, channel: channelToEdit}}
-          show={channelToEdit !== null}
-          onHide={onChannelEditClose}
-        />
-        }
+        )}
       </SectionPaper>
     </Box>
   );

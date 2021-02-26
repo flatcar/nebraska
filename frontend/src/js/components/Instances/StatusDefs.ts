@@ -8,60 +8,64 @@ import playCircle from '@iconify/icons-mdi/play-circle';
 import progressDownload from '@iconify/icons-mdi/progress-download';
 import { Theme } from '@material-ui/core';
 
-function makeStatusDefs(theme: Theme): {[key: string]: {
-  label: string;
-  color: string;
-  icon: any;
-  queryValue: string;
-};} {
+function makeStatusDefs(
+  theme: Theme
+): {
+  [key: string]: {
+    label: string;
+    color: string;
+    icon: any;
+    queryValue: string;
+  };
+} {
   return {
-    'InstanceStatusComplete': {
+    InstanceStatusComplete: {
       label: 'Complete',
       color: theme.palette.titleColor,
       icon: checkCircleOutline,
-      queryValue: '4'
+      queryValue: '4',
     },
-    'InstanceStatusDownloaded': {
+    InstanceStatusDownloaded: {
       label: 'Downloaded',
       color: theme.palette.success.main,
       icon: downloadCircleOutline,
-      queryValue: '6'
+      queryValue: '6',
     },
-    'InstanceStatusOnHold': {
+    InstanceStatusOnHold: {
       label: 'On Hold',
       color: theme.palette.grey['400'],
       icon: pauseCircle,
-      queryValue: '8'
+      queryValue: '8',
     },
-    'InstanceStatusInstalled': {
+    InstanceStatusInstalled: {
       label: 'Installed',
       color: theme.palette.primary.main,
       icon: packageVariantClosed,
-      queryValue: '5'
+      queryValue: '5',
     },
-    'InstanceStatusDownloading': {
+    InstanceStatusDownloading: {
       label: 'Downloading',
       color: theme.palette.primary.main,
       icon: progressDownload,
-      queryValue: '7'
+      queryValue: '7',
     },
-    'InstanceStatusError': {
+    InstanceStatusError: {
       label: 'Error',
       color: theme.palette.error.main,
       icon: alertCircleOutline,
-      queryValue: '3'
+      queryValue: '3',
     },
-    'InstanceStatusUndefined': {
+    InstanceStatusUndefined: {
       label: 'Unknown',
       color: theme.palette.titleColor,
       icon: helpCircleOutline,
-      queryValue: '1'
+      queryValue: '1',
     },
-    'InstanceStatusUpdateGranted': {
+    InstanceStatusUpdateGranted: {
       label: 'Update Granted',
       color: theme.palette.sapphireColor,
       icon: playCircle,
-      queryValue: '2'
+      queryValue: '2',
     },
   };
 }

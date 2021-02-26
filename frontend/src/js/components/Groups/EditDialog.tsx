@@ -1,4 +1,12 @@
-import { Box, Divider, FormLabel, makeStyles, Switch, Tooltip, Typography } from '@material-ui/core';
+import {
+  Box,
+  Divider,
+  FormLabel,
+  makeStyles,
+  Switch,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -21,12 +29,12 @@ import { ARCHES } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import TimezonePicker, { DEFAULT_TIMEZONE } from '../Common/TimezonePicker';
 
-const useStyles = makeStyles(({
+const useStyles = makeStyles({
   root: {
     padding: '0.5em 0em',
-    overflow: 'hidden'
-  }
-}));
+    overflow: 'hidden',
+  },
+});
 
 function EditDialog(props: {
   create?: boolean;
@@ -39,11 +47,10 @@ function EditDialog(props: {
   const isCreation = Boolean(props.create);
   const classes = useStyles();
 
-  function handleSubmit(values: {[key: string]: any}, actions: {[key: string]: any}) {
-    const updatesPeriodPolicy = values.updatesPeriodRange.toString() + ' '
-      + values.updatesPeriodUnit;
-    const updatesTimeoutPolicy = values.updatesTimeout.toString() + ' '
-      + values.updatesTimeoutUnit;
+  function handleSubmit(values: { [key: string]: any }, actions: { [key: string]: any }) {
+    const updatesPeriodPolicy =
+      values.updatesPeriodRange.toString() + ' ' + values.updatesPeriodUnit;
+    const updatesTimeoutPolicy = values.updatesTimeout.toString() + ' ' + values.updatesTimeoutUnit;
 
     const data: {
       [key: string]: any;
@@ -59,11 +66,9 @@ function EditDialog(props: {
       policy_update_timeout: updatesTimeoutPolicy,
     };
 
-    if (values.channel)
-      data['channel_id'] = values.channel;
+    if (values.channel) data['channel_id'] = values.channel;
 
-    if (values.timezone)
-      data['policy_timezone'] = values.timezone;
+    if (values.timezone) data['policy_timezone'] = values.timezone;
 
     let packageFunctionCall;
     if (isCreation) {
@@ -81,7 +86,9 @@ function EditDialog(props: {
       })
       .catch(() => {
         actions.setSubmitting(false);
-        actions.setStatus({statusMessage: 'Something went wrong. Check the form or try again later...'});
+        actions.setStatus({
+          statusMessage: 'Something went wrong. Check the form or try again later...',
+        });
       });
   }
 
@@ -90,17 +97,15 @@ function EditDialog(props: {
   }
 
   //@ts-ignore
-  function renderForm({values, status, setFieldValue, isSubmitting}) {
+  function renderForm({ values, status, setFieldValue, isSubmitting }) {
     const channels = props.data.channels ? props.data.channels : [];
 
     return (
       <Form data-testid="group-edit-form">
         <DialogContent className={classes.root}>
-          {status && status.statusMessage &&
-          <DialogContentText color="error">
-            {status.statusMessage}
-          </DialogContentText>
-          }
+          {status && status.statusMessage && (
+            <DialogContentText color="error">{status.statusMessage}</DialogContentText>
+          )}
           <Grid container spacing={2}>
             <Grid item xs={8}>
               <Box pl={2}>
@@ -118,19 +123,15 @@ function EditDialog(props: {
               <Box pr={2}>
                 <FormControl margin="dense" fullWidth>
                   <InputLabel shrink>Channel</InputLabel>
-                  <Field
-                    name="channel"
-                    component={Select}
-                    displayEmpty
-                  >
+                  <Field name="channel" component={Select} displayEmpty>
                     <MenuItem value="" key="">
                       None yet
                     </MenuItem>
-                    {channels.map((channelItem: Channel) =>
+                    {channels.map((channelItem: Channel) => (
                       <MenuItem value={channelItem.id} key={channelItem.id}>
                         {`${channelItem.name}(${ARCHES[channelItem.arch]})`}
-                      </MenuItem>)
-                    }
+                      </MenuItem>
+                    ))}
                   </Field>
                 </FormControl>
               </Box>
@@ -155,15 +156,14 @@ function EditDialog(props: {
             />
           </Box>
           <Box mt={2}>
-            <Divider/>
+            <Divider />
           </Box>
           <Box mt={2} px={2}>
-            <Grid container
-              justify="space-between"
-              spacing={4}
-            >
+            <Grid container justify="space-between" spacing={4}>
               <Grid item xs={12}>
-                <Box mt={1}><FormLabel component="legend">Update</FormLabel></Box>
+                <Box mt={1}>
+                  <FormLabel component="legend">Update</FormLabel>
+                </Box>
                 <Grid container>
                   <Grid item xs={6}>
                     <FormControlLabel
@@ -205,28 +205,25 @@ function EditDialog(props: {
             </Grid>
           </Box>
           <Box mt={2}>
-            <Divider/>
+            <Divider />
           </Box>
           <Box mt={1} pl={2}>
-            <FormLabel component="legend">
-              {'Update Limits'}
-            </FormLabel>
+            <FormLabel component="legend">{'Update Limits'}</FormLabel>
           </Box>
           <Box m={1}>
             <Grid container>
               <Grid item xs={6}>
-
                 <FormControlLabel
-                  label={<Box display="flex" alignItems="center">
-                    <Box pr={0.5}>
-                      Only office hours
+                  label={
+                    <Box display="flex" alignItems="center">
+                      <Box pr={0.5}>Only office hours</Box>
+                      <Box pt={0.1} color="#808080">
+                        <Tooltip title="Only update from 9am to 5pm.">
+                          <HelpOutlineIcon fontSize="small" />
+                        </Tooltip>
+                      </Box>
                     </Box>
-                    <Box pt={0.1} color="#808080">
-                      <Tooltip title="Only update from 9am to 5pm.">
-                        <HelpOutlineIcon fontSize="small"/>
-                      </Tooltip>
-                    </Box>
-                  </Box>}
+                  }
                   control={
                     <Box pl={1}>
                       <Field
@@ -254,7 +251,7 @@ function EditDialog(props: {
               </Grid>
             </Grid>
           </Box>
-          <Grid container >
+          <Grid container>
             <Grid item xs={12} container spacing={2} justify="space-between" alignItems="center">
               <Grid item xs={4}>
                 <Box pl={2}>
@@ -269,9 +266,7 @@ function EditDialog(props: {
                 </Box>
               </Grid>
               <Grid item>
-                <Typography color="textSecondary">
-                  {'per'}
-                </Typography>
+                <Typography color="textSecondary">{'per'}</Typography>
               </Grid>
               <Grid item xs={3}>
                 <Box mt={1}>
@@ -293,12 +288,13 @@ function EditDialog(props: {
                     select
                     fullWidth
                   >
-                    {['hours', 'minutes', 'days'].map((unit) => {
-                      return (<MenuItem value={unit} key={unit}>
-                        {unit}
-                      </MenuItem>);
-                    })
-                    }
+                    {['hours', 'minutes', 'days'].map(unit => {
+                      return (
+                        <MenuItem value={unit} key={unit}>
+                          {unit}
+                        </MenuItem>
+                      );
+                    })}
                   </Field>
                 </Box>
               </Grid>
@@ -324,12 +320,13 @@ function EditDialog(props: {
                         select
                         fullWidth
                       >
-                        {['hours', 'minutes', 'days'].map((unit) => {
-                          return (<MenuItem value={unit} key={unit}>
-                            {unit}
-                          </MenuItem>);
-                        })
-                        }
+                        {['hours', 'minutes', 'days'].map(unit => {
+                          return (
+                            <MenuItem value={unit} key={unit}>
+                              {unit}
+                            </MenuItem>
+                          );
+                        })}
                       </Field>
                     </Box>
                   </Grid>
@@ -339,8 +336,12 @@ function EditDialog(props: {
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">Cancel</Button>
-          <Button type="submit" disabled={isSubmitting} color="primary">{ isCreation ? 'Add' : 'Save' }</Button>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isSubmitting} color="primary">
+            {isCreation ? 'Add' : 'Save'}
+          </Button>
         </DialogActions>
       </Form>
     );
@@ -354,11 +355,9 @@ function EditDialog(props: {
   }
 
   function maxCharacters(maxChars: number, required = false) {
-    let validation = Yup.string()
-      .max(maxChars, 'Must be less than $maxChars characters');
+    let validation = Yup.string().max(maxChars, 'Must be less than $maxChars characters');
 
-    if (required)
-      validation = validation.required('Required');
+    if (required) validation = validation.required('Required');
 
     return validation;
   }
@@ -386,10 +385,13 @@ function EditDialog(props: {
     };
   } else if (!!props.data.group) {
     const group = props.data.group;
-    const [currentUpdatesPeriodRange, currentUpdatesPeriodUnit] =
-      group.policy_period_interval.split(' ');
-    const [currentupdatesTimeout, currentUpdatesTimeoutUnit] =
-      group.policy_update_timeout.split(' ');
+    const [
+      currentUpdatesPeriodRange,
+      currentUpdatesPeriodUnit,
+    ] = group.policy_period_interval.split(' ');
+    const [currentupdatesTimeout, currentUpdatesTimeoutUnit] = group.policy_update_timeout.split(
+      ' '
+    );
 
     initialValues = {
       name: group.name,
@@ -410,7 +412,7 @@ function EditDialog(props: {
 
   return (
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
-      <DialogTitle>{ isCreation ? 'Add Group' : 'Edit Group' }</DialogTitle>
+      <DialogTitle>{isCreation ? 'Add Group' : 'Edit Group'}</DialogTitle>
       <Formik
         initialValues={initialValues}
         onSubmit={handleSubmit}

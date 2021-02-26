@@ -7,12 +7,13 @@ import ChannelEditDialog from '../Channels/EditDialog';
 import GroupEditDialog from '../Groups/EditDialog';
 import PackageEditDialog from '../Packages/EditDialog';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
-    color: theme.palette.titleColor
-  }}));
+    color: theme.palette.titleColor,
+  },
+}));
 
-function ModalButton(props: {data: object; modalToOpen: string; icon?: string}) {
+function ModalButton(props: { data: object; modalToOpen: string; icon?: string }) {
   const [showModal, setShowModal] = React.useState(false);
   const classes = useStyles();
 
@@ -51,8 +52,8 @@ function ModalButton(props: {data: object; modalToOpen: string; icon?: string}) 
   // case it should be set from the caller).
   return (
     <div>
-      <IconButton size="small" aria-label="add" onClick={open} data-testid="modal-button" >
-        <AddIcon fontSize="large" className={classes.root}/>
+      <IconButton size="small" aria-label="add" onClick={open} data-testid="modal-button">
+        <AddIcon fontSize="large" className={classes.root} />
       </IconButton>
       {modal}
     </div>
@@ -61,7 +62,7 @@ function ModalButton(props: {data: object; modalToOpen: string; icon?: string}) 
 
 ModalButton.propTypes = {
   modalToOpen: PropTypes.string.isRequired,
-  data: PropTypes.object
+  data: PropTypes.object,
 };
 
 export default ModalButton;

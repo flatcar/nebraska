@@ -14,7 +14,7 @@ import { cleanSemverVersion, makeColorsForVersions } from '../../constants/helpe
 const useStyles = makeStyles({
   noBorder: {
     border: 'none',
-  }
+  },
 });
 
 const useChartStyle = makeStyles(theme => ({
@@ -29,15 +29,15 @@ const useChartStyle = makeStyles(theme => ({
 
 function VersionsTooltip(props: {
   versionsData: {
-  data: any;
-  versions: string[];
-  colors: {
-    [key: string]: string;
+    data: any;
+    versions: string[];
+    colors: {
+      [key: string]: string;
+    };
   };
-};
 }) {
   const classes = useStyles();
-  const {data, versions, colors} = props.versionsData;
+  const { data, versions, colors } = props.versionsData;
 
   return (
     <div className="custom-tooltip">
@@ -50,11 +50,9 @@ function VersionsTooltip(props: {
               return (
                 <TableRow key={version}>
                   <TableCell className={classes.noBorder}>
-                    <span style={{color: color, fontWeight: 'bold'}}>{version}</span>
+                    <span style={{ color: color, fontWeight: 'bold' }}>{version}</span>
                   </TableCell>
-                  <TableCell className={classes.noBorder}>
-                    {value} %
-                  </TableCell>
+                  <TableCell className={classes.noBorder}>{value} %</TableCell>
                 </TableRow>
               );
             })}
@@ -65,28 +63,32 @@ function VersionsTooltip(props: {
   );
 }
 
-function VersionProgressBar(props: {version_breakdown: any; channel: Channel}) {
+function VersionProgressBar(props: { version_breakdown: any; channel: Channel }) {
   const classes = useChartStyle();
   const theme = useTheme();
   let lastVersionChannel: string | null = '';
   const otherVersionLabel = 'Other';
-  const [chartData, setChartData] = React.useState<{data: any; versions: string[]; colors: {
-    [key: string]: string;
-  };}>({
+  const [chartData, setChartData] = React.useState<{
+    data: any;
+    versions: string[];
+    colors: {
+      [key: string]: string;
+    };
+  }>({
     data: {},
     versions: [],
     colors: {},
   });
 
   function setup(version_breakdown: any, channel: Channel) {
-    const data: {[key: string]: any} = {};
+    const data: { [key: string]: any } = {};
     const other = {
       versions: [],
       percentage: 0,
     };
 
     version_breakdown.forEach((entry: never) => {
-      const {version, percentage} = entry;
+      const { version, percentage } = entry;
       const percentageValue = parseFloat(percentage);
 
       if (percentage < 10) {
@@ -99,7 +101,7 @@ function VersionProgressBar(props: {version_breakdown: any; channel: Channel}) {
     });
 
     const versionColors = makeColorsForVersions(theme as Theme, Object.keys(data), channel);
-    lastVersionChannel = (channel && channel.package) ? channel.package.version : null;
+    lastVersionChannel = channel && channel.package ? channel.package.version : null;
 
     if (other.percentage > 0) {
       data[otherVersionLabel] = other.percentage;
@@ -112,7 +114,7 @@ function VersionProgressBar(props: {version_breakdown: any; channel: Channel}) {
       // Otherwise compare the number of instances.
       const cleanVersion1 = cleanSemverVersion(version1);
       const cleanVersion2 = cleanSemverVersion(version2);
-      const results: {[key: string]: number} = {cleanVersion1: -1, cleanVersion2: 1};
+      const results: { [key: string]: number } = { cleanVersion1: -1, cleanVersion2: 1 };
 
       for (const version of [cleanVersion1, cleanVersion2]) {
         switch (version) {
@@ -139,33 +141,18 @@ function VersionProgressBar(props: {version_breakdown: any; channel: Channel}) {
 
   React.useEffect(() => {
     setup(props.version_breakdown, props.channel);
-  },
-  [props.version_breakdown, props.channel]);
+  }, [props.version_breakdown, props.channel]);
 
   return (
     <ResponsiveContainer width="95%" height={30} className={classes.container}>
-      <BarChart
-        layout="vertical"
-        maxBarSize={10}
-        data={[chartData.data]}
-        className={classes.chart}
-      >
+      <BarChart layout="vertical" maxBarSize={10} data={[chartData.data]} className={classes.chart}>
         <Tooltip content={<VersionsTooltip versionsData={chartData} />} />
         <XAxis hide type="number" />
         <YAxis hide dataKey="key" type="category" />
         {chartData.versions.map((version, index) => {
           const color = chartData.colors[version];
-          return (
-            <Bar
-              key={index}
-              dataKey={version}
-              stackId="1"
-              fill={color}
-              layout="vertical"
-            />
-          );
-        })
-        }
+          return <Bar key={index} dataKey={version} stackId="1" fill={color} layout="vertical" />;
+        })}
       </BarChart>
     </ResponsiveContainer>
   );
@@ -173,7 +160,7 @@ function VersionProgressBar(props: {version_breakdown: any; channel: Channel}) {
 
 VersionProgressBar.propTypes = {
   version_breakdown: PropTypes.array.isRequired,
-  channel: PropTypes.object.isRequired
+  channel: PropTypes.object.isRequired,
 };
 
 export default VersionProgressBar;

@@ -12,11 +12,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function Label(props: {children: React.ReactNode}) {
+export default function Label(props: { children: React.ReactNode }) {
   const classes = useStyles();
-  return (
-    <span className={classes.label}>
-      {props.children}
-    </span>
-  );
+  return <span className={classes.label}>{props.children}</span>;
 }

@@ -5,11 +5,18 @@ import { Application, Channel, FlatcarAction, Group, Package } from './apiDataTy
 
 const MAIN_PROGRESS_BAR = 'main_progress_bar';
 const BASE_URL = '/api';
-type REQUEST_DATA_TYPE = string | Blob | ArrayBufferView | ArrayBuffer | FormData |
-URLSearchParams | ReadableStream<Uint8Array> | null | undefined;
+type REQUEST_DATA_TYPE =
+  | string
+  | Blob
+  | ArrayBufferView
+  | ArrayBuffer
+  | FormData
+  | URLSearchParams
+  | ReadableStream<Uint8Array>
+  | null
+  | undefined;
 
 class API {
-
   // Applications
 
   static getApplications() {
@@ -26,8 +33,10 @@ class API {
     return API.doRequest('DELETE', url, '');
   }
 
-  static createApplication(applicationData: {name: string; description: string},
-                           clonedFromAppID: string) {
+  static createApplication(
+    applicationData: { name: string; description: string },
+    clonedFromAppID: string
+  ) {
     let url = BASE_URL + '/apps';
     if (clonedFromAppID) {
       url += '?clone_from=' + clonedFromAppID;
@@ -67,19 +76,27 @@ class API {
   }
 
   static getGroupVersionCountTimeline(applicationID: string, groupID: string, duration: string) {
-    return API.getJSON(`${BASE_URL}/apps/${applicationID}/groups/${groupID}/version_timeline?duration=${duration}`);
+    return API.getJSON(
+      `${BASE_URL}/apps/${applicationID}/groups/${groupID}/version_timeline?duration=${duration}`
+    );
   }
 
   static getGroupStatusCountTimeline(applicationID: string, groupID: string, duration: string) {
-    return API.getJSON(`${BASE_URL}/apps/${applicationID}/groups/${groupID}/status_timeline?duration=${duration}`);
+    return API.getJSON(
+      `${BASE_URL}/apps/${applicationID}/groups/${groupID}/status_timeline?duration=${duration}`
+    );
   }
 
   static getGroupInstancesStats(applicationID: string, groupID: string, duration: string) {
-    return API.getJSON(`${BASE_URL}/apps/${applicationID}/groups/${groupID}/instances_stats?duration=${duration}`);
+    return API.getJSON(
+      `${BASE_URL}/apps/${applicationID}/groups/${groupID}/instances_stats?duration=${duration}`
+    );
   }
 
   static getGroupVersionBreakdown(applicationID: string, groupID: string) {
-    return API.getJSON(BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/version_breakdown');
+    return API.getJSON(
+      BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/version_breakdown'
+    );
   }
 
   // Channels
@@ -105,7 +122,7 @@ class API {
   }
 
   // Packages
-  static getPackages(applicationID: string){
+  static getPackages(applicationID: string) {
     const url = BASE_URL + '/apps/' + applicationID + '/packages/';
 
     return API.doRequest('GET', url);
@@ -150,20 +167,29 @@ class API {
   }
 
   static getInstance(applicationID: string, groupID: string, instanceID: string) {
-    const url = BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/instances/' + instanceID;
+    const url =
+      BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/instances/' + instanceID;
 
     return API.getJSON(url);
   }
 
   static getInstanceStatusHistory(applicationID: string, groupID: string, instanceID: string) {
-    const url = BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/instances/' + instanceID + '/status_history';
+    const url =
+      BASE_URL +
+      '/apps/' +
+      applicationID +
+      '/groups/' +
+      groupID +
+      '/instances/' +
+      instanceID +
+      '/status_history';
 
     return API.getJSON(url);
   }
 
   static updateInstance(instanceID: string, alias: REQUEST_DATA_TYPE) {
     const url = BASE_URL + '/instances/' + instanceID;
-    const params = JSON.stringify({alias});
+    const params = JSON.stringify({ alias });
     return API.doRequest('PUT', url, params);
   }
 
@@ -188,8 +214,10 @@ class API {
 
   // Helpers
 
-  static removeKeysFromObject(data: Package | Application |
-    Group | FlatcarAction | Channel | Partial<Package>, valuesToRemove: string[]) {
+  static removeKeysFromObject(
+    data: Package | Application | Group | FlatcarAction | Channel | Partial<Package>,
+    valuesToRemove: string[]
+  ) {
     return _.omit(data, valuesToRemove);
   }
 
@@ -199,40 +227,7 @@ class API {
     PubSub.publish(MAIN_PROGRESS_BAR, 'add');
 
     return fetch(url)
-      .then((response) => {
-        if (!response.ok) {
-          throw response;
-        }
-        return response.json();})
-      .finally(() => PubSub.publish(MAIN_PROGRESS_BAR, 'done') );
-  }
-
-  static doRequest(method: 'GET', url: string): Promise<any>;
-  static doRequest(method: 'POST' | 'PUT' | 'PATCH' | 'DELETE', url: string, data: REQUEST_DATA_TYPE): Promise<any>;
-
-  static doRequest(method: string, url: string, data: REQUEST_DATA_TYPE = '') {
-    PubSub.publish(MAIN_PROGRESS_BAR, 'add');
-    let fetchConfigObject: {
-      method: string;
-      body?: REQUEST_DATA_TYPE;
-    } = {method: 'GET'};
-    if (method === 'DELETE') {
-      fetchConfigObject = {
-        method
-      };
-      return fetch(url, fetchConfigObject)
-        .finally(() => PubSub.publish(MAIN_PROGRESS_BAR, 'done'));
-    } else {
-      if (method !== 'GET') {
-        fetchConfigObject = {
-          method,
-          body: data
-        };
-      }
-    }
-
-    return fetch(url, fetchConfigObject)
-      .then((response) => {
+      .then(response => {
         if (!response.ok) {
           throw response;
         }
@@ -241,6 +236,42 @@ class API {
       .finally(() => PubSub.publish(MAIN_PROGRESS_BAR, 'done'));
   }
 
+  static doRequest(method: 'GET', url: string): Promise<any>;
+  static doRequest(
+    method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',
+    url: string,
+    data: REQUEST_DATA_TYPE
+  ): Promise<any>;
+
+  static doRequest(method: string, url: string, data: REQUEST_DATA_TYPE = '') {
+    PubSub.publish(MAIN_PROGRESS_BAR, 'add');
+    let fetchConfigObject: {
+      method: string;
+      body?: REQUEST_DATA_TYPE;
+    } = { method: 'GET' };
+    if (method === 'DELETE') {
+      fetchConfigObject = {
+        method,
+      };
+      return fetch(url, fetchConfigObject).finally(() => PubSub.publish(MAIN_PROGRESS_BAR, 'done'));
+    } else {
+      if (method !== 'GET') {
+        fetchConfigObject = {
+          method,
+          body: data,
+        };
+      }
+    }
+
+    return fetch(url, fetchConfigObject)
+      .then(response => {
+        if (!response.ok) {
+          throw response;
+        }
+        return response.json();
+      })
+      .finally(() => PubSub.publish(MAIN_PROGRESS_BAR, 'done'));
+  }
 }
 
 export default API;

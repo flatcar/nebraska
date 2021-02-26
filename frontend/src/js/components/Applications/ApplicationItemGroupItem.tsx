@@ -8,18 +8,15 @@ import API from '../../api/API';
 import { Group } from '../../api/apiDataTypes';
 import ChannelItem from '../Channels/Item';
 
-const useStyles = makeStyles(({
+const useStyles = makeStyles({
   groupLink: {
-    fontSize: '1rem'
+    fontSize: '1rem',
   },
-}));
+});
 
-function ApplicationItemGroupItem(props: {
-  group: Group;
-  appName: string;
-}) {
+function ApplicationItemGroupItem(props: { group: Group; appName: string }) {
   const classes = useStyles();
-  const {group} = props;
+  const { group } = props;
   const [totalInstances, setTotalInstances] = React.useState(-1);
 
   React.useEffect(() => {
@@ -30,16 +27,15 @@ function ApplicationItemGroupItem(props: {
         setTotalInstances(result);
       })
       .catch(err => console.error('Error loading total instances in Instances/List', err));
-  },
-  [group]);
+  }, [group]);
 
-  const instanceCountContent = (<Box display="flex">
-    <LayersOutlinedIcon/>
-    <Box px={0.5}>
-      {totalInstances}
+  const instanceCountContent = (
+    <Box display="flex">
+      <LayersOutlinedIcon />
+      <Box px={0.5}>{totalInstances}</Box>
+      {'instances'}
     </Box>
-    {'instances'}
-  </Box>);
+  );
 
   return (
     <>
@@ -47,23 +43,29 @@ function ApplicationItemGroupItem(props: {
         <Box width="40%">
           <Link
             className={classes.groupLink}
-            to={{pathname: `/apps/${props.group.application_id}/groups/${props.group.id}`}}
+            to={{ pathname: `/apps/${props.group.application_id}/groups/${props.group.id}` }}
             component={RouterLink}
           >
             {props.group.name}
           </Link>
         </Box>
         <Box display="flex" width="50%">
-          {totalInstances > 0 ?
+          {totalInstances > 0 ? (
             <Link
-              to={{pathname: `/apps/${props.group.application_id}/groups/${props.group.id}/instances`, search: 'period=1d'}}
+              to={{
+                pathname: `/apps/${props.group.application_id}/groups/${props.group.id}/instances`,
+                search: 'period=1d',
+              }}
               component={RouterLink}
             >
               {instanceCountContent}
-            </Link> : instanceCountContent}
+            </Link>
+          ) : (
+            instanceCountContent
+          )}
         </Box>
       </Box>
-      {group.channel && <ChannelItem channel={group.channel} isAppView/>}
+      {group.channel && <ChannelItem channel={group.channel} isAppView />}
     </>
   );
 }

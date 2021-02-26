@@ -4,7 +4,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import React from 'react';
-import {Route, Switch } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import Footer from './Footer';
 import Header from './Header.react';
 import ApplicationLayout from './Layouts/ApplicationLayout';
@@ -30,22 +30,22 @@ const nebraskaTheme = createMuiTheme({
     },
     success: {
       main: green['500'],
-      ...green
+      ...green,
     },
   },
   typography: {
     fontFamily: 'Overpass, sans-serif',
     h4: {
       fontSize: '1.875rem',
-      fontWeight: 900
+      fontWeight: 900,
     },
     subtitle1: {
-      fontSize: '14px'
-    }
+      fontSize: '14px',
+    },
   },
   shape: {
-    borderRadius: 0
-  }
+    borderRadius: 0,
+  },
 });
 
 export default function Main() {
@@ -55,14 +55,22 @@ export default function Main() {
       <Header />
       <Container component="main">
         <Switch>
-          <Route path='/' exact component={MainLayout} />
-          <Route path='/apps' exact component={MainLayout} />
+          <Route path="/" exact component={MainLayout} />
+          <Route path="/apps" exact component={MainLayout} />
           <Route path="/apps/:appID" exact component={ApplicationLayout} />
           <Route path="/apps/:appID/groups/:groupID" exact component={GroupLayout} />
-          <Route path="/apps/:appID/groups/:groupID/instances" exact component={InstanceListLayout} />
-          <Route path="/apps/:appID/groups/:groupID/instances/:instanceID" exact component={InstanceLayout} />
+          <Route
+            path="/apps/:appID/groups/:groupID/instances"
+            exact
+            component={InstanceListLayout}
+          />
+          <Route
+            path="/apps/:appID/groups/:groupID/instances/:instanceID"
+            exact
+            component={InstanceLayout}
+          />
         </Switch>
-        <Footer/>
+        <Footer />
       </Container>
     </ThemeProvider>
   );

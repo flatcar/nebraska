@@ -5,8 +5,8 @@ import { timeIntervalsDefault } from '../../constants/helpers';
 
 const useStyles = makeStyles(() => ({
   title: {
-    fontSize: '1rem'
-  }
+    fontSize: '1rem',
+  },
 }));
 
 interface TimeIntervalLinksProps {
@@ -17,20 +17,22 @@ interface TimeIntervalLinksProps {
 }
 
 export default function TimeIntervalLinks(props: TimeIntervalLinksProps) {
-  const {selectedInterval, intervalChangeHandler} = props;
+  const { selectedInterval, intervalChangeHandler } = props;
   const [timeIntervals, setTimeIntervals] = React.useState(timeIntervalsDefault);
   const { appID, groupID } = props;
   const classes = useStyles();
 
   React.useEffect(() => {
     if (appID && groupID) {
-      Promise.all(timeIntervalsDefault.map((timeInterval) => {
-        return API.getInstancesCount(appID, groupID, timeInterval.queryValue);
-      })).then((results) => {
+      Promise.all(
+        timeIntervalsDefault.map(timeInterval => {
+          return API.getInstancesCount(appID, groupID, timeInterval.queryValue);
+        })
+      ).then(results => {
         const timeIntervalsToUpdate = [...timeIntervals];
         for (let i = 0; i < results.length; i++) {
           if (results[i] === 0) {
-            const timeInterval = {...timeIntervalsToUpdate[i]};
+            const timeInterval = { ...timeIntervalsToUpdate[i] };
             timeInterval.disabled = true;
             timeIntervalsToUpdate[i] = timeInterval;
           }
@@ -38,29 +40,35 @@ export default function TimeIntervalLinks(props: TimeIntervalLinksProps) {
         setTimeIntervals(timeIntervalsToUpdate);
       });
     }
-
   }, [appID, groupID]);
 
   return (
     <Grid container spacing={1}>
-      {
-        timeIntervals.map((link, index) =>
-          <React.Fragment key={link.queryValue}>
+      {timeIntervals.map((link, index) => (
+        <React.Fragment key={link.queryValue}>
+          <Grid item>
+            <Link
+              underline="none"
+              component="button"
+              onClick={() => intervalChangeHandler(link)}
+              color={
+                link.disabled
+                  ? 'textSecondary'
+                  : link.queryValue === selectedInterval
+                  ? 'inherit'
+                  : 'primary'
+              }
+            >
+              <Typography className={classes.title}>{link.displayValue}</Typography>
+            </Link>
+          </Grid>
+          {index < timeIntervals.length - 1 && (
             <Grid item>
-              <Link underline="none"
-                component="button"
-                onClick={() => intervalChangeHandler(link)}
-                color={link.disabled ? 'textSecondary' : link.queryValue === selectedInterval ? 'inherit' : 'primary'}
-              >
-                <Typography className={classes.title} >
-                  {link.displayValue}
-                </Typography>
-              </Link>
+              <Box color="text.disabled">{'.'}</Box>
             </Grid>
-            {(index < timeIntervals.length - 1) && <Grid item><Box color="text.disabled">{'.'}</Box></Grid>}
-          </React.Fragment>)
-      }
+          )}
+        </React.Fragment>
+      ))}
     </Grid>
   );
 }
-

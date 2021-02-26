@@ -11,11 +11,15 @@ interface NebraskaConfig {
 function Footer() {
   const [nebraskaConfig, setNebraskaConfig] = React.useState<null | NebraskaConfig>(null);
   React.useEffect(() => {
-    API.getConfig().then((config) => {
+    API.getConfig().then(config => {
       setNebraskaConfig(config);
     });
   }, []);
-  return <Box mt={1} color="text.secondary">{nebraskaConfig && `${nebraskaConfig.title || 'Nebraska'} ${nebraskaConfig.nebraska_version}`}</Box>;
+  return (
+    <Box mt={1} color="text.secondary">
+      {nebraskaConfig && `${nebraskaConfig.title || 'Nebraska'} ${nebraskaConfig.nebraska_version}`}
+    </Box>
+  );
 }
 
 export default Footer;

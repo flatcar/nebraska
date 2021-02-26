@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function List(props: {entries?: Activity[]; timestamp: string}) {
+function List(props: { entries?: Activity[]; timestamp: string }) {
   const classes = useStyles();
   const entries = props.entries ? props.entries : [];
 
@@ -21,13 +21,13 @@ function List(props: {entries?: Activity[]; timestamp: string}) {
       <Typography className={classes.listTitle}>
         {makeLocaleTime(props.timestamp, {
           showTime: false,
-          dateFormat: {weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'}
+          dateFormat: { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' },
         })}
       </Typography>
       <MuiList>
-        {entries.map((entry: Activity, i: number) =>
+        {entries.map((entry: Activity, i: number) => (
           <Item key={i} entry={entry} />
-        )}
+        ))}
       </MuiList>
     </React.Fragment>
   );

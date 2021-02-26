@@ -3,7 +3,7 @@ import MuiList from '@material-ui/core/List';
 import Paper from '@material-ui/core/Paper';
 import React from 'react';
 import _ from 'underscore';
-import { Channel, Group} from '../../api/apiDataTypes';
+import { Channel, Group } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
@@ -15,14 +15,15 @@ import Item from './Item';
 const styles = () => ({
   root: {
     '& > hr:first-child': {
-      display: 'none'
-    }
-  }
+      display: 'none',
+    },
+  },
 });
 
-function List(props: {appID: string; classes: Record<'root', string>}) {
-  const [application, setApplication] =
-  React.useState(applicationsStore.getCachedApplication(props.appID));
+function List(props: { appID: string; classes: Record<'root', string> }) {
+  const [application, setApplication] = React.useState(
+    applicationsStore.getCachedApplication(props.appID)
+  );
   const [searchTerm, setSearchTerm] = React.useState('');
   const [updateGroupModalVisible, setUpdateGroupModalVisible] = React.useState(false);
   const [updateGroupIDModal, setUpdateGroupIDModal] = React.useState<string | null>(null);
@@ -43,15 +44,14 @@ function List(props: {appID: string; classes: Record<'root', string>}) {
     return () => {
       applicationsStore.removeChangeListener(onChange);
     };
-  },
-  []);
+  }, []);
 
   function onChange() {
     setApplication(applicationsStore.getCachedApplication(props.appID));
   }
 
-  function searchUpdated(event: React.ChangeEvent<{value: any}>) {
-    const {value} = event.currentTarget;
+  function searchUpdated(event: React.ChangeEvent<{ value: any }>) {
+    const { value } = event.currentTarget;
     setSearchTerm(value.toLowerCase());
   }
 
@@ -77,12 +77,15 @@ function List(props: {appID: string; classes: Record<'root', string>}) {
       if (searchTerm) {
         entries = <Empty>No results found.</Empty>;
       } else {
-        entries = <Empty>
-          There are no groups for this application yet.
-          <br/><br/>
-          Groups help you control how you want to distribute updates to
-          a specific set of instances.
-        </Empty>;
+        entries = (
+          <Empty>
+            There are no groups for this application yet.
+            <br />
+            <br />
+            Groups help you control how you want to distribute updates to a specific set of
+            instances.
+          </Empty>
+        );
       }
     } else {
       entries = _.map(groups, (group, i) => {
@@ -93,18 +96,19 @@ function List(props: {appID: string; classes: Record<'root', string>}) {
             appName={name}
             channels={channels}
             handleUpdateGroup={openUpdateGroupModal}
-          />);
+          />
+        );
       });
     }
-
   } else {
     entries = <Loader />;
   }
 
-  const groupToUpdate = !_.isEmpty(groups) &&
-      updateGroupIDModal ?
-    _.findWhere(groups, {id: updateGroupIDModal}) : null;
-  const {classes} = props;
+  const groupToUpdate =
+    !_.isEmpty(groups) && updateGroupIDModal
+      ? _.findWhere(groups, { id: updateGroupIDModal })
+      : null;
+  const { classes } = props;
 
   return (
     <>
@@ -116,22 +120,20 @@ function List(props: {appID: string; classes: Record<'root', string>}) {
             modalToOpen="AddGroupModal"
             data={{
               channels: channels,
-              appID: props.appID
+              appID: props.appID,
             }}
-          />
+          />,
         ]}
       />
       <Paper>
-        <MuiList className={classes.root}>
-          {entries}
-        </MuiList>
-        {groupToUpdate &&
+        <MuiList className={classes.root}>{entries}</MuiList>
+        {groupToUpdate && (
           <EditDialog
-            data={{group: groupToUpdate, channels: channels}}
+            data={{ group: groupToUpdate, channels: channels }}
             show={updateGroupModalVisible}
             onHide={closeUpdateGroupModal}
           />
-        }
+        )}
       </Paper>
     </>
   );
