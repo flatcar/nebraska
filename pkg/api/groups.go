@@ -4,11 +4,13 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 	"gopkg.in/guregu/null.v4"
 )
 
@@ -24,6 +26,12 @@ const (
 	oneDay
 	sevenDays
 	thirtyDays
+)
+
+const (
+	// If an instance doesn't update its status for deadInstanceTimeSpan then the instance
+	// is considered dead.
+	deadInstanceTimeSpan = "6 months"
 )
 
 var durationParamToCode = map[durationParam]durationCode{
@@ -589,6 +597,29 @@ func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (m
 	if err != nil {
 		return nil, err
 	}
+
+	instanceQuery, _, err := goqu.From("instance_application").Select(goqu.L("array_agg(DISTINCT (\"instance_id\")) \"instance_id\"")).Where(goqu.C("group_id").Eq(groupID),
+		goqu.L(fmt.Sprintf("last_check_for_updates >= now() - interval '%s'", durationString)),
+		goqu.L(ignoreFakeInstanceCondition("instance_id"))).ToSQL()
+
+	if err != nil {
+		return nil, err
+	}
+	ids := []string{}
+	err = api.db.QueryRowx(instanceQuery).Scan(pq.Array(&ids))
+	if err != nil {
+		return nil, err
+	}
+	values := "VALUES "
+	for _, id := range ids {
+		values = values + fmt.Sprintf("('%s'),", id)
+	}
+	values = strings.TrimRight(values, ",")
+
+	if len(ids) == 0 {
+		values = values + "('')"
+	}
+
 	query := fmt.Sprintf(`
 	WITH time_series AS (SELECT * FROM generate_series(now() - interval '%[1]s', now(), INTERVAL '%[2]s') AS ts),
 		 recent_instances AS (SELECT instance_id, (CASE WHEN last_update_granted_ts 
@@ -596,8 +627,8 @@ func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (m
 			instance_application WHERE group_id=$1 AND 
 			last_check_for_updates >= now() - interval '%[1]s' AND %[3]s ORDER BY last_update_granted_ts DESC),
 		 instance_versions AS (SELECT instance_id, created_ts, version, status 
-			FROM instance_status_history WHERE instance_id IN (SELECT instance_id FROM recent_instances) 
-			AND status = 4 UNION (SELECT * FROM recent_instances) ORDER BY created_ts DESC)
+			FROM instance_status_history WHERE instance_id = ANY (%[5]s) 
+			AND status = 4 AND created_ts >= now() - interval '%[6]s' UNION (SELECT * FROM recent_instances) ORDER BY created_ts DESC)
 	SELECT ts, (CASE WHEN version IS NULL THEN '' ELSE version END), 
 	  sum(CASE WHEN version IS NOT null THEN 1 ELSE 0 END) total 
 	FROM (SELECT * FROM time_series 
@@ -608,7 +639,8 @@ func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (m
 	GROUP BY 1,2
 	ORDER BY ts DESC;
 	`, durationString, interval, ignoreFakeInstanceCondition("instance_id"),
-		ignoreFakeInstanceCondition("instance_Id"))
+		ignoreFakeInstanceCondition("instance_Id"), values, deadInstanceTimeSpan)
+
 	rows, err := api.db.Queryx(query, groupID)
 	if err != nil {
 		return nil, err
