@@ -15,11 +15,10 @@ import ModalButton from '../Common/ModalButton';
 import EditDialog from './EditDialog';
 import Item from './Item';
 
-function List(props: {
-  appID: string;
-}) {
-  const [application, setApplication] =
-    React.useState(applicationsStore.getCachedApplication(props.appID) || null);
+function List(props: { appID: string }) {
+  const [application, setApplication] = React.useState(
+    applicationsStore.getCachedApplication(props.appID) || null
+  );
   const [packages, setPackages] = React.useState<Package[] | null>(null);
   const [packageToUpdate, setPackageToUpdate] = React.useState<Package | null>(null);
   const rowsPerPage = 10;
@@ -31,15 +30,14 @@ function List(props: {
 
   React.useEffect(() => {
     applicationsStore.addChangeListener(onChange);
-    if (!packages){
-      API.getPackages(props.appID)
-        .then((result) => {
-          if (_.isNull(result)) {
-            setPackages([]);
-            return;
-          }
-          setPackages(result);
-        });
+    if (!packages) {
+      API.getPackages(props.appID).then(result => {
+        if (_.isNull(result)) {
+          setPackages([]);
+          return;
+        }
+        setPackages(result);
+      });
     }
 
     if (application === null) {
@@ -49,22 +47,23 @@ function List(props: {
     return function cleanup() {
       applicationsStore.removeChangeListener(onChange);
     };
-  },
-  [application, packages]);
+  }, [application, packages]);
 
   function onCloseEditDialog() {
     setPackageToUpdate(null);
   }
 
   function openEditDialog(packageID: string) {
-    const pkg = packages?.find(({id}) => id === packageID) || null;
+    const pkg = packages?.find(({ id }) => id === packageID) || null;
     if (pkg !== packageToUpdate) {
       setPackageToUpdate(pkg);
     }
   }
 
-  function handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
-                            newPage: number) {
+  function handleChangePage(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
+    newPage: number
+  ) {
     setPage(newPage);
   }
 
@@ -72,48 +71,46 @@ function List(props: {
     <>
       <ListHeader
         title="Packages"
-        actions={application ?
-          [
-            <ModalButton
-              modalToOpen="AddPackageModal"
-              data={{
-                channels: application.channels || [],
-                appID: props.appID
-              }}
-            />
-          ]
-          :
-          []
+        actions={
+          application
+            ? [
+                <ModalButton
+                  modalToOpen="AddPackageModal"
+                  data={{
+                    channels: application.channels || [],
+                    appID: props.appID,
+                  }}
+                />,
+              ]
+            : []
         }
       />
       <Paper>
-
         <Box padding="1em">
-          {application && !_.isNull(packages) ?
-            _.isEmpty(packages) ?
+          {application && !_.isNull(packages) ? (
+            _.isEmpty(packages) ? (
               <Empty>This application does not have any package yet</Empty>
-              :
+            ) : (
               <React.Fragment>
                 <MuiList>
-                  {
-                    packages.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                      .map(packageItem =>
-                        <Item
-                          key={'packageItemID_' + packageItem.id}
-                          packageItem={packageItem}
-                          channels={application.channels}
-                          handleUpdatePackage={openEditDialog}
-                        />
-                      )
-                  }
+                  {packages
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map(packageItem => (
+                      <Item
+                        key={'packageItemID_' + packageItem.id}
+                        packageItem={packageItem}
+                        channels={application.channels}
+                        handleUpdatePackage={openEditDialog}
+                      />
+                    ))}
                 </MuiList>
-                {packageToUpdate &&
-                <EditDialog
-                  data={{channels: application.channels, channel: packageToUpdate}}
-                  show={Boolean(packageToUpdate)}
-                  onHide={onCloseEditDialog}
-                />
-                }
+                {packageToUpdate && (
+                  <EditDialog
+                    data={{ channels: application.channels, channel: packageToUpdate }}
+                    show={Boolean(packageToUpdate)}
+                    onHide={onCloseEditDialog}
+                  />
+                )}
                 <TablePagination
                   rowsPerPageOptions={[]}
                   component="div"
@@ -129,9 +126,10 @@ function List(props: {
                   onChangePage={handleChangePage}
                 />
               </React.Fragment>
-            :
-              <Loader />
-          }
+            )
+          ) : (
+            <Loader />
+          )}
         </Box>
       </Paper>
     </>
@@ -139,7 +137,7 @@ function List(props: {
 }
 
 List.propTypes = {
-  appID: PropTypes.string.isRequired
+  appID: PropTypes.string.isRequired,
 };
 
 export default List;

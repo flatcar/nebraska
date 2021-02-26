@@ -11,24 +11,26 @@ import { Area, AreaChart, CartesianGrid, LineType, Tooltip, XAxis, YAxis } from 
 import semver from 'semver';
 import _ from 'underscore';
 import { Group } from '../../api/apiDataTypes';
-import { cleanSemverVersion, getInstanceStatus, getMinuteDifference, makeColorsForVersions, makeLocaleTime, useGroupVersionBreakdown } from '../../constants/helpers';
+import {
+  cleanSemverVersion,
+  getInstanceStatus,
+  getMinuteDifference,
+  makeColorsForVersions,
+  makeLocaleTime,
+  useGroupVersionBreakdown,
+} from '../../constants/helpers';
 import { groupChartStore } from '../../stores/Stores';
 import Loader from '../Common/Loader';
 import SimpleTable from '../Common/SimpleTable';
 import makeStatusDefs from '../Instances/StatusDefs';
 
-function TimelineTooltip(props: {
-  label?: string;
-  data: any;
-}) {
-  const {label, data} = props;
+function TimelineTooltip(props: { label?: string; data: any }) {
+  const { label, data } = props;
   return (
     <div className="custom-tooltip">
       <Paper>
         <Box padding={1}>
-          <Typography>
-            {label && data[label] && makeLocaleTime(data[label].timestamp)}
-          </Typography>
+          <Typography>{label && data[label] && makeLocaleTime(data[label].timestamp)}</Typography>
         </Box>
       </Paper>
     </div>
@@ -44,7 +46,7 @@ function TimelineChart(props: {
   colors: any;
   keys: string[];
 }) {
-  const {width = 500, height = 400, interpolation = 'monotone'} = props;
+  const { width = 500, height = 400, interpolation = 'monotone' } = props;
   let ticks: {
     [key: string]: string;
   } = {};
@@ -56,7 +58,7 @@ function TimelineChart(props: {
       useDate?: boolean;
       showTime?: boolean;
       dateFormat?: Intl.DateTimeFormatOptions;
-    } = {useDate: false};
+    } = { useDate: false };
     const startTs = new Date(props.data[0].timestamp);
     const endTs = new Date(props.data[props.data.length - 1].timestamp);
     const lengthMinutes = getMinuteDifference(endTs.valueOf(), startTs.valueOf());
@@ -68,13 +70,13 @@ function TimelineChart(props: {
 
     if (lengthMinutes === 7 * DAY) {
       tickCount = 7;
-      dateFormat = {dateFormat: {month: 'short', day: 'numeric'}, showTime: false};
+      dateFormat = { dateFormat: { month: 'short', day: 'numeric' }, showTime: false };
     }
     if (lengthMinutes === 60) {
       for (let i = 0; i < 4; i++) {
-        const minuteValue = lengthMinutes / 4 * i;
+        const minuteValue = (lengthMinutes / 4) * i;
         startTs.setMinutes(new Date(props.data[0].timestamp).getMinutes() + minuteValue);
-        ticks[i] = makeLocaleTime(startTs, {useDate: false});
+        ticks[i] = makeLocaleTime(startTs, { useDate: false });
       }
       return ticks;
     }
@@ -82,7 +84,10 @@ function TimelineChart(props: {
     if (lengthMinutes === 30 * DAY) {
       for (let i = 0; i < props.data.length; i += 2) {
         const tickDate = new Date(props.data[i].timestamp);
-        ticks[i] = makeLocaleTime(tickDate, {showTime: false, dateFormat: {month: 'short', day: 'numeric'}});
+        ticks[i] = makeLocaleTime(tickDate, {
+          showTime: false,
+          dateFormat: { month: 'short', day: 'numeric' },
+        });
       }
       return ticks;
     }
@@ -91,7 +96,7 @@ function TimelineChart(props: {
     nextDay.setHours(24, 0, 0, 0);
     const midnightDay = new Date(nextDay);
     const nextDayMinuteDiff = getMinuteDifference(nextDay.valueOf(), startTs.valueOf());
-    const midnightTick = nextDayMinuteDiff * dimension / lengthMinutes;
+    const midnightTick = (nextDayMinuteDiff * dimension) / lengthMinutes;
 
     // Set up the remaining ticks according to the desired amount, separated
     // evenly.
@@ -109,14 +114,17 @@ function TimelineChart(props: {
           break;
         }
 
-        const tick = getMinuteDifference(tickDate.valueOf(),
-        startTs.valueOf()) * dimension / lengthMinutes;
+        const tick =
+          (getMinuteDifference(tickDate.valueOf(), startTs.valueOf()) * dimension) / lengthMinutes;
         // Show only the time.
         ticks[tick] = makeLocaleTime(tickDate, dateFormat);
       }
     }
     // The midnight tick just gets the date, not the hours (since they're zero)
-    ticks[midnightTick] = makeLocaleTime(midnightDay, {dateFormat: {month: 'short', day: 'numeric'}, showTime: false});
+    ticks[midnightTick] = makeLocaleTime(midnightDay, {
+      dateFormat: { month: 'short', day: 'numeric' },
+      showTime: false,
+    });
     return ticks;
   }
 
@@ -126,9 +134,12 @@ function TimelineChart(props: {
       height={height}
       data={props.data}
       margin={{
-        top: 10, right: 30, left: 0, bottom: 0,
+        top: 10,
+        right: 30,
+        left: 0,
+        bottom: 0,
       }}
-      onClick={(obj) => obj && props.onSelect(obj.activeLabel)}
+      onClick={obj => obj && props.onSelect(obj.activeLabel)}
     >
       <CartesianGrid strokeDasharray="3 3" />
       <Tooltip content={<TimelineTooltip data={props.data} />} />
@@ -143,7 +154,7 @@ function TimelineChart(props: {
         }}
       />
       <YAxis />
-      {props.keys.map((key: string, i: number) =>
+      {props.keys.map((key: string, i: number) => (
         <Area
           type={interpolation}
           key={i}
@@ -153,7 +164,7 @@ function TimelineChart(props: {
           cursor="pointer"
           fill={props.colors[key]}
         />
-      )}
+      ))}
     </AreaChart>
   );
 }
@@ -173,7 +184,7 @@ export function VersionCountTimeline(props: {
   }>({
     data: [],
     keys: [],
-    colors: []
+    colors: [],
   });
   const [timeline, setTimeline] = React.useState({
     timeline: {},
@@ -183,13 +194,13 @@ export function VersionCountTimeline(props: {
 
   const theme = useTheme();
 
-  function makeChartData(group: Group, groupTimeline: {[key: string]: any}) {
+  function makeChartData(group: Group, groupTimeline: { [key: string]: any }) {
     const data = Object.keys(groupTimeline).map((timestamp, i) => {
       const versions = groupTimeline[timestamp];
       return {
         index: i,
         timestamp: timestamp,
-        ...versions
+        ...versions,
       };
     });
 
@@ -205,9 +216,7 @@ export function VersionCountTimeline(props: {
     });
   }
 
-  function getVersionsFromTimeline(timeline: {
-    [key: string]: any;
-  }) {
+  function getVersionsFromTimeline(timeline: { [key: string]: any }) {
     if (Object.keys(timeline).length === 0) {
       return [];
     }
@@ -261,14 +270,12 @@ export function VersionCountTimeline(props: {
       }
     }
 
-    version_breakdown.forEach((entry: {
-      [key: string]: any;
-    }) => {
+    version_breakdown.forEach((entry: { [key: string]: any }) => {
       entry.color = timelineChartData.colors[entry.version];
 
       // Calculate the percentage if needed.
       if (total > 0) {
-        entry.percentage = entry.instances * 100.0 / total;
+        entry.percentage = (entry.instances * 100.0) / total;
       }
 
       entry.percentage = parseFloat(entry.percentage).toFixed(1);
@@ -296,12 +303,15 @@ export function VersionCountTimeline(props: {
     let canceled = false;
     async function getVersionTimeline(group: Group | null) {
       if (group) {
-      // Check if we should update the timeline or it's too early.
+        // Check if we should update the timeline or it's too early.
         const lastUpdate = new Date(timeline.lastUpdate);
-        setTimelineChartData({data: [], keys: [], colors: []});
+        setTimelineChartData({ data: [], keys: [], colors: [] });
         try {
-          const versionCountTimeline = await groupChartStore
-            .getGroupVersionCountTimeline(group.application_id, group.id, duration.queryValue);
+          const versionCountTimeline = await groupChartStore.getGroupVersionCountTimeline(
+            group.application_id,
+            group.id,
+            duration.queryValue
+          );
           if (!canceled) {
             setTimeline({
               timeline: versionCountTimeline,
@@ -316,56 +326,53 @@ export function VersionCountTimeline(props: {
       }
     }
     getVersionTimeline(props.group);
-    return () => {canceled = true;};
-  },
-  [duration]);
+    return () => {
+      canceled = true;
+    };
+  }, [duration]);
 
   return (
     <Grid container alignItems="center" spacing={2}>
       <Grid item xs={12}>
-        {timelineChartData.data.length > 0 ?
-          <TimelineChart
-            {...timelineChartData}
-            onSelect={setSelectedEntry}
-          />
-          :
+        {timelineChartData.data.length > 0 ? (
+          <TimelineChart {...timelineChartData} onSelect={setSelectedEntry} />
+        ) : (
           <Loader />
-        }
+        )}
       </Grid>
       <Grid item xs={12} container>
         <Grid item xs={12}>
           <Box width={500}>
-            { timelineChartData.data.length > 0 ?
-              selectedEntry !== -1 ?
+            {timelineChartData.data.length > 0 ? (
+              selectedEntry !== -1 ? (
                 <React.Fragment>
-                  <Typography component="span">
-                    Showing for:
-                  </Typography>
+                  <Typography component="span">Showing for:</Typography>
                   &nbsp;
                   <Chip
                     label={getSelectedTime()}
-                    onDelete={() => {setSelectedEntry(-1);}}
+                    onDelete={() => {
+                      setSelectedEntry(-1);
+                    }}
                   />
                 </React.Fragment>
-                :
+              ) : (
                 <Box color="text.secondary" fontSize={14} textAlign="center" lineHeight={1.5}>
                   Showing data for the last time point.
                   <br />
                   Click the chart to choose a different time point.
                 </Box>
-              :
-              null
-            }
+              )
+            ) : null}
           </Box>
         </Grid>
         <Grid item xs={11}>
-          {timelineChartData.data.length > 0 &&
+          {timelineChartData.data.length > 0 && (
             <SimpleTable
               emptyMessage="No data to show for this time point."
-              columns={{version: 'Version', instances: 'Count', percentage: 'Percentage'}}
+              columns={{ version: 'Version', instances: 'Count', percentage: 'Percentage' }}
               instances={getInstanceCount(selectedEntry)}
             />
-          }
+          )}
         </Grid>
       </Grid>
     </Grid>
@@ -384,15 +391,15 @@ export function StatusCountTimeline(props: {
     data: {
       index: number;
       timestamp: string;
-  }[];
-  keys: string[];
-  colors: {
-    [key: string]: any;
-  };
+    }[];
+    keys: string[];
+    colors: {
+      [key: string]: any;
+    };
   }>({
     data: [],
     keys: [],
-    colors: []
+    colors: [],
   });
 
   const [timeline, setTimeline] = React.useState<{
@@ -416,9 +423,7 @@ export function StatusCountTimeline(props: {
     };
   } = makeStatusDefs(theme as Theme);
 
-  function makeChartData(groupTimeline: {
-    [key: string]: any;
-  }) {
+  function makeChartData(groupTimeline: { [key: string]: any }) {
     const data = Object.keys(groupTimeline).map((timestamp, i) => {
       const status = groupTimeline[timestamp];
       const statusCount: {
@@ -433,7 +438,7 @@ export function StatusCountTimeline(props: {
       return {
         index: i,
         timestamp: timestamp,
-        ...statusCount
+        ...statusCount,
       };
     });
 
@@ -447,9 +452,7 @@ export function StatusCountTimeline(props: {
     });
   }
 
-  function makeStatusesColors(statuses: {
-    [key: string]: any;
-  }) {
+  function makeStatusesColors(statuses: { [key: string]: any }) {
     const colors: {
       [key: string]: any;
     } = {};
@@ -462,9 +465,7 @@ export function StatusCountTimeline(props: {
     return colors;
   }
 
-  function getStatusFromTimeline(timeline: {
-    [key: number]: number;
-  }) {
+  function getStatusFromTimeline(timeline: { [key: number]: number }) {
     if (Object.keys(timeline).length === 0) {
       return [];
     }
@@ -485,8 +486,7 @@ export function StatusCountTimeline(props: {
     // Populate it from the selected time one.
     if (!_.isEmpty(statusTimeline) && !_.isEmpty(timelineChartData.data)) {
       const timelineIndex = selectedEntry >= 0 ? selectedEntry : timelineChartData.data.length - 1;
-      if (timelineIndex < 0)
-        return [];
+      if (timelineIndex < 0) return [];
 
       const ts = timelineChartData.data[timelineIndex].timestamp;
       // Create the version breakdown from the timeline
@@ -509,11 +509,7 @@ export function StatusCountTimeline(props: {
       }
     }
 
-    status_breakdown.forEach((entry: {
-      status: string;
-      version: string;
-      [key: string]: any;
-    }) => {
+    status_breakdown.forEach((entry: { status: string; version: string; [key: string]: any }) => {
       const statusInfo = getInstanceStatus(parseInt(entry.status), entry.version);
       const statusTheme = statusDefs[statusInfo.type];
 
@@ -542,10 +538,13 @@ export function StatusCountTimeline(props: {
   React.useEffect(() => {
     async function getStatusTimeline(group: Group | null) {
       if (group) {
-        setTimelineChartData({data: [], keys: [], colors: []});
+        setTimelineChartData({ data: [], keys: [], colors: [] });
         try {
-          const statusCountTimeline = await groupChartStore
-            .getGroupStatusCountTimeline(group.application_id, group.id, duration.queryValue);
+          const statusCountTimeline = await groupChartStore.getGroupStatusCountTimeline(
+            group.application_id,
+            group.id,
+            duration.queryValue
+          );
           setTimeline({
             timeline: statusCountTimeline,
             lastUpdate: new Date().toUTCString(),
@@ -560,56 +559,50 @@ export function StatusCountTimeline(props: {
     }
     setSelectedEntry(-1);
     getStatusTimeline(props.group);
-  },
-  [props.duration]);
+  }, [props.duration]);
 
   return (
     <Grid container alignItems="center" spacing={2}>
       <Grid item xs={12}>
-        {timelineChartData.data.length > 0 ?
-          <TimelineChart
-            {...timelineChartData}
-            interpolation="step"
-            onSelect={setSelectedEntry}
-          />
-          :
+        {timelineChartData.data.length > 0 ? (
+          <TimelineChart {...timelineChartData} interpolation="step" onSelect={setSelectedEntry} />
+        ) : (
           <Loader />
-        }
+        )}
       </Grid>
       <Grid item xs={12} container>
         <Grid item xs={12}>
           <Box width={500}>
-            { timelineChartData.data.length > 0 ?
-              selectedEntry !== -1 ?
+            {timelineChartData.data.length > 0 ? (
+              selectedEntry !== -1 ? (
                 <React.Fragment>
-                  <Typography component="span">
-                    Showing for:
-                  </Typography>
+                  <Typography component="span">Showing for:</Typography>
                   &nbsp;
                   <Chip
                     label={getSelectedTime()}
-                    onDelete={() => {setSelectedEntry(-1);}}
+                    onDelete={() => {
+                      setSelectedEntry(-1);
+                    }}
                   />
                 </React.Fragment>
-                :
+              ) : (
                 <Box color="text.secondary" fontSize={14} textAlign="center" lineHeight={1.5}>
                   Showing data for the last time point.
                   <br />
                   Click the chart to choose a different time point.
                 </Box>
-              :
-              null
-            }
+              )
+            ) : null}
           </Box>
         </Grid>
         <Grid item xs={12}>
-          {timelineChartData.data.length > 0 &&
+          {timelineChartData.data.length > 0 && (
             <SimpleTable
               emptyMessage="No data to show for this time point."
-              columns={{status: 'Status', version: 'Version', instances: 'Instances'}}
+              columns={{ status: 'Status', version: 'Version', instances: 'Instances' }}
               instances={getInstanceCount(selectedEntry)}
             />
-          }
+          )}
         </Grid>
       </Grid>
     </Grid>

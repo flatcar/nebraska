@@ -21,7 +21,7 @@ const useStyles = makeStyles({
   },
   select: {
     fontSize: '.85em',
-  }
+  },
 });
 
 function Container() {
@@ -34,41 +34,46 @@ function Container() {
   React.useEffect(() => {
     activityStore.addChangeListener(onChange);
 
-    return function cleanup () {
+    return function cleanup() {
       activityStore.removeChangeListener(onChange);
     };
-  },
-  [activity]);
+  }, [activity]);
 
   function onChange() {
     setActivity(getActivityEntries());
     setPage(0);
   }
 
-  function handleChangePage(event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
-                            newPage: number) {
+  function handleChangePage(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
+    newPage: number
+  ) {
     setPage(newPage);
   }
 
-  function handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement |
-     HTMLTextAreaElement>) {
+  function handleChangeRowsPerPage(
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) {
     setRowsPerPage(+event.target.value);
     setPage(0);
   }
 
   function getPagedActivity() {
-    const entriesPerTime: {[key: string]: any} = {};
+    const entriesPerTime: { [key: string]: any } = {};
     let timestamp = null;
     if (!activity) {
       return entriesPerTime;
     }
 
-    for (let i = page * rowsPerPage;
-      i < Math.min(activity.length, page * rowsPerPage + rowsPerPage); ++i) {
+    for (
+      let i = page * rowsPerPage;
+      i < Math.min(activity.length, page * rowsPerPage + rowsPerPage);
+      ++i
+    ) {
       const entry = activity[i];
       const date = new Date(entry.created_ts);
       if (!timestamp || date.getDay() !== new Date(timestamp).getDay()) {
-        timestamp = date.toUTCString();;
+        timestamp = date.toUTCString();
         entriesPerTime[timestamp] = [];
       }
 
@@ -94,50 +99,47 @@ function Container() {
 
   return (
     <>
-      <ListHeader title="Activity"/>
+      <ListHeader title="Activity" />
       <Paper>
         <Box padding="1em">
-          { _.isNull(activity) ?
+          {_.isNull(activity) ? (
             <Loader />
-            : _.isEmpty(activity) ?
-              <Empty>
-                No activity found for the last week.
-                <br/><br/>
-                You will see here important events related to the rollout of your updates.
-                Stay tuned!
-              </Empty>
-              :
-              <Grid
-                container
-                direction="column"
-              >
-                <Grid item>
-                  {Object.values(
-                _.mapObject(getPagedActivity(), (entry, timestamp) => {
-                  return <List timestamp={timestamp} entries={entry} key={timestamp} />;
-                })
-                  )}
-                </Grid>
-                <Grid item>
-                  <TablePagination
-                    classes={classes}
-                    rowsPerPageOptions={rowsOptions}
-                    component="div"
-                    count={activity.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    backIconButtonProps={{
-                      'aria-label': 'previous page',
-                    }}
-                    nextIconButtonProps={{
-                      'aria-label': 'next page',
-                    }}
-                    onChangePage={handleChangePage}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                  />
-                </Grid>
+          ) : _.isEmpty(activity) ? (
+            <Empty>
+              No activity found for the last week.
+              <br />
+              <br />
+              You will see here important events related to the rollout of your updates. Stay tuned!
+            </Empty>
+          ) : (
+            <Grid container direction="column">
+              <Grid item>
+                {Object.values(
+                  _.mapObject(getPagedActivity(), (entry, timestamp) => {
+                    return <List timestamp={timestamp} entries={entry} key={timestamp} />;
+                  })
+                )}
               </Grid>
-          }
+              <Grid item>
+                <TablePagination
+                  classes={classes}
+                  rowsPerPageOptions={rowsOptions}
+                  component="div"
+                  count={activity.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  backIconButtonProps={{
+                    'aria-label': 'previous page',
+                  }}
+                  nextIconButtonProps={{
+                    'aria-label': 'next page',
+                  }}
+                  onChangePage={handleChangePage}
+                  onChangeRowsPerPage={handleChangeRowsPerPage}
+                />
+              </Grid>
+            </Grid>
+          )}
         </Box>
       </Paper>
     </>

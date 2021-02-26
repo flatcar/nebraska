@@ -3,7 +3,13 @@ import Chip from '@material-ui/core/Chip';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import React from 'react';
-import { ERROR_STATUS_CODE, getErrorAndFlags, getInstanceStatus, makeLocaleTime, prepareErrorMessage } from '../../constants/helpers';
+import {
+  ERROR_STATUS_CODE,
+  getErrorAndFlags,
+  getInstanceStatus,
+  makeLocaleTime,
+  prepareErrorMessage,
+} from '../../constants/helpers';
 
 interface StatusHistoryItemProps {
   entry: {
@@ -28,8 +34,7 @@ function StatusHistoryItem(props: StatusHistoryItemProps) {
   }>({});
   React.useEffect(() => {
     fetchStatusFromStore();
-  },
-  []);
+  }, []);
 
   function fetchStatusFromStore() {
     const status = getInstanceStatus(props.entry.status, props.entry.version);
@@ -37,38 +42,33 @@ function StatusHistoryItem(props: StatusHistoryItemProps) {
   }
 
   const time = makeLocaleTime(props.entry.created_ts);
-  const {className, bgColor, textColor} = status;
+  const { className, bgColor, textColor } = status;
   const errorCode = props.entry.error_code;
   let extendedErrorExplanation = '';
   if (props.entry.status === ERROR_STATUS_CODE) {
     const [errorMessages, flags] = getErrorAndFlags(errorCode);
     extendedErrorExplanation = prepareErrorMessage(errorMessages, flags);
   }
-  const instanceLabel = className ?
+  const instanceLabel = className ? (
     <Box p={1} bgcolor={bgColor} color={textColor} textAlign="center">
       {status}
-    </Box> :
-    <div>&nbsp;</div>;
+    </Box>
+  ) : (
+    <div>&nbsp;</div>
+  );
 
   return (
     <TableRow>
-      <TableCell>
-        {time}
-      </TableCell>
-      <TableCell>
-        {instanceLabel}
-      </TableCell>
+      <TableCell>{time}</TableCell>
+      <TableCell>{instanceLabel}</TableCell>
       <TableCell>
         {status.explanation}
-        {
-          extendedErrorExplanation &&
-            <>
-              {':'}
-              <Box>
-                {extendedErrorExplanation}
-              </Box>
-            </>
-        }
+        {extendedErrorExplanation && (
+          <>
+            {':'}
+            <Box>{extendedErrorExplanation}</Box>
+          </>
+        )}
       </TableCell>
     </TableRow>
   );

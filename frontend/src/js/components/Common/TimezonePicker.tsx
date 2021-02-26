@@ -16,8 +16,9 @@ import React from 'react';
 import { FixedSizeList } from 'react-window';
 
 const suggestions = moment.tz.names().map(timezone => {
-  return {label: timezone,
-          utcDiff: moment.tz(moment.utc(), timezone).utcOffset() / 60 // Hours from/to UTC
+  return {
+    label: timezone,
+    utcDiff: moment.tz(moment.utc(), timezone).utcOffset() / 60, // Hours from/to UTC
   };
 });
 
@@ -81,17 +82,8 @@ function renderSuggestion(suggestionProps: RenderSuggestionProps) {
   }
 
   return (
-    <ListItem
-      {...itemProps}
-      button
-      key={suggestion.label}
-      selected={isSelected}
-      style={style}
-    >
-      <ListItemText
-        primary={suggestion.label}
-        secondary={getUtcLabel(suggestion.utcDiff)}
-      />
+    <ListItem {...itemProps} button key={suggestion.label} selected={isSelected} style={style}>
+      <ListItemText primary={suggestion.label} secondary={getUtcLabel(suggestion.utcDiff)} />
     </ListItem>
   );
 }
@@ -102,13 +94,13 @@ function getSuggestions(value: string | null, selectedItem: string) {
   }
   const inputValue = value.toLowerCase();
 
-  if (value === selectedItem)
-    return suggestions;
+  if (value === selectedItem) return suggestions;
 
-  return inputValue.length === 0 ? suggestions
+  return inputValue.length === 0
+    ? suggestions
     : suggestions.filter(suggestion => {
-      return suggestion.label.toLowerCase().includes(inputValue);
-    });
+        return suggestion.label.toLowerCase().includes(inputValue);
+      });
 }
 
 const useStyles = makeStyles(theme => ({
@@ -131,7 +123,6 @@ const useStyles = makeStyles(theme => ({
 interface LazyListProps {
   options: string[];
   itemData: any;
-
 }
 
 interface LazyListProps {
@@ -144,27 +135,25 @@ interface LazyListProps {
 }
 
 function LazyList(props: LazyListProps) {
-  const {options, itemData, ...others} = props;
+  const { options, itemData, ...others } = props;
 
   itemData['suggestions'] = options;
 
-  function Row(props: {index: number; style: object; data: any}) {
-    const {index, style, data} = props;
+  function Row(props: { index: number; style: object; data: any }) {
+    const { index, style, data } = props;
     const suggestion = data.suggestions[index];
     const getItemProps = data.getItemProps;
     data['index'] = index;
-    return renderSuggestion({suggestion,
-                             style,
-                             itemProps: getItemProps({item: suggestion.label}),
-                             ...data});
+    return renderSuggestion({
+      suggestion,
+      style,
+      itemProps: getItemProps({ item: suggestion.label }),
+      ...data,
+    });
   }
 
   return (
-    <FixedSizeList
-      itemCount={options.length}
-      itemData={itemData}
-      {...others}
-    >
+    <FixedSizeList itemCount={options.length} itemData={itemData} {...others}>
       {Row}
     </FixedSizeList>
   );
@@ -172,11 +161,14 @@ function LazyList(props: LazyListProps) {
 
 export const DEFAULT_TIMEZONE = moment.tz.guess(true);
 
-export default function TimzonePicker(props: {value: string;
-  onSelect: (selectedTimezone: string) => void;}) {
+export default function TimzonePicker(props: {
+  value: string;
+  onSelect: (selectedTimezone: string) => void;
+}) {
   const [showPicker, setShowPicker] = React.useState(false);
-  const [selectedTimezone, setSelectedTimezone] =
-    React.useState(props.value ? props.value : DEFAULT_TIMEZONE);
+  const [selectedTimezone, setSelectedTimezone] = React.useState(
+    props.value ? props.value : DEFAULT_TIMEZONE
+  );
   const classes = useStyles();
 
   function onInputActivate() {
@@ -200,7 +192,7 @@ export default function TimzonePicker(props: {value: string;
           onClick={onInputActivate}
           value={selectedTimezone}
           inputProps={{
-            className: classes.pickerButtonInput
+            className: classes.pickerButtonInput,
           }}
           placeholder="Pick a timezone"
           readOnly
@@ -208,9 +200,7 @@ export default function TimzonePicker(props: {value: string;
         />
       </FormControl>
       <Dialog open={showPicker}>
-        <DialogTitle>
-          Choose a Timezone
-        </DialogTitle>
+        <DialogTitle>Choose a Timezone</DialogTitle>
         <DialogContent>
           <Downshift id="downshift-options">
             {({
@@ -236,7 +226,7 @@ export default function TimzonePicker(props: {value: string;
                     InputLabelProps: getLabelProps(),
                     InputProps: { onBlur, onChange, onFocus },
                     inputProps,
-                    variant: 'outlined'
+                    variant: 'outlined',
                   })}
                   <LazyList
                     //@todo add better types
@@ -257,8 +247,12 @@ export default function TimzonePicker(props: {value: string;
           </Downshift>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">Cancel</Button>
-          <Button onClick={handleSelect} color="primary">Select</Button>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleSelect} color="primary">
+            Select
+          </Button>
         </DialogActions>
       </Dialog>
     </div>

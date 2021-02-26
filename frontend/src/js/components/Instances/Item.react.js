@@ -15,25 +15,31 @@ import API from '../../api/API';
 import { cleanSemverVersion, makeLocaleTime } from '../../constants/helpers';
 import StatusHistoryContainer from './StatusHistoryContainer';
 
-const TableLabel = function(props){
-  return (<Box bgcolor={props.bgColor} color={props.textColor} display="inline-block" py={1} px={2}>
-
-    {props.children}
-  </Box>);
+const TableLabel = function (props) {
+  return (
+    <Box bgcolor={props.bgColor} color={props.textColor} display="inline-block" py={1} px={2}>
+      {props.children}
+    </Box>
+  );
 };
 function Item(props) {
   const date = props.instance.application.last_check_for_updates;
   const downloadingIcon = props.instance.statusInfo.spinning ? <img src={LoadingGif} /> : '';
   const statusDescription = props.instance.statusInfo.description;
-  const instanceLabel = props.instance.statusInfo.className ?
-    <TableLabel bgColor={props.instance.statusInfo.bgColor}
+  const instanceLabel = props.instance.statusInfo.className ? (
+    <TableLabel
+      bgColor={props.instance.statusInfo.bgColor}
       textColor={props.instance.statusInfo.textColor}
     >
       {statusDescription}
-    </TableLabel> : <div>&nbsp;</div>;
+    </TableLabel>
+  ) : (
+    <div>&nbsp;</div>
+  );
   const version = cleanSemverVersion(props.instance.application.version);
-  const currentVersionIndex = props.lastVersionChannel ?
-    _.indexOf(props.versionNumbers, props.lastVersionChannel) : null;
+  const currentVersionIndex = props.lastVersionChannel
+    ? _.indexOf(props.versionNumbers, props.lastVersionChannel)
+    : null;
   let versionStyle = 'default';
   const appID = props.instance.application.application_id;
   const groupID = props.instance.application.group_id;
@@ -44,13 +50,12 @@ function Item(props) {
     const selected = props.selected;
 
     if (!selected) {
-
       API.getInstanceStatusHistory(appID, groupID, instanceID)
-        .then((statusHistory) => {
+        .then(statusHistory => {
           setStatusHistory(statusHistory);
           props.onToggle(instanceID);
         })
-        .catch((error) => {
+        .catch(error => {
           if (error.status === 404) {
             props.onToggle(instanceID);
             setStatusHistory([]);
@@ -72,10 +77,8 @@ function Item(props) {
       versionStyle = 'info';
     } else {
       const indexDiff = _.indexOf(props.versionNumbers, version) - currentVersionIndex;
-      if (indexDiff === 1)
-        versionStyle = 'warning';
-      else
-        versionStyle = 'danger';
+      if (indexDiff === 1) versionStyle = 'warning';
+      else versionStyle = 'danger';
     }
   }
   const searchParams = new URLSearchParams(window.location.search).toString();
@@ -86,29 +89,26 @@ function Item(props) {
     <React.Fragment>
       <TableRow>
         <TableCell>
-          <Link to={instancePath} component={RouterLink}>{instanceName}</Link>
+          <Link to={instancePath} component={RouterLink}>
+            {instanceName}
+          </Link>
         </TableCell>
-        <TableCell>
-          {props.instance.ip}
-        </TableCell>
-        <TableCell>
-          {instanceLabel}
-        </TableCell>
+        <TableCell>{props.instance.ip}</TableCell>
+        <TableCell>{instanceLabel}</TableCell>
         <TableCell>
           <span className={'box--' + versionStyle}>{version}</span>
         </TableCell>
         <TableCell>
           <Box display="flex" justifyContent="space-between">
+            <Box>{makeLocaleTime(date)}</Box>
             <Box>
-              {makeLocaleTime(date)}
-            </Box>
-            <Box>
-              <InlineIcon icon={ props.selected ? chevronUp : chevronDown }
+              <InlineIcon
+                icon={props.selected ? chevronUp : chevronDown}
                 onClick={onToggle}
                 height="25"
                 width="25"
                 color="#808080"
-                style={{cursor: 'pointer'}}
+                style={{ cursor: 'pointer' }}
               />
             </Box>
           </Box>
@@ -116,10 +116,7 @@ function Item(props) {
       </TableRow>
       <TableRow>
         <TableCell padding="none" colSpan={5}>
-          <Collapse
-            hidden={!props.selected}
-            in={props.selected}
-          >
+          <Collapse hidden={!props.selected} in={props.selected}>
             <StatusHistoryContainer statusHistory={statusHistory} />
           </Collapse>
         </TableCell>

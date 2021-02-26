@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function SearchInput(props: {[key: string]: any}) {
+export default function SearchInput(props: { [key: string]: any }) {
   const classes = useStyles();
 
   return (

@@ -10,11 +10,11 @@ import { applicationsStore } from '../../stores/Stores';
 import MoreMenu from '../Common/MoreMenu';
 import ChannelAvatar from './ChannelAvatar';
 
-const useStyles = makeStyles(({
+const useStyles = makeStyles({
   root: {
-    margin: '0px'
-  }
-}));
+    margin: '0px',
+  },
+});
 
 function Item(props: {
   channel: Channel;
@@ -25,8 +25,14 @@ function Item(props: {
 }) {
   const theme = useTheme();
   const classes = useStyles();
-  const {channel, packages, handleUpdateChannel,
-         showArch = true, isAppView = false, ...others} = props;
+  const {
+    channel,
+    packages,
+    handleUpdateChannel,
+    showArch = true,
+    isAppView = false,
+    ...others
+  } = props;
   const name = channel.name;
   const version = channel.package ? cleanSemverVersion(channel.package.version) : 'No package';
 
@@ -60,54 +66,57 @@ function Item(props: {
     const date = channel.package ? new Date(channel.package.created_ts) : null;
     return (
       <Box display="flex" ml={1}>
-        <Box>
-          {text}
-        </Box>
-        {date &&
+        <Box>{text}</Box>
+        {date && (
           <Box pl={2}>
             <Box display="flex">
               <Box>
                 <Tooltip title="Release date">
-                  <ScheduleIcon fontSize="small"/>
+                  <ScheduleIcon fontSize="small" />
                 </Tooltip>
               </Box>
-              <Box pl={1}>
-                {date.toLocaleDateString()}
-              </Box>
+              <Box pl={1}>{date.toLocaleDateString()}</Box>
             </Box>
           </Box>
-        }
-      </Box>);
+        )}
+      </Box>
+    );
   }
   return (
     <ListItem component="div" {...others}>
       <Grid container spacing={2}>
         <Grid item>
-          {isAppView ?
-            <ChannelAvatar color={channel.color} size={theme.spacing(1)}/> :
+          {isAppView ? (
+            <ChannelAvatar color={channel.color} size={theme.spacing(1)} />
+          ) : (
             <ChannelAvatar color={channel.color}>{name[0]}</ChannelAvatar>
-          }
+          )}
         </Grid>
         <Grid item>
           <ListItemText
-            primary={<Box display="flex" alignItems="center">
-              <Box pl={1} display="inline-block">{name}</Box>
-            </Box>}
+            primary={
+              <Box display="flex" alignItems="center">
+                <Box pl={1} display="inline-block">
+                  {name}
+                </Box>
+              </Box>
+            }
             secondary={getSecondaryText()}
             className={classes.root}
             disableTypography
           />
         </Grid>
       </Grid>
-      {props.handleUpdateChannel &&
+      {props.handleUpdateChannel && (
         <ListItemSecondaryAction>
-          <MoreMenu options={[
-            {label: 'Edit', action: updateChannel},
-            {label: 'Delete', action: deleteChannel}
-          ]}
+          <MoreMenu
+            options={[
+              { label: 'Edit', action: updateChannel },
+              { label: 'Delete', action: deleteChannel },
+            ]}
           />
         </ListItemSecondaryAction>
-      }
+      )}
     </ListItem>
   );
 }

@@ -4,7 +4,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import React from 'react';
 
-export default function MoreMenu(props: {options: {label: string; action: () => void}[]}) {
+export default function MoreMenu(props: { options: { label: string; action: () => void }[] }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const options = props.options || [];
 
@@ -18,7 +18,8 @@ export default function MoreMenu(props: {options: {label: string; action: () => 
 
   return (
     <div>
-      <IconButton edge="end"
+      <IconButton
+        edge="end"
         aria-controls="simple-menu"
         aria-haspopup="true"
         onClick={handleClick}
@@ -33,7 +34,7 @@ export default function MoreMenu(props: {options: {label: string; action: () => 
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        {options.map(({label, action}, i) =>
+        {options.map(({ label, action }, i) => (
           <MenuItem
             key={i}
             onClick={() => {
@@ -44,7 +45,7 @@ export default function MoreMenu(props: {options: {label: string; action: () => 
           >
             {label}
           </MenuItem>
-        )}
+        ))}
       </Menu>
     </div>
   );

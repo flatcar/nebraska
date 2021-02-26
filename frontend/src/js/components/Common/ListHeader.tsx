@@ -10,7 +10,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function ListHeader(props: {title: string; actions?: React.ReactElement[]}) {
+export default function ListHeader(props: { title: string; actions?: React.ReactElement[] }) {
   const classes = useStyles();
   const actions = props.actions || [];
   return (
@@ -20,20 +20,19 @@ export default function ListHeader(props: {title: string; actions?: React.ReactE
       justify="space-between"
       className={classes.sectionHeader}
     >
-      {props.title &&
-      <Grid item>
-        <Box p={0.5}>
-          <Typography variant="h4">{props.title}</Typography>
-        </Box>
-      </Grid>
-      }
+      {props.title && (
+        <Grid item>
+          <Box p={0.5}>
+            <Typography variant="h4">{props.title}</Typography>
+          </Box>
+        </Grid>
+      )}
       {actions &&
-              actions.map((action, i: number) =>
-                <Grid item key={i}>
-                  {action}
-                </Grid>
-              )
-      }
+        actions.map((action, i: number) => (
+          <Grid item key={i}>
+            {action}
+          </Grid>
+        ))}
     </Grid>
   );
 }

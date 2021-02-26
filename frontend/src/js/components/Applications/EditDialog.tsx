@@ -12,20 +12,18 @@ import * as Yup from 'yup';
 import { Application } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 
-function EditDialog(props: {
-  create?: any;
-  data: any;
-  show: boolean;
-  onHide: () => void;
-}) {
+function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () => void }) {
   const isCreation = Boolean(props.create);
 
-  function handleSubmit(values: {[key: string]: any}, actions: {
-    [key: string]: any;
-  }) {
+  function handleSubmit(
+    values: { [key: string]: any },
+    actions: {
+      [key: string]: any;
+    }
+  ) {
     var data = {
       name: values.name,
-      description: values.description
+      description: values.description,
     };
 
     let appFunctionCall;
@@ -45,7 +43,9 @@ function EditDialog(props: {
       })
       .catch(() => {
         actions.setSubmitting(false);
-        actions.setStatus({statusMessage: 'Something went wrong. Check the form or try again later...'});
+        actions.setStatus({
+          statusMessage: 'Something went wrong. Check the form or try again later...',
+        });
       });
   }
 
@@ -54,15 +54,13 @@ function EditDialog(props: {
   }
 
   //@ts-ignore
-  function renderForm({status, isSubmitting}) {
+  function renderForm({ status, isSubmitting }) {
     return (
       <Form data-testid="app-edit-form">
         <DialogContent>
-          {status && status.statusMessage &&
-          <DialogContentText color="error">
-            {status.statusMessage}
-          </DialogContentText>
-          }
+          {status && status.statusMessage && (
+            <DialogContentText color="error">{status.statusMessage}</DialogContentText>
+          )}
           <Field
             name="name"
             component={TextField}
@@ -80,7 +78,7 @@ function EditDialog(props: {
             type="text"
             fullWidth
           />
-          {isCreation &&
+          {isCreation && (
             <Field
               type="text"
               name="appToClone"
@@ -93,7 +91,9 @@ function EditDialog(props: {
                 shrink: true,
               }}
             >
-              <MenuItem value="none" key="none">Do not copy</MenuItem>
+              <MenuItem value="none" key="none">
+                Do not copy
+              </MenuItem>
               {props.data.applications &&
                 props.data.applications.map((application: Application, i: number) => {
                   return (
@@ -101,33 +101,32 @@ function EditDialog(props: {
                       {application.name}
                     </MenuItem>
                   );
-                })
-              }
+                })}
             </Field>
-          }
+          )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">Cancel</Button>
-          <Button type="submit" disabled={isSubmitting} color="primary">{isCreation ? 'Add' : 'Update'}</Button>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isSubmitting} color="primary">
+            {isCreation ? 'Add' : 'Update'}
+          </Button>
         </DialogActions>
       </Form>
     );
   }
 
   const validation = Yup.object().shape({
-    name: Yup.string()
-      .max(50, 'Must be less than 50 characters')
-      .required('Required'),
-    description: Yup.string()
-      .max(250, 'Must be less than 250 characters'),
+    name: Yup.string().max(50, 'Must be less than 50 characters').required('Required'),
+    description: Yup.string().max(250, 'Must be less than 250 characters'),
   });
 
   return (
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
       <DialogTitle>{isCreation ? 'Add Application' : 'Update Application'}</DialogTitle>
       <Formik
-        initialValues={{ name: props.data.name,
-                         description: props.data.description }}
+        initialValues={{ name: props.data.name, description: props.data.description }}
         onSubmit={handleSubmit}
         validationSchema={validation}
         //@todo add better types for renderForm

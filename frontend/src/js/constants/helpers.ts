@@ -23,14 +23,15 @@ export const ERROR_STATUS_CODE = 3;
 
 const colors = makeColors();
 export const timeIntervalsDefault = [
-  {displayValue: '30 days', queryValue: '30d', disabled: false},
-  {displayValue: '7 days', queryValue: '7d', disabled: false},
-  {displayValue: '1 day', queryValue: '1d', disabled: false},
-  {displayValue: '1 hour', queryValue: '1h', disabled: false}
+  { displayValue: '30 days', queryValue: '30d', disabled: false },
+  { displayValue: '7 days', queryValue: '7d', disabled: false },
+  { displayValue: '1 day', queryValue: '1d', disabled: false },
+  { displayValue: '1 hour', queryValue: '1h', disabled: false },
 ];
 
-export const defaultTimeInterval = timeIntervalsDefault
-  .filter((interval) => interval.queryValue === '1d')[0];
+export const defaultTimeInterval = timeIntervalsDefault.filter(
+  interval => interval.queryValue === '1d'
+)[0];
 
 function makeColors() {
   const colors: string[] = [];
@@ -62,10 +63,11 @@ export function getMinuteDifference(date1: number, date2: number) {
   return (date1 - date2) / 1000 / 60;
 }
 
-export function makeLocaleTime(timestamp: string |
-  Date | number, opts: {useDate?: boolean;
-    showTime?: boolean; dateFormat?: Intl.DateTimeFormatOptions;} = {}) {
-  const {useDate = true, showTime = true, dateFormat = {}} = opts;
+export function makeLocaleTime(
+  timestamp: string | Date | number,
+  opts: { useDate?: boolean; showTime?: boolean; dateFormat?: Intl.DateTimeFormatOptions } = {}
+) {
+  const { useDate = true, showTime = true, dateFormat = {} } = opts;
   const date = new Date(timestamp);
   const formattedDate = date.toLocaleDateString('default', dateFormat);
   const timeFormat = date.toLocaleString('default', { hour: '2-digit', minute: '2-digit' });
@@ -79,9 +81,12 @@ export function makeLocaleTime(timestamp: string |
   return timeFormat;
 }
 
-export function makeColorsForVersions(theme: Theme,
-                                      versions: string[], channel: Channel | null = null) {
-  const versionColors:{[key: string]: string} = {};
+export function makeColorsForVersions(
+  theme: Theme,
+  versions: string[],
+  channel: Channel | null = null
+) {
+  const versionColors: { [key: string]: string } = {};
   let colorIndex = 0;
   let latestVersion = null;
 
@@ -104,17 +109,19 @@ export function makeColorsForVersions(theme: Theme,
 }
 
 export function getInstanceStatus(statusID: number, version?: string) {
-  const status: {[x: number]: {
-    type: string;
-    className: string;
-    spinning: boolean;
-    icon: string;
-    description: string;
-    status: string;
-    explanation: string;
-    textColor?: string;
-    bgColor?: string;
-  };} = {
+  const status: {
+    [x: number]: {
+      type: string;
+      className: string;
+      spinning: boolean;
+      icon: string;
+      description: string;
+      status: string;
+      explanation: string;
+      textColor?: string;
+      bgColor?: string;
+    };
+  } = {
     1: {
       type: 'InstanceStatusUndefined',
       className: '',
@@ -122,7 +129,7 @@ export function getInstanceStatus(statusID: number, version?: string) {
       icon: '',
       description: '',
       status: 'Undefined',
-      explanation: ''
+      explanation: '',
     },
     2: {
       type: 'InstanceStatusUpdateGranted',
@@ -133,7 +140,10 @@ export function getInstanceStatus(statusID: number, version?: string) {
       textColor: '#061751',
       bgColor: 'rgba(6, 23, 81, 0.1)',
       status: 'Granted',
-      explanation: 'The instance has received an update package -version ' + version + '- and the update process is about to start'
+      explanation:
+        'The instance has received an update package -version ' +
+        version +
+        '- and the update process is about to start',
     },
     3: {
       type: 'InstanceStatusError',
@@ -144,7 +154,7 @@ export function getInstanceStatus(statusID: number, version?: string) {
       bgColor: 'rgba(244, 67, 54, 0.1)',
       textColor: '#F44336',
       status: 'Error',
-      explanation: 'The instance reported an error while updating to version ' + version
+      explanation: 'The instance reported an error while updating to version ' + version,
     },
     4: {
       type: 'InstanceStatusComplete',
@@ -155,7 +165,8 @@ export function getInstanceStatus(statusID: number, version?: string) {
       status: 'Completed',
       textColor: '#26B640',
       bgColor: 'rgba(38, 182, 64, 0.1)',
-      explanation: 'The instance has been updated successfully and is now running version ' + version
+      explanation:
+        'The instance has been updated successfully and is now running version ' + version,
     },
     5: {
       type: 'InstanceStatusInstalled',
@@ -164,7 +175,10 @@ export function getInstanceStatus(statusID: number, version?: string) {
       icon: '',
       description: 'Updating: installed',
       status: 'Installed',
-      explanation: 'The instance has installed the update package -version ' + version + '- but it isn’t using it yet'
+      explanation:
+        'The instance has installed the update package -version ' +
+        version +
+        '- but it isn’t using it yet',
     },
     6: {
       type: 'InstanceStatusDownloaded',
@@ -175,7 +189,10 @@ export function getInstanceStatus(statusID: number, version?: string) {
       bgColor: 'rgba(44, 152, 240, 0.1)',
       textColor: '#2C98F0',
       status: 'Downloaded',
-      explanation: 'The instance has downloaded the update package -version ' + version + '- and will install it now'
+      explanation:
+        'The instance has downloaded the update package -version ' +
+        version +
+        '- and will install it now',
     },
     7: {
       type: 'InstanceStatusDownloading',
@@ -186,7 +203,8 @@ export function getInstanceStatus(statusID: number, version?: string) {
       textColor: '#808080',
       bgColor: 'rgba(128, 128, 128, 0.1)',
       status: 'Downloading',
-      explanation: 'The instance has just started downloading the update package -version ' + version + '-'
+      explanation:
+        'The instance has just started downloading the update package -version ' + version + '-',
     },
     8: {
       type: 'InstanceStatusOnHold',
@@ -195,8 +213,9 @@ export function getInstanceStatus(statusID: number, version?: string) {
       icon: '',
       description: 'Waiting...',
       status: 'On hold',
-      explanation: 'There was an update pending for the instance but it was put on hold because of the rollout policy'
-    }
+      explanation:
+        'There was an update pending for the instance but it was put on hold because of the rollout policy',
+    },
   };
 
   const statusDetails = statusID ? status[statusID] : status[1];
@@ -219,14 +238,13 @@ export function useGroupVersionBreakdown(group: Group) {
       .catch(err => {
         console.error('Error getting version breakdown for group', group.id, '\nError:', err);
       });
-  },
-  [group]);
+  }, [group]);
 
   return versionBreakdown;
 }
 
 // Keep in sync with https://github.com/flatcar-linux/update_engine/blob/flatcar-master/src/update_engine/action_processor.h#L25
-const actionCodes: {[x: string]: string} = {
+const actionCodes: { [x: string]: string } = {
   '1': 'Error',
   '2': 'OmahaRequestError',
   '3': 'OmahaResponseHandlerError',
@@ -272,14 +290,14 @@ const actionCodes: {[x: string]: string} = {
   '43': 'NewPCRPolicyHTTPError',
   '44': 'RollbackError',
   '100': 'DownloadIncomplete',
-  '2000': 'OmahaRequestHTTPResponseBase'
+  '2000': 'OmahaRequestHTTPResponseBase',
 };
 
-const flagsCodes: {[x: number]: string} = {
+const flagsCodes: { [x: number]: string } = {
   [Math.pow(2, 31)]: 'DevModeFlag',
   [Math.pow(2, 30)]: 'ResumedFlag',
   [Math.pow(2, 29)]: 'TestImageFlag',
-  [Math.pow(2, 28)]: 'TestOmahaUrlFlag'
+  [Math.pow(2, 28)]: 'TestOmahaUrlFlag',
 };
 
 export function getErrorAndFlags(errorCode: number) {

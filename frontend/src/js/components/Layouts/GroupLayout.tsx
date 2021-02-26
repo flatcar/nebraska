@@ -8,9 +8,10 @@ import EditDialog from '../Groups/EditDialog';
 import GroupExtended from '../Groups/ItemExtended';
 
 function GroupLayout(props: {}) {
-  const {appID, groupID} = useParams<{appID: string; groupID: string}>();
-  const [applications, setApplications] =
-      React.useState(applicationsStore.getCachedApplications() || []);
+  const { appID, groupID } = useParams<{ appID: string; groupID: string }>();
+  const [applications, setApplications] = React.useState(
+    applicationsStore.getCachedApplications() || []
+  );
   const [updateGroupModalVisible, setUpdateGroupModalVisible] = React.useState(false);
 
   React.useEffect(() => {
@@ -19,8 +20,7 @@ function GroupLayout(props: {}) {
     return () => {
       applicationsStore.removeChangeListener(onChange);
     };
-  },
-  []);
+  }, []);
 
   function onChange() {
     setApplications(applicationsStore.getCachedApplications() || []);
@@ -37,7 +37,7 @@ function GroupLayout(props: {}) {
   let appName = '';
   let groupName = '';
 
-  const application = _.findWhere(applications, {id: appID});
+  const application = _.findWhere(applications, { id: appID });
   let groups: Group[] = [];
   let channels: Channel[] = [];
 
@@ -45,13 +45,13 @@ function GroupLayout(props: {}) {
     appName = application.name;
     groups = application.groups;
     channels = application.channels ? application.channels : [];
-    const group = _.findWhere(application.groups, {id: groupID});
+    const group = _.findWhere(application.groups, { id: groupID });
     if (group) {
       groupName = group.name;
     }
   }
 
-  const groupToUpdate = _.findWhere(groups, {id: groupID});
+  const groupToUpdate = _.findWhere(groups, { id: groupID });
 
   return (
     <div>
@@ -60,21 +60,17 @@ function GroupLayout(props: {}) {
         breadcrumbs={[
           {
             path: '/apps',
-            label: 'Applications'
+            label: 'Applications',
           },
           {
             path: `/apps/${appID}`,
-            label: appName
-          }
+            label: appName,
+          },
         ]}
       />
-      <GroupExtended
-        appID={appID}
-        groupID={groupID}
-        handleUpdateGroup={openUpdateGroupModal}
-      />
+      <GroupExtended appID={appID} groupID={groupID} handleUpdateGroup={openUpdateGroupModal} />
       <EditDialog
-        data={{group: groupToUpdate, channels: channels}}
+        data={{ group: groupToUpdate, channels: channels }}
         show={updateGroupModalVisible}
         onHide={closeUpdateGroupModal}
       />

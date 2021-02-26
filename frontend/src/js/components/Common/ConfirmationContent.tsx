@@ -1,13 +1,15 @@
 import React from 'react';
 import { applicationsStore } from '../../stores/Stores';
 
-function ConfirmationContent(props: {data: {
-  appID: string;
-  groupID?: string;
-  channelID?: string;
-  packageID?: string;
-  type: string;
-};}) {
+function ConfirmationContent(props: {
+  data: {
+    appID: string;
+    groupID?: string;
+    channelID?: string;
+    packageID?: string;
+    type: string;
+  };
+}) {
   function processClick() {
     if (props.data.type === 'application') {
       applicationsStore.deleteApplication(props.data.appID);
@@ -24,8 +26,12 @@ function ConfirmationContent(props: {data: {
     <div className="popover-content" {...props}>
       Are you sure ... ?
       <p className="button-group">
-        <button type="button" className="confirm-dialog-btn-abord">No</button>
-        <button type="button" className="confirm-dialog-btn-confirm" onClick={processClick}>Yes</button>
+        <button type="button" className="confirm-dialog-btn-abord">
+          No
+        </button>
+        <button type="button" className="confirm-dialog-btn-confirm" onClick={processClick}>
+          Yes
+        </button>
       </p>
     </div>
   );

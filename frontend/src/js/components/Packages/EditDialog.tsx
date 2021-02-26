@@ -20,7 +20,7 @@ import _ from 'underscore';
 import * as Yup from 'yup';
 import { Channel, Package } from '../../api/apiDataTypes';
 import { ARCHES } from '../../constants/helpers';
-import {REGEX_SEMVER} from '../../constants/regex';
+import { REGEX_SEMVER } from '../../constants/regex';
 import { applicationsStore } from '../../stores/Stores';
 
 const useStyles = makeStyles(theme => ({
@@ -29,16 +29,12 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function EditDialog(props: {
-  data: any;
-  show: boolean;
-  create?: boolean;
-  onHide: () => void;
-}) {
+function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide: () => void }) {
   const classes = useStyles();
   const [flatcarType, otherType] = [1, 4];
-  const [packageType, setPackageType] =
-    React.useState(props.data.channel ? props.data.channel.type : flatcarType);
+  const [packageType, setPackageType] = React.useState(
+    props.data.channel ? props.data.channel.type : flatcarType
+  );
   const [arch, setArch] = React.useState(props.data.channel ? props.data.channel.arch : 1);
   const isCreation = Boolean(props.create);
 
@@ -54,10 +50,12 @@ function EditDialog(props: {
     const channels = props.data.channels.filter((channel: Channel) => {
       return channelIds.includes(channel.id);
     });
-    return channels.map((channelObj: Channel) => { return channelObj.name; });
+    return channels.map((channelObj: Channel) => {
+      return channelObj.name;
+    });
   }
 
-  function handlePackageTypeChange(event:React.ChangeEvent<{ name?: string; value: unknown }>) {
+  function handlePackageTypeChange(event: React.ChangeEvent<{ name?: string; value: unknown }>) {
     setPackageType(event.target.value as number);
   }
 
@@ -76,13 +74,13 @@ function EditDialog(props: {
       type: packageType,
       size: values.size.toString(),
       hash: values.hash,
-      application_id: isCreation && props.data.appID ?
-        props.data.appID : props.data.channel.application_id,
+      application_id:
+        isCreation && props.data.appID ? props.data.appID : props.data.channel.application_id,
       channels_blacklist: values.channelsBlacklist ? values.channelsBlacklist : [],
     };
 
     if (isFlatcarType(packageType)) {
-      data.flatcar_action = {sha256: values.flatcarHash};
+      data.flatcar_action = { sha256: values.flatcarHash };
     }
 
     let packageFunctionCall;
@@ -101,7 +99,8 @@ function EditDialog(props: {
       .catch(() => {
         actions.setSubmitting(false);
         actions.setStatus({
-          statusMessage: 'Something went wrong, or the version you are trying to add already exists for the arch and package type. Check the form or try again later...'
+          statusMessage:
+            'Something went wrong, or the version you are trying to add already exists for the arch and package type. Check the form or try again later...',
         });
       });
   }
@@ -112,32 +111,25 @@ function EditDialog(props: {
 
   //@todo add better types
   //@ts-ignore
-  function renderForm({values, status, isSubmitting}) {
+  function renderForm({ values, status, isSubmitting }) {
     const channels = props.data.channels ? props.data.channels : [];
     return (
       <Form data-testid="package-edit-form">
         <DialogContent>
-          {status && status.statusMessage &&
-          <DialogContentText color="error">
-            {status.statusMessage}
-          </DialogContentText>
-          }
-          <Grid
-            container
-            justify="space-between"
-          >
+          {status && status.statusMessage && (
+            <DialogContentText color="error">{status.statusMessage}</DialogContentText>
+          )}
+          <Grid container justify="space-between">
             <Grid item>
-              <FormControl
-                margin="dense"
-                className={classes.topSelect}
-              >
+              <FormControl margin="dense" className={classes.topSelect}>
                 <InputLabel>Type</InputLabel>
-                <MuiSelect
-                  value={packageType}
-                  onChange={handlePackageTypeChange}
-                >
-                  <MenuItem value={otherType} key="other">Other</MenuItem>
-                  <MenuItem value={flatcarType} key="flatcar">Flatcar</MenuItem>
+                <MuiSelect value={packageType} onChange={handlePackageTypeChange}>
+                  <MenuItem value={otherType} key="other">
+                    Other
+                  </MenuItem>
+                  <MenuItem value={flatcarType} key="flatcar">
+                    Flatcar
+                  </MenuItem>
                 </MuiSelect>
               </FormControl>
             </Grid>
@@ -149,13 +141,14 @@ function EditDialog(props: {
                 disabled={!isCreation}
               >
                 <InputLabel>Architecture</InputLabel>
-                <MuiSelect
-                  value={arch}
-                  onChange={handleArchChange}
-                >
+                <MuiSelect value={arch} onChange={handleArchChange}>
                   {Object.keys(ARCHES).map((key: string) => {
                     const archName = ARCHES[parseInt(key)];
-                    return <MenuItem value={parseInt(key)} key={key}>{archName}</MenuItem>;
+                    return (
+                      <MenuItem value={parseInt(key)} key={key}>
+                        {archName}
+                      </MenuItem>
+                    );
                   })}
                 </MuiSelect>
                 <FormHelperText>Cannot be changed once created.</FormHelperText>
@@ -189,10 +182,7 @@ function EditDialog(props: {
             required
             fullWidth
           />
-          <Grid container
-            justify="space-between"
-            spacing={4}
-          >
+          <Grid container justify="space-between" spacing={4}>
             <Grid item xs={6}>
               <Field
                 name="version"
@@ -228,18 +218,18 @@ function EditDialog(props: {
             helperText="Tip: cat update.gz | openssl dgst -sha1 -binary | base64"
             fullWidth
           />
-          {isFlatcarType(packageType) &&
-          <Field
-            name="flatcarHash"
-            component={TextField}
-            margin="dense"
-            label="Flatcar Action SHA256"
-            type="text"
-            required
-            helperText="Tip: cat update.gz | openssl dgst -sha256 -binary | base64"
-            fullWidth
-          />
-          }
+          {isFlatcarType(packageType) && (
+            <Field
+              name="flatcarHash"
+              component={TextField}
+              margin="dense"
+              label="Flatcar Action SHA256"
+              type="text"
+              required
+              helperText="Tip: cat update.gz | openssl dgst -sha256 -binary | base64"
+              fullWidth
+            />
+          )}
           <FormControl margin="dense" fullWidth>
             <InputLabel>Channels Blacklist</InputLabel>
             <Field
@@ -248,30 +238,40 @@ function EditDialog(props: {
               multiple
               renderValue={(selected: string[]) => getChannelsNames(selected).join(' / ')}
             >
-              {channels.filter((channelItem: Channel) =>
-                channelItem.arch === arch).map((packageItem: Channel) => {
-                const label = packageItem.name;
-                const isDisabled = !isCreation && packageItem.package &&
-                  props.data.channel.version === packageItem.package.version;
+              {channels
+                .filter((channelItem: Channel) => channelItem.arch === arch)
+                .map((packageItem: Channel) => {
+                  const label = packageItem.name;
+                  const isDisabled =
+                    !isCreation &&
+                    packageItem.package &&
+                    props.data.channel.version === packageItem.package.version;
 
-                return (
-                  <MenuItem value={packageItem.id} disabled={isDisabled} key={packageItem.id}>
-                    <Checkbox checked={values.channelsBlacklist.indexOf(packageItem.id) > -1} />
-                    <ListItemText primary={label} secondary={ isDisabled ? 'channel pointing to this package' : null } />
-                  </MenuItem>
-                );
-              })
-              }
+                  return (
+                    <MenuItem value={packageItem.id} disabled={isDisabled} key={packageItem.id}>
+                      <Checkbox checked={values.channelsBlacklist.indexOf(packageItem.id) > -1} />
+                      <ListItemText
+                        primary={label}
+                        secondary={isDisabled ? 'channel pointing to this package' : null}
+                      />
+                    </MenuItem>
+                  );
+                })}
             </Field>
             <FormHelperText>
-              Blacklisted channels cannot point to this package.<br/>
+              Blacklisted channels cannot point to this package.
+              <br />
               Showing only channels with the same architecture ({ARCHES[arch]}).
             </FormHelperText>
           </FormControl>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">Cancel</Button>
-          <Button type="submit" disabled={isSubmitting} color="primary">{ isCreation ? 'Add' : 'Save' }</Button>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button type="submit" disabled={isSubmitting} color="primary">
+            {isCreation ? 'Add' : 'Save'}
+          </Button>
         </DialogActions>
       </Form>
     );
@@ -298,20 +298,22 @@ function EditDialog(props: {
       .required('Required'),
   });
 
-  let initialValues: {[key: string]: any} = {channelsBlacklist: []};
+  let initialValues: { [key: string]: any } = { channelsBlacklist: [] };
   if (!isCreation) {
     validation['flatcarHash'] = Yup.string()
       .max(64, 'Must be a valid hash (less than 64 characters)')
       .required('Required');
 
-    initialValues = {url: props.data.channel.url,
-                     filename: props.data.channel.filename,
-                     description: props.data.channel.description,
-                     version: props.data.channel.version,
-                     size: props.data.channel.size,
-                     hash: props.data.channel.hash,
-                     channelsBlacklist: props.data.channel.channels_blacklist
-                       ? props.data.channel.channels_blacklist : [],
+    initialValues = {
+      url: props.data.channel.url,
+      filename: props.data.channel.filename,
+      description: props.data.channel.description,
+      version: props.data.channel.version,
+      size: props.data.channel.size,
+      hash: props.data.channel.hash,
+      channelsBlacklist: props.data.channel.channels_blacklist
+        ? props.data.channel.channels_blacklist
+        : [],
     };
 
     if (isFlatcarType(packageType)) {
@@ -321,7 +323,7 @@ function EditDialog(props: {
 
   return (
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
-      <DialogTitle>{ isCreation ? 'Add Package' : 'Edit Package' }</DialogTitle>
+      <DialogTitle>{isCreation ? 'Add Package' : 'Edit Package'}</DialogTitle>
       <Formik
         initialValues={initialValues}
         onSubmit={handleSubmit}

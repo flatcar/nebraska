@@ -1,5 +1,5 @@
 import { MuiThemeProvider } from '@material-ui/core/styles';
-import {getByText, render, waitForDomChange} from '@testing-library/react';
+import { getByText, render, waitForDomChange } from '@testing-library/react';
 import jest from 'jest-mock';
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
@@ -18,24 +18,26 @@ describe('Application Item Group Item', () => {
       application_id: '123',
       id: '1',
       channel: {
-        name: 'main'
-      }
+        name: 'main',
+      },
     },
-    appName: 'FlatCar'
+    appName: 'FlatCar',
   };
   beforeEach(() => {
     API.getInstancesCount = mockAjax();
   });
   it('should render correct link and correct total instances', async () => {
-    const {container, getByText} = render(
+    const { container, getByText } = render(
       <BrowserRouter>
         <MuiThemeProvider theme={theme}>
-          <ApplicationItemGroupItem {...minProps}/>
+          <ApplicationItemGroupItem {...minProps} />
         </MuiThemeProvider>
-      </BrowserRouter>);
+      </BrowserRouter>
+    );
     await waitForDomChange(container);
-    expect(container.querySelector('a').getAttribute('href'))
-      .toBe(`/apps/${minProps.group.application_id}/groups/${minProps.group.id}`);
+    expect(container.querySelector('a').getAttribute('href')).toBe(
+      `/apps/${minProps.group.application_id}/groups/${minProps.group.id}`
+    );
     expect(getByText(`${minProps.group.name}`)).toBeInTheDocument();
     expect(getByText(minProps.group.channel.name)).toBeInTheDocument();
   });

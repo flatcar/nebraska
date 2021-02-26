@@ -1,4 +1,4 @@
-import {fireEvent, render} from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
 import ConfirmationContent from '../../components/Common/ConfirmationContent';
 import { applicationsStore } from '../../stores/Stores';
@@ -11,25 +11,17 @@ describe('Confirmation Content', () => {
   const minProps = {
     data: {
       type: 'application',
-      appID: '123'
-    }
+      appID: '123',
+    },
   };
   it('should render Confirmation Content correctly', () => {
-    const {asFragment} = render(
-      <ConfirmationContent
-        data={minProps.data}
-        channel={{}}
-      />);
+    const { asFragment } = render(<ConfirmationContent data={minProps.data} channel={{}} />);
     expect(asFragment()).toMatchSnapshot();
   });
   it('should call delete handler function on yes confirmation', () => {
     applicationsStore.deleteApplication = mockResolver;
     const deleteApp = applicationsStore.deleteApplication;
-    const {getByText} = render(
-      <ConfirmationContent
-        data={minProps.data}
-        channel = {{}}
-      />);
+    const { getByText } = render(<ConfirmationContent data={minProps.data} channel={{}} />);
     fireEvent.click(getByText('Yes'));
     expect(mockResolver).toHaveBeenCalled();
     applicationsStore.deleteApplication = deleteApp;

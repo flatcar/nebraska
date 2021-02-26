@@ -15,10 +15,10 @@ const useStyles = makeStyles({
 
 function StatusHistoryContainer(props: {
   statusHistory: {
-  status: number;
-  version?: string | undefined;
-  created_ts: string;
-  error_code: number;
+    status: number;
+    version?: string | undefined;
+    created_ts: string;
+    error_code: number;
   }[];
 }) {
   const classes = useStyles();
@@ -28,16 +28,13 @@ function StatusHistoryContainer(props: {
     entries = (
       <Empty>
         This instance hasn’t reported any events yet in the context of this application/group.
-      </Empty>);
+      </Empty>
+    );
   } else {
     entries = <StatusHistoryList entries={props.statusHistory} />;
   }
 
-  return (
-    <div className={classes.historyBox}>
-      {entries}
-    </div>
-  );
+  return <div className={classes.historyBox}>{entries}</div>;
 }
 
 export default StatusHistoryContainer;

@@ -38,14 +38,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   channelLabel: {
     marginRight: '5px',
-  }
+  },
 }));
 
 const containerIcons: {
   [key: string]: any;
 } = {
-  1: {icon: flatcarIcon, name: 'Flatcar'},
-  other: {icon: cubeOutline, name: 'Other'},
+  1: { icon: flatcarIcon, name: 'Flatcar' },
+  other: { icon: cubeOutline, name: 'Other' },
 };
 
 function Item(props: {
@@ -55,15 +55,21 @@ function Item(props: {
 }) {
   const classes = useStyles();
   const createdDate = new Date(props.packageItem.created_ts as string);
-  const date = createdDate.toLocaleString('default', {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'});
+  const date = createdDate.toLocaleString('default', {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
   const type = props.packageItem.type || 1;
-  const processedChannels = _.where(props.channels, {package_id: props.packageItem.id});
+  const processedChannels = _.where(props.channels, { package_id: props.packageItem.id });
   let blacklistInfo: string | null = null;
   const item = type in containerIcons ? containerIcons[type] : containerIcons.other;
 
   if (props.packageItem.channels_blacklist) {
     const channelsList = _.map(props.packageItem.channels_blacklist, (channel, index) => {
-      return (_.findWhere(props.channels, {id: channel}))?.name;
+      return _.findWhere(props.channels, { id: channel })?.name;
     });
     blacklistInfo = channelsList.join(' - ');
   }
@@ -71,8 +77,10 @@ function Item(props: {
   function deletePackage() {
     const confirmationText = 'Are you sure you want to delete this package?';
     if (window.confirm(confirmationText)) {
-      applicationsStore.deletePackage(props.packageItem.application_id,
-        props.packageItem.id as string);
+      applicationsStore.deletePackage(
+        props.packageItem.application_id,
+        props.packageItem.id as string
+      );
     }
   }
 
@@ -84,35 +92,45 @@ function Item(props: {
     return (
       <Grid container direction="column">
         <Grid item>
-          <Typography component="span" className={classes.subtitle}>Version:</Typography>&nbsp;
+          <Typography component="span" className={classes.subtitle}>
+            Version:
+          </Typography>
+          &nbsp;
           {`${cleanSemverVersion(props.packageItem.version)} (${ARCHES[props.packageItem.arch]})`}
         </Grid>
-        {processedChannels.length > 0 &&
+        {processedChannels.length > 0 && (
           <Grid item>
-            <Typography component="span" className={classes.subtitle}>Channels:</Typography>&nbsp;
+            <Typography component="span" className={classes.subtitle}>
+              Channels:
+            </Typography>
+            &nbsp;
             {processedChannels.map((channel, i) => {
-              return (<span className={classes.channelLabel} key={i}>
-                <ChannelAvatar color={channel.color} size="10px" />&nbsp;
-                {channel.name}
-              </span>
+              return (
+                <span className={classes.channelLabel} key={i}>
+                  <ChannelAvatar color={channel.color} size="10px" />
+                  &nbsp;
+                  {channel.name}
+                </span>
               );
-            })
-            }
+            })}
           </Grid>
-        }
+        )}
         <Grid item>
-          <Typography component="span" className={classes.subtitle}>Released:</Typography>&nbsp;
+          <Typography component="span" className={classes.subtitle}>
+            Released:
+          </Typography>
+          &nbsp;
           {date}
         </Grid>
-        {props.packageItem.channels_blacklist &&
+        {props.packageItem.channels_blacklist && (
           <Grid item>
-            {props.packageItem.channels_blacklist &&
+            {props.packageItem.channels_blacklist && (
               <Label>
-                <InlineIcon icon={cancelIcon} width="10" height="10" /> { blacklistInfo }
+                <InlineIcon icon={cancelIcon} width="10" height="10" /> {blacklistInfo}
               </Label>
-            }
+            )}
           </Grid>
-        }
+        )}
       </Grid>
     );
   }
@@ -124,15 +142,16 @@ function Item(props: {
       </ListItemIcon>
       <ListItemText
         disableTypography
-        primaryTypographyProps={{className: classes.packageName}}
+        primaryTypographyProps={{ className: classes.packageName }}
         primary={<Typography>{item.name}</Typography>}
         secondary={makeItemSecondaryInfo()}
       />
       <ListItemSecondaryAction>
-        <MoreMenu options={[
-          {label: 'Edit', action: updatePackage},
-          {label: 'Delete', action: deletePackage}
-        ]}
+        <MoreMenu
+          options={[
+            { label: 'Edit', action: updatePackage },
+            { label: 'Delete', action: deletePackage },
+          ]}
         />
       </ListItemSecondaryAction>
     </ListItem>
@@ -142,7 +161,7 @@ function Item(props: {
 Item.propTypes = {
   packageItem: PropTypes.object.isRequired,
   channels: PropTypes.array,
-  handleUpdatePackage: PropTypes.func.isRequired
+  handleUpdatePackage: PropTypes.func.isRequired,
 };
 
 export default Item;

@@ -5,12 +5,7 @@ import ApplicationsList from '../Applications/List';
 
 function MainLayout() {
   return (
-    <Grid
-      container
-      spacing={2}
-      justify="center"
-      alignItems="flex-start"
-    >
+    <Grid container spacing={2} justify="center" alignItems="flex-start">
       <Grid item xs={8}>
         <ApplicationsList />
       </Grid>

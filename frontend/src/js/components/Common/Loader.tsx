@@ -7,16 +7,15 @@ const useStyles = makeStyles({
   loaderContainer: {
     margin: '30px auto',
     textAlign: 'center',
-  }
+  },
 });
 
-export default function Loader(props: {noContainer?: boolean}) {
+export default function Loader(props: { noContainer?: boolean }) {
   const classes = useStyles();
-  const {noContainer = false, ...other} = props;
+  const { noContainer = false, ...other } = props;
   const progress = <CircularProgress {...other} />;
 
-  if (noContainer)
-    return progress;
+  if (noContainer) return progress;
 
   return (
     <Box className={classes.loaderContainer} data-testid="loader-container">

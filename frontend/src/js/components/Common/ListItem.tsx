@@ -9,16 +9,13 @@ const useStyles = makeStyles({
   },
 });
 
-export default function ListItem(props: {
-  children: React.ReactNode;
-  [key: string]: any;
-}) {
+export default function ListItem(props: { children: React.ReactNode; [key: string]: any }) {
   const classes = useStyles();
 
   return (
     <React.Fragment>
-      <Divider className={classes.outterDivider} data-testid="list-item-divider"/>
-      <MuiListItem disableGutters {...props} data-testid="list-item"/>
+      <Divider className={classes.outterDivider} data-testid="list-item-divider" />
+      <MuiListItem disableGutters {...props} data-testid="list-item" />
     </React.Fragment>
   );
 }

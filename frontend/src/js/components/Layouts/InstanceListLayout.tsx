@@ -7,14 +7,15 @@ import SectionHeader from '../Common/SectionHeader';
 import List from '../Instances/List';
 
 export default function InstanceLayout(props: {}) {
-  const {appID, groupID} = useParams<{appID: string; groupID: string}>();
-  const [application, setApplication] =
-    React.useState(applicationsStore.getCachedApplication(appID));
+  const { appID, groupID } = useParams<{ appID: string; groupID: string }>();
+  const [application, setApplication] = React.useState(
+    applicationsStore.getCachedApplication(appID)
+  );
   const [group, setGroup] = React.useState<Group | null>(getGroupFromApplication(application));
 
   function onChange() {
     const apps = applicationsStore.getCachedApplications() || [];
-    const app = apps.find(({id}) => id === appID);
+    const app = apps.find(({ id }) => id === appID);
     if (app !== application) {
       setApplication(app);
       setGroup(getGroupFromApplication(app));
@@ -25,7 +26,7 @@ export default function InstanceLayout(props: {}) {
     if (!app) {
       return null;
     }
-    const group = app.groups.find(({id}) => id === groupID);
+    const group = app.groups.find(({ id }) => id === groupID);
     return group || null;
   }
 
@@ -36,8 +37,7 @@ export default function InstanceLayout(props: {}) {
     return function cleanup() {
       applicationsStore.removeChangeListener(onChange);
     };
-  },
-  []);
+  }, []);
 
   const applicationName = application ? application.name : '…';
   const groupName = group ? group.name : '…';
@@ -49,25 +49,19 @@ export default function InstanceLayout(props: {}) {
         breadcrumbs={[
           {
             path: '/apps',
-            label: 'Applications'
+            label: 'Applications',
           },
           {
             path: `/apps/${appID}`,
-            label: applicationName
+            label: applicationName,
           },
           {
             path: `/apps/${appID}/groups/${groupID}`,
-            label: groupName
-          }
+            label: groupName,
+          },
         ]}
       />
-      { group === null ? <Loader />
-        :
-      <List
-        application={application}
-        group={group}
-      />
-      }
+      {group === null ? <Loader /> : <List application={application} group={group} />}
     </React.Fragment>
   );
 }

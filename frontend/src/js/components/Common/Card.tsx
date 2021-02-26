@@ -15,11 +15,11 @@ const useStyles = makeStyles(theme => ({
   cardTitle: {
     color: '#474747',
     fontSize: '1.8rem',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   mainLink: {
     fontSize: '1.8rem',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   featureLabel: {
     color: theme.palette.text.secondary,
@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
   },
   idLabel: {
     color: theme.palette.text.secondary,
-    fontSize: '1rem'
+    fontSize: '1rem',
   },
   innerDivider: {
     marginLeft: '1em',
@@ -40,36 +40,42 @@ const useStyles = makeStyles(theme => ({
   },
   label: props => ({
     fontSize: '1rem',
-    ...props
+    ...props,
   }),
 }));
 
-export function CardFeatureLabel(props: {children: React.ReactNode}) {
+export function CardFeatureLabel(props: { children: React.ReactNode }) {
   const classes = useStyles();
   return (
-    <Typography component='span' className={classes.featureLabel}>{props.children}</Typography>
+    <Typography component="span" className={classes.featureLabel}>
+      {props.children}
+    </Typography>
   );
 }
 
-export function CardDescriptionLabel(props: {children: React.ReactNode}) {
+export function CardDescriptionLabel(props: { children: React.ReactNode }) {
   const classes = useStyles();
   return (
     <Box mt={2}>
-      <Typography component='span' className={classes.descriptionLabel}>{props.children}</Typography>
+      <Typography component="span" className={classes.descriptionLabel}>
+        {props.children}
+      </Typography>
     </Box>
   );
 }
 
-export function CardLabel(props: {children: React.ReactNode; labelStyle?: object}) {
-  const {labelStyle = {}} = props;
+export function CardLabel(props: { children: React.ReactNode; labelStyle?: object }) {
+  const { labelStyle = {} } = props;
   const classes = useStyles(labelStyle);
   return (
-    <Typography component='span' className={classes.label}>{props.children}</Typography>
+    <Typography component="span" className={classes.label}>
+      {props.children}
+    </Typography>
   );
 }
 
 interface CardHeaderProps {
-  cardMainLinkPath?: string | {pathname: string};
+  cardMainLinkPath?: string | { pathname: string };
   cardMainLinkLabel?: string;
   cardTrack?: string;
   cardId?: string;
@@ -82,41 +88,27 @@ export function CardHeader(props: CardHeaderProps) {
   const theme = useTheme();
   return (
     <React.Fragment>
-      <Grid
-        container
-        className={classes.gridHeader}
-        justify="space-between"
-      >
-        <Grid item
-          container
-          spacing={1}
-          alignItems="center"
-          justify="space-between"
-        >
+      <Grid container className={classes.gridHeader} justify="space-between">
+        <Grid item container spacing={1} alignItems="center" justify="space-between">
           <Grid item xs={12}>
-            { props.cardMainLinkPath ? (
+            {props.cardMainLinkPath ? (
               <Link component={RouterLink} to={props.cardMainLinkPath} className={classes.mainLink}>
                 {props.cardMainLinkLabel}
               </Link>
             ) : (
-              <Typography className={classes.cardTitle}>
-                {props.cardMainLinkLabel}
-              </Typography>
-            )
-            }
+              <Typography className={classes.cardTitle}>{props.cardMainLinkLabel}</Typography>
+            )}
           </Grid>
           <Grid item xs={12}>
             <Box bgcolor={theme.palette.lightSilverShade} px={1} display="inline-block">
-              <Typography className={classes.idLabel} arial-label="group-id" noWrap>{props.cardTrack ? props.cardTrack : props.cardId}</Typography>
+              <Typography className={classes.idLabel} arial-label="group-id" noWrap>
+                {props.cardTrack ? props.cardTrack : props.cardId}
+              </Typography>
             </Box>
             <CardDescriptionLabel>{props.cardDescription}</CardDescriptionLabel>
           </Grid>
         </Grid>
-        {props.children &&
-          <Grid item>
-            {props.children}
-          </Grid>
-        }
+        {props.children && <Grid item>{props.children}</Grid>}
       </Grid>
       <Divider light className={classes.innerDivider} />
     </React.Fragment>
