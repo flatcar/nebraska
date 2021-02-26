@@ -27,7 +27,7 @@
     "@types/recharts": "^1.8.19",
     "@types/semver": "^7.3.4",
     "@types/yup": "^0.29.11",
-    "dompurify": "^2.0.12",
+    "dompurify": "^2.2.6",
     "downshift": "^3.4.7",
     "formik": "^2.1.5",
     "formik-material-ui": "^0.0.20",
