@@ -2,6 +2,7 @@ package api
 
 import (
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -206,9 +207,31 @@ func TestGetVersionCountTimeline(t *testing.T) {
 	_ = a.grantUpdate(instance, version)
 	_ = a.updateInstanceStatus(instanceID, tApp.ID, InstanceStatusComplete)
 
+	var versionTimelineMap map[time.Time](VersionCountMap)
+	var isCache bool
+
 	// get VersionCountTimeline from 1 hr before now
-	versionTimelineMap, err := a.GetGroupVersionCountTimeline(tGroup.ID, "1h")
+	_, isCache, err = a.GetGroupVersionCountTimeline(tGroup.ID, "1h")
 	assert.NoError(t, err)
+
+	// the first time the cache is not hit
+	assert.Equal(t, false, isCache)
+
+	time.Sleep(time.Second * 10)
+	_, isCache, err = a.GetGroupVersionCountTimeline(tGroup.ID, "1h")
+	assert.NoError(t, err)
+
+	// the cache must be hit
+	assert.Equal(t, true, isCache)
+
+	time.Sleep(time.Second * 60)
+
+	versionTimelineMap, isCache, err = a.GetGroupVersionCountTimeline(tGroup.ID, "1h")
+	assert.NoError(t, err)
+
+	// the cache must be stale as we wait for the timespan
+	assert.Equal(t, false, isCache)
+
 	var totalInstances uint64
 	for _, versionMap := range versionTimelineMap {
 		totalInstances += versionMap[version]
@@ -217,20 +240,26 @@ func TestGetVersionCountTimeline(t *testing.T) {
 	// for 1h we generate timestamp for every 15 minute so total timeline should have 5 timestamps
 	assert.Equal(t, len(versionTimelineMap), 5)
 
-	versionTimelineMap, err = a.GetGroupVersionCountTimeline(tGroup.ID, "1d")
+	versionTimelineMap, isCache, err = a.GetGroupVersionCountTimeline(tGroup.ID, "1d")
 	assert.NoError(t, err)
 	// for 1d we generate timestamp for each hour so total timeline should have 25 timestamps
 	assert.Equal(t, len(versionTimelineMap), 25)
+	// the first time the cache is not hit
+	assert.Equal(t, false, isCache)
 
-	versionTimelineMap, err = a.GetGroupVersionCountTimeline(tGroup.ID, "7d")
+	versionTimelineMap, isCache, err = a.GetGroupVersionCountTimeline(tGroup.ID, "7d")
 	assert.NoError(t, err)
 	// for 7d we generate timestamp for each day so total timeline should have 8 timestamps
 	assert.Equal(t, len(versionTimelineMap), 8)
+	// the first time the cache is not hit
+	assert.Equal(t, false, isCache)
 
-	versionTimelineMap, err = a.GetGroupVersionCountTimeline(tGroup.ID, "30d")
+	versionTimelineMap, isCache, err = a.GetGroupVersionCountTimeline(tGroup.ID, "30d")
 	assert.NoError(t, err)
 	// for 30d we generate timestamp after each 3days so total timeline should have 11 timestamps
 	assert.Equal(t, len(versionTimelineMap), 11)
+	// the first time the cache is not hit
+	assert.Equal(t, false, isCache)
 }
 
 func TestGetStatusCountTimeline(t *testing.T) {

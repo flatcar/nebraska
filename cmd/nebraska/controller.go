@@ -382,9 +382,14 @@ func (ctl *controller) getGroups(c *gin.Context) {
 func (ctl *controller) getGroupVersionCountTimeline(c *gin.Context) {
 	groupID := c.Params.ByName("group_id")
 	duration := c.Query("duration")
-	versionCountTimeline, err := ctl.api.GetGroupVersionCountTimeline(groupID, duration)
+	versionCountTimeline, isCache, err := ctl.api.GetGroupVersionCountTimeline(groupID, duration)
 	switch err {
 	case nil:
+		if isCache {
+			c.Writer.Header().Set("X-Cache", "HIT")
+		} else {
+			c.Writer.Header().Set("X-Cache", "MISS")
+		}
 		if err := json.NewEncoder(c.Writer).Encode(versionCountTimeline); err != nil {
 			logger.Error().Err(err).Msgf("getGroupVersionCountTimeline - encoding group count-timeline %v", versionCountTimeline)
 		}
