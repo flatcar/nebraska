@@ -59,9 +59,22 @@ var (
 	// itself. An alternative is to use atomic loads instead of RLock()
 	// and using atomic stores inside Lock() of a normal Mutex to serialize
 	// the writes (or use channel handshakes instead of a mutex).
-	cachedGroups     map[GroupDescriptor]string
-	cachedGroupsLock sync.RWMutex
+	cachedGroups                    map[GroupDescriptor]string
+	cachedGroupsLock                sync.RWMutex
+	cachedGroupVersionCount         = make(map[groupDurationCacheKey]groupVersionCountCache)
+	cachedGroupVersionCountLock     sync.RWMutex
+	cachedGroupVersionCountLifespan = time.Minute
 )
+
+type groupDurationCacheKey struct {
+	GroupID  string
+	Duration string
+}
+
+type groupVersionCountCache struct {
+	data     map[time.Time](VersionCountMap)
+	storedAt time.Time
+}
 
 type GroupDescriptor struct {
 	Track string
@@ -588,14 +601,27 @@ func durationParamToPostgresTimings(duration durationParam) (postgresDuration, p
 	return durationCodeToPostgresTimings(code)
 }
 
-func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (map[time.Time](VersionCountMap), error) {
+func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (map[time.Time](VersionCountMap), bool, error) {
+	cacheKey := groupDurationCacheKey{GroupID: groupID, Duration: duration}
+
+	cachedGroupVersionCountLock.RLock()
+	val, ok := cachedGroupVersionCount[cacheKey]
+	cachedGroupVersionCountLock.RUnlock()
+	if ok {
+		if time.Since(val.storedAt) < cachedGroupVersionCountLifespan {
+			logger.Debug().Str("cacheStatus", "HIT").Str("groupID", groupID).Str("duration", duration).Msg("GetGroupVersionCountTimeline")
+			return val.data, true, nil
+		}
+		logger.Debug().Str("cacheStatus", "STALE").Str("groupID", groupID).Str("duration", duration).Msg("GetGroupVersionCountTimeline")
+	}
+
 	var timelineEntry []VersionCountTimelineEntry
 	durationString, interval, err := durationParamToPostgresTimings(durationParam(duration))
 	// Get the number of instances per version until each of the time-interval
 	// divisions. This is done only for the instances that pinged the server in
 	// the last time-interval.
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 
 	instanceQuery, _, err := goqu.From("instance_application").Select(goqu.L("array_agg(DISTINCT (\"instance_id\")) \"instance_id\"")).Where(goqu.C("group_id").Eq(groupID),
@@ -603,12 +629,12 @@ func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (m
 		goqu.L(ignoreFakeInstanceCondition("instance_id"))).ToSQL()
 
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 	ids := []string{}
 	err = api.db.QueryRowx(instanceQuery).Scan(pq.Array(&ids))
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 	values := "VALUES "
 	for _, id := range ids {
@@ -643,19 +669,19 @@ func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (m
 
 	rows, err := api.db.Queryx(query, groupID)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var timelineEntryEntity VersionCountTimelineEntry
 		err := rows.StructScan(&timelineEntryEntity)
 		if err != nil {
-			return nil, err
+			return nil, false, err
 		}
 		timelineEntry = append(timelineEntry, timelineEntryEntity)
 	}
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return nil, false, err
 	}
 	allVersions := make(map[string]struct{})
 	timelineCount := make(map[time.Time]VersionCountMap)
@@ -694,7 +720,17 @@ func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (m
 		}
 	}
 
-	return timelineCount, nil
+	go func() {
+		cachedGroupVersionCountLock.Lock()
+		defer cachedGroupVersionCountLock.Unlock()
+		val, ok := cachedGroupVersionCount[cacheKey]
+		if !ok || time.Since(val.storedAt) >= cachedGroupVersionCountLifespan {
+			logger.Debug().Str("cacheStatus", "SET").Str("groupID", groupID).Str("duration", duration).Msg("GetGroupVersionCountTimeline")
+			cachedGroupVersionCount[cacheKey] = groupVersionCountCache{timelineCount, time.Now()}
+		}
+	}()
+
+	return timelineCount, false, nil
 }
 
 func (api *API) GetGroupStatusCountTimeline(groupID string, duration string) (map[time.Time](map[int](VersionCountMap)), error) {
