@@ -94,7 +94,9 @@ strategy:
 
 podAnnotations: {}
 
-podSecurityContext: {}
+podSecurityContext:
+  runAsUser: 65534
+  runAsGroup: 65534
   # fsGroup: 2000
 
 securityContext: {}
