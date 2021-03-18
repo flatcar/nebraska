@@ -116,6 +116,11 @@ ingress:
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
+  update:
+    # Create a separate ingress for the /v1/update and /flatcar paths,
+    # with it's own annotations.
+    enabled: false
+    annotations: {}
   hosts:
     - flatcar.example.com
   tls: []
