@@ -14,10 +14,12 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog"
 
 	"github.com/kinvolk/nebraska/cmd/nebraska/auth"
 	"github.com/kinvolk/nebraska/pkg/api"
 	"github.com/kinvolk/nebraska/pkg/omaha"
+	ginsessions "github.com/kinvolk/nebraska/pkg/sessions/gin"
 	"github.com/kinvolk/nebraska/pkg/syncer"
 	"github.com/kinvolk/nebraska/pkg/version"
 )
@@ -54,6 +56,13 @@ type controllerConfig struct {
 	githubAuthConfig    *auth.GithubAuthConfig
 	flatcarUpdatesURL   string
 	checkFrequency      time.Duration
+}
+
+func loggerWithUsername(l zerolog.Logger, c *gin.Context) zerolog.Logger {
+	session := ginsessions.GetSession(c)
+	username := session.Get("username")
+
+	return logger.With().Str("username", username.(string)).Logger()
 }
 
 func newController(conf *controllerConfig) (*controller, error) {
@@ -166,6 +175,8 @@ func (ctl *controller) updateUserPassword(c *gin.Context) {
 //
 
 func (ctl *controller) addApp(c *gin.Context) {
+	logger := loggerWithUsername(logger, c)
+
 	sourceAppID := c.Request.URL.Query().Get("clone_from")
 
 	app := &api.Application{}
@@ -192,19 +203,32 @@ func (ctl *controller) addApp(c *gin.Context) {
 	if err := json.NewEncoder(c.Writer).Encode(app); err != nil {
 		logger.Error().Err(err).Msgf("addApp - encoding app %v", app)
 	}
+
+	logger.Info().Msgf("addApp - successfully added app %+v", app)
 }
 
 func (ctl *controller) updateApp(c *gin.Context) {
+	logger := loggerWithUsername(logger, c)
+
+	appID := c.Params.ByName("app_id")
+
+	oldApp, err := ctl.api.GetApp(appID)
+	if err != nil {
+		logger.Error().Err(err).Str("appID", appID).Msg("updateApp - getting old app to update")
+		httpError(c, http.StatusInternalServerError)
+		return
+	}
+
 	app := &api.Application{}
 	if err := json.NewDecoder(c.Request.Body).Decode(app); err != nil {
 		logger.Error().Err(err).Msg("updateApp - decoding payload")
 		httpError(c, http.StatusBadRequest)
 		return
 	}
-	app.ID = c.Params.ByName("app_id")
+	app.ID = appID
 	app.TeamID = c.GetString("team_id")
 
-	err := ctl.api.UpdateApp(app)
+	err = ctl.api.UpdateApp(app)
 	if err != nil {
 		logger.Error().Err(err).Msgf("updatedApp - updating app %+v", app)
 		httpError(c, http.StatusBadRequest)
@@ -220,12 +244,23 @@ func (ctl *controller) updateApp(c *gin.Context) {
 	if err := json.NewEncoder(c.Writer).Encode(app); err != nil {
 		logger.Error().Err(err).Str("appID", app.ID).Msg("updateApp - encoding app")
 	}
+
+	logger.Info().Msgf("updateApp - successfully updated app %+v -> %+v", oldApp, app)
 }
 
 func (ctl *controller) deleteApp(c *gin.Context) {
+	logger := loggerWithUsername(logger, c)
+
 	appID := c.Params.ByName("app_id")
 
-	err := ctl.api.DeleteApp(appID)
+	app, err := ctl.api.GetApp(appID)
+	if err != nil {
+		logger.Error().Err(err).Str("appID", app.ID).Msg("deleteApp - getting app to delete")
+		httpError(c, http.StatusInternalServerError)
+		return
+	}
+
+	err = ctl.api.DeleteApp(appID)
 	switch err {
 	case nil:
 		c.Status(http.StatusNoContent)
@@ -233,6 +268,8 @@ func (ctl *controller) deleteApp(c *gin.Context) {
 		logger.Error().Err(err).Str("appID", appID).Msg("deleteApp")
 		httpError(c, http.StatusBadRequest)
 	}
+
+	logger.Info().Msgf("deleteApp - successfully deleted app %+v", app)
 }
 
 func (ctl *controller) getApp(c *gin.Context) {
@@ -276,6 +313,8 @@ func (ctl *controller) getApps(c *gin.Context) {
 //
 
 func (ctl *controller) addGroup(c *gin.Context) {
+	logger := loggerWithUsername(logger, c)
+
 	group := &api.Group{}
 	if err := json.NewDecoder(c.Request.Body).Decode(group); err != nil {
 		logger.Error().Err(err).Msg("addGroup - decoding payload")
@@ -300,19 +339,32 @@ func (ctl *controller) addGroup(c *gin.Context) {
 	if err := json.NewEncoder(c.Writer).Encode(group); err != nil {
 		logger.Error().Err(err).Msgf("addGroup - encoding group %v", group)
 	}
+
+	logger.Info().Msgf("addGroup - successfully added group %+v", group)
 }
 
 func (ctl *controller) updateGroup(c *gin.Context) {
+	logger := loggerWithUsername(logger, c)
+
+	groupID := c.Params.ByName("group_id")
+
+	oldGroup, err := ctl.api.GetGroup(groupID)
+	if err != nil {
+		logger.Error().Err(err).Str("groupID", groupID).Msg("updateGroup - getting old group to update")
+		httpError(c, http.StatusInternalServerError)
+		return
+	}
+
 	group := &api.Group{}
 	if err := json.NewDecoder(c.Request.Body).Decode(group); err != nil {
 		logger.Error().Err(err).Msg("updateGroup - decoding payload")
 		httpError(c, http.StatusBadRequest)
 		return
 	}
-	group.ID = c.Params.ByName("group_id")
+	group.ID = groupID
 	group.ApplicationID = c.Params.ByName("app_id")
 
-	err := ctl.api.UpdateGroup(group)
+	err = ctl.api.UpdateGroup(group)
 	if err != nil {
 		logger.Error().Err(err).Msgf("updateGroup - updating group %+v", group)
 		httpError(c, http.StatusBadRequest)
@@ -328,12 +380,23 @@ func (ctl *controller) updateGroup(c *gin.Context) {
 	if err := json.NewEncoder(c.Writer).Encode(group); err != nil {
 		logger.Error().Err(err).Msgf("updateGroup - encoding group %v", group)
 	}
+
+	logger.Info().Msgf("updateGroup - successfully updated group %+v -> %+v", oldGroup, group)
 }
 
 func (ctl *controller) deleteGroup(c *gin.Context) {
+	logger := loggerWithUsername(logger, c)
+
 	groupID := c.Params.ByName("group_id")
 
-	err := ctl.api.DeleteGroup(groupID)
+	group, err := ctl.api.GetGroup(groupID)
+	if err != nil {
+		logger.Error().Err(err).Str("groupID", group.ID).Msg("deleteGroup - fetching group to delete")
+		httpError(c, http.StatusInternalServerError)
+		return
+	}
+
+	err = ctl.api.DeleteGroup(groupID)
 	switch err {
 	case nil:
 		c.Status(http.StatusNoContent)
@@ -341,6 +404,8 @@ func (ctl *controller) deleteGroup(c *gin.Context) {
 		logger.Error().Err(err).Str("groupID", groupID).Msg("deleteGroup")
 		httpError(c, http.StatusBadRequest)
 	}
+
+	logger.Info().Msgf("deleteGroup - successfully deleted group %+v", group)
 }
 
 func (ctl *controller) getGroup(c *gin.Context) {
@@ -457,6 +522,8 @@ func (ctl *controller) getGroupVersionBreakdown(c *gin.Context) {
 //
 
 func (ctl *controller) addChannel(c *gin.Context) {
+	logger := loggerWithUsername(logger, c)
+
 	channel := &api.Channel{}
 	if err := json.NewDecoder(c.Request.Body).Decode(channel); err != nil {
 		logger.Error().Err(err).Msg("addChannel")
@@ -481,19 +548,31 @@ func (ctl *controller) addChannel(c *gin.Context) {
 	if err := json.NewEncoder(c.Writer).Encode(channel); err != nil {
 		logger.Error().Err(err).Str("channelID", channel.ID).Msg("addChannel - encoding channel")
 	}
+
+	logger.Info().Msgf("addChannel - successfully added channel %+v", channel)
 }
 
 func (ctl *controller) updateChannel(c *gin.Context) {
+	logger := loggerWithUsername(logger, c)
+
+	channelID := c.Params.ByName("channel_id")
+	oldChannel, err := ctl.api.GetChannel(channelID)
+	if err != nil {
+		logger.Error().Err(err).Str("channelID", channelID).Msg("updateChannel - getting old channel to update")
+		httpError(c, http.StatusInternalServerError)
+		return
+	}
+
 	channel := &api.Channel{}
 	if err := json.NewDecoder(c.Request.Body).Decode(channel); err != nil {
 		logger.Error().Err(err).Msg("updateChannel - decoding payload")
 		httpError(c, http.StatusBadRequest)
 		return
 	}
-	channel.ID = c.Params.ByName("channel_id")
+	channel.ID = channelID
 	channel.ApplicationID = c.Params.ByName("app_id")
 
-	err := ctl.api.UpdateChannel(channel)
+	err = ctl.api.UpdateChannel(channel)
 	if err != nil {
 		logger.Error().Err(err).Msgf("updateChannel - updating channel %+v", channel)
 		httpError(c, http.StatusBadRequest)
@@ -509,12 +588,23 @@ func (ctl *controller) updateChannel(c *gin.Context) {
 	if err := json.NewEncoder(c.Writer).Encode(channel); err != nil {
 		logger.Error().Err(err).Str("channelID", channel.ID).Msg("updateChannel - encoding channel")
 	}
+
+	logger.Info().Msgf("updateChannel - successfully updated channel %+v (PACKAGE: %+v) -> %+v (PACKAGE: %+v)", oldChannel, oldChannel.Package, channel, channel.Package)
 }
 
 func (ctl *controller) deleteChannel(c *gin.Context) {
+	logger := loggerWithUsername(logger, c)
+
 	channelID := c.Params.ByName("channel_id")
 
-	err := ctl.api.DeleteChannel(channelID)
+	channel, err := ctl.api.GetChannel(channelID)
+	if err != nil {
+		logger.Error().Err(err).Str("channelID", channel.ID).Msg("updateChannel - getting channel to be deleted")
+		httpError(c, http.StatusInternalServerError)
+		return
+	}
+
+	err = ctl.api.DeleteChannel(channelID)
 	switch err {
 	case nil:
 		c.Status(http.StatusNoContent)
@@ -522,6 +612,8 @@ func (ctl *controller) deleteChannel(c *gin.Context) {
 		logger.Error().Err(err).Str("channelID", channelID).Msg("deleteChannel")
 		httpError(c, http.StatusBadRequest)
 	}
+
+	logger.Info().Msgf("deleteChannel - successfully deleted channel %+v (PACKAGE: %+v)", channel, channel.Package)
 }
 
 func (ctl *controller) getChannel(c *gin.Context) {
@@ -565,6 +657,8 @@ func (ctl *controller) getChannels(c *gin.Context) {
 //
 
 func (ctl *controller) addPackage(c *gin.Context) {
+	logger := loggerWithUsername(logger, c)
+
 	pkg := &api.Package{}
 	if err := json.NewDecoder(c.Request.Body).Decode(pkg); err != nil {
 		logger.Error().Err(err).Msg("addPackage - decoding payload")
@@ -589,19 +683,32 @@ func (ctl *controller) addPackage(c *gin.Context) {
 	if err := json.NewEncoder(c.Writer).Encode(pkg); err != nil {
 		logger.Error().Err(err).Str("packageID", pkg.ID).Msg("addPackage - encoding package")
 	}
+
+	logger.Info().Msgf("addPackage - successfully added package %+v", pkg)
 }
 
 func (ctl *controller) updatePackage(c *gin.Context) {
+	logger := loggerWithUsername(logger, c)
+
+	packageID := c.Params.ByName("package_id")
+
+	oldPkg, err := ctl.api.GetPackage(packageID)
+	if err != nil {
+		logger.Error().Err(err).Str("packageID", packageID).Msg("updatePackage - getting old package to update")
+		httpError(c, http.StatusInternalServerError)
+		return
+	}
+
 	pkg := &api.Package{}
 	if err := json.NewDecoder(c.Request.Body).Decode(pkg); err != nil {
 		logger.Error().Err(err).Msg("updatePackage - decoding payload")
 		httpError(c, http.StatusBadRequest)
 		return
 	}
-	pkg.ID = c.Params.ByName("package_id")
+	pkg.ID = packageID
 	pkg.ApplicationID = c.Params.ByName("app_id")
 
-	err := ctl.api.UpdatePackage(pkg)
+	err = ctl.api.UpdatePackage(pkg)
 	if err != nil {
 		logger.Error().Err(err).Msgf("updatePackage - updating package %+v", pkg)
 		httpError(c, http.StatusBadRequest)
@@ -617,12 +724,23 @@ func (ctl *controller) updatePackage(c *gin.Context) {
 	if err := json.NewEncoder(c.Writer).Encode(pkg); err != nil {
 		logger.Error().Err(err).Str("packageID", pkg.ID).Msg("updatePackage - encoding package")
 	}
+
+	logger.Info().Msgf("updatePackage - successfully updated package %+v -> %+v", oldPkg, pkg)
 }
 
 func (ctl *controller) deletePackage(c *gin.Context) {
+	logger := loggerWithUsername(logger, c)
+
 	packageID := c.Params.ByName("package_id")
 
-	err := ctl.api.DeletePackage(packageID)
+	pkg, err := ctl.api.GetPackage(packageID)
+	if err != nil {
+		logger.Error().Err(err).Str("packageID", pkg.ID).Msg("addPackage - getting package to delete")
+		httpError(c, http.StatusInternalServerError)
+		return
+	}
+
+	err = ctl.api.DeletePackage(packageID)
 	switch err {
 	case nil:
 		c.Status(http.StatusNoContent)
@@ -630,6 +748,8 @@ func (ctl *controller) deletePackage(c *gin.Context) {
 		logger.Error().Err(err).Str("packageID", packageID).Msg("deletePackage")
 		httpError(c, http.StatusBadRequest)
 	}
+
+	logger.Info().Msgf("deletePackage - successfully deleted package %+v", pkg)
 }
 
 func (ctl *controller) getPackage(c *gin.Context) {
@@ -751,6 +871,8 @@ func (ctl *controller) getInstance(c *gin.Context) {
 }
 
 func (ctl *controller) updateInstance(c *gin.Context) {
+	logger := loggerWithUsername(logger, c)
+
 	instanceID := c.Params.ByName("instance_id")
 	params := struct{ Alias string }{}
 
@@ -775,6 +897,8 @@ func (ctl *controller) updateInstance(c *gin.Context) {
 		logger.Error().Err(err).Str("instance", instanceID).Msgf("updateInstance - getting instance %s params", params)
 		httpError(c, http.StatusBadRequest)
 	}
+
+	logger.Info().Msgf("updateInstance - successfully updated instance %q alias to %q", instanceID, instance.Alias)
 }
 
 // ----------------------------------------------------------------------------
