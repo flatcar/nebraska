@@ -46,7 +46,12 @@ spec:
               serviceName: {{ $fullName }}
               servicePort: {{ $svcPort }}
             {{- end }}
+          {{- if $.Values.config.hostFlatcarPackages.enabled }}
+          {{- if regexFind ( printf "://%s(:[0-9]+)?/" . ) ( default "" $.Values.config.hostFlatcarPackages.nebraskaURL ) }}
+          - path: {{ regexReplaceAll "^[^/]+://[^/]+" $.Values.config.hostFlatcarPackages.nebraskaURL "" | trimAll "/" }}/flatcar
+          {{- else }}
           - path: /flatcar
+          {{- end }}
             backend:
             {{- if semverCompare ">=1.19-0" $kubeGitVersion }}
               service:
@@ -58,5 +63,6 @@ spec:
               serviceName: {{ $fullName }}
               servicePort: {{ $svcPort }}
             {{- end }}
+          {{- end }}
     {{- end }}
   {{- end }}
