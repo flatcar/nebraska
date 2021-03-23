@@ -5,10 +5,10 @@ go 1.13
 replace github.com/coreos/go-omaha => github.com/kinvolk/go-omaha v0.0.0-20201126073937-801f305b087b
 
 require (
-	github.com/Depado/ginprom v1.5.0
+	github.com/Depado/ginprom v1.7.0
 	github.com/blang/semver/v4 v4.0.0
 	github.com/coreos/go-omaha v0.0.0 // replaced with github.com/kinvolk/go-omaha
-	github.com/doug-martin/goqu/v9 v9.10.0
+	github.com/doug-martin/goqu/v9 v9.11.0
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
 	github.com/facebookgo/ensure v0.0.0-20160127193407-b4ab57deab51 // indirect
 	github.com/facebookgo/freeport v0.0.0-20150612182905-d4adf43b75b9 // indirect
@@ -18,30 +18,27 @@ require (
 	github.com/facebookgo/stats v0.0.0-20151006221625-1b76add642e4 // indirect
 	github.com/facebookgo/subset v0.0.0-20150612182917-8dac2c3c4870 // indirect
 	github.com/gin-gonic/gin v1.6.3
-	github.com/go-playground/validator/v10 v10.4.1 // indirect
-	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/golangci/golangci-lint v1.21.0
 	github.com/google/go-github/v28 v28.1.1
-	github.com/google/uuid v1.1.2
+	github.com/google/uuid v1.2.0
 	github.com/gorilla/securecookie v1.1.1
-	github.com/jackc/pgx/v4 v4.9.2
-	github.com/jmoiron/sqlx v1.2.0
-	github.com/json-iterator/go v1.1.10 // indirect
+	github.com/jackc/pgproto3/v2 v2.0.7 // indirect
+	github.com/jackc/pgx/v4 v4.10.1
+	github.com/jmoiron/sqlx v1.3.1
 	github.com/kevinburke/go-bindata v3.16.0+incompatible
-	github.com/lib/pq v1.8.0
+	github.com/lib/pq v1.10.0
 	github.com/mattn/go-colorable v0.1.8 // indirect
-	github.com/prometheus/client_golang v1.5.0
+	github.com/prometheus/client_golang v1.9.0
+	github.com/prometheus/common v0.19.0 // indirect
 	github.com/rs/zerolog v1.20.0
-	github.com/rubenv/sql-migrate v0.0.0-20200616145509-8d140a17f351
-	github.com/stretchr/testify v1.6.1
-	github.com/ugorji/go v1.1.13 // indirect
-	golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897 // indirect
-	golang.org/x/net v0.0.0-20201031054903-ff519b6c9102 // indirect
-	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
-	golang.org/x/sys v0.0.0-20201101102859-da207088b7d1 // indirect
-	golang.org/x/text v0.3.4 // indirect
+	github.com/rubenv/sql-migrate v0.0.0-20210215143335-f84234893558
+	github.com/stretchr/testify v1.7.0
+	golang.org/x/crypto v0.0.0-20210317152858-513c2a44f670 // indirect
+	golang.org/x/net v0.0.0-20210316092652-d523dce5a7f4 // indirect
+	golang.org/x/oauth2 v0.0.0-20210313182246-cd4f82c27b84
+	golang.org/x/sys v0.0.0-20210317091845-390168757d9c // indirect
+	golang.org/x/text v0.3.5 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	gopkg.in/guregu/null.v4 v4.0.0
-	gopkg.in/yaml.v2 v2.3.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776 // indirect
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
