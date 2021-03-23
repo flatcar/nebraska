@@ -42,7 +42,7 @@ function StatusHistoryItem(props: StatusHistoryItemProps) {
   }
 
   const time = makeLocaleTime(props.entry.created_ts);
-  const { className, bgColor, textColor } = status;
+  const { className, bgColor, textColor, status: statusString } = status;
   const errorCode = props.entry.error_code;
   let extendedErrorExplanation = '';
   if (props.entry.status === ERROR_STATUS_CODE) {
@@ -51,7 +51,7 @@ function StatusHistoryItem(props: StatusHistoryItemProps) {
   }
   const instanceLabel = className ? (
     <Box p={1} bgcolor={bgColor} color={textColor} textAlign="center">
-      {status}
+      {statusString}
     </Box>
   ) : (
     <div>&nbsp;</div>
