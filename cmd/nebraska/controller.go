@@ -185,7 +185,7 @@ func (ctl *controller) addApp(c *gin.Context) {
 
 	app, err = ctl.api.GetApp(app.ID)
 	if err != nil {
-		logger.Error().Err(err).Str("appID", app.ID).Msgf("addApp - getting added app")
+		logger.Error().Err(err).Str("appID", app.ID).Msg("addApp - getting added app")
 		httpError(c, http.StatusInternalServerError)
 		return
 	}
@@ -206,7 +206,7 @@ func (ctl *controller) updateApp(c *gin.Context) {
 
 	err := ctl.api.UpdateApp(app)
 	if err != nil {
-		logger.Error().Err(err).Msgf("updatedApp - updating app %v", app)
+		logger.Error().Err(err).Msgf("updatedApp - updating app %+v", app)
 		httpError(c, http.StatusBadRequest)
 		return
 	}
@@ -261,7 +261,7 @@ func (ctl *controller) getApps(c *gin.Context) {
 	switch err {
 	case nil:
 		if err := json.NewEncoder(c.Writer).Encode(apps); err != nil {
-			logger.Error().Err(err).Str("teamID", teamID).Msgf("getApps - encoding apps")
+			logger.Error().Err(err).Str("teamID", teamID).Msg("getApps - encoding apps")
 		}
 	case sql.ErrNoRows:
 		httpError(c, http.StatusNotFound)
@@ -293,7 +293,7 @@ func (ctl *controller) addGroup(c *gin.Context) {
 
 	group, err = ctl.api.GetGroup(group.ID)
 	if err != nil {
-		logger.Error().Err(err).Str("groupID", group.ID).Msgf("addGroup - getting added group")
+		logger.Error().Err(err).Str("groupID", group.ID).Msg("addGroup - getting added group")
 		httpError(c, http.StatusInternalServerError)
 		return
 	}
@@ -314,7 +314,7 @@ func (ctl *controller) updateGroup(c *gin.Context) {
 
 	err := ctl.api.UpdateGroup(group)
 	if err != nil {
-		logger.Error().Err(err).Msgf("updateGroup - updating group %v", group)
+		logger.Error().Err(err).Msgf("updateGroup - updating group %+v", group)
 		httpError(c, http.StatusBadRequest)
 		return
 	}
@@ -338,7 +338,7 @@ func (ctl *controller) deleteGroup(c *gin.Context) {
 	case nil:
 		c.Status(http.StatusNoContent)
 	default:
-		logger.Error().Err(err).Str("groupID", groupID).Msgf("deleteGroup")
+		logger.Error().Err(err).Str("groupID", groupID).Msg("deleteGroup")
 		httpError(c, http.StatusBadRequest)
 	}
 }
@@ -374,7 +374,7 @@ func (ctl *controller) getGroups(c *gin.Context) {
 	case sql.ErrNoRows:
 		httpError(c, http.StatusNotFound)
 	default:
-		logger.Error().Err(err).Str("appID", appID).Msgf("getGroups - getting groups")
+		logger.Error().Err(err).Str("appID", appID).Msg("getGroups - getting groups")
 		httpError(c, http.StatusBadRequest)
 	}
 }
@@ -396,7 +396,7 @@ func (ctl *controller) getGroupVersionCountTimeline(c *gin.Context) {
 	case sql.ErrNoRows:
 		httpError(c, http.StatusNotFound)
 	default:
-		logger.Error().Err(err).Str("groupID", groupID).Msgf("getGroupVersionCountTimeline - getting version timeline")
+		logger.Error().Err(err).Str("groupID", groupID).Msg("getGroupVersionCountTimeline - getting version timeline")
 		httpError(c, http.StatusBadRequest)
 	}
 }
@@ -413,7 +413,7 @@ func (ctl *controller) getGroupStatusCountTimeline(c *gin.Context) {
 	case sql.ErrNoRows:
 		httpError(c, http.StatusNotFound)
 	default:
-		logger.Error().Err(err).Str("groupID", groupID).Msgf("getGroupStatusCountTimeline - getting status timeline")
+		logger.Error().Err(err).Str("groupID", groupID).Msg("getGroupStatusCountTimeline - getting status timeline")
 		httpError(c, http.StatusBadRequest)
 	}
 }
@@ -430,7 +430,7 @@ func (ctl *controller) getGroupInstancesStats(c *gin.Context) {
 	case sql.ErrNoRows:
 		httpError(c, http.StatusNotFound)
 	default:
-		logger.Error().Err(err).Str("groupID", groupID).Msgf("getGroupInstancesStats - getting instances stats groupID")
+		logger.Error().Err(err).Str("groupID", groupID).Msg("getGroupInstancesStats - getting instances stats groupID")
 		httpError(c, http.StatusBadRequest)
 	}
 }
@@ -459,7 +459,7 @@ func (ctl *controller) getGroupVersionBreakdown(c *gin.Context) {
 func (ctl *controller) addChannel(c *gin.Context) {
 	channel := &api.Channel{}
 	if err := json.NewDecoder(c.Request.Body).Decode(channel); err != nil {
-		logger.Error().Err(err).Msgf("addChannel")
+		logger.Error().Err(err).Msg("addChannel")
 		httpError(c, http.StatusBadRequest)
 		return
 	}
@@ -495,7 +495,7 @@ func (ctl *controller) updateChannel(c *gin.Context) {
 
 	err := ctl.api.UpdateChannel(channel)
 	if err != nil {
-		logger.Error().Err(err).Msgf("updateChannel - updating channel %v", channel)
+		logger.Error().Err(err).Msgf("updateChannel - updating channel %+v", channel)
 		httpError(c, http.StatusBadRequest)
 		return
 	}
@@ -507,7 +507,7 @@ func (ctl *controller) updateChannel(c *gin.Context) {
 		return
 	}
 	if err := json.NewEncoder(c.Writer).Encode(channel); err != nil {
-		logger.Error().Err(err).Str("channelID", channel.ID).Msgf("updateChannel - encoding channel")
+		logger.Error().Err(err).Str("channelID", channel.ID).Msg("updateChannel - encoding channel")
 	}
 }
 
@@ -587,7 +587,7 @@ func (ctl *controller) addPackage(c *gin.Context) {
 		return
 	}
 	if err := json.NewEncoder(c.Writer).Encode(pkg); err != nil {
-		logger.Error().Err(err).Str("packageID", pkg.ID).Msgf("addPackage - encoding package")
+		logger.Error().Err(err).Str("packageID", pkg.ID).Msg("addPackage - encoding package")
 	}
 }
 
@@ -603,14 +603,14 @@ func (ctl *controller) updatePackage(c *gin.Context) {
 
 	err := ctl.api.UpdatePackage(pkg)
 	if err != nil {
-		logger.Error().Err(err).Msgf("updatePackage - updating package %v", pkg)
+		logger.Error().Err(err).Msgf("updatePackage - updating package %+v", pkg)
 		httpError(c, http.StatusBadRequest)
 		return
 	}
 
 	pkg, err = ctl.api.GetPackage(pkg.ID)
 	if err != nil {
-		logger.Error().Err(err).Str("packageID", pkg.ID).Msg("addPackage - getting updated package")
+		logger.Error().Err(err).Str("packageID", pkg.ID).Msg("updatePackage - getting updated package")
 		httpError(c, http.StatusInternalServerError)
 		return
 	}
@@ -627,7 +627,7 @@ func (ctl *controller) deletePackage(c *gin.Context) {
 	case nil:
 		c.Status(http.StatusNoContent)
 	default:
-		logger.Error().Err(err).Str("packageID", packageID).Msgf("deletePackage")
+		logger.Error().Err(err).Str("packageID", packageID).Msg("deletePackage")
 		httpError(c, http.StatusBadRequest)
 	}
 }
@@ -644,7 +644,7 @@ func (ctl *controller) getPackage(c *gin.Context) {
 	case sql.ErrNoRows:
 		httpError(c, http.StatusNotFound)
 	default:
-		logger.Error().Err(err).Str("packageID", packageID).Msgf("getPackage - getting package")
+		logger.Error().Err(err).Str("packageID", packageID).Msg("getPackage - getting package")
 		httpError(c, http.StatusBadRequest)
 	}
 }
@@ -819,7 +819,7 @@ func (ctl *controller) processOmahaRequest(c *gin.Context) {
 	c.Writer.Header().Set("Content-Type", "text/xml")
 	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, UpdateMaxRequestSize)
 	if err := ctl.omahaHandler.Handle(c.Request.Body, c.Writer, getRequestIP(c.Request)); err != nil {
-		logger.Error().Err(err).Msgf("process omaha request")
+		logger.Error().Err(err).Msg("process omaha request")
 		if uerr := errors.Unwrap(err); uerr != nil && uerr.Error() == "http: request body too large" {
 			httpError(c, http.StatusBadRequest)
 		}
@@ -845,7 +845,7 @@ func getRequestIP(r *http.Request) string {
 
 func (ctl *controller) getConfig(c *gin.Context) {
 	if err := json.NewEncoder(c.Writer).Encode(ctl.clientConfig); err != nil {
-		logger.Error().Err(err).Msgf("getConfig - encoding config")
+		logger.Error().Err(err).Msg("getConfig - encoding config")
 		httpError(c, http.StatusBadRequest)
 	}
 }
