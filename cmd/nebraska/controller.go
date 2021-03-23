@@ -60,6 +60,10 @@ type controllerConfig struct {
 
 func loggerWithUsername(l zerolog.Logger, c *gin.Context) zerolog.Logger {
 	session := ginsessions.GetSession(c)
+	if session == nil {
+		return logger
+	}
+
 	username := session.Get("username")
 
 	return logger.With().Str("username", username.(string)).Logger()
