@@ -8,8 +8,7 @@ import (
 	"os"
 	"strconv"
 
-	omahaSpec "github.com/coreos/go-omaha/omaha"
-
+	omahaSpec "github.com/kinvolk/go-omaha/omaha"
 	"github.com/rs/zerolog"
 
 	"github.com/kinvolk/nebraska/pkg/api"

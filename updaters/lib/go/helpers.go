@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/coreos/go-omaha/omaha"
+	"github.com/kinvolk/go-omaha/omaha"
 )
 
 // Update represents some information about an update received from CR.
