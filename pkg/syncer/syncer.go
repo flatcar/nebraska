@@ -18,10 +18,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/rs/zerolog"
-
-	"github.com/coreos/go-omaha/omaha"
 	"github.com/google/uuid"
+	"github.com/kinvolk/go-omaha/omaha"
+	"github.com/rs/zerolog"
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/kinvolk/nebraska/pkg/api"
