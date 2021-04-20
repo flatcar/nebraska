@@ -1,4 +1,5 @@
-import { InlineIcon } from '@iconify/react';
+import { IconifyIcon, InlineIcon } from '@iconify/react';
+import { Theme } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
@@ -10,8 +11,13 @@ import Loader from '../Common/Loader';
 import { InstanceCountLabel } from './Common';
 import makeStatusDefs from './StatusDefs';
 
-const useStyles = makeStyles(theme => ({
-  doughnutLabel: ({ color, labelSize }) => ({
+interface DoughnutLabelProps {
+  color: string;
+  labelSize: string;
+}
+
+const useStyles = makeStyles((theme: Theme) => ({
+  doughnutLabel: ({ color, labelSize }: DoughnutLabelProps) => ({
     fontSize: labelSize,
     color: color || theme.palette.text.secondary,
     display: 'inline',
@@ -29,22 +35,44 @@ const LightTooltip = withStyles(theme => ({
   },
 }))(Tooltip);
 
-function ProgressDoughnut(props) {
+interface ProgressData {
+  value: number;
+  color: string;
+  description: string;
+}
+
+interface ProgressDoughnutProps {
+  label: string;
+  width: number;
+  height: number;
+  color: string;
+  icon: IconifyIcon;
+  data: ProgressData[];
+}
+
+interface VictoryPieData {
+  x: number;
+  y: number;
+  color: string;
+  description?: string;
+}
+
+function ProgressDoughnut(props: ProgressDoughnutProps) {
   const { label, data, width = 100, height = 100, color = '#afafaf', icon } = props;
-  const [hoverData, setHoverData] = React.useState(null);
+  const [hoverData, setHoverData] = React.useState<ProgressData | null>(null);
   const [showTooltip, setShowTooltip] = React.useState(false);
 
   const iconSize = '1.1rem';
 
   const classes = useStyles({ color: color, labelSize: iconSize });
-  const theme = useTheme();
+  const theme = useTheme<Theme>();
 
   const pieSize = width > height ? height : width;
   const radius = pieSize * 0.45;
 
   let totalFilled = 0;
   let valuesSum = 0;
-  const dataSet = data.map(({ value, color, description }, i) => {
+  const dataSet: VictoryPieData[] = data.map(({ value, color, description }, i) => {
     // Ensure that the minimum value displayed is 0.5 if the original value
     // is 0, or 1.5 otherwise. This ensures the user is able to see the bits
     // related to this value in the charts.
@@ -71,7 +99,7 @@ function ProgressDoughnut(props) {
   const mainTooltipText = data.map(({ description }) => description).join('\n');
 
   dataSet.push({
-    x: 'remain',
+    x: percentage,
     y: 100 - percentage,
     color: theme.palette.grey['100'],
   });
@@ -89,7 +117,7 @@ function ProgressDoughnut(props) {
             radius={radius}
             innerRadius={radius * 0.8}
             padAngle={0.5}
-            labels={() => null}
+            labels={undefined}
             style={{
               data: { fill: ({ datum }) => datum.color },
             }}
@@ -147,7 +175,6 @@ function ProgressDoughnut(props) {
               fontSize: `${radius * 0.25}px`,
               fontFamily: theme.typography.fontFamily,
             }}
-            class={classes.innerLabelFontSize}
           />
         </svg>
       </Grid>
@@ -177,12 +204,31 @@ function ProgressDoughnut(props) {
   );
 }
 
-export default function InstanceStatusArea(props) {
-  const theme = useTheme();
+interface InstanceStats {
+  [key: string]: number;
+  total: number;
+}
+
+interface InstanceStatusAreaProps {
+  instanceStats: InstanceStats | null;
+  href?: object;
+  period: string;
+}
+
+interface InstanceStatusCount {
+  status: string;
+  count: {
+    key: string;
+    label?: string;
+  }[];
+}
+
+export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
+  const theme = useTheme<Theme>();
   const statusDefs = makeStatusDefs(theme);
 
   const { instanceStats, href, period } = props;
-  const instanceStateCount = [
+  const instanceStateCount: InstanceStatusCount[] = [
     {
       status: 'InstanceStatusComplete',
       count: [{ key: 'complete' }],
@@ -246,7 +292,7 @@ export default function InstanceStatusArea(props) {
                 data={count.map(({ key, label = status }) => {
                   const statusLabel = statusDefs[label].label;
                   return {
-                    value: instanceStats[key] / instanceStats['total'],
+                    value: instanceStats[key] / instanceStats.total,
                     color: statusDefs[label].color,
                     description: `${statusLabel}: ${instanceStats[key]} instances.`,
                   };
