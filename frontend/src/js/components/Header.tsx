@@ -55,35 +55,34 @@ interface NebraskaConfig {
 }
 
 interface AppbarProps {
-  cachedConfig: NebraskaConfig;
+  config: NebraskaConfig | null;
   menuAnchorEl: MenuProps['anchorEl'];
   projectLogo: object;
-  config: NebraskaConfig | null;
   handleClose: MenuProps['onClose'];
   handleMenu: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 function Appbar(props: AppbarProps) {
-  const { cachedConfig, menuAnchorEl, projectLogo, config, handleClose, handleMenu } = props;
+  const { config, menuAnchorEl, projectLogo, handleClose, handleMenu } = props;
   const classes = useStyles();
 
   React.useEffect(() => {
-    document.title = (cachedConfig && cachedConfig.title) || 'Nebraska';
-  }, [cachedConfig]);
+    document.title = (config?.title) || 'Nebraska';
+  }, [config]);
 
   return (
     <AppBar position="static" className={classes.header}>
       <Toolbar>
-        {cachedConfig?.logo ? (
+        {config?.logo ? (
           <Box className={classes.svgContainer}>
-            <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(cachedConfig.logo) }} />
+            <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(config.logo) }} />
           </Box>
         ) : (
           <Icon icon={projectLogo} height={45} />
         )}
-        {cachedConfig && cachedConfig.title !== '' && (
+        {config?.title && (
           <Typography variant="h6" className={classes.title}>
-            {cachedConfig.title}
+            {config.title}
           </Typography>
         )}
 
@@ -127,12 +126,12 @@ function Appbar(props: AppbarProps) {
 }
 
 export default function Header() {
-  const [config, setConfig] = React.useState<NebraskaConfig | null>(null);
+  const [gotConfig, setGotConfig] = React.useState(false);
   const theme = useTheme();
   const projectLogo = _.isEmpty(nebraskaLogo) ? null : nebraskaLogo;
 
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLButtonElement | null>(null);
-  const [cachedConfig, setCachedConfig] = React.useState<NebraskaConfig>(
+  const [config, setConfig] = React.useState<NebraskaConfig>(
     JSON.parse(localStorage.getItem('nebraska_config') || "") as NebraskaConfig
   );
 
@@ -146,28 +145,23 @@ export default function Header() {
 
   // @todo: This should be abstracted but we should do it when we integrate Redux.
   React.useEffect(() => {
-    if (!config) {
+    if (!gotConfig) {
       API.getConfig()
-        .then(config => {
-          const cacheConfig: NebraskaConfig = {
-            title: config.title,
-            logo: config.logo,
-            header_style: config.header_style,
-          };
-          localStorage.setItem('nebraska_config', JSON.stringify(cacheConfig));
-          setCachedConfig(cacheConfig);
-          setConfig(config);
+        .then((newConfig: NebraskaConfig) => {
+          localStorage.setItem('nebraska_config', JSON.stringify(newConfig));
+          setGotConfig(true);
+          setConfig(newConfig);
         })
         .catch(error => {
           console.error(error);
         });
     }
-  }, [config]);
+  }, [gotConfig, config]);
 
-  const props = {cachedConfig, menuAnchorEl, projectLogo: projectLogo as object, config, handleClose, handleMenu} as AppbarProps;
+  const props = {config, menuAnchorEl, projectLogo: projectLogo as object, handleClose, handleMenu} as AppbarProps;
   const appBar = <Appbar {...props} />
   // cachedConfig.appBarColor is for backward compatibility (the name used for the setting before).
-  return cachedConfig && (cachedConfig.header_style === 'dark' || cachedConfig.header_style === undefined && cachedConfig.appBarColor === 'dark') ? (
+  return config && (config.header_style === 'dark' || config.header_style === undefined && config.appBarColor === 'dark') ? (
     <ThemeProvider theme={prepareDarkTheme(theme)}>{appBar}</ThemeProvider>
   ) : (
     appBar
