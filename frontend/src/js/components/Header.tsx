@@ -1,12 +1,11 @@
 import { Icon } from '@iconify/react';
-import { Box } from '@material-ui/core';
+import { Box, Link } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import IconButton from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import { createMuiTheme, makeStyles, ThemeProvider, useTheme } from '@material-ui/core/styles';
+import Menu, { MenuProps } from '@material-ui/core/Menu';
+import { createMuiTheme, makeStyles, Theme, ThemeProvider, useTheme } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -36,7 +35,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function prepareDarkTheme(theme) {
+function prepareDarkTheme(theme: Theme) {
   return createMuiTheme({
     ...theme,
     palette: {
@@ -49,7 +48,24 @@ function prepareDarkTheme(theme) {
   });
 }
 
-function Appbar(props) {
+interface NebraskaConfig {
+  title?: string;
+  logo?: string;
+  access_management_url?: string;
+  header_style?: string;
+  [other: string]: any;
+}
+
+interface AppbarProps {
+  cachedConfig: NebraskaConfig;
+  menuAnchorEl: MenuProps['anchorEl'];
+  projectLogo: object;
+  config: NebraskaConfig | null;
+  handleClose: MenuProps['onClose'];
+  handleMenu: React.MouseEventHandler<HTMLButtonElement>;
+}
+
+function Appbar(props: AppbarProps) {
   const { cachedConfig, menuAnchorEl, projectLogo, config, handleClose, handleMenu } = props;
   const classes = useStyles();
 
@@ -60,7 +76,7 @@ function Appbar(props) {
   return (
     <AppBar position="static" className={classes.header}>
       <Toolbar>
-        {cachedConfig && cachedConfig.logo ? (
+        {cachedConfig?.logo ? (
           <Box className={classes.svgContainer}>
             <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(cachedConfig.logo) }} />
           </Box>
@@ -73,7 +89,7 @@ function Appbar(props) {
           </Typography>
         )}
 
-        {config && config.access_management_url && (
+        {config?.access_management_url && (
           <IconButton
             aria-label="User menu"
             aria-controls="menu-appbar"
@@ -84,43 +100,45 @@ function Appbar(props) {
             <AccountCircle />
           </IconButton>
         )}
-        <Menu
-          id="customized-menu"
-          anchorEl={menuAnchorEl}
-          open={Boolean(menuAnchorEl)}
-          onClose={handleClose}
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
-        >
-          <MenuItem component="a" href={config && config.access_management_url}>
-            <ListItemIcon>
-              <CreateOutlined />
-            </ListItemIcon>
-            <ListItemText primary="Manage Access" />
-          </MenuItem>
-        </Menu>
+        {config?.access_management_url &&
+          <Menu
+            id="customized-menu"
+            anchorEl={menuAnchorEl}
+            open={Boolean(menuAnchorEl)}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+          >
+            <Link href={config.access_management_url}>
+              <ListItemIcon>
+                <CreateOutlined />
+              </ListItemIcon>
+              <ListItemText primary="Manage Access" />
+            </Link>
+          </Menu>
+        }
       </Toolbar>
     </AppBar>
   );
 }
 
 export default function Header() {
-  const [config, setConfig] = React.useState(null);
+  const [config, setConfig] = React.useState<NebraskaConfig | null>(null);
   const theme = useTheme();
   const projectLogo = _.isEmpty(nebraskaLogo) ? null : nebraskaLogo;
 
-  const [menuAnchorEl, setMenuAnchorEl] = React.useState(null);
-  const [cachedConfig, setCachedConfig] = React.useState(
-    JSON.parse(localStorage.getItem('nebraska_config'))
+  const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+  const [cachedConfig, setCachedConfig] = React.useState<NebraskaConfig>(
+    JSON.parse(localStorage.getItem('nebraska_config') || "") as NebraskaConfig
   );
 
-  function handleMenu(event) {
+  function handleMenu(event: React.MouseEvent<HTMLButtonElement>) {
     setMenuAnchorEl(event.currentTarget);
   }
 
@@ -133,7 +151,7 @@ export default function Header() {
     if (!config) {
       API.getConfig()
         .then(config => {
-          const cacheConfig = {
+          const cacheConfig: NebraskaConfig = {
             title: config.title,
             logo: config.logo,
             appBarColor: config.header_style,
@@ -147,8 +165,9 @@ export default function Header() {
         });
     }
   }, [config]);
-  const appBarProps = { cachedConfig, menuAnchorEl, projectLogo, config, handleClose, handleMenu };
-  const appBar = <Appbar {...appBarProps} />;
+
+  const props = {cachedConfig, menuAnchorEl, projectLogo: projectLogo as object, config, handleClose, handleMenu} as AppbarProps;
+  const appBar = <Appbar {...props} />
   return cachedConfig && cachedConfig.appBarColor === 'dark' ? (
     <ThemeProvider theme={prepareDarkTheme(theme)}>{appBar}</ThemeProvider>
   ) : (
