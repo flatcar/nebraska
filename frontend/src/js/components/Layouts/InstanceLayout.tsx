@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import API from '../../api/API';
-import { Application, Group } from '../../api/apiDataTypes';
+import { Application, Instance } from '../../api/apiDataTypes';
 import { getInstanceStatus } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
 import Loader from '../Common/Loader';
@@ -18,7 +18,7 @@ export default function InstanceLayout(props: {}) {
     applicationsStore.getCachedApplication(appID)
   );
   const [group, setGroup] = React.useState(getGroupFromApplication(application));
-  const [instance, setInstance] = React.useState<{ [key: string]: any } | null>(null);
+  const [instance, setInstance] = React.useState<Instance | null>(null);
 
   function onChange() {
     API.getInstance(appID, groupID, instanceID).then(instance => {
@@ -86,8 +86,8 @@ export default function InstanceLayout(props: {}) {
         <Loader />
       ) : (
         <Details
-          application={application}
-          group={group}
+          application={application!}
+          group={group!}
           instance={instance}
           onInstanceUpdated={() => onChange()}
         />

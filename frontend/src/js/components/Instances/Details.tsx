@@ -1,8 +1,9 @@
 import chevronDown from '@iconify/icons-mdi/chevron-down';
 import chevronUp from '@iconify/icons-mdi/chevron-up';
 import { InlineIcon } from '@iconify/react';
+import { Theme } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
+import Button, { ButtonProps } from '@material-ui/core/Button';
 import Collapse from '@material-ui/core/Collapse';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -20,19 +21,19 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/styles';
-import { Field, Form, Formik } from 'formik';
+import { Field, Form, Formik, FormikHelpers, FormikProps } from 'formik';
 import { TextField } from 'formik-material-ui';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import * as Yup from 'yup';
 import API from '../../api/API';
+import { Application, Group, Instance } from '../../api/apiDataTypes';
 import {
   ERROR_STATUS_CODE,
   getErrorAndFlags,
   getInstanceStatus,
   makeLocaleTime,
-  prepareErrorMessage,
+  prepareErrorMessage
 } from '../../constants/helpers';
 import ChannelItem from '../Channels/Item';
 import { CardFeatureLabel, CardLabel } from '../Common/Card';
@@ -42,7 +43,7 @@ import Loader from '../Common/Loader';
 import MoreMenu from '../Common/MoreMenu';
 import makeStatusDefs from './StatusDefs';
 
-const useDetailsStyles = makeStyles(theme => ({
+const useDetailsStyles = makeStyles((theme: Theme) => ({
   timelineContainer: {
     maxHeight: '700px',
     overflow: 'auto',
@@ -56,7 +57,7 @@ const useDetailsStyles = makeStyles(theme => ({
   },
 }));
 
-const useRowStyles = makeStyles(theme => ({
+const useRowStyles = makeStyles((theme: Theme) => ({
   statusExplanation: {
     padding: theme.spacing(2),
   },
@@ -80,7 +81,13 @@ const useStatusStyles = makeStyles({
   },
 });
 
-function StatusLabel(props) {
+interface StatusLabelProps {
+  status: Instance['statusInfo'];
+  activated?: boolean;
+  onClick?: ButtonProps['onClick'];
+}
+
+function StatusLabel(props: StatusLabelProps) {
   const classes = useStatusStyles();
   const statusDefs = makeStatusDefs(useTheme());
   const { status, activated } = props;
@@ -93,8 +100,8 @@ function StatusLabel(props) {
       {props.onClick ? (
         <Button size="small" onClick={props.onClick} className={classes.statusButton}>
           <Box
-            bgcolor={status.bgColor}
-            color={status.textColor}
+            bgcolor={status?.bgColor}
+            color={status?.textColor}
             p={0.8}
             display="inline-block"
             mr={1}
@@ -115,15 +122,26 @@ function StatusLabel(props) {
   );
 }
 
-function StatusRow(props) {
+interface StatusEvent {
+  status: number;
+  version: string;
+  error_code?: number;
+  created_ts: string | Date | number;
+}
+
+interface StatusRow {
+  entry: StatusEvent;
+}
+
+function StatusRow(props: StatusRow) {
   const classes = useRowStyles();
   const { entry } = props;
   const time = makeLocaleTime(entry.created_ts);
-  const status = getInstanceStatus(entry.status, entry.version, entry.error_code);
+  const status = getInstanceStatus(entry.status, entry.version);
   const [collapsed, setCollapsed] = React.useState(true);
   let extendedErrorLabel = '';
   const errorCode = entry.error_code;
-  if (entry.status === ERROR_STATUS_CODE && errorCode) {
+  if (entry.status === ERROR_STATUS_CODE && !!errorCode) {
     const [errorMessages, flags] = getErrorAndFlags(errorCode);
     extendedErrorLabel = prepareErrorMessage(errorMessages, flags);
   }
@@ -142,7 +160,7 @@ function StatusRow(props) {
       </TableRow>
       <TableRow>
         <TableCell padding="none" colSpan={3}>
-          <Collapse hidden={collapsed} in={!collapsed}>
+          <Collapse in={!collapsed}>
             <Typography className={classes.statusExplanation}>
               {status.explanation}
               {extendedErrorLabel && (
@@ -159,7 +177,7 @@ function StatusRow(props) {
   );
 }
 
-function EventTable(props) {
+function EventTable(props: {events: StatusEvent[]}) {
   return props.events.length === 0 ? (
     <Empty>No events to report for this instance yet.</Empty>
   ) : (
@@ -168,26 +186,36 @@ function EventTable(props) {
         <TableRow>
           <TableCell>Status</TableCell>
           <TableCell>Version</TableCell>
-          <TableCell>Time{props.events && props.events.status}</TableCell>
+          <TableCell>Time</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
         {props.events.map((entry, i) => (
-          <StatusRow key={i} entry={entry} />
+          <StatusRow key={`status-row-${i}`} entry={entry} />
         ))}
       </TableBody>
     </Table>
   );
 }
 
-function EditDialog(props) {
+interface EditDialogProps {
+  show: boolean;
+  onHide: (instance?: Instance) => void;
+  instance: Instance;
+}
+
+interface FormValues {
+  name: string;
+}
+
+function EditDialog(props: EditDialogProps) {
   const { show, onHide, instance } = props;
 
   function handleClose() {
     onHide();
   }
 
-  function handleSubmit(values, actions) {
+  function handleSubmit(values: FormValues, actions: FormikHelpers<FormValues>) {
     actions.setSubmitting(true);
 
     API.updateInstance(instance.id, values.name)
@@ -204,7 +232,7 @@ function EditDialog(props) {
       });
   }
 
-  function renderForm({ values, status, setFieldValue, isSubmitting }) {
+  function renderForm({ status, isSubmitting }: FormikProps<FormValues>) {
     return (
       <Form data-testid="instance-edit-form">
         <DialogContent>
@@ -252,11 +280,18 @@ function EditDialog(props) {
   );
 }
 
-function DetailsView(props) {
+interface DetailsViewProps {
+  application: Application;
+  group: Group;
+  instance: Instance;
+  onInstanceUpdated: () => void;
+}
+
+function DetailsView(props: DetailsViewProps) {
   const classes = useDetailsStyles();
-  const theme = useTheme();
+  const theme = useTheme<Theme>();
   const { application, group, instance, onInstanceUpdated } = props;
-  const [eventHistory, setEventHistory] = React.useState(null);
+  const [eventHistory, setEventHistory] = React.useState<StatusEvent[] | null>(null);
   const [showEdit, setShowEdit] = React.useState(false);
 
   const hasAlias = !!instance.alias;
@@ -275,7 +310,7 @@ function DetailsView(props) {
     setShowEdit(true);
   }
 
-  function onEditHide(newInstance) {
+  function onEditHide(newInstance?: Instance) {
     setShowEdit(false);
     if (newInstance !== null) {
       onInstanceUpdated();
@@ -424,15 +459,5 @@ function DetailsView(props) {
     </>
   );
 }
-
-const nullable = propType => (props, propName, ...rest) =>
-  props[propName] === null ? null : propType(props, propName, ...rest);
-
-DetailsView.propTypes = {
-  application: PropTypes.object.isRequired,
-  group: nullable(PropTypes.object.isRequired),
-  instance: PropTypes.object,
-  onInstanceUpdated: PropTypes.func,
-};
 
 export default DetailsView;
