@@ -1,23 +1,18 @@
 import { Box } from '@material-ui/core';
-import Chip from '@material-ui/core/Chip';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import React from 'react';
+import { InstanceStatusHistory } from '../../api/apiDataTypes';
 import {
   ERROR_STATUS_CODE,
   getErrorAndFlags,
   getInstanceStatus,
   makeLocaleTime,
-  prepareErrorMessage,
+  prepareErrorMessage
 } from '../../constants/helpers';
 
 interface StatusHistoryItemProps {
-  entry: {
-    status: number;
-    version?: string | undefined;
-    created_ts: string;
-    error_code: number;
-  };
+  entry: InstanceStatusHistory;
 }
 
 function StatusHistoryItem(props: StatusHistoryItemProps) {
@@ -45,8 +40,8 @@ function StatusHistoryItem(props: StatusHistoryItemProps) {
   const { className, bgColor, textColor, status: statusString } = status;
   const errorCode = props.entry.error_code;
   let extendedErrorExplanation = '';
-  if (props.entry.status === ERROR_STATUS_CODE) {
-    const [errorMessages, flags] = getErrorAndFlags(errorCode);
+  if (props.entry.status === ERROR_STATUS_CODE && errorCode !== null) {
+    const [errorMessages, flags] = getErrorAndFlags(parseInt(errorCode));
     extendedErrorExplanation = prepareErrorMessage(errorMessages, flags);
   }
   const instanceLabel = className ? (

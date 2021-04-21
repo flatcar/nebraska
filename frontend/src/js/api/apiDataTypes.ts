@@ -96,6 +96,7 @@ export interface Instance {
   ip: string;
   application: InstanceApplication;
   statusInfo?: ReturnType<typeof getInstanceStatus>;
+  statusHistory?: InstanceStatusHistory[];
 }
 
 export interface InstanceApplication {
@@ -106,4 +107,11 @@ export interface InstanceApplication {
   created_ts: string | Date | number;
   status: null | number;
   last_check_for_updates: string;
+}
+
+export interface InstanceStatusHistory {
+  status: number;
+  version: string;
+  created_ts: string | Date | number;
+  error_code: string | null;
 }

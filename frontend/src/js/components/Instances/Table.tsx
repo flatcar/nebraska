@@ -7,17 +7,14 @@ import TableRow from '@material-ui/core/TableRow';
 import React from 'react';
 import semver from 'semver';
 import _ from 'underscore';
-import { Channel } from '../../api/apiDataTypes';
+import { Channel, Instance } from '../../api/apiDataTypes';
 import { cleanSemverVersion } from '../../constants/helpers';
 import Item from './Item';
 
 function Table(props: {
   version_breakdown?: any;
   channel: Channel;
-  instances: {
-    id: string;
-    [key: string]: any;
-  }[];
+  instances: Instance[];
 }) {
   const [selectedInstance, setSelectedInstance] = React.useState<string | null>(null);
   const versions = props.version_breakdown || [];
@@ -47,7 +44,7 @@ function Table(props: {
         </TableRow>
       </TableHead>
       <TableBody>
-        {props.instances.map((instance: { id: string; [key: string]: any }, i) => (
+        {props.instances.map((instance, i) => (
           <Item
             key={'instance_' + i}
             instance={instance}

@@ -1,6 +1,7 @@
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import _ from 'underscore';
+import { InstanceStatusHistory } from '../../api/apiDataTypes';
 import Empty from '../Common/EmptyContent';
 import StatusHistoryList from './StatusHistoryList';
 
@@ -14,12 +15,7 @@ const useStyles = makeStyles({
 });
 
 function StatusHistoryContainer(props: {
-  statusHistory: {
-    status: number;
-    version?: string | undefined;
-    created_ts: string;
-    error_code: number;
-  }[];
+  statusHistory: InstanceStatusHistory[];
 }) {
   const classes = useStyles();
   let entries: React.ReactElement;
