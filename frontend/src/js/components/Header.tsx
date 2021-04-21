@@ -85,7 +85,7 @@ function Appbar(props: AppbarProps) {
             {config.title}
           </Typography>
         )}
-
+        <div style={{ flex: '1 0 0' }} />
         {config?.access_management_url && (
           <IconButton
             aria-label="User menu"
