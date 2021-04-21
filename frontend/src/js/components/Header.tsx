@@ -1,9 +1,7 @@
 import { Icon } from '@iconify/react';
-import { Box, Link } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import IconButton from '@material-ui/core/IconButton';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 import Menu, { MenuProps } from '@material-ui/core/Menu';
 import { createMuiTheme, makeStyles, Theme, ThemeProvider, useTheme } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -115,12 +113,13 @@ function Appbar(props: AppbarProps) {
               horizontal: 'right',
             }}
           >
-            <Link href={config.access_management_url}>
-              <ListItemIcon>
-                <CreateOutlined />
-              </ListItemIcon>
-              <ListItemText primary="Manage Access" />
-            </Link>
+            <Button
+              component="a"
+              startIcon={<CreateOutlined />}
+              href={config.access_management_url}
+            >
+              Manage Access
+            </Button>
           </Menu>
         }
       </Toolbar>
