@@ -9,7 +9,7 @@ import semver from 'semver';
 import _ from 'underscore';
 import { Channel } from '../../api/apiDataTypes';
 import { cleanSemverVersion } from '../../constants/helpers';
-import Item from './Item.react';
+import Item from './Item';
 
 function Table(props: {
   version_breakdown?: any;
