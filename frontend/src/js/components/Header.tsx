@@ -154,7 +154,7 @@ export default function Header() {
           const cacheConfig: NebraskaConfig = {
             title: config.title,
             logo: config.logo,
-            appBarColor: config.header_style,
+            header_style: config.header_style,
           };
           localStorage.setItem('nebraska_config', JSON.stringify(cacheConfig));
           setCachedConfig(cacheConfig);
@@ -168,7 +168,8 @@ export default function Header() {
 
   const props = {cachedConfig, menuAnchorEl, projectLogo: projectLogo as object, config, handleClose, handleMenu} as AppbarProps;
   const appBar = <Appbar {...props} />
-  return cachedConfig && cachedConfig.appBarColor === 'dark' ? (
+  // cachedConfig.appBarColor is for backward compatibility (the name used for the setting before).
+  return cachedConfig && (cachedConfig.header_style === 'dark' || cachedConfig.header_style === undefined && cachedConfig.appBarColor === 'dark') ? (
     <ThemeProvider theme={prepareDarkTheme(theme)}>{appBar}</ThemeProvider>
   ) : (
     appBar
