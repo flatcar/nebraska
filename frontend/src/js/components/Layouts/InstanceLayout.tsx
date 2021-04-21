@@ -8,7 +8,7 @@ import Loader from '../Common/Loader';
 import SectionHeader from '../Common/SectionHeader';
 import Details from '../Instances/Details';
 
-export default function InstanceLayout(props: {}) {
+export default function InstanceLayout() {
   const { appID, groupID, instanceID } = useParams<{
     appID: string;
     groupID: string;
