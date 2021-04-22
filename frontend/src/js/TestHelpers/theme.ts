@@ -5,7 +5,7 @@ export const theme = createMuiTheme({
   palette: {
     primary: {
       contrastText: '#fff',
-      main: process.env.REACT_APP_PRIMARY_COLOR,
+      main: process.env.REACT_APP_PRIMARY_COLOR || "#000",
     },
     success: {
       main: green['500'],

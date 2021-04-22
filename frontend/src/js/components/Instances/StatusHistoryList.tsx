@@ -5,6 +5,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import React from 'react';
+import { InstanceStatusHistory } from '../../api/apiDataTypes';
 import StatusHistoryItem from './StatusHistoryItem';
 
 const useStyles = makeStyles({
@@ -15,12 +16,7 @@ const useStyles = makeStyles({
   },
 });
 function StatusHistoryList(props: {
-  entries: {
-    status: number;
-    version?: string | undefined;
-    created_ts: string;
-    error_code: number;
-  }[];
+  entries: InstanceStatusHistory[];
 }) {
   const entries = props.entries || [];
   const classes = useStyles();

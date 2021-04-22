@@ -1,3 +1,5 @@
+import { getInstanceStatus } from "../constants/helpers";
+
 type Arch = number;
 
 export interface Group {
@@ -85,4 +87,31 @@ export interface Activity {
   group_name: string | null;
   channel_name: string | null;
   instance_id: string | null;
+}
+
+export interface Instance {
+  id: string;
+  alias: string;
+  created_ts: string | Date | number;
+  ip: string;
+  application: InstanceApplication;
+  statusInfo?: ReturnType<typeof getInstanceStatus>;
+  statusHistory?: InstanceStatusHistory[];
+}
+
+export interface InstanceApplication {
+  instance_id: string;
+  application_id: string;
+  group_id: string;
+  version: string;
+  created_ts: string | Date | number;
+  status: null | number;
+  last_check_for_updates: string;
+}
+
+export interface InstanceStatusHistory {
+  status: number;
+  version: string;
+  created_ts: string | Date | number;
+  error_code: string | null;
 }

@@ -5,7 +5,7 @@ import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import API from '../../api/API';
 import ApplicationItemGroupItem from '../../components/Applications/ApplicationItemGroupItem';
-import { theme } from '../../TestHelpers/theme.js';
+import { theme } from '../../TestHelpers/theme';
 
 function mockResolver() {
   return Promise.resolve(1);

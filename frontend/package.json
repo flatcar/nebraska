@@ -47,7 +47,7 @@
     "semver": "~5.3.0",
     "typescript": "^4.1.3",
     "underscore": "~1.8.3",
-    "victory": "^33.1.7",
+    "victory": "^34.3.12",
     "yup": "^0.27.0"
   },
   "devDependencies": {
