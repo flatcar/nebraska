@@ -10,19 +10,35 @@ manage their updates. The process for doing so is slightly different depending o
 
 ## New machines
 
-For new machines, you can set up the updates server in their cloud config. Here is a small example of how to do it:
+For new machines, you can set up the updates server in their Container Linux Configuration. Here is a small example of how to do it:
 
-	coreos:
-		update:
-			group: stable
-			server: http://your.nebraska.host:port/v1/update/
+
+```yaml
+storage:
+  files:
+    - path: /etc/flatcar/update.conf
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          GROUP=stable
+          SERVER=http://your.nebraska.host:port/v1/update/
+```
 
 In addition to the default `stable`, `beta` and `alpha` groups, you can also create and use **custom groups** for greater control over the updates. In that case, you **must** use the group id (not the name) you will find next to the group name in the dashboard.
 
-	coreos:
-		update:
-			group: ab51a000-02dc-4fc7-a6b0-c42881c89856
-			server: http://your.nebraska.host:port/v1/update/
+
+```yaml
+storage:
+  files:
+    - path: /etc/flatcar/update.conf
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          GROUP=ab51a000-02dc-4fc7-a6b0-c42881c89856
+          SERVER=http://your.nebraska.host:port/v1/update/
+```
 
 **Note**: The sample Nebraska containers provided use the `port 8000` by default (**plain HTTP, no SSL**). Please adjust the update URL setup in your servers to match your Nebraska deployment.
 
