@@ -10,19 +10,35 @@ manage their updates. The process for doing so is slightly different depending o
 
 ## New machines
 
-For new machines, you can set up the updates server in their cloud config. Here is a small example of how to do it:
+For new machines, you can set up the updates server in their Container Linux Configuration. Here is a small example of how to do it:
 
-	coreos:
-		update:
-			group: stable
-			server: http://your.nebraska.host:port/v1/update/
+
+```yaml
+storage:
+  files:
+    - path: /etc/flatcar/update.conf
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          GROUP=stable
+          SERVER=http://your.nebraska.host:port/v1/update/
+```
 
 In addition to the default `stable`, `beta` and `alpha` groups, you can also create and use **custom groups** for greater control over the updates. In that case, you **must** use the group id (not the name) you will find next to the group name in the dashboard.
 
-	coreos:
-		update:
-			group: ab51a000-02dc-4fc7-a6b0-c42881c89856
-			server: http://your.nebraska.host:port/v1/update/
+
+```yaml
+storage:
+  files:
+    - path: /etc/flatcar/update.conf
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          GROUP=ab51a000-02dc-4fc7-a6b0-c42881c89856
+          SERVER=http://your.nebraska.host:port/v1/update/
+```
 
 **Note**: The sample Nebraska containers provided use the `port 8000` by default (**plain HTTP, no SSL**). Please adjust the update URL setup in your servers to match your Nebraska deployment.
 
@@ -43,6 +59,33 @@ To apply these changes run:
 In may take a few minutes to see an update request coming through. If you want to see it sooner, you can force it running this command:
 
 	update_engine_client -update
+
+## Setting a machine alias
+
+The machine alias is an additional name an instance can use when registering in Nebraska.
+Since the field is supplied by the instance itself, it's not necessarily unique and can contain arbitrary data.
+In the instance list it is shown instead of the instance ID, while on the instance page it is shown in addition to the instance ID.
+
+To add a machine alias to your Flatcar Container Linux instance, you can edit the `/etc/flatcar/update.conf` file or create it on deployment through a Container Linux Configuration:
+
+```yaml
+storage:
+  files:
+    - path: /etc/flatcar/update.conf
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          MACHINE_ALIAS=myhost a.b.c
+```
+
+The `MACHINE_ALIAS` value is not quoted and can contain whitespace.
+For dynamic contents like the IP address, you may write the value through a script:
+
+```
+sudo sed -i "/MACHINE_ALIAS=.*/d" /etc/flatcar/update.conf
+echo "MACHINE_ALIAS=$(hostname) ${MY_IP_ADDR}" | sudo tee -a /etc/flatcar/update.conf
+```
 
 ## Flatcar Container Linux packages in Nebraska
 
