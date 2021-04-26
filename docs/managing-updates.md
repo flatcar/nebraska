@@ -60,6 +60,33 @@ In may take a few minutes to see an update request coming through. If you want t
 
 	update_engine_client -update
 
+## Setting a machine alias
+
+The machine alias is an additional name an instance can use when registering in Nebraska.
+Since the field is supplied by the instance itself, it's not necessarily unique and can contain arbitrary data.
+In the instance list it is shown instead of the instance ID, while on the instance page it is shown in addition to the instance ID.
+
+To add a machine alias to your Flatcar Container Linux instance, you can edit the `/etc/flatcar/update.conf` file or create it on deployment through a Container Linux Configuration:
+
+```yaml
+storage:
+  files:
+    - path: /etc/flatcar/update.conf
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          MACHINE_ALIAS=myhost a.b.c
+```
+
+The `MACHINE_ALIAS` value is not quoted and can contain whitespace.
+For dynamic contents like the IP address, you may write the value through a script:
+
+```
+sudo sed -i "/MACHINE_ALIAS=.*/d" /etc/flatcar/update.conf
+echo "MACHINE_ALIAS=$(hostname) ${MY_IP_ADDR}" | sudo tee -a /etc/flatcar/update.conf
+```
+
 ## Flatcar Container Linux packages in Nebraska
 
 Nebraska is able to periodically poll the public Flatcar Container Linux update servers and create new packages to update the corresponding channels. So if Nebraska is connected to the internet, new packages will show up automatically for the official Flatcar Container Linux. This functionality is optional, and turned off by default. If you
