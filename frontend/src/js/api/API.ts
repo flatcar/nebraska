@@ -225,8 +225,12 @@ class API {
 
   static getJSON(url: string) {
     PubSub.publish(MAIN_PROGRESS_BAR, 'add');
-
-    return fetch(url)
+    const token = localStorage.getItem('nebraska_auth_token');
+    return fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then(response => {
         if (!response.ok) {
           throw response;
@@ -244,14 +248,19 @@ class API {
   ): Promise<any>;
 
   static doRequest(method: string, url: string, data: REQUEST_DATA_TYPE = '') {
+    const token = localStorage.getItem('nebraska_auth_token');
     PubSub.publish(MAIN_PROGRESS_BAR, 'add');
     let fetchConfigObject: {
       method: string;
       body?: REQUEST_DATA_TYPE;
+      headers?: { [key: string]: string };
     } = { method: 'GET' };
     if (method === 'DELETE') {
       fetchConfigObject = {
         method,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       };
       return fetch(url, fetchConfigObject).finally(() => PubSub.publish(MAIN_PROGRESS_BAR, 'done'));
     } else {
@@ -259,6 +268,9 @@ class API {
         fetchConfigObject = {
           method,
           body: data,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         };
       }
     }

@@ -51,8 +51,9 @@ const nebraskaTheme = createMuiTheme({
 });
 
 const oidcConfig = {
-  onSignIn: async () => {
+  onSignIn: async (user: any) => {
     window.location.hash = '';
+    localStorage.setItem('nebraska_auth_token', user.id_token);
   },
   authority: process.env.REACT_APP_AUTH_AUTHORITY,
   clientId: process.env.REACT_APP_AUTH_CLIENT_ID,
@@ -72,7 +73,6 @@ function AppRoutes() {
   const auth = useAuth();
 
   if (auth?.userData?.id_token) {
-    localStorage.setItem('nebraska_auth_token', auth.userData.id_token);
     return (
       <ThemeProvider theme={nebraskaTheme}>
         <CssBaseline />
