@@ -34,6 +34,7 @@
     "husky": "^5.0.9",
     "lint-staged": "^10.5.4",
     "moment-timezone": "^0.5.32",
+    "oidc-react": "^1.4.0",
     "prettier": "^2.2.1",
     "prop-types": "^15.7.2",
     "pubsub-js": "~1.5.3",
