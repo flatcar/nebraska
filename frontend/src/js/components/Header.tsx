@@ -131,8 +131,9 @@ export default function Header() {
   const projectLogo = _.isEmpty(nebraskaLogo) ? null : nebraskaLogo;
 
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLButtonElement | null>(null);
-  const [config, setConfig] = React.useState<NebraskaConfig>(
-    JSON.parse(localStorage.getItem('nebraska_config') || "") as NebraskaConfig
+  const nebraskaConfig = localStorage.getItem('nebraska_config');
+  const [config, setConfig] = React.useState<NebraskaConfig | null>(
+    nebraskaConfig && JSON.parse(nebraskaConfig)
   );
 
   function handleMenu(event: React.MouseEvent<HTMLButtonElement>) {
