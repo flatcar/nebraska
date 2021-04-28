@@ -5,20 +5,17 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"os"
 	"strconv"
 
 	omahaSpec "github.com/kinvolk/go-omaha/omaha"
 	"github.com/rs/zerolog"
 
 	"github.com/kinvolk/nebraska/pkg/api"
+	"github.com/kinvolk/nebraska/pkg/util"
 )
 
 var (
-	logger = zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr}).Hook(
-		zerolog.HookFunc(func(e *zerolog.Event, level zerolog.Level, message string) {
-			e.Str("context", "omaha")
-		}))
+	logger = util.NewLogger("omaha")
 
 	initialFlatcarGroups = map[string]string{
 		// amd64
@@ -86,7 +83,7 @@ func getArch(os *omahaSpec.OS, appReq *omahaSpec.AppRequest) api.Arch {
 			return arch
 		}
 	}
-	logger.Warn().Msg("getArch - unknown arch, assuming amd64 arch")
+	logger.Debug().Msg("getArch - unknown arch, assuming amd64 arch")
 	return api.ArchAMD64
 }
 
@@ -101,14 +98,14 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 		// but also allows the old hard-coded CoreOS group UUIDs until we now that they are not used.
 		group := reqApp.Track
 		if trackName, ok := initialFlatcarGroups[group]; ok {
-			logger.Info().Str("uuid", group).Msgf("buildOmahaResponse - found client using a hard-coded group UUID")
+			logger.Info().Str("machineId", reqApp.MachineID).Str("uuid", group).Msgf("buildOmahaResponse - found client using a hard-coded group UUID")
 			group = trackName
 		}
 		groupID, err := h.crAPI.GetGroupID(group, getArch(omahaReq.OS, reqApp))
 		if err == nil {
 			group = groupID
 		} else {
-			logger.Info().Str("track", group).Msgf("buildOmahaResponse - no group found for track and arch error %s", err.Error())
+			logger.Info().Str("machineId", reqApp.MachineID).Str("track", group).Msgf("buildOmahaResponse - no group found for track and arch error %s", err.Error())
 			respApp.Status = h.getStatusMessage(err)
 			respApp.AddUpdateCheck(omahaSpec.UpdateInternalError)
 			return omahaResp, nil
@@ -116,14 +113,14 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 
 		for _, event := range reqApp.Events {
 			if err := h.processEvent(reqApp.MachineID, reqApp.ID, group, event); err != nil {
-				logger.Warn().Msgf("processEvent error %s", err.Error())
+				logger.Debug().Str("machineId", reqApp.MachineID).Msgf("processEvent error %s", err.Error())
 			}
 			respApp.AddEvent()
 		}
 
 		if reqApp.Ping != nil {
 			if _, err := h.crAPI.RegisterInstance(reqApp.MachineID, reqApp.MachineAlias, ip, reqApp.Version, reqApp.ID, group); err != nil {
-				logger.Warn().Msgf("processPing error %s", err.Error())
+				logger.Debug().Str("machineId", reqApp.MachineID).Msgf("processPing error %s", err.Error())
 			}
 			respApp.AddPing()
 		}
@@ -143,7 +140,7 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 }
 
 func (h *Handler) processEvent(machineID string, appID string, group string, event *omahaSpec.EventRequest) error {
-	logger.Info().Str("appID", appID).Str("group", group).Str("event", event.Type.String()+"."+event.Result.String()).Str("previousVersion", event.PreviousVersion).Msgf("processEvent eventError %d", event.ErrorCode)
+	logger.Info().Str("machineId", machineID).Str("appID", appID).Str("group", group).Str("event", event.Type.String()+"."+event.Result.String()).Str("previousVersion", event.PreviousVersion).Msgf("processEvent eventError %d", event.ErrorCode)
 
 	return h.crAPI.RegisterEvent(machineID, appID, group, int(event.Type), int(event.Result), event.PreviousVersion, strconv.Itoa(event.ErrorCode))
 }

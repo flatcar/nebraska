@@ -20,10 +20,10 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/kinvolk/go-omaha/omaha"
-	"github.com/rs/zerolog"
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/kinvolk/nebraska/pkg/api"
+	"github.com/kinvolk/nebraska/pkg/util"
 )
 
 const (
@@ -31,10 +31,7 @@ const (
 )
 
 var (
-	logger = zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr}).Hook(
-		zerolog.HookFunc(func(e *zerolog.Event, level zerolog.Level, message string) {
-			e.Str("context", "syncer")
-		}))
+	logger = util.NewLogger("syncer")
 
 	// ErrInvalidAPIInstance error indicates that no valid api instance was
 	// provided to the syncer constructor.

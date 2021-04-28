@@ -19,6 +19,7 @@ import (
 	"github.com/kinvolk/nebraska/cmd/nebraska/auth"
 	"github.com/kinvolk/nebraska/pkg/api"
 	"github.com/kinvolk/nebraska/pkg/random"
+	"github.com/kinvolk/nebraska/pkg/util"
 )
 
 const (
@@ -46,16 +47,13 @@ var (
 	ghReadWriteTeams    = flag.String("gh-rw-teams", "", "comma-separated list of read-write GitHub teams in the org/team format")
 	ghReadOnlyTeams     = flag.String("gh-ro-teams", "", "comma-separated list of read-only GitHub teams in the org/team format")
 	ghEnterpriseURL     = flag.String("gh-enterprise-url", "", fmt.Sprintf("base URL of the enterprise instance if using GHE; can be taken from %s env var too", ghEnterpriseURLEnvName))
-	logger              = zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr}).Hook(
-		zerolog.HookFunc(func(e *zerolog.Event, level zerolog.Level, message string) {
-			e.Str("context", "nebraska")
-		}))
-	flatcarUpdatesURL = flag.String("sync-update-url", "https://public.update.flatcar-linux.net/v1/update/", "Flatcar update URL to sync from")
-	checkFrequencyVal = flag.String("sync-interval", "1h", "Sync check interval (the minimum depends on the number of channels to sync, e.g., 8m for 8 channels incl. different architectures)")
-	appLogoPath       = flag.String("client-logo", "", "Client app logo, should be a path to svg file")
-	appTitle          = flag.String("client-title", "", "Client app title")
-	appHeaderStyle    = flag.String("client-header-style", "light", "Client app header style, should be either dark or light")
-	apiEndpointSuffix = flag.String("api-endpoint-suffix", "", "Additional suffix for the API endpoint to serve Omaha clients on; use a secret to only serve your clients, e.g., mysecret results in /v1/update/mysecret")
+	logger              = util.NewLogger("nebraska")
+	flatcarUpdatesURL   = flag.String("sync-update-url", "https://public.update.flatcar-linux.net/v1/update/", "Flatcar update URL to sync from")
+	checkFrequencyVal   = flag.String("sync-interval", "1h", "Sync check interval (the minimum depends on the number of channels to sync, e.g., 8m for 8 channels incl. different architectures)")
+	appLogoPath         = flag.String("client-logo", "", "Client app logo, should be a path to svg file")
+	appTitle            = flag.String("client-title", "", "Client app title")
+	appHeaderStyle      = flag.String("client-header-style", "light", "Client app header style, should be either dark or light")
+	apiEndpointSuffix   = flag.String("api-endpoint-suffix", "", "Additional suffix for the API endpoint to serve Omaha clients on; use a secret to only serve your clients, e.g., mysecret results in /v1/update/mysecret")
 )
 
 func main() {
