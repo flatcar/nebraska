@@ -83,7 +83,7 @@ func getArch(os *omahaSpec.OS, appReq *omahaSpec.AppRequest) api.Arch {
 			return arch
 		}
 	}
-	logger.Warn().Msg("getArch - unknown arch, assuming amd64 arch")
+	logger.Debug().Msg("getArch - unknown arch, assuming amd64 arch")
 	return api.ArchAMD64
 }
 
@@ -113,14 +113,14 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 
 		for _, event := range reqApp.Events {
 			if err := h.processEvent(reqApp.MachineID, reqApp.ID, group, event); err != nil {
-				logger.Warn().Msgf("processEvent error %s", err.Error())
+				logger.Debug().Msgf("processEvent error %s", err.Error())
 			}
 			respApp.AddEvent()
 		}
 
 		if reqApp.Ping != nil {
 			if _, err := h.crAPI.RegisterInstance(reqApp.MachineID, reqApp.MachineAlias, ip, reqApp.Version, reqApp.ID, group); err != nil {
-				logger.Warn().Msgf("processPing error %s", err.Error())
+				logger.Debug().Msgf("processPing error %s", err.Error())
 			}
 			respApp.AddPing()
 		}
