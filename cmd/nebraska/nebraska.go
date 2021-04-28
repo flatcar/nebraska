@@ -46,6 +46,10 @@ var (
 	ghReadWriteTeams    = flag.String("gh-rw-teams", "", "comma-separated list of read-write GitHub teams in the org/team format")
 	ghReadOnlyTeams     = flag.String("gh-ro-teams", "", "comma-separated list of read-only GitHub teams in the org/team format")
 	ghEnterpriseURL     = flag.String("gh-enterprise-url", "", fmt.Sprintf("base URL of the enterprise instance if using GHE; can be taken from %s env var too", ghEnterpriseURLEnvName))
+	oidcClientID        = flag.String("oidc-client-id", "", "OIDC client ID used for authentication")
+	oidcIssuerURL       = flag.String("oidc-issuer-url", "", "OIDC issuer URL used for authentication")
+	oidcAdminRoles      = flag.String("oidc-admin-roles", "", "comma-separated list of accepted roles with admin access")
+	oidcViewerRoles     = flag.String("oidc-viewer-roles", "", "comma-separated list of accepted roles with viewer access")
 	logger              = zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr}).Hook(
 		zerolog.HookFunc(func(e *zerolog.Event, level zerolog.Level, message string) {
 			e.Str("context", "nebraska")
@@ -88,6 +92,7 @@ func mainWithError() error {
 	var (
 		noopAuthConfig *auth.NoopAuthConfig
 		ghAuthConfig   *auth.GithubAuthConfig
+		oidcAuthConfig *auth.OIDCAuthConfig
 	)
 
 	switch *authMode {
@@ -129,6 +134,18 @@ func mainWithError() error {
 			DefaultTeamID:     defaultTeam.ID,
 			EnterpriseURL:     ghEnterpriseURL,
 		}
+	case "oidc":
+		defaultTeam, err := api.GetTeam()
+		if err != nil {
+			return err
+		}
+		oidcAuthConfig = &auth.OIDCAuthConfig{
+			DefaultTeamID: defaultTeam.ID,
+			ClientID:      *oidcClientID,
+			IssuerURL:     *oidcIssuerURL,
+			AdminRoles:    strings.Split(*oidcAdminRoles, ","),
+			ViewerRoles:   strings.Split(*oidcViewerRoles, ","),
+		}
 	default:
 		return fmt.Errorf("unknown auth mode %q", *authMode)
 	}
@@ -145,6 +162,7 @@ func mainWithError() error {
 		nebraskaURL:         *nebraskaURL,
 		noopAuthConfig:      noopAuthConfig,
 		githubAuthConfig:    ghAuthConfig,
+		oidcAuthConfig:      oidcAuthConfig,
 		flatcarUpdatesURL:   *flatcarUpdatesURL,
 		checkFrequency:      checkFrequency,
 	}

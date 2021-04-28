@@ -5,6 +5,7 @@ go 1.13
 require (
 	github.com/Depado/ginprom v1.7.0
 	github.com/blang/semver/v4 v4.0.0
+	github.com/coreos/go-oidc/v3 v3.0.0 // indirect
 	github.com/doug-martin/goqu/v9 v9.11.0
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
 	github.com/facebookgo/ensure v0.0.0-20160127193407-b4ab57deab51 // indirect
@@ -40,3 +41,4 @@ require (
 	gopkg.in/guregu/null.v4 v4.0.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
+

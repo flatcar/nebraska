@@ -54,6 +54,7 @@ type controllerConfig struct {
 	nebraskaURL         string
 	noopAuthConfig      *auth.NoopAuthConfig
 	githubAuthConfig    *auth.GithubAuthConfig
+	oidcAuthConfig      *auth.OIDCAuthConfig
 	flatcarUpdatesURL   string
 	checkFrequency      time.Duration
 }
@@ -115,6 +116,9 @@ func getAuthenticator(config *controllerConfig) (auth.Authenticator, error) {
 	}
 	if config.githubAuthConfig != nil {
 		return auth.NewGithubAuthenticator(config.githubAuthConfig), nil
+	}
+	if config.oidcAuthConfig != nil {
+		return auth.NewOIDCAuthenticator(config.oidcAuthConfig), nil
 	}
 	return nil, fmt.Errorf("authentication method not configured")
 }
