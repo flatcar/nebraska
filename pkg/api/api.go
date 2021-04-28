@@ -7,8 +7,9 @@ import (
 	//register "pgx" sql driver
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/jmoiron/sqlx"
-	"github.com/rs/zerolog"
 	migrate "github.com/rubenv/sql-migrate"
+
+	"github.com/kinvolk/nebraska/pkg/util"
 
 	// Postgresql driver
 	_ "github.com/lib/pq"
@@ -37,10 +38,7 @@ func nowUTC() time.Time {
 }
 
 var (
-	logger = zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr}).Hook(
-		zerolog.HookFunc(func(e *zerolog.Event, level zerolog.Level, message string) {
-			e.Str("context", "api")
-		}))
+	logger = util.NewLogger("api")
 
 	// ErrNoRowsAffected indicates that no rows were affected in an update or
 	// delete database operation.

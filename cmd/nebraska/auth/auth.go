@@ -1,19 +1,14 @@
 package auth
 
 import (
-	"os"
-
 	"github.com/gin-gonic/gin"
-	"github.com/rs/zerolog"
 
 	"github.com/kinvolk/nebraska/cmd/nebraska/ginhelpers"
+	"github.com/kinvolk/nebraska/pkg/util"
 )
 
 var (
-	logger = zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr}).Hook(
-		zerolog.HookFunc(func(e *zerolog.Event, level zerolog.Level, message string) {
-			e.Str("context", "auth")
-		}))
+	logger = util.NewLogger("auth")
 )
 
 // Authenticator provides a way to authenticate a user sending an HTTP

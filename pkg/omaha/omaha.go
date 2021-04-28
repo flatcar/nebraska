@@ -5,20 +5,17 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"os"
 	"strconv"
 
 	omahaSpec "github.com/kinvolk/go-omaha/omaha"
 	"github.com/rs/zerolog"
 
 	"github.com/kinvolk/nebraska/pkg/api"
+	"github.com/kinvolk/nebraska/pkg/util"
 )
 
 var (
-	logger = zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr}).Hook(
-		zerolog.HookFunc(func(e *zerolog.Event, level zerolog.Level, message string) {
-			e.Str("context", "omaha")
-		}))
+	logger = util.NewLogger("omaha")
 
 	initialFlatcarGroups = map[string]string{
 		// amd64
