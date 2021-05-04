@@ -11,7 +11,7 @@ COPY . /nebraska-source/
 
 WORKDIR /nebraska-source
 
-RUN rm -rf frontend/node_modules tools/go-bindata tools/golangci-lint bin/nebraska && make frontend backend-binary
+RUN make frontend backend-binary
 
 FROM alpine:3.12.0
 
