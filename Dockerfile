@@ -1,11 +1,11 @@
-FROM alpine:3.12.0 as nebraska-build
+FROM golang:1.16-alpine as nebraska-build
 
 ENV GOPATH=/go \
     GOPROXY=https://proxy.golang.org \
 	GO111MODULE=on
 
 RUN apk update && \
-	apk add git go nodejs npm ca-certificates make musl-dev bash
+	apk add gcc git nodejs npm ca-certificates make musl-dev bash
 
 COPY . /nebraska-source/
 
