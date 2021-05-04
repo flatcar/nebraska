@@ -1,24 +1,25 @@
 FROM alpine:3.12.0 as nebraska-build
 
 ENV GOPATH=/go \
-    GOPROXY=https://proxy.golang.org
+    GOPROXY=https://proxy.golang.org \
+	GO111MODULE=on
 
 RUN apk update && \
 	apk add git go nodejs npm ca-certificates make musl-dev bash
 
-COPY . /go/src/github.com/kinvolk/nebraska/
+COPY . /nebraska-source/
 
-RUN cd /go/src/github.com/kinvolk/nebraska && \
-	rm -rf frontend/node_modules tools/go-bindata tools/golangci-lint bin/nebraska && \
-	make frontend backend-binary
+WORKDIR /nebraska-source
+
+RUN rm -rf frontend/node_modules tools/go-bindata tools/golangci-lint bin/nebraska && make frontend backend-binary
 
 FROM alpine:3.12.0
 
 RUN apk update && \
 	apk add ca-certificates tzdata
 
-COPY --from=nebraska-build /go/src/github.com/kinvolk/nebraska/bin/nebraska /nebraska/
-COPY --from=nebraska-build /go/src/github.com/kinvolk/nebraska/frontend/build/ /nebraska/static/
+COPY --from=nebraska-build /nebraska-source/bin/nebraska /nebraska/
+COPY --from=nebraska-build /nebraska-source/frontend/build/ /nebraska/static/
 
 ENV NEBRASKA_DB_URL "postgres://postgres@postgres:5432/nebraska?sslmode=disable&connect_timeout=10"
 EXPOSE 8000
