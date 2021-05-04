@@ -7,7 +7,7 @@ This section has information on how to contribute to Nebraska. It assumes you ha
 this repository (or your own Github fork).
 
 Any contributions to the project are accepted under the terms of the project's
-license ([AGPL v3](../LICENSE)).
+license ([Apache 2.0](../LICENSE)).
 
 ## Code of Conduct
 

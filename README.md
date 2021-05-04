@@ -55,4 +55,4 @@ For instructions on how to set up user access, please check the [authorization d
 
 ## License
 
-Nebraska is released under the terms of the [AGPL v3](https://www.gnu.org/licenses/agpl-3.0.en.html), and was forked from the [CoreRoller](https://github.com/coreroller/coreroller) project (licensed under [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0)).
+Nebraska is released under the terms of the [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0), and was forked from the [CoreRoller](https://github.com/coreroller/coreroller) project.
