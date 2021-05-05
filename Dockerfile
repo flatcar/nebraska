@@ -18,7 +18,7 @@ FROM alpine:3.12.0
 RUN apk update && \
 	apk add ca-certificates tzdata
 
-COPY --from=nebraska-build /nebraska-source/bin/nebraska /nebraska/
+COPY --from=nebraska-build /nebraska-source/backend/bin/nebraska /nebraska/
 COPY --from=nebraska-build /nebraska-source/frontend/build/ /nebraska/static/
 
 ENV NEBRASKA_DB_URL "postgres://postgres@postgres:5432/nebraska?sslmode=disable&connect_timeout=10"

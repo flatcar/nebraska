@@ -1,11 +1,11 @@
 .DS_Store
 *.swp
 *sublime*
-bin
 node_modules
 frontend/yarn-error.log
 frontend/src/js/icons/*.json
 
+backend/bin
 coverage.out
-/tools/go-bindata
-/tools/golangci-lint
+backend/tools/go-bindata
+backend/tools/golangci-lint

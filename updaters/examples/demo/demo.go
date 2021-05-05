@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/facebookgo/grace/gracehttp"
-	cr "github.com/kinvolk/nebraska/updaters/lib/go"
+	cr "github.com/kinvolk/nebraska/backend/updaters/lib/go"
 )
 
 const (

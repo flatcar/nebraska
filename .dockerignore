@@ -2,5 +2,6 @@
 frontend/build
 docs/
 bin/nebraska
-tools/
+backend/tools/
+backend/bin
 charts/
