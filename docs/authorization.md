@@ -140,6 +140,73 @@ the app configuration can have different values:
 
 Rest of the steps is the same.
 
+# Deploying on Kubernetes using the Helm Chart
+
+We maintain a Helm Chart for deploying a Nebraska instance to Kubernetes. The
+Helm Chart offers flexible configuration options such as:
+
+- Deploy a single-replica `PostgreSQL` database together with Nebraska. We use
+  the container image and also the Helm Chart (as a subchart) from
+  [Bitnami](https://github.com/bitnami/charts/tree/master/bitnami/postgresql)
+
+- Enable / disable and configuring persistence for both Nebraska and PostgreSQL
+  (persistence is disabled by default)
+
+- Common deployment parameters (exposing through `Ingress`, replica count, etc.)
+
+- All [Nebraska application configration](https://github.com/kinvolk/nebraska/tree/master/charts/nebraska#nebraska-configuration)
+
+For the complete list of all available customization options, please read the
+[Helm Chart README](https://github.com/kinvolk/nebraska/blob/master/charts/nebraska/README.md).
+
+To install the Helm Chart using the default configuration (noop authentication),
+you can simply execute:
+
+```console
+$ helm repo add nebraska https://kinvolk.github.io/nebraska/
+$ helm install my-nebraska nebraska/nebraska
+```
+
+You probably need to customize the installation, then use a Helm values file.
+Eg.:
+
+```yaml
+# nebraska-values.yaml
+config:
+  app:
+    title: Nebraska
+
+  auth:
+    mode: github
+    github:
+      clientID: <your clientID obtained during GitHub App registration>
+      clientSecret: <your clientSecret obtained during GitHub App registration>
+      sessionAuthKey: <64 random hexadecimal characters>
+      sessionCryptKey: <32 random hexadecimal characters>
+      webhookSecret: <random Secret used in GitHub App registration>
+
+ingress:
+  annotations:
+    kubernetes.io/ingress.class: <your ingress class>
+  hosts:
+    - nebraska.example.com
+
+postgresql:
+  postgresqlPassword: <A secure password>
+  persistence:
+    enabled: true
+    storageClass: <A block storage-class>
+    accessModes:
+      - ReadWriteOnce
+    size: 1Gi
+```
+
+Then execute:
+
+```console
+$ helm install my-nebraska nebraska/nebraska --values nebraska-values.yaml
+```
+
 # Personal Access Tokens (GitHub authentication)
 
 How a Nebraska instance does authentication depends on existence of the
