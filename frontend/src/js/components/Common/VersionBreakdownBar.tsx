@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Channel } from '../../api/apiDataTypes';
-import { cleanSemverVersion, makeColorsForVersions } from '../../constants/helpers';
+import { cleanSemverVersion, makeColorsForVersions } from '../../utils/helpers';
 
 const useStyles = makeStyles({
   noBorder: {

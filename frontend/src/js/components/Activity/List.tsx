@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { Activity } from '../../api/apiDataTypes';
-import { makeLocaleTime } from '../../constants/helpers';
+import { makeLocaleTime } from '../../utils/helpers';
 import Item from './Item';
 
 const useStyles = makeStyles(theme => ({

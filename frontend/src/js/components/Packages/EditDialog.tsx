@@ -16,12 +16,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Field, Form, Formik } from 'formik';
 import { Select, TextField } from 'formik-material-ui';
 import React from 'react';
-import _ from 'underscore';
 import * as Yup from 'yup';
 import { Channel, Package } from '../../api/apiDataTypes';
-import { ARCHES } from '../../constants/helpers';
-import { REGEX_SEMVER } from '../../constants/regex';
 import { applicationsStore } from '../../stores/Stores';
+import { ARCHES } from '../../utils/helpers';
+import { REGEX_SEMVER } from '../../utils/regex';
 
 const useStyles = makeStyles(theme => ({
   topSelect: {
