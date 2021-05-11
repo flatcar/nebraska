@@ -9,7 +9,7 @@ import {
   getInstanceStatus,
   makeLocaleTime,
   prepareErrorMessage
-} from '../../constants/helpers';
+} from '../../utils/helpers';
 
 interface StatusHistoryItemProps {
   entry: InstanceStatusHistory;

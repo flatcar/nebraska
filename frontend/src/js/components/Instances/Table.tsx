@@ -7,7 +7,7 @@ import React from 'react';
 import semver from 'semver';
 import _ from 'underscore';
 import { Channel, Instance } from '../../api/apiDataTypes';
-import { cleanSemverVersion } from '../../constants/helpers';
+import { cleanSemverVersion } from '../../utils/helpers';
 import Item from './Item';
 
 function Table(props: {

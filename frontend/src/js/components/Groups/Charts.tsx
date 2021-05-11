@@ -16,10 +16,8 @@ import {
   getInstanceStatus,
   getMinuteDifference,
   makeColorsForVersions,
-  makeLocaleTime,
-  useGroupVersionBreakdown,
-} from '../../constants/helpers';
-import { groupChartStore } from '../../stores/Stores';
+  makeLocaleTime
+} from '../../utils/helpers';
 import Loader from '../Common/Loader';
 import SimpleTable from '../Common/SimpleTable';
 import makeStatusDefs from '../Instances/StatusDefs';

@@ -5,8 +5,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import React from 'react';
 import { Channel, Package } from '../../api/apiDataTypes';
-import { ARCHES, cleanSemverVersion } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
+import { ARCHES, cleanSemverVersion } from '../../utils/helpers';
 import MoreMenu from '../Common/MoreMenu';
 import ChannelAvatar from './ChannelAvatar';
 

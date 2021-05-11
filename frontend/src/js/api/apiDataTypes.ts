@@ -1,4 +1,4 @@
-import { getInstanceStatus } from "../constants/helpers";
+import { getInstanceStatus } from "../utils/helpers";
 
 type Arch = number;
 

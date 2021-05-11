@@ -15,7 +15,7 @@ import React, { ChangeEvent } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import API from '../../api/API';
 import { Application, Group } from '../../api/apiDataTypes';
-import { getInstanceStatus, useGroupVersionBreakdown } from '../../constants/helpers';
+import { getInstanceStatus, useGroupVersionBreakdown } from '../../utils/helpers';
 import Empty from '../Common/EmptyContent';
 import ListHeader from '../Common/ListHeader';
 import Loader from '../Common/Loader';
