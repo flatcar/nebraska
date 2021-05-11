@@ -5,6 +5,9 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
+import API from '../api/API';
+import { setConfig } from '../stores/redux/features/config';
+import { useDispatch } from '../stores/redux/hooks';
 import Footer from './Footer';
 import Header from './Header';
 import ApplicationLayout from './Layouts/ApplicationLayout';
@@ -49,6 +52,15 @@ const nebraskaTheme = createMuiTheme({
 });
 
 export default function Main() {
+  const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    API.getConfig().then(config => {
+      console.debug("Got config", config)
+      dispatch(setConfig(config));
+    });
+  }, [])
+
   return (
     <ThemeProvider theme={nebraskaTheme}>
       <CssBaseline />
