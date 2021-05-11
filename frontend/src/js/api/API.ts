@@ -1,6 +1,7 @@
 import PubSub from 'pubsub-js';
 import queryString from 'querystring';
 import _ from 'underscore';
+import { getToken } from '../utils/auth';
 import { Application, Channel, FlatcarAction, Group, Package } from './apiDataTypes';
 
 const MAIN_PROGRESS_BAR = 'main_progress_bar';
@@ -225,8 +226,14 @@ class API {
 
   static getJSON(url: string) {
     PubSub.publish(MAIN_PROGRESS_BAR, 'add');
+    const token = getToken();
 
-    return fetch(url)
+    return fetch(url
+      ,{
+        headers:{
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then(response => {
         if (!response.ok) {
           throw response;
@@ -244,14 +251,24 @@ class API {
   ): Promise<any>;
 
   static doRequest(method: string, url: string, data: REQUEST_DATA_TYPE = '') {
+    const token = getToken();
     PubSub.publish(MAIN_PROGRESS_BAR, 'add');
     let fetchConfigObject: {
       method: string;
       body?: REQUEST_DATA_TYPE;
+      headers?: {
+        [prop: string]: any;
+      };
     } = { method: 'GET' };
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
     if (method === 'DELETE') {
       fetchConfigObject = {
         method,
+        headers
       };
       return fetch(url, fetchConfigObject).finally(() => PubSub.publish(MAIN_PROGRESS_BAR, 'done'));
     } else {
@@ -259,6 +276,7 @@ class API {
         fetchConfigObject = {
           method,
           body: data,
+          headers,
         };
       }
     }

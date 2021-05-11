@@ -11,8 +11,8 @@ import CreateOutlined from '@material-ui/icons/CreateOutlined';
 import DOMPurify from 'dompurify';
 import React from 'react';
 import _ from 'underscore';
-import API from '../api/API';
 import nebraskaLogo from '../icons/nebraska-logo.json';
+import { useTypedSelector } from '../stores/redux/reducers';
 
 const useStyles = makeStyles(theme => ({
   title: {
@@ -126,14 +126,10 @@ function Appbar(props: AppbarProps) {
 }
 
 export default function Header() {
-  const [gotConfig, setGotConfig] = React.useState(false);
+  const config = useTypedSelector(state => state.config);
   const theme = useTheme();
   const projectLogo = _.isEmpty(nebraskaLogo) ? null : nebraskaLogo;
-
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLButtonElement | null>(null);
-  const [config, setConfig] = React.useState<NebraskaConfig>(
-    JSON.parse(localStorage.getItem('nebraska_config') || "") as NebraskaConfig
-  );
 
   function handleMenu(event: React.MouseEvent<HTMLButtonElement>) {
     setMenuAnchorEl(event.currentTarget);
@@ -142,21 +138,6 @@ export default function Header() {
   function handleClose() {
     setMenuAnchorEl(null);
   }
-
-  // @todo: This should be abstracted but we should do it when we integrate Redux.
-  React.useEffect(() => {
-    if (!gotConfig) {
-      API.getConfig()
-        .then((newConfig: NebraskaConfig) => {
-          localStorage.setItem('nebraska_config', JSON.stringify(newConfig));
-          setGotConfig(true);
-          setConfig(newConfig);
-        })
-        .catch(error => {
-          console.error(error);
-        });
-    }
-  }, [gotConfig, config]);
 
   const props = {config, menuAnchorEl, projectLogo: projectLogo as object, handleClose, handleMenu} as AppbarProps;
   const appBar = <Appbar {...props} />

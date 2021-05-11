@@ -11,6 +11,7 @@ import { Area, AreaChart, CartesianGrid, LineType, Tooltip, XAxis, YAxis } from 
 import semver from 'semver';
 import _ from 'underscore';
 import { Group } from '../../api/apiDataTypes';
+import { groupChartStore } from '../../stores/Stores';
 import {
   cleanSemverVersion,
   getInstanceStatus,
