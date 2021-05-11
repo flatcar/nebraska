@@ -1,0 +1,7 @@
+**/node_modules
+frontend/build
+docs/
+bin/nebraska
+backend/tools/
+backend/bin
+charts/

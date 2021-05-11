@@ -16,7 +16,7 @@ else
 	VERSION := $(TAG)-dirty
 endif
 
-LDFLAGS := "-X github.com/kinvolk/nebraska/pkg/version.Version=$(VERSION) -extldflags "-static""
+LDFLAGS := "-X github.com/kinvolk/nebraska/backend/pkg/version.Version=$(VERSION) -extldflags "-static""
 .PHONY: all
 all: backend tools frontend
 
@@ -28,15 +28,17 @@ check-code-coverage:
 print-code-coverage:
 	go tool cover -html=coverage.out
 container_id:
+	cd backend && \
 	./tools/setup_local_db.sh \
 		--id-file container_id.tmp \
 		--db-name nebraska_tests \
 		--password nebraska
-	mv container_id.tmp container_id
+	cd backend && mv container_id.tmp container_id
 
 .PHONY: check-backend-with-container
 check-backend-with-container: container_id
 	set -e; \
+	cd backend && \
 	trap "$(DOCKER_CMD) kill $$(cat container_id); $(DOCKER_CMD) rm $$(cat container_id); rm -f container_id" EXIT; \
 	go test -p 1 ./...
 
@@ -83,14 +85,14 @@ test-clean-work-tree-backend:
 
 .PHONY: tools
 tools:
-	go build -o bin/initdb ./cmd/initdb
-	go build -o bin/userctl ./cmd/userctl
+	cd backend && go build -o bin/initdb ./cmd/initdb
+	cd backend && go build -o bin/userctl ./cmd/userctl
 
-tools/go-bindata: go.mod go.sum
-	go build -o tools/go-bindata github.com/kevinburke/go-bindata/go-bindata
+backend/tools/go-bindata: backend/go.mod backend/go.sum
+	cd backend && go build -o ./tools/go-bindata github.com/kevinburke/go-bindata/go-bindata
 
-tools/golangci-lint: go.mod go.sum
-	go build -o ./tools/golangci-lint github.com/golangci/golangci-lint/cmd/golangci-lint
+backend/tools/golangci-lint: backend/go.mod backend/go.sum
+	cd backend && go build -o ./tools/golangci-lint github.com/golangci/golangci-lint/cmd/golangci-lint
 
 .PHONY: container-nebraska
 container-nebraska:
@@ -107,20 +109,20 @@ container: container-nebraska
 backend-ci: backend test-clean-work-tree-backend check-backend-with-container
 
 .PHONY: run-generators
-run-generators: tools/go-bindata
-	PATH="$(abspath tools):$${PATH}" go generate ./...
+run-generators: backend/tools/go-bindata
+	cd backend && PATH="$(abspath backend/tools):$${PATH}" go generate ./...
 
 .PHONY: build-backend-binary
 build-backend-binary:
-	go build -trimpath -ldflags ${LDFLAGS} -o bin/nebraska ./cmd/nebraska
+	cd backend && go build -trimpath -ldflags ${LDFLAGS} -o bin/nebraska ./cmd/nebraska
 
 .PHONY: backend-code-checks
-backend-code-checks: tools/golangci-lint
+backend-code-checks: backend/tools/golangci-lint
 	# this is to get nice error messages when something doesn't
 	# build (both the project and the tests), golangci-lint's
 	# output in this regard in unreadable.
-	go build ./...
-	./tools/check_pkg_test.sh
-	NEBRASKA_SKIP_TESTS=1 go test ./... >/dev/null
-	./tools/golangci-lint run --fix
-	go mod tidy
+	cd backend && go build ./...
+	cd backend && ./tools/check_pkg_test.sh
+	cd backend && NEBRASKA_SKIP_TESTS=1 go test ./... >/dev/null
+	cd backend && ./tools/golangci-lint run --fix
+	cd backend && go mod tidy
