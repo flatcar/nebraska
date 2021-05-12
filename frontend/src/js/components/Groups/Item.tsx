@@ -40,7 +40,7 @@ function Item(props: {
 
   const version_breakdown = useGroupVersionBreakdown(props.group);
   const description = props.group.description || 'No description provided';
-  const channel = props.group.channel || {};
+  const channel = props.group.channel || null;
 
   const groupChannel = _.isEmpty(props.group.channel) ? (
     <CardLabel>No channel provided</CardLabel>

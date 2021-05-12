@@ -5,7 +5,6 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import { useTheme } from '@material-ui/styles';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Channel } from '../../api/apiDataTypes';
@@ -63,7 +62,7 @@ function VersionsTooltip(props: {
   );
 }
 
-function VersionProgressBar(props: { version_breakdown: any; channel: Channel }) {
+function VersionProgressBar(props: { version_breakdown: any; channel: Channel | null}) {
   const classes = useChartStyle();
   const theme = useTheme();
   let lastVersionChannel: string | null = '';
@@ -80,7 +79,7 @@ function VersionProgressBar(props: { version_breakdown: any; channel: Channel })
     colors: {},
   });
 
-  function setup(version_breakdown: any, channel: Channel) {
+  function setup(version_breakdown: any, channel: Channel | null) {
     const data: { [key: string]: any } = {};
     const other = {
       versions: [],
@@ -157,10 +156,5 @@ function VersionProgressBar(props: { version_breakdown: any; channel: Channel })
     </ResponsiveContainer>
   );
 }
-
-VersionProgressBar.propTypes = {
-  version_breakdown: PropTypes.array.isRequired,
-  channel: PropTypes.object.isRequired,
-};
 
 export default VersionProgressBar;
