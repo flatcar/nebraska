@@ -8,6 +8,7 @@ import { Route, Switch } from 'react-router-dom';
 import API from '../api/API';
 import { setConfig } from '../stores/redux/features/config';
 import { useDispatch } from '../stores/redux/hooks';
+import { useAuthRedirect } from '../utils/auth';
 import Footer from './Footer';
 import Header from './Header';
 import ApplicationLayout from './Layouts/ApplicationLayout';
@@ -60,6 +61,8 @@ export default function Main() {
       dispatch(setConfig(config));
     });
   }, [])
+
+  useAuthRedirect();
 
   return (
     <ThemeProvider theme={nebraskaTheme}>
