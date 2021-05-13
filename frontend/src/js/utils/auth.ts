@@ -36,15 +36,44 @@ export function isValidToken(token: string) {
   return true;
 }
 
+function getUserInfoFromToken(token: string) {
+  const info: UserState = {
+    name: '',
+    email: '',
+  };
+
+  if (token === '') {
+    return info;
+  }
+
+  const decoded = jwt_decode(token) as JWT;
+
+  info.name = decoded.given_name || '';
+  info.email = decoded.email || '';
+
+  return info;
+}
+
 export function useAuthRedirect() {
   const config = useTypedSelector(state => state.config);
   const user = useTypedSelector(state => state.user);
   const dispatch = useDispatch();
   const history = useHistory();
 
+  function shouldUpdateUser(token: string) {
+    const newInfo = getUserInfoFromToken(token);
+
+    for (const [key, value] of Object.entries(newInfo)) {
+      if (user[key] !== value) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   React.useEffect(() => {
     const params = new URLSearchParams(history.location.search);
-
     // We only do the login dance if the auth mode is OIDC
     if (config.auth_mode !== 'oidc') {
       return;
@@ -60,6 +89,10 @@ export function useAuthRedirect() {
     }
 
     const currentToken = getToken() || '';
+
+    if (isValidToken(currentToken) && shouldUpdateUser(currentToken)) {
+      dispatch(setUser({authenticated: true, ...getUserInfoFromToken(currentToken)}));
+    }
 
     if ((!isValidToken(currentToken) || !user?.authenticated) && !!config.login_url) {
       window.location.href = config.login_url + '?login_redirect_url=' + window.location.href;
