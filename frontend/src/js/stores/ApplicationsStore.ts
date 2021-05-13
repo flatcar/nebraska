@@ -2,6 +2,8 @@ import _, { Collection, List } from 'underscore';
 import API from '../api/API';
 import { Application, Channel, Group, Package } from '../api/apiDataTypes';
 import Store from './BaseStore';
+import { setUser } from './redux/actions';
+import store from './redux/store';
 
 class ApplicationsStore extends Store {
   applications: Application[] | null;
@@ -36,9 +38,16 @@ class ApplicationsStore extends Store {
         this.emitChange();
       })
       .catch(error => {
-        if (error.status === 404) {
-          this.applications = [];
-          this.emitChange();
+        switch (error.status) {
+          case 404:
+            this.applications = [];
+            this.emitChange();
+            break;
+          case 401:
+            store.dispatch(setUser({authenticated: false}))
+            break;
+          default:
+            console.debug('Error', error)
         }
       });
   }
