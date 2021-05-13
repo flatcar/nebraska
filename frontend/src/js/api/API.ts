@@ -260,22 +260,25 @@ class API {
   static doRequest(method: string, url: string, data: REQUEST_DATA_TYPE = '') {
     const token = getToken();
     PubSub.publish(MAIN_PROGRESS_BAR, 'add');
+
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
     let fetchConfigObject: {
       method: string;
       body?: REQUEST_DATA_TYPE;
       headers?: {
         [prop: string]: any;
       };
-    } = { method: 'GET' };
-
-    const headers = {
-      Authorization: `Bearer ${token}`,
+    } = {
+      method: 'GET',
+      headers,
     };
 
     if (method === 'DELETE') {
       fetchConfigObject = {
         method,
-        headers
       };
       return fetch(url, fetchConfigObject).finally(() => PubSub.publish(MAIN_PROGRESS_BAR, 'done'));
     } else {
@@ -283,7 +286,6 @@ class API {
         fetchConfigObject = {
           method,
           body: data,
-          headers,
         };
       }
     }
