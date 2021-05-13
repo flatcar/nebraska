@@ -10,7 +10,7 @@ export interface State {
 }
 
 const initialState: State = {
-  config: JSON.parse(localStorage.getItem(CONFIG_STORAGE_KEY) || "") as NebraskaConfig,
+  config: JSON.parse(localStorage.getItem(CONFIG_STORAGE_KEY) || "{}") as NebraskaConfig,
   user: {}
 };
 
