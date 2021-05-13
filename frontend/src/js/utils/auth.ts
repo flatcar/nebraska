@@ -1,7 +1,8 @@
 import jwt_decode from "jwt-decode";
 import React from "react";
 import { useHistory } from "react-router";
-import { useSelector } from "../stores/redux/hooks";
+import { setUser } from "../stores/redux/features/user";
+import { useDispatch, useSelector } from "../stores/redux/hooks";
 
 const TOKEN_KEY = 'token';
 
@@ -36,6 +37,8 @@ export function isValidToken(token: string) {
 
 export function useAuthRedirect() {
   const config = useSelector(state => state.config);
+  const user = useSelector(state => state.user);
+  const dispatch = useDispatch();
   const history = useHistory();
 
   React.useEffect(() => {
@@ -50,13 +53,16 @@ export function useAuthRedirect() {
     if (!!token) {
       setToken(token);
       // Discard the URL search params
+      dispatch(setUser({authenticated: true}));
       history.push(history.location.pathname)
       return;
     }
 
-    if (!isValidToken(getToken() || '') && !!config.login_url) {
+    const currentToken = getToken() || '';
+
+    if ((!isValidToken(currentToken) || !user?.authenticated) && !!config.login_url) {
       window.location.href = config.login_url + '?login_redirect_url=' + window.location.href;
     }
   },
-  [history, config]);
+  [history, user, config]);
 }
