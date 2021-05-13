@@ -12,6 +12,7 @@ import DOMPurify from 'dompurify';
 import React from 'react';
 import _ from 'underscore';
 import nebraskaLogo from '../icons/nebraska-logo.json';
+import { UserState } from '../stores/redux/actions';
 import { useTypedSelector } from '../stores/redux/reducers';
 
 const useStyles = makeStyles(theme => ({
@@ -31,6 +32,12 @@ const useStyles = makeStyles(theme => ({
   svgContainer: {
     '& svg': { maxHeight: '3rem' },
   },
+  userName: {
+    fontSize: '1.5em',
+  },
+  email: {
+    fontSize: '1.2em',
+  }
 }));
 
 function prepareDarkTheme(theme: Theme) {
@@ -56,6 +63,7 @@ interface NebraskaConfig {
 
 interface AppbarProps {
   config: NebraskaConfig | null;
+  user: UserState | null;
   menuAnchorEl: MenuProps['anchorEl'];
   projectLogo: object;
   handleClose: MenuProps['onClose'];
@@ -63,12 +71,18 @@ interface AppbarProps {
 }
 
 function Appbar(props: AppbarProps) {
-  const { config, menuAnchorEl, projectLogo, handleClose, handleMenu } = props;
+  const { config, user, menuAnchorEl, projectLogo, handleClose, handleMenu } = props;
   const classes = useStyles();
 
   React.useEffect(() => {
     document.title = (config?.title) || 'Nebraska';
   }, [config]);
+
+  function showAccountMenu() {
+    return config?.access_management_url || user?.name || user?.email;
+  }
+
+  const showAccountButton = showAccountMenu();
 
   return (
     <AppBar position="static" className={classes.header}>
@@ -86,7 +100,7 @@ function Appbar(props: AppbarProps) {
           </Typography>
         )}
         <div style={{ flex: '1 0 0' }} />
-        {config?.access_management_url && (
+        {showAccountButton && (
           <IconButton
             aria-label="User menu"
             aria-controls="menu-appbar"
@@ -96,7 +110,7 @@ function Appbar(props: AppbarProps) {
             <AccountCircle />
           </IconButton>
         )}
-        {config?.access_management_url &&
+        {showAccountButton &&
           <Menu
             id="customized-menu"
             anchorEl={menuAnchorEl}
@@ -111,13 +125,28 @@ function Appbar(props: AppbarProps) {
               horizontal: 'right',
             }}
           >
-            <Button
-              component="a"
-              startIcon={<CreateOutlined />}
-              href={config.access_management_url}
+            <Box
+              paddingY={2}
+              paddingX={2}
+              textAlign="center"
             >
-              Manage Access
-            </Button>
+              {user?.name && <Typography className={classes.userName}>{user.name}</Typography>}
+              {user?.email && <Typography className={classes.email}>{user.email}</Typography>}
+            </Box>
+            <Box
+              paddingY={1}
+              paddingX={2}
+              textAlign="center"
+            >
+              <Button
+                component="a"
+                startIcon={<CreateOutlined />}
+                disabled={!config?.access_management_url}
+                href={config?.access_management_url || ''}
+              >
+                Manage Account
+              </Button>
+            </Box>
           </Menu>
         }
       </Toolbar>
@@ -126,7 +155,7 @@ function Appbar(props: AppbarProps) {
 }
 
 export default function Header() {
-  const config = useTypedSelector(state => state.config);
+  const {config, user} = useTypedSelector(state => ({config: state.config, user: state.user}));
   const theme = useTheme();
   const projectLogo = _.isEmpty(nebraskaLogo) ? null : nebraskaLogo;
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLButtonElement | null>(null);
@@ -139,7 +168,7 @@ export default function Header() {
     setMenuAnchorEl(null);
   }
 
-  const props = {config, menuAnchorEl, projectLogo: projectLogo as object, handleClose, handleMenu} as AppbarProps;
+  const props = {config, user, menuAnchorEl, projectLogo: projectLogo as object, handleClose, handleMenu} as AppbarProps;
   const appBar = <Appbar {...props} />
   // cachedConfig.appBarColor is for backward compatibility (the name used for the setting before).
   return config && (config.header_style === 'dark' || config.header_style === undefined && config.appBarColor === 'dark') ? (
