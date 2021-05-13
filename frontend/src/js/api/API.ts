@@ -1,7 +1,7 @@
 import PubSub from 'pubsub-js';
 import queryString from 'querystring';
 import _ from 'underscore';
-import { getToken } from '../utils/auth';
+import { getToken, setToken } from '../utils/auth';
 import { Application, Channel, FlatcarAction, Group, Package } from './apiDataTypes';
 
 const MAIN_PROGRESS_BAR = 'main_progress_bar';
@@ -237,6 +237,13 @@ class API {
       .then(response => {
         if (!response.ok) {
           throw response;
+        }
+
+        // The token has been renewed, let's store it.
+        const newIdToken = response.headers.get('id_token');
+        if (!!newIdToken && getToken() !== newIdToken) {
+          console.debug('Refreshed token')
+          setToken(newIdToken);
         }
         return response.json();
       })
