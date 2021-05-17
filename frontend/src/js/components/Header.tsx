@@ -132,7 +132,7 @@ export default function Header() {
 
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLButtonElement | null>(null);
   const [config, setConfig] = React.useState<NebraskaConfig>(
-    JSON.parse(localStorage.getItem('nebraska_config') || "") as NebraskaConfig
+    JSON.parse(localStorage.getItem('nebraska_config') || "{}") as NebraskaConfig
   );
 
   function handleMenu(event: React.MouseEvent<HTMLButtonElement>) {
