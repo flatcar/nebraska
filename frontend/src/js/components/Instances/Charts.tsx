@@ -117,7 +117,7 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
             radius={radius}
             innerRadius={radius * 0.8}
             padAngle={0.5}
-            labels={undefined}
+            labels={() => null}
             style={{
               data: { fill: ({ datum }) => datum.color },
             }}
