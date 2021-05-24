@@ -847,6 +847,8 @@ func (ctl *controller) getInstances(c *gin.Context) {
 	p.Status, _ = strconv.Atoi(c.Query("status"))
 	p.Page, _ = strconv.ParseUint(c.Query("page"), 10, 64)
 	p.PerPage, _ = strconv.ParseUint(c.Query("perpage"), 10, 64)
+	p.SortFilter = c.Query("sort")
+	p.SortOrder = c.Query("sortOrder")
 	duration := c.Query("duration")
 	result, err := ctl.api.GetInstances(p, duration)
 	if err == nil {
