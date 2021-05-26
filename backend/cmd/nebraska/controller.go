@@ -36,6 +36,8 @@ type ClientConfig struct {
 	Logo                string `json:"logo"`
 	Title               string `json:"title"`
 	HeaderStyle         string `json:"header_style"`
+	LoginURL            string `json:"login_url"`
+	AuthMode            string `json:"auth_mode"`
 }
 
 type controller struct {
@@ -54,6 +56,7 @@ type controllerConfig struct {
 	nebraskaURL         string
 	noopAuthConfig      *auth.NoopAuthConfig
 	githubAuthConfig    *auth.GithubAuthConfig
+	oidcAuthConfig      *auth.OIDCAuthConfig
 	flatcarUpdatesURL   string
 	checkFrequency      time.Duration
 }
@@ -116,6 +119,9 @@ func getAuthenticator(config *controllerConfig) (auth.Authenticator, error) {
 	if config.githubAuthConfig != nil {
 		return auth.NewGithubAuthenticator(config.githubAuthConfig), nil
 	}
+	if config.oidcAuthConfig != nil {
+		return auth.NewOIDCAuthenticator(config.oidcAuthConfig), nil
+	}
 	return nil, fmt.Errorf("authentication method not configured")
 }
 
@@ -133,6 +139,16 @@ func NewClientConfig(conf *controllerConfig) *ClientConfig {
 			config.AccessManagementURL = GithubAccessManagementURL
 		}
 	}
+
+	if conf.oidcAuthConfig != nil {
+		config.AuthMode = "oidc"
+		if conf.nebraskaURL == "" {
+			config.LoginURL = "http://localhost:8000/login"
+		} else {
+			config.LoginURL = conf.nebraskaURL + "/login"
+		}
+	}
+
 	config.NebraskaVersion = version.Version
 	config.Title = *appTitle
 	config.HeaderStyle = *appHeaderStyle

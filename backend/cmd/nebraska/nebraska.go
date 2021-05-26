@@ -38,7 +38,7 @@ var (
 	nebraskaURL         = flag.String("nebraska-url", "", "nebraska URL (http://host:port - required when hosting Flatcar packages in nebraska)")
 	httpLog             = flag.Bool("http-log", false, "Enable http requests logging")
 	httpStaticDir       = flag.String("http-static-dir", "../frontend/build", "Path to frontend static files")
-	authMode            = flag.String("auth-mode", "github", "authentication mode, available modes: noop, github")
+	authMode            = flag.String("auth-mode", "github", "authentication mode, available modes: noop, github, oidc")
 	ghClientID          = flag.String("gh-client-id", "", fmt.Sprintf("GitHub client ID used for authentication; can be taken from %s env var too", ghClientIDEnvName))
 	ghClientSecret      = flag.String("gh-client-secret", "", fmt.Sprintf("GitHub client secret used for authentication; can be taken from %s env var too", ghClientSecretEnvName))
 	ghSessionAuthKey    = flag.String("gh-session-secret", "", fmt.Sprintf("Session secret used for authenticating sessions in cookies used for storing GitHub info , will be generated if none is passed; can be taken from %s env var too", ghSessionAuthKeyEnvName))
@@ -47,6 +47,13 @@ var (
 	ghReadWriteTeams    = flag.String("gh-rw-teams", "", "comma-separated list of read-write GitHub teams in the org/team format")
 	ghReadOnlyTeams     = flag.String("gh-ro-teams", "", "comma-separated list of read-only GitHub teams in the org/team format")
 	ghEnterpriseURL     = flag.String("gh-enterprise-url", "", fmt.Sprintf("base URL of the enterprise instance if using GHE; can be taken from %s env var too", ghEnterpriseURLEnvName))
+	oidcClientID        = flag.String("oidc-client-id", "", "OIDC client ID used for authentication")
+	oidcClientSecret    = flag.String("oidc-client-secret", "", "OIDC client Secret used for authentication")
+	oidcIssuerURL       = flag.String("oidc-issuer-url", "", "OIDC issuer URL used for authentication")
+	oidcCallbackURL     = flag.String("oidc-callback-url", "", "OIDC callback URL configured in your URL provider, /login/cb")
+	oidcAdminRoles      = flag.String("oidc-admin-roles", "", "comma-separated list of accepted roles with admin access")
+	oidcViewerRoles     = flag.String("oidc-viewer-roles", "", "comma-separated list of accepted roles with viewer access")
+	oidcRolesPath       = flag.String("oidc-roles-path", "roles", "json path in which the roles array is present in the id token")
 	logger              = util.NewLogger("nebraska")
 	flatcarUpdatesURL   = flag.String("sync-update-url", "https://public.update.flatcar-linux.net/v1/update/", "Flatcar update URL to sync from")
 	checkFrequencyVal   = flag.String("sync-interval", "1h", "Sync check interval (the minimum depends on the number of channels to sync, e.g., 8m for 8 channels incl. different architectures)")
@@ -54,6 +61,7 @@ var (
 	appTitle            = flag.String("client-title", "", "Client app title")
 	appHeaderStyle      = flag.String("client-header-style", "light", "Client app header style, should be either dark or light")
 	apiEndpointSuffix   = flag.String("api-endpoint-suffix", "", "Additional suffix for the API endpoint to serve Omaha clients on; use a secret to only serve your clients, e.g., mysecret results in /v1/update/mysecret")
+	debug               = flag.Bool("debug", false, "sets log level to debug")
 )
 
 func main() {
@@ -65,8 +73,6 @@ func main() {
 
 func mainWithError() error {
 	flag.Parse()
-
-	debug := flag.Bool("debug", false, "sets log level to debug")
 
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
@@ -86,6 +92,7 @@ func mainWithError() error {
 	var (
 		noopAuthConfig *auth.NoopAuthConfig
 		ghAuthConfig   *auth.GithubAuthConfig
+		oidcAuthConfig *auth.OIDCAuthConfig
 	)
 
 	switch *authMode {
@@ -127,6 +134,23 @@ func mainWithError() error {
 			DefaultTeamID:     defaultTeam.ID,
 			EnterpriseURL:     ghEnterpriseURL,
 		}
+	case "oidc":
+		defaultTeam, err := api.GetTeam()
+		if err != nil {
+			return err
+		}
+		oidcAuthConfig = &auth.OIDCAuthConfig{
+			DefaultTeamID:   defaultTeam.ID,
+			ClientID:        *oidcClientID,
+			ClientSecret:    *oidcClientSecret,
+			IssuerURL:       *oidcIssuerURL,
+			CallbackURL:     *oidcCallbackURL,
+			AdminRoles:      strings.Split(*oidcAdminRoles, ","),
+			ViewerRoles:     strings.Split(*oidcViewerRoles, ","),
+			SessionAuthKey:  obtainSessionAuthKey(*ghSessionAuthKey),
+			SessionCryptKey: obtainSessionCryptKey(*ghSessionCryptKey),
+			RolesPath:       *oidcRolesPath,
+		}
 	default:
 		return fmt.Errorf("unknown auth mode %q", *authMode)
 	}
@@ -143,6 +167,7 @@ func mainWithError() error {
 		nebraskaURL:         *nebraskaURL,
 		noopAuthConfig:      noopAuthConfig,
 		githubAuthConfig:    ghAuthConfig,
+		oidcAuthConfig:      oidcAuthConfig,
 		flatcarUpdatesURL:   *flatcarUpdatesURL,
 		checkFrequency:      checkFrequency,
 	}
@@ -325,7 +350,9 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 
 	// Config router setup
 	configRouter := wrappedEngine.Group("/config", "config")
-	configRouter.Use(ctl.authenticate)
+	if *authMode != "oidc" {
+		configRouter.Use(ctl.authenticate)
+	}
 	configRouter.GET("/", ctl.getConfig)
 
 	// Host Flatcar packages payloads
@@ -336,7 +363,9 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 
 	// Serve frontend static content
 	staticRouter := wrappedEngine.Group("/", "static")
-	staticRouter.Use(ctl.authenticate)
+	if *authMode != "oidc" {
+		staticRouter.Use(ctl.authenticate)
+	}
 	staticRouter.StaticFile("", filepath.Join(*httpStaticDir, "index.html"))
 	for _, file := range []string{"index.html", "favicon.png", "robots.txt"} {
 		staticRouter.StaticFile(file, filepath.Join(*httpStaticDir, file))
