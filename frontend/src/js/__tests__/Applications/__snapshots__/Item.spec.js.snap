@@ -17,7 +17,7 @@ exports[`Application Item should render item correctly for no data 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
-          class="MuiGrid-root makeStyles-gridHeader-125 MuiGrid-container MuiGrid-justify-xs-space-between"
+          class="MuiGrid-root makeStyles-gridHeader-4 MuiGrid-container MuiGrid-justify-xs-space-between"
         >
           <div
             class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
@@ -26,7 +26,7 @@ exports[`Application Item should render item correctly for no data 1`] = `
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
             >
               <a
-                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-mainLink-127 MuiTypography-colorPrimary"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-mainLink-6 MuiTypography-colorPrimary"
                 href="/apps/123"
               >
                 ABC
@@ -36,20 +36,20 @@ exports[`Application Item should render item correctly for no data 1`] = `
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
             >
               <div
-                class="MuiBox-root MuiBox-root-171"
+                class="MuiBox-root MuiBox-root-13"
               >
                 <p
                   arial-label="group-id"
-                  class="MuiTypography-root makeStyles-idLabel-130 MuiTypography-body1 MuiTypography-noWrap"
+                  class="MuiTypography-root makeStyles-idLabel-9 MuiTypography-body1 MuiTypography-noWrap"
                 >
                   123
                 </p>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-173"
+                class="MuiBox-root MuiBox-root-15"
               >
                 <span
-                  class="MuiTypography-root makeStyles-descriptionLabel-129 MuiTypography-body1"
+                  class="MuiTypography-root makeStyles-descriptionLabel-8 MuiTypography-body1"
                 >
                   No description provided
                 </span>
@@ -75,7 +75,6 @@ exports[`Application Item should render item correctly for no data 1`] = `
                     aria-hidden="true"
                     class="MuiSvgIcon-root"
                     focusable="false"
-                    role="presentation"
                     viewBox="0 0 24 24"
                   >
                     <path
@@ -91,7 +90,7 @@ exports[`Application Item should render item correctly for no data 1`] = `
           </div>
         </div>
         <hr
-          class="MuiDivider-root makeStyles-innerDivider-131 MuiDivider-light"
+          class="MuiDivider-root makeStyles-innerDivider-10 MuiDivider-light"
         />
       </div>
       <div
@@ -104,15 +103,15 @@ exports[`Application Item should render item correctly for no data 1`] = `
             class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
           >
             <div
-              class="MuiBox-root MuiBox-root-199"
+              class="MuiBox-root MuiBox-root-16"
             >
               <span
-                class="MuiTypography-root makeStyles-featureLabel-128 MuiTypography-body1"
+                class="MuiTypography-root makeStyles-featureLabel-7 MuiTypography-body1"
               >
                 INSTANCES
               </span>
               <span
-                class="MuiTypography-root makeStyles-label-132 makeStyles-label-201 MuiTypography-body1"
+                class="MuiTypography-root makeStyles-label-11 makeStyles-label-18 MuiTypography-body1"
               >
                 <h5
                   class="MuiTypography-root MuiTypography-h5"
@@ -120,13 +119,12 @@ exports[`Application Item should render item correctly for no data 1`] = `
                   None
                 </h5>
                 <div
-                  class="MuiBox-root MuiBox-root-202"
+                  class="MuiBox-root MuiBox-root-19"
                 >
                   <svg
                     aria-hidden="true"
                     class="MuiSvgIcon-root MuiSvgIcon-colorDisabled"
                     focusable="false"
-                    role="presentation"
                     viewBox="0 0 24 24"
                   >
                     <path
@@ -137,7 +135,7 @@ exports[`Application Item should render item correctly for no data 1`] = `
                     />
                   </svg>
                   <div
-                    class="MuiBox-root MuiBox-root-203"
+                    class="MuiBox-root MuiBox-root-20"
                   >
                     <h6
                       class="MuiTypography-root MuiTypography-subtitle1"
@@ -150,7 +148,7 @@ exports[`Application Item should render item correctly for no data 1`] = `
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-204"
+            class="MuiBox-root MuiBox-root-21"
           >
             <hr
               class="MuiDivider-root MuiDivider-vertical"
@@ -160,18 +158,18 @@ exports[`Application Item should render item correctly for no data 1`] = `
             class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-7"
           >
             <div
-              class="MuiBox-root MuiBox-root-205"
+              class="MuiBox-root MuiBox-root-22"
             >
               <span
-                class="MuiTypography-root makeStyles-featureLabel-128 MuiTypography-body1"
+                class="MuiTypography-root makeStyles-featureLabel-7 MuiTypography-body1"
               >
                 Groups
               </span>
               <div
-                class="MuiBox-root MuiBox-root-207"
+                class="MuiBox-root MuiBox-root-24"
               >
                 <span
-                  class="MuiTypography-root makeStyles-label-132 makeStyles-label-208 MuiTypography-body1"
+                  class="MuiTypography-root makeStyles-label-11 makeStyles-label-25 MuiTypography-body1"
                 >
                   None
                 </span>
