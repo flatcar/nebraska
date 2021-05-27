@@ -1,6 +1,7 @@
 import PubSub from 'pubsub-js';
 import queryString from 'querystring';
 import _ from 'underscore';
+import { CONFIG_STORAGE_KEY } from '../stores/redux/features/config';
 import { getToken, setToken } from '../utils/auth';
 import { Application, Channel, FlatcarAction, Group, Package } from './apiDataTypes';
 
@@ -227,12 +228,17 @@ class API {
   static getJSON(url: string) {
     PubSub.publish(MAIN_PROGRESS_BAR, 'add');
     const token = getToken();
-
+    let headers = {};
+    const config = JSON.parse(localStorage.getItem(CONFIG_STORAGE_KEY) || "{}")
+    
+    if(Object.keys(config).length > 0 && config.auth_mode === 'oidc') {
+      headers = {
+        Authorization: `Bearer ${token}`,
+      }
+    }
     return fetch(url
       ,{
-        headers:{
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
       })
       .then(response => {
         if (!response.ok) {
@@ -260,11 +266,14 @@ class API {
   static doRequest(method: string, url: string, data: REQUEST_DATA_TYPE = '') {
     const token = getToken();
     PubSub.publish(MAIN_PROGRESS_BAR, 'add');
-
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };
-
+    const config = JSON.parse(localStorage.getItem(CONFIG_STORAGE_KEY) || "{}");
+    let headers = {}
+    
+    if (Object.keys(config).length > 0 && config.auth_mode === 'oidc') {
+       headers = {
+        Authorization: `Bearer ${token}`,
+      };  
+    }
     let fetchConfigObject: {
       method: string;
       body?: REQUEST_DATA_TYPE;
@@ -294,6 +303,10 @@ class API {
       .then(response => {
         if (!response.ok) {
           throw response;
+        }
+        const newIdToken = response.headers.get('id_token');
+        if (!!newIdToken && getToken() !== newIdToken) {
+          setToken(newIdToken);
         }
         return response.json();
       })
