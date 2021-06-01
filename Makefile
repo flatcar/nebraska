@@ -65,7 +65,7 @@ frontend-lint:
 	cd frontend && npm run lint
 
 run-backend: backend-binary
-	./bin/nebraska -auth-mode noop
+	cd backend && ./bin/nebraska -auth-mode noop
 
 .PHONY: backend
 backend: run-generators backend-code-checks build-backend-binary
