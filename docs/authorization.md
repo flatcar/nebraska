@@ -40,6 +40,66 @@ the `postgres` container as follows:
 
 - In the browser, access `http://localhost:8000`
 
+# Preparing Keycloak as OIDC provider for Nebraska
+
+- Run `Keycloak` using docker:
+    - `docker run -p 8080:8080 -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin -d quay.io/keycloak/keycloak:13.0.1`
+
+- Open http://localhost:8080 in your browser to access keycloak UI and login with the username admin and password as admin.
+
+## Creating Roles
+
+### Member Role
+
+1. Click on `Roles` menu option and select `Add Role`.
+2. Provide a name for the member role, here we will use `nebraska_member`.
+3. Click `Save`.
+
+### Admin Role
+
+1. Click on `Roles` menu option and select `Add Role`.
+2. Provide a name for the admin role, here we will use `nebraska_admin`.
+3. Click `Save`.
+4. After the admin role is created enable composite role to ON. In the Composite Roles section select the member role, In our case it is nebraska_member and click Add Selected.
+
+Now the member and admin roles are created, the admin role is a composite role which comprises of member role.
+
+<p align="center">
+  <img width="100%"  src="./images/keycloak-roles.gif">
+</p>
+
+## Creating a client.
+
+1. Click on `Clients` menu option and click `Create`.
+2. Set the client name as `nebraska` and click `Save`.
+3. Change the `Access Type` to `Confidential`
+4. Set `Valid Redirect URIs` to `http://localhost:8000/login/cb`. 
+
+<p align="center">
+  <img width="100%" src="./images/keycloak-client.gif">
+</p>
+
+## Adding roles scope to token.
+
+1. Click on `Mappers` tab in Client Edit View. Click on `Create`.
+2. Set the name as `roles`, Select the `Mapper Type` as `User Realm Role`, `Token Claim Name` as `roles` and Select `Claim JSON Type` as String.
+3. Click `Save`
+
+<p align="center">
+  <img width="100%" src="./images/keycloak-token.gif">
+</p>
+
+## Attaching Roles to User.
+
+1. Click on `Users` menu option and click `View all users`.
+2. Once the user list appears select the user and click on `Edit`.
+3. Go to `Role Mapping` tab and select `nebraska_admin` role and click on add selected to attach role to user. If you want to provide only member access access select the member role.
+
+<p align="center">
+  <img width="100%" src="./images/keycloak-user.gif">
+</p>
+
+
 # Deploying Nebraska for testing/development on local computer (GitHub authentication)
 
 - Go to https://smee.io/ and press the `Start a new channel` button,
