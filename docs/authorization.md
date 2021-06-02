@@ -99,6 +99,48 @@ Now the member and admin roles are created, the admin role is a composite role w
   <img width="100%" src="./images/keycloak-user.gif">
 </p>
 
+# Preparing Auth0 as OIDC provider for Nebraska
+## Create and configure new application
+
+1. Click on `Create Application`.
+2. Provide the name as `nebraska`, select `Regular Web Application`.
+3. Click `Create`
+4. Click on the `settings` tab.
+5. Under `Application URIs` section provide the `Allowed Callback URLs` as `http://localhost:8000/login/cb`.
+6. Click on `Save Changes`
+
+<p align="center">
+  <img width="100%" src="./images/auth0-application.gif">
+</p>
+
+
+## Adding roles scope to token.
+
+1. Click on `Rules` sub-menu from `Auth Pipeline` menu option.
+2. Click on `Empty Rule` option.
+3. Provide the name as `roles`.
+4. Paste the following snippet in `Script` text box.
+```js
+function (user, context, callback) {
+  const namespace = 'http://kinvolk.io';
+  const assignedRoles = (context.authorization || {}).roles;
+
+  let idTokenClaims = context.idToken || {};
+  let accessTokenClaims = context.accessToken || {};
+
+  idTokenClaims[`${namespace}/roles`] = assignedRoles;
+  accessTokenClaims[`${namespace}/roles`] = assignedRoles;
+
+  context.idToken = idTokenClaims;
+  context.accessToken = accessTokenClaims;
+  callback(null, user, context);
+}
+```
+Now the rule to add the roles to the token is setup, the roles will be available in the key `http://kinvolk.io/roles`.
+
+<p align="center">
+  <img width="100%" src="./images/auth0-token.gif">
+</p>
 
 # Deploying Nebraska for testing/development on local computer (GitHub authentication)
 
