@@ -40,6 +40,22 @@ the `postgres` container as follows:
 
 - In the browser, access `http://localhost:8000`
 
+# Deploying Nebraska with OIDC authentication mode.
+
+- Go to the nebraska project directory and run `make`
+
+- Start the database (see the section above if you need a quick setup).
+
+- Setup OIDC provider (Keycloak Recommended).
+
+- Start the Nebraska backend:
+  
+  - `nebraska --auth-mode oidc --oidc-admin-roles nebraska_admin  --oidc-viewer-roles nebraska_member --oidc-client-id nebraska --oidc-issuer-url http://localhost:8080/auth/realms/master --oidc-client-secret <Your_Client_Secret>`
+
+  Note: If roles array in the token is not in `roles` key, one can specify a custom JSON path using the `oidc-roles-path` flag.
+  
+- In the browser, access `http://localhost:8000`
+
 # Preparing Keycloak as OIDC provider for Nebraska
 
 - Run `Keycloak` using docker:
