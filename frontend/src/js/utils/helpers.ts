@@ -19,6 +19,20 @@ export const ARCHES: {
   3: 'X86',
 };
 
+// Indexes/keys for the instancesFilter need to match the ones in
+// pkg/api/instances.go.
+export const InstanceSortFilters: {
+  [key: string]: string;
+} = {
+  id: '0',
+  ip: '1',
+  'last-check': '2',
+};
+
+export function getKeyByValue(object: { [key: string]: any }, value: any) {
+  return Object.keys(object).find((key: any) => object[key] === value);
+}
+
 export const ERROR_STATUS_CODE = 3;
 
 const colors = makeColors();
