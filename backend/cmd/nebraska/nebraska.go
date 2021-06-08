@@ -109,6 +109,7 @@ func mainWithError() error {
 			DefaultTeamID: defaultTeam.ID,
 		}
 	case "github":
+		logger.Warn().Msg("github auth-mode support will be deprecated, oidc auth-mode is recommended")
 		defaultTeam, err := api.GetTeam()
 		if err != nil {
 			return err
