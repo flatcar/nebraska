@@ -288,12 +288,14 @@ class API {
     if (method === 'DELETE') {
       fetchConfigObject = {
         method,
+        headers,
       };
       return fetch(url, fetchConfigObject).finally(() => PubSub.publish(MAIN_PROGRESS_BAR, 'done'));
     } else {
       if (method !== 'GET') {
         fetchConfigObject = {
           method,
+          headers,
           body: data,
         };
       }
