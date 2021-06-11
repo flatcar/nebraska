@@ -209,10 +209,17 @@ func (oa *oidcAuth) loginCb(c *gin.Context) {
 		httpError(c, http.StatusInternalServerError)
 		return
 	}
+	oidcToken, err := oa.verifier.Verify(c.Request.Context(), idToken)
+	if err != nil {
+		logger.Error().Str("request_id", requestID).AnErr("error", err).Msg("Can't verify the token")
+		httpError(c, http.StatusInternalServerError)
+		return
+	}
 
 	// Store refresh_token in session
 	session := ginsessions.GetSession(c)
 	session.Set("refresh_token", token.RefreshToken)
+	session.Set("username", oidcToken.Subject)
 	sessionSave(c, session, "login_cb")
 
 	// Add token to redirect url provided by the client
