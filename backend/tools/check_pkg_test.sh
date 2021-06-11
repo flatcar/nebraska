@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # This script checks if all the packages in the running directory or
 # below support skipping the tests if the NEBRASKA_SKIP_TESTS is
