@@ -1,23 +1,13 @@
 import { Box } from '@material-ui/core';
 import React from 'react';
-import API from '../api/API';
-
-interface NebraskaConfig {
-  title: string;
-  nebraska_config: string;
-  nebraska_version: string;
-}
+import { useSelector } from '../stores/redux/hooks';
 
 function Footer() {
-  const [nebraskaConfig, setNebraskaConfig] = React.useState<null | NebraskaConfig>(null);
-  React.useEffect(() => {
-    API.getConfig().then(config => {
-      setNebraskaConfig(config);
-    });
-  }, []);
+  const {title='', nebraska_version=''} = useSelector(state => state.config);
+
   return (
     <Box mt={1} color="text.secondary">
-      {nebraskaConfig && `${nebraskaConfig.title || 'Nebraska'} ${nebraskaConfig.nebraska_version}`}
+      {`${title || 'Nebraska'} ${nebraska_version}`}
     </Box>
   );
 }

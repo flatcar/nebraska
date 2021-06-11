@@ -3,7 +3,7 @@
 exports[`Empty renders correct content 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-2"
+    class="MuiBox-root MuiBox-root-1"
   >
     <p
       class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary MuiTypography-alignCenter"

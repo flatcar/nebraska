@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -36,6 +37,8 @@ type ClientConfig struct {
 	Logo                string `json:"logo"`
 	Title               string `json:"title"`
 	HeaderStyle         string `json:"header_style"`
+	LoginURL            string `json:"login_url"`
+	AuthMode            string `json:"auth_mode"`
 }
 
 type controller struct {
@@ -54,6 +57,7 @@ type controllerConfig struct {
 	nebraskaURL         string
 	noopAuthConfig      *auth.NoopAuthConfig
 	githubAuthConfig    *auth.GithubAuthConfig
+	oidcAuthConfig      *auth.OIDCAuthConfig
 	flatcarUpdatesURL   string
 	checkFrequency      time.Duration
 }
@@ -116,6 +120,9 @@ func getAuthenticator(config *controllerConfig) (auth.Authenticator, error) {
 	if config.githubAuthConfig != nil {
 		return auth.NewGithubAuthenticator(config.githubAuthConfig), nil
 	}
+	if config.oidcAuthConfig != nil {
+		return auth.NewOIDCAuthenticator(config.oidcAuthConfig), nil
+	}
 	return nil, fmt.Errorf("authentication method not configured")
 }
 
@@ -133,6 +140,18 @@ func NewClientConfig(conf *controllerConfig) *ClientConfig {
 			config.AccessManagementURL = GithubAccessManagementURL
 		}
 	}
+
+	if conf.oidcAuthConfig != nil {
+		config.AuthMode = "oidc"
+		url, err := url.Parse(conf.nebraskaURL)
+		if err != nil {
+			logger.Error().Err(err).Msg("Invalid nebraska-url")
+			return nil
+		}
+		url.Path = "/login"
+		config.LoginURL = url.String()
+	}
+
 	config.NebraskaVersion = version.Version
 	config.Title = *appTitle
 	config.HeaderStyle = *appHeaderStyle

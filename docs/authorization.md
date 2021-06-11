@@ -3,12 +3,7 @@ title: Deployment & Authorization
 weight: 10
 ---
 
-Nebraska uses either a noop authentication, OAuth or Bearer tokens
-to authenticate and authorize users. Currently, only GitHub is
-supported as an OAuth authentication backend.  [GitHub personal access
-tokens](https://github.com/settings/tokens) can be used as bearer
-token. If no bearer token is sent, Nebraska will authorize users
-through the GitHub Oauth flow and create a persistent session.
+Nebraska uses either a noop authentication or OIDC to authenticate and authorize users.
 
 # Preparing the database for Nebraska
 
@@ -40,105 +35,123 @@ the `postgres` container as follows:
 
 - In the browser, access `http://localhost:8000`
 
-# Deploying Nebraska for testing/development on local computer (GitHub authentication)
+# Deploying Nebraska with OIDC authentication mode.
 
-- Go to https://smee.io/ and press the `Start a new channel` button,
-  you'll get redirected to something like
-  `https://smee.io/asfdFA7B87SD98F7`
+- Go to the nebraska project directory and run `make`
 
-- On the computer create some directory for nodejs stuff (say
-  `~/nodejsstuff`), then in that directory do `npm install
-  smee-client`, after that run `~/nodejsstuff/node_modules/.bin/smee
-  -u https://smee.io/asfdFA7B87SD98F7 -p 8000 -P /login/webhook`
+- Start the database (see the section above if you need a quick setup).
 
-- Now you need a github app, go to
-  `https://github.com/settings/apps/new` (or, if doing it in some
-  organization, to
-  `https://github.com/organizations/<ORG>/settings/apps/new`) and fill
-  the following fields:
-
-  - `GitHub App name` - just put some fancy name, must be unique I
-    think
-
-  - `Homepage URL` - `https://smee.io/asfdFA7B87SD98F7`
-
-  - `User authorization callback URL` - `http://localhost:8000/login/cb`
-
-  - `Webhook URL` - `https://smee.io/asfdFA7B87SD98F7`
-
-  - `Webhook secret` - another secret stuff, this time for webhook
-    message validation
-
-  - Enable SSL verification
-
-  - `Permissions` - `Access: Read-only` to `Organization members`
-
-  - `User permissions` - none needed
-
-  - `Subscribe to events` - tick `Membership`, `Organization` and `Team`
-
-  - `Where can this GitHub App be installed?` - `Only on this account`
-
-- Press `Create GitHub App` button
-
-- Next thing you'll get is `OAuth credentials` at the bottom of the
-  page of the app you just created, we will need both `Client ID` and
-  `Client secret`
-
-- You also need to install the app you just created
-
-  - Go to `https://github.com/settings/apps` (or, in case of an
-    organization,
-    `https://github.com/organizations/<ORG>/settings/apps`)
-
-  - Click `Edit` button for your new app
-
-  - Choose `Install App` on the left of the page and perform the
-    installation
-
-- Now go to the nebraska project directory and run `make all`
-
-- Start the database: `docker run --privileged -d -p
-  127.0.0.1:5432:5432 nebraska/postgres`
+- Setup OIDC provider (Keycloak Recommended).
 
 - Start the Nebraska backend:
+  
+  - `nebraska --auth-mode oidc --oidc-admin-roles nebraska_admin  --oidc-viewer-roles nebraska_member --oidc-client-id nebraska --oidc-issuer-url http://localhost:8080/auth/realms/master --oidc-client-secret <Your_Client_Secret>`
 
-  - `nebraska -auth-mode github -gh-client-id <CLIENT_ID>
-    -gh-client-secret <CLIENT_SECRET> -gh-ro-teams <READ_ONLY_TEAMS>
-    -gh-rw-teams <READ_WRITE_TEAMS> -gh-webhook-secret <WEBHOOK_SECRET>
-    -http-static-dir $PWD/frontend/build -http-log`
-
-    - Use the `-gh-rw-teams` and `-gh-ro-teams` to specify the list of
-      read-write and read-only access teams.
-    - Nebraska uses this list to set the access level of the user accordingly
-      and users in read-only teams can only perform `GET` and `HEAD` requests.
-    - Nebraska then logs into Github and fetches the list of the Github teams
-      of the logged in user and tries to match them against the list of teams
-      passed through the CLI
-    - If user is not part of any of the teams in the list then Nebraska denies
-      access completely and sets the permissions of the session accordingly.
-    - Nebraska doesn't support groups but instead assumes that there is only
-      one nebraska team in the database. We plan to setup a new nebraska
-      instance for separation needed between different customers or projects
-    - Run `nebraska -h` to learn about env vars you can use instead of
-      flags
-
+  Note: If roles array in the token is not in `roles` key, one can specify a custom JSON path using the `oidc-roles-path` flag.
+  
 - In the browser, access `http://localhost:8000`
 
-# Deploying on remote server (GitHub authentication)
+# Preparing Keycloak as OIDC provider for Nebraska
 
-Assuming that our Nebraska instance is reachable through a
-`nebraska.example.com` address, then there is no need for using `smee` and
-`localhost:8000` that were mentioned above. In that case, the following fields in
-the app configuration can have different values:
+- Run `Keycloak` using docker:
+    - `docker run -p 8080:8080 -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin -d quay.io/keycloak/keycloak:13.0.1`
 
-  - `Homepage URL` - `https://nebraska.example.com`
+- Open http://localhost:8080 in your browser to access keycloak UI and login with the username admin and password as admin.
 
-  - `User authorization callback URL` - `https://nebraska.example.com/login/cb`
+## Creating Roles
 
-  - `Webhook URL` - `https://nebraska.example.com/login/webhook`
+### Member Role
 
-Rest of the steps is the same.
+1. Click on `Roles` menu option and select `Add Role`.
+2. Provide a name for the member role, here we will use `nebraska_member`.
+3. Click `Save`.
+
+### Admin Role
+
+1. Click on `Roles` menu option and select `Add Role`.
+2. Provide a name for the admin role, here we will use `nebraska_admin`.
+3. Click `Save`.
+4. After the admin role is created enable composite role to ON. In the Composite Roles section select the member role, In our case it is nebraska_member and click Add Selected.
+
+Now the member and admin roles are created, the admin role is a composite role which comprises of member role.
+
+<p align="center">
+  <img width="100%"  src="./images/keycloak-roles.gif">
+</p>
+
+## Creating a client.
+
+1. Click on `Clients` menu option and click `Create`.
+2. Set the client name as `nebraska` and click `Save`.
+3. Change the `Access Type` to `Confidential`
+4. Set `Valid Redirect URIs` to `http://localhost:8000/login/cb`. 
+
+<p align="center">
+  <img width="100%" src="./images/keycloak-client.gif">
+</p>
+
+## Adding roles scope to token.
+
+1. Click on `Mappers` tab in Client Edit View. Click on `Create`.
+2. Set the name as `roles`, Select the `Mapper Type` as `User Realm Role`, `Token Claim Name` as `roles` and Select `Claim JSON Type` as String.
+3. Click `Save`
+
+<p align="center">
+  <img width="100%" src="./images/keycloak-token.gif">
+</p>
+
+## Attaching Roles to User.
+
+1. Click on `Users` menu option and click `View all users`.
+2. Once the user list appears select the user and click on `Edit`.
+3. Go to `Role Mapping` tab and select `nebraska_admin` role and click on add selected to attach role to user. If you want to provide only member access access select the member role.
+
+<p align="center">
+  <img width="100%" src="./images/keycloak-user.gif">
+</p>
+
+# Preparing Auth0 as OIDC provider for Nebraska
+## Create and configure new application
+
+1. Click on `Create Application`.
+2. Provide the name as `nebraska`, select `Regular Web Application`.
+3. Click `Create`
+4. Click on the `settings` tab.
+5. Under `Application URIs` section provide the `Allowed Callback URLs` as `http://localhost:8000/login/cb`.
+6. Click on `Save Changes`
+
+<p align="center">
+  <img width="100%" src="./images/auth0-application.gif">
+</p>
+
+
+## Adding roles scope to token.
+
+1. Click on `Rules` sub-menu from `Auth Pipeline` menu option.
+2. Click on `Empty Rule` option.
+3. Provide the name as `roles`.
+4. Paste the following snippet in `Script` text box.
+```js
+function (user, context, callback) {
+  const namespace = 'http://kinvolk.io';
+  const assignedRoles = (context.authorization || {}).roles;
+
+  let idTokenClaims = context.idToken || {};
+  let accessTokenClaims = context.accessToken || {};
+
+  idTokenClaims[`${namespace}/roles`] = assignedRoles;
+  accessTokenClaims[`${namespace}/roles`] = assignedRoles;
+
+  context.idToken = idTokenClaims;
+  context.accessToken = accessTokenClaims;
+  callback(null, user, context);
+}
+```
+Now the rule to add the roles to the token is setup, the roles will be available in the key `http://kinvolk.io/roles`.
+
+<p align="center">
+  <img width="100%" src="./images/auth0-token.gif">
+</p>
 
 # Deploying on Kubernetes using the Helm Chart
 
@@ -206,30 +219,6 @@ Then execute:
 ```console
 $ helm install my-nebraska nebraska/nebraska --values nebraska-values.yaml
 ```
-
-# Personal Access Tokens (GitHub authentication)
-
-How a Nebraska instance does authentication depends on existence of the
-`Authorization` header in the first request. Basically if the header
-does not exist then Nebraska will go with the "Login through GitHub"
-route, which means redirecting to github, authenticating there if you
-weren't logged in before, authorizing the app if it wasn't authorized
-before. This is not exactly friendly for some services (for example,
-prometheus won't work with that).
-
-If the `Authorization` header exists, it must be like `Authorization:
-bearer <TOKEN>`. The `<TOKEN>` part should be personal access token
-generated on github (`https://github.com/settings/tokens`).
-
-Personal access token requires just one scope: `read:org`.
-
-# GitHub Enterprise
-
-If you want to authenticate against GitHub Enterprise, set `-gh-enterprise-url`
-to the URL of your GitHub Enterprise instance, for example
-`https://github.myorganization.net`.
-
-After that, follow the same procedures as with GitHub.
 
 # Troubleshooting:
 

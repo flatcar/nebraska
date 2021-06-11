@@ -1,6 +1,8 @@
 import PubSub from 'pubsub-js';
 import queryString from 'querystring';
 import _ from 'underscore';
+import { CONFIG_STORAGE_KEY } from '../stores/redux/features/config';
+import { getToken, setToken } from '../utils/auth';
 import { Application, Channel, FlatcarAction, Group, Package } from './apiDataTypes';
 
 const MAIN_PROGRESS_BAR = 'main_progress_bar';
@@ -225,11 +227,29 @@ class API {
 
   static getJSON(url: string) {
     PubSub.publish(MAIN_PROGRESS_BAR, 'add');
-
-    return fetch(url)
+    const token = getToken();
+    let headers = {};
+    const config = JSON.parse(localStorage.getItem(CONFIG_STORAGE_KEY) || "{}")
+    
+    if(Object.keys(config).length > 0 && config.auth_mode === 'oidc') {
+      headers = {
+        Authorization: `Bearer ${token}`,
+      }
+    }
+    return fetch(url
+      ,{
+        headers,
+      })
       .then(response => {
         if (!response.ok) {
           throw response;
+        }
+
+        // The token has been renewed, let's store it.
+        const newIdToken = response.headers.get('id_token');
+        if (!!newIdToken && getToken() !== newIdToken) {
+          console.debug('Refreshed token')
+          setToken(newIdToken);
         }
         return response.json();
       })
@@ -244,20 +264,38 @@ class API {
   ): Promise<any>;
 
   static doRequest(method: string, url: string, data: REQUEST_DATA_TYPE = '') {
+    const token = getToken();
     PubSub.publish(MAIN_PROGRESS_BAR, 'add');
+    const config = JSON.parse(localStorage.getItem(CONFIG_STORAGE_KEY) || "{}");
+    let headers = {}
+    
+    if (Object.keys(config).length > 0 && config.auth_mode === 'oidc') {
+       headers = {
+        Authorization: `Bearer ${token}`,
+      };  
+    }
     let fetchConfigObject: {
       method: string;
       body?: REQUEST_DATA_TYPE;
-    } = { method: 'GET' };
+      headers?: {
+        [prop: string]: any;
+      };
+    } = {
+      method: 'GET',
+      headers,
+    };
+
     if (method === 'DELETE') {
       fetchConfigObject = {
         method,
+        headers,
       };
       return fetch(url, fetchConfigObject).finally(() => PubSub.publish(MAIN_PROGRESS_BAR, 'done'));
     } else {
       if (method !== 'GET') {
         fetchConfigObject = {
           method,
+          headers,
           body: data,
         };
       }
@@ -267,6 +305,10 @@ class API {
       .then(response => {
         if (!response.ok) {
           throw response;
+        }
+        const newIdToken = response.headers.get('id_token');
+        if (!!newIdToken && getToken() !== newIdToken) {
+          setToken(newIdToken);
         }
         return response.json();
       })

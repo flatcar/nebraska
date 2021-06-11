@@ -19,7 +19,7 @@ exports[`Section Header renders section header correctly 1`] = `
             class="MuiBreadcrumbs-li"
           >
             <span
-              class="MuiBox-root MuiBox-root-141 makeStyles-breadCrumbsItem-2"
+              class="MuiBox-root MuiBox-root-3 makeStyles-breadCrumbsItem-2"
             >
               <a
                 class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiTypography-colorPrimary"
@@ -37,7 +37,6 @@ exports[`Section Header renders section header correctly 1`] = `
               aria-hidden="true"
               class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
               focusable="false"
-              role="presentation"
               viewBox="0 0 24 24"
             >
               <path

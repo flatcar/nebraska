@@ -1,7 +1,7 @@
 import { Box, Grid, Link, makeStyles, Typography } from '@material-ui/core';
 import React from 'react';
 import API from '../../api/API';
-import { timeIntervalsDefault } from '../../constants/helpers';
+import { timeIntervalsDefault } from '../../utils/helpers';
 
 const useStyles = makeStyles(() => ({
   title: {

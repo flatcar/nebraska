@@ -34,7 +34,7 @@ import {
   getInstanceStatus,
   makeLocaleTime,
   prepareErrorMessage
-} from '../../constants/helpers';
+} from '../../utils/helpers';
 import ChannelItem from '../Channels/Item';
 import { CardFeatureLabel, CardLabel } from '../Common/Card';
 import Empty from '../Common/EmptyContent';

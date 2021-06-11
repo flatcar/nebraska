@@ -8,8 +8,8 @@ import React from 'react';
 import _ from 'underscore';
 import API from '../../api/API';
 import { Channel, Group } from '../../api/apiDataTypes';
-import { useGroupVersionBreakdown } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
+import { useGroupVersionBreakdown } from '../../utils/helpers';
 import ChannelItem from '../Channels/Item';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../Common/Card';
 import Empty from '../Common/EmptyContent';
@@ -40,7 +40,7 @@ function Item(props: {
 
   const version_breakdown = useGroupVersionBreakdown(props.group);
   const description = props.group.description || 'No description provided';
-  const channel = props.group.channel || {};
+  const channel = props.group.channel || null;
 
   const groupChannel = _.isEmpty(props.group.channel) ? (
     <CardLabel>No channel provided</CardLabel>

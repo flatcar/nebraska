@@ -25,8 +25,8 @@ import { Select, TextField } from 'formik-material-ui';
 import React from 'react';
 import * as Yup from 'yup';
 import { Channel, Group } from '../../api/apiDataTypes';
-import { ARCHES } from '../../constants/helpers';
 import { applicationsStore } from '../../stores/Stores';
+import { ARCHES } from '../../utils/helpers';
 import TimezonePicker, { DEFAULT_TIMEZONE } from '../Common/TimezonePicker';
 
 const useStyles = makeStyles({
