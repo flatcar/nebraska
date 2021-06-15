@@ -161,8 +161,8 @@ func mainWithError() error {
 			ValidRedirectURLs: strings.Split(*oidcValidRedirectURLs, ","),
 			AdminRoles:        strings.Split(*oidcAdminRoles, ","),
 			ViewerRoles:       strings.Split(*oidcViewerRoles, ","),
-			SessionAuthKey:    obtainSessionAuthKey(*oidcSessionAuthKey),
-			SessionCryptKey:   obtainSessionCryptKey(*oidcSessionCryptKey),
+			SessionAuthKey:    obtainSessionOIDCAuthKey(*oidcSessionAuthKey),
+			SessionCryptKey:   obtainSessionOIDCCryptKey(*oidcSessionCryptKey),
 			RolesPath:         *oidcRolesPath,
 		}
 	default:
@@ -215,6 +215,20 @@ func obtainSessionAuthKey(potentialSecret string) []byte {
 
 func obtainSessionCryptKey(potentialKey string) []byte {
 	if key := getPotentialOrEnv(potentialKey, ghSessionCryptKeyEnvName); key != "" {
+		return []byte(key)
+	}
+	return random.Data(32)
+}
+
+func obtainSessionOIDCAuthKey(potentialKey string) []byte {
+	if key := getPotentialOrEnv(potentialKey, oidcSessionAuthKeyEnvName); key != "" {
+		return []byte(key)
+	}
+	return random.Data(32)
+}
+
+func obtainSessionOIDCCryptKey(potentialKey string) []byte {
+	if key := getPotentialOrEnv(potentialKey, oidcSessionCryptKeyEnvName); key != "" {
 		return []byte(key)
 	}
 	return random.Data(32)
