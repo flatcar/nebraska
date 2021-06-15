@@ -115,11 +115,11 @@ func NewOIDCAuthenticator(config *OIDCAuthConfig) Authenticator {
 		sessionStore:      sessionStore,
 	}
 
-	stateTicker := time.Tick(stateCleanupDuration)
+	stateTicker := time.NewTicker(stateCleanupDuration)
 
 	go func() {
 		for {
-			<-stateTicker
+			<-stateTicker.C
 			oidcAuthenticator.cleanState()
 		}
 	}()
@@ -417,7 +417,6 @@ checkloop:
 }
 
 func (oa *oidcAuth) cleanState() {
-
 	now := time.Now()
 	oa.stateMap.Range(func(key, value interface{}) bool {
 		val, ok := value.(stateMessage)
