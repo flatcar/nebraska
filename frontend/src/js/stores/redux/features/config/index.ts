@@ -12,7 +12,8 @@ export interface NebraskaConfig {
   [prop: string]: any;
 };
 
-const initialState: NebraskaConfig = JSON.parse(localStorage.getItem(CONFIG_STORAGE_KEY) || "{}") as NebraskaConfig;
+const nebraskaConfig = localStorage.getItem(CONFIG_STORAGE_KEY) || "{}"
+const initialState: NebraskaConfig = JSON.parse(nebraskaConfig) || {} as NebraskaConfig;
 
 export const configSlice = createSlice({
   name: 'config',

@@ -229,7 +229,8 @@ class API {
     PubSub.publish(MAIN_PROGRESS_BAR, 'add');
     const token = getToken();
     let headers = {};
-    const config = JSON.parse(localStorage.getItem(CONFIG_STORAGE_KEY) || "{}")
+    const nebraska_config = localStorage.getItem(CONFIG_STORAGE_KEY) || "{}";
+    const config = JSON.parse(nebraska_config) || {};
     
     if(Object.keys(config).length > 0 && config.auth_mode === 'oidc') {
       headers = {
@@ -266,7 +267,8 @@ class API {
   static doRequest(method: string, url: string, data: REQUEST_DATA_TYPE = '') {
     const token = getToken();
     PubSub.publish(MAIN_PROGRESS_BAR, 'add');
-    const config = JSON.parse(localStorage.getItem(CONFIG_STORAGE_KEY) || "{}");
+    const nebraska_config = localStorage.getItem(CONFIG_STORAGE_KEY) || "{}";
+    const config = JSON.parse(nebraska_config) || {};
     let headers = {}
     
     if (Object.keys(config).length > 0 && config.auth_mode === 'oidc') {
