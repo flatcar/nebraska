@@ -13,6 +13,8 @@ import (
 	"time"
 
 	"github.com/Depado/ginprom"
+	"github.com/gin-contrib/requestid"
+
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 
@@ -327,6 +329,7 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 
 	// Setup Middlewares
 
+	engine.Use(requestid.New())
 	// Recovery middleware to recover from panics
 	engine.Use(gin.Recovery())
 
