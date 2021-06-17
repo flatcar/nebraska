@@ -48,6 +48,7 @@ type OIDCAuthConfig struct {
 	SessionAuthKey    []byte
 	SessionCryptKey   []byte
 	RolesPath         string
+	Scopes            []string
 }
 
 type oidcAuth struct {
@@ -61,6 +62,7 @@ type oidcAuth struct {
 	validRedirectURLs []string  // List of valid redirect URLs that the browser can redirect to after successful login
 	adminRoles        []string  // List of roles with admin access
 	viewerRoles       []string  // List of roles with viewer access
+	scopes            []string  // List of OIDC scopes
 	stateMap          *sync.Map // Map used to store state between nebraska and oidc provider, used to prevent fake authentication response
 	rolesPath         string    // Json Path in which the roles will be found in ID Token
 	sessionStore      *sessions.Store
@@ -86,7 +88,7 @@ func NewOIDCAuthenticator(config *OIDCAuthConfig) Authenticator {
 		ClientSecret: config.ClientSecret,
 		Endpoint:     provider.Endpoint(),
 		RedirectURL:  config.CallbackURL,
-		Scopes:       []string{oidc.ScopeOpenID},
+		Scopes:       config.Scopes,
 	}
 
 	verifier := provider.Verifier(oidcProviderConfig)
@@ -110,6 +112,7 @@ func NewOIDCAuthenticator(config *OIDCAuthConfig) Authenticator {
 		validRedirectURLs: config.ValidRedirectURLs,
 		adminRoles:        config.AdminRoles,
 		viewerRoles:       config.ViewerRoles,
+		scopes:            config.Scopes,
 		stateMap:          &stateMap,
 		rolesPath:         config.RolesPath,
 		sessionStore:      sessionStore,
@@ -262,7 +265,7 @@ func (oa *oidcAuth) login(c *gin.Context) {
 	q := authURL.Query()
 	q.Set("client_id", oa.clientID)
 	q.Set("redirect_uri", oa.callbackURL)
-	q.Set("scope", "openid")
+	q.Set("scope", strings.Join(oa.scopes, " "))
 	q.Set("response_type", "code")
 	q.Set("response_mode", "query")
 	q.Set("state", state)

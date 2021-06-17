@@ -56,6 +56,7 @@ var (
 	oidcAdminRoles        = flag.String("oidc-admin-roles", "", "comma-separated list of accepted roles with admin access")
 	oidcViewerRoles       = flag.String("oidc-viewer-roles", "", "comma-separated list of accepted roles with viewer access")
 	oidcRolesPath         = flag.String("oidc-roles-path", "roles", "json path in which the roles array is present in the id token")
+	oidcScopes            = flag.String("oidc-scopes", "openid", "comma-separated list of scopes to be used in OIDC")
 	oidcSessionAuthKey    = flag.String("oidc-session-secret", "", fmt.Sprintf("Session secret used for authenticating sessions in cookies used for storing GitHub info , will be generated if none is passed; can be taken from %s env var too", ghSessionAuthKeyEnvName))
 	oidcSessionCryptKey   = flag.String("oidc-session-crypt-key", "", fmt.Sprintf("Session key used for encrypting sessions in cookies used for storing GitHub info, will be generated if none is passed; can be taken from %s env var too", ghSessionCryptKeyEnvName))
 	flatcarUpdatesURL     = flag.String("sync-update-url", "https://public.update.flatcar-linux.net/v1/update/", "Flatcar update URL to sync from")
@@ -161,6 +162,7 @@ func mainWithError() error {
 			ValidRedirectURLs: strings.Split(*oidcValidRedirectURLs, ","),
 			AdminRoles:        strings.Split(*oidcAdminRoles, ","),
 			ViewerRoles:       strings.Split(*oidcViewerRoles, ","),
+			Scopes:            strings.Split(*oidcScopes, ","),
 			SessionAuthKey:    obtainSessionOIDCAuthKey(*oidcSessionAuthKey),
 			SessionCryptKey:   obtainSessionOIDCCryptKey(*oidcSessionCryptKey),
 			RolesPath:         *oidcRolesPath,
