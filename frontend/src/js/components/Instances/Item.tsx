@@ -36,7 +36,6 @@ interface ItemProps {
 function Item(props: ItemProps) {
   const { instance, selected, lastVersionChannel, versionNumbers } = props;
   const date = instance.application.last_check_for_updates;
-  const downloadingIcon = instance.statusInfo?.spinning ? <img src={LoadingGif} /> : '';
   const statusDescription = instance.statusInfo?.description;
   const instanceLabel = instance.statusInfo?.className ? (
     <TableLabel
