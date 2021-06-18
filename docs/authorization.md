@@ -35,7 +35,7 @@ the `postgres` container as follows:
 
 - In the browser, access `http://localhost:8000`
 
-# Deploying Nebraska with OIDC authentication mode.
+# Deploying Nebraska with OIDC authentication mode
 
 - Go to the nebraska project directory and run `make`
 
@@ -51,7 +51,7 @@ the `postgres` container as follows:
   
 - In the browser, access `http://localhost:8000`
 
-# Preparing Keycloak as OIDC provider for Nebraska
+# Preparing Keycloak as an OIDC provider for Nebraska
 
 - Run `Keycloak` using docker:
     - `docker run -p 8080:8080 -e KEYCLOAK_USER=admin -e KEYCLOAK_PASSWORD=admin -d quay.io/keycloak/keycloak:13.0.1`
@@ -79,7 +79,7 @@ Now the member and admin roles are created, the admin role is a composite role w
   <img width="100%"  src="./images/keycloak-roles.gif">
 </p>
 
-## Creating a client.
+## Creating a client
 
 1. Click on `Clients` menu option and click `Create`.
 2. Set the client name as `nebraska` and click `Save`.
@@ -90,7 +90,7 @@ Now the member and admin roles are created, the admin role is a composite role w
   <img width="100%" src="./images/keycloak-client.gif">
 </p>
 
-## Adding roles scope to token.
+## Adding roles scope to token
 
 1. Click on `Mappers` tab in Client Edit View. Click on `Create`.
 2. Set the name as `roles`, Select the `Mapper Type` as `User Realm Role`, `Token Claim Name` as `roles` and Select `Claim JSON Type` as String.
@@ -100,7 +100,7 @@ Now the member and admin roles are created, the admin role is a composite role w
   <img width="100%" src="./images/keycloak-token.gif">
 </p>
 
-## Attaching Roles to User.
+## Attaching Roles to User
 
 1. Click on `Users` menu option and click `View all users`.
 2. Once the user list appears select the user and click on `Edit`.
@@ -110,7 +110,7 @@ Now the member and admin roles are created, the admin role is a composite role w
   <img width="100%" src="./images/keycloak-user.gif">
 </p>
 
-# Preparing Auth0 as OIDC provider for Nebraska
+# Preparing Auth0 as an OIDC provider for Nebraska
 ## Create and configure new application
 
 1. Click on `Create Application`.
@@ -125,7 +125,7 @@ Now the member and admin roles are created, the admin role is a composite role w
 </p>
 
 
-## Adding roles scope to token.
+## Adding roles scope to token
 
 1. Click on `Rules` sub-menu from `Auth Pipeline` menu option.
 2. Click on `Empty Rule` option.
@@ -152,6 +152,100 @@ Now the rule to add the roles to the token is setup, the roles will be available
 <p align="center">
   <img width="100%" src="./images/auth0-token.gif">
 </p>
+
+# Preparing Dex with github connector as an OIDC provider for Nebraska
+
+## Setting up a Github App to be used as a connector for Dex
+
+- Create a new `organization` in Github.
+
+- Now you need a Github app, go to `https://github.com/organizations/<ORG>/settings/apps/new` and fill
+  the following fields:
+
+  - `GitHub App name` - just put some fancy name.
+
+  - `Homepage URL` - `http://localhost:8000`
+
+  - `User authorization callback URL` - `http://0.0.0.0:5556/dex/callback`
+
+  - `Permissions` - `Access: Read-only` to `Organization members`
+
+  - `User permissions` - none needed
+
+  - `Subscribe to events` - tick `Membership`, `Organization` and `Team`
+
+  - `Where can this GitHub App be installed?` - `Only on this account`
+
+- Press `Create GitHub App` button
+
+- Next thing you'll get is `OAuth credentials` at the bottom of the
+  page of the app you just created, we will need both `Client ID` and
+  `Client secret`
+
+- You also need to install the app you just created
+
+  - Go to `https://github.com/organizations/<ORG>/settings/apps`
+
+  - Click `Edit` button for your new app
+
+  - Choose `Install App` on the left of the page and perform the
+    installation
+
+## Creating Github Teams
+
+- Create two teams in your organization with the following names
+  `admin` and `viewer`.
+
+- Add the admin users to both `admin` and `viewer` team. Add the non-admin users to 
+`viewer` team.
+
+## Configuring and Running Dex IDP
+
+- Create a configuration for Dex based on the example.
+
+> example.yaml
+
+```yaml
+issuer: http://0.0.0.0:5556/dex
+
+storage:
+  type: sqlite3
+  config:
+    file: dex.db
+
+web:
+  http: 0.0.0.0:5556
+
+staticClients:
+  - id: nebraska
+    redirectURIs:
+      - 'http://localhost:8000/login/cb'
+    name: 'nebraska'
+    secret: <ClientSecret> // Random Hash
+
+connectors:
+- type: github
+  id: github
+  name: GitHub
+  config:
+    clientID: <Client ID>
+    clientSecret: <Client Secret>
+    redirectURI: http://0.0.0.0:5556/dex/callback
+    loadAllGroups: true
+    teamNameField: slug
+    useLoginAsID: true
+    
+enablePasswordDB: true
+```
+
+- Run Dex using docker with the example configuration.
+
+> docker run -p 5556:5556 -v ${PWD}/example.yaml:/etc/dex/example.yaml -v ${PWD}/dex.db:/var/dex/dex.db ghcr.io/dexidp/dex:v2.28.1 dex serve /etc/dex/example.yaml
+
+
+## Running nebraska
+
+> go run ./cmd/nebraska --auth-mode oidc --oidc-admin-roles <organization>:admin  --oidc-viewer-roles <organization>:viewer --oidc-client-id nebraska --oidc-issuer-url http://127.0.0.1:5556/dex --oidc-client-secret <ClientSecret> --oidc-roles-path groups --oidc-scopes groups,openid,profile
 
 # Deploying on Kubernetes using the Helm Chart
 
