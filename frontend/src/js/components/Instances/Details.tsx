@@ -54,6 +54,7 @@ const useDetailsStyles = makeStyles((theme: Theme) => ({
   },
   link: {
     fontSize: '1rem',
+    color: '#1b5c91'
   },
 }));
 

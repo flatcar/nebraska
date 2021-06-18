@@ -174,6 +174,7 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
             style={{
               fontSize: `${radius * 0.25}px`,
               fontFamily: theme.typography.fontFamily,
+              fill: "#000033"
             }}
           />
         </svg>

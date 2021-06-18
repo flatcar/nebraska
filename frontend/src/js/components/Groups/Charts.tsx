@@ -151,8 +151,9 @@ function TimelineChart(props: {
         tickFormatter={(index: string) => {
           return ticks[index];
         }}
+        stroke={"#000"}
       />
-      <YAxis />
+      <YAxis stroke="#000"/>
       {props.keys.map((key: string, i: number) => (
         <Area
           type={interpolation}

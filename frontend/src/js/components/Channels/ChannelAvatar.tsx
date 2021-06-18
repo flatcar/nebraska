@@ -12,7 +12,7 @@ interface ChannelAvatarProps {
 
 const useStyles = makeStyles((theme: Theme) => ({
   colorAvatar: (props: ChannelAvatarProps) => ({
-    color: '#fff',
+    color: 'rgb(15 15 15)',
     backgroundColor: props.backgroundColor || props.color || theme.palette.secondary.main,
     width: props.size,
     height: props.size,

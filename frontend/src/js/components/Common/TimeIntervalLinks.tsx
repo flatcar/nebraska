@@ -58,6 +58,7 @@ export default function TimeIntervalLinks(props: TimeIntervalLinksProps) {
                   ? 'inherit'
                   : 'primary'
               }
+              style={{color: !link.disabled && link.queryValue !== selectedInterval? '#1b5c91' : ''}}
             >
               <Typography className={classes.title}>{link.displayValue}</Typography>
             </Link>

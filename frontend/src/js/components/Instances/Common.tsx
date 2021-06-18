@@ -19,6 +19,7 @@ const useInstanceCountStyles = makeStyles((theme: Theme) => ({
   },
   instanceLink: {
     fontSize: '1.2rem',
+    color: 'rgb(27, 92, 145)'
   },
 }));
 

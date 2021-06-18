@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     textTransform: 'uppercase',
     fontWeight: '300',
     paddingRight: '.05em',
-    color: theme.palette.grey['500'],
+    color: '#595959',
   },
   packageIcon: {
     minWidth: '40px',

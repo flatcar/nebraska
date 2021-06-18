@@ -2,7 +2,7 @@ import alertCircleOutline from '@iconify/icons-mdi/alert-circle-outline';
 import alertOutline from '@iconify/icons-mdi/alert-outline';
 import checkCircleOutline from '@iconify/icons-mdi/check-circle-outline';
 import { Icon } from '@iconify/react';
-import { Box } from '@material-ui/core';
+import { Box, makeStyles } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import ListItem from '@material-ui/core/ListItem';
@@ -41,12 +41,19 @@ const stateIcons: {
   },
 };
 
+const useStyles = makeStyles({
+  groupLink: {
+    color: '#1b5c91'
+  }
+})
+
 function Item(props: { entry: Activity }) {
   const [entryClass, setEntryClass] = React.useState<{ [key: string]: any }>({});
   const [entrySeverity, setEntrySeverity] = React.useState<{
     className?: string;
     [key: string]: any;
   }>({});
+  const classes = useStyles();
 
   function fetchEntryClassFromStore() {
     const entryClass = activityStore.getActivityEntryClass(props.entry.class, props.entry);
@@ -75,7 +82,7 @@ function Item(props: { entry: Activity }) {
     const groupPath = `apps/${app_id}/groups/${group_id}`;
     subtitle = 'GROUP';
     name = (
-      <Link component={RouterLink} to={groupPath}>
+      <Link component={RouterLink} to={groupPath} className={classes.groupLink}>
         {entryClass.groupName}
       </Link>
     );
