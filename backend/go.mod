@@ -7,6 +7,7 @@ require (
 	github.com/blang/semver/v4 v4.0.0
 	github.com/coreos/go-oidc/v3 v3.0.0
 	github.com/doug-martin/goqu/v9 v9.12.0
+	github.com/gin-contrib/requestid v0.0.1
 	github.com/gin-gonic/gin v1.7.1
 	github.com/golangci/golangci-lint v1.39.0
 	github.com/google/go-github/v28 v28.1.1

@@ -13,6 +13,8 @@ import (
 	"time"
 
 	"github.com/Depado/ginprom"
+	"github.com/gin-contrib/requestid"
+
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 
@@ -29,6 +31,8 @@ const (
 	ghSessionCryptKeyEnvName   = "NEBRASKA_GITHUB_SESSION_CRYPT_KEY"
 	ghWebhookSecretEnvName     = "NEBRASKA_GITHUB_WEBHOOK_SECRET"
 	ghEnterpriseURLEnvName     = "NEBRASKA_GITHUB_ENTERPRISE_URL"
+	oidcClientIDEnvName        = "NEBRASKA_OIDC_CLIENT_ID"
+	oidcClientSecretEnvName    = "NEBRASKA_OIDC_CLIENT_SECRET"
 	oidcSessionAuthKeyEnvName  = "NEBRASKA_OIDC_SESSION_SECRET"
 	oidcSessionCryptKeyEnvName = "NEBRASKA_OIDC_SESSION_CRYPT_KEY"
 )
@@ -50,8 +54,8 @@ var (
 	ghReadOnlyTeams       = flag.String("gh-ro-teams", "", "comma-separated list of read-only GitHub teams in the org/team format")
 	ghEnterpriseURL       = flag.String("gh-enterprise-url", "", fmt.Sprintf("base URL of the enterprise instance if using GHE; can be taken from %s env var too", ghEnterpriseURLEnvName))
 	oidcClientID          = flag.String("oidc-client-id", "", "OIDC client ID used for authentication")
-	oidcClientSecret      = flag.String("oidc-client-secret", "", "OIDC client Secret used for authentication")
-	oidcIssuerURL         = flag.String("oidc-issuer-url", "", "OIDC issuer URL used for authentication")
+	oidcClientSecret      = flag.String("oidc-client-secret", "", fmt.Sprintf("OIDC client Secret used for authentication; can be taken from %s env var too", oidcClientIDEnvName))
+	oidcIssuerURL         = flag.String("oidc-issuer-url", "", fmt.Sprintf("OIDC issuer URL used for authentication;can be taken from %s env var too", oidcClientSecretEnvName))
 	oidcValidRedirectURLs = flag.String("oidc-valid-redirect-urls", "http://localhost:8000/*", "OIDC valid Redirect URLs")
 	oidcAdminRoles        = flag.String("oidc-admin-roles", "", "comma-separated list of accepted roles with admin access")
 	oidcViewerRoles       = flag.String("oidc-viewer-roles", "", "comma-separated list of accepted roles with viewer access")
@@ -153,10 +157,19 @@ func mainWithError() error {
 
 		url.Path = "/login/cb"
 
+		clientID, err := obtainOIDCClientID(*oidcClientID)
+		if err != nil {
+			return err
+		}
+		clientSecret, err := obtainOIDCClientSecret(*oidcClientSecret)
+		if err != nil {
+			return err
+		}
+
 		oidcAuthConfig = &auth.OIDCAuthConfig{
 			DefaultTeamID:     defaultTeam.ID,
-			ClientID:          *oidcClientID,
-			ClientSecret:      *oidcClientSecret,
+			ClientID:          clientID,
+			ClientSecret:      clientSecret,
 			IssuerURL:         *oidcIssuerURL,
 			CallbackURL:       url.String(),
 			ValidRedirectURLs: strings.Split(*oidcValidRedirectURLs, ","),
@@ -236,6 +249,20 @@ func obtainSessionOIDCCryptKey(potentialKey string) []byte {
 	return random.Data(32)
 }
 
+func obtainOIDCClientID(potentialID string) (string, error) {
+	if id := getPotentialOrEnv(potentialID, oidcClientIDEnvName); id != "" {
+		return id, nil
+	}
+	return "", errors.New("no OIDC client ID")
+}
+
+func obtainOIDCClientSecret(potentialSecret string) (string, error) {
+	if secret := getPotentialOrEnv(potentialSecret, oidcClientSecretEnvName); secret != "" {
+		return secret, nil
+	}
+	return "", errors.New("no OIDC client secret")
+}
+
 func obtainOAuthClientID(potentialID string) (string, error) {
 	if id := getPotentialOrEnv(potentialID, ghClientIDEnvName); id != "" {
 		return id, nil
@@ -304,6 +331,7 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 
 	// Setup Middlewares
 
+	engine.Use(requestid.New())
 	// Recovery middleware to recover from panics
 	engine.Use(gin.Recovery())
 
