@@ -1,0 +1,48 @@
+basePath: /api
+host: localhost:8000
+info:
+  contact: {}
+  description: This is a sample server for nebraska
+  title: Swagger API - Nebraska
+  version: "1.0"
+paths:
+  /apps:
+    get:
+      consumes:
+      - application/json
+      description: Get paginated information of all applications under a given team
+        ID
+      parameters:
+      - description: Team ID
+        in: query
+        name: team_id
+        type: string
+      - description: Number of pages
+        in: query
+        name: page
+        type: string
+      - description: Elements per page
+        in: query
+        name: perpage
+        type: string
+      produces:
+      - application/json
+      responses:
+        "400":
+          description: error
+          schema:
+            type: string
+        "404":
+          description: error
+          schema:
+            type: string
+        "500":
+          description: error
+          schema:
+            type: string
+        default:
+          description: error
+          schema:
+            type: string
+      summary: Get all applications for a given team
+swagger: "2.0"
