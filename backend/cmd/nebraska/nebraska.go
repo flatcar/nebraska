@@ -445,7 +445,7 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 	docs.SwaggerInfo.Title = "Swagger API - Nebraska"
 	docs.SwaggerInfo.Description = "This is a sample server for nebraska"
 	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = "localhost:8000"
+	docs.SwaggerInfo.Host = strings.TrimPrefix(strings.TrimPrefix(*nebraskaURL,"https://"),"http://")
 	docs.SwaggerInfo.BasePath = "/api"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
