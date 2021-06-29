@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
@@ -35,11 +36,12 @@ export default function SectionHeader(props: SectionHeaderProps) {
   const classes = useStyles();
   const breadcrumbs = props.breadcrumbs;
   const title = props.title;
+  const { t } = useTranslation();
 
   return (
     <Grid container alignItems="center" justify="flex-start" className={classes.sectionContainer}>
       <Grid item>
-        <Breadcrumbs aria-label="breadcrumbs" separator={<NavigateNextIcon fontSize="small" />}>
+        <Breadcrumbs aria-label={t('common|breadcrumbs')} separator={<NavigateNextIcon fontSize="small" />}>
           {breadcrumbs &&
             breadcrumbs.map(({ path = null, label }, index) => {
               if (path)

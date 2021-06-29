@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
 import { Channel, Package } from '../../api/apiDataTypes';
 import flatcarIcon from '../../icons/flatcar-logo.json';
@@ -54,6 +55,8 @@ function Item(props: {
   handleUpdatePackage: (pkgId: string) => void;
 }) {
   const classes = useStyles();
+  const { t } = useTranslation();
+
   const createdDate = new Date(props.packageItem.created_ts as string);
   const date = createdDate.toLocaleString('default', {
     year: 'numeric',
@@ -75,7 +78,7 @@ function Item(props: {
   }
 
   function deletePackage() {
-    const confirmationText = 'Are you sure you want to delete this package?';
+    const confirmationText = t('packages|Are you sure you want to delete this package?');
     if (window.confirm(confirmationText)) {
       applicationsStore.deletePackage(
         props.packageItem.application_id,
@@ -93,7 +96,7 @@ function Item(props: {
       <Grid container direction="column">
         <Grid item>
           <Typography component="span" className={classes.subtitle}>
-            Version:
+            {t('packages|Version:')}
           </Typography>
           &nbsp;
           {`${cleanSemverVersion(props.packageItem.version)} (${ARCHES[props.packageItem.arch]})`}
@@ -101,7 +104,7 @@ function Item(props: {
         {processedChannels.length > 0 && (
           <Grid item>
             <Typography component="span" className={classes.subtitle}>
-              Channels:
+              {t('packages|Channels:')}
             </Typography>
             &nbsp;
             {processedChannels.map((channel, i) => {
@@ -117,7 +120,7 @@ function Item(props: {
         )}
         <Grid item>
           <Typography component="span" className={classes.subtitle}>
-            Released:
+            {t('packages|Released:')}
           </Typography>
           &nbsp;
           {date}
@@ -149,8 +152,8 @@ function Item(props: {
       <ListItemSecondaryAction>
         <MoreMenu
           options={[
-            { label: 'Edit', action: updatePackage },
-            { label: 'Delete', action: deletePackage },
+            { label: t('frequent|Edit'), action: updatePackage },
+            { label: t('frequent|Delete'), action: deletePackage },
           ]}
         />
       </ListItemSecondaryAction>

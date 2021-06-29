@@ -4,6 +4,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import semver from 'semver';
 import _ from 'underscore';
 import { Channel, Instance } from '../../api/apiDataTypes';
@@ -16,6 +17,7 @@ function Table(props: {
   instances: Instance[];
 }) {
   const [selectedInstance, setSelectedInstance] = React.useState<string | null>(null);
+  const { t } = useTranslation();
   const versions = props.version_breakdown || [];
   const lastVersionChannel =
     props.channel && props.channel.package ? cleanSemverVersion(props.channel.package.version) : '';
@@ -35,11 +37,11 @@ function Table(props: {
     <MuiTable>
       <TableHead>
         <TableRow>
-          <TableCell>Instance</TableCell>
-          <TableCell>IP</TableCell>
-          <TableCell>Current Status</TableCell>
-          <TableCell>Version</TableCell>
-          <TableCell>Last Check</TableCell>
+          <TableCell>{t('instances|Instance')}</TableCell>
+          <TableCell>{t('instances|IP')}</TableCell>
+          <TableCell>{t('instances|Current Status')}</TableCell>
+          <TableCell>{t('instances|Version')}</TableCell>
+          <TableCell>{t('instances|Last Check')}</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>

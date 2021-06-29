@@ -4,6 +4,7 @@ import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
 import TablePagination from '@material-ui/core/TablePagination';
 import React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import _ from 'underscore';
 import { Activity } from '../../api/apiDataTypes';
 import { activityStore } from '../../stores/Stores';
@@ -26,6 +27,8 @@ const useStyles = makeStyles({
 
 function Container() {
   const classes = useStyles();
+  const { t } = useTranslation();
+
   const [activity, setActivity] = React.useState(getActivityEntries());
   const rowsOptions = [5, 10, 50];
   const [page, setPage] = React.useState(0);
@@ -99,17 +102,19 @@ function Container() {
 
   return (
     <>
-      <ListHeader title="Activity" />
+      <ListHeader title={t('activity|Activity')} />
       <Paper>
         <Box padding="1em">
           {_.isNull(activity) ? (
             <Loader />
           ) : _.isEmpty(activity) ? (
             <Empty>
-              No activity found for the last week.
-              <br />
-              <br />
-              You will see here important events related to the rollout of your updates. Stay tuned!
+              <Trans ns="activity">
+                No activity found for the last week.
+                <br />
+                <br />
+                You will see here important events related to the rollout of your updates. Stay tuned!
+              </Trans>
             </Empty>
           ) : (
             <Grid container direction="column">
@@ -129,10 +134,10 @@ function Container() {
                   rowsPerPage={rowsPerPage}
                   page={page}
                   backIconButtonProps={{
-                    'aria-label': 'previous page',
+                    'aria-label': t('activity|previous page'),
                   }}
                   nextIconButtonProps={{
-                    'aria-label': 'next page',
+                    'aria-label': t('activity|next page'),
                   }}
                   onChangePage={handleChangePage}
                   onChangeRowsPerPage={handleChangeRowsPerPage}

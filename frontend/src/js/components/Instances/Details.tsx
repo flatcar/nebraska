@@ -24,6 +24,7 @@ import { makeStyles, useTheme } from '@material-ui/styles';
 import { Field, Form, Formik, FormikHelpers, FormikProps } from 'formik';
 import { TextField } from 'formik-material-ui';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 import * as Yup from 'yup';
 import API from '../../api/API';
@@ -91,8 +92,10 @@ interface StatusLabelProps {
 function StatusLabel(props: StatusLabelProps) {
   const classes = useStatusStyles();
   const statusDefs = makeStatusDefs(useTheme());
+  const { t } = useTranslation();
+
   const { status, activated } = props;
-  const { icon = null, label = 'Unknown', color } = (status && statusDefs[status.type]) || {};
+  const { icon = null, label = t('frequent|Unknown'), color } = (status && statusDefs[status.type]) || {};
   const iconSize = '22px';
 
   return (
@@ -179,15 +182,17 @@ function StatusRow(props: StatusRow) {
 }
 
 function EventTable(props: {events: StatusEvent[]}) {
+  const { t } = useTranslation();
+
   return props.events.length === 0 ? (
-    <Empty>No events to report for this instance yet.</Empty>
+    <Empty>{t('instances|No events to report for this instance yet.')}</Empty>
   ) : (
     <Table>
       <TableHead>
         <TableRow>
-          <TableCell>Status</TableCell>
-          <TableCell>Version</TableCell>
-          <TableCell>Time</TableCell>
+          <TableCell>{t('instances|Status')}</TableCell>
+          <TableCell>{t('instances|Version')}</TableCell>
+          <TableCell>{t('instances|Time')}</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
@@ -211,6 +216,7 @@ interface FormValues {
 
 function EditDialog(props: EditDialogProps) {
   const { show, onHide, instance } = props;
+  const { t } = useTranslation();
 
   function handleClose() {
     onHide();
@@ -228,7 +234,7 @@ function EditDialog(props: EditDialogProps) {
         actions.setSubmitting(false);
         actions.setStatus({
           statusMessage:
-            err && err.message ? `Something went wrong: ${err.message}` : 'Something went wrong…',
+            err && err.message ? t('instances|Something went wrong: {{message}}', {message: err.message}) : t('instances|Something went wrong…'),
         });
       });
   }
@@ -244,18 +250,18 @@ function EditDialog(props: EditDialogProps) {
             name="name"
             component={TextField}
             margin="dense"
-            label="Name"
+            label={t('instances|Name')}
             type="text"
-            helperText="Leave empty for displaying the instance ID"
+            helperText={t('instances|Leave empty for displaying the instance ID')}
             fullWidth
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            Cancel
+            {t('frequent|Cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting} color="primary">
-            Save
+            {t('frequent|Save')}
           </Button>
         </DialogActions>
       </Form>
@@ -263,12 +269,12 @@ function EditDialog(props: EditDialogProps) {
   }
 
   const validation = Yup.object().shape({
-    name: Yup.string().max(256, 'Must enter a valid name (less than 256 characters)'),
+    name: Yup.string().max(256, t('instances|Must enter a valid name (less than 256 characters)')),
   });
 
   return (
     <Dialog open={show} onClose={handleClose} aria-labelledby="form-dialog-title" fullWidth>
-      <DialogTitle>Edit Instance</DialogTitle>
+      <DialogTitle>{t('instances|Edit Instance')}</DialogTitle>
       <Formik
         initialValues={{
           name: instance.alias || instance.id,
@@ -294,6 +300,7 @@ function DetailsView(props: DetailsViewProps) {
   const { application, group, instance, onInstanceUpdated } = props;
   const [eventHistory, setEventHistory] = React.useState<StatusEvent[] | null>(null);
   const [showEdit, setShowEdit] = React.useState(false);
+  const { t } = useTranslation();
 
   const hasAlias = !!instance.alias;
 
@@ -320,7 +327,7 @@ function DetailsView(props: DetailsViewProps) {
 
   return (
     <>
-      <ListHeader title="Instance Information" />
+      <ListHeader title={t('instances|Instance Information')} />
       <Paper>
         <Box p={2}>
           <Grid container spacing={1}>
@@ -335,7 +342,7 @@ function DetailsView(props: DetailsViewProps) {
                   <MoreMenu
                     options={[
                       {
-                        label: 'Rename',
+                        label: t('instances|Rename'),
                         action: updateInstance,
                       },
                     ]}
@@ -351,20 +358,20 @@ function DetailsView(props: DetailsViewProps) {
                       <Grid item container>
                         {hasAlias && (
                           <Grid item xs={12}>
-                            <CardFeatureLabel>ID</CardFeatureLabel>&nbsp;
+                            <CardFeatureLabel>{t('instances|ID')}</CardFeatureLabel>&nbsp;
                             <Box mt={1} mb={1}>
                               <CardLabel>{instance.id}</CardLabel>
                             </Box>
                           </Grid>
                         )}
                         <Grid item xs={6}>
-                          <CardFeatureLabel>IP</CardFeatureLabel>
+                          <CardFeatureLabel>{t('instances|IP')}</CardFeatureLabel>
                           <Box mt={1}>
                             <CardLabel>{instance.ip}</CardLabel>
                           </Box>
                         </Grid>
                         <Grid item xs={6}>
-                          <CardFeatureLabel>Version</CardFeatureLabel>
+                          <CardFeatureLabel>{t('instances|Version')}</CardFeatureLabel>
                           <Box mt={1}>
                             <CardLabel>{instance.application.version}</CardLabel>
                           </Box>
@@ -376,13 +383,13 @@ function DetailsView(props: DetailsViewProps) {
 
                       <Grid item xs={12} container>
                         <Grid item xs={6}>
-                          <CardFeatureLabel>Status</CardFeatureLabel>
+                          <CardFeatureLabel>{t('instances|Status')}</CardFeatureLabel>
                           <Box mt={1}>
                             <StatusLabel status={instance.statusInfo} />
                           </Box>
                         </Grid>
                         <Grid item xs={6}>
-                          <CardFeatureLabel>Last Update Check</CardFeatureLabel>
+                          <CardFeatureLabel>{t('instances|Last Update Check')}</CardFeatureLabel>
                           <Box mt={1}>
                             <CardLabel>
                               {makeLocaleTime(instance.application.last_check_for_updates)}
@@ -396,7 +403,7 @@ function DetailsView(props: DetailsViewProps) {
                       </Grid>
                       <Grid item xs={12} container>
                         <Grid item xs={6}>
-                          <CardFeatureLabel>Application</CardFeatureLabel>
+                          <CardFeatureLabel>{t('instances|Application')}</CardFeatureLabel>
                           <Box mt={1}>
                             <Link
                               className={classes.link}
@@ -408,7 +415,7 @@ function DetailsView(props: DetailsViewProps) {
                           </Box>
                         </Grid>
                         <Grid item xs={6}>
-                          <CardFeatureLabel>Group</CardFeatureLabel>
+                          <CardFeatureLabel>{t('instances|Group')}</CardFeatureLabel>
                           <Box mt={1}>
                             <Link
                               className={classes.link}
@@ -423,11 +430,11 @@ function DetailsView(props: DetailsViewProps) {
 
                       <Grid item xs={12}>
                         <Box mt={2}>
-                          <CardFeatureLabel>Channel</CardFeatureLabel>&nbsp;
+                          <CardFeatureLabel>{t('instances|Channel')}</CardFeatureLabel>&nbsp;
                           {group.channel ? (
                             <ChannelItem channel={group.channel} />
                           ) : (
-                            <CardLabel>None</CardLabel>
+                            <CardLabel>{t('frequent|None')}</CardLabel>
                           )}
                         </Box>
                       </Grid>
@@ -441,7 +448,7 @@ function DetailsView(props: DetailsViewProps) {
             </Box>
             <Grid item md>
               <Box mt={2} fontSize={18} fontWeight={700} color={theme.palette.greyShadeColor}>
-                Event Timeline
+                {t('instances|Event Timeline')}
                 {eventHistory ? (
                   <Box padding="1em">
                     <div className={classes.timelineContainer}>

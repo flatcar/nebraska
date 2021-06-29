@@ -16,6 +16,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Field, Form, Formik } from 'formik';
 import { Select, TextField } from 'formik-material-ui';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import { Channel, Package } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
@@ -35,6 +36,7 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
     props.data.channel ? props.data.channel.type : flatcarType
   );
   const [arch, setArch] = React.useState(props.data.channel ? props.data.channel.arch : 1);
+  const { t } = useTranslation();
   const isCreation = Boolean(props.create);
 
   function getFlatcarActionHash() {
@@ -99,7 +101,7 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
         actions.setSubmitting(false);
         actions.setStatus({
           statusMessage:
-            'Something went wrong, or the version you are trying to add already exists for the arch and package type. Check the form or try again later...',
+            t('packages|Something went wrong, or the version you are trying to add already exists for the arch and package type. Check the form or try again later...'),
         });
       });
   }
@@ -124,10 +126,10 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
                 <InputLabel>Type</InputLabel>
                 <MuiSelect value={packageType} onChange={handlePackageTypeChange}>
                   <MenuItem value={otherType} key="other">
-                    Other
+                    {t('packages|Other')}
                   </MenuItem>
                   <MenuItem value={flatcarType} key="flatcar">
-                    Flatcar
+                    {t('packages|Flatcar')}
                   </MenuItem>
                 </MuiSelect>
               </FormControl>
@@ -139,7 +141,7 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
                 className={classes.topSelect}
                 disabled={!isCreation}
               >
-                <InputLabel>Architecture</InputLabel>
+                <InputLabel>{t('packages|Architecture')}</InputLabel>
                 <MuiSelect value={arch} onChange={handleArchChange}>
                   {Object.keys(ARCHES).map((key: string) => {
                     const archName = ARCHES[parseInt(key)];
@@ -150,7 +152,7 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
                     );
                   })}
                 </MuiSelect>
-                <FormHelperText>Cannot be changed once created.</FormHelperText>
+                <FormHelperText>{t('packages|Cannot be changed once created.')}</FormHelperText>
               </FormControl>
             </Grid>
           </Grid>
@@ -158,7 +160,7 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
             name="url"
             component={TextField}
             margin="dense"
-            label="URL"
+            label={t('packages|URL')}
             type="url"
             required
             fullWidth
@@ -167,7 +169,7 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
             name="filename"
             component={TextField}
             margin="dense"
-            label="Filename"
+            label={t('packages|Filename')}
             type="text"
             required
             fullWidth
@@ -176,7 +178,7 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
             name="description"
             component={TextField}
             margin="dense"
-            label="Description"
+            label={t('packages|Description')}
             type="text"
             required
             fullWidth
@@ -187,10 +189,10 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
                 name="version"
                 component={TextField}
                 margin="dense"
-                label="Version"
+                label={t('packages|Version')}
                 type="text"
                 required
-                helperText="Use SemVer format (1.0.1)"
+                helperText={t('packages|Use SemVer format (1.0.1)')}
                 fullWidth
               />
             </Grid>
@@ -199,10 +201,10 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
                 name="size"
                 component={TextField}
                 margin="dense"
-                label="Size"
+                label={t('packages|Size')}
                 type="number"
                 required
-                helperText="In bytes"
+                helperText={t('packages|In bytes')}
                 fullWidth
               />
             </Grid>
@@ -211,10 +213,10 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
             name="hash"
             component={TextField}
             margin="dense"
-            label="Hash"
+            label={t('packages|Hash')}
             type="text"
             required
-            helperText="Tip: cat update.gz | openssl dgst -sha1 -binary | base64"
+            helperText={t('packages|Tip: cat update.gz | openssl dgst -sha1 -binary | base64')}
             fullWidth
           />
           {isFlatcarType(packageType) && (
@@ -222,10 +224,10 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
               name="flatcarHash"
               component={TextField}
               margin="dense"
-              label="Flatcar Action SHA256"
+              label={t('packages|Flatcar Action SHA256')}
               type="text"
               required
-              helperText="Tip: cat update.gz | openssl dgst -sha256 -binary | base64"
+              helperText={t('packages|Tip: cat update.gz | openssl dgst -sha256 -binary | base64')}
               fullWidth
             />
           )}
@@ -251,7 +253,7 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
                       <Checkbox checked={values.channelsBlacklist.indexOf(packageItem.id) > -1} />
                       <ListItemText
                         primary={label}
-                        secondary={isDisabled ? 'channel pointing to this package' : null}
+                        secondary={isDisabled ? t('packages|channel pointing to this package') : null}
                       />
                     </MenuItem>
                   );
@@ -266,10 +268,10 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            Cancel
+            {t('frequent|Cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting} color="primary">
-            {isCreation ? 'Add' : 'Save'}
+            {isCreation ? t('frequent|Add') : t('frequent|Save')}
           </Button>
         </DialogActions>
       </Form>
@@ -281,27 +283,27 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
   } = Yup.object().shape({
     url: Yup.string().url(),
     filename: Yup.string()
-      .max(100, 'Must enter a valid filename (less than 100 characters)')
-      .required('Required'),
+      .max(100, t('packages|Must enter a valid filename (less than 100 characters)'))
+      .required(t('frequent|Required')),
     // @todo: Validate whether the version already exists so we can provide
     // better feedback.
     version: Yup.string()
-      .matches(REGEX_SEMVER, 'Enter a valid semver (1.0.1)')
-      .required('Required'),
+      .matches(REGEX_SEMVER, t('packages|Enter a valid semver (1.0.1)'))
+      .required(t('frequent|Required')),
     size: Yup.number()
-      .integer('Must be an integer number')
-      .positive('Must be a positive number')
-      .required('Required'),
+      .integer(t('packages|Must be an integer number'))
+      .positive(t('packages|Must be a positive number'))
+      .required(t('frequent|Required')),
     hash: Yup.string()
-      .max(64, 'Must be a valid hash (less than 64 characters)')
-      .required('Required'),
+      .max(64, t('packages|Must be a valid hash (less than 64 characters)'))
+      .required(t('frequent|Required')),
   });
 
   let initialValues: { [key: string]: any } = { channelsBlacklist: [] };
   if (!isCreation) {
     validation['flatcarHash'] = Yup.string()
-      .max(64, 'Must be a valid hash (less than 64 characters)')
-      .required('Required');
+      .max(64, t('packages|Must be a valid hash (less than 64 characters)'))
+      .required(t('frequent|Required'));
 
     initialValues = {
       url: props.data.channel.url,
@@ -322,7 +324,7 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
 
   return (
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
-      <DialogTitle>{isCreation ? 'Add Package' : 'Edit Package'}</DialogTitle>
+      <DialogTitle>{isCreation ? t('packages|Add Package') : t('packages|Edit Package')}</DialogTitle>
       <Formik
         initialValues={initialValues}
         onSubmit={handleSubmit}

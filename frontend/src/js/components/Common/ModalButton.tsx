@@ -2,6 +2,7 @@ import { IconButton, makeStyles, useTheme } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import ApplicationEditDialog from '../Applications/EditDialog';
 import ChannelEditDialog from '../Channels/EditDialog';
 import GroupEditDialog from '../Groups/EditDialog';
@@ -16,6 +17,7 @@ const useStyles = makeStyles(theme => ({
 function ModalButton(props: { data: object; modalToOpen: string; icon?: string }) {
   const [showModal, setShowModal] = React.useState(false);
   const classes = useStyles();
+  const { t } = useTranslation();
 
   function close() {
     setShowModal(false);
@@ -52,7 +54,7 @@ function ModalButton(props: { data: object; modalToOpen: string; icon?: string }
   // case it should be set from the caller).
   return (
     <div>
-      <IconButton size="small" aria-label="add" onClick={open} data-testid="modal-button">
+      <IconButton size="small" aria-label={t('frequent|add')} onClick={open} data-testid="modal-button">
         <AddIcon fontSize="large" className={classes.root} />
       </IconButton>
       {modal}

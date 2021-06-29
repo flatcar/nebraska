@@ -12,6 +12,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import { useTheme } from '@material-ui/styles';
 import PropTypes from 'prop-types';
 import React, { ChangeEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import API from '../../api/API';
 import { Application, Group } from '../../api/apiDataTypes';
@@ -41,6 +42,7 @@ interface InstanceFilterProps {
 
 function InstanceFilter(props: InstanceFilterProps) {
   const statusDefs = makeStatusDefs(useTheme());
+  const { t } = useTranslation();
   const { onFiltersChanged, versions } = props;
 
   function changeFilter(filterName: string, filterValue: string) {
@@ -60,17 +62,17 @@ function InstanceFilter(props: InstanceFilterProps) {
         <Grid item xs={5}>
           <FormControl fullWidth disabled={props.disabled}>
             <InputLabel htmlFor="select-status" shrink>
-              Filter Status
+              {t('instances|Filter Status')}
             </InputLabel>
             <Select
               onChange={(event: any) => changeFilter('status', event.target.value)}
               input={<Input id="select-status" />}
-              renderValue={(selected: any) => (selected ? statusDefs[selected].label : 'Show All')}
+              renderValue={(selected: any) => (selected ? statusDefs[selected].label : t('instances|Show All'))}
               value={props.filter.status}
               displayEmpty
             >
               <MenuItem key="" value="">
-                Show All
+                {t('instances|Show All')}
               </MenuItem>
               {Object.keys(statusDefs).map(statusType => {
                 const label = statusDefs[statusType].label;
@@ -86,19 +88,19 @@ function InstanceFilter(props: InstanceFilterProps) {
         <Grid item xs={5}>
           <FormControl fullWidth disabled={props.disabled}>
             <InputLabel htmlFor="select-versions" shrink>
-              Filter Version
+              {t('instances|Filter Version')}
             </InputLabel>
             <Select
               onChange={(event: ChangeEvent<{ name?: string | undefined; value: any }>) =>
                 changeFilter('version', event.target.value)
               }
               input={<Input id="select-versions" />}
-              renderValue={(selected: any) => (selected ? selected : 'Show All')}
+              renderValue={(selected: any) => (selected ? selected : t('instances|Show All'))}
               value={props.filter.version}
               displayEmpty
             >
               <MenuItem key="" value="">
-                Show All
+                {t('instances|Show All')}
               </MenuItem>
               {(versions || []).map(({ version }) => {
                 return (
@@ -118,6 +120,7 @@ function InstanceFilter(props: InstanceFilterProps) {
 function ListView(props: { application: Application; group: Group }) {
   const classes = useStyles();
   const theme = useTheme();
+  const { t } = useTranslation();
   const statusDefs = makeStatusDefs(useTheme());
   const { application, group } = props;
   const versionBreakdown = useGroupVersionBreakdown(group);
@@ -293,7 +296,7 @@ function ListView(props: { application: Application; group: Group }) {
   }
   return (
     <>
-      <ListHeader title="Instance List" />
+      <ListHeader title={t('instances|Instance List')} />
       <Paper>
         <Box padding="1em">
           <Grid container spacing={1}>
@@ -339,7 +342,7 @@ function ListView(props: { application: Application; group: Group }) {
               <Grid item md={12} container justify="center">
                 <Grid item>
                   <Button variant="outlined" color="secondary" onClick={resetFilters}>
-                    Reset filters
+                    {t('instances|Reset filters')}
                   </Button>
                 </Grid>
               </Grid>
@@ -356,17 +359,17 @@ function ListView(props: { application: Application; group: Group }) {
                       rowsPerPage={rowsPerPage}
                       page={page}
                       backIconButtonProps={{
-                        'aria-label': 'previous page',
+                        'aria-label': t('frequent|previous page'),
                       }}
                       nextIconButtonProps={{
-                        'aria-label': 'next page',
+                        'aria-label': t('frequent|next page'),
                       }}
                       onChangePage={handleChangePage}
                       onChangeRowsPerPage={handleChangeRowsPerPage}
                     />
                   </React.Fragment>
                 ) : (
-                  <Empty>No instances.</Empty>
+                  <Empty>{t('frequent|No instances.')}</Empty>
                 )
               ) : (
                 <Loader />

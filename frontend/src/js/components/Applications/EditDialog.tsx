@@ -8,12 +8,14 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { Field, Form, Formik } from 'formik';
 import { TextField } from 'formik-material-ui';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import { Application } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 
 function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () => void }) {
   const isCreation = Boolean(props.create);
+  const { t } = useTranslation();
 
   function handleSubmit(
     values: { [key: string]: any },
@@ -44,7 +46,7 @@ function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () 
       .catch(() => {
         actions.setSubmitting(false);
         actions.setStatus({
-          statusMessage: 'Something went wrong. Check the form or try again later...',
+          statusMessage: t('applications|Something went wrong. Check the form or try again later...'),
         });
       });
   }
@@ -65,7 +67,7 @@ function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () 
             name="name"
             component={TextField}
             margin="dense"
-            label="Name"
+            label={t('frequent|Name')}
             type="text"
             fullWidth
             required
@@ -74,7 +76,7 @@ function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () 
             name="description"
             component={TextField}
             margin="dense"
-            label="Description"
+            label={t('frequent|Description')}
             type="text"
             fullWidth
           />
@@ -82,9 +84,9 @@ function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () 
             <Field
               type="text"
               name="appToClone"
-              label="Groups/Channels"
+              label={t("Applications|Groups/Channels")}
               select
-              helperText="Clone channels and groups from another other application"
+              helperText={t("Applications|Clone channels and groups from another other application")}
               margin="normal"
               component={TextField}
               InputLabelProps={{
@@ -107,10 +109,10 @@ function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () 
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            Cancel
+            {t('frequent|Cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting} color="primary">
-            {isCreation ? 'Add' : 'Update'}
+            {isCreation ? t('frequent|Add') : t('frequent|Update')}
           </Button>
         </DialogActions>
       </Form>
@@ -118,13 +120,13 @@ function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () 
   }
 
   const validation = Yup.object().shape({
-    name: Yup.string().max(50, 'Must be less than 50 characters').required('Required'),
-    description: Yup.string().max(250, 'Must be less than 250 characters'),
+    name: Yup.string().max(50, t('applications|Must be less than 50 characters')).required('Required'),
+    description: Yup.string().max(250, t('applications|Must be less than 250 characters')),
   });
 
   return (
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
-      <DialogTitle>{isCreation ? 'Add Application' : 'Update Application'}</DialogTitle>
+      <DialogTitle>{isCreation ? t('applications|Add Application') : t('applications|Update Application')}</DialogTitle>
       <Formik
         initialValues={{ name: props.data.name, description: props.data.description }}
         onSubmit={handleSubmit}

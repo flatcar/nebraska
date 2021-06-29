@@ -1,6 +1,7 @@
 import { List as MuiList, withStyles } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import _ from 'underscore';
 import { Application } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
@@ -20,10 +21,13 @@ const styles = () => ({
 });
 
 function List(props: { classes: Record<'root', string> }) {
-  const [applications, setApplications] = React.useState(applicationsStore.getCachedApplications());
+  const [applications, setApplications] = React.useState(
+    applicationsStore.getCachedApplications ? applicationsStore.getCachedApplications() : []
+  );
   const [searchTerm, setSearchTerm] = React.useState('');
   const [updateAppModalVisible, setUpdateModalVisible] = React.useState(false);
   const [updateAppIDModal, setUpdateAppIDModal] = React.useState<null | string>(null);
+  const { t } = useTranslation();
 
   function closeUpdateAppModal() {
     setUpdateModalVisible(false);
@@ -40,6 +44,13 @@ function List(props: { classes: Record<'root', string> }) {
       applicationsStore.removeChangeListener(onChange);
     };
   }, []);
+
+  React.useEffect(() => {
+    if (applicationsStore.getCachedApplications) {
+      setApplications(applicationsStore.getCachedApplications());
+    }
+  }, [applicationsStore.getCachedApplications]);
+
 
   function onChange() {
     setApplications(applicationsStore.getCachedApplications());
@@ -59,14 +70,16 @@ function List(props: { classes: Record<'root', string> }) {
   } else {
     if (_.isEmpty(applications)) {
       if (searchTerm) {
-        entries = <Empty>No results found.</Empty>;
+        entries = <Empty>{t('applications|No results found.')}</Empty>;
       } else {
         entries = (
           <Empty>
-            Ops, it looks like you have not created any application yet..
-            <br />
-            <br /> Now is a great time to create your first one, just click on the plus symbol
-            above.
+            <Trans ns="applications">
+              Ops, it looks like you have not created any application yet..
+              <br />
+              <br /> Now is a great time to create your first one, just click on the plus symbol
+              above.
+            </Trans>
           </Empty>
         );
       }
@@ -88,7 +101,7 @@ function List(props: { classes: Record<'root', string> }) {
   return (
     <>
       <ListHeader
-        title="Applications"
+        title={t('applications|Applications')}
         actions={[
           <ModalButton modalToOpen="AddApplicationModal" data={{ applications: applications }} />,
         ]}

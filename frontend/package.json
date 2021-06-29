@@ -85,7 +85,8 @@
     "eject": "react-scripts eject",
     "lint": "eslint -c package.json 'src/**/*.{js,jsx,ts,tsx}'",
     "format": "prettier --config package.json --write src/",
-    "lint:fix": "eslint -c package.json --fix 'src/**/*.{js,jsx,ts,tsx}'"
+    "lint:fix": "eslint -c package.json --fix 'src/**/*.{js,jsx,ts,tsx}'",
+    "i18n": "npx --no-install i18next ./src/**/ts* ./src/**/**/*.ts* ./src/**/**/**/*.ts* -c ./src/i18n/i18next-parser.config.js"
   },
   "browserslist": {
     "production": [

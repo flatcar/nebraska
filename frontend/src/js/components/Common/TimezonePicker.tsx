@@ -13,6 +13,7 @@ import TextField from '@material-ui/core/TextField';
 import Downshift, { GetLabelPropsOptions } from 'downshift';
 import moment from 'moment-timezone';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FixedSizeList } from 'react-window';
 
 const suggestions = moment.tz.names().map(timezone => {
@@ -170,6 +171,7 @@ export default function TimzonePicker(props: {
     props.value ? props.value : DEFAULT_TIMEZONE
   );
   const classes = useStyles();
+  const { t } = useTranslation();
 
   function onInputActivate() {
     setShowPicker(true);
@@ -194,7 +196,7 @@ export default function TimzonePicker(props: {
           inputProps={{
             className: classes.pickerButtonInput,
           }}
-          placeholder="Pick a timezone"
+          placeholder={t('common|Pick a timezone')}
           readOnly
           data-testid="timezone-readonly-input"
         />
@@ -221,8 +223,8 @@ export default function TimzonePicker(props: {
                     fullWidth: true,
                     autoFocus: true,
                     classes,
-                    label: 'Timezone',
-                    placeholder: 'Start typing to search a timezone',
+                    label: t('common|Timezone'),
+                    placeholder: t('common|Start typing to search a timezone'),
                     InputLabelProps: getLabelProps(),
                     InputProps: { onBlur, onChange, onFocus },
                     inputProps,
@@ -248,10 +250,10 @@ export default function TimzonePicker(props: {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            Cancel
+            {t('frequent|Cancel')}
           </Button>
           <Button onClick={handleSelect} color="primary">
-            Select
+            {t('frequent|Select')}
           </Button>
         </DialogActions>
       </Dialog>

@@ -1,3 +1,4 @@
+import '../../i18n/config.ts';
 import { render, waitForDomChange } from '@testing-library/react';
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';

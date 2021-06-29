@@ -63,6 +63,7 @@ exports[`Application Item should render item correctly for no data 1`] = `
               <button
                 aria-controls="simple-menu"
                 aria-haspopup="true"
+                aria-label="Open menu"
                 class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd"
                 data-testid="more-menu-open-button"
                 tabindex="0"

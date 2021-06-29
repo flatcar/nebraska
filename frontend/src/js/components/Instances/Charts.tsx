@@ -5,6 +5,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme, withStyles } from '@material-ui/styles';
 import React from 'react';
+import { Trans,useTranslation } from 'react-i18next';
 import { Cell,Label, Pie, PieChart } from 'recharts';
 import Empty from '../Common/EmptyContent';
 import Loader from '../Common/Loader';
@@ -143,7 +144,7 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
           }
           strokeWidth={activeIndex === index? 2: 0}
           />
-        })}  
+        })}
           </Pie>
         </PieChart>
       </Grid>
@@ -195,6 +196,7 @@ interface InstanceStatusCount {
 export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
   const theme = useTheme<Theme>();
   const statusDefs = makeStatusDefs(theme);
+  const { t } = useTranslation();
 
   const { instanceStats, href, period } = props;
   const instanceStateCount: InstanceStatusCount[] = [
@@ -209,8 +211,8 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
     {
       status: 'InstanceStatusOther',
       count: [
-        { key: 'onhold', label: 'InstanceStatusOnHold' },
-        { key: 'undefined', label: 'InstanceStatusUndefined' },
+        { key: 'onhold', label: t('instances|InstanceStatusOnHold') },
+        { key: 'undefined', label: t('instances|InstanceStatusUndefined') },
       ],
     },
     {
@@ -220,8 +222,8 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
     {
       status: 'InstanceStatusDownloading',
       count: [
-        { key: 'downloading', label: 'InstanceStatusDownloading' },
-        { key: 'update_granted', label: 'InstanceStatusUpdateGranted' },
+        { key: 'downloading', label: t('instances|InstanceStatusDownloading') },
+        { key: 'update_granted', label: t('instances|InstanceStatusUpdateGranted') },
       ],
     },
     {
@@ -231,7 +233,7 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
   ];
 
   statusDefs['InstanceStatusOther'] = { ...statusDefs['InstanceStatusUndefined'] };
-  statusDefs['InstanceStatusOther'].label = 'Other';
+  statusDefs['InstanceStatusOther'].label = t('instances|Other');
 
   const totalInstances = instanceStats ? instanceStats.total : 0;
 
@@ -263,7 +265,10 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
                   return {
                     value: instanceStats[key] / instanceStats.total,
                     color: statusDefs[label].color,
-                    description: `${statusLabel}: ${instanceStats[key]} instances.`,
+                    description: t('{{statusLabel}}: {{stat, number}} instances', {
+                      statusLabel: statusLabel,
+                      stat: instanceStats[key],
+                    }),
                   };
                 })}
                 width={140}
@@ -277,10 +282,12 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
     </Grid>
   ) : (
     <Empty>
-      No instances have registered with this group for the past {period}.
-      <br />
-      <br />
-      Instances will be shown here automatically the next time they request an update.
+      <Trans ns="instances">
+        No instances have registered with this group for the past {period}.
+        <br />
+        <br />
+        Instances will be shown here automatically the next time they request an update.
+      </Trans>
     </Empty>
   );
 }

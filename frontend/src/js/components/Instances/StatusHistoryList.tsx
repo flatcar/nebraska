@@ -5,6 +5,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { InstanceStatusHistory } from '../../api/apiDataTypes';
 import StatusHistoryItem from './StatusHistoryItem';
 
@@ -20,15 +21,16 @@ function StatusHistoryList(props: {
 }) {
   const entries = props.entries || [];
   const classes = useStyles();
+  const { t } = useTranslation();
 
   // @todo: Virtualize the table.
   return (
     <Table className={classes.root}>
       <TableHead>
         <TableRow>
-          <TableCell>Instances</TableCell>
-          <TableCell>Status</TableCell>
-          <TableCell>Message</TableCell>
+          <TableCell>{t('instances|Instances')}</TableCell>
+          <TableCell>{t('instances|Status')}</TableCell>
+          <TableCell>{t('instances|Message')}</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>

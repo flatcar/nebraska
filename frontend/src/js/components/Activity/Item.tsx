@@ -8,6 +8,7 @@ import Link from '@material-ui/core/Link';
 import ListItem from '@material-ui/core/ListItem';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 import { Activity } from '../../api/apiDataTypes';
 import { activityStore } from '../../stores/Stores';
@@ -54,6 +55,7 @@ function Item(props: { entry: Activity }) {
     [key: string]: any;
   }>({});
   const classes = useStyles();
+  const { t } = useTranslation();
 
   function fetchEntryClassFromStore() {
     const entryClass = activityStore.getActivityEntryClass(props.entry.class, props.entry);
@@ -80,7 +82,7 @@ function Item(props: { entry: Activity }) {
   if (entryClass.type !== 'activityChannelPackageUpdated') {
     const { app_id, group_id } = props.entry;
     const groupPath = `apps/${app_id}/groups/${group_id}`;
-    subtitle = 'GROUP';
+    subtitle = t('activity|GROUP');
     name = (
       <Link component={RouterLink} to={groupPath} className={classes.groupLink}>
         {entryClass.groupName}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import API from '../../api/API';
 import { Application, Instance } from '../../api/apiDataTypes';
@@ -19,6 +20,7 @@ export default function InstanceLayout() {
   );
   const [group, setGroup] = React.useState(getGroupFromApplication(application));
   const [instance, setInstance] = React.useState<Instance | null>(null);
+  const { t } = useTranslation();
 
   function onChange() {
     API.getInstance(appID, groupID, instanceID).then(instance => {
@@ -66,7 +68,7 @@ export default function InstanceLayout() {
         breadcrumbs={[
           {
             path: '/apps',
-            label: 'Applications',
+            label: t('layouts|Applications'),
           },
           {
             path: `/apps/${appID}`,
@@ -78,7 +80,7 @@ export default function InstanceLayout() {
           },
           {
             path: `/apps/${appID}/groups/${groupID}/instances?${searchParams}`,
-            label: 'Instances',
+            label: t('layouts|Instances'),
           },
         ]}
       />

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { applicationsStore } from '../../stores/Stores';
 
 function ConfirmationContent(props: {
@@ -10,6 +11,8 @@ function ConfirmationContent(props: {
     type: string;
   };
 }) {
+  const { t } = useTranslation();
+
   function processClick() {
     if (props.data.type === 'application') {
       applicationsStore.deleteApplication(props.data.appID);
@@ -24,13 +27,13 @@ function ConfirmationContent(props: {
 
   return (
     <div className="popover-content" {...props}>
-      Are you sure ... ?
+      {t('common|Are you sure ... ?')}
       <p className="button-group">
         <button type="button" className="confirm-dialog-btn-abord">
-          No
+          {t('frequent|No')}
         </button>
         <button type="button" className="confirm-dialog-btn-confirm" onClick={processClick}>
-          Yes
+          {t('frequent|Yes')}
         </button>
       </p>
     </div>

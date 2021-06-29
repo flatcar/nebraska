@@ -12,6 +12,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Downshift, { GetLabelPropsOptions } from 'downshift';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FixedSizeList } from 'react-window';
 
 interface RenderInputProps {
@@ -160,6 +161,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
   const [showPicker, setShowPicker] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState(props.defaultValue);
   const suggestions = props.getSuggestions;
+  const { t } = useTranslation();
 
   const classes = useStyles();
   function onInputActivate() {
@@ -236,10 +238,10 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            Cancel
+            {t('frequent|Cancel')}
           </Button>
           <Button onClick={handleSelect} color="primary">
-            Select
+            {t('frequent|Select')}
           </Button>
         </DialogActions>
       </Dialog>

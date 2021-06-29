@@ -4,6 +4,7 @@ import Paper from '@material-ui/core/Paper';
 import TablePagination from '@material-ui/core/TablePagination';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
 import API from '../../api/API';
 import { Package } from '../../api/apiDataTypes';
@@ -23,6 +24,7 @@ function List(props: { appID: string }) {
   const [packageToUpdate, setPackageToUpdate] = React.useState<Package | null>(null);
   const rowsPerPage = 10;
   const [page, setPage] = React.useState(0);
+  const { t } = useTranslation();
 
   function onChange() {
     setApplication(applicationsStore.getCachedApplication(props.appID));
@@ -70,7 +72,7 @@ function List(props: { appID: string }) {
   return (
     <>
       <ListHeader
-        title="Packages"
+        title={t('packages|Packages')}
         actions={
           application
             ? [
@@ -118,10 +120,10 @@ function List(props: { appID: string }) {
                   rowsPerPage={rowsPerPage}
                   page={page}
                   backIconButtonProps={{
-                    'aria-label': 'previous page',
+                    'aria-label': t('frequent|previous page'),
                   }}
                   nextIconButtonProps={{
-                    'aria-label': 'next page',
+                    'aria-label': t('frequent|next page'),
                   }}
                   onChangePage={handleChangePage}
                 />
@@ -135,6 +137,7 @@ function List(props: { appID: string }) {
     </>
   );
 }
+
 
 List.propTypes = {
   appID: PropTypes.string.isRequired,

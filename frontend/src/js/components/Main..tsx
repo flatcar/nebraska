@@ -2,10 +2,10 @@ import green from '@material-ui/core/colors/green';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { createMuiTheme } from '@material-ui/core/styles';
-import { ThemeProvider } from '@material-ui/styles';
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import API from '../api/API';
+import ThemeProviderNexti18n from '../i18n/ThemeProviderNexti18n';
 import { setConfig } from '../stores/redux/features/config';
 import { useDispatch } from '../stores/redux/hooks';
 import { useAuthRedirect } from '../utils/auth';
@@ -66,7 +66,7 @@ export default function Main() {
   useAuthRedirect();
 
   return (
-    <ThemeProvider theme={nebraskaTheme}>
+    <ThemeProviderNexti18n theme={nebraskaTheme}>
       <CssBaseline />
       <Header />
       <Container component="main">
@@ -88,6 +88,6 @@ export default function Main() {
         </Switch>
         <Footer />
       </Container>
-    </ThemeProvider>
+    </ThemeProviderNexti18n>
   );
 }

@@ -1,3 +1,4 @@
+import '../../i18n/config.ts';
 import { render } from '@testing-library/react';
 import React from 'react';
 import SearchInput from '../../components/Common/ListSearch';

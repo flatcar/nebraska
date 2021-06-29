@@ -117,6 +117,7 @@ exports[`Application List should render list correctly with data 1`] = `
                   <button
                     aria-controls="simple-menu"
                     aria-haspopup="true"
+                    aria-label="Open menu"
                     class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd"
                     data-testid="more-menu-open-button"
                     tabindex="0"
