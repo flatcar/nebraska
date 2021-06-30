@@ -30,6 +30,7 @@
     "@types/yup": "^0.29.11",
     "dompurify": "^2.2.6",
     "downshift": "^3.4.7",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
     "formik": "^2.1.5",
     "formik-material-ui": "^0.0.20",
     "husky": "^5.0.9",
