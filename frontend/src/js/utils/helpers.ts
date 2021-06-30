@@ -187,7 +187,7 @@ export function getInstanceStatus(statusID: number, version?: string) {
       icon: '',
       description: 'Updating: downloaded',
       bgColor: 'rgba(44, 152, 240, 0.1)',
-      textColor: '#2C98F0',
+      textColor: '#195586',
       status: 'Downloaded',
       explanation:
         'The instance has downloaded the update package -version ' +

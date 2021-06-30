@@ -124,7 +124,6 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
                   margin="dense"
                   label="Name"
                   InputLabelProps={{ shrink: true }}
-                  autoFocus
                   type="text"
                   required
                   helperText="Can be an existing one as long as the arch is different."

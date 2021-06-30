@@ -11,7 +11,11 @@ import ChannelItem from '../Channels/Item';
 const useStyles = makeStyles({
   groupLink: {
     fontSize: '1rem',
+    color: '#1b5c91'
   },
+  instanceLink: {
+    color: '#1b5c91'
+  }
 });
 
 function ApplicationItemGroupItem(props: { group: Group; appName: string }) {
@@ -57,6 +61,7 @@ function ApplicationItemGroupItem(props: { group: Group; appName: string }) {
                 search: 'period=1d',
               }}
               component={RouterLink}
+              className={classes.instanceLink}
             >
               {instanceCountContent}
             </Link>

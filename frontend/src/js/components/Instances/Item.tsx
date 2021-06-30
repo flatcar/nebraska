@@ -1,7 +1,7 @@
 import chevronDown from '@iconify/icons-mdi/chevron-down';
 import chevronUp from '@iconify/icons-mdi/chevron-up';
 import { InlineIcon } from '@iconify/react';
-import { Box } from '@material-ui/core';
+import { Box, makeStyles } from '@material-ui/core';
 import Collapse from '@material-ui/core/Collapse';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
@@ -25,6 +25,12 @@ const TableLabel = function (props: PropsWithChildren<{bgColor?: string; textCol
   );
 };
 
+const useStyles = makeStyles({
+  link: {
+    color: '#1b5c91'
+  }
+})
+
 interface ItemProps {
   instance: Instance;
   lastVersionChannel: string;
@@ -35,8 +41,8 @@ interface ItemProps {
 
 function Item(props: ItemProps) {
   const { instance, selected, lastVersionChannel, versionNumbers } = props;
+  const classes = useStyles();
   const date = instance.application.last_check_for_updates;
-  const downloadingIcon = instance.statusInfo?.spinning ? <img src={LoadingGif} /> : '';
   const statusDescription = instance.statusInfo?.description;
   const instanceLabel = instance.statusInfo?.className ? (
     <TableLabel
@@ -101,7 +107,7 @@ function Item(props: ItemProps) {
     <React.Fragment>
       <TableRow>
         <TableCell>
-          <Link to={instancePath} component={RouterLink}>
+          <Link to={instancePath} component={RouterLink} className={classes.link}>
             {instanceName}
           </Link>
         </TableCell>

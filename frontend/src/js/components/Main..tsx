@@ -45,6 +45,7 @@ const nebraskaTheme = createMuiTheme({
     },
     subtitle1: {
       fontSize: '14px',
+      color: 'rgba(0,0,0,0.6)'
     },
   },
   shape: {

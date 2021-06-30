@@ -21,13 +21,13 @@ function makeStatusDefs(
   return {
     InstanceStatusComplete: {
       label: 'Complete',
-      color: theme.palette.titleColor,
+      color: 'rgba(15,15,15,1)',
       icon: checkCircleOutline,
       queryValue: '4',
     },
     InstanceStatusDownloaded: {
       label: 'Downloaded',
-      color: theme.palette.success.main,
+      color: 'rgba(40,95,43,1)',
       icon: downloadCircleOutline,
       queryValue: '6',
     },
@@ -39,25 +39,25 @@ function makeStatusDefs(
     },
     InstanceStatusInstalled: {
       label: 'Installed',
-      color: theme.palette.primary.main,
+      color: 'rgba(27,92,145,1)',
       icon: packageVariantClosed,
       queryValue: '5',
     },
     InstanceStatusDownloading: {
       label: 'Downloading',
-      color: theme.palette.primary.main,
+      color: 'rgba(17,40,141,1)',
       icon: progressDownload,
       queryValue: '7',
     },
     InstanceStatusError: {
       label: 'Error',
-      color: theme.palette.error.main,
+      color: 'rgba(164,45,36,1)',
       icon: alertCircleOutline,
       queryValue: '3',
     },
     InstanceStatusUndefined: {
       label: 'Unknown',
-      color: theme.palette.titleColor,
+      color: 'rgb(89, 89, 89)',
       icon: helpCircleOutline,
       queryValue: '1',
     },
