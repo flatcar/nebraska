@@ -113,7 +113,8 @@
     "extends": [
       "@kinvolk",
       "prettier",
-      "prettier/react"
+      "prettier/react",
+      "plugin:jsx-a11y/recommended"
     ]
   },
   "prettier": "@kinvolk/eslint-config/prettier-config"
