@@ -2,7 +2,7 @@ import { withStyles } from '@material-ui/core';
 import MuiList from '@material-ui/core/List';
 import Paper from '@material-ui/core/Paper';
 import React from 'react';
-import { Trans,useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import _ from 'underscore';
 import { Channel, Group } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';

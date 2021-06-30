@@ -34,7 +34,7 @@ import {
   getErrorAndFlags,
   getInstanceStatus,
   makeLocaleTime,
-  prepareErrorMessage
+  prepareErrorMessage,
 } from '../../utils/helpers';
 import ChannelItem from '../Channels/Item';
 import { CardFeatureLabel, CardLabel } from '../Common/Card';
@@ -55,7 +55,7 @@ const useDetailsStyles = makeStyles((theme: Theme) => ({
   },
   link: {
     fontSize: '1rem',
-    color: '#1b5c91'
+    color: '#1b5c91',
   },
 }));
 
@@ -95,7 +95,8 @@ function StatusLabel(props: StatusLabelProps) {
   const { t } = useTranslation();
 
   const { status, activated } = props;
-  const { icon = null, label = t('frequent|Unknown'), color } = (status && statusDefs[status.type]) || {};
+  const { icon = null, label = t('frequent|Unknown'), color } =
+    (status && statusDefs[status.type]) || {};
   const iconSize = '22px';
 
   return (
@@ -181,7 +182,7 @@ function StatusRow(props: StatusRow) {
   );
 }
 
-function EventTable(props: {events: StatusEvent[]}) {
+function EventTable(props: { events: StatusEvent[] }) {
   const { t } = useTranslation();
 
   return props.events.length === 0 ? (
@@ -234,7 +235,9 @@ function EditDialog(props: EditDialogProps) {
         actions.setSubmitting(false);
         actions.setStatus({
           statusMessage:
-            err && err.message ? t('instances|Something went wrong: {{message}}', {message: err.message}) : t('instances|Something went wrong…'),
+            err && err.message
+              ? t('instances|Something went wrong: {{message}}', { message: err.message })
+              : t('instances|Something went wrong…'),
         });
       });
   }

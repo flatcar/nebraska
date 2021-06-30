@@ -51,7 +51,6 @@ function List(props: { classes: Record<'root', string> }) {
     }
   }, [applicationsStore.getCachedApplications]);
 
-
   function onChange() {
     setApplications(applicationsStore.getCachedApplications());
   }

@@ -10,10 +10,10 @@ export interface NebraskaConfig {
   auth_mode: string;
   header_style: string;
   [prop: string]: any;
-};
+}
 
-const nebraskaConfig = localStorage.getItem(CONFIG_STORAGE_KEY) || "{}"
-const initialState: NebraskaConfig = JSON.parse(nebraskaConfig) || {} as NebraskaConfig;
+const nebraskaConfig = localStorage.getItem(CONFIG_STORAGE_KEY) || '{}';
+const initialState: NebraskaConfig = JSON.parse(nebraskaConfig) || ({} as NebraskaConfig);
 
 export const configSlice = createSlice({
   name: 'config',
@@ -24,7 +24,7 @@ export const configSlice = createSlice({
       localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(state));
     },
   },
-})
+});
 
 export const { setConfig } = configSlice.actions;
 export default configSlice.reducer;

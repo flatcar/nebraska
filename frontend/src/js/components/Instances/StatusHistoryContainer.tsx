@@ -15,9 +15,7 @@ const useStyles = makeStyles({
   },
 });
 
-function StatusHistoryContainer(props: {
-  statusHistory: InstanceStatusHistory[];
-}) {
+function StatusHistoryContainer(props: { statusHistory: InstanceStatusHistory[] }) {
   const classes = useStyles();
   const { t } = useTranslation();
   let entries: React.ReactElement;
@@ -25,7 +23,9 @@ function StatusHistoryContainer(props: {
   if (_.isEmpty(props.statusHistory)) {
     entries = (
       <Empty>
-        {t('instances|This instance hasn’t reported any events yet in the context of this application/group.')}
+        {t(
+          'instances|This instance hasn’t reported any events yet in the context of this application/group.'
+        )}
       </Empty>
     );
   } else {

@@ -113,7 +113,8 @@ function Container() {
                 No activity found for the last week.
                 <br />
                 <br />
-                You will see here important events related to the rollout of your updates. Stay tuned!
+                You will see here important events related to the rollout of your updates. Stay
+                tuned!
               </Trans>
             </Empty>
           ) : (

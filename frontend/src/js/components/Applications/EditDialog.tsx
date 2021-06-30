@@ -46,7 +46,9 @@ function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () 
       .catch(() => {
         actions.setSubmitting(false);
         actions.setStatus({
-          statusMessage: t('applications|Something went wrong. Check the form or try again later...'),
+          statusMessage: t(
+            'applications|Something went wrong. Check the form or try again later...'
+          ),
         });
       });
   }
@@ -84,9 +86,11 @@ function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () 
             <Field
               type="text"
               name="appToClone"
-              label={t("Applications|Groups/Channels")}
+              label={t('Applications|Groups/Channels')}
               select
-              helperText={t("Applications|Clone channels and groups from another other application")}
+              helperText={t(
+                'Applications|Clone channels and groups from another other application'
+              )}
               margin="normal"
               component={TextField}
               InputLabelProps={{
@@ -120,13 +124,17 @@ function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () 
   }
 
   const validation = Yup.object().shape({
-    name: Yup.string().max(50, t('applications|Must be less than 50 characters')).required('Required'),
+    name: Yup.string()
+      .max(50, t('applications|Must be less than 50 characters'))
+      .required('Required'),
     description: Yup.string().max(250, t('applications|Must be less than 250 characters')),
   });
 
   return (
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
-      <DialogTitle>{isCreation ? t('applications|Add Application') : t('applications|Update Application')}</DialogTitle>
+      <DialogTitle>
+        {isCreation ? t('applications|Add Application') : t('applications|Update Application')}
+      </DialogTitle>
       <Formik
         initialValues={{ name: props.data.name, description: props.data.description }}
         onSubmit={handleSubmit}

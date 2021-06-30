@@ -36,7 +36,9 @@ function Item(props: {
     ...others
   } = props;
   const name = channel.name;
-  const version = channel.package ? cleanSemverVersion(channel.package.version) : t('channels|No package');
+  const version = channel.package
+    ? cleanSemverVersion(channel.package.version)
+    : t('channels|No package');
 
   function deleteChannel() {
     const confirmationText = t('channels|Are you sure you want to delete this channel?');
@@ -77,7 +79,7 @@ function Item(props: {
                   <ScheduleIcon fontSize="small" />
                 </Tooltip>
               </Box>
-              <Box pl={1}>{t('{{date, date}}', {date: date})}</Box>
+              <Box pl={1}>{t('{{date, date}}', { date: date })}</Box>
             </Box>
           </Box>
         )}

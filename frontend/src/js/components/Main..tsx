@@ -45,7 +45,7 @@ const nebraskaTheme = createMuiTheme({
     },
     subtitle1: {
       fontSize: '14px',
-      color: 'rgba(0,0,0,0.6)'
+      color: 'rgba(0,0,0,0.6)',
     },
   },
   shape: {
@@ -58,10 +58,10 @@ export default function Main() {
 
   React.useEffect(() => {
     API.getConfig().then(config => {
-      console.debug("Got config", config)
+      console.debug('Got config', config);
       dispatch(setConfig(config));
     });
-  }, [])
+  }, []);
 
   useAuthRedirect();
 

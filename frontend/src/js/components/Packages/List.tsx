@@ -138,7 +138,6 @@ function List(props: { appID: string }) {
   );
 }
 
-
 List.propTypes = {
   appID: PropTypes.string.isRequired,
 };

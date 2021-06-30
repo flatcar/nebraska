@@ -16,9 +16,7 @@ const useStyles = makeStyles({
     },
   },
 });
-function StatusHistoryList(props: {
-  entries: InstanceStatusHistory[];
-}) {
+function StatusHistoryList(props: { entries: InstanceStatusHistory[] }) {
   const entries = props.entries || [];
   const classes = useStyles();
   const { t } = useTranslation();

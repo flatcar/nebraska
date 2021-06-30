@@ -12,18 +12,18 @@ import ChannelItem from '../Channels/Item';
 const useStyles = makeStyles({
   groupLink: {
     fontSize: '1rem',
-    color: '#1b5c91'
+    color: '#1b5c91',
   },
   instanceLink: {
-    color: '#1b5c91'
-  }
+    color: '#1b5c91',
+  },
 });
 
 function ApplicationItemGroupItem(props: { group: Group; appName: string }) {
   const classes = useStyles();
   const { group } = props;
   const [totalInstances, setTotalInstances] = React.useState(-1);
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
   React.useEffect(() => {
     // We use this function without any filter to get the total number of instances

@@ -153,7 +153,9 @@ function EditDialog(props: {
               name="track"
               component={TextField}
               margin="dense"
-              label={t('groups|Track (identifier for clients, filled with the group ID if omitted)')}
+              label={t(
+                'groups|Track (identifier for clients, filled with the group ID if omitted)'
+              )}
               fullWidth
             />
           </Box>

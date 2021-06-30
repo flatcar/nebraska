@@ -17,7 +17,7 @@ import {
   getInstanceStatus,
   getMinuteDifference,
   makeColorsForVersions,
-  makeLocaleTime
+  makeLocaleTime,
 } from '../../utils/helpers';
 import Loader from '../Common/Loader';
 import SimpleTable from '../Common/SimpleTable';
@@ -151,9 +151,9 @@ function TimelineChart(props: {
         tickFormatter={(index: string) => {
           return ticks[index];
         }}
-        stroke={"#000"}
+        stroke={'#000'}
       />
-      <YAxis stroke="#000"/>
+      <YAxis stroke="#000" />
       {props.keys.map((key: string, i: number) => (
         <Area
           type={interpolation}

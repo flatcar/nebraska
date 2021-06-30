@@ -90,7 +90,9 @@ function Item(props: {
               <Box mt={2} p={1}>
                 <CardFeatureLabel>{t('frequent|Groups')}</CardFeatureLabel>
                 <Box display="inline-block" pl={2}>
-                  <CardLabel>{groups.length === 0 ? t('applications|None') : groups.length}</CardLabel>
+                  <CardLabel>
+                    {groups.length === 0 ? t('applications|None') : groups.length}
+                  </CardLabel>
                 </Box>
                 <GroupsList
                   groups={groups}
