@@ -314,16 +314,13 @@ func (ctl *controller) getApp(c *gin.Context) {
 
 // getApps godoc
 // @Summary Get all applications for a given team
-// @Description Get paginated information of all applications under a given team ID
+// @Description Get paginated information of all applications
 // @Accept  json
 // @Produce  json
-// @Param team_id query string false "Team ID"
 // @Param page query string false "Number of pages"
 // @Param perpage query string false "Elements per page"
 // @Header 200 {string} string "ok"
-// @Failure 400,404 {string} string "error"
-// @Failure 500 {string} string "error"
-// @Failure default {string} string "error"
+// @Failure 400,404,500,default {string} string "error"
 // @Router /apps [get]
 func (ctl *controller) getApps(c *gin.Context) {
 	teamID := c.GetString("team_id")
