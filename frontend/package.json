@@ -17,7 +17,6 @@
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "@types/dompurify": "^2.2.1",
-    "@types/jest": "^26.0.20",
     "@types/material-ui": "^0.21.8",
     "@types/node": "^14.14.22",
     "@types/pubsub-js": "^1.8.2",
