@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 import ScheduleIcon from '@material-ui/icons/Schedule';
+import { TFunction } from 'i18next';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
@@ -29,6 +30,13 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.success.main,
   },
 }));
+
+export function formatUpdateLimits(t: TFunction, group: Group) {
+  return t('groups|Max {{policy_max_updates_per_period, number}} / {{policy_period_interval}}', {
+    policy_max_updates_per_period: group.policy_max_updates_per_period,
+    policy_period_interval: group.policy_period_interval,
+  });
+}
 
 function Item(props: {
   group: Group;
@@ -148,15 +156,7 @@ function Item(props: {
             <Grid item>
               <CardFeatureLabel>{t('groups|Rollout Policy')}</CardFeatureLabel>
               <Box p={1} mb={1}>
-                <CardLabel>
-                  {t(
-                    'groups|Max {{policy_max_updates_per_period, number}} / {{policy_period_interval}}',
-                    {
-                      policy_max_updates_per_period: props.group.policy_max_updates_per_period,
-                      policy_period_interval: props.group.policy_period_interval,
-                    }
-                  )}
-                </CardLabel>
+                <CardLabel>{formatUpdateLimits(t, props.group)}</CardLabel>
               </Box>
             </Grid>
             <Grid item container>
