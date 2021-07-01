@@ -1,4 +1,5 @@
 import menuDown from '@iconify/icons-mdi/menu-down';
+import menuSwap from '@iconify/icons-mdi/menu-swap';
 import menuUp from '@iconify/icons-mdi/menu-up';
 import Icon from '@iconify/react';
 import { IconButton } from '@material-ui/core';
@@ -35,7 +36,7 @@ function TableCellWithSortButtons(props: {
           clickHandler(!isDescSortOrder, sortQuery);
         }}
       >
-        <Icon icon={isDescSortOrder ? menuDown : menuUp} />
+        <Icon icon={!isDefault ? menuSwap : isDescSortOrder ? menuDown : menuUp} />
       </IconButton>
     </TableCell>
   );
