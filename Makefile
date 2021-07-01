@@ -126,3 +126,11 @@ backend-code-checks: backend/tools/golangci-lint
 	cd backend && NEBRASKA_SKIP_TESTS=1 go test ./... >/dev/null
 	cd backend && ./tools/golangci-lint run --fix
 	cd backend && go mod tidy
+
+.PHONY: swagger-install
+swagger-install:
+	go get -u github.com/swaggo/swag/cmd/swag
+
+.PHONY: swagger-init
+swagger-init:
+	cd backend && swag init -g cmd/userctl/main.go -o api
