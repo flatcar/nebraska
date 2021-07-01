@@ -34,6 +34,8 @@
     "formik": "^2.1.5",
     "formik-material-ui": "^0.0.20",
     "husky": "^5.0.9",
+    "i18next": "^20.3.2",
+    "i18next-browser-languagedetector": "^6.1.2",
     "jwt-decode": "^3.1.2",
     "lint-staged": "^10.5.4",
     "moment-timezone": "^0.5.32",
@@ -43,6 +45,7 @@
     "react": "^16.13.0",
     "react-color": "^2.17.3",
     "react-dom": "^16.13.0",
+    "react-i18next": "^11.11.0",
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.1.2",
     "react-scripts": "^4.0.0",
@@ -69,6 +72,7 @@
     "eslint-plugin-react-hooks": "^3.0.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "http-proxy-middleware": "^1.0.3",
+    "i18next-parser": "^4.2.0",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.10"
   },
@@ -81,7 +85,8 @@
     "eject": "react-scripts eject",
     "lint": "eslint -c package.json 'src/**/*.{js,jsx,ts,tsx}'",
     "format": "prettier --config package.json --write src/",
-    "lint:fix": "eslint -c package.json --fix 'src/**/*.{js,jsx,ts,tsx}'"
+    "lint:fix": "eslint -c package.json --fix 'src/**/*.{js,jsx,ts,tsx}'",
+    "i18n": "npx --no-install i18next ./src/**/ts* ./src/**/**/*.ts* ./src/**/**/**/*.ts* -c ./src/i18n/i18next-parser.config.js"
   },
   "browserslist": {
     "production": [

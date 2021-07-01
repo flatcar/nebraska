@@ -3,10 +3,12 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function MoreMenu(props: { options: { label: string; action: () => void }[] }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const options = props.options || [];
+  const { t } = useTranslation();
 
   function handleClick(event: any) {
     setAnchorEl(event.currentTarget);
@@ -22,6 +24,7 @@ export default function MoreMenu(props: { options: { label: string; action: () =
         edge="end"
         aria-controls="simple-menu"
         aria-haspopup="true"
+        aria-label={t('common|Open menu')}
         onClick={handleClick}
         data-testid="more-menu-open-button"
       >

@@ -7,6 +7,7 @@ import pauseCircle from '@iconify/icons-mdi/pause-circle';
 import playCircle from '@iconify/icons-mdi/play-circle';
 import progressDownload from '@iconify/icons-mdi/progress-download';
 import { Theme } from '@material-ui/core';
+import { useTranslation } from 'react-i18next';
 
 function makeStatusDefs(
   theme: Theme
@@ -18,51 +19,53 @@ function makeStatusDefs(
     queryValue: string;
   };
 } {
+  const { t } = useTranslation();
+
   return {
     InstanceStatusComplete: {
-      label: 'Complete',
+      label: t('instances|Complete'),
       color: 'rgba(15,15,15,1)',
       icon: checkCircleOutline,
       queryValue: '4',
     },
     InstanceStatusDownloaded: {
-      label: 'Downloaded',
+      label: t('instances|Downloaded'),
       color: 'rgba(40,95,43,1)',
       icon: downloadCircleOutline,
       queryValue: '6',
     },
     InstanceStatusOnHold: {
-      label: 'On Hold',
+      label: t('instances|On Hold'),
       color: theme.palette.grey['400'],
       icon: pauseCircle,
       queryValue: '8',
     },
     InstanceStatusInstalled: {
-      label: 'Installed',
+      label: t('instances|Installed'),
       color: 'rgba(27,92,145,1)',
       icon: packageVariantClosed,
       queryValue: '5',
     },
     InstanceStatusDownloading: {
-      label: 'Downloading',
+      label: t('instances|Downloading'),
       color: 'rgba(17,40,141,1)',
       icon: progressDownload,
       queryValue: '7',
     },
     InstanceStatusError: {
-      label: 'Error',
+      label: t('instances|Error'),
       color: 'rgba(164,45,36,1)',
       icon: alertCircleOutline,
       queryValue: '3',
     },
     InstanceStatusUndefined: {
-      label: 'Unknown',
+      label: t('instances|Unknown'),
       color: 'rgb(89, 89, 89)',
       icon: helpCircleOutline,
       queryValue: '1',
     },
     InstanceStatusUpdateGranted: {
-      label: 'Update Granted',
+      label: t('instances|Update Granted'),
       color: theme.palette.sapphireColor,
       icon: playCircle,
       queryValue: '2',

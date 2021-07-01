@@ -7,6 +7,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import React, { ReactChildren } from 'react';
+import { useTranslation } from 'react-i18next';
 import Empty from './EmptyContent';
 
 interface SimpleTableProps {
@@ -22,6 +23,7 @@ export default function SimpleTable(props: SimpleTableProps) {
   const [page, setPage] = React.useState(0);
   const rowsPerPageOptions = [5, 10, 50];
   const [rowsPerPage, setRowsPerPage] = React.useState(rowsPerPageOptions[0]);
+  const { t } = useTranslation();
 
   function handleChangePage(event: any, newPage: number) {
     setPage(newPage);
@@ -42,7 +44,7 @@ export default function SimpleTable(props: SimpleTableProps) {
   }
 
   return props.instances.length === 0 ? (
-    <Empty>{props.emptyMessage ? props.emptyMessage : 'No data to be shown.'}</Empty>
+    <Empty>{props.emptyMessage ? props.emptyMessage : t('common|No data to be shown.')}</Empty>
   ) : (
     <React.Fragment>
       <Table>
@@ -80,10 +82,10 @@ export default function SimpleTable(props: SimpleTableProps) {
           rowsPerPage={rowsPerPage}
           page={page}
           backIconButtonProps={{
-            'aria-label': 'previous page',
+            'aria-label': t('frequent|previous page'),
           }}
           nextIconButtonProps={{
-            'aria-label': 'next page',
+            'aria-label': t('frequent|next page'),
           }}
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}

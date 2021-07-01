@@ -1,5 +1,6 @@
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import _ from 'underscore';
 import { applicationsStore } from '../../stores/Stores';
@@ -13,6 +14,7 @@ function ApplicationLayout(props: {}) {
   const [applications, setApplications] = React.useState(
     applicationsStore.getCachedApplications() || []
   );
+  const { t } = useTranslation();
 
   function onChange() {
     setApplications(applications);
@@ -39,7 +41,7 @@ function ApplicationLayout(props: {}) {
         breadcrumbs={[
           {
             path: '/apps',
-            label: 'Applications',
+            label: t('layouts|Applications'),
           },
         ]}
       />

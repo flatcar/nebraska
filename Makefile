@@ -64,6 +64,10 @@ frontend-test:
 frontend-lint:
 	cd frontend && npm run lint
 
+.PHONY: i18n
+i18n:
+	cd frontend && npm run i18n
+
 run-backend: backend-binary
 	cd backend && ./bin/nebraska -auth-mode noop
 

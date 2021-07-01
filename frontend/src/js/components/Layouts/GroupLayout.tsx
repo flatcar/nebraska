@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import _ from 'underscore';
 import { Channel, Group } from '../../api/apiDataTypes';
@@ -13,6 +14,7 @@ function GroupLayout(props: {}) {
     applicationsStore.getCachedApplications() || []
   );
   const [updateGroupModalVisible, setUpdateGroupModalVisible] = React.useState(false);
+  const { t } = useTranslation();
 
   React.useEffect(() => {
     applicationsStore.getApplication(appID);
@@ -60,7 +62,7 @@ function GroupLayout(props: {}) {
         breadcrumbs={[
           {
             path: '/apps',
-            label: 'Applications',
+            label: t('layouts|Applications'),
           },
           {
             path: `/apps/${appID}`,

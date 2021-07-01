@@ -3,6 +3,7 @@ import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
 import LayersOutlinedIcon from '@material-ui/icons/LayersOutlined';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 import API from '../../api/API';
 import { Group } from '../../api/apiDataTypes';
@@ -22,6 +23,7 @@ function ApplicationItemGroupItem(props: { group: Group; appName: string }) {
   const classes = useStyles();
   const { group } = props;
   const [totalInstances, setTotalInstances] = React.useState(-1);
+  const {t} = useTranslation();
 
   React.useEffect(() => {
     // We use this function without any filter to get the total number of instances
@@ -37,7 +39,7 @@ function ApplicationItemGroupItem(props: { group: Group; appName: string }) {
     <Box display="flex">
       <LayersOutlinedIcon />
       <Box px={0.5}>{totalInstances}</Box>
-      {'instances'}
+      {t('applications|instances')}
     </Box>
   );
 

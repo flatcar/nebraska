@@ -3,6 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
 const useInstanceCountStyles = makeStyles((theme: Theme) => ({
@@ -31,11 +32,12 @@ export function InstanceCountLabel(props: {
 }) {
   const classes = useInstanceCountStyles();
   const { countText, href, instanceListView = false } = props;
+  const { t } = useTranslation();
 
   return (
     <Grid container direction="column">
       <Grid item>
-        <Typography className={classes.instancesLabel}>INSTANCES</Typography>
+        <Typography className={classes.instancesLabel}>{t('instances|INSTANCES')}</Typography>
       </Grid>
       <Grid item>
         <Typography className={classes.instancesCount}>{countText}</Typography>
@@ -45,7 +47,7 @@ export function InstanceCountLabel(props: {
           <Box>
             {!props.loading && (
               <Link to={{ ...href }} component={RouterLink}>
-                <Typography className={classes.instanceLink}>See all instances</Typography>
+                <Typography className={classes.instanceLink}>{t('instances|See all instances')}</Typography>
               </Link>
             )}
           </Box>

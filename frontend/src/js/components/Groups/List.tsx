@@ -2,6 +2,7 @@ import { withStyles } from '@material-ui/core';
 import MuiList from '@material-ui/core/List';
 import Paper from '@material-ui/core/Paper';
 import React from 'react';
+import { Trans,useTranslation } from 'react-i18next';
 import _ from 'underscore';
 import { Channel, Group } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
@@ -28,6 +29,7 @@ function List(props: { appID: string; classes: Record<'root', string> }) {
   const [updateGroupModalVisible, setUpdateGroupModalVisible] = React.useState(false);
   const [updateGroupIDModal, setUpdateGroupIDModal] = React.useState<string | null>(null);
   const [updateAppIDModal, setUpdateAppIDModal] = React.useState<string | null>(null);
+  const { t } = useTranslation();
 
   function closeUpdateGroupModal() {
     setUpdateGroupModalVisible(false);
@@ -75,15 +77,17 @@ function List(props: { appID: string; classes: Record<'root', string> }) {
 
     if (_.isEmpty(groups)) {
       if (searchTerm) {
-        entries = <Empty>No results found.</Empty>;
+        entries = <Empty>{t('groups|No results found.')}</Empty>;
       } else {
         entries = (
           <Empty>
-            There are no groups for this application yet.
-            <br />
-            <br />
-            Groups help you control how you want to distribute updates to a specific set of
-            instances.
+            <Trans ns="Groups">
+              There are no groups for this application yet.
+              <br />
+              <br />
+              Groups help you control how you want to distribute updates to a specific set of
+              instances.
+            </Trans>
           </Empty>
         );
       }

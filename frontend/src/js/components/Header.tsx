@@ -10,6 +10,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import CreateOutlined from '@material-ui/icons/CreateOutlined';
 import DOMPurify from 'dompurify';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
 import nebraskaLogo from '../icons/nebraska-logo.json';
 import { UserState } from '../stores/redux/features/user';
@@ -73,6 +74,7 @@ interface AppbarProps {
 function Appbar(props: AppbarProps) {
   const { config, user, menuAnchorEl, projectLogo, handleClose, handleMenu } = props;
   const classes = useStyles();
+  const { t } = useTranslation();
 
   React.useEffect(() => {
     document.title = (config?.title) || 'Nebraska';
@@ -102,7 +104,7 @@ function Appbar(props: AppbarProps) {
         <div style={{ flex: '1 0 0' }} />
         {showAccountButton && (
           <IconButton
-            aria-label="User menu"
+            aria-label={t('header|User menu')}
             aria-controls="menu-appbar"
             aria-haspopup="true"
             onClick={handleMenu}
@@ -144,7 +146,7 @@ function Appbar(props: AppbarProps) {
                 disabled={!config?.access_management_url}
                 href={config?.access_management_url || ''}
               >
-                Manage Account
+                {t('header|Manage Account')}
               </Button>
             </Box>
           </Menu>

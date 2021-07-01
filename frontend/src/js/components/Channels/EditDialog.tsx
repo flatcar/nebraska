@@ -15,6 +15,7 @@ import { Field, Form, Formik } from 'formik';
 import { TextField } from 'formik-material-ui';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import { Channel, Package } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
@@ -31,6 +32,7 @@ const useStyles = makeStyles(theme => ({
 
 function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide: () => void }) {
   const classes = useStyles();
+  const { t } = useTranslation();
   const defaultColor = '';
   const [channelColor, setChannelColor] = React.useState(defaultColor);
   const defaultArch = 1;
@@ -80,7 +82,7 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
         actions.setSubmitting(false);
         actions.setStatus({
           statusMessage:
-            'Something went wrong, or a channel with this name and architecture already exists. Check the form or try again later…',
+            t('channels|Something went wrong, or a channel with this name and architecture already exists. Check the form or try again later…'),
         });
       });
   }
@@ -122,11 +124,11 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
                   name="name"
                   component={TextField}
                   margin="dense"
-                  label="Name"
+                  label={t('frequent|Name')}
                   InputLabelProps={{ shrink: true }}
                   type="text"
                   required
-                  helperText="Can be an existing one as long as the arch is different."
+                  helperText={t('channels|Can be an existing one as long as the arch is different.')}
                   fullWidth
                 />
               </Grid>
@@ -144,16 +146,18 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
                 );
               })}
             </MuiSelect>
-            <FormHelperText>Cannot be changed once created.</FormHelperText>
+            <FormHelperText>{t('channels|Cannot be changed once created.')}</FormHelperText>
           </FormControl>
           <Field
             type="text"
             name="package"
-            label="Package"
+            label={t('frequent|Package')}
             select
             margin="dense"
             component={AutoCompletePicker}
-            helperText={`Showing only for the channel's architecture (${ARCHES[arch]}).`}
+            helperText={t('channels|Showing only for the channel\'s architecture ({{arch}}).', {
+              arch: ARCHES[arch]
+            })}
             fullWidth
             onSelect={(packageVersion: string) => {
               const selectedPackage = packages
@@ -167,17 +171,13 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
                 const date = new Date(packageItem.created_ts);
                 return {
                   primary: packageItem.version,
-                  secondary: `created: ${date.toLocaleString('default', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                  })}`,
+                  secondary: t('channels|created: {{date, date}}', {date: date}),
                 };
               })}
-            placeholder={'Pick a package'}
-            pickerPlaceholder={'Start typing to search a package'}
+            placeholder={t('channels|Pick a package')}
+            pickerPlaceholder={t('channels|Start typing to search a package')}
             data={packages.filter((packageItem: Package) => packageItem.arch === arch)}
-            dialogTitle={'Choose a package'}
+            dialogTitle={t('channels|Choose a package')}
             defaultValue={channel && channel.package ? channel.package.version : ''}
           />
         </DialogContent>
@@ -186,7 +186,7 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
             Cancel
           </Button>
           <Button type="submit" disabled={isSubmitting} color="primary">
-            {isCreation ? 'Add' : 'Save'}
+            {isCreation ? t('frequent|Add') : t('frequent|Save')}
           </Button>
         </DialogActions>
       </Form>
@@ -194,7 +194,7 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
   }
 
   const validation = Yup.object().shape({
-    name: Yup.string().max(50, 'Must be less than 50 characters').required('Required'),
+    name: Yup.string().max(50, t('channels|Must be less than 50 characters')).required('Required'),
   });
 
   let initialValues = {};
@@ -207,7 +207,7 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
 
   return (
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
-      <DialogTitle>{isCreation ? 'Add New Channel' : 'Edit Channel'}</DialogTitle>
+      <DialogTitle>{isCreation ? t('channels|Add New Channel') : t('channels|Edit Channel')}</DialogTitle>
       <Formik
         initialValues={initialValues}
         onSubmit={handleSubmit}

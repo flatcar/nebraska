@@ -1,5 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
 import { InstanceStatusHistory } from '../../api/apiDataTypes';
 import Empty from '../Common/EmptyContent';
@@ -18,12 +19,13 @@ function StatusHistoryContainer(props: {
   statusHistory: InstanceStatusHistory[];
 }) {
   const classes = useStyles();
+  const { t } = useTranslation();
   let entries: React.ReactElement;
 
   if (_.isEmpty(props.statusHistory)) {
     entries = (
       <Empty>
-        This instance hasn’t reported any events yet in the context of this application/group.
+        {t('instances|This instance hasn’t reported any events yet in the context of this application/group.')}
       </Empty>
     );
   } else {

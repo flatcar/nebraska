@@ -6,6 +6,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import { useTheme } from '@material-ui/styles';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { Channel } from '../../api/apiDataTypes';
 import { cleanSemverVersion, makeColorsForVersions } from '../../utils/helpers';
@@ -65,8 +66,9 @@ function VersionsTooltip(props: {
 function VersionProgressBar(props: { version_breakdown: any; channel: Channel | null}) {
   const classes = useChartStyle();
   const theme = useTheme();
+  const { t } = useTranslation();
   let lastVersionChannel: string | null = '';
-  const otherVersionLabel = 'Other';
+  const otherVersionLabel = t('common|Other');
   const [chartData, setChartData] = React.useState<{
     data: any;
     versions: string[];

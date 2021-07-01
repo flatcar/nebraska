@@ -1,5 +1,6 @@
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import ActivityContainer from '../Activity/Container';
 import ApplicationsList from '../Applications/List';
 

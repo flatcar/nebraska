@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { Application, Group } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
@@ -12,6 +13,7 @@ export default function InstanceLayout(props: {}) {
     applicationsStore.getCachedApplication(appID)
   );
   const [group, setGroup] = React.useState<Group | null>(getGroupFromApplication(application));
+  const { t } = useTranslation();
 
   function onChange() {
     const apps = applicationsStore.getCachedApplications() || [];
@@ -45,11 +47,11 @@ export default function InstanceLayout(props: {}) {
   return (
     <React.Fragment>
       <SectionHeader
-        title="Instances"
+        title={t('layouts|Instances')}
         breadcrumbs={[
           {
             path: '/apps',
-            label: 'Applications',
+            label: t('layouts|Applications'),
           },
           {
             path: `/apps/${appID}`,

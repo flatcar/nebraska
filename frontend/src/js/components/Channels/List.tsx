@@ -4,6 +4,7 @@ import MuiList from '@material-ui/core/List';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
 import API from '../../api/API';
 import { Application, Channel, Package } from '../../api/apiDataTypes';
@@ -86,6 +87,7 @@ function List(props: { appID: string }) {
   );
   const [packages, setPackages] = React.useState<null | Package[]>(null);
   const [channelToEdit, setChannelToEdit] = React.useState<null | Channel>(null);
+  const { t } = useTranslation();
 
   React.useEffect(() => {
     applicationsStore.addChangeListener(onStoreChange);
@@ -136,7 +138,7 @@ function List(props: { appID: string }) {
       <Box mb={2}>
         <Grid container alignItems="center" justify="space-between">
           <Grid item>
-            <Typography variant="h4">Channels</Typography>
+            <Typography variant="h4">{t('channels|Channels')}</Typography>
           </Grid>
           <Grid item>
             <ModalButton

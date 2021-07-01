@@ -23,6 +23,7 @@ import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import { Field, Form, Formik } from 'formik';
 import { Select, TextField } from 'formik-material-ui';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import { Channel, Group } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
@@ -46,6 +47,7 @@ function EditDialog(props: {
 }) {
   const isCreation = Boolean(props.create);
   const classes = useStyles();
+  const { t } = useTranslation();
 
   function handleSubmit(values: { [key: string]: any }, actions: { [key: string]: any }) {
     const updatesPeriodPolicy =
@@ -87,7 +89,7 @@ function EditDialog(props: {
       .catch(() => {
         actions.setSubmitting(false);
         actions.setStatus({
-          statusMessage: 'Something went wrong. Check the form or try again later...',
+          statusMessage: t('groups|Something went wrong. Check the form or try again later...'),
         });
       });
   }
@@ -125,7 +127,7 @@ function EditDialog(props: {
                   <InputLabel shrink>Channel</InputLabel>
                   <Field name="channel" component={Select} displayEmpty>
                     <MenuItem value="" key="">
-                      None yet
+                      {t('groups|None yet')}
                     </MenuItem>
                     {channels.map((channelItem: Channel) => (
                       <MenuItem value={channelItem.id} key={channelItem.id}>
@@ -142,7 +144,7 @@ function EditDialog(props: {
               name="description"
               component={TextField}
               margin="dense"
-              label="Description"
+              label={t('groups|Description')}
               fullWidth
             />
           </Box>
@@ -151,7 +153,7 @@ function EditDialog(props: {
               name="track"
               component={TextField}
               margin="dense"
-              label="Track (identifier for clients, filled with the group ID if omitted)"
+              label={t('groups|Track (identifier for clients, filled with the group ID if omitted)')}
               fullWidth
             />
           </Box>
@@ -162,12 +164,12 @@ function EditDialog(props: {
             <Grid container justify="space-between" spacing={4}>
               <Grid item xs={12}>
                 <Box mt={1}>
-                  <FormLabel component="legend">Update</FormLabel>
+                  <FormLabel component="legend">{t('groups|Update')}</FormLabel>
                 </Box>
                 <Grid container>
                   <Grid item xs={6}>
                     <FormControlLabel
-                      label="Updates enabled"
+                      label={t('groups|Updates enabled')}
                       control={
                         <Field
                           name="updatesEnabled"
@@ -183,7 +185,7 @@ function EditDialog(props: {
                   </Grid>
                   <Grid item xs={6}>
                     <FormControlLabel
-                      label="Safe mode"
+                      label={t('groups|Safe mode')}
                       control={
                         <Field
                           name="safeMode"
@@ -197,7 +199,7 @@ function EditDialog(props: {
                       }
                     />
                     <FormHelperText>
-                      Only update 1 instance at a time, and stop if an update fails.
+                      {t('groups|Only update 1 instance at a time, and stop if an update fails.')}
                     </FormHelperText>
                   </Grid>
                 </Grid>
@@ -208,7 +210,7 @@ function EditDialog(props: {
             <Divider />
           </Box>
           <Box mt={1} pl={2}>
-            <FormLabel component="legend">{'Update Limits'}</FormLabel>
+            <FormLabel component="legend">{t('groups|Update Limits')}</FormLabel>
           </Box>
           <Box m={1}>
             <Grid container>
@@ -216,9 +218,9 @@ function EditDialog(props: {
                 <FormControlLabel
                   label={
                     <Box display="flex" alignItems="center">
-                      <Box pr={0.5}>Only office hours</Box>
+                      <Box pr={0.5}>{t('groups|Only office hours')}</Box>
                       <Box pt={0.1} color="#808080">
-                        <Tooltip title="Only update from 9am to 5pm.">
+                        <Tooltip title={t('groups|Only update from 9am to 5pm.') || ''}>
                           <HelpOutlineIcon fontSize="small" />
                         </Tooltip>
                       </Box>
@@ -258,7 +260,7 @@ function EditDialog(props: {
                   <Field
                     name="maxUpdates"
                     component={TextField}
-                    label="Max number of updates"
+                    label={t('groups|Max number of updates')}
                     margin="dense"
                     type="number"
                     fullWidth
@@ -266,7 +268,7 @@ function EditDialog(props: {
                 </Box>
               </Grid>
               <Grid item>
-                <Typography color="textSecondary">{'per'}</Typography>
+                <Typography color="textSecondary">{t('groups|per')}</Typography>
               </Grid>
               <Grid item xs={3}>
                 <Box mt={1}>
@@ -288,20 +290,22 @@ function EditDialog(props: {
                     select
                     fullWidth
                   >
-                    {['hours', 'minutes', 'days'].map(unit => {
-                      return (
-                        <MenuItem value={unit} key={unit}>
-                          {unit}
-                        </MenuItem>
-                      );
-                    })}
+                    <MenuItem value={'hours'} key={'hours'}>
+                      {t('groups|hours')}
+                    </MenuItem>
+                    <MenuItem value={'minutes'} key={'minutes'}>
+                      {t('groups|minutes')}
+                    </MenuItem>
+                    <MenuItem value={'days'} key={'days'}>
+                      {t('groups|days')}
+                    </MenuItem>
                   </Field>
                 </Box>
               </Grid>
             </Grid>
             <Grid item xs={12}>
               <Box mt={2} pl={2}>
-                <FormLabel>Updates timeout </FormLabel>
+                <FormLabel>{t('groups|Updates timeout')}</FormLabel>
                 <Grid container spacing={2}>
                   <Grid item xs={4}>
                     <Field
@@ -320,13 +324,15 @@ function EditDialog(props: {
                         select
                         fullWidth
                       >
-                        {['hours', 'minutes', 'days'].map(unit => {
-                          return (
-                            <MenuItem value={unit} key={unit}>
-                              {unit}
-                            </MenuItem>
-                          );
-                        })}
+                        <MenuItem value={'hours'} key={'hours'}>
+                          {t('groups|hours')}
+                        </MenuItem>
+                        <MenuItem value={'minutes'} key={'minutes'}>
+                          {t('groups|minutes')}
+                        </MenuItem>
+                        <MenuItem value={'days'} key={'days'}>
+                          {t('groups|days')}
+                        </MenuItem>
                       </Field>
                     </Box>
                   </Grid>
@@ -337,10 +343,10 @@ function EditDialog(props: {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            Cancel
+            {t('frequent|Cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting} color="primary">
-            {isCreation ? 'Add' : 'Save'}
+            {isCreation ? t('frequent|Add') : t('frequent|Save')}
           </Button>
         </DialogActions>
       </Form>
@@ -350,12 +356,12 @@ function EditDialog(props: {
   function positiveNum() {
     return Yup.number()
       .positive()
-      .min(1, 'Must be greather than or equal to 1')
+      .min(1, t('groups|Must be greather than or equal to 1'))
       .required('Required');
   }
 
   function maxCharacters(maxChars: number, required = false) {
-    let validation = Yup.string().max(maxChars, 'Must be less than $maxChars characters');
+    let validation = Yup.string().max(maxChars, t('groups|Must be less than $maxChars characters'));
 
     if (required) validation = validation.required('Required');
 
@@ -412,7 +418,7 @@ function EditDialog(props: {
 
   return (
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
-      <DialogTitle>{isCreation ? 'Add Group' : 'Edit Group'}</DialogTitle>
+      <DialogTitle>{isCreation ? t('groups|Add Group') : t('groups|Edit Group')}</DialogTitle>
       <Formik
         initialValues={initialValues}
         onSubmit={handleSubmit}
