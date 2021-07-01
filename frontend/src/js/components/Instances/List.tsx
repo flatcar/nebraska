@@ -30,6 +30,9 @@ import { InstanceCountLabel } from './Common';
 import makeStatusDefs from './StatusDefs';
 import Table from './Table';
 
+// The indexes for the sorting names match the backend index for that criteria as well.
+const SORT_ORDERS = ['asc', 'desc'];
+
 const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: theme.palette.lightSilverShade,
@@ -136,15 +139,16 @@ function ListView(props: { application: Application; group: Group }) {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [isDescSortOrder, setIsDescSortOrder] = React.useState(false);
   const [sortQuery, setSortQuery] = React.useState(InstanceSortFilters['last-check']);
-  const [filters, setFilters] = React.useState<{ [key: string]: any }>({ status: '', version: '' });
+  const [filters, setFilters] = React.useState<{ [key: string]: any }>({
+    status: '',
+    version: '',
+    sortOrder: SORT_ORDERS[1],
+  });
   const [instancesObj, setInstancesObj] = React.useState({ instances: [], total: -1 });
   const [instanceFetchLoading, setInstanceFetchLoading] = React.useState(false);
   const [totalInstances, setTotalInstances] = React.useState(-1);
   const location = useLocation();
   const history = useHistory();
-
-  // The indexes for the sorting names match the backend index for that criteria as well.
-  const SORT_ORDERS = ['asc', 'desc'];
 
   function getDuration() {
     return new URLSearchParams(location.search).get('period') || '1d';
