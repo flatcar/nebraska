@@ -19,6 +19,7 @@ import MoreMenu from '../Common/MoreMenu';
 import TimeIntervalLinks from '../Common/TimeIntervalLinks';
 import InstanceStatusArea from '../Instances/Charts';
 import { StatusCountTimeline, VersionCountTimeline } from './Charts';
+import { formatUpdateLimits } from './Item';
 
 const useStyles = makeStyles(theme => ({
   link: {
@@ -224,11 +225,7 @@ function ItemExtended(props: {
                     <Grid item>
                       <CardFeatureLabel>{t('groups|Updates Policy')}</CardFeatureLabel>
                       <Box my={1}>
-                        <CardLabel>
-                          {`Max ${group.policy_max_updates_per_period || 0} updates per ${
-                            group.policy_period_interval || 0
-                          }`}
-                        </CardLabel>
+                        <CardLabel>{formatUpdateLimits(t, group)}</CardLabel>
                       </Box>
                     </Grid>
                     <Grid item>
