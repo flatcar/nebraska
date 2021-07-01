@@ -24,18 +24,18 @@ function TableCellWithSortButtons(props: {
 }) {
   const { sortQuery, clickHandler, defaultSortOrder, isDefault } = props;
   //false denotes a increasing sort order and true a decreasing sort order
-  const [sortOrder, setSortOrder] = React.useState(isDefault ? defaultSortOrder : false);
+  const [isDescSortOrder, setDescSortOrder] = React.useState(isDefault ? defaultSortOrder : false);
   return (
     <TableCell>
       {props.children}
       <IconButton
         size="small"
         onClick={() => {
-          setSortOrder(!sortOrder);
-          clickHandler(!sortOrder, sortQuery);
+          setDescSortOrder(!isDescSortOrder);
+          clickHandler(!isDescSortOrder, sortQuery);
         }}
       >
-        <Icon icon={sortOrder ? menuUp : menuDown} />
+        <Icon icon={isDescSortOrder ? menuDown : menuUp} />
       </IconButton>
     </TableCell>
   );
