@@ -150,7 +150,7 @@ function Item(props: {
               <Box p={1} mb={1}>
                 <CardLabel>
                   {t(
-                    'groups|Max {{policy_max_updates_per_period, number}} / {{policy_period_interval, number}}',
+                    'groups|Max {{policy_max_updates_per_period, number}} / {{policy_period_interval}}',
                     {
                       policy_max_updates_per_period: props.group.policy_max_updates_per_period,
                       policy_period_interval: props.group.policy_period_interval,
