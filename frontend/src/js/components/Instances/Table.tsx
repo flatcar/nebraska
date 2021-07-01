@@ -18,22 +18,24 @@ import Item from './Item';
 
 function TableCellWithSortButtons(props: {
   sortQuery: string;
-  clickHandler: (sortOrder: boolean, sortKey: string) => void;
+  clickHandler: (isDescSortOrder: boolean, sortKey: string) => void;
   children: React.ReactNode;
   isDefault: boolean;
-  defaultSortOrder: boolean;
+  defaultIsDescSortOrder: boolean;
 }) {
-  const { sortQuery, clickHandler, defaultSortOrder, isDefault } = props;
-  //false denotes a increasing sort order and true a decreasing sort order
-  const [isDescSortOrder, setDescSortOrder] = React.useState(isDefault ? defaultSortOrder : false);
+  const { sortQuery, clickHandler, defaultIsDescSortOrder, isDefault } = props;
+  const [isDescSortOrder, setDescSortOrder] = React.useState(
+    isDefault ? defaultIsDescSortOrder : false
+  );
   return (
     <TableCell>
       {props.children}
       <IconButton
         size="small"
         onClick={() => {
-          setDescSortOrder(!isDescSortOrder);
-          clickHandler(!isDescSortOrder, sortQuery);
+          const newOrder = !isDescSortOrder;
+          setDescSortOrder(newOrder);
+          clickHandler(newOrder, sortQuery);
         }}
       >
         <Icon icon={!isDefault ? menuSwap : isDescSortOrder ? menuDown : menuUp} />
@@ -47,10 +49,10 @@ function Table(props: {
   channel: Channel;
   instances: Instance[];
   sortQuery: string;
-  sortOrder: boolean;
-  sortHandler: (sortOrder: boolean, sortKey: string) => void;
+  isDescSortOrder: boolean;
+  sortHandler: (isDescSortOrder: boolean, sortKey: string) => void;
 }) {
-  const { sortHandler, sortQuery, sortOrder } = props;
+  const { sortHandler, sortQuery, isDescSortOrder } = props;
   const [selectedInstance, setSelectedInstance] = React.useState<string | null>(null);
   const { t } = useTranslation();
   const versions = props.version_breakdown || [];
@@ -76,14 +78,14 @@ function Table(props: {
             sortQuery={InstanceSortFilters['id']}
             clickHandler={sortHandler}
             isDefault={sortQuery === InstanceSortFilters['id']}
-            defaultSortOrder={sortOrder}
+            defaultIsDescSortOrder={isDescSortOrder}
           >
             {t('instances|Instance')}
           </TableCellWithSortButtons>
           <TableCellWithSortButtons
             clickHandler={sortHandler}
             sortQuery={InstanceSortFilters['ip']}
-            defaultSortOrder={sortOrder}
+            defaultIsDescSortOrder={isDescSortOrder}
             isDefault={sortQuery === InstanceSortFilters['ip']}
           >
             {t('instances|IP')}
@@ -93,7 +95,7 @@ function Table(props: {
           <TableCellWithSortButtons
             clickHandler={sortHandler}
             sortQuery={InstanceSortFilters['last-check']}
-            defaultSortOrder={sortOrder}
+            defaultIsDescSortOrder={isDescSortOrder}
             isDefault={sortQuery === InstanceSortFilters['last-check']}
           >
             {t('instances|Last Check')}

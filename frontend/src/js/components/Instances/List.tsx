@@ -134,7 +134,7 @@ function ListView(props: { application: Application; group: Group }) {
   /*TODO: use the URL as the single source of truth and remove states */
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [isAscSortOrder, setIsAscSortOrder] = React.useState(false);
+  const [isDescSortOrder, setIsDescSortOrder] = React.useState(false);
   const [sortQuery, setSortQuery] = React.useState(InstanceSortFilters['last-check']);
   const [filters, setFilters] = React.useState<{ [key: string]: any }>({ status: '', version: '' });
   const [instancesObj, setInstancesObj] = React.useState({ instances: [], total: -1 });
@@ -142,6 +142,9 @@ function ListView(props: { application: Application; group: Group }) {
   const [totalInstances, setTotalInstances] = React.useState(-1);
   const location = useLocation();
   const history = useHistory();
+
+  // The indexes for the sorting names match the backend index for that criteria as well.
+  const SORT_ORDERS = ['asc', 'desc'];
 
   function getDuration() {
     return new URLSearchParams(location.search).get('period') || '1d';
@@ -166,7 +169,7 @@ function ListView(props: { application: Application; group: Group }) {
     const pageFromURL = queryParams.get('page');
     const pageQueryParam = ((pageFromURL && parseInt(pageFromURL)) || 1) - 1;
     const perPage = parseInt(queryParams.get('perPage') as string) || 10;
-    const sortOrder = parseInt(queryParams.get('sortOrder') as string) || 0;
+    const sortOrder = SORT_ORDERS[1] === (queryParams.get('sortOrder') as string) ? 1 : 0;
     const duration = getDuration();
 
     callback(status, version, sort, sortOrder, pageQueryParam, perPage, duration);
@@ -206,7 +209,7 @@ function ListView(props: { application: Application; group: Group }) {
     }
     API.getInstances(application.id, group.id, {
       ...fetchFilters,
-      sortOrder: Number(isAscSortOrder),
+      sortOrder: Number(isDescSortOrder),
       page: page + 1,
       perpage: perPage,
       duration,
@@ -266,14 +269,14 @@ function ListView(props: { application: Application; group: Group }) {
         status: string,
         version: string,
         sort: string,
-        sortOrder: boolean,
+        isDescSortOrder: boolean,
         pageParam: number,
         perPageParam: number,
         duration: string
       ) => {
         setFilters({ status, version, sort });
         setPage(pageParam);
-        setIsAscSortOrder(sortOrder);
+        setIsDescSortOrder(isDescSortOrder);
         setSortQuery(sort);
         setRowsPerPage(perPageParam);
         fetchInstances({ status, version, sort }, pageParam, perPageParam, duration);
@@ -311,11 +314,11 @@ function ListView(props: { application: Application; group: Group }) {
     return filters.status || filters.version;
   }
 
-  function sortHandler(sortOrder: boolean, sortQuery: string) {
-    setIsAscSortOrder(sortOrder);
+  function sortHandler(isDescSortOrder: boolean, sortQuery: string) {
+    setIsDescSortOrder(isDescSortOrder);
     setSortQuery(sortQuery);
     const sortAliasKey = getKeyByValue(InstanceSortFilters, sortQuery);
-    addQuery({ sort: sortAliasKey, sortOrder: Number(sortOrder) });
+    addQuery({ sort: sortAliasKey, sortOrder: SORT_ORDERS[Number(isDescSortOrder)] });
   }
 
   return (
@@ -378,7 +381,7 @@ function ListView(props: { application: Application; group: Group }) {
                     <Table
                       channel={group.channel}
                       instances={instancesObj.instances}
-                      sortOrder={isAscSortOrder}
+                      isDescSortOrder={isDescSortOrder}
                       sortQuery={sortQuery}
                       sortHandler={sortHandler}
                     />
