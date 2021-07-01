@@ -5,7 +5,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme, withStyles } from '@material-ui/styles';
 import React from 'react';
-import { VictoryLabel, VictoryPie } from 'victory';
+import { Cell,Label, Pie, PieChart } from 'recharts';
 import Empty from '../Common/EmptyContent';
 import Loader from '../Common/Loader';
 import { InstanceCountLabel } from './Common';
@@ -50,7 +50,7 @@ interface ProgressDoughnutProps {
   data: ProgressData[];
 }
 
-interface VictoryPieData {
+interface RechartsPieData {
   x: number;
   y: number;
   color: string;
@@ -59,9 +59,9 @@ interface VictoryPieData {
 
 function ProgressDoughnut(props: ProgressDoughnutProps) {
   const { label, data, width = 100, height = 100, color = '#afafaf', icon } = props;
-  const [hoverData, setHoverData] = React.useState<ProgressData | null>(null);
+  const [hoverData, setHoverData] = React.useState<RechartsPieData | null>(null);
   const [showTooltip, setShowTooltip] = React.useState(false);
-
+  const [activeIndex , setActiveIndex] = React.useState(-1);
   const iconSize = '1.1rem';
 
   const classes = useStyles({ color: color, labelSize: iconSize });
@@ -72,7 +72,7 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
 
   let totalFilled = 0;
   let valuesSum = 0;
-  const dataSet: VictoryPieData[] = data.map(({ value, color, description }, i) => {
+  const dataSet: RechartsPieData[] = data.map(({ value, color, description }, i) => {
     // Ensure that the minimum value displayed is 0.5 if the original value
     // is 0, or 1.5 otherwise. This ensures the user is able to see the bits
     // related to this value in the charts.
@@ -107,77 +107,45 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
   return (
     <Grid container direction="column" justify="center" alignItems="center">
       <Grid item>
-        <svg viewBox={`0 0 ${width} ${height}`} width={width} height={height}>
-          <VictoryPie
-            standalone={false}
-            animate={{ duration: 1000 }}
-            width={pieSize}
-            height={pieSize}
-            data={dataSet}
-            radius={radius}
-            innerRadius={radius * 0.8}
-            padAngle={0.5}
-            labels={() => null}
-            style={{
-              data: { fill: ({ datum }) => datum.color },
-            }}
-            events={[
-              {
-                target: 'data',
-                eventHandlers: {
-                  onMouseOver: () => {
-                    return [
-                      {
-                        target: 'data',
-                        mutation: ({ datum, style }) => {
-                          // Set what to show in the tooltip on hover.
-                          setHoverData(datum);
-                          setShowTooltip(true);
-
-                          // Highlight the bit on hover, if it's not
-                          // the remaining percentage.
-                          if (datum.x !== 'remain') {
-                            return {
-                              style: {
-                                ...style,
-                                stroke: theme.palette.primary.light,
-                                strokeWidth: 2,
-                              },
-                            };
-                          }
-                        },
-                      },
-                    ];
-                  },
-                  onMouseOut: () => {
-                    return [
-                      {
-                        target: 'data',
-                        mutation: () => {
-                          // Reset tooltip previously set on hover.
-                          setHoverData(null);
-                          setShowTooltip(false);
-                        },
-                      },
-                    ];
-                  },
-                },
-              },
-            ]}
+        <PieChart width={width} height={height}
+        onMouseOut={() => {
+          setShowTooltip(false);
+          setActiveIndex(-1);
+        }}>
+          <Pie data={dataSet} dataKey="y" nameKey="x" paddingAngle={0.5} outerRadius={radius}
+          isAnimationActive
+          startAngle={90}
+          endAngle={-270}
+          innerRadius={radius * 0.8}
+          animationDuration={1000}
+          animationEasing={"ease-in-out"}
+          onMouseOver={(dataum, index) => {
+            setHoverData(dataum);
+            setShowTooltip(true);
+            // Highlight the bit on hover, if it's not
+            // the remaining percentage.
+            if (dataum.x !== 'remain') {
+              setActiveIndex(index);
+            }
+          }}
+          onMouseOut={
+            () => {
+              setActiveIndex(-1);
+              setShowTooltip(false);
+              setHoverData(null);
+            }
+          }
+          >
+          <Label position="center" value={`${valuesSum.toFixed(1)}%`}/>
+          {dataSet.map((entry, index) => {
+          return <Cell key={`cell-${index}`} fill={entry.color} stroke={
+            activeIndex === index? theme.palette.primary.light : '#fff'
+          }
+          strokeWidth={activeIndex === index? 2: 0}
           />
-          <VictoryLabel
-            textAnchor="middle"
-            verticalAnchor="middle"
-            x={width / 2}
-            y={height / 2}
-            text={`${valuesSum.toFixed(1)}%`}
-            style={{
-              fontSize: `${radius * 0.25}px`,
-              fontFamily: theme.typography.fontFamily,
-              fill: "#000033"
-            }}
-          />
-        </svg>
+        })}  
+          </Pie>
+        </PieChart>
       </Grid>
       <Grid item container alignItems="center" justify="center" spacing={1}>
         {icon && (
