@@ -229,18 +229,17 @@ class API {
     PubSub.publish(MAIN_PROGRESS_BAR, 'add');
     const token = getToken();
     let headers = {};
-    const nebraska_config = localStorage.getItem(CONFIG_STORAGE_KEY) || "{}";
+    const nebraska_config = localStorage.getItem(CONFIG_STORAGE_KEY) || '{}';
     const config = JSON.parse(nebraska_config) || {};
-    
-    if(Object.keys(config).length > 0 && config.auth_mode === 'oidc') {
+
+    if (Object.keys(config).length > 0 && config.auth_mode === 'oidc') {
       headers = {
         Authorization: `Bearer ${token}`,
-      }
+      };
     }
-    return fetch(url
-      ,{
-        headers,
-      })
+    return fetch(url, {
+      headers,
+    })
       .then(response => {
         if (!response.ok) {
           throw response;
@@ -249,7 +248,7 @@ class API {
         // The token has been renewed, let's store it.
         const newIdToken = response.headers.get('id_token');
         if (!!newIdToken && getToken() !== newIdToken) {
-          console.debug('Refreshed token')
+          console.debug('Refreshed token');
           setToken(newIdToken);
         }
         return response.json();
@@ -267,14 +266,14 @@ class API {
   static doRequest(method: string, url: string, data: REQUEST_DATA_TYPE = '') {
     const token = getToken();
     PubSub.publish(MAIN_PROGRESS_BAR, 'add');
-    const nebraska_config = localStorage.getItem(CONFIG_STORAGE_KEY) || "{}";
+    const nebraska_config = localStorage.getItem(CONFIG_STORAGE_KEY) || '{}';
     const config = JSON.parse(nebraska_config) || {};
-    let headers = {}
-    
+    let headers = {};
+
     if (Object.keys(config).length > 0 && config.auth_mode === 'oidc') {
-       headers = {
+      headers = {
         Authorization: `Bearer ${token}`,
-      };  
+      };
     }
     let fetchConfigObject: {
       method: string;

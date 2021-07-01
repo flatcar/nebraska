@@ -208,13 +208,17 @@ function ItemExtended(props: {
                     <Grid item>
                       <CardFeatureLabel>{t('groups|Only Office Hours')}</CardFeatureLabel>
                       <Box my={1}>
-                        <CardLabel>{group.policy_office_hours ? t('frequent|Yes') : t('frequent|No')}</CardLabel>
+                        <CardLabel>
+                          {group.policy_office_hours ? t('frequent|Yes') : t('frequent|No')}
+                        </CardLabel>
                       </Box>
                     </Grid>
                     <Grid item>
                       <CardFeatureLabel>{t('groups|Safe Mode')}</CardFeatureLabel>
                       <Box my={1}>
-                        <CardLabel>{group.policy_safe_mode ? t('frequent|Yes') : t('frequent|No')}</CardLabel>
+                        <CardLabel>
+                          {group.policy_safe_mode ? t('frequent|Yes') : t('frequent|No')}
+                        </CardLabel>
                       </Box>
                     </Grid>
                     <Grid item>

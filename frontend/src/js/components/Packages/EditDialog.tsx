@@ -100,8 +100,9 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
       .catch(() => {
         actions.setSubmitting(false);
         actions.setStatus({
-          statusMessage:
-            t('packages|Something went wrong, or the version you are trying to add already exists for the arch and package type. Check the form or try again later...'),
+          statusMessage: t(
+            'packages|Something went wrong, or the version you are trying to add already exists for the arch and package type. Check the form or try again later...'
+          ),
         });
       });
   }
@@ -253,7 +254,9 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
                       <Checkbox checked={values.channelsBlacklist.indexOf(packageItem.id) > -1} />
                       <ListItemText
                         primary={label}
-                        secondary={isDisabled ? t('packages|channel pointing to this package') : null}
+                        secondary={
+                          isDisabled ? t('packages|channel pointing to this package') : null
+                        }
                       />
                     </MenuItem>
                   );
@@ -324,7 +327,9 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
 
   return (
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
-      <DialogTitle>{isCreation ? t('packages|Add Package') : t('packages|Edit Package')}</DialogTitle>
+      <DialogTitle>
+        {isCreation ? t('packages|Add Package') : t('packages|Edit Package')}
+      </DialogTitle>
       <Formik
         initialValues={initialValues}
         onSubmit={handleSubmit}

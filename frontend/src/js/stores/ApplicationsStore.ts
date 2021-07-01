@@ -44,10 +44,10 @@ class ApplicationsStore extends Store {
             this.emitChange();
             break;
           case 401:
-            store.dispatch(setUser({authenticated: false}))
+            store.dispatch(setUser({ authenticated: false }));
             break;
           default:
-            console.debug('Error', error)
+            console.debug('Error', error);
         }
       });
   }

@@ -3,7 +3,13 @@ import { Box, Button } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import IconButton from '@material-ui/core/IconButton';
 import Menu, { MenuProps } from '@material-ui/core/Menu';
-import { createMuiTheme, makeStyles, Theme, ThemeProvider, useTheme } from '@material-ui/core/styles';
+import {
+  createMuiTheme,
+  makeStyles,
+  Theme,
+  ThemeProvider,
+  useTheme,
+} from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -38,7 +44,7 @@ const useStyles = makeStyles(theme => ({
   },
   email: {
     fontSize: '1.2em',
-  }
+  },
 }));
 
 function prepareDarkTheme(theme: Theme) {
@@ -77,7 +83,7 @@ function Appbar(props: AppbarProps) {
   const { t } = useTranslation();
 
   React.useEffect(() => {
-    document.title = (config?.title) || 'Nebraska';
+    document.title = config?.title || 'Nebraska';
   }, [config]);
 
   function showAccountMenu() {
@@ -112,7 +118,7 @@ function Appbar(props: AppbarProps) {
             <AccountCircle />
           </IconButton>
         )}
-        {showAccountButton &&
+        {showAccountButton && (
           <Menu
             id="customized-menu"
             anchorEl={menuAnchorEl}
@@ -127,19 +133,11 @@ function Appbar(props: AppbarProps) {
               horizontal: 'right',
             }}
           >
-            <Box
-              paddingY={2}
-              paddingX={2}
-              textAlign="center"
-            >
+            <Box paddingY={2} paddingX={2} textAlign="center">
               {user?.name && <Typography className={classes.userName}>{user.name}</Typography>}
               {user?.email && <Typography className={classes.email}>{user.email}</Typography>}
             </Box>
-            <Box
-              paddingY={1}
-              paddingX={2}
-              textAlign="center"
-            >
+            <Box paddingY={1} paddingX={2} textAlign="center">
               <Button
                 component="a"
                 startIcon={<CreateOutlined />}
@@ -150,14 +148,14 @@ function Appbar(props: AppbarProps) {
               </Button>
             </Box>
           </Menu>
-        }
+        )}
       </Toolbar>
     </AppBar>
   );
 }
 
 export default function Header() {
-  const {config, user} = useSelector(state => ({config: state.config, user: state.user}));
+  const { config, user } = useSelector(state => ({ config: state.config, user: state.user }));
   const theme = useTheme();
   const projectLogo = _.isEmpty(nebraskaLogo) ? null : nebraskaLogo;
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLButtonElement | null>(null);
@@ -170,10 +168,19 @@ export default function Header() {
     setMenuAnchorEl(null);
   }
 
-  const props = {config, user, menuAnchorEl, projectLogo: projectLogo as object, handleClose, handleMenu} as AppbarProps;
-  const appBar = <Appbar {...props} />
+  const props = {
+    config,
+    user,
+    menuAnchorEl,
+    projectLogo: projectLogo as object,
+    handleClose,
+    handleMenu,
+  } as AppbarProps;
+  const appBar = <Appbar {...props} />;
   // cachedConfig.appBarColor is for backward compatibility (the name used for the setting before).
-  return config && (config.header_style === 'dark' || config.header_style === undefined && config.appBarColor === 'dark') ? (
+  return config &&
+    (config.header_style === 'dark' ||
+      (config.header_style === undefined && config.appBarColor === 'dark')) ? (
     <ThemeProvider theme={prepareDarkTheme(theme)}>{appBar}</ThemeProvider>
   ) : (
     appBar

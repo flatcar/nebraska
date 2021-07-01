@@ -41,7 +41,10 @@ export default function SectionHeader(props: SectionHeaderProps) {
   return (
     <Grid container alignItems="center" justify="flex-start" className={classes.sectionContainer}>
       <Grid item>
-        <Breadcrumbs aria-label={t('common|breadcrumbs')} separator={<NavigateNextIcon fontSize="small" />}>
+        <Breadcrumbs
+          aria-label={t('common|breadcrumbs')}
+          separator={<NavigateNextIcon fontSize="small" />}
+        >
           {breadcrumbs &&
             breadcrumbs.map(({ path = null, label }, index) => {
               if (path)

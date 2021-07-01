@@ -81,8 +81,9 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
       .catch(() => {
         actions.setSubmitting(false);
         actions.setStatus({
-          statusMessage:
-            t('channels|Something went wrong, or a channel with this name and architecture already exists. Check the form or try again later…'),
+          statusMessage: t(
+            'channels|Something went wrong, or a channel with this name and architecture already exists. Check the form or try again later…'
+          ),
         });
       });
   }
@@ -128,7 +129,9 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
                   InputLabelProps={{ shrink: true }}
                   type="text"
                   required
-                  helperText={t('channels|Can be an existing one as long as the arch is different.')}
+                  helperText={t(
+                    'channels|Can be an existing one as long as the arch is different.'
+                  )}
                   fullWidth
                 />
               </Grid>
@@ -155,8 +158,8 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
             select
             margin="dense"
             component={AutoCompletePicker}
-            helperText={t('channels|Showing only for the channel\'s architecture ({{arch}}).', {
-              arch: ARCHES[arch]
+            helperText={t("channels|Showing only for the channel's architecture ({{arch}}).", {
+              arch: ARCHES[arch],
             })}
             fullWidth
             onSelect={(packageVersion: string) => {
@@ -171,7 +174,7 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
                 const date = new Date(packageItem.created_ts);
                 return {
                   primary: packageItem.version,
-                  secondary: t('channels|created: {{date, date}}', {date: date}),
+                  secondary: t('channels|created: {{date, date}}', { date: date }),
                 };
               })}
             placeholder={t('channels|Pick a package')}
@@ -207,7 +210,9 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
 
   return (
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
-      <DialogTitle>{isCreation ? t('channels|Add New Channel') : t('channels|Edit Channel')}</DialogTitle>
+      <DialogTitle>
+        {isCreation ? t('channels|Add New Channel') : t('channels|Edit Channel')}
+      </DialogTitle>
       <Formik
         initialValues={initialValues}
         onSubmit={handleSubmit}

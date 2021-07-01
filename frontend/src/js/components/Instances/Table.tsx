@@ -11,11 +11,7 @@ import { Channel, Instance } from '../../api/apiDataTypes';
 import { cleanSemverVersion } from '../../utils/helpers';
 import Item from './Item';
 
-function Table(props: {
-  version_breakdown?: any;
-  channel: Channel;
-  instances: Instance[];
-}) {
+function Table(props: { version_breakdown?: any; channel: Channel; instances: Instance[] }) {
   const [selectedInstance, setSelectedInstance] = React.useState<string | null>(null);
   const { t } = useTranslation();
   const versions = props.version_breakdown || [];

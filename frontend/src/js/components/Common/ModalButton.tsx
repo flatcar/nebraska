@@ -54,7 +54,12 @@ function ModalButton(props: { data: object; modalToOpen: string; icon?: string }
   // case it should be set from the caller).
   return (
     <div>
-      <IconButton size="small" aria-label={t('frequent|add')} onClick={open} data-testid="modal-button">
+      <IconButton
+        size="small"
+        aria-label={t('frequent|add')}
+        onClick={open}
+        data-testid="modal-button"
+      >
         <AddIcon fontSize="large" className={classes.root} />
       </IconButton>
       {modal}

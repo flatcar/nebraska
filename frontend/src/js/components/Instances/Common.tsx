@@ -20,7 +20,7 @@ const useInstanceCountStyles = makeStyles((theme: Theme) => ({
   },
   instanceLink: {
     fontSize: '1.2rem',
-    color: 'rgb(27, 92, 145)'
+    color: 'rgb(27, 92, 145)',
   },
 }));
 
@@ -47,7 +47,9 @@ export function InstanceCountLabel(props: {
           <Box>
             {!props.loading && (
               <Link to={{ ...href }} component={RouterLink}>
-                <Typography className={classes.instanceLink}>{t('instances|See all instances')}</Typography>
+                <Typography className={classes.instanceLink}>
+                  {t('instances|See all instances')}
+                </Typography>
               </Link>
             )}
           </Box>

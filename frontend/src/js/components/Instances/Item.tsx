@@ -17,7 +17,7 @@ import { Instance } from '../../api/apiDataTypes';
 import { cleanSemverVersion, makeLocaleTime } from '../../utils/helpers';
 import StatusHistoryContainer from './StatusHistoryContainer';
 
-const TableLabel = function (props: PropsWithChildren<{bgColor?: string; textColor?: string}>) {
+const TableLabel = function (props: PropsWithChildren<{ bgColor?: string; textColor?: string }>) {
   return (
     <Box bgcolor={props.bgColor} color={props.textColor} display="inline-block" py={1} px={2}>
       {props.children}
@@ -27,9 +27,9 @@ const TableLabel = function (props: PropsWithChildren<{bgColor?: string; textCol
 
 const useStyles = makeStyles({
   link: {
-    color: '#1b5c91'
-  }
-})
+    color: '#1b5c91',
+  },
+});
 
 interface ItemProps {
   instance: Instance;
@@ -45,10 +45,7 @@ function Item(props: ItemProps) {
   const date = instance.application.last_check_for_updates;
   const statusDescription = instance.statusInfo?.description;
   const instanceLabel = instance.statusInfo?.className ? (
-    <TableLabel
-      bgColor={instance.statusInfo?.bgColor}
-      textColor={instance.statusInfo?.textColor}
-    >
+    <TableLabel bgColor={instance.statusInfo?.bgColor} textColor={instance.statusInfo?.textColor}>
       {statusDescription}
     </TableLabel>
   ) : (
@@ -119,11 +116,8 @@ function Item(props: ItemProps) {
         <TableCell>
           <Box display="flex" justifyContent="space-between">
             <Box>{makeLocaleTime(date)}</Box>
-            <Box
-            >
-              <IconButton
-                onClick={onToggle}
-              >
+            <Box>
+              <IconButton onClick={onToggle}>
                 <InlineIcon
                   icon={props.selected ? chevronUp : chevronDown}
                   height="25"

@@ -149,10 +149,13 @@ function Item(props: {
               <CardFeatureLabel>{t('groups|Rollout Policy')}</CardFeatureLabel>
               <Box p={1} mb={1}>
                 <CardLabel>
-                  {t('groups|Max {{policy_max_updates_per_period, number}} / {{policy_period_interval, number}}', {
-                    policy_max_updates_per_period: props.group.policy_max_updates_per_period,
-                    policy_period_interval: props.group.policy_period_interval,
-                  })}
+                  {t(
+                    'groups|Max {{policy_max_updates_per_period, number}} / {{policy_period_interval, number}}',
+                    {
+                      policy_max_updates_per_period: props.group.policy_max_updates_per_period,
+                      policy_period_interval: props.group.policy_period_interval,
+                    }
+                  )}
                 </CardLabel>
               </Box>
             </Grid>

@@ -44,9 +44,9 @@ const stateIcons: {
 
 const useStyles = makeStyles({
   groupLink: {
-    color: '#1b5c91'
-  }
-})
+    color: '#1b5c91',
+  },
+});
 
 function Item(props: { entry: Activity }) {
   const [entryClass, setEntryClass] = React.useState<{ [key: string]: any }>({});

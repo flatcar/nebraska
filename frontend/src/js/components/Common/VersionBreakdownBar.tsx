@@ -63,7 +63,7 @@ function VersionsTooltip(props: {
   );
 }
 
-function VersionProgressBar(props: { version_breakdown: any; channel: Channel | null}) {
+function VersionProgressBar(props: { version_breakdown: any; channel: Channel | null }) {
   const classes = useChartStyle();
   const theme = useTheme();
   const { t } = useTranslation();

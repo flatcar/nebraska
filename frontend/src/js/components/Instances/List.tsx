@@ -67,7 +67,9 @@ function InstanceFilter(props: InstanceFilterProps) {
             <Select
               onChange={(event: any) => changeFilter('status', event.target.value)}
               input={<Input id="select-status" />}
-              renderValue={(selected: any) => (selected ? statusDefs[selected].label : t('instances|Show All'))}
+              renderValue={(selected: any) =>
+                selected ? statusDefs[selected].label : t('instances|Show All')
+              }
               value={props.filter.status}
               displayEmpty
             >

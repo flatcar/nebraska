@@ -1,8 +1,8 @@
-import jwt_decode from "jwt-decode";
-import React from "react";
-import { useHistory } from "react-router";
-import { setUser, UserState } from "../stores/redux/features/user";
-import { useDispatch, useSelector } from "../stores/redux/hooks";
+import jwt_decode from 'jwt-decode';
+import React from 'react';
+import { useHistory } from 'react-router';
+import { setUser, UserState } from '../stores/redux/features/user';
+import { useDispatch, useSelector } from '../stores/redux/hooks';
 
 const TOKEN_KEY = 'token';
 
@@ -28,8 +28,8 @@ export function isValidToken(token: string) {
 
   // Check if it's expired
   const expiration = new Date(decoded.exp * 1000);
-  if (expiration < (new Date())) {
-    return false
+  if (expiration < new Date()) {
+    return false;
   }
 
   return true;
@@ -82,20 +82,19 @@ export function useAuthRedirect() {
     if (!!token) {
       setToken(token);
       // Discard the URL search params
-      dispatch(setUser({authenticated: true}));
-      history.push(history.location.pathname)
+      dispatch(setUser({ authenticated: true }));
+      history.push(history.location.pathname);
       return;
     }
 
     const currentToken = getToken() || '';
 
     if (isValidToken(currentToken) && shouldUpdateUser(currentToken)) {
-      dispatch(setUser({authenticated: true, ...getUserInfoFromToken(currentToken)}));
+      dispatch(setUser({ authenticated: true, ...getUserInfoFromToken(currentToken) }));
     }
 
     if ((!isValidToken(currentToken) || !user?.authenticated) && !!config.login_url) {
       window.location.href = config.login_url + '?login_redirect_url=' + window.location.href;
     }
-  },
-  [history, user, config]);
+  }, [history, user, config]);
 }
