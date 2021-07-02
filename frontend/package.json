@@ -24,7 +24,7 @@
     "@types/react-window": "^1.8.2",
     "@types/semver": "^7.3.4",
     "@types/yup": "^0.29.11",
-    "dompurify": "^2.2.6",
+    "dompurify": "^2.2.9",
     "downshift": "^3.4.7",
     "formik": "^2.1.5",
     "formik-material-ui": "^0.0.20",
