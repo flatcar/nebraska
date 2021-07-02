@@ -132,5 +132,5 @@ swagger-install:
 	go get -u github.com/swaggo/swag/cmd/swag
 
 .PHONY: swagger-init
-swagger-init:
+swagger-init:  swagger-install
 	cd backend && swag init -g cmd/userctl/main.go -o api

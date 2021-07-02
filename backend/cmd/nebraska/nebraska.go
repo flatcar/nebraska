@@ -442,7 +442,7 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 
 	// Gin Swagger setup
 	swagger.SwaggerInfo.Title = "Swagger API - Nebraska"
-	swagger.SwaggerInfo.Description = "This is a sample server for nebraska"
+	swagger.SwaggerInfo.Description = "Nebraska Swagger Documentation"
 	swagger.SwaggerInfo.Version = "1.0"
 	swagger.SwaggerInfo.Host = strings.TrimPrefix(strings.TrimPrefix(*nebraskaURL,"https://"),"http://")
 	swagger.SwaggerInfo.BasePath = "/api"
