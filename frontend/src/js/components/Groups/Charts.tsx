@@ -7,7 +7,7 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { useTheme } from '@material-ui/styles';
 import React from 'react';
-import { Area, AreaChart, CartesianGrid, LineType, Tooltip, XAxis, YAxis } from 'recharts';
+import { Area, AreaChart, AreaProps, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 import semver from 'semver';
 import _ from 'underscore';
 import { Group } from '../../api/apiDataTypes';
@@ -39,7 +39,7 @@ function TimelineTooltip(props: { label?: string; data: any }) {
 function TimelineChart(props: {
   width?: number;
   height?: number;
-  interpolation?: LineType;
+  interpolation?: AreaProps['type'];
   data: any;
   onSelect: (activeLabel: any) => void;
   colors: any;
@@ -138,7 +138,7 @@ function TimelineChart(props: {
         left: 0,
         bottom: 0,
       }}
-      onClick={obj => obj && props.onSelect(obj.activeLabel)}
+      onClick={(obj: any) => obj && props.onSelect(obj.activeLabel)}
     >
       <CartesianGrid strokeDasharray="3 3" />
       <Tooltip content={<TimelineTooltip data={props.data} />} />
