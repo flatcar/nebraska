@@ -56,6 +56,14 @@ run-frontend:
 frontend-install:
 	cd frontend && npm install
 
+.PHONY: frontend-install-ci
+frontend-install-ci:
+	cd frontend && npm ci
+
+.PHONY: frontend-build
+frontend-build:
+	cd frontend && npm run build
+
 .PHONY: frontend-test
 frontend-test:
 	cd frontend && npm run test
@@ -63,6 +71,10 @@ frontend-test:
 .PHONY: frontend-lint
 frontend-lint:
 	cd frontend && npm run lint
+
+.PHONY: frontend-tsc
+frontend-tsc:
+	cd frontend && npm run tsc
 
 .PHONY: i18n
 i18n:
