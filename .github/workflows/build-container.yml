@@ -1,0 +1,20 @@
+name: Build Container Image
+on:
+  pull_request:
+    paths:
+    - 'backend/**'
+    - 'frontend/**'
+    - Makefile
+    - '.github/**'
+
+jobs:
+  build:
+    name: Build Container Image
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+    - name: Build image
+      run: |
+        cd $GITHUB_WORKSPACE
+        make container
