@@ -95,8 +95,11 @@ function StatusLabel(props: StatusLabelProps) {
   const { t } = useTranslation();
 
   const { status, activated } = props;
-  const { icon = null, label = t('frequent|Unknown'), color } =
-    (status && statusDefs[status.type]) || {};
+  const {
+    icon = null,
+    label = t('frequent|Unknown'),
+    color,
+  } = (status && statusDefs[status.type]) || {};
   const iconSize = '22px';
 
   return (
