@@ -18,6 +18,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 
+	"github.com/swaggo/files"
+	"github.com/swaggo/gin-swagger"
+	swagger "github.com/kinvolk/nebraska/backend/api"
+
 	"github.com/kinvolk/nebraska/backend/cmd/nebraska/auth"
 	"github.com/kinvolk/nebraska/backend/pkg/api"
 	"github.com/kinvolk/nebraska/backend/pkg/random"
@@ -435,5 +439,15 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 	engine.NoRoute(func(c *gin.Context) {
 		c.File(filepath.Join(*httpStaticDir, "index.html"))
 	})
+
+	// Gin Swagger setup
+	swagger.SwaggerInfo.Title = "Swagger API - Nebraska"
+	swagger.SwaggerInfo.Description = "Nebraska Swagger Documentation"
+	swagger.SwaggerInfo.Version = "1.0"
+	swagger.SwaggerInfo.Host = strings.TrimPrefix(strings.TrimPrefix(*nebraskaURL,"https://"),"http://")
+	swagger.SwaggerInfo.BasePath = "/api"
+	swagger.SwaggerInfo.Schemes = []string{"http", "https"}
+	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	return engine
 }

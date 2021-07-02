@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/Depado/ginprom v1.7.0
+	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/blang/semver/v4 v4.0.0
 	github.com/coreos/go-oidc/v3 v3.0.0
 	github.com/doug-martin/goqu/v9 v9.12.0
@@ -23,6 +24,9 @@ require (
 	github.com/rubenv/sql-migrate v0.0.0-20210408115534-a32ed26c37ea
 	github.com/ryanuber/go-glob v1.0.0
 	github.com/stretchr/testify v1.7.0
+	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
+	github.com/swaggo/gin-swagger v1.3.0
+	github.com/swaggo/swag v1.7.0
 	github.com/tidwall/gjson v1.8.0
 	github.com/ziutek/mymysql v1.5.4 // indirect
 	golang.org/x/oauth2 v0.0.0-20210427180440-81ed05c6b58c
