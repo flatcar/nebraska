@@ -68,6 +68,7 @@ var (
 	oidcSessionAuthKey    = flag.String("oidc-session-secret", "", fmt.Sprintf("Session secret used for authenticating sessions in cookies used for storing OIDC info , will be generated if none is passed; can be taken from %s env var too", oidcSessionAuthKeyEnvName))
 	oidcSessionCryptKey   = flag.String("oidc-session-crypt-key", "", fmt.Sprintf("Session key used for encrypting sessions in cookies used for storing OIDC info, will be generated if none is passed; can be taken from %s env var too", oidcSessionCryptKeyEnvName))
 	oidcManagementURL     = flag.String("oidc-management-url", "", "OIDC management url for managing the account")
+	oidcLogutURL          = flag.String("oidc-logout-url", "", "URL to logout the user from current session")
 	flatcarUpdatesURL     = flag.String("sync-update-url", "https://public.update.flatcar-linux.net/v1/update/", "Flatcar update URL to sync from")
 	checkFrequencyVal     = flag.String("sync-interval", "1h", "Sync check interval (the minimum depends on the number of channels to sync, e.g., 8m for 8 channels incl. different architectures)")
 	appLogoPath           = flag.String("client-logo", "", "Client app logo, should be a path to svg file")
@@ -179,6 +180,7 @@ func mainWithError() error {
 			CallbackURL:       url.String(),
 			ValidRedirectURLs: strings.Split(*oidcValidRedirectURLs, ","),
 			ManagementURL:     *oidcManagementURL,
+			LogoutURL:         *oidcLogutURL,
 			AdminRoles:        strings.Split(*oidcAdminRoles, ","),
 			ViewerRoles:       strings.Split(*oidcViewerRoles, ","),
 			Scopes:            strings.Split(*oidcScopes, ","),
