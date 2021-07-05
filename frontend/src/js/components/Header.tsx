@@ -133,10 +133,12 @@ function Appbar(props: AppbarProps) {
               horizontal: 'right',
             }}
           >
-            <Box paddingY={2} paddingX={2} textAlign="center">
-              {user?.name && <Typography className={classes.userName}>{user.name}</Typography>}
-              {user?.email && <Typography className={classes.email}>{user.email}</Typography>}
-            </Box>
+            {(user?.name || user?.email) && (
+              <Box paddingY={2} paddingX={2} textAlign="center">
+                {user?.name && <Typography className={classes.userName}>{user.name}</Typography>}
+                {user?.email && <Typography className={classes.email}>{user.email}</Typography>}
+              </Box>
+            )}
             <Box paddingY={1} paddingX={2} textAlign="center">
               <Button
                 component="a"
