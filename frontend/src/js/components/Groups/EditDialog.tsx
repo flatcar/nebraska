@@ -6,6 +6,7 @@ import {
   Switch,
   Tooltip,
   Typography,
+  useTheme,
 } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -19,6 +20,8 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import { Field, Form, Formik } from 'formik';
 import { Select, TextField } from 'formik-material-ui';
@@ -35,6 +38,9 @@ const useStyles = makeStyles({
     padding: '0.5em 0em',
     overflow: 'hidden',
   },
+  indicator: {
+    background: '#000',
+  },
 });
 
 function EditDialog(props: {
@@ -47,7 +53,9 @@ function EditDialog(props: {
 }) {
   const isCreation = Boolean(props.create);
   const classes = useStyles();
+  const [groupEditActiveTab, setGroupEditActiveTab] = React.useState(0);
   const { t } = useTranslation();
+  const theme = useTheme();
 
   function handleSubmit(values: { [key: string]: any }, actions: { [key: string]: any }) {
     const updatesPeriodPolicy =
@@ -94,8 +102,22 @@ function EditDialog(props: {
       });
   }
 
+  function TabPanel(props: {
+    render: () => React.ReactElement | null;
+    index: number;
+    value: number;
+  }) {
+    const { index, value, render } = props;
+
+    return index === value ? render() : null;
+  }
+
   function handleClose() {
     props.onHide();
+  }
+
+  function onEditGroupTabChange(event: any, index: any) {
+    setGroupEditActiveTab(index);
   }
 
   //@ts-ignore
@@ -108,247 +130,38 @@ function EditDialog(props: {
           {status && status.statusMessage && (
             <DialogContentText color="error">{status.statusMessage}</DialogContentText>
           )}
-          <Grid container spacing={2}>
-            <Grid item xs={8}>
-              <Box pl={2}>
-                <Field
-                  name="name"
-                  component={TextField}
-                  margin="dense"
-                  label="Name"
-                  required
-                  fullWidth
-                />
-              </Box>
-            </Grid>
-            <Grid item xs={4}>
-              <Box pr={2}>
-                <FormControl margin="dense" fullWidth>
-                  <InputLabel shrink>Channel</InputLabel>
-                  <Field name="channel" component={Select} displayEmpty>
-                    <MenuItem value="" key="">
-                      {t('groups|None yet')}
-                    </MenuItem>
-                    {channels.map((channelItem: Channel) => (
-                      <MenuItem value={channelItem.id} key={channelItem.id}>
-                        {`${channelItem.name}(${ARCHES[channelItem.arch]})`}
-                      </MenuItem>
-                    ))}
-                  </Field>
-                </FormControl>
-              </Box>
-            </Grid>
-          </Grid>
-          <Box mt={2} px={2}>
-            <Field
-              name="description"
-              component={TextField}
-              margin="dense"
-              label={t('groups|Description')}
-              fullWidth
-            />
-          </Box>
-          <Box mt={2} px={2}>
-            <Field
-              name="track"
-              component={TextField}
-              margin="dense"
-              label={t(
-                'groups|Track (identifier for clients, filled with the group ID if omitted)'
-              )}
-              fullWidth
-            />
-          </Box>
-          <Box mt={2}>
+          <Box py={1}>
+            <Tabs
+              value={groupEditActiveTab}
+              onChange={onEditGroupTabChange}
+              classes={{ indicator: classes.indicator }}
+            >
+              <Tab label="Details" />
+              <Tab label="Policy" />
+            </Tabs>
             <Divider />
           </Box>
-          <Box mt={2} px={2}>
-            <Grid container justify="space-between" spacing={4}>
-              <Grid item xs={12}>
-                <Box mt={1}>
-                  <FormLabel component="legend">{t('groups|Update')}</FormLabel>
-                </Box>
-                <Grid container>
-                  <Grid item xs={6}>
-                    <FormControlLabel
-                      label={t('groups|Updates enabled')}
-                      control={
-                        <Field
-                          name="updatesEnabled"
-                          component={Switch}
-                          color="primary"
-                          checked={values.updatesEnabled}
-                          onChange={(e: any) => {
-                            setFieldValue('updatesEnabled', e.target.checked);
-                          }}
-                        />
-                      }
-                    />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <FormControlLabel
-                      label={t('groups|Safe mode')}
-                      control={
-                        <Field
-                          name="safeMode"
-                          component={Switch}
-                          checked={values.safeMode}
-                          color="primary"
-                          onChange={(e: any) => {
-                            setFieldValue('safeMode', e.target.checked);
-                          }}
-                        />
-                      }
-                    />
-                    <FormHelperText>
-                      {t('groups|Only update 1 instance at a time, and stop if an update fails.')}
-                    </FormHelperText>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-          </Box>
-          <Box mt={2}>
-            <Divider />
-          </Box>
-          <Box mt={1} pl={2}>
-            <FormLabel component="legend">{t('groups|Update Limits')}</FormLabel>
-          </Box>
-          <Box m={1}>
-            <Grid container>
-              <Grid item xs={6}>
-                <FormControlLabel
-                  label={
-                    <Box display="flex" alignItems="center">
-                      <Box pr={0.5}>{t('groups|Only office hours')}</Box>
-                      <Box pt={0.1} color="#808080">
-                        <Tooltip title={t('groups|Only update from 9am to 5pm.') || ''}>
-                          <HelpOutlineIcon fontSize="small" />
-                        </Tooltip>
-                      </Box>
-                    </Box>
-                  }
-                  control={
-                    <Box pl={1}>
-                      <Field
-                        name="onlyOfficeHours"
-                        component={Switch}
-                        color="primary"
-                        checked={values.onlyOfficeHours}
-                        onChange={(e: any) => {
-                          setFieldValue('onlyOfficeHours', e.target.checked);
-                        }}
-                      />
-                    </Box>
-                  }
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <Field
-                  component={TimezonePicker}
-                  name="timezone"
-                  value={values.timezone}
-                  onSelect={(timezone: string) => {
-                    setFieldValue('timezone', timezone);
-                  }}
-                />
-              </Grid>
-            </Grid>
-          </Box>
-          <Grid container>
-            <Grid item xs={12} container spacing={2} justify="space-between" alignItems="center">
-              <Grid item xs={4}>
-                <Box pl={2}>
-                  <Field
-                    name="maxUpdates"
-                    component={TextField}
-                    label={t('groups|Max number of updates')}
-                    margin="dense"
-                    type="number"
-                    fullWidth
-                  />
-                </Box>
-              </Grid>
-              <Grid item>
-                <Typography color="textSecondary">{t('groups|per')}</Typography>
-              </Grid>
-              <Grid item xs={3}>
-                <Box mt={1}>
-                  <Field
-                    name="updatesPeriodRange"
-                    component={TextField}
-                    margin="dense"
-                    type="number"
-                    fullWidth
-                  />
-                </Box>
-              </Grid>
-              <Grid item xs={3}>
-                <Box mt={2} mr={2}>
-                  <Field
-                    name="updatesPeriodUnit"
-                    component={TextField}
-                    margin="dense"
-                    select
-                    fullWidth
-                  >
-                    <MenuItem value={'hours'} key={'hours'}>
-                      {t('groups|hours')}
-                    </MenuItem>
-                    <MenuItem value={'minutes'} key={'minutes'}>
-                      {t('groups|minutes')}
-                    </MenuItem>
-                    <MenuItem value={'days'} key={'days'}>
-                      {t('groups|days')}
-                    </MenuItem>
-                  </Field>
-                </Box>
-              </Grid>
-            </Grid>
-            <Grid item xs={12}>
-              <Box mt={2} pl={2}>
-                <FormLabel>{t('groups|Updates timeout')}</FormLabel>
-                <Grid container spacing={2}>
-                  <Grid item xs={4}>
-                    <Field
-                      name="updatesTimeout"
-                      component={TextField}
-                      margin="dense"
-                      type="number"
-                    />
-                  </Grid>
-                  <Grid item xs={3}>
-                    <Box pr={2}>
-                      <Field
-                        name="updatesTimeoutUnit"
-                        component={TextField}
-                        margin="dense"
-                        select
-                        fullWidth
-                      >
-                        <MenuItem value={'hours'} key={'hours'}>
-                          {t('groups|hours')}
-                        </MenuItem>
-                        <MenuItem value={'minutes'} key={'minutes'}>
-                          {t('groups|minutes')}
-                        </MenuItem>
-                        <MenuItem value={'days'} key={'days'}>
-                          {t('groups|days')}
-                        </MenuItem>
-                      </Field>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Grid>
-          </Grid>
+          <TabPanel
+            index={0}
+            value={groupEditActiveTab}
+            render={() => <GroupDetailsForm channels={channels} />}
+          />
+          <TabPanel
+            index={1}
+            value={groupEditActiveTab}
+            render={() => <GroupPolicyForm values={values} setFieldValue={setFieldValue} />}
+          />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            {t('frequent|Cancel')}
+          <Button onClick={handleClose}>
+            <Box color={theme.palette.greyShadeColor} component="span">
+              {t('frequent|Cancel')}
+            </Box>
           </Button>
-          <Button type="submit" disabled={isSubmitting} color="primary">
-            {isCreation ? t('frequent|Add') : t('frequent|Save')}
+          <Button type="submit" disabled={isSubmitting}>
+            <Box component="span" color="#ffff" bgcolor="#000" width="100%" px={1.5} py={1}>
+              {isCreation ? t('frequent|Add') : t('frequent|Save')}
+            </Box>
           </Button>
         </DialogActions>
       </Form>
@@ -430,4 +243,230 @@ function EditDialog(props: {
   );
 }
 
+function GroupDetailsForm(props: { channels: Channel[] }) {
+  const { t } = useTranslation();
+  const { channels } = props;
+  return (
+    <div style={{ padding: '1rem' }}>
+      <Grid container spacing={2} justify="center">
+        <Grid item xs={8}>
+          <Field name="name" component={TextField} margin="dense" label="Name" required fullWidth />
+        </Grid>
+        <Grid item xs={4}>
+          <FormControl margin="dense" fullWidth>
+            <InputLabel shrink>Channel</InputLabel>
+            <Field name="channel" component={Select} displayEmpty>
+              <MenuItem value="" key="">
+                {t('groups|None yet')}
+              </MenuItem>
+              {channels.map((channelItem: Channel) => (
+                <MenuItem value={channelItem.id} key={channelItem.id}>
+                  {`${channelItem.name}(${ARCHES[channelItem.arch]})`}
+                </MenuItem>
+              ))}
+            </Field>
+          </FormControl>
+        </Grid>
+        <Grid item xs={12}>
+          <Field
+            name="description"
+            component={TextField}
+            margin="dense"
+            label={t('groups|Description')}
+            fullWidth
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Field
+            name="track"
+            component={TextField}
+            margin="dense"
+            label={t('groups|Track (identifier for clients, filled with the group ID if omitted)')}
+            fullWidth
+          />
+        </Grid>
+      </Grid>
+    </div>
+  );
+}
+
+function GroupPolicyForm(props: {
+  values: { [key: string]: string };
+  setFieldValue: (formField: string, value: any) => any;
+}) {
+  const { t } = useTranslation();
+  const { values, setFieldValue } = props;
+
+  return (
+    <div style={{ padding: '1rem' }}>
+      <Grid container justify="space-between" spacing={4}>
+        <Grid item xs={12}>
+          <Box mt={1}>
+            <FormLabel component="legend">{t('groups|Update')}</FormLabel>
+          </Box>
+          <Grid container>
+            <Grid item xs={6}>
+              <FormControlLabel
+                label={t('groups|Updates enabled')}
+                control={
+                  <Field
+                    name="updatesEnabled"
+                    component={Switch}
+                    color="primary"
+                    checked={values.updatesEnabled}
+                    onChange={(e: any) => {
+                      setFieldValue('updatesEnabled', e.target.checked);
+                    }}
+                  />
+                }
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <FormControlLabel
+                label={t('groups|Safe mode')}
+                control={
+                  <Field
+                    name="safeMode"
+                    component={Switch}
+                    checked={values.safeMode}
+                    color="primary"
+                    onChange={(e: any) => {
+                      setFieldValue('safeMode', e.target.checked);
+                    }}
+                  />
+                }
+              />
+              <FormHelperText>
+                {t('groups|Only update 1 instance at a time, and stop if an update fails.')}
+              </FormHelperText>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Grid>
+      <Box mt={2}>
+        <Divider />
+      </Box>
+      <Box mt={2}>
+        <FormLabel component="legend">{t('groups|Update Limits')}</FormLabel>
+      </Box>
+      <Box>
+        <Grid container>
+          <Grid item xs={6}>
+            <FormControlLabel
+              label={
+                <Box display="flex" alignItems="center">
+                  <Box pr={0.5}>{t('groups|Only office hours')}</Box>
+                  <Box pt={0.1} color="#808080">
+                    <Tooltip title={t('groups|Only update from 9am to 5pm.') || ''}>
+                      <HelpOutlineIcon fontSize="small" />
+                    </Tooltip>
+                  </Box>
+                </Box>
+              }
+              control={
+                <Box>
+                  <Field
+                    name="onlyOfficeHours"
+                    component={Switch}
+                    color="primary"
+                    checked={values.onlyOfficeHours}
+                    onChange={(e: any) => {
+                      setFieldValue('onlyOfficeHours', e.target.checked);
+                    }}
+                  />
+                </Box>
+              }
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <Field
+              component={TimezonePicker}
+              name="timezone"
+              value={values.timezone}
+              onSelect={(timezone: string) => {
+                setFieldValue('timezone', timezone);
+              }}
+            />
+          </Grid>
+        </Grid>
+      </Box>
+      <Box my={2}>
+        <Grid item xs={12} container spacing={2} justify="space-between" alignItems="center">
+          <Grid item xs={5}>
+            <Box pl={2}>
+              <Field
+                name="maxUpdates"
+                component={TextField}
+                label={t('groups|Max number of updates')}
+                margin="dense"
+                type="number"
+                fullWidth
+              />
+            </Box>
+          </Grid>
+          <Grid item>
+            <Typography color="textSecondary">{t('groups|per')}</Typography>
+          </Grid>
+          <Grid item xs={3}>
+            <Box mt={2}>
+              <Field
+                name="updatesPeriodRange"
+                component={TextField}
+                margin="dense"
+                type="number"
+                fullWidth
+              />
+            </Box>
+          </Grid>
+          <Grid item xs={3}>
+            <Box mt={2} mr={2}>
+              <Field name="updatesPeriodUnit" component={TextField} margin="dense" select fullWidth>
+                <MenuItem value={'hours'} key={'hours'}>
+                  {t('groups|hours')}
+                </MenuItem>
+                <MenuItem value={'minutes'} key={'minutes'}>
+                  {t('groups|minutes')}
+                </MenuItem>
+                <MenuItem value={'days'} key={'days'}>
+                  {t('groups|days')}
+                </MenuItem>
+              </Field>
+            </Box>
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <Box mt={2} pl={2}>
+            <FormLabel>{t('groups|Updates timeout')}</FormLabel>
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <Field name="updatesTimeout" component={TextField} margin="dense" type="number" />
+              </Grid>
+              <Grid item xs={3}>
+                <Box pr={2}>
+                  <Field
+                    name="updatesTimeoutUnit"
+                    component={TextField}
+                    margin="dense"
+                    select
+                    fullWidth
+                  >
+                    <MenuItem value={'hours'} key={'hours'}>
+                      {t('groups|hours')}
+                    </MenuItem>
+                    <MenuItem value={'minutes'} key={'minutes'}>
+                      {t('groups|minutes')}
+                    </MenuItem>
+                    <MenuItem value={'days'} key={'days'}>
+                      {t('groups|days')}
+                    </MenuItem>
+                  </Field>
+                </Box>
+              </Grid>
+            </Grid>
+          </Box>
+        </Grid>
+      </Box>
+    </div>
+  );
+}
 export default EditDialog;
