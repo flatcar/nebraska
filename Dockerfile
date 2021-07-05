@@ -13,7 +13,7 @@ WORKDIR /nebraska-source
 
 RUN make frontend backend-binary
 
-FROM alpine:3.12.0
+FROM alpine:3.14.0
 
 RUN apk update && \
 	apk add ca-certificates tzdata

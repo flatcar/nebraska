@@ -108,14 +108,7 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
   return (
     <Grid container direction="column" justify="center" alignItems="center">
       <Grid item>
-        <PieChart
-          width={width}
-          height={height}
-          onMouseOut={() => {
-            setShowTooltip(false);
-            setActiveIndex(-1);
-          }}
-        >
+        <PieChart width={width} height={height}>
           <Pie
             data={dataSet}
             dataKey="y"

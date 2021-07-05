@@ -393,13 +393,10 @@ function EditDialog(props: {
     };
   } else if (!!props.data.group) {
     const group = props.data.group;
-    const [
-      currentUpdatesPeriodRange,
-      currentUpdatesPeriodUnit,
-    ] = group.policy_period_interval.split(' ');
-    const [currentupdatesTimeout, currentUpdatesTimeoutUnit] = group.policy_update_timeout.split(
-      ' '
-    );
+    const [currentUpdatesPeriodRange, currentUpdatesPeriodUnit] =
+      group.policy_period_interval.split(' ');
+    const [currentupdatesTimeout, currentUpdatesTimeoutUnit] =
+      group.policy_update_timeout.split(' ');
 
     initialValues = {
       name: group.name,

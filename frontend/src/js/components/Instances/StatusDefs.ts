@@ -9,9 +9,7 @@ import progressDownload from '@iconify/icons-mdi/progress-download';
 import { Theme } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 
-function makeStatusDefs(
-  theme: Theme
-): {
+function makeStatusDefs(theme: Theme): {
   [key: string]: {
     label: string;
     color: string;

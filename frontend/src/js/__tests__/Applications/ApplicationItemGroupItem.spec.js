@@ -1,5 +1,5 @@
 import { MuiThemeProvider } from '@material-ui/core/styles';
-import { getByText, render, waitForDomChange } from '@testing-library/react';
+import { getByText, render, screen } from '@testing-library/react';
 import jest from 'jest-mock';
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
@@ -27,19 +27,21 @@ describe('Application Item Group Item', () => {
     API.getInstancesCount = mockAjax();
   });
   it('should render correct link and correct total instances', async () => {
-    const { container, getByText } = render(
+    render(
       <BrowserRouter>
         <MuiThemeProvider theme={theme}>
           <ApplicationItemGroupItem {...minProps} />
         </MuiThemeProvider>
       </BrowserRouter>
     );
-    await waitForDomChange(container);
-    expect(container.querySelector('a').getAttribute('href')).toBe(
-      `/apps/${minProps.group.application_id}/groups/${minProps.group.id}`
-    );
-    expect(getByText(`${minProps.group.name}`)).toBeInTheDocument();
-    expect(getByText(minProps.group.channel.name)).toBeInTheDocument();
+
+    expect(screen.getByText(`${minProps.group.name}`)).toBeInTheDocument();
+    expect(screen.getByText(minProps.group.channel.name)).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', {
+        href: `/apps/${minProps.group.application_id}/groups/${minProps.group.id}`,
+      })
+    ).toBeInTheDocument();
   });
   afterEach(() => {
     mockAjax.mockClear();

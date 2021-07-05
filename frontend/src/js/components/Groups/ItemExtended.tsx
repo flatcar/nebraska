@@ -45,12 +45,10 @@ function ItemExtended(props: {
     [key: string]: any;
     total: number;
   } | null>(null);
-  const [updateProgressChartDuration, setUpdateProgressChartDuration] = React.useState(
-    defaultTimeInterval
-  );
-  const [versionChartSelectedDuration, setVersionChartSelectedDuration] = React.useState(
-    defaultTimeInterval
-  );
+  const [updateProgressChartDuration, setUpdateProgressChartDuration] =
+    React.useState(defaultTimeInterval);
+  const [versionChartSelectedDuration, setVersionChartSelectedDuration] =
+    React.useState(defaultTimeInterval);
   const [statusChartDuration, setStatusChartDuration] = React.useState(defaultTimeInterval);
   const location = useLocation();
   const history = useHistory();
