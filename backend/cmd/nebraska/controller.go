@@ -33,6 +33,7 @@ const (
 // ClientConfig represents Nebraska's configuration of interest for the client.
 type ClientConfig struct {
 	AccessManagementURL string `json:"access_management_url"`
+	LogoutURL           string `json:"logout_url"`
 	NebraskaVersion     string `json:"nebraska_version"`
 	Logo                string `json:"logo"`
 	Title               string `json:"title"`
@@ -150,6 +151,8 @@ func NewClientConfig(conf *controllerConfig) *ClientConfig {
 		}
 		url.Path = "/login"
 		config.LoginURL = url.String()
+		config.AccessManagementURL = conf.oidcAuthConfig.ManagementURL
+		config.LogoutURL = conf.oidcAuthConfig.LogoutURL
 	}
 
 	config.NebraskaVersion = version.Version
