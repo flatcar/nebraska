@@ -18,9 +18,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 
-	"github.com/swaggo/files"
-	"github.com/swaggo/gin-swagger"
 	swagger "github.com/kinvolk/nebraska/backend/api"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"github.com/kinvolk/nebraska/backend/cmd/nebraska/auth"
 	"github.com/kinvolk/nebraska/backend/pkg/api"
@@ -67,6 +67,7 @@ var (
 	oidcScopes            = flag.String("oidc-scopes", "openid", "comma-separated list of scopes to be used in OIDC")
 	oidcSessionAuthKey    = flag.String("oidc-session-secret", "", fmt.Sprintf("Session secret used for authenticating sessions in cookies used for storing OIDC info , will be generated if none is passed; can be taken from %s env var too", oidcSessionAuthKeyEnvName))
 	oidcSessionCryptKey   = flag.String("oidc-session-crypt-key", "", fmt.Sprintf("Session key used for encrypting sessions in cookies used for storing OIDC info, will be generated if none is passed; can be taken from %s env var too", oidcSessionCryptKeyEnvName))
+	oidcManagementURL     = flag.String("oidc-management-url", "", "OIDC management url for managing the account")
 	flatcarUpdatesURL     = flag.String("sync-update-url", "https://public.update.flatcar-linux.net/v1/update/", "Flatcar update URL to sync from")
 	checkFrequencyVal     = flag.String("sync-interval", "1h", "Sync check interval (the minimum depends on the number of channels to sync, e.g., 8m for 8 channels incl. different architectures)")
 	appLogoPath           = flag.String("client-logo", "", "Client app logo, should be a path to svg file")
@@ -177,6 +178,7 @@ func mainWithError() error {
 			IssuerURL:         *oidcIssuerURL,
 			CallbackURL:       url.String(),
 			ValidRedirectURLs: strings.Split(*oidcValidRedirectURLs, ","),
+			ManagementURL:     *oidcManagementURL,
 			AdminRoles:        strings.Split(*oidcAdminRoles, ","),
 			ViewerRoles:       strings.Split(*oidcViewerRoles, ","),
 			Scopes:            strings.Split(*oidcScopes, ","),
@@ -444,7 +446,7 @@ func setupRoutes(ctl *controller, httpLog bool) *gin.Engine {
 	swagger.SwaggerInfo.Title = "Swagger API - Nebraska"
 	swagger.SwaggerInfo.Description = "Nebraska Swagger Documentation"
 	swagger.SwaggerInfo.Version = "1.0"
-	swagger.SwaggerInfo.Host = strings.TrimPrefix(strings.TrimPrefix(*nebraskaURL,"https://"),"http://")
+	swagger.SwaggerInfo.Host = strings.TrimPrefix(strings.TrimPrefix(*nebraskaURL, "https://"), "http://")
 	swagger.SwaggerInfo.BasePath = "/api"
 	swagger.SwaggerInfo.Schemes = []string{"http", "https"}
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

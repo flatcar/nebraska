@@ -150,6 +150,7 @@ func NewClientConfig(conf *controllerConfig) *ClientConfig {
 		}
 		url.Path = "/login"
 		config.LoginURL = url.String()
+		config.AccessManagementURL = conf.oidcAuthConfig.ManagementURL
 	}
 
 	config.NebraskaVersion = version.Version

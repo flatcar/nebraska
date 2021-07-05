@@ -42,6 +42,7 @@ type OIDCAuthConfig struct {
 	CallbackURL       string
 	TokenPath         string
 	IssuerURL         string
+	ManagementURL     string
 	ValidRedirectURLs []string
 	AdminRoles        []string
 	ViewerRoles       []string
