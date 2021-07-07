@@ -81,11 +81,39 @@ spec:
             {{- if .Values.config.auth.mode }}
             - "-auth-mode={{ .Values.config.auth.mode }}"
             {{- end }}
-            {{- if and .Values.config.auth.github.readWriteTeams (not (eq .Values.config.auth.mode "noop")) }}
+            {{- if eq .Values.config.auth.mode "github" }}
+              {{- if .Values.config.auth.github.readWriteTeams }}
             - "-gh-rw-teams={{ .Values.config.auth.github.readWriteTeams }}"
-            {{- end }}
-            {{- if and .Values.config.auth.github.readOnlyTeams (not (eq .Values.config.auth.mode "noop")) }}
+              {{- end }}
+              {{- if .Values.config.auth.github.readOnlyTeams }}
             - "-gh-ro-teams={{ .Values.config.auth.github.readOnlyTeams }}"
+              {{- end }}
+            {{- end }}
+            {{- if eq .Values.config.auth.mode "oidc" }}
+              {{- with .Values.config.auth.oidc.issuerURL }}
+            - "-oidc-issuer-url={{ . }}"
+              {{- end }}
+              {{- with .Values.config.auth.oidc.validRedirectURLs }}
+            - "-oidc-valid-redirect-urls={{ . }}"
+              {{- end }}
+              {{- with .Values.config.auth.oidc.managementURL }}
+            - "-oidc-management-url={{ . }}"
+              {{- end }}
+              {{- with .Values.config.auth.oidc.logoutURL }}
+            - "-oidc-logout-url"={{ . }}"
+              {{- end }}
+              {{- with .Values.config.auth.oidc.adminRoles }}
+            - "-oidc-admin-roles={{ . }}"
+              {{- end }}
+              {{- with .Values.config.auth.oidc.viewerRoles }}
+            - "-oidc-viewer-roles={{ . }}"
+              {{- end }}
+              {{- with .Values.config.auth.oidc.rolesPath }}
+            - "-oidc-roles-path={{ . }}"
+              {{- end }}
+              {{- with .Values.config.auth.oidc.scopes }}
+            - "-oidc-scopes={{ . }}"
+              {{- end }}
             {{- end }}
           env:
             - name: DB_PASSWORD
@@ -100,7 +128,7 @@ spec:
                   {{- end }}
             - name: NEBRASKA_DB_URL
               value: {{ printf "postgres://%s:$(DB_PASSWORD)@%s:%s/%s?sslmode=disable&connect_timeout=10" $user $host $port $db | quote }}
-            {{- if or (eq .Values.config.auth.mode "github") (not .Values.config.auth.mode) }}
+            {{- if eq .Values.config.auth.mode "github" }}
             - name: "NEBRASKA_GITHUB_OAUTH_CLIENT_ID"
               value: "{{ .Values.config.auth.github.clientID }}"
             - name: "NEBRASKA_GITHUB_OAUTH_CLIENT_SECRET"
@@ -126,6 +154,32 @@ spec:
               {{- if .Values.config.auth.github.enterpriseURL }}
             - name: "NEBRASKA_GITHUB_ENTERPRISE_URL"
               value: "{{ .Values.config.auth.github.enterpriseURL }}"
+              {{- end }}
+            {{- end }}
+            {{- if eq .Values.config.auth.mode "oidc" }}
+            - name: "NEBRASKA_OIDC_CLIENT_ID"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "nebraska.fullname" . }}
+                  key: oidcClientID
+            - name: "NEBRASKA_OIDC_CLIENT_SECRET"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "nebraska.fullname" . }}
+                  key: oidcClientSecret
+              {{- if .Values.config.auth.oidc.sessionAuthKey }}
+            - name: "NEBRASKA_OIDC_SESSION_SECRET"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "nebraska.fullname" . }}
+                  key: oidcSessionAuthKey
+              {{- end }}
+              {{- if .Values.config.auth.oidc.sessionCryptKey }}
+            - name: "NEBRASKA_OIDC_SESSION_CRYPT_KEY"
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "nebraska.fullname" . }}
+                  key: oidcSessionCryptKey   
               {{- end }}
             {{- end }}
             {{- range $key, $value := .Values.extraEnvVars }}
@@ -154,7 +208,7 @@ spec:
       {{- if .Values.config.hostFlatcarPackages.enabled }}
       volumes:
         - name: packages
-          {{- if .Values.config.hostFlatcarPackages.persistence.enabled}}
+          {{- if .Values.config.hostFlatcarPackages.persistence.enabled }}
           persistentVolumeClaim:
             claimName: {{ include "nebraska.fullname" . }}-packages
           {{- else }}

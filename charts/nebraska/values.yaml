@@ -41,6 +41,19 @@ config:
 
   auth:
     mode: noop
+    oidc:
+      clientID:
+      clientSecret:
+      issuerURL:
+      validRedirectURLs:
+      managementURL:
+      logoutURL:
+      adminRoles:
+      viewerRoles:
+      rolesPath:
+      scopes:
+      sessionAuthKey:
+      sessionCryptKey:
     github:
       clientID:
       clientSecret:

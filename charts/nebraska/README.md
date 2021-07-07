@@ -69,7 +69,7 @@ $ helm install my-nebraska nebraska/nebraska
 | `config.hostFlatcarPackages.persistence.storageClass` | PVC Storage Class for PostgreSQL volume                                                                                              | `nil`                                                                   |
 | `config.hostFlatcarPackages.persistence.accessModes`  | PVC Access Mode for PostgreSQL volume                                                                                                | `["ReadWriteOnce"]`                                                     |
 | `config.hostFlatcarPackages.persistence.size`         | PVC Storage Request for PostgreSQL volume                                                                                            | `10Gi`                                                                  |
-| `config.auth.mode`                                    | Authentication mode, available modes: `noop`, `github`                                                                               | `noop`                                                                  |
+| `config.auth.mode`                                    | Authentication mode, available modes: `noop`, `github`, `oidc`                                                                               | `noop`                                                                  |
 | `config.auth.github.clientID`                         | GitHub client ID used for authentication                                                                                             | `nil`                                                                   |
 | `config.auth.github.clientSecret`                     | GitHub client secret used for authentication                                                                                         | `nil`                                                                   |
 | `config.auth.github.sessionAuthKey`                   | Session secret used for authenticating sessions in cookies used for storing GitHub info , will be generated if none is passed        | `nil`                                                                   |
@@ -77,7 +77,19 @@ $ helm install my-nebraska nebraska/nebraska
 | `config.auth.github.webhookSecret`                    | GitHub webhook secret used for validing webhook messages                                                                             | `nil`                                                                   |
 | `config.auth.github.readWriteTeams`                   | comma-separated list of read-write GitHub teams in the org/team format                                                               | `nil`                                                                   |
 | `config.auth.github.readOnlyTeams`                    | comma-separated list of read-only GitHub teams in the org/team format                                                                | `nil`                                                                   |
-| `config.auth.github.enterpriseURL`                    | Base URL of the enterprise instance if using GHE                                                                                     | `nil`                                                                   |
+| `config.auth.github.enterpriseURL`                    | Base URL of the enterprise instance if using GHE                                                                                     | `nil`    |                          
+| `config.auth.oidc.clientID`                           | OIDC client ID used for authentication  | `nil`  |
+| `config.auth.oidc.clientSecret`                       | OIDC client Secret used for authentication | `nil`  |
+| `config.auth.oidc.issuerURL`                          | OIDC issuer URL used for authentication | `nil`  |
+| `config.auth.oidc.validRedirectURLs`                  | comma-separated list of valid Redirect URLs  | `nil`  |
+| `config.auth.oidc.managementURL`                      | OIDC management url for managing the account  | `nil`  |
+| `config.auth.oidc.logoutURL`                          | URL to logout the user from current session  | `nil`  |
+| `config.auth.oidc.adminRoles`                         | comma-separated list of accepted roles with admin access | `nil`  |
+| `config.auth.oidc.viewerRoles`                        | comma-separated list of accepted roles with viewer access | `nil`  |
+| `config.auth.oidc.rolesPath`                          | json path in which the roles array is present in the id token  | `nil`  |
+| `config.auth.oidc.scopes`                             | comma-separated list of scopes to be used in OIDC | `nil`  |
+| `config.auth.oidc.sessionAuthKey`                     | Session secret used for authenticating sessions in cookies to store OIDC info , will be generated if none is passed | `nil`  |
+| `config.auth.oidc.sessionCryptKey`                    | Session key used for encrypting sessions in cookies to store OIDC info, will be generated if none is passed | `nil`                                    |
 | `config.database.host`                                | The host name of the database server                                                                                                 | `""` (use postgresql from Bitnami subchart)                             |
 | `config.database.port`                                | The port number the database server is listening on                                                                                  | `5432`                                                                  |
 | `config.database.dbname`                              | The database name                                                                                                                    | `{{ .Values.postgresql.postgresqlDatabase }}` (evaluated as a template) |
