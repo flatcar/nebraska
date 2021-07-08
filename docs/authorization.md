@@ -261,10 +261,10 @@ Helm Chart offers flexible configuration options such as:
 
 - Common deployment parameters (exposing through `Ingress`, replica count, etc.)
 
-- All [Nebraska application configuration](https://github.com/kinvolk/nebraska/tree/master/charts/nebraska#nebraska-configuration)
+- All [Nebraska application configuration](https://github.com/kinvolk/nebraska/tree/main/charts/nebraska#nebraska-configuration)
 
 For the complete list of all available customization options, please read the
-[Helm Chart README](https://github.com/kinvolk/nebraska/blob/master/charts/nebraska/README.md).
+[Helm Chart README](https://github.com/kinvolk/nebraska/blob/main/charts/nebraska/README.md).
 
 To install the Helm Chart using the default configuration (noop authentication),
 you can execute:
