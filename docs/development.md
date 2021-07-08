@@ -50,7 +50,7 @@ opened browser page should automatically refresh.
 
 ## Frontend
 
-The [frontend](https://github.com/kinvolk/nebraska/tree/master/frontend) side of Nebraska is a web application built using `React` and `Material-UI`.
+The [frontend](https://github.com/kinvolk/nebraska/tree/main/frontend) side of Nebraska is a web application built using `React` and `Material-UI`.
 
 ## Backend
 
