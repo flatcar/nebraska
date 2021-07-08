@@ -128,6 +128,7 @@ function EditDialog(props: {
               value={groupEditActiveTab}
               onChange={onEditGroupTabChange}
               classes={{ indicator: classes.indicator }}
+              aria-label="group edit form tabs"
             >
               <Tab label="Details" />
               <Tab label="Policy" />
