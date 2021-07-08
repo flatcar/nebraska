@@ -2,7 +2,7 @@ import { withStyles } from '@material-ui/core';
 import MuiList from '@material-ui/core/List';
 import Paper from '@material-ui/core/Paper';
 import React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import _ from 'underscore';
 import { Channel, Group } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
@@ -25,11 +25,8 @@ function List(props: { appID: string; classes: Record<'root', string> }) {
   const [application, setApplication] = React.useState(
     applicationsStore.getCachedApplication(props.appID)
   );
-  const [searchTerm, setSearchTerm] = React.useState('');
   const [updateGroupModalVisible, setUpdateGroupModalVisible] = React.useState(false);
   const [updateGroupIDModal, setUpdateGroupIDModal] = React.useState<string | null>(null);
-  const [updateAppIDModal, setUpdateAppIDModal] = React.useState<string | null>(null);
-  const { t } = useTranslation();
 
   function closeUpdateGroupModal() {
     setUpdateGroupModalVisible(false);
@@ -38,7 +35,6 @@ function List(props: { appID: string; classes: Record<'root', string> }) {
   function openUpdateGroupModal(appID: string, groupID: string) {
     setUpdateGroupModalVisible(true);
     setUpdateGroupIDModal(groupID);
-    setUpdateAppIDModal(appID);
   }
 
   React.useEffect(() => {
@@ -52,47 +48,30 @@ function List(props: { appID: string; classes: Record<'root', string> }) {
     setApplication(applicationsStore.getCachedApplication(props.appID));
   }
 
-  function searchUpdated(event: React.ChangeEvent<{ value: any }>) {
-    const { value } = event.currentTarget;
-    setSearchTerm(value.toLowerCase());
-  }
-
   let channels: Channel[] = [];
   let groups: Group[] = [];
-  let packages = [];
-  let instances = 0;
   let name = '';
   let entries: React.ReactNode = '';
 
   if (application) {
     name = application.name;
     groups = application.groups ? application.groups : [];
-    packages = application.packages ? application.packages : [];
-    instances = application.instances ? application.instances : [];
     channels = application.channels ? application.channels : [];
 
-    if (searchTerm) {
-      groups = groups.filter((app: Group) => app.name.toLowerCase().includes(searchTerm));
-    }
-
     if (_.isEmpty(groups)) {
-      if (searchTerm) {
-        entries = <Empty>{t('groups|No results found.')}</Empty>;
-      } else {
-        entries = (
-          <Empty>
-            <Trans ns="Groups">
-              There are no groups for this application yet.
-              <br />
-              <br />
-              Groups help you control how you want to distribute updates to a specific set of
-              instances.
-            </Trans>
-          </Empty>
-        );
-      }
+      entries = (
+        <Empty>
+          <Trans ns="Groups">
+            There are no groups for this application yet.
+            <br />
+            <br />
+            Groups help you control how you want to distribute updates to a specific set of
+            instances.
+          </Trans>
+        </Empty>
+      );
     } else {
-      entries = _.map(groups, (group, i) => {
+      entries = _.map(groups, group => {
         return (
           <Item
             key={'groupID_' + group.id}

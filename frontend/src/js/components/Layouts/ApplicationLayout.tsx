@@ -9,7 +9,7 @@ import SectionHeader from '../Common/SectionHeader';
 import GroupsList from '../Groups/List';
 import PackagesList from '../Packages/List';
 
-function ApplicationLayout(props: {}) {
+function ApplicationLayout() {
   const { appID } = useParams<{ appID: string }>();
   const [applications, setApplications] = React.useState(
     applicationsStore.getCachedApplications() || []

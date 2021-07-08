@@ -8,7 +8,7 @@ import SectionHeader from '../Common/SectionHeader';
 import EditDialog from '../Groups/EditDialog';
 import GroupExtended from '../Groups/ItemExtended';
 
-function GroupLayout(props: {}) {
+function GroupLayout() {
   const { appID, groupID } = useParams<{ appID: string; groupID: string }>();
   const [applications, setApplications] = React.useState(
     applicationsStore.getCachedApplications() || []

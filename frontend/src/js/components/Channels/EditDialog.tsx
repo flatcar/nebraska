@@ -15,7 +15,7 @@ import { Field, Form, Formik } from 'formik';
 import { TextField } from 'formik-material-ui';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import { Channel, Package } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
@@ -24,11 +24,11 @@ import AutoCompletePicker from '../Common/AutoCompletePicker';
 import { ColorPickerButton } from '../Common/ColorPicker';
 import ChannelAvatar from './ChannelAvatar';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
   nameField: {
     width: '15rem',
   },
-}));
+});
 
 function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide: () => void }) {
   const classes = useStyles();

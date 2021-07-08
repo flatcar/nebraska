@@ -104,7 +104,7 @@ function getSuggestions(value: string | null, selectedItem: string) {
       });
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
   container: {
     flexGrow: 1,
     position: 'relative',
@@ -119,7 +119,7 @@ const useStyles = makeStyles(theme => ({
   pickerButtonInput: {
     cursor: 'pointer',
   },
-}));
+});
 
 interface LazyListProps {
   options: string[];

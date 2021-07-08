@@ -1,4 +1,4 @@
-import { IconButton, makeStyles, useTheme } from '@material-ui/core';
+import { IconButton, makeStyles } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import PropTypes from 'prop-types';
 import React from 'react';

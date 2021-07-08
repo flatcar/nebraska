@@ -4,11 +4,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
   sectionHeader: {
     padding: '1em',
   },
-}));
+});
 
 export default function ListHeader(props: { title: string; actions?: React.ReactElement[] }) {
   const classes = useStyles();

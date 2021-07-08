@@ -6,11 +6,11 @@ import { Activity } from '../../api/apiDataTypes';
 import { makeLocaleTime } from '../../utils/helpers';
 import Item from './Item';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
   listTitle: {
     fontSize: '1em',
   },
-}));
+});
 
 function List(props: { entries?: Activity[]; timestamp: string }) {
   const classes = useStyles();

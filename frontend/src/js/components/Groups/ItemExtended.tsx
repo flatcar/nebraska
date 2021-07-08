@@ -39,7 +39,6 @@ function ItemExtended(props: {
   handleUpdateGroup: (groupID: string, appID: string) => void;
 }) {
   const [application, setApplication] = React.useState(null);
-  const [loadingUpdateProgressChart, setLoadingUpdateProgressChart] = React.useState(false);
   const [group, setGroup] = React.useState<Group | null>(null);
   const [instancesStats, setInstancesStats] = React.useState<{
     [key: string]: any;
@@ -121,7 +120,6 @@ function ItemExtended(props: {
 
   React.useEffect(() => {
     if (group) {
-      setLoadingUpdateProgressChart(true);
       API.getGroupInstancesStats(
         group.application_id,
         group.id,
@@ -129,7 +127,6 @@ function ItemExtended(props: {
       )
         .then(stats => {
           setInstancesStats(stats);
-          setLoadingUpdateProgressChart(false);
         })
         .catch(err => {
           console.error(
@@ -139,7 +136,6 @@ function ItemExtended(props: {
             err
           );
           setInstancesStats(null);
-          setLoadingUpdateProgressChart(false);
         });
     }
   }, [group, updateProgressChartDuration]);
