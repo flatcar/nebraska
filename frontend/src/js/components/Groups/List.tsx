@@ -112,7 +112,7 @@ function List(props: { appID: string; classes: Record<'root', string> }) {
         <MuiList className={classes.root}>{entries}</MuiList>
         {groupToUpdate && (
           <EditDialog
-            data={{ group: groupToUpdate, channels: channels }}
+            data={{ group: groupToUpdate, channels: channels, appID: props.appID }}
             show={updateGroupModalVisible}
             onHide={closeUpdateGroupModal}
           />

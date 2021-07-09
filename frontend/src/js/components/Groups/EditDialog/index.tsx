@@ -74,8 +74,8 @@ function EditDialog(props: {
     if (values.timezone) data['policy_timezone'] = values.timezone;
 
     let packageFunctionCall;
+    data['application_id'] = props.data.appID;
     if (isCreation) {
-      data['application_id'] = props.data.appID;
       packageFunctionCall = applicationsStore.createGroup(data as Group);
     } else {
       data['id'] = props.data.group.id;
