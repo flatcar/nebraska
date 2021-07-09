@@ -11,7 +11,7 @@ COPY . /nebraska-source/
 
 WORKDIR /nebraska-source
 
-RUN make frontend backend-binary
+RUN make frontend build-backend-binary
 
 FROM alpine:3.14.0
 
