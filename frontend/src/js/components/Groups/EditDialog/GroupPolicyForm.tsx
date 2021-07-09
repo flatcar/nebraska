@@ -127,6 +127,11 @@ export default function GroupPolicyForm(props: {
                 margin="dense"
                 type="number"
                 fullWidth
+                minValue={0}
+                onChange={(e: any) => {
+                  setFieldValue('maxUpdates', e.target.value);
+                }}
+                defaultValue={values.maxUpdates}
               />
             </Box>
           </Grid>
@@ -141,12 +146,26 @@ export default function GroupPolicyForm(props: {
                 margin="dense"
                 type="number"
                 fullWidth
+                defaultValue={values.updatesPeriodRange}
+                onChange={(e: any) => {
+                  setFieldValue('updatesPeriodRange', e.target.value);
+                }}
               />
             </Box>
           </Grid>
           <Grid item xs={3}>
             <Box mt={2} mr={2}>
-              <Field name="updatesPeriodUnit" component={TextField} margin="dense" select fullWidth>
+              <Field
+                name="updatesPeriodUnit"
+                component={TextField}
+                margin="dense"
+                select
+                fullWidth
+                defaultValue={values.updatesPeriodUnit}
+                onChange={(e: any) => {
+                  setFieldValue('updatesPeriodUnit', e.target.value);
+                }}
+              >
                 <MenuItem value={'hours'} key={'hours'}>
                   {t('groups|hours')}
                 </MenuItem>
@@ -165,7 +184,16 @@ export default function GroupPolicyForm(props: {
             <FormLabel>{t('groups|Updates timeout')}</FormLabel>
             <Grid container spacing={2}>
               <Grid item xs={4}>
-                <Field name="updatesTimeout" component={TextField} margin="dense" type="number" />
+                <Field
+                  name="updatesTimeout"
+                  component={TextField}
+                  margin="dense"
+                  type="number"
+                  defaultValue={values.updatesTimeout}
+                  onChange={(e: any) => {
+                    setFieldValue('updatesTimeout', e.target.value);
+                  }}
+                />
               </Grid>
               <Grid item xs={3}>
                 <Box pr={2}>
@@ -175,6 +203,10 @@ export default function GroupPolicyForm(props: {
                     margin="dense"
                     select
                     fullWidth
+                    defaultValue={values.updatesTimeoutUnit}
+                    onChange={(e: any) => {
+                      setFieldValue('updatesTimeoutUnit', e.target.value);
+                    }}
                   >
                     <MenuItem value={'hours'} key={'hours'}>
                       {t('groups|hours')}

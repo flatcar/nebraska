@@ -138,7 +138,9 @@ function EditDialog(props: {
           <TabPanel
             index={0}
             value={groupEditActiveTab}
-            render={() => <GroupDetailsForm channels={channels} />}
+            render={() => (
+              <GroupDetailsForm channels={channels} values={values} setFieldValue={setFieldValue} />
+            )}
           />
           <TabPanel
             index={1}
@@ -204,7 +206,6 @@ function EditDialog(props: {
       group.policy_period_interval.split(' ');
     const [currentupdatesTimeout, currentUpdatesTimeoutUnit] =
       group.policy_update_timeout.split(' ');
-
     initialValues = {
       name: group.name,
       track: group.track,
