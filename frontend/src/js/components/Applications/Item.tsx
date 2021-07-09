@@ -11,14 +11,14 @@ import ListItem from '../Common/ListItem';
 import MoreMenu from '../Common/MoreMenu';
 import GroupsList from './ApplicationItemGroupsList';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
   root: {
     padding: '0px 8px',
   },
   itemSection: {
     padding: '0 1em',
   },
-}));
+});
 
 function Item(props: {
   application: Application;

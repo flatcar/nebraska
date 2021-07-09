@@ -2,7 +2,6 @@ import { Box } from '@material-ui/core';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { InstanceStatusHistory } from '../../api/apiDataTypes';
 import {
   ERROR_STATUS_CODE,

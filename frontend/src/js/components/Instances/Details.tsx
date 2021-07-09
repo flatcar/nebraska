@@ -95,12 +95,7 @@ function StatusLabel(props: StatusLabelProps) {
   const { t } = useTranslation();
 
   const { status, activated } = props;
-  const {
-    icon = null,
-    label = t('frequent|Unknown'),
-    color,
-  } = (status && statusDefs[status.type]) || {};
-  const iconSize = '22px';
+  const { label = t('frequent|Unknown') } = (status && statusDefs[status.type]) || {};
 
   return (
     <span>
@@ -286,7 +281,7 @@ function EditDialog(props: EditDialogProps) {
           name: instance.alias || instance.id,
         }}
         onSubmit={handleSubmit}
-        // validationSchema={validation}
+        validationSchema={validation}
         render={renderForm}
       />
     </Dialog>

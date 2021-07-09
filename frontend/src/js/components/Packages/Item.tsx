@@ -1,7 +1,6 @@
 import cancelIcon from '@iconify/icons-mdi/cancel';
 import cubeOutline from '@iconify/icons-mdi/cube-outline';
 import { InlineIcon } from '@iconify/react';
-import { Theme } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -23,14 +22,14 @@ import MoreMenu from '../Common/MoreMenu';
 
 //@todo visit this again
 //@ts-ignore
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles({
   packageName: {
     fontSize: '1.1em',
   },
   subtitle: {
     fontSize: '.9em',
     textTransform: 'uppercase',
-    fontWeight: '300',
+    fontWeight: 300,
     paddingRight: '.05em',
     color: '#595959',
   },
@@ -40,7 +39,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   channelLabel: {
     marginRight: '5px',
   },
-}));
+});
 
 const containerIcons: {
   [key: string]: any;
@@ -71,7 +70,7 @@ function Item(props: {
   const item = type in containerIcons ? containerIcons[type] : containerIcons.other;
 
   if (props.packageItem.channels_blacklist) {
-    const channelsList = _.map(props.packageItem.channels_blacklist, (channel, index) => {
+    const channelsList = _.map(props.packageItem.channels_blacklist, channel => {
       return _.findWhere(props.channels, { id: channel })?.name;
     });
     blacklistInfo = channelsList.join(' - ');

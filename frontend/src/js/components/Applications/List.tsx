@@ -24,7 +24,7 @@ function List(props: { classes: Record<'root', string> }) {
   const [applications, setApplications] = React.useState(
     applicationsStore.getCachedApplications ? applicationsStore.getCachedApplications() : []
   );
-  const [searchTerm, setSearchTerm] = React.useState('');
+  const [searchTerm] = React.useState('');
   const [updateAppModalVisible, setUpdateModalVisible] = React.useState(false);
   const [updateAppIDModal, setUpdateAppIDModal] = React.useState<null | string>(null);
   const { t } = useTranslation();
@@ -83,7 +83,7 @@ function List(props: { classes: Record<'root', string> }) {
         );
       }
     } else {
-      entries = _.map(applications, (application: Application, i: number) => {
+      entries = _.map(applications, (application: Application) => {
         return (
           <Item
             key={application.id}

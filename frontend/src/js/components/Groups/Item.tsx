@@ -63,7 +63,6 @@ function Item(props: {
   ) : (
     <ChannelItem channel={props.group.channel} />
   );
-  const styleGroupChannel = _.isEmpty(props.group.channel) ? 'italicText' : '';
   const groupPath = `/apps/${props.group.application_id}/groups/${props.group.id}`;
 
   function deleteGroup() {

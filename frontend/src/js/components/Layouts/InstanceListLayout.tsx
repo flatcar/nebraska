@@ -7,7 +7,7 @@ import Loader from '../Common/Loader';
 import SectionHeader from '../Common/SectionHeader';
 import List from '../Instances/List';
 
-export default function InstanceLayout(props: {}) {
+export default function InstanceLayout() {
   const { appID, groupID } = useParams<{ appID: string; groupID: string }>();
   const [application, setApplication] = React.useState(
     applicationsStore.getCachedApplication(appID)

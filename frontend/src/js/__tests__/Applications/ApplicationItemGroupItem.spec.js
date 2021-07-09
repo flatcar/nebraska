@@ -1,5 +1,5 @@
 import { MuiThemeProvider } from '@material-ui/core/styles';
-import { getByText, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import jest from 'jest-mock';
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
