@@ -1,13 +1,4 @@
-import {
-  Box,
-  Divider,
-  FormLabel,
-  makeStyles,
-  Switch,
-  Tooltip,
-  Typography,
-  useTheme,
-} from '@material-ui/core';
+import { Box, Divider, makeStyles, useTheme } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -16,11 +7,11 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
-import { Field, Form, Formik } from 'formik';
+import { Form, Formik } from 'formik';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
-import { Channel, Group } from '../../../api/apiDataTypes';
+import { Group } from '../../../api/apiDataTypes';
 import { applicationsStore } from '../../../stores/Stores';
 import { DEFAULT_TIMEZONE } from '../../Common/TimezonePicker';
 import GroupDetailsForm from './GroupDetailsForm';
