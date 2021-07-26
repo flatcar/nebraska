@@ -46,10 +46,10 @@ function ApplicationLayout() {
         ]}
       />
       <Grid container spacing={1} justify="space-between">
-        <Grid item xs={8}>
+        <Grid item xs={12} sm={8}>
           <GroupsList appID={appID} />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={12} sm={4}>
           <Grid container direction="column" alignItems="stretch" spacing={2}>
             <Grid item xs={12}>
               <ChannelsList appID={appID} />

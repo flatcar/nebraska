@@ -6,10 +6,10 @@ import ApplicationsList from '../Applications/List';
 function MainLayout() {
   return (
     <Grid container spacing={2} justify="center" alignItems="flex-start">
-      <Grid item xs={8}>
+      <Grid item xs={12} sm={8}>
         <ApplicationsList />
       </Grid>
-      <Grid item xs={4}>
+      <Grid item xs={12} sm={4}>
         <ActivityContainer />
       </Grid>
     </Grid>

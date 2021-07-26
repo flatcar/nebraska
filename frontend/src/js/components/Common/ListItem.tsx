@@ -1,11 +1,10 @@
-import Divider from '@material-ui/core/Divider';
 import MuiListItem from '@material-ui/core/ListItem';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 
 const useStyles = makeStyles({
-  outterDivider: {
-    height: '2px',
+  divider: {
+    borderBottom: `2px solid rgba(0, 0, 0, 0.12)`,
   },
 });
 
@@ -13,9 +12,14 @@ export default function ListItem(props: { children: React.ReactNode; [key: strin
   const classes = useStyles();
 
   return (
-    <React.Fragment>
-      <Divider className={classes.outterDivider} data-testid="list-item-divider" />
-      <MuiListItem disableGutters {...props} data-testid="list-item" />
-    </React.Fragment>
+    <MuiListItem
+      classes={{
+        divider: classes.divider,
+      }}
+      divider
+      disableGutters
+      {...props}
+      data-testid="list-item"
+    />
   );
 }

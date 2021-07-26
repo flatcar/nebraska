@@ -138,7 +138,7 @@ function List(props: { appID: string }) {
       <Box mb={2}>
         <Grid container alignItems="center" justify="space-between">
           <Grid item>
-            <Typography variant="h4">{t('channels|Channels')}</Typography>
+            <Typography variant="h1">{t('channels|Channels')}</Typography>
           </Grid>
           <Grid item>
             <ModalButton

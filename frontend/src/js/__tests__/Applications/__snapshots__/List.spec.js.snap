@@ -11,11 +11,11 @@ exports[`Application List should render list correctly with data 1`] = `
       <div
         class="MuiBox-root MuiBox-root-3"
       >
-        <h4
-          class="MuiTypography-root MuiTypography-h4"
+        <h1
+          class="MuiTypography-root MuiTypography-h1"
         >
           Applications
-        </h4>
+        </h1>
       </div>
     </div>
     <div
@@ -56,12 +56,8 @@ exports[`Application List should render list correctly with data 1`] = `
     <ul
       class="MuiList-root List-root-1 MuiList-padding"
     >
-      <hr
-        class="MuiDivider-root makeStyles-outterDivider-7"
-        data-testid="list-item-divider"
-      />
       <li
-        class="MuiListItem-root makeStyles-root-5"
+        class="MuiListItem-root makeStyles-root-5 MuiListItem-divider makeStyles-divider-7"
         data-testid="list-item"
       >
         <div
@@ -79,12 +75,16 @@ exports[`Application List should render list correctly with data 1`] = `
                 <div
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                 >
-                  <a
-                    class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-mainLink-10 MuiTypography-colorPrimary"
-                    href="/apps/123"
+                  <h2
+                    class="MuiTypography-root MuiTypography-h2"
                   >
-                    ABC
-                  </a>
+                    <a
+                      class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-mainLink-10 MuiTypography-colorPrimary"
+                      href="/apps/123"
+                    >
+                      ABC
+                    </a>
+                  </h2>
                 </div>
                 <div
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
@@ -115,7 +115,7 @@ exports[`Application List should render list correctly with data 1`] = `
               >
                 <div>
                   <button
-                    aria-controls="simple-menu"
+                    aria-controls="simple-menu-1"
                     aria-haspopup="true"
                     aria-label="Open menu"
                     class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd"

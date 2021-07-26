@@ -23,7 +23,7 @@ export default function ListHeader(props: { title: string; actions?: React.React
       {props.title && (
         <Grid item>
           <Box p={0.5}>
-            <Typography variant="h4">{props.title}</Typography>
+            <Typography variant="h1">{props.title}</Typography>
           </Box>
         </Grid>
       )}
