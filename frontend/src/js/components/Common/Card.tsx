@@ -92,9 +92,15 @@ export function CardHeader(props: CardHeaderProps) {
         <Grid item container spacing={1} alignItems="center" justify="space-between">
           <Grid item xs={12}>
             {props.cardMainLinkPath ? (
-              <Link component={RouterLink} to={props.cardMainLinkPath} className={classes.mainLink}>
-                {props.cardMainLinkLabel}
-              </Link>
+              <Typography variant="h2">
+                <Link
+                  component={RouterLink}
+                  to={props.cardMainLinkPath}
+                  className={classes.mainLink}
+                >
+                  {props.cardMainLinkLabel}
+                </Link>
+              </Typography>
             ) : (
               <Typography className={classes.cardTitle}>{props.cardMainLinkLabel}</Typography>
             )}
