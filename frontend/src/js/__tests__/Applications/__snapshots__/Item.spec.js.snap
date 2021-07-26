@@ -2,12 +2,8 @@
 
 exports[`Application Item should render item correctly for no data 1`] = `
 <DocumentFragment>
-  <hr
-    class="MuiDivider-root makeStyles-outterDivider-3"
-    data-testid="list-item-divider"
-  />
   <li
-    class="MuiListItem-root makeStyles-root-1"
+    class="MuiListItem-root makeStyles-root-1 MuiListItem-divider makeStyles-divider-3"
     data-testid="list-item"
   >
     <div
@@ -25,12 +21,16 @@ exports[`Application Item should render item correctly for no data 1`] = `
             <div
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
             >
-              <a
-                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-mainLink-6 MuiTypography-colorPrimary"
-                href="/apps/123"
+              <h2
+                class="MuiTypography-root MuiTypography-h2"
               >
-                ABC
-              </a>
+                <a
+                  class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-mainLink-6 MuiTypography-colorPrimary"
+                  href="/apps/123"
+                >
+                  ABC
+                </a>
+              </h2>
             </div>
             <div
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
@@ -61,7 +61,7 @@ exports[`Application Item should render item correctly for no data 1`] = `
           >
             <div>
               <button
-                aria-controls="simple-menu"
+                aria-controls="simple-menu-1"
                 aria-haspopup="true"
                 aria-label="Open menu"
                 class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd"

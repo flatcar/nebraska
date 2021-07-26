@@ -5,10 +5,16 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+let menuCount = 0;
+
 export default function MoreMenu(props: { options: { label: string; action: () => void }[] }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const options = props.options || [];
   const { t } = useTranslation();
+  const [menuId] = React.useState(() => {
+    menuCount++;
+    return `simple-menu-${menuCount}`;
+  });
 
   function handleClick(event: any) {
     setAnchorEl(event.currentTarget);
@@ -22,7 +28,7 @@ export default function MoreMenu(props: { options: { label: string; action: () =
     <div>
       <IconButton
         edge="end"
-        aria-controls="simple-menu"
+        aria-controls={menuId}
         aria-haspopup="true"
         aria-label={t('common|Open menu')}
         onClick={handleClick}
@@ -31,7 +37,7 @@ export default function MoreMenu(props: { options: { label: string; action: () =
         <MoreVertIcon />
       </IconButton>
       <Menu
-        id="simple-menu"
+        id={menuId}
         anchorEl={anchorEl}
         keepMounted
         open={Boolean(anchorEl)}
