@@ -13,15 +13,14 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/gin-gonic/gin"
 	"github.com/google/go-github/v28/github"
+	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2"
 	githuboauth "golang.org/x/oauth2/github"
 
-	"github.com/kinvolk/nebraska/backend/cmd/nebraska/ginhelpers"
 	"github.com/kinvolk/nebraska/backend/pkg/random"
 	"github.com/kinvolk/nebraska/backend/pkg/sessions"
-	ginsessions "github.com/kinvolk/nebraska/backend/pkg/sessions/gin"
+	echosessions "github.com/kinvolk/nebraska/backend/pkg/sessions/echo"
 	"github.com/kinvolk/nebraska/backend/pkg/sessions/memcache"
 	memcachegob "github.com/kinvolk/nebraska/backend/pkg/sessions/memcache/gob"
 	"github.com/kinvolk/nebraska/backend/pkg/sessions/securecookie"
@@ -126,18 +125,15 @@ func copyStringSlice(original []string) []string {
 	return dup
 }
 
-func (gha *githubAuth) SetupRouter(router ginhelpers.Router) {
-	router.Use(ginsessions.SessionsMiddleware(gha.sessionsStore, "githubauth"))
-	oauthRouter := router.Group("/login", "oauth")
-	oauthRouter.GET("/cb", gha.loginCb)
-	oauthRouter.POST("/webhook", gha.loginWebhook)
+func (gha *githubAuth) SetupRouter(router *echo.Echo) {
+	router.Use(echosessions.SessionsMiddleware(gha.sessionsStore, "githubauth"))
 }
 
-func (gha *githubAuth) Authenticate(c *gin.Context) (teamID string, replied bool) {
-	session := ginsessions.GetSession(c)
+func (gha *githubAuth) Authenticate(c echo.Context) (teamID string, replied bool) {
+	session := echosessions.GetSession(c)
 	if session.Has("teamID") {
 		if session.Get("accesslevel") != "rw" {
-			if c.Request.Method != "HEAD" && c.Request.Method != "GET" {
+			if c.Request().Method != "HEAD" && c.Request().Method != "GET" {
 				httpError(c, http.StatusForbidden)
 				teamID = ""
 				replied = true
@@ -148,11 +144,11 @@ func (gha *githubAuth) Authenticate(c *gin.Context) (teamID string, replied bool
 		replied = false
 		return
 	}
-	authHeader := c.Request.Header.Get("Authorization")
+	authHeader := c.Request().Header.Get("Authorization")
 	if authHeader == "" {
 		oauthState := random.String(64)
 		session.Set("state", oauthState)
-		session.Set("desiredurl", c.Request.URL.String())
+		session.Set("desiredurl", c.Request().URL.String())
 		sessionSave(c, session, "authMissingTeamID")
 		logger.Debug().Str("oauthstate", oauthState).Msg("authenticate")
 		url := gha.oauthConfig.AuthCodeURL(oauthState, oauth2.AccessTypeOnline)
@@ -185,7 +181,7 @@ func (gha *githubAuth) Authenticate(c *gin.Context) (teamID string, replied bool
 			AccessToken: bearerToken,
 		}
 		tokenSource := oauth2.StaticTokenSource(&token)
-		oauthClient := oauth2.NewClient(c.Request.Context(), tokenSource)
+		oauthClient := oauth2.NewClient(c.Request().Context(), tokenSource)
 		failed = false
 		if replied = gha.doLoginDance(c, oauthClient); !replied {
 			teamID = session.Get("teamID").(string)
@@ -196,7 +192,7 @@ func (gha *githubAuth) Authenticate(c *gin.Context) (teamID string, replied bool
 	return
 }
 
-func (gha *githubAuth) loginCb(c *gin.Context) {
+func (gha *githubAuth) LoginCb(c echo.Context) error {
 	const (
 		resultOK = iota
 		resultUnauthorized
@@ -215,56 +211,57 @@ func (gha *githubAuth) loginCb(c *gin.Context) {
 		}
 	}()
 
-	session := ginsessions.GetSession(c)
+	session := echosessions.GetSession(c)
 	defer sessionSave(c, session, "login cb")
 	desiredURL, ok := session.Get("desiredurl").(string)
 	if !ok {
 		logger.Error().Str("login cb", "expected to have a valid desiredurl item in session data").Send()
-		return
+		return nil
 	}
-	state := c.Request.FormValue("state")
+	state := c.Request().FormValue("state")
 	logger.Debug().Str("state", state).Msg("login cb received oauth")
 	expectedState, ok := session.Get("state").(string)
 	if !ok {
 		logger.Error().Str("login cb", "expected to have a valid state item in session data").Send()
-		return
+		return nil
 	}
 
 	if expectedState != state {
 		logger.Error().Str("expected", expectedState).Str("got", state).Msg("login cb: invalid oauth state")
-		return
+		return nil
 	}
-	code := c.Request.FormValue("code")
+	code := c.Request().FormValue("code")
 	logger.Debug().Str("code", code).Msg("login cb received")
-	token, err := gha.oauthConfig.Exchange(c.Request.Context(), code)
+	token, err := gha.oauthConfig.Exchange(c.Request().Context(), code)
 	if err != nil {
 		logger.Error().Err(err).Msg("login cb: oauth exchange failed error")
-		return
+		return nil
 	}
 	logger.Debug().Msgf("login cb received token %s", token)
 	if !token.Valid() {
 		logger.Error().Err(fmt.Errorf("login cb got invalid token")).Send()
-		return
+		return nil
 	}
 
-	oauthClient := gha.oauthConfig.Client(c.Request.Context(), token)
+	oauthClient := gha.oauthConfig.Client(c.Request().Context(), token)
 	result = resultOK
 	if replied := gha.doLoginDance(c, oauthClient); !replied {
 		redirectTo(c, desiredURL)
 	}
+	return nil
 }
 
-func (gha *githubAuth) loginWebhook(c *gin.Context) {
-	signature := c.Request.Header.Get("X-Hub-Signature")
+func (gha *githubAuth) LoginWebhook(c echo.Context) error {
+	signature := c.Request().Header.Get("X-Hub-Signature")
 	if len(signature) == 0 {
 		logger.Debug().Str("webhook", "request with missing signature, ignoring it").Send()
-		return
+		return nil
 	}
-	eventType := c.Request.Header.Get("X-Github-Event")
-	rawPayload, err := ioutil.ReadAll(c.Request.Body)
+	eventType := c.Request().Header.Get("X-Github-Event")
+	rawPayload, err := ioutil.ReadAll(c.Request().Body)
 	if err != nil {
 		logger.Debug().Str("failed to read the contents of the message", eventType).Msg("webhook")
-		return
+		return nil
 	}
 	mac := hmac.New(sha1.New, []byte(gha.webhookSecret))
 	_, _ = mac.Write(rawPayload)
@@ -272,7 +269,7 @@ func (gha *githubAuth) loginWebhook(c *gin.Context) {
 	// [5:] is to drop the "sha1-" part.
 	if !hmac.Equal([]byte(signature[5:]), []byte(payloadMAC)) {
 		logger.Debug().Str("webhook", "message validation failed").Send()
-		return
+		return nil
 	}
 	payloadReader := bytes.NewBuffer(rawPayload)
 	logger.Debug().Str("got event of type", eventType).Msg("webhook")
@@ -287,11 +284,12 @@ func (gha *githubAuth) loginWebhook(c *gin.Context) {
 		gha.loginWebhookTeamEvent(c, payloadReader)
 	default:
 		logger.Debug().Str("ignoring event", eventType).Msg("webhook")
-		return
+		return nil
 	}
+	return nil
 }
 
-func (gha *githubAuth) doLoginDance(c *gin.Context, oauthClient *http.Client) (replied bool) {
+func (gha *githubAuth) doLoginDance(c echo.Context, oauthClient *http.Client) (replied bool) {
 	const (
 		resultOK = iota
 		resultUnauthorized
@@ -299,7 +297,7 @@ func (gha *githubAuth) doLoginDance(c *gin.Context, oauthClient *http.Client) (r
 	)
 
 	result := resultUnauthorized
-	session := ginsessions.GetSession(c)
+	session := echosessions.GetSession(c)
 	defer func() {
 		replied = true
 		switch result {
@@ -329,7 +327,7 @@ func (gha *githubAuth) doLoginDance(c *gin.Context, oauthClient *http.Client) (r
 		}
 	}
 
-	ghUser, _, err := client.Users.Get(c.Request.Context(), "")
+	ghUser, _, err := client.Users.Get(c.Request().Context(), "")
 	if err != nil {
 		logger.Error().Err(err).Str("login dance", "failed to get authenticated user").Send()
 		result = resultInternalFailure
@@ -353,7 +351,7 @@ func (gha *githubAuth) doLoginDance(c *gin.Context, oauthClient *http.Client) (r
 
 checkLoop:
 	for {
-		ghTeams, response, err := client.Teams.ListUserTeams(c.Request.Context(), &listOpts)
+		ghTeams, response, err := client.Teams.ListUserTeams(c.Request().Context(), &listOpts)
 		if err != nil {
 			logger.Error().Err(err).Str("login dance", "failed to get user teams").Send()
 			result = resultInternalFailure
@@ -414,7 +412,7 @@ checkLoop:
 		listOpts.Page = 1
 	checkLoop2:
 		for {
-			ghOrgs, response, err := client.Organizations.List(c.Request.Context(), "", &listOpts)
+			ghOrgs, response, err := client.Organizations.List(c.Request().Context(), "", &listOpts)
 			if err != nil {
 				logger.Error().Err(err).Str("login dance", "failed to get user orgs").Send()
 				result = resultInternalFailure
@@ -492,8 +490,8 @@ func (gha *githubAuth) addSessionID(username, sessionID string, teamData githubT
 	}
 }
 
-func (gha *githubAuth) cleanupSession(c *gin.Context) {
-	session := ginsessions.GetSession(c)
+func (gha *githubAuth) cleanupSession(c echo.Context) {
+	session := echosessions.GetSession(c)
 	defer session.Mark()
 	username, ok := session.Get("username").(string)
 	if !ok {
@@ -523,14 +521,14 @@ func (gha *githubAuth) cleanupSession(c *gin.Context) {
 	}
 }
 
-func sessionSave(c *gin.Context, session *sessions.Session, msg string) {
-	if err := ginsessions.SaveSession(c, session); err != nil {
+func sessionSave(c echo.Context, session *sessions.Session, msg string) {
+	if err := echosessions.SaveSession(c, session); err != nil {
 		logger.Error().Err(err).Str("failed to save the session", msg).Send()
 		httpError(c, http.StatusInternalServerError)
 	}
 }
 
-func redirectTo(c *gin.Context, where string) {
+func redirectTo(c echo.Context, where string) {
 	c.Redirect(http.StatusTemporaryRedirect, where)
 }
 
@@ -582,7 +580,7 @@ type (
 	}
 )
 
-func (gha *githubAuth) loginWebhookAuthorizationEvent(c *gin.Context, payloadReader io.Reader) {
+func (gha *githubAuth) loginWebhookAuthorizationEvent(c echo.Context, payloadReader io.Reader) {
 	var payload ghAppAuthPayload
 	if err := json.NewDecoder(payloadReader).Decode(&payload); err != nil {
 		logger.Error().Err(err).Str("webhook", "error unmarshalling github_app_authorization payload").Send()
@@ -626,7 +624,7 @@ func (gha *githubAuth) stealUserSessionIDs(username string) []string {
 	return userSessionIDs
 }
 
-func (gha *githubAuth) loginWebhookOrganizationEvent(c *gin.Context, payloadReader io.Reader) {
+func (gha *githubAuth) loginWebhookOrganizationEvent(c echo.Context, payloadReader io.Reader) {
 	var payload ghOrganizationPayload
 	if err := json.NewDecoder(payloadReader).Decode(&payload); err != nil {
 		logger.Error().Err(err).Str("webhook", "error unmarshalling organization payload").Send()
@@ -670,7 +668,7 @@ func (gha *githubAuth) stealUserSessionIDsForOrg(username, org string) []string 
 	return userSessionIDs
 }
 
-func (gha *githubAuth) loginWebhookMembershipEvent(c *gin.Context, payloadReader io.Reader) {
+func (gha *githubAuth) loginWebhookMembershipEvent(c echo.Context, payloadReader io.Reader) {
 	var payload ghMembershipPayload
 	if err := json.NewDecoder(payloadReader).Decode(&payload); err != nil {
 		logger.Error().Err(err).Str("webhook", "error unmarshalling membership payload")
@@ -743,7 +741,7 @@ func (gha *githubAuth) stealUserSessionIDsForOrgAndTeam(username, org, team stri
 	return userSessionIDs
 }
 
-func (gha *githubAuth) loginWebhookTeamEvent(c *gin.Context, payloadReader io.Reader) {
+func (gha *githubAuth) loginWebhookTeamEvent(c echo.Context, payloadReader io.Reader) {
 	var payload ghTeamPayload
 	if err := json.NewDecoder(payloadReader).Decode(&payload); err != nil {
 		logger.Error().Err(err).Str("webhook", "error unmarshalling team payload").Send()
@@ -800,10 +798,18 @@ func (gha *githubAuth) stealSessionIDsForOrgAndTeam(org, team string) []string {
 	return userSessionIDs
 }
 
-func httpError(c *gin.Context, status int) {
-	c.AbortWithStatus(status)
+func httpError(c echo.Context, status int) {
+	c.NoContent(status)
 }
 
 func makeTeamName(org, team string) string {
 	return fmt.Sprintf("%s/%s", org, team)
+}
+
+func (gha *githubAuth) Login(ctx echo.Context) error {
+	return ctx.NoContent(http.StatusNotImplemented)
+}
+
+func (gha *githubAuth) ValidateToken(ctx echo.Context) error {
+	return ctx.NoContent(http.StatusNotImplemented)
 }
