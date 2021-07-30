@@ -22,10 +22,13 @@ all: backend tools frontend
 
 .PHONY: check
 check:
+	cd backend && \
 	go test -p 1 ./...
 check-code-coverage:
+	cd backend && \
 	go test -p 1 -coverprofile=coverage.out ./...
 print-code-coverage:
+	cd backend && \
 	go tool cover -html=coverage.out
 container_id:
 	cd backend && \
@@ -91,6 +94,7 @@ backend-binary: run-generators build-backend-binary
 
 .PHONY: test-clean-work-tree-backend
 test-clean-work-tree-backend:
+	cd backend && \
 	@if ! git diff --quiet -- go.mod go.sum pkg cmd updaters tools/tools.go; then \
 	  echo; \
 	  echo 'Working tree of backend code is not clean'; \
