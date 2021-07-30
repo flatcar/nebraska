@@ -8,6 +8,7 @@ import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
+import PageTitle from './PageTitle';
 
 const useStyles = makeStyles(theme => ({
   sectionContainer: {
@@ -34,41 +35,43 @@ interface SectionHeaderProps {
 
 export default function SectionHeader(props: SectionHeaderProps) {
   const classes = useStyles();
-  const breadcrumbs = props.breadcrumbs;
-  const title = props.title;
   const { t } = useTranslation();
+  const { breadcrumbs, title } = props;
 
   return (
-    <Grid container alignItems="center" justify="flex-start" className={classes.sectionContainer}>
-      <Grid item>
-        <Breadcrumbs
-          aria-label={t('common|breadcrumbs')}
-          separator={<NavigateNextIcon fontSize="small" />}
-        >
-          {breadcrumbs &&
-            breadcrumbs.map(({ path = null, label }, index) => {
-              if (path)
-                return (
-                  <Box
-                    component="span"
-                    className={classes.breadCrumbsItem}
-                    key={'breadcrumb_' + index}
-                  >
-                    <Link to={path} component={RouterLink}>
+    <>
+      <PageTitle title={title} />
+      <Grid container alignItems="center" justify="flex-start" className={classes.sectionContainer}>
+        <Grid item>
+          <Breadcrumbs
+            aria-label={t('common|breadcrumbs')}
+            separator={<NavigateNextIcon fontSize="small" />}
+          >
+            {breadcrumbs &&
+              breadcrumbs.map(({ path = null, label }, index) => {
+                if (path)
+                  return (
+                    <Box
+                      component="span"
+                      className={classes.breadCrumbsItem}
+                      key={'breadcrumb_' + index}
+                    >
+                      <Link to={path} component={RouterLink}>
+                        {label}
+                      </Link>
+                    </Box>
+                  );
+                else
+                  return (
+                    <Typography key={'breadcrumb_' + index} color="textPrimary">
                       {label}
-                    </Link>
-                  </Box>
-                );
-              else
-                return (
-                  <Typography key={'breadcrumb_' + index} color="textPrimary">
-                    {label}
-                  </Typography>
-                );
-            })}
-          {title && <Typography color="textPrimary">{title}</Typography>}
-        </Breadcrumbs>
+                    </Typography>
+                  );
+              })}
+            {title && <Typography color="textPrimary">{title}</Typography>}
+          </Breadcrumbs>
+        </Grid>
       </Grid>
-    </Grid>
+    </>
   );
 }
