@@ -315,6 +315,9 @@ func (api *API) getInstanceApps(appID, instanceID string, duration postgresDurat
 	if p.Version != "" {
 		query = query.Where(goqu.C("version").Eq(p.Version))
 	}
+	if p.GroupID != "" {
+		query = query.Where(goqu.C("group_id").Eq(p.GroupID))
+	}
 	instanceAppsQuery, _, err := query.ToSQL()
 	if err != nil {
 		return nil, err
