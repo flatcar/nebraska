@@ -129,6 +129,11 @@ func TestGetInstances(t *testing.T) {
 	assert.Equal(t, 1, len(result.Instances))
 	assert.Equal(t, 1, (int)(result.TotalInstances))
 
+	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Version: "1.0.0", Page: 1, PerPage: 10}, testDuration)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(result.Instances))
+	assert.Equal(t, "1.0.0", result.Instances[0].Application.Version)
+
 	_, _ = a.GetUpdatePackage(tInstance.ID, "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
 	_ = a.RegisterEvent(tInstance.ID, tApp.ID, tGroup.ID, EventUpdateComplete, ResultSuccessReboot, "", "")
 

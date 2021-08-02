@@ -304,13 +304,25 @@ func (api *API) GetInstance(instanceID, appID string) (*Instance, error) {
 
 	return &instance, nil
 }
-func (api *API) getInstanceApps(appID, instanceID string, duration postgresDuration, sortFilter string, orderOfSort sortOrder, limit, offset uint) ([]*InstanceApplication, error) {
+func (api *API) getInstanceApps(appID, instanceID string, duration postgresDuration, sortFilter string, orderOfSort sortOrder, limit, offset uint, p InstancesQueryParams) ([]*InstanceApplication, error) {
 	var instanceApps []*InstanceApplication
-	query, _, err := api.instanceAppQuery(appID, instanceID, duration, sortFilter, orderOfSort).Limit(limit).Offset(offset).ToSQL()
+	query := api.instanceAppQuery(appID, instanceID, duration, sortFilter, orderOfSort).Limit(limit).Offset(offset)
+	if p.Status == InstanceStatusUndefined {
+		query = query.Where(goqu.L("status IS NULL"))
+	} else if p.Status != 0 {
+		query = query.Where(goqu.C("status").Eq(p.Status))
+	}
+	if p.Version != "" {
+		query = query.Where(goqu.C("version").Eq(p.Version))
+	}
+	if p.GroupID != "" {
+		query = query.Where(goqu.C("group_id").Eq(p.GroupID))
+	}
+	instanceAppsQuery, _, err := query.ToSQL()
 	if err != nil {
 		return nil, err
 	}
-	rows, err := api.db.Queryx(query)
+	rows, err := api.db.Queryx(instanceAppsQuery)
 	for rows.Next() {
 		var instanceApp InstanceApplication
 		err = rows.StructScan(&instanceApp)
@@ -419,7 +431,7 @@ func (api *API) GetInstances(p InstancesQueryParams, duration string) (Instances
 	if existsInInstanceAppTable {
 		var applications []*InstanceApplication
 		//first query instance app table
-		applications, err = api.getInstanceApps(p.ApplicationID, "", dbDuration, sortFilter, sortOrder, limit, offset)
+		applications, err = api.getInstanceApps(p.ApplicationID, "", dbDuration, sortFilter, sortOrder, limit, offset, p)
 		if err != nil {
 			return InstancesWithTotal{}, err
 		}
