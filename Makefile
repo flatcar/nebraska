@@ -2,18 +2,19 @@ GO111MODULE=on
 export GO111MODULE
 
 TAG := `git describe --tags --always`
-VERSION :=
 SHELL = /bin/bash
-VERSION ?= $(shell git describe --tags --always --dirty)
 DOCKER_CMD ?= "docker"
 DOCKER_REPO ?= "quay.io/flatcar"
 DOCKER_IMAGE_NEBRASKA ?= "nebraska"
-## Adds a '-dirty' suffix to version string if there are uncommitted changes
-changes := $(shell git status --porcelain)
-ifeq ($(changes),)
-	VERSION := $(TAG)
-else
-	VERSION := $(TAG)-dirty
+VERSION ?=
+ifeq ($(VERSION),)
+	## Adds a '-dirty' suffix to version string if there are uncommitted changes
+	changes := $(shell git status ./backend ./frontend --porcelain)
+	ifeq ($(changes),)
+		VERSION := $(TAG)
+	else
+		VERSION := $(TAG)-dirty
+	endif
 endif
 
 LDFLAGS := "-X github.com/kinvolk/nebraska/backend/pkg/version.Version=$(VERSION) -extldflags "-static""
@@ -118,6 +119,7 @@ backend/tools/golangci-lint: backend/go.mod backend/go.sum
 container-nebraska:
 	$(DOCKER_CMD) build \
 		--no-cache \
+		--build-arg NEBRASKA_VERSION=$(VERSION) \
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_NEBRASKA):$(VERSION)" \
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_NEBRASKA):latest" \
 		-f Dockerfile .
