@@ -119,6 +119,7 @@ backend/tools/golangci-lint: backend/go.mod backend/go.sum
 container-nebraska:
 	$(DOCKER_CMD) build \
 		--no-cache \
+		--build-arg NEBRASKA_VERSION=$(VERSION) \
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_NEBRASKA):$(VERSION)" \
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_NEBRASKA):latest" \
 		-f Dockerfile .

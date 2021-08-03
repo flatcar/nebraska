@@ -1,8 +1,17 @@
 FROM golang:1.16-alpine as nebraska-build
 
+ARG NEBRASKA_VERSION=""
+
 ENV GOPATH=/go \
     GOPROXY=https://proxy.golang.org \
 	GO111MODULE=on
+
+# We optionally allow to set the version to display for the image.
+# This is mainly used because when copying the source dir, docker will
+# ignore the files we requested it to, and thus produce a "dirty" build
+# as git status returns changes (when effectively for the built source
+# there's none).
+ENV VERSION=${NEBRASKA_VERSION}
 
 RUN apk update && \
 	apk add gcc git nodejs npm ca-certificates make musl-dev bash
