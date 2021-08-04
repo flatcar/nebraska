@@ -164,8 +164,9 @@ func (api *API) triggerEventConsequences(instanceID, appID, groupID, lastUpdateV
 		return err
 	}
 
-	// TODO: should we also consider ResultSuccess in the next check? Flatcar ~ generic conflicts?
-	if etype == EventUpdateComplete && result == ResultSuccessReboot {
+	// We allow the plain ResultSuccess here only if the app is not Flatcar because Flatcar is relying on
+	// having only the update-complete logic on ResultSuccessReboot.
+	if etype == EventUpdateComplete && (result == ResultSuccessReboot || (appID != flatcarAppID && result == ResultSuccess)) {
 		if err := api.updateInstanceStatus(instanceID, appID, InstanceStatusComplete); err != nil {
 			logger.Error().Err(err).Msg("triggerEventConsequences - could not update instance status")
 		}
