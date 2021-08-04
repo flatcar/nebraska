@@ -85,7 +85,7 @@ i18n:
 	cd frontend && npm run i18n
 
 run-backend: backend-binary
-	cd backend && ./bin/nebraska -auth-mode noop
+	cd backend && ./bin/nebraska -auth-mode noop -debug
 
 .PHONY: backend
 backend: run-generators backend-code-checks build-backend-binary
