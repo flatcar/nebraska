@@ -34,7 +34,7 @@ import (
 func bindataRead(data []byte, name string) ([]byte, error) {
 	gz, err := gzip.NewReader(bytes.NewBuffer(data))
 	if err != nil {
-		return nil, fmt.Errorf("read %q: %v", name, err)
+		return nil, fmt.Errorf("read %q: %w", name, err)
 	}
 
 	var buf bytes.Buffer
@@ -42,7 +42,7 @@ func bindataRead(data []byte, name string) ([]byte, error) {
 	clErr := gz.Close()
 
 	if err != nil {
-		return nil, fmt.Errorf("read %q: %v", name, err)
+		return nil, fmt.Errorf("read %q: %w", name, err)
 	}
 	if clErr != nil {
 		return nil, err
@@ -491,6 +491,9 @@ var _bindata = map[string]func() (*asset, error){
 	"db/migrations/0013_add_stats_indexes.sql":     dbMigrations0013_add_stats_indexesSql,
 }
 
+// AssetDebug is true if the assets were built with the debug flag enabled.
+const AssetDebug = false
+
 // AssetDir returns the file names below a certain
 // directory embedded in the file by go-bindata.
 // For example if you run go-bindata on data/... and data contains the
@@ -532,24 +535,24 @@ type bintree struct {
 }
 
 var _bintree = &bintree{nil, map[string]*bintree{
-	"db": &bintree{nil, map[string]*bintree{
-		"drop_all_tables.sql": &bintree{dbDrop_all_tablesSql, map[string]*bintree{}},
-		"migrations": &bintree{nil, map[string]*bintree{
-			"0001_initial.sql":               &bintree{dbMigrations0001_initialSql, map[string]*bintree{}},
-			"0002_event_data.sql":            &bintree{dbMigrations0002_event_dataSql, map[string]*bintree{}},
-			"0003_longer_team_names.sql":     &bintree{dbMigrations0003_longer_team_namesSql, map[string]*bintree{}},
-			"0004_rename_coreos_action.sql":  &bintree{dbMigrations0004_rename_coreos_actionSql, map[string]*bintree{}},
-			"0005_default_team_id.sql":       &bintree{dbMigrations0005_default_team_idSql, map[string]*bintree{}},
-			"0006_initial_application.sql":   &bintree{dbMigrations0006_initial_applicationSql, map[string]*bintree{}},
-			"0007_add_package_arch.sql":      &bintree{dbMigrations0007_add_package_archSql, map[string]*bintree{}},
-			"0008-arm-channels-groups.sql":   &bintree{dbMigrations0008ArmChannelsGroupsSql, map[string]*bintree{}},
-			"0009_group_track_names.sql":     &bintree{dbMigrations0009_group_track_namesSql, map[string]*bintree{}},
-			"0010_add_instance_alias.sql":    &bintree{dbMigrations0010_add_instance_aliasSql, map[string]*bintree{}},
-			"0011_add_composite_indexes.sql": &bintree{dbMigrations0011_add_composite_indexesSql, map[string]*bintree{}},
-			"0012_drop_unused_indexes.sql":   &bintree{dbMigrations0012_drop_unused_indexesSql, map[string]*bintree{}},
-			"0013_add_stats_indexes.sql":     &bintree{dbMigrations0013_add_stats_indexesSql, map[string]*bintree{}},
+	"db": {nil, map[string]*bintree{
+		"drop_all_tables.sql": {dbDrop_all_tablesSql, map[string]*bintree{}},
+		"migrations": {nil, map[string]*bintree{
+			"0001_initial.sql": {dbMigrations0001_initialSql, map[string]*bintree{}},
+			"0002_event_data.sql": {dbMigrations0002_event_dataSql, map[string]*bintree{}},
+			"0003_longer_team_names.sql": {dbMigrations0003_longer_team_namesSql, map[string]*bintree{}},
+			"0004_rename_coreos_action.sql": {dbMigrations0004_rename_coreos_actionSql, map[string]*bintree{}},
+			"0005_default_team_id.sql": {dbMigrations0005_default_team_idSql, map[string]*bintree{}},
+			"0006_initial_application.sql": {dbMigrations0006_initial_applicationSql, map[string]*bintree{}},
+			"0007_add_package_arch.sql": {dbMigrations0007_add_package_archSql, map[string]*bintree{}},
+			"0008-arm-channels-groups.sql": {dbMigrations0008ArmChannelsGroupsSql, map[string]*bintree{}},
+			"0009_group_track_names.sql": {dbMigrations0009_group_track_namesSql, map[string]*bintree{}},
+			"0010_add_instance_alias.sql": {dbMigrations0010_add_instance_aliasSql, map[string]*bintree{}},
+			"0011_add_composite_indexes.sql": {dbMigrations0011_add_composite_indexesSql, map[string]*bintree{}},
+			"0012_drop_unused_indexes.sql": {dbMigrations0012_drop_unused_indexesSql, map[string]*bintree{}},
+			"0013_add_stats_indexes.sql": {dbMigrations0013_add_stats_indexesSql, map[string]*bintree{}},
 		}},
-		"sample_data.sql": &bintree{dbSample_dataSql, map[string]*bintree{}},
+		"sample_data.sql": {dbSample_dataSql, map[string]*bintree{}},
 	}},
 }}
 
