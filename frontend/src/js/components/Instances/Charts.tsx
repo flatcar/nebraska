@@ -122,12 +122,14 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
             animationDuration={1000}
             animationEasing={'ease-in-out'}
             onMouseOver={(dataum, index) => {
-              setHoverData(dataum);
-              setShowTooltip(true);
-              // Highlight the bit on hover, if it's not
-              // the remaining percentage.
-              if (dataum.x !== 'remain') {
-                setActiveIndex(index);
+              if (!showTooltip) {
+                setHoverData(dataum);
+                setShowTooltip(true);
+                // Highlight the bit on hover, if it's not
+                // the remaining percentage.
+                if (dataum.x !== 'remain') {
+                  setActiveIndex(index);
+                }
               }
             }}
             onMouseOut={() => {
