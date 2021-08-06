@@ -18,9 +18,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 
-	swagger "github.com/kinvolk/nebraska/backend/api"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+
+	swagger "github.com/kinvolk/nebraska/backend/api"
 
 	"github.com/kinvolk/nebraska/backend/cmd/nebraska/auth"
 	"github.com/kinvolk/nebraska/backend/pkg/api"
