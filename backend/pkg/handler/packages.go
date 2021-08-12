@@ -4,14 +4,14 @@ import (
 	"database/sql"
 	"net/http"
 
-	"github.com/kinvolk/nebraska/backend/pkg/api"
-	"github.com/kinvolk/nebraska/backend/pkg/codegen"
 	"github.com/labstack/echo/v4"
 	"gopkg.in/guregu/null.v4"
+
+	"github.com/kinvolk/nebraska/backend/pkg/api"
+	"github.com/kinvolk/nebraska/backend/pkg/codegen"
 )
 
-func (h *handler) PaginatePackages(ctx echo.Context, appId string, params codegen.PaginatePackagesParams) error {
-
+func (h *Handler) PaginatePackages(ctx echo.Context, appID string, params codegen.PaginatePackagesParams) error {
 	if params.Page == nil {
 		params.Page = &defaultPage
 	}
@@ -20,24 +20,24 @@ func (h *handler) PaginatePackages(ctx echo.Context, appId string, params codege
 		params.Perpage = &defaultPerPage
 	}
 
-	totalCount, err := h.db.GetPackagesCount(appId)
+	totalCount, err := h.db.GetPackagesCount(appID)
 	if err != nil {
-		logger.Error().Err(err).Str("appID", appId).Msg("getPackages count - encoding packages")
+		logger.Error().Err(err).Str("appID", appID).Msg("getPackages count - encoding packages")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
-	pkgs, err := h.db.GetPackages(appId, *params.Page, *params.Perpage)
+	pkgs, err := h.db.GetPackages(appID, *params.Page, *params.Perpage)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
 		}
-		logger.Error().Err(err).Str("appID", appId).Msg("getPackages - encoding packages")
+		logger.Error().Err(err).Str("appID", appID).Msg("getPackages - encoding packages")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
 	return ctx.JSON(http.StatusOK, packagePage{totalCount, len(pkgs), pkgs})
 }
 
-func (h *handler) CreatePackage(ctx echo.Context, appId string) error {
+func (h *Handler) CreatePackage(ctx echo.Context, appID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
 	var request codegen.CreatePackageInfo
@@ -48,7 +48,7 @@ func (h *handler) CreatePackage(ctx echo.Context, appId string) error {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	pkg := packageFromRequest(appId, request.Arch, request.ChannelsBlacklist, request.Description, request.Filename, request.Hash, request.Size, request.Url, request.Version, request.Type, request.FlatcarAction, "")
+	pkg := packageFromRequest(appID, request.Arch, request.ChannelsBlacklist, request.Description, request.Filename, request.Hash, request.Size, request.Url, request.Version, request.Type, request.FlatcarAction, "")
 
 	pkg, err = h.db.AddPackage(pkg)
 	if err != nil {
@@ -67,21 +67,20 @@ func (h *handler) CreatePackage(ctx echo.Context, appId string) error {
 	return ctx.JSON(http.StatusOK, pkg)
 }
 
-func (h *handler) GetPackage(ctx echo.Context, appId string, packageId string) error {
-
-	pkg, err := h.db.GetPackage(packageId)
+func (h *Handler) GetPackage(ctx echo.Context, appID string, packageID string) error {
+	pkg, err := h.db.GetPackage(packageID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
 		}
-		logger.Error().Err(err).Str("packageID", packageId).Msg("getPackage - getting package")
+		logger.Error().Err(err).Str("packageID", packageID).Msg("getPackage - getting package")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
 	return ctx.JSON(http.StatusOK, pkg)
 }
 
-func (h *handler) UpdatePackage(ctx echo.Context, appId string, packageId string) error {
+func (h *Handler) UpdatePackage(ctx echo.Context, appID string, packageID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
 	var request codegen.UpdatePackageInfo
@@ -92,14 +91,14 @@ func (h *handler) UpdatePackage(ctx echo.Context, appId string, packageId string
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	pkg := packageFromRequest(appId, request.Arch, request.ChannelsBlacklist, request.Description, request.Filename, request.Hash, request.Size, request.Url, request.Version, request.Type, request.FlatcarAction, packageId)
+	pkg := packageFromRequest(appID, request.Arch, request.ChannelsBlacklist, request.Description, request.Filename, request.Hash, request.Size, request.Url, request.Version, request.Type, request.FlatcarAction, packageID)
 
-	oldPkg, err := h.db.GetPackage(packageId)
+	oldPkg, err := h.db.GetPackage(packageID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
 		}
-		logger.Error().Err(err).Str("packageID", packageId).Msg("updatePackage - getting old package to update")
+		logger.Error().Err(err).Str("packageID", packageID).Msg("updatePackage - getting old package to update")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
@@ -109,9 +108,9 @@ func (h *handler) UpdatePackage(ctx echo.Context, appId string, packageId string
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	pkg, err = h.db.GetPackage(packageId)
+	pkg, err = h.db.GetPackage(packageID)
 	if err != nil {
-		logger.Error().Err(err).Str("packageID", packageId).Msg("updatePackage - getting old package to update")
+		logger.Error().Err(err).Str("packageID", packageID).Msg("updatePackage - getting old package to update")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
@@ -120,18 +119,18 @@ func (h *handler) UpdatePackage(ctx echo.Context, appId string, packageId string
 	return ctx.JSON(http.StatusOK, pkg)
 }
 
-func (h *handler) DeletePackage(ctx echo.Context, appId string, packageId string) error {
+func (h *Handler) DeletePackage(ctx echo.Context, appID string, packageID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
-	pkg, err := h.db.GetPackage(packageId)
+	pkg, err := h.db.GetPackage(packageID)
 	if err != nil {
-		logger.Error().Err(err).Str("packageID", packageId).Msg("deletePackage - getting package to delete")
+		logger.Error().Err(err).Str("packageID", packageID).Msg("deletePackage - getting package to delete")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	err = h.db.DeletePackage(packageId)
+	err = h.db.DeletePackage(packageID)
 	if err != nil {
-		logger.Error().Err(err).Str("packageID", packageId).Msg("deletePackage")
+		logger.Error().Err(err).Str("packageID", packageID).Msg("deletePackage")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
@@ -141,7 +140,6 @@ func (h *handler) DeletePackage(ctx echo.Context, appId string, packageId string
 }
 
 func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, description string, filename string, hash string, size string, url string, version string, packageType int, flAction *codegen.FlatcarActionPackage, ID string) *api.Package {
-
 	var flatcarAction *api.FlatcarAction
 
 	if flAction != nil {

@@ -7,7 +7,6 @@ import (
 )
 
 func SessionsMiddleware(s *sessions.Store, name string) echo.MiddlewareFunc {
-
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			session := s.GetSessionUse(c.Request(), name)

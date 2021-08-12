@@ -4,13 +4,14 @@ import (
 	"database/sql"
 	"net/http"
 
-	"github.com/kinvolk/nebraska/backend/pkg/api"
-	"github.com/kinvolk/nebraska/backend/pkg/codegen"
 	"github.com/labstack/echo/v4"
 	"gopkg.in/guregu/null.v4"
+
+	"github.com/kinvolk/nebraska/backend/pkg/api"
+	"github.com/kinvolk/nebraska/backend/pkg/codegen"
 )
 
-func (h *handler) PaginateGroups(ctx echo.Context, appId string, params codegen.PaginateGroupsParams) error {
+func (h *Handler) PaginateGroups(ctx echo.Context, appID string, params codegen.PaginateGroupsParams) error {
 
 	if params.Page == nil {
 		params.Page = &defaultPage
@@ -20,28 +21,26 @@ func (h *handler) PaginateGroups(ctx echo.Context, appId string, params codegen.
 		params.Perpage = &defaultPerPage
 	}
 
-	totalCount, err := h.db.GetGroupsCount(appId)
+	totalCount, err := h.db.GetGroupsCount(appID)
 	if err != nil {
-		logger.Error().Err(err).Str("appID", appId).Msg("getGroups count - getting groups")
+		logger.Error().Err(err).Str("appID", appID).Msg("getGroups count - getting groups")
 		return ctx.NoContent(http.StatusInternalServerError)
-
 	}
 
-	groups, err := h.db.GetGroups(appId, *params.Page, *params.Perpage)
+	groups, err := h.db.GetGroups(appID, *params.Page, *params.Perpage)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			logger.Error().Err(err).Msg("getGroups - getting groups not found error")
 			return ctx.NoContent(http.StatusNotFound)
 		}
-		logger.Error().Err(err).Str("appID", appId).Msg("getGroups - getting groups")
+		logger.Error().Err(err).Str("appID", appID).Msg("getGroups - getting groups")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
 	return ctx.JSON(http.StatusOK, groupsPage{totalCount, len(groups), groups})
 }
 
-func (h *handler) CreateGroup(ctx echo.Context, appId string) error {
-
+func (h *Handler) CreateGroup(ctx echo.Context, appID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
 	var request codegen.CreateGroupInfo
@@ -51,7 +50,7 @@ func (h *handler) CreateGroup(ctx echo.Context, appId string) error {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	group := groupFromRequest(request.Name, request.Description, request.PolicyMaxUpdatesPerPeriod, request.PolicyOfficeHours, request.PolicyPeriodInterval, request.PolicySafeMode, request.PolicyTimezone, request.PolicyUpdateTimeout, request.PolicyUpdatesEnabled, request.ChannelId, request.Track, "", appId)
+	group := groupFromRequest(request.Name, request.Description, request.PolicyMaxUpdatesPerPeriod, request.PolicyOfficeHours, request.PolicyPeriodInterval, request.PolicySafeMode, request.PolicyTimezone, request.PolicyUpdateTimeout, request.PolicyUpdatesEnabled, request.ChannelId, request.Track, "", appID)
 
 	group, err = h.db.AddGroup(group)
 	if err != nil {
@@ -69,21 +68,20 @@ func (h *handler) CreateGroup(ctx echo.Context, appId string) error {
 	return ctx.JSON(http.StatusOK, group)
 }
 
-func (h *handler) GetGroup(ctx echo.Context, appId string, groupId string) error {
-
-	group, err := h.db.GetGroup(groupId)
+func (h *Handler) GetGroup(ctx echo.Context, appID string, groupID string) error {
+	group, err := h.db.GetGroup(groupID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
 		}
-		logger.Error().Err(err).Str("groupID", groupId).Msg("getGroup - getting group")
+		logger.Error().Err(err).Str("groupID", groupID).Msg("getGroup - getting group")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
 	return ctx.JSON(http.StatusOK, group)
 }
 
-func (h *handler) UpdateGroup(ctx echo.Context, appId string, groupId string) error {
+func (h *Handler) UpdateGroup(ctx echo.Context, appID string, groupID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
 	var request codegen.UpdateGroupInfo
@@ -93,16 +91,16 @@ func (h *handler) UpdateGroup(ctx echo.Context, appId string, groupId string) er
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	oldGroup, err := h.db.GetGroup(groupId)
+	oldGroup, err := h.db.GetGroup(groupID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
 		}
-		logger.Error().Err(err).Str("groupID", groupId).Msg("updateGroup - getting old group to update")
+		logger.Error().Err(err).Str("groupID", groupID).Msg("updateGroup - getting old group to update")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	group := groupFromRequest(request.Name, request.Description, request.PolicyMaxUpdatesPerPeriod, request.PolicyOfficeHours, request.PolicyPeriodInterval, request.PolicySafeMode, request.PolicyTimezone, request.PolicyUpdateTimeout, request.PolicyUpdatesEnabled, request.ChannelId, request.Track, groupId, appId)
+	group := groupFromRequest(request.Name, request.Description, request.PolicyMaxUpdatesPerPeriod, request.PolicyOfficeHours, request.PolicyPeriodInterval, request.PolicySafeMode, request.PolicyTimezone, request.PolicyUpdateTimeout, request.PolicyUpdatesEnabled, request.ChannelId, request.Track, groupID, appID)
 
 	err = h.db.UpdateGroup(group)
 	if err != nil {
@@ -110,34 +108,32 @@ func (h *handler) UpdateGroup(ctx echo.Context, appId string, groupId string) er
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	group, err = h.db.GetGroup(groupId)
+	group, err = h.db.GetGroup(groupID)
 	if err != nil {
-		logger.Error().Err(err).Str("groupID", groupId).Msg("getGroup - getting group")
+		logger.Error().Err(err).Str("groupID", groupID).Msg("getGroup - getting group")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
 	logger.Info().Msgf("updateGroup - successfully updated group %+v -> %+v", oldGroup, group)
 
 	return ctx.JSON(http.StatusOK, group)
-
 }
 
-func (h *handler) DeleteGroup(ctx echo.Context, appId string, groupId string) error {
-
+func (h *Handler) DeleteGroup(ctx echo.Context, appID string, groupID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
-	group, err := h.db.GetGroup(groupId)
+	group, err := h.db.GetGroup(groupID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
 		}
-		logger.Error().Err(err).Str("groupID", groupId).Msg("updateGroup - getting old group to update")
+		logger.Error().Err(err).Str("groupID", groupID).Msg("updateGroup - getting old group to update")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	err = h.db.DeleteGroup(groupId)
+	err = h.db.DeleteGroup(groupID)
 	if err != nil {
-		logger.Error().Err(err).Str("groupID", groupId).Msg("deleteGroup")
+		logger.Error().Err(err).Str("groupID", groupID).Msg("deleteGroup")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
@@ -146,14 +142,13 @@ func (h *handler) DeleteGroup(ctx echo.Context, appId string, groupId string) er
 	return ctx.NoContent(http.StatusOK)
 }
 
-func (h *handler) GetGroupVersionTimeline(ctx echo.Context, appId string, groupId string, params codegen.GetGroupVersionTimelineParams) error {
-
-	versionCountTimeline, isCache, err := h.db.GetGroupVersionCountTimeline(groupId, params.Duration)
+func (h *Handler) GetGroupVersionTimeline(ctx echo.Context, appID string, groupID string, params codegen.GetGroupVersionTimelineParams) error {
+	versionCountTimeline, isCache, err := h.db.GetGroupVersionCountTimeline(groupID, params.Duration)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
 		}
-		logger.Error().Err(err).Str("groupID", groupId).Msg("getGroupVersionCountTimeline - getting version timeline")
+		logger.Error().Err(err).Str("groupID", groupID).Msg("getGroupVersionCountTimeline - getting version timeline")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
@@ -164,52 +159,48 @@ func (h *handler) GetGroupVersionTimeline(ctx echo.Context, appId string, groupI
 	}
 
 	return ctx.JSON(http.StatusOK, versionCountTimeline)
-
 }
 
-func (h *handler) GetGroupStatusTimeline(ctx echo.Context, appId string, groupId string, params codegen.GetGroupStatusTimelineParams) error {
-
-	statusCountTimeline, err := h.db.GetGroupStatusCountTimeline(groupId, params.Duration)
+func (h *Handler) GetGroupStatusTimeline(ctx echo.Context, appID string, groupID string, params codegen.GetGroupStatusTimelineParams) error {
+	statusCountTimeline, err := h.db.GetGroupStatusCountTimeline(groupID, params.Duration)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
 		}
-		logger.Error().Err(err).Str("groupID", groupId).Msg("getGroupStatusCountTimeline - getting status timeline")
+		logger.Error().Err(err).Str("groupID", groupID).Msg("getGroupStatusCountTimeline - getting status timeline")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
 	return ctx.JSON(http.StatusOK, statusCountTimeline)
 }
 
-func (h *handler) GetGroupInstanceStats(ctx echo.Context, appId string, groupId string, params codegen.GetGroupInstanceStatsParams) error {
-
-	instancesStats, err := h.db.GetGroupInstancesStats(groupId, params.Duration)
+func (h *Handler) GetGroupInstanceStats(ctx echo.Context, appID string, groupID string, params codegen.GetGroupInstanceStatsParams) error {
+	instancesStats, err := h.db.GetGroupInstancesStats(groupID, params.Duration)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
 		}
-		logger.Error().Err(err).Str("groupID", groupId).Msg("getGroupInstancesStats - getting instances stats groupID")
+		logger.Error().Err(err).Str("groupID", groupID).Msg("getGroupInstancesStats - getting instances stats groupID")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
 	return ctx.JSON(http.StatusOK, instancesStats)
 }
 
-func (h *handler) GetGroupVersionBreakdown(ctx echo.Context, appId string, groupId string) error {
-
-	versionBreakdown, err := h.db.GetGroupVersionBreakdown(groupId)
+func (h *Handler) GetGroupVersionBreakdown(ctx echo.Context, appID string, groupID string) error {
+	versionBreakdown, err := h.db.GetGroupVersionBreakdown(groupID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
 		}
-		logger.Error().Err(err).Str("groupID", groupId).Msg("getVersionBreakdown - getting version breakdown")
+		logger.Error().Err(err).Str("groupID", groupID).Msg("getVersionBreakdown - getting version breakdown")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
 	return ctx.JSON(http.StatusOK, versionBreakdown)
 }
 
-func (h *handler) GetGroupInstances(ctx echo.Context, appId string, groupId string, params codegen.GetGroupInstancesParams) error {
+func (h *Handler) GetGroupInstances(ctx echo.Context, appID string, groupID string, params codegen.GetGroupInstancesParams) error {
 
 	if params.Page == nil {
 		params.Page = &defaultPage
@@ -220,8 +211,8 @@ func (h *handler) GetGroupInstances(ctx echo.Context, appId string, groupId stri
 	}
 
 	p := api.InstancesQueryParams{
-		ApplicationID: appId,
-		GroupID:       groupId,
+		ApplicationID: appID,
+		GroupID:       groupID,
 		Status:        params.Status,
 		Page:          *params.Page,
 		PerPage:       *params.Perpage,
@@ -245,11 +236,10 @@ func (h *handler) GetGroupInstances(ctx echo.Context, appId string, groupId stri
 	return ctx.JSON(http.StatusOK, groupInstances)
 }
 
-func (h *handler) GetGroupInstancesCount(ctx echo.Context, appId string, groupId string, params codegen.GetGroupInstancesCountParams) error {
-
+func (h *Handler) GetGroupInstancesCount(ctx echo.Context, appID string, groupID string, params codegen.GetGroupInstancesCountParams) error {
 	p := api.InstancesQueryParams{
-		ApplicationID: appId,
-		GroupID:       groupId,
+		ApplicationID: appID,
+		GroupID:       groupID,
 	}
 
 	count, err := h.db.GetInstancesCount(p, params.Duration)
@@ -259,11 +249,9 @@ func (h *handler) GetGroupInstancesCount(ctx echo.Context, appId string, groupId
 	}
 
 	return ctx.JSON(http.StatusOK, codegen.InstanceCount{Count: count})
-
 }
 
 func groupFromRequest(name string, description string, policyMaxUpdatesPerPeriod int, policyOfficeHours bool, policyPeriodInterval string, policySafeMode bool, policyTimezone string, policyUpdateTimeout string, policyUpdatesEnabled bool, channelID *string, track string, groupID string, appID string) *api.Group {
-
 	group := &api.Group{
 		Name:                      name,
 		Description:               description,

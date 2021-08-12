@@ -52,7 +52,6 @@ var (
 )
 
 func main() {
-
 	// config parse
 
 	conf, err := config.Parse()
@@ -89,7 +88,11 @@ func main() {
 	}
 
 	// setup and instrument metrics
-	metrics.RegisterAndInstrument(db)
+	err = metrics.RegisterAndInstrument(db)
+	if err != nil {
+		log.Fatal("Metrics register error", err)
+	}
+
 	p := prometheus.NewPrometheus(serviceName, nil)
 	p.Use(e)
 
@@ -114,7 +117,7 @@ func main() {
 	e.Use(middleware.RequestID())
 	e.Use(middleware.CORS())
 	e.Use(middleware.GzipWithConfig(middleware.GzipConfig{Skipper: middlewareSkipper}))
-	if conf.HttpLog {
+	if conf.HTTPLog {
 		e.Use(middleware.Logger())
 	}
 	if sessionStore != nil {
@@ -152,13 +155,14 @@ func main() {
 		log.Fatal("Error setting up handlers, err:", err)
 	}
 
-	e.Static("/", conf.HttpStaticDir)
+	e.Static("/", conf.HTTPStaticDir)
 
 	e.HTTPErrorHandler = func(err error, c echo.Context) {
 		code := http.StatusNotFound
 		if he, ok := err.(*echo.HTTPError); ok {
 			if code == he.Code {
-				err = c.File(path.Join(conf.HttpStaticDir, "index.html"))
+				//nolint:errcheck
+				c.File(path.Join(conf.HTTPStaticDir, "index.html"))
 				return
 			}
 		}
@@ -171,27 +175,12 @@ func main() {
 }
 
 func setupAuthenticator(conf config.Config, defaultTeamID string) (auth.Authenticator, error) {
-
 	switch conf.AuthMode {
 	case "noop":
 		noopAuthConfig := &auth.NoopAuthConfig{
 			DefaultTeamID: defaultTeamID,
 		}
 		return auth.NewNoopAuthenticator(noopAuthConfig), nil
-	case "github":
-		logger.Warn().Msg("github auth-mode support will be deprecated, oidc auth-mode is recommended")
-		ghAuthConfig := &auth.GithubAuthConfig{
-			SessionAuthKey:    []byte(conf.GhSessionAuthKey),
-			SessionCryptKey:   []byte(conf.GhSessionCryptKey),
-			OAuthClientID:     conf.GhClientID,
-			OAuthClientSecret: conf.GhClientSecret,
-			WebhookSecret:     conf.GhWebhookSecret,
-			ReadWriteTeams:    strings.Split(conf.GhReadWriteTeams, ","),
-			ReadOnlyTeams:     strings.Split(conf.GhReadOnlyTeams, ","),
-			DefaultTeamID:     defaultTeamID,
-			EnterpriseURL:     conf.GhEnterpriseURL,
-		}
-		return auth.NewGithubAuthenticator(ghAuthConfig), nil
 	case "oidc":
 		url, err := url.Parse(conf.NebraskaURL)
 		if err != nil {
@@ -222,13 +211,12 @@ func setupAuthenticator(conf config.Config, defaultTeamID string) (auth.Authenti
 }
 
 func setupSessionStore(conf config.Config) *sessions.Store {
-
 	switch conf.AuthMode {
 	case "noop":
 		return nil
 	case "oidc":
 		cache := memcache.New(memcachegob.New())
-		codec := securecookie.New([]byte(conf.GhSessionAuthKey), []byte(conf.GhSessionCryptKey))
+		codec := securecookie.New([]byte(conf.OidcSessionAuthKey), []byte(conf.OidcSessionCryptKey))
 		return sessions.NewStore(cache, codec)
 	}
 	return nil

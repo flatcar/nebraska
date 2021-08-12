@@ -29,7 +29,7 @@ type ClientConfig struct {
 	AuthMode            string `json:"auth_mode"`
 }
 
-type handler struct {
+type Handler struct {
 	db           *api.API
 	omahaHandler *omaha.Handler
 	conf         *config.Config
@@ -37,15 +37,12 @@ type handler struct {
 	auth         auth.Authenticator
 }
 
-const teamID = "d89342dc-9214-441d-a4af-bdd837a3b239"
-
 var defaultPage uint64 = 1
 var defaultPerPage uint64 = 10
 
 var logger = util.NewLogger("nebraska")
 
-func New(db *api.API, conf *config.Config, auth auth.Authenticator) (*handler, error) {
-
+func New(db *api.API, conf *config.Config, auth auth.Authenticator) (*Handler, error) {
 	clientConfig := &ClientConfig{
 		AuthMode:        conf.AuthMode,
 		NebraskaVersion: version.Version,
@@ -66,14 +63,7 @@ func New(db *api.API, conf *config.Config, auth auth.Authenticator) (*handler, e
 		clientConfig.Logo = string(svg)
 	}
 
-	if conf.AuthMode == "github" {
-		if conf.GhEnterpriseURL != "" {
-			clientConfig.AccessManagementURL = conf.GhEnterpriseURL
-		} else {
-			clientConfig.AccessManagementURL = GithubAccessManagementURL
-		}
-
-	} else if conf.AuthMode == "oidc" {
+	if conf.AuthMode == "oidc" {
 		url, err := url.Parse(conf.NebraskaURL)
 		if err != nil {
 			logger.Error().Err(err).Msg("Invalid nebraska-url")
@@ -85,5 +75,5 @@ func New(db *api.API, conf *config.Config, auth auth.Authenticator) (*handler, e
 		clientConfig.LogoutURL = conf.OidcLogutURL
 	}
 
-	return &handler{db, omaha.NewHandler(db), conf, clientConfig, auth}, nil
+	return &Handler{db, omaha.NewHandler(db), conf, clientConfig, auth}, nil
 }

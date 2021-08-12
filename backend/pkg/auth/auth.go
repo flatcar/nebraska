@@ -1,8 +1,9 @@
 package auth
 
 import (
-	"github.com/kinvolk/nebraska/backend/pkg/util"
 	"github.com/labstack/echo/v4"
+
+	"github.com/kinvolk/nebraska/backend/pkg/util"
 )
 
 var (
@@ -26,6 +27,4 @@ type Authenticator interface {
 	LoginCb(ctx echo.Context) error
 
 	ValidateToken(ctx echo.Context) error
-
-	LoginWebhook(ctx echo.Context) error
 }

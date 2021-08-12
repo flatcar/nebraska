@@ -1,21 +1,14 @@
 package middleware
 
 import (
-	"github.com/kinvolk/nebraska/backend/pkg/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+
+	"github.com/kinvolk/nebraska/backend/pkg/auth"
 )
 
 func NewAuthSkipper(auth string) middleware.Skipper {
 	return func(c echo.Context) bool {
-		if auth == "github" {
-			paths := []string{"/*", "/login/cb"}
-			for _, path := range paths {
-				if c.Path() == path {
-					return true
-				}
-			}
-		}
 		if auth == "oidc" {
 			paths := []string{"/login", "/config", "/*", "/login/cb"}
 			for _, path := range paths {

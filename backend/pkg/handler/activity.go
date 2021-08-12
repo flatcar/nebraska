@@ -4,13 +4,13 @@ import (
 	"database/sql"
 	"net/http"
 
+	"github.com/labstack/echo/v4"
+
 	"github.com/kinvolk/nebraska/backend/pkg/api"
 	"github.com/kinvolk/nebraska/backend/pkg/codegen"
-	"github.com/labstack/echo/v4"
 )
 
-func (h *handler) PaginateActivity(ctx echo.Context, params codegen.PaginateActivityParams) error {
-
+func (h *Handler) PaginateActivity(ctx echo.Context, params codegen.PaginateActivityParams) error {
 	teamID := getTeamID(ctx)
 
 	if params.Page == nil {
@@ -22,17 +22,17 @@ func (h *handler) PaginateActivity(ctx echo.Context, params codegen.PaginateActi
 	}
 
 	var p api.ActivityQueryParams
-	if params.AppId != nil {
-		p.AppID = *params.AppId
+	if params.AppID != nil {
+		p.AppID = *params.AppID
 	}
-	if params.GroupId != nil {
-		p.GroupID = *params.GroupId
+	if params.GroupID != nil {
+		p.GroupID = *params.GroupID
 	}
-	if params.ChannelId != nil {
-		p.ChannelID = *params.ChannelId
+	if params.ChannelID != nil {
+		p.ChannelID = *params.ChannelID
 	}
-	if params.InstanceId != nil {
-		p.InstanceID = *params.InstanceId
+	if params.InstanceID != nil {
+		p.InstanceID = *params.InstanceID
 	}
 	if params.Version != nil {
 		p.Version = *params.Version

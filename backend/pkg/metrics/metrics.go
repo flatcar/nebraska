@@ -5,9 +5,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
+
 	"github.com/kinvolk/nebraska/backend/pkg/api"
 	"github.com/kinvolk/nebraska/backend/pkg/util"
-	"github.com/prometheus/client_golang/prometheus"
 )
 
 const (
@@ -81,11 +82,11 @@ func RegisterAndInstrument(api *api.API) error {
 
 	refreshInterval := getMetricsRefreshInterval()
 
-	metricsTicker := time.Tick(refreshInterval)
+	metricsTicker := time.NewTicker(refreshInterval)
 
 	go func() {
 		for {
-			<-metricsTicker
+			<-metricsTicker.C
 			err := calculateMetrics(api)
 			if err != nil {
 				logger.Error().Err(err).Msg("registerAndInstrumentMetrics updating the metrics")

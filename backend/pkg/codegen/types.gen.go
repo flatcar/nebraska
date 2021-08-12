@@ -13,14 +13,14 @@ const (
 
 // Activity defines model for activity.
 type Activity struct {
-	AppId           string    `json:"application_id"`
+	AppID           string    `json:"application_id"`
 	ApplicationName string    `json:"application_name"`
 	ChannelName     string    `json:"channel_name"`
 	Class           int       `json:"class"`
 	CreatedTs       time.Time `db:"created_ts" json:"created_ts"`
-	GroupId         string    `json:"group_id"`
+	GroupID         string    `json:"group_id"`
 	GroupName       string    `json:"group_name"`
-	InstanceId      string    `json:"instance_id"`
+	InstanceID      string    `json:"instance_id"`
 	Severity        int       `json:"severity"`
 	Version         string    `json:"version"`
 }
@@ -58,14 +58,14 @@ type Arch int
 
 // Channel defines model for channel.
 type Channel struct {
-	ApplicationId string    `json:"application_id"`
+	ApplicationID string    `json:"application_id"`
 	Arch          Arch      `json:"arch"`
 	Color         string    `json:"color"`
 	CreatedTs     time.Time `json:"created_ts"`
 	Id            string    `json:"id"`
 	Name          string    `json:"name"`
 	Package       *Package  `json:"package,omitempty"`
-	PackageId     string    `json:"package_id"`
+	PackageID     string    `json:"package_id"`
 }
 
 // ChannelPage defines model for channelPage.
@@ -144,7 +144,7 @@ type FlatcarAction struct {
 	MetadataSignatureRsa  string    `json:"metadata_signature_rsa"`
 	MetadataSize          string    `json:"metadata_size"`
 	NeedsAdmin            bool      `json:"needs_admin"`
-	PackageId             string    `json:"-"`
+	PackageID             string    `json:"-"`
 	Sha256                string    `json:"sha256"`
 }
 
@@ -156,9 +156,9 @@ type FlatcarActionPackage struct {
 
 // Group defines model for group.
 type Group struct {
-	ApplicationId             string    `json:"application_id"`
+	ApplicationID             string    `json:"application_id"`
 	Channel                   *Channel  `db:"channel" json:"channel,omitempty"`
-	ChannelId                 string    `json:"channel_id"`
+	ChannelID                 string    `json:"channel_id"`
 	CreatedTs                 time.Time `json:"created_ts"`
 	Description               string    `json:"description"`
 	Id                        string    `json:"id"`
@@ -214,10 +214,10 @@ type Instance struct {
 
 // InstanceApplication defines model for instanceApplication.
 type InstanceApplication struct {
-	ApplicationId       string    `json:"application_id"`
+	ApplicationID       string    `json:"application_id"`
 	CreatedTs           time.Time `json:"created_ts"`
-	GroupId             string    `json:"group_id"`
-	InstanceId          string    `json:"instance_id"`
+	GroupID             string    `json:"group_id"`
+	InstanceID          string    `json:"instance_id"`
 	LastCheckForUpdates time.Time `json:"last_check_for_updates"`
 	LastUpdateGrantedTs time.Time `json:"last_update_granted_ts"`
 	LastUpdateVersion   string    `json:"last_update_version"`
@@ -242,12 +242,12 @@ type InstanceStatusHistories []InstanceStatusHistory
 
 // InstanceStatusHistory defines model for instanceStatusHistory.
 type InstanceStatusHistory struct {
-	ApplicationId string    `db:"application_id" json:"-"`
+	ApplicationID string    `db:"application_id" json:"-"`
 	CreatedTs     time.Time `json:"created_ts"`
 	ErrorCode     string    `db:"error_code" json:"error_code"`
-	GroupId       string    `db:"group_id" json:"-"`
+	GroupID       string    `db:"group_id" json:"-"`
 	Id            int       `json:"-"`
-	InstanceId    string    `json:"-"`
+	InstanceID    string    `json:"-"`
 	Status        int       `json:"status"`
 	Verison       string    `json:"verison"`
 }
@@ -257,7 +257,7 @@ type OmahaRequest map[string]interface{}
 
 // Package defines model for package.
 type Package struct {
-	ApplicationId     string         `json:"application_id"`
+	ApplicationID     string         `json:"application_id"`
 	Arch              Arch           `json:"arch"`
 	ChannelsBlacklist []string       `json:"channels_blacklist"`
 	CreatedTs         time.Time      `json:"created_ts"`
@@ -301,10 +301,10 @@ type VersionBreakdownEntry struct {
 
 // PaginateActivityParams defines parameters for PaginateActivity.
 type PaginateActivityParams struct {
-	AppId      *string   `json:"appId,omitempty"`
-	GroupId    *string   `json:"groupId,omitempty"`
-	ChannelId  *string   `json:"channelId,omitempty"`
-	InstanceId *string   `json:"instanceId,omitempty"`
+	AppID      *string   `json:"appID,omitempty"`
+	GroupID    *string   `json:"groupID,omitempty"`
+	ChannelID  *string   `json:"channelID,omitempty"`
+	InstanceID *string   `json:"instanceID,omitempty"`
 	Version    *string   `json:"version,omitempty"`
 	Severity   *int      `json:"severity,omitempty"`
 	Start      time.Time `json:"start"`

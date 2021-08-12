@@ -6,8 +6,9 @@ import (
 	"os"
 
 	"github.com/caarlos0/env"
-	"github.com/kinvolk/nebraska/backend/pkg/random"
 	"github.com/pkg/errors"
+
+	"github.com/kinvolk/nebraska/backend/pkg/random"
 )
 
 type Config struct {
@@ -15,17 +16,9 @@ type Config struct {
 	HostFlatcarPackages   bool   `env:"HOST_FLATCAR_PACKAGES"`
 	FlatcarPackagesPath   string `env:"FLATCAR_PACKAGES_PATH"`
 	NebraskaURL           string `env:"NEBRASKA_URL" envDefault:"http://localhost:8000"`
-	HttpLog               bool   `env:"HTTP_LOG"`
-	HttpStaticDir         string `env:"HTTP_STATIC_DIR" envDefault:"../frontend/build"`
+	HTTPLog               bool   `env:"HTTP_LOG"`
+	HTTPStaticDir         string `env:"HTTP_STATIC_DIR" envDefault:"../frontend/build"`
 	AuthMode              string `env:"AUTH_MODE" envDefault:"noop"`
-	GhClientID            string `env:"GITHUB_OAUTH_CLIENT_ID"`
-	GhClientSecret        string `env:"GITHUB_OAUTH_CLIENT_SECRET"`
-	GhSessionAuthKey      string `env:"GITHUB_SESSION_SECRET"`
-	GhSessionCryptKey     string `env:"GITHUB_SESSION_CRYPT_KEY"`
-	GhWebhookSecret       string `env:"GITHUB_WEBHOOK_SECRET"`
-	GhReadWriteTeams      string `env:"GITHUB_READ_WRITE_TEAMS"`
-	GhReadOnlyTeams       string `env:"GITHUB_READ_ONLY_TEAMS"`
-	GhEnterpriseURL       string `env:"GITHUB_ENTERPRISE_URL"`
 	OidcClientID          string `env:"OIDC_CLIENT_ID"`
 	OidcClientSecret      string `env:"OIDC_CLIENT_SECRET"`
 	OidcIssuerURL         string `env:"OIDC_ISSUER_URL"`
@@ -43,7 +36,7 @@ type Config struct {
 	AppLogoPath           string `env:"APP_LOGO_PATH"`
 	AppTitle              string `env:"APP_TITLE"`
 	AppHeaderStyle        string `env:"APP_HEADER_STYLE"`
-	ApiEndpointSuffix     string `env:"API_ENDPOINT_SUFFIX"`
+	APIEndpointSuffix     string `env:"API_ENDPOINT_SUFFIX"`
 	Debug                 bool   `env:"DEBUG"`
 	ServerPort            uint   `env:"PORT" envDefault:"8000"`
 }
@@ -68,7 +61,6 @@ func (c *Config) Validate() error {
 }
 
 func Parse() (*Config, error) {
-
 	var config Config
 
 	err := env.Parse(&config)
@@ -76,12 +68,6 @@ func Parse() (*Config, error) {
 		return nil, errors.Wrap(err, "Error parsing environment variables")
 	}
 
-	if config.GhSessionAuthKey == "" {
-		config.GhSessionAuthKey = string(random.Data(32))
-	}
-	if config.GhSessionCryptKey == "" {
-		config.GhSessionCryptKey = string(random.Data(32))
-	}
 	if config.OidcSessionAuthKey == "" {
 		config.OidcSessionAuthKey = string(random.Data(32))
 	}

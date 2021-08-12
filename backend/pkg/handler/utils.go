@@ -8,7 +8,11 @@ import (
 )
 
 func getTeamID(c echo.Context) string {
-	return teamID
+
+	if val, ok := c.Get("team_id").(string); ok {
+		return val
+	}
+	return ""
 }
 
 func loggerWithUsername(l zerolog.Logger, ctx echo.Context) zerolog.Logger {

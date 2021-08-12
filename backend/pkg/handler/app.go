@@ -4,13 +4,13 @@ import (
 	"database/sql"
 	"net/http"
 
+	"github.com/labstack/echo/v4"
+
 	"github.com/kinvolk/nebraska/backend/pkg/api"
 	"github.com/kinvolk/nebraska/backend/pkg/codegen"
-	"github.com/labstack/echo/v4"
 )
 
-func (h *handler) PaginateApps(ctx echo.Context, params codegen.PaginateAppsParams) error {
-
+func (h *Handler) PaginateApps(ctx echo.Context, params codegen.PaginateAppsParams) error {
 	teamID := getTeamID(ctx)
 
 	if params.Page == nil {
@@ -39,8 +39,7 @@ func (h *handler) PaginateApps(ctx echo.Context, params codegen.PaginateAppsPara
 	return ctx.JSON(http.StatusOK, applicationPage{totalCount, len(apps), apps})
 }
 
-func (h *handler) CreateApp(ctx echo.Context, params codegen.CreateAppParams) error {
-
+func (h *Handler) CreateApp(ctx echo.Context, params codegen.CreateAppParams) error {
 	logger := loggerWithUsername(logger, ctx)
 
 	teamID := getTeamID(ctx)
@@ -75,20 +74,19 @@ func (h *handler) CreateApp(ctx echo.Context, params codegen.CreateAppParams) er
 	return ctx.JSON(http.StatusOK, app)
 }
 
-func (h *handler) GetApp(ctx echo.Context, appId string) error {
-
-	app, err := h.db.GetApp(appId)
+func (h *Handler) GetApp(ctx echo.Context, appID string) error {
+	app, err := h.db.GetApp(appID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			ctx.NoContent(http.StatusNotFound)
+			return ctx.NoContent(http.StatusNotFound)
 		}
-		logger.Error().Err(err).Str("appID", appId).Msg("getApp - getting app")
-		ctx.NoContent(http.StatusInternalServerError)
+		logger.Error().Err(err).Str("appID", appID).Msg("getApp - getting app")
+		return ctx.NoContent(http.StatusInternalServerError)
 	}
 	return ctx.JSON(http.StatusOK, app)
 }
 
-func (h *handler) UpdateApp(ctx echo.Context, appId string) error {
+func (h *Handler) UpdateApp(ctx echo.Context, appID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
 	var request codegen.UpdateAppInfo
@@ -98,23 +96,23 @@ func (h *handler) UpdateApp(ctx echo.Context, appId string) error {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	oldApp, err := h.db.GetApp(appId)
+	oldApp, err := h.db.GetApp(appID)
 	if err != nil {
-		logger.Error().Err(err).Str("appID", appId).Msg("updateApp - getting old app to update")
+		logger.Error().Err(err).Str("appID", appID).Msg("updateApp - getting old app to update")
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	app := appFromRequest(request.Name, request.Description, appId, "")
+	app := appFromRequest(request.Name, request.Description, appID, "")
 
 	err = h.db.UpdateApp(app)
 	if err != nil {
-		logger.Error().Err(err).Msgf("updatedApp - updating app %s", appId)
+		logger.Error().Err(err).Msgf("updatedApp - updating app %s", appID)
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	app, err = h.db.GetApp(appId)
+	app, err = h.db.GetApp(appID)
 	if err != nil {
-		logger.Error().Err(err).Str("appID", appId).Msg("updateApp - getting updated app")
+		logger.Error().Err(err).Str("appID", appID).Msg("updateApp - getting updated app")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
@@ -124,18 +122,18 @@ func (h *handler) UpdateApp(ctx echo.Context, appId string) error {
 	return ctx.JSON(http.StatusOK, app)
 }
 
-func (h *handler) DeleteApp(ctx echo.Context, appId string) error {
+func (h *Handler) DeleteApp(ctx echo.Context, appID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
-	app, err := h.db.GetApp(appId)
+	app, err := h.db.GetApp(appID)
 	if err != nil {
-		logger.Error().Err(err).Str("appID", appId).Msg("deleteApp - getting app to delete")
+		logger.Error().Err(err).Str("appID", appID).Msg("deleteApp - getting app to delete")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	err = h.db.DeleteApp(appId)
+	err = h.db.DeleteApp(appID)
 	if err != nil {
-		logger.Error().Err(err).Str("appID", appId).Msg("deleteApp")
+		logger.Error().Err(err).Str("appID", appID).Msg("deleteApp")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 	logger.Info().Msgf("deleteApp - successfully deleted app %+v", app)
@@ -144,7 +142,6 @@ func (h *handler) DeleteApp(ctx echo.Context, appId string) error {
 }
 
 func appFromRequest(name string, description string, appID string, teamID string) *api.Application {
-
 	app := api.Application{
 		TeamID:      teamID,
 		Name:        name,

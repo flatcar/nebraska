@@ -4,14 +4,14 @@ import (
 	"database/sql"
 	"net/http"
 
-	"github.com/kinvolk/nebraska/backend/pkg/api"
-	"github.com/kinvolk/nebraska/backend/pkg/codegen"
 	"github.com/labstack/echo/v4"
 	"gopkg.in/guregu/null.v4"
+
+	"github.com/kinvolk/nebraska/backend/pkg/api"
+	"github.com/kinvolk/nebraska/backend/pkg/codegen"
 )
 
-func (h *handler) PaginateChannels(ctx echo.Context, appId string, params codegen.PaginateChannelsParams) error {
-
+func (h *Handler) PaginateChannels(ctx echo.Context, appID string, params codegen.PaginateChannelsParams) error {
 	if params.Page == nil {
 		params.Page = &defaultPage
 	}
@@ -20,25 +20,24 @@ func (h *handler) PaginateChannels(ctx echo.Context, appId string, params codege
 		params.Perpage = &defaultPerPage
 	}
 
-	totalCount, err := h.db.GetChannelsCount(appId)
+	totalCount, err := h.db.GetChannelsCount(appID)
 	if err != nil {
-		logger.Error().Err(err).Str("appID", appId).Msg("getChannels count - getting channels")
+		logger.Error().Err(err).Str("appID", appID).Msg("getChannels count - getting channels")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	channels, err := h.db.GetChannels(appId, *params.Page, *params.Perpage)
+	channels, err := h.db.GetChannels(appID, *params.Page, *params.Perpage)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
 		}
-		logger.Error().Err(err).Str("appID", appId).Msg("getChannels - getting channels")
+		logger.Error().Err(err).Str("appID", appID).Msg("getChannels - getting channels")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 	return ctx.JSON(http.StatusOK, channelsPage{totalCount, len(channels), channels})
-
 }
 
-func (h *handler) CreateChannel(ctx echo.Context, appId string) error {
+func (h *Handler) CreateChannel(ctx echo.Context, appID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
 	var request codegen.CreateChannelInfo
@@ -48,7 +47,7 @@ func (h *handler) CreateChannel(ctx echo.Context, appId string) error {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	channel := newChannel(appId, request.Arch, request.Color, request.Name, request.PackageId)
+	channel := newChannel(appID, request.Arch, request.Color, request.Name, request.PackageId)
 	_, err = h.db.AddChannel(channel)
 	if err != nil {
 		logger.Error().Err(err).Msgf("addChannel channel %v", channel)
@@ -65,19 +64,19 @@ func (h *handler) CreateChannel(ctx echo.Context, appId string) error {
 	return ctx.JSON(http.StatusOK, channel)
 }
 
-func (h *handler) GetChannel(ctx echo.Context, appId string, channelId string) error {
-	channel, err := h.db.GetChannel(channelId)
+func (h *Handler) GetChannel(ctx echo.Context, appID string, channelID string) error {
+	channel, err := h.db.GetChannel(channelID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
 		}
-		logger.Error().Err(err).Str("channelID", channelId).Msg("getChannel - getting updated channel")
+		logger.Error().Err(err).Str("channelID", channelID).Msg("getChannel - getting updated channel")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 	return ctx.JSON(http.StatusOK, channel)
 }
 
-func (h *handler) UpdateChannel(ctx echo.Context, appId string, channelId string) error {
+func (h *Handler) UpdateChannel(ctx echo.Context, appID string, channelID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
 	var request codegen.UpdateChannelInfo
@@ -88,17 +87,17 @@ func (h *handler) UpdateChannel(ctx echo.Context, appId string, channelId string
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	oldChannel, err := h.db.GetChannel(channelId)
+	oldChannel, err := h.db.GetChannel(channelID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
 		}
-		logger.Error().Err(err).Str("channelID", channelId).Msg("updateChannel - getting old channel to update")
+		logger.Error().Err(err).Str("channelID", channelID).Msg("updateChannel - getting old channel to update")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	channel := newChannel(appId, request.Arch, request.Color, request.Name, request.PackageId)
-	channel.ID = channelId
+	channel := newChannel(appID, request.Arch, request.Color, request.Name, request.PackageId)
+	channel.ID = channelID
 
 	err = h.db.UpdateChannel(channel)
 	if err != nil {
@@ -106,7 +105,7 @@ func (h *handler) UpdateChannel(ctx echo.Context, appId string, channelId string
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	channel, err = h.db.GetChannel(channelId)
+	channel, err = h.db.GetChannel(channelID)
 	if err != nil {
 		logger.Error().Err(err).Str("channelID", channel.ID).Msg("updateChannel - getting channel updated")
 		return ctx.NoContent(http.StatusInternalServerError)
@@ -117,19 +116,18 @@ func (h *handler) UpdateChannel(ctx echo.Context, appId string, channelId string
 	return ctx.JSON(http.StatusOK, channel)
 }
 
-func (h *handler) DeleteChannel(ctx echo.Context, appId string, channelId string) error {
-
+func (h *Handler) DeleteChannel(ctx echo.Context, appID string, channelID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
-	channel, err := h.db.GetChannel(channelId)
+	channel, err := h.db.GetChannel(channelID)
 	if err != nil {
 		logger.Error().Err(err).Str("channelID", channel.ID).Msg("updateChannel - getting channel to be deleted")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	err = h.db.DeleteChannel(channelId)
+	err = h.db.DeleteChannel(channelID)
 	if err != nil {
-		logger.Error().Err(err).Str("channelID", channelId).Msg("deleteChannel")
+		logger.Error().Err(err).Str("channelID", channelID).Msg("deleteChannel")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
@@ -138,13 +136,13 @@ func (h *handler) DeleteChannel(ctx echo.Context, appId string, channelId string
 	return ctx.NoContent(http.StatusOK)
 }
 
-func newChannel(appID string, arch uint, color string, name string, packageId *string) *api.Channel {
+func newChannel(appID string, arch uint, color string, name string, packageID *string) *api.Channel {
 	channel := &api.Channel{
 		ApplicationID: appID,
 		Name:          name,
 		Color:         color,
 		Arch:          api.Arch(arch),
-		PackageID:     null.StringFromPtr(packageId),
+		PackageID:     null.StringFromPtr(packageID),
 	}
 	return channel
 }

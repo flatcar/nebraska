@@ -433,6 +433,19 @@ func (oa *oidcAuth) cleanState() {
 	})
 }
 
-func (oa *oidcAuth) LoginWebhook(ctx echo.Context) error {
-	return ctx.NoContent(http.StatusNotImplemented)
+func httpError(c echo.Context, status int) {
+	//nolint:errcheck
+	c.NoContent(status)
+}
+
+func redirectTo(c echo.Context, where string) {
+	//nolint:errcheck
+	c.Redirect(http.StatusTemporaryRedirect, where)
+}
+
+func sessionSave(c echo.Context, session *sessions.Session, msg string) {
+	if err := echosessions.SaveSession(c, session); err != nil {
+		logger.Error().Err(err).Str("failed to save the session", msg).Send()
+		httpError(c, http.StatusInternalServerError)
+	}
 }

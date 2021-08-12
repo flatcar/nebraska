@@ -29,13 +29,6 @@ paths:
       responses:
         "200":
           description: validate token response
-  /login/webhook:
-    get:
-      operationId: loginWebhook
-      description: github login webhook events
-      responses:
-        "200":
-          description: login webhook response
   /config:
     get:
       operationId: getConfig
@@ -123,7 +116,7 @@ paths:
         "500":
           description: Create App error response
 
-  /api/apps/{appId}:
+  /api/apps/{appID}:
     get:
       description: get app
       operationId: getApp
@@ -132,7 +125,7 @@ paths:
         - bearerAuth: []   
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
@@ -155,7 +148,7 @@ paths:
         - bearerAuth: []   
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
@@ -185,7 +178,7 @@ paths:
         - bearerAuth: []   
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
@@ -195,7 +188,7 @@ paths:
         "500":
           description: Delete App error response
 
-  /api/apps/{appId}/groups:
+  /api/apps/{appID}/groups:
     get:
       description: paginate groups of an app
       operationId: paginateGroups
@@ -204,7 +197,7 @@ paths:
         - bearerAuth: []   
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
@@ -239,7 +232,7 @@ paths:
         - bearerAuth: []   
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
@@ -262,21 +255,21 @@ paths:
         "500":
           description: Create Group error response
 
-  /api/apps/{appId}/groups/{groupId}:
+  /api/apps/{appID}/groups/{groupID}:
     get:
-      description: get group given its groupId and appId
+      description: get group given its groupID and appID
       operationId: getGroup
       security:
         - {}
         - bearerAuth: []   
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
         - in: path
-          name: groupId
+          name: groupID
           required: true
           schema:
             type: string
@@ -292,19 +285,19 @@ paths:
         "500":
           description: Get Group error response
     put:
-      description: update group given its groupId and appId
+      description: update group given its groupID and appID
       operationId: updateGroup
       security:
         - {}
         - bearerAuth: []   
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
         - in: path
-          name: groupId
+          name: groupID
           required: true
           schema:
             type: string
@@ -329,19 +322,19 @@ paths:
         "500":
           description: Update Group error response
     delete:
-      description: delete group given its groupId and appId
+      description: delete group given its groupID and appID
       operationId: deleteGroup
       security:
         - {}
         - bearerAuth: []   
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
         - in: path
-          name: groupId
+          name: groupID
           required: true
           schema:
             type: string
@@ -353,21 +346,21 @@ paths:
         "500":
           description: Delete Group error response
 
-  /api/apps/{appId}/groups/{groupId}/version_timeline:
+  /api/apps/{appID}/groups/{groupID}/version_timeline:
     get:
-      description: get version timeline of a group given its groupId and appId
+      description: get version timeline of a group given its groupID and appID
       operationId: getGroupVersionTimeline
       security:
         - {}
         - bearerAuth: []   
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
         - in: path
-          name: groupId
+          name: groupID
           required: true
           schema:
             type: string
@@ -387,21 +380,21 @@ paths:
           description: Group not found response
         "500":
           description: Version Timeline of group error response
-  /api/apps/{appId}/groups/{groupId}/status_timeline:
+  /api/apps/{appID}/groups/{groupID}/status_timeline:
     get:
-      description: get status timeline of a group given its groupId and appId
+      description: get status timeline of a group given its groupID and appID
       operationId: getGroupStatusTimeline
       security:
         - {}
         - bearerAuth: []   
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
         - in: path
-          name: groupId
+          name: groupID
           required: true
           schema:
             type: string
@@ -422,21 +415,21 @@ paths:
         "500":
           description: Status Timeline of group error response
 
-  /api/apps/{appId}/groups/{groupId}/instances_stats:
+  /api/apps/{appID}/groups/{groupID}/instances_stats:
     get:
-      description: get instance stats of a group given its groupId and appId
+      description: get instance stats of a group given its groupID and appID
       operationId: getGroupInstanceStats
       security:
         - {}
         - bearerAuth: []   
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
         - in: path
-          name: groupId
+          name: groupID
           required: true
           schema:
             type: string
@@ -456,21 +449,21 @@ paths:
           description: Group not found response
         "500":
            description: Instance Stats of group error response
-  /api/apps/{appId}/groups/{groupId}/version_breakdown:
+  /api/apps/{appID}/groups/{groupID}/version_breakdown:
     get:
-      description: get version breakdown of a group given its groupId and appId
+      description: get version breakdown of a group given its groupID and appID
       operationId: getGroupVersionBreakdown
       security:
         - {}
         - bearerAuth: []   
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
         - in: path
-          name: groupId
+          name: groupID
           required: true
           schema:
             type: string
@@ -485,7 +478,7 @@ paths:
           description: Group not found response
         "500":
           description:  Version Breakdown of group error response
-  /api/apps/{appId}/channels:
+  /api/apps/{appID}/channels:
     get:
       description: paginate channels of an app
       operationId: paginateChannels
@@ -494,7 +487,7 @@ paths:
         - bearerAuth: []   
       parameters:
         - in : path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
@@ -529,7 +522,7 @@ paths:
         - bearerAuth: []   
       parameters:
         - in : path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
@@ -551,7 +544,7 @@ paths:
           description: Bad request response
         "500":
           description: Create channel error response
-  /api/apps/{appId}/channels/{channelId}:
+  /api/apps/{appID}/channels/{channelID}:
     get:
       description: get channel by id
       operationId: getChannel
@@ -560,12 +553,12 @@ paths:
         - bearerAuth: []   
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
         - in: path
-          name: channelId
+          name: channelID
           required: true
           schema:
             type: string
@@ -588,12 +581,12 @@ paths:
         - bearerAuth: []   
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
         - in: path
-          name: channelId
+          name: channelID
           required: true
           schema:
             type: string
@@ -625,12 +618,12 @@ paths:
         - bearerAuth: []   
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
         - in: path
-          name: channelId
+          name: channelID
           required: true
           schema:
             type: string
@@ -639,7 +632,7 @@ paths:
           description: Delete channel success response
         "500":
           description: Delete channel error response
-  /api/apps/{appId}/packages:
+  /api/apps/{appID}/packages:
     get:
       description: paginate packages of an app
       operationId: paginatePackages
@@ -648,7 +641,7 @@ paths:
         - bearerAuth: []   
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
@@ -681,7 +674,7 @@ paths:
         - bearerAuth: []   
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
@@ -703,21 +696,21 @@ paths:
           description: Create Package bad request response
         "500":
           description: Create package error response
-  /api/apps/{appId}/packages/{packageId}:
+  /api/apps/{appID}/packages/{packageID}:
     get:
-      description: get package given its packageId and appId
+      description: get package given its packageID and appID
       operationId: getPackage
       security:
         - {}
         - bearerAuth: []   
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
         - in: path
-          name: packageId
+          name: packageID
           required: true
           schema:
             type: string
@@ -733,19 +726,19 @@ paths:
         "500":
           description: Get Package error response
     put:
-      description: update package given its packageId and appId
+      description: update package given its packageID and appID
       operationId: updatePackage
       security:
         - {}
         - bearerAuth: []         
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
         - in: path
-          name: packageId
+          name: packageID
           required: true
           schema:
             type: string
@@ -768,19 +761,19 @@ paths:
         "500":
           description: Update package error response
     delete:
-      description: delete package given its packageId and appId
+      description: delete package given its packageID and appID
       operationId: deletePackage
       security:
         - {}
         - bearerAuth: []   
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
         - in: path
-          name: packageId
+          name: packageID
           required: true
           schema:
             type: string
@@ -791,21 +784,21 @@ paths:
           description: Package not found response
         "500":
           description: Delete package error response
-  /api/apps/{appId}/groups/{groupId}/instances:
+  /api/apps/{appID}/groups/{groupID}/instances:
     get:
-      description: get instances of a group given its groupId and appId
+      description: get instances of a group given its groupID and appID
       operationId: getGroupInstances
       security:
         - {}
         - bearerAuth: []   
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
         - in: path
-          name: groupId
+          name: groupID
           required: true
           schema:
             type: string
@@ -855,21 +848,21 @@ paths:
                 $ref: "#/components/schemas/instancePage"
         "500":
           description: Get Instances of a Group error response
-  /api/apps/{appId}/groups/{groupId}/instancescount:
+  /api/apps/{appID}/groups/{groupID}/instancescount:
     get:
-      description: get instance count of a group given its groupId and appId
+      description: get instance count of a group given its groupID and appID
       operationId: getGroupInstancesCount
       security:
         - {}
         - bearerAuth: []   
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
         - in: path
-          name: groupId
+          name: groupID
           required: true
           schema:
             type: string
@@ -887,26 +880,26 @@ paths:
                 $ref: "#/components/schemas/instanceCount"
         "500":
           description: Get Instance count of a Group error response
-  /api/apps/{appId}/groups/{groupId}/instances/{instanceId}:
+  /api/apps/{appID}/groups/{groupID}/instances/{instanceID}:
     get:
-      description: get instance of a group given its groupId and appId
+      description: get instance of a group given its groupID and appID
       operationId: getInstance
       security:
         - {}
         - bearerAuth: []   
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
         - in: path
-          name: groupId
+          name: groupID
           required: true
           schema:
             type: string
         - in: path
-          name: instanceId
+          name: instanceID
           required: true
           schema:
             type: string
@@ -921,7 +914,7 @@ paths:
           description: Instance not found response
         "500":
           description: Get instance error response
-  /api/apps/{appId}/groups/{groupId}/instances/{instanceId}/status_history:
+  /api/apps/{appID}/groups/{groupID}/instances/{instanceID}/status_history:
     get:
       description: get instance status_history.
       operationId: getInstanceStatusHistory
@@ -930,17 +923,17 @@ paths:
         - bearerAuth: []   
       parameters:
         - in: path
-          name: appId
+          name: appID
           required: true
           schema:
             type: string
         - in: path
-          name: groupId
+          name: groupID
           required: true
           schema:
             type: string
         - in: path
-          name: instanceId
+          name: instanceID
           required: true
           schema:
             type: string
@@ -961,7 +954,7 @@ paths:
           description: Instance not found response
         "500":
           description: Get instance status history error response
-  /instances/{instanceId}:
+  /instances/{instanceID}:
     put:
       description: update instance
       operationId: updateInstance
@@ -970,7 +963,7 @@ paths:
         - bearerAuth: []   
       parameters:
         - in: path
-          name: instanceId
+          name: instanceID
           required: true
           schema:
             type: string
@@ -1000,22 +993,22 @@ paths:
         - bearerAuth: []   
       parameters:
         - in: query
-          name: appId
+          name: appID
           required: false
           schema:
             type: string
         - in: query
-          name: groupId
+          name: groupID
           required: false
           schema:
             type: string
         - in: query
-          name: channelId
+          name: channelID
           required: false
           schema:
             type: string
         - in: query
-          name: instanceId
+          name: instanceID
           required: false
           schema:
             type: string
@@ -1252,7 +1245,7 @@ components:
         - metadataSize
         - deadline
         - createdTs
-        - packageId
+        - packageID
       properties:
         id:
           type: string
@@ -1291,7 +1284,7 @@ components:
           format: date-time
           x-oapi-codegen-extra-tags:
             json: created_ts
-        packageId:
+        packageID:
           type: string
           x-oapi-codegen-extra-tags:
             json: "-"
@@ -1311,7 +1304,7 @@ components:
         - hash
         - createdTs
         - channelsBlacklist
-        - applicationId
+        - applicationID
         - arch
       properties:
         id:
@@ -1341,7 +1334,7 @@ components:
             type: string
           x-oapi-codegen-extra-tags:
             json: channels_blacklist
-        applicationId:
+        applicationID:
           type: string
           x-oapi-codegen-extra-tags:
             json: application_id
@@ -1360,8 +1353,8 @@ components:
         - name
         - color
         - createdTs
-        - applicationId
-        - packageId
+        - applicationID
+        - packageID
         - arch
       properties:
         id:
@@ -1375,11 +1368,11 @@ components:
           format: date-time
           x-oapi-codegen-extra-tags:
             json: created_ts
-        applicationId:
+        applicationID:
           type: string
           x-oapi-codegen-extra-tags:
             json: application_id
-        packageId:
+        packageID:
           type: string
           x-oapi-codegen-extra-tags:
             json: package_id
@@ -1398,8 +1391,8 @@ components:
         - description
         - createdTs
         - rolloutInProgress
-        - applicationId
-        - channelId
+        - applicationID
+        - channelID
         - policyUpdatesEnabled
         - policySafeMode
         - policyOfficeHours
@@ -1424,11 +1417,11 @@ components:
           type: boolean
           x-oapi-codegen-extra-tags:
             json: rollout_in_progress
-        applicationId:
+        applicationID:
           type: string
           x-oapi-codegen-extra-tags:
             json: application_id
-        channelId:
+        channelID:
           type: string
           x-oapi-codegen-extra-tags:
             json: channel_id
@@ -1572,9 +1565,9 @@ components:
     instanceApplication:
       type: object
       required:
-        - instanceId
-        - applicationId
-        - groupId
+        - instanceID
+        - applicationID
+        - groupID
         - version
         - createdTs
         - status
@@ -1583,15 +1576,15 @@ components:
         - lastUpdateVersion
         - updateInProgress
       properties:
-        instanceId:
+        instanceID:
           type: string
           x-oapi-codegen-extra-tags:
             json: instance_id
-        applicationId:
+        applicationID:
           type: string
           x-oapi-codegen-extra-tags:
             json: application_id
-        groupId:
+        groupID:
           type: string
           x-oapi-codegen-extra-tags:
             json: group_id
@@ -1679,9 +1672,9 @@ components:
         - status
         - verison
         - createdTs
-        - instanceId
-        - applicationId
-        - groupId
+        - instanceID
+        - applicationID
+        - groupID
         - errorCode
       properties:
         id:
@@ -1697,16 +1690,16 @@ components:
           format: date-time
           x-oapi-codegen-extra-tags:
             json: created_ts
-        instanceId:
+        instanceID:
           type: string
           x-oapi-codegen-extra-tags:
             json: "-"
-        applicationId:
+        applicationID:
           type: string
           x-oapi-codegen-extra-tags:
             db: application_id
             json: "-"
-        groupId:
+        groupID:
           type: string
           x-oapi-codegen-extra-tags:
             db: group_id
@@ -1721,8 +1714,8 @@ components:
     activity:
       type: object
       required:
-        - appId
-        - groupId
+        - appID
+        - groupID
         - createdTs
         - class
         - severity
@@ -1730,13 +1723,13 @@ components:
         - applicationName
         - groupName
         - channelName
-        - instanceId
+        - instanceID
       properties:
-        appId:
+        appID:
           type: string
           x-oapi-codegen-extra-tags:
             json: application_id
-        groupId:
+        groupID:
           type: string
           x-oapi-codegen-extra-tags:
             json: group_id
@@ -1764,7 +1757,7 @@ components:
           type: string
           x-oapi-codegen-extra-tags:
             json: channel_name
-        instanceId:
+        instanceID:
           type: string
           x-oapi-codegen-extra-tags:
             json: instance_id
