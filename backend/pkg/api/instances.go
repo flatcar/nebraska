@@ -148,22 +148,6 @@ func sanitizeSortFilterParams(sortFilter string) string {
 	return sortFilterMap[id]
 }
 
-func (api *API) checkIfColumnExistInTableQuery(tableName string, columnName string) (bool, error) {
-	query, _, err := goqu.Select(goqu.Func("EXISTS", goqu.From("information_schema.columns").Where(goqu.Ex{
-		"table_name":  tableName,
-		"column_name": columnName,
-	}))).ToSQL()
-
-	if err != nil {
-		return false, err
-	}
-
-	var isColumnAvailableInTable bool
-	err = api.db.QueryRowx(query).Scan(&isColumnAvailableInTable)
-
-	return isColumnAvailableInTable, err
-}
-
 // RegisterInstance registers an instance into Nebraska.
 func (api *API) RegisterInstance(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID string) (*Instance, error) {
 	if !isValidSemver(instanceVersion) {
@@ -304,38 +288,6 @@ func (api *API) GetInstance(instanceID, appID string) (*Instance, error) {
 
 	return &instance, nil
 }
-func (api *API) getInstanceApps(appID, instanceID string, duration postgresDuration, sortFilter string, orderOfSort sortOrder, limit, offset uint, p InstancesQueryParams) ([]*InstanceApplication, error) {
-	var instanceApps []*InstanceApplication
-	query := api.instanceAppQuery(appID, instanceID, duration, sortFilter, orderOfSort).Limit(limit).Offset(offset)
-	if p.Status == InstanceStatusUndefined {
-		query = query.Where(goqu.L("status IS NULL"))
-	} else if p.Status != 0 {
-		query = query.Where(goqu.C("status").Eq(p.Status))
-	}
-	if p.Version != "" {
-		query = query.Where(goqu.C("version").Eq(p.Version))
-	}
-	if p.GroupID != "" {
-		query = query.Where(goqu.C("group_id").Eq(p.GroupID))
-	}
-	instanceAppsQuery, _, err := query.ToSQL()
-	if err != nil {
-		return nil, err
-	}
-	rows, err := api.db.Queryx(instanceAppsQuery)
-	for rows.Next() {
-		var instanceApp InstanceApplication
-		err = rows.StructScan(&instanceApp)
-		if err != nil {
-			return nil, err
-		}
-		instanceApps = append(instanceApps, &instanceApp)
-	}
-	if err != nil {
-		return nil, err
-	}
-	return instanceApps, nil
-}
 func (api *API) getInstanceApp(appID, instanceID string, duration postgresDuration, sortFilter string, orderOfSort sortOrder) (*InstanceApplication, error) {
 	var instanceApp InstanceApplication
 	query, _, err := api.instanceAppQuery(appID, instanceID, duration, sortFilter, orderOfSort).ToSQL()
@@ -347,18 +299,6 @@ func (api *API) getInstanceApp(appID, instanceID string, duration postgresDurati
 		return nil, err
 	}
 	return &instanceApp, nil
-}
-func (api *API) getInstanceFromID(instanceID string) (*Instance, error) {
-	query, _, err := goqu.From("instance").Where(goqu.C("id").Eq(instanceID)).ToSQL()
-	if err != nil {
-		return nil, err
-	}
-	var instance Instance
-	err = api.db.QueryRowx(query).StructScan(&instance)
-	if err != nil {
-		return nil, err
-	}
-	return &instance, nil
 }
 
 // GetInstanceStatusHistory returns the status history of an instance in the
@@ -394,6 +334,13 @@ func (api *API) GetInstanceStatusHistory(instanceID, appID, groupID string, limi
 	return instanceStatusHistory, nil
 }
 
+func prepareGetInstancesQuery(instanceQuery *goqu.SelectDataset, instanceAppQuery *goqu.SelectDataset) *goqu.SelectDataset {
+	return goqu.From(goqu.L("Instance")).With("Instance", instanceQuery).With("application", instanceAppQuery).InnerJoin(
+		goqu.L("application"),
+		goqu.On(goqu.L("Instance.id").Eq(goqu.L("application.instance_id"))),
+	).Select(goqu.L("*"))
+}
+
 // GetInstances returns all instances that match with the provided criteria.
 func (api *API) GetInstances(p InstancesQueryParams, duration string) (InstancesWithTotal, error) {
 	var instances []*Instance
@@ -412,55 +359,21 @@ func (api *API) GetInstances(p InstancesQueryParams, duration string) (Instances
 	limit, offset := sqlPaginate(p.Page, p.PerPage)
 	sortFilter := sanitizeSortFilterParams(p.SortFilter)
 	sortOrder := sortOrderFromString(p.SortOrder)
-	existsInInstanceTable, err := api.checkIfColumnExistInTableQuery("instance", sortFilter)
-	if err != nil {
-		return InstancesWithTotal{}, err
+	instancesQuery := api.instancesQuery(p, dbDuration)
+	instancesQuery = instancesQuery.Select("id", "ip", "created_ts", goqu.Case().
+		When(goqu.C("alias").Neq(""), goqu.C("alias")).Else(goqu.C("id")).As("alias"))
+
+	instanceAppQuery := goqu.From("instance_application").
+		Select("version", "status", "last_check_for_updates", "last_update_version", "update_in_progress", "application_id", "group_id", "instance_id")
+
+	finalQuery := prepareGetInstancesQuery(instancesQuery, instanceAppQuery)
+	if sortOrder == sortOrderAsc {
+		finalQuery = finalQuery.Order(goqu.I(sortFilter).Asc().NullsLast())
+	} else if sortOrder == sortOrderDesc {
+		finalQuery = finalQuery.Order(goqu.I(sortFilter).Desc().NullsLast())
 	}
 
-	//check if the sortFilter is part of the instance_app
-	existsInInstanceAppTable, err := api.checkIfColumnExistInTableQuery("instance_application", sortFilter)
-	if err != nil {
-		return InstancesWithTotal{}, err
-	}
-	if !existsInInstanceTable && !existsInInstanceAppTable {
-		/* we are sure here that the sort filter passed doesn't exist in instance or the
-		instance_application table
-		*/
-		return InstancesWithTotal{}, fmt.Errorf("The sort filter %s is invalid", sortFilter)
-	}
-	if existsInInstanceAppTable {
-		var applications []*InstanceApplication
-		//first query instance app table
-		applications, err = api.getInstanceApps(p.ApplicationID, "", dbDuration, sortFilter, sortOrder, limit, offset, p)
-		if err != nil {
-			return InstancesWithTotal{}, err
-		}
-		for _, application := range applications {
-			var instance *Instance
-			instance, err = api.getInstanceFromID(application.InstanceID)
-			if err != nil {
-				return InstancesWithTotal{}, err
-			}
-			instance.Application = *application
-			instances = append(instances, instance)
-		}
-		return InstancesWithTotal{
-			TotalInstances: totalCount,
-			Instances:      instances,
-		}, nil
-	}
-	instancesQuery := api.instancesQuery(p, dbDuration)
-	if existsInInstanceTable {
-		// We want to make sure we sort by alias if its available otherwise by id
-		instancesQuery = instancesQuery.Select("id", "ip", "created_ts", goqu.Case().
-			When(goqu.C("alias").Neq(""), goqu.C("alias")).Else(goqu.C("id")).As("alias"))
-		if sortOrder == sortOrderAsc {
-			instancesQuery = instancesQuery.Order(goqu.I(sortFilter).Asc().NullsLast())
-		} else if sortOrder == sortOrderDesc {
-			instancesQuery = instancesQuery.Order(goqu.I(sortFilter).Desc().NullsLast())
-		}
-	}
-	query, _, err := instancesQuery.
+	query, _, err := finalQuery.
 		Limit(limit).
 		Offset(offset).
 		ToSQL()
@@ -472,26 +385,19 @@ func (api *API) GetInstances(p InstancesQueryParams, duration string) (Instances
 		return InstancesWithTotal{}, err
 	}
 	defer rows.Close()
+	if err := rows.Err(); err != nil {
+		return InstancesWithTotal{}, err
+	}
 	for rows.Next() {
 		var instance Instance
-		err := rows.StructScan(&instance)
+		err = rows.Scan(&instance.ID, &instance.IP, &instance.CreatedTs, &instance.Alias,
+			&instance.Application.Version, &instance.Application.Status, &instance.Application.LastCheckForUpdates,
+			&instance.Application.LastUpdateVersion, &instance.Application.UpdateInProgress,
+			&instance.Application.ApplicationID, &instance.Application.GroupID, &instance.Application.InstanceID)
 		if err != nil {
 			return InstancesWithTotal{}, err
 		}
-		var application *InstanceApplication
-		application, err = api.getInstanceApp(p.ApplicationID, instance.ID, dbDuration, "", sortOrder)
-		switch err {
-		case nil:
-			instance.Application = *application
-		case sql.ErrNoRows:
-			instance.Application = InstanceApplication{}
-		default:
-			return InstancesWithTotal{}, err
-		}
 		instances = append(instances, &instance)
-	}
-	if err := rows.Err(); err != nil {
-		return InstancesWithTotal{}, err
 	}
 	result := InstancesWithTotal{
 		TotalInstances: totalCount,
