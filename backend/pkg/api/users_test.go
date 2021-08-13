@@ -59,3 +59,41 @@ func TestAddUser(t *testing.T) {
 	_, err = a.AddUser(user)
 	assert.Error(t, err)
 }
+
+func TestGetUsersInTeam(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	_, err := a.GetUsersInTeam("non-existent")
+	assert.Error(t, err)
+
+	users, err := a.GetUsersInTeam(defaultTeamID)
+	assert.NoError(t, err)
+	assert.Equal(t, len(users), 1)
+
+	teams, err := a.GetTeams()
+	assert.NoError(t, err)
+	assert.Equal(t, len(teams), 1)
+
+	teamRoss, _ := a.AddTeam(&Team{Name: "team-ross"})
+	assert.NoError(t, err)
+	assert.Equal(t, teamRoss.Name, "team-ross")
+
+	user := &User{
+		Username: "chandler",
+		Secret:   "shhhhh",
+		TeamID:   teamRoss.ID,
+	}
+
+	chandler, err := a.AddUser(user)
+	assert.NoError(t, err)
+	assert.Equal(t, user.Username, chandler.Username)
+
+	defaultUsers, err := a.GetUsersInTeam(defaultTeamID)
+	assert.NoError(t, err)
+	assert.Equal(t, len(defaultUsers), 1, "Should still be one.")
+
+	newTeamUsers, err := a.GetUsersInTeam(teamRoss.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, len(newTeamUsers), 1, "Should also be one.")
+}
