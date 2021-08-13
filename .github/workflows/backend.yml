@@ -2,10 +2,10 @@ name: Build Backend
 on:
   pull_request:
     paths:
-    - 'cmd/**'
-    - 'pkg/**'
-    - 'go.mod'
-    - 'go.sum'
+    - 'backend/cmd/**'
+    - 'backend/pkg/**'
+    - 'backend/go.mod'
+    - 'backend/go.sum'
     - 'updaters/**'
     - '.github/**'
 
