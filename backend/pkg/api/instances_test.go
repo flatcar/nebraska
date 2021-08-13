@@ -214,3 +214,48 @@ func TestGetInstancesFiltered(t *testing.T) {
 		assert.Empty(t, expectedIDs)
 	}
 }
+
+func TestGetInstanceStatusHistory(t *testing.T) {
+	// Update instance status several times and see if the history matches.
+
+	a := newForTest(t)
+	defer a.Close()
+
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+
+	newInstance1ID := uuid.New().String()
+	tInstance, _ := a.RegisterInstance(newInstance1ID, "analias", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
+	assert.Equal(t, tInstance.Alias, "analias")
+
+	instance, err := a.GetInstance(tInstance.ID, tApp.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, "10.0.0.1", instance.IP)
+
+	err = a.grantUpdate(tInstance, "1.0.1")
+	assert.NoError(t, err)
+
+	err = a.updateInstanceStatus(tInstance.ID, tApp.ID, InstanceStatusInstalled)
+	assert.NoError(t, err)
+
+	err = a.updateInstanceStatus(tInstance.ID, tApp.ID, InstanceStatusComplete)
+	assert.NoError(t, err)
+
+	err = a.grantUpdate(tInstance, "1.0.2")
+	assert.NoError(t, err)
+
+	history, err := a.GetInstanceStatusHistory(tInstance.ID, tApp.ID, tGroup.ID, 100)
+	assert.NoError(t, err)
+	assert.Equal(t, 4, len(history))
+	assert.Equal(t, history[0].Status, InstanceStatusUpdateGranted)
+	assert.Equal(t, history[0].Version, "1.0.2")
+	assert.Equal(t, history[1].Status, InstanceStatusComplete)
+	assert.Equal(t, history[1].Version, "1.0.1")
+	assert.Equal(t, history[2].Status, InstanceStatusInstalled)
+	assert.Equal(t, history[2].Version, "1.0.1")
+	assert.Equal(t, history[3].Status, InstanceStatusUpdateGranted)
+	assert.Equal(t, history[3].Version, "1.0.1")
+}
