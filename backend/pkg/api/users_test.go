@@ -41,3 +41,21 @@ func TestUpdateUserPassword(t *testing.T) {
 	assert.NotEqual(t, "8b31292d4778582c0e5fa96aee5513f1", user.Secret)
 	assert.Equal(t, "c01e8daa7a6c135909f218ff2bea1cfe", user.Secret)
 }
+
+func TestAddUser(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	user := &User{
+		Username: "chandler",
+		Secret:   "shhhhh",
+		TeamID:   defaultTeamID,
+	}
+
+	chandler, err := a.AddUser(user)
+	assert.NoError(t, err)
+	assert.Equal(t, user.Username, chandler.Username)
+
+	_, err = a.AddUser(user)
+	assert.Error(t, err)
+}

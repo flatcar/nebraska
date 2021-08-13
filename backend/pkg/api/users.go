@@ -40,7 +40,7 @@ func (api *API) AddUser(user *User) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = api.db.QueryRowx(query).StructScan(&user)
+	err = api.db.QueryRowx(query).StructScan(user)
 	if err != nil {
 		return nil, err
 	}
