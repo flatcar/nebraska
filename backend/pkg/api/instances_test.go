@@ -129,10 +129,37 @@ func TestGetInstances(t *testing.T) {
 	assert.Equal(t, 1, len(result.Instances))
 	assert.Equal(t, 1, (int)(result.TotalInstances))
 
+	// Search for a non-existant Version should give no results.
+	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Version: "non-existant", Page: 1, PerPage: 10}, testDuration)
+	assert.NoError(t, err)
+	assert.Equal(t, 0, len(result.Instances))
+
 	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Version: "1.0.0", Page: 1, PerPage: 10}, testDuration)
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(result.Instances))
 	assert.Equal(t, "1.0.0", result.Instances[0].Application.Version)
+
+	// Search for a non-existant GroupID should give no results.
+	nonExistentGroupID := "123e4567-e89b-12d3-a456-426614174000"
+	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: nonExistentGroupID, Page: 1, PerPage: 10}, testDuration)
+	assert.NoError(t, err)
+	assert.Equal(t, 0, len(result.Instances))
+
+	// sortFilter 2 == last_check_for_updates
+	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup2.ID, Page: 1, PerPage: 10, SortFilter: "2"}, testDuration)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(result.Instances))
+	assert.Equal(t, 1, (int)(result.TotalInstances))
+
+	// Search with sortFilter and non-existant GroupID should give no results.
+	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: nonExistentGroupID, Page: 1, PerPage: 10, SortFilter: "2"}, testDuration)
+	assert.NoError(t, err)
+	assert.Equal(t, 0, len(result.Instances))
+
+	// Search with sortFilter for a non-existant Version should give no results.
+	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Version: "non-existant", Page: 1, PerPage: 10, SortFilter: "2"}, testDuration)
+	assert.NoError(t, err)
+	assert.Equal(t, 0, len(result.Instances))
 
 	_, _ = a.GetUpdatePackage(tInstance.ID, "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
 	_ = a.RegisterEvent(tInstance.ID, tApp.ID, tGroup.ID, EventUpdateComplete, ResultSuccessReboot, "", "")
