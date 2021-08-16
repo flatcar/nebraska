@@ -34,6 +34,13 @@ the `postgres` container as follows:
 - Set the timezone to Nebraska's database:
     - `psql postgres://postgres:nebraska@localhost:5432/nebraska -c 'set timezone = "utc";'`
 
+- Set up the nebraska_tests database for running unit tests
+
+```bash
+psql postgres://postgres:nebraska@localhost:5432/postgres -c 'create database nebraska_tests;'
+psql postgres://postgres:nebraska@localhost:5432/nebraska_tests -c 'set timezone = "utc";'
+```
+
 # Development Quickstart
 
 - Go to the Nebraska project directory and run `make`
