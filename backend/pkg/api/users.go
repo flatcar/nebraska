@@ -23,11 +23,11 @@ var (
 
 // User represents a Nebraska user.
 type User struct {
-	ID        string    `db:"id" json:"id"`
-	Username  string    `db:"username" json:"username"`
-	Secret    string    `db:"secret" json:"secret"`
-	CreatedTs time.Time `db:"created_ts" json:"-"`
-	TeamID    string    `db:"team_id" json:"team_id"`
+	ID        string    `db:"id" json:"id"`             // UUID v4 unique, created automatically
+	Username  string    `db:"username" json:"username"` // unique username
+	Secret    string    `db:"secret" json:"secret"`     // md5 hash from (username:realm:password)
+	CreatedTs time.Time `db:"created_ts" json:"-"`      // Created automatically
+	TeamID    string    `db:"team_id" json:"team_id"`   // User can be in single team
 }
 
 // AddTeam registers a team.
@@ -40,7 +40,7 @@ func (api *API) AddUser(user *User) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = api.db.QueryRowx(query).StructScan(&user)
+	err = api.db.QueryRowx(query).StructScan(user)
 	if err != nil {
 		return nil, err
 	}
