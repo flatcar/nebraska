@@ -193,3 +193,46 @@ func TestRegisterEvent_CheckFlatcarSuccessResult(t *testing.T) {
 	performUpdate(tApp, tGroup, ResultSuccess, InstanceStatusInstalled)
 	performUpdate(tApp, tGroup, ResultSuccessReboot, InstanceStatusComplete)
 }
+
+func TestRegisterEvent_CheckFlatcarIgnoredUpdate(t *testing.T) {
+	// If it's a Flatcar application, and the instance reports that it updated to "" or 0.0.0.0 as the version,
+	// then the event is ignored.
+	a := newForTest(t)
+	defer a.Close()
+
+	tApp, _ := a.GetApp(flatcarAppID)
+	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := a.AddGroup(&Group{Name: "group9", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+
+	performUpdate := func(previousVersion string) {
+		tInstance, err := a.RegisterInstance(uuid.New().String(), "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
+		assert.NoError(t, err)
+
+		_, err = a.GetUpdatePackage(tInstance.ID, "", "10.0.0.1", "12.0.0", tApp.ID, tGroup.ID)
+		assert.NoError(t, err)
+
+		err = a.RegisterEvent(tInstance.ID, "{"+tApp.ID+"}", tGroup.ID, EventUpdateDownloadStarted, ResultSuccess, previousVersion, "")
+		assert.NoError(t, err)
+		instance, _ := a.GetInstance(tInstance.ID, tApp.ID)
+		assert.Equal(t, null.IntFrom(int64(InstanceStatusDownloading)), instance.Application.Status)
+
+		err = a.RegisterEvent(tInstance.ID, tApp.ID, "{"+tGroup.ID+"}", EventUpdateDownloadFinished, ResultSuccess, previousVersion, "")
+		assert.NoError(t, err)
+		instance, _ = a.GetInstance(tInstance.ID, tApp.ID)
+		assert.Equal(t, null.IntFrom(int64(InstanceStatusDownloaded)), instance.Application.Status)
+
+		err = a.RegisterEvent(tInstance.ID, tApp.ID, tGroup.ID, EventUpdateInstalled, ResultSuccess, previousVersion, "")
+		assert.NoError(t, err)
+		instance, _ = a.GetInstance(tInstance.ID, tApp.ID)
+		assert.Equal(t, null.IntFrom(int64(InstanceStatusInstalled)), instance.Application.Status)
+
+		err = a.RegisterEvent(tInstance.ID, tApp.ID, tGroup.ID, EventUpdateComplete, ResultSuccessReboot, previousVersion, "")
+		assert.Error(t, err, "Received unexpected error: \nnebraska: flatcar event ignored")
+		instance, _ = a.GetInstance(tInstance.ID, tApp.ID)
+		assert.Equal(t, null.IntFrom(int64(InstanceStatusUndefined)), instance.Application.Status)
+	}
+
+	performUpdate("0.0.0.0")
+	performUpdate("")
+}
