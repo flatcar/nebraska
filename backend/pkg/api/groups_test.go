@@ -319,3 +319,29 @@ func TestGetStatusCountTimeline(t *testing.T) {
 	// for 30d we generate timestamp after each 3days so total timeline should have 11 timestamps
 	assert.Equal(t, len(statusTimelineMap), 11)
 }
+
+func TestGroupTrackName(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	trackName := "production"
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup1, _ := a.AddGroup(&Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes", Track: trackName})
+
+	id, err := a.GetGroupID(trackName, ArchAll)
+	assert.NoError(t, err)
+	assert.Equal(t, tGroup1.ID, id)
+
+	_, err = a.GetGroupID("", ArchAll)
+	assert.Error(t, err, "no group found for track  and architecture amd64")
+
+	_, err = a.GetGroupID("Phony", ArchAll)
+	assert.Error(t, err, "no group found for track Phony and architecture amd64")
+
+	tGroup2, err := a.AddGroup(&Group{Name: "test_group2", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	assert.NoError(t, err)
+	assert.Equal(t, tGroup2.Track, tGroup2.ID)
+}
