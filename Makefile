@@ -28,7 +28,9 @@ check:
 check-code-coverage:
 	cd backend && \
 	go test -p 1 -coverprofile=coverage.out ./...
-print-code-coverage:
+coverage.out:
+	make check-code-coverage
+print-code-coverage: coverage.out
 	cd backend && \
 	go tool cover -html=coverage.out
 container_id:
