@@ -197,18 +197,6 @@ func (api *API) enforceRolloutPolicy(instance *Instance, group *Group) error {
 	return nil
 }
 
-// grantUpdate grants an update for the provided instance in the context of the
-// given application.
-func (api *API) grantUpdate(instance *Instance, version string) error {
-	instanceData := make(map[string]interface{})
-	instanceData["last_update_granted_ts"] = nowUTC()
-	instanceData["last_update_version"] = version
-	instanceData["status"] = InstanceStatusUpdateGranted
-	instanceData["update_in_progress"] = true
-
-	return api.updateInstanceData(instance, instanceData)
-}
-
 // inOfficeHoursNow checks if the provided timezone is now in office hours.
 func inOfficeHoursNow(tz string) bool {
 	if tz == "" {

@@ -577,6 +577,17 @@ func (api *API) updateInstanceStatus(instanceID, appID string, newStatus int) er
 	return api.updateInstanceObjStatus(instance, newStatus)
 }
 
+// InstanceStatusUpdateGranted for an instance and version
+func (api *API) grantUpdate(instance *Instance, version string) error {
+	insertData := make(map[string]interface{})
+	insertData["last_update_granted_ts"] = nowUTC()
+	insertData["last_update_version"] = version
+	insertData["status"] = InstanceStatusUpdateGranted
+	insertData["update_in_progress"] = true
+
+	return api.updateInstanceData(instance, insertData)
+}
+
 func (api *API) updateInstanceData(instance *Instance, data map[string]interface{}) error {
 	appID := instance.Application.ApplicationID
 
@@ -597,6 +608,8 @@ func (api *API) updateInstanceData(instance *Instance, data map[string]interface
 
 	// This insert is used with values returned from the update query that's executed together,
 	// so we do one transaction in the DB only.
+	// Note: When last_update_version is NULL this fails.
+	//       There always has to be a "updateInstanceStatusUpdatedGranted" done first.
 	insertQuery, _, err := goqu.Insert("instance_status_history").
 		Cols("status", "version", "instance_id", "application_id", "group_id").
 		With("inst_app", goqu.Update("instance_application").

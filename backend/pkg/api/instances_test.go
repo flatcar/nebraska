@@ -129,10 +129,37 @@ func TestGetInstances(t *testing.T) {
 	assert.Equal(t, 1, len(result.Instances))
 	assert.Equal(t, 1, (int)(result.TotalInstances))
 
+	// Search for a non-existant Version should give no results.
+	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Version: "non-existant", Page: 1, PerPage: 10}, testDuration)
+	assert.NoError(t, err)
+	assert.Equal(t, 0, len(result.Instances))
+
 	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Version: "1.0.0", Page: 1, PerPage: 10}, testDuration)
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(result.Instances))
 	assert.Equal(t, "1.0.0", result.Instances[0].Application.Version)
+
+	// Search for a non-existant GroupID should give no results.
+	nonExistentGroupID := "123e4567-e89b-12d3-a456-426614174000"
+	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: nonExistentGroupID, Page: 1, PerPage: 10}, testDuration)
+	assert.NoError(t, err)
+	assert.Equal(t, 0, len(result.Instances))
+
+	// sortFilter 2 == last_check_for_updates
+	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup2.ID, Page: 1, PerPage: 10, SortFilter: "2"}, testDuration)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(result.Instances))
+	assert.Equal(t, 1, (int)(result.TotalInstances))
+
+	// Search with sortFilter and non-existant GroupID should give no results.
+	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: nonExistentGroupID, Page: 1, PerPage: 10, SortFilter: "2"}, testDuration)
+	assert.NoError(t, err)
+	assert.Equal(t, 0, len(result.Instances))
+
+	// Search with sortFilter for a non-existant Version should give no results.
+	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Version: "non-existant", Page: 1, PerPage: 10, SortFilter: "2"}, testDuration)
+	assert.NoError(t, err)
+	assert.Equal(t, 0, len(result.Instances))
 
 	_, _ = a.GetUpdatePackage(tInstance.ID, "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
 	_ = a.RegisterEvent(tInstance.ID, tApp.ID, tGroup.ID, EventUpdateComplete, ResultSuccessReboot, "", "")
@@ -186,4 +213,49 @@ func TestGetInstancesFiltered(t *testing.T) {
 		}
 		assert.Empty(t, expectedIDs)
 	}
+}
+
+func TestGetInstanceStatusHistory(t *testing.T) {
+	// Update instance status several times and see if the history matches.
+
+	a := newForTest(t)
+	defer a.Close()
+
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+
+	newInstance1ID := uuid.New().String()
+	tInstance, _ := a.RegisterInstance(newInstance1ID, "analias", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
+	assert.Equal(t, tInstance.Alias, "analias")
+
+	instance, err := a.GetInstance(tInstance.ID, tApp.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, "10.0.0.1", instance.IP)
+
+	err = a.grantUpdate(tInstance, "1.0.1")
+	assert.NoError(t, err)
+
+	err = a.updateInstanceStatus(tInstance.ID, tApp.ID, InstanceStatusInstalled)
+	assert.NoError(t, err)
+
+	err = a.updateInstanceStatus(tInstance.ID, tApp.ID, InstanceStatusComplete)
+	assert.NoError(t, err)
+
+	err = a.grantUpdate(tInstance, "1.0.2")
+	assert.NoError(t, err)
+
+	history, err := a.GetInstanceStatusHistory(tInstance.ID, tApp.ID, tGroup.ID, 100)
+	assert.NoError(t, err)
+	assert.Equal(t, 4, len(history))
+	assert.Equal(t, history[0].Status, InstanceStatusUpdateGranted)
+	assert.Equal(t, history[0].Version, "1.0.2")
+	assert.Equal(t, history[1].Status, InstanceStatusComplete)
+	assert.Equal(t, history[1].Version, "1.0.1")
+	assert.Equal(t, history[2].Status, InstanceStatusInstalled)
+	assert.Equal(t, history[2].Version, "1.0.1")
+	assert.Equal(t, history[3].Status, InstanceStatusUpdateGranted)
+	assert.Equal(t, history[3].Version, "1.0.1")
 }
