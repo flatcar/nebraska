@@ -556,22 +556,24 @@ func (api *API) GetGroupInstancesStats(groupID, duration string) (*InstancesStat
 	if err != nil {
 		return nil, err
 	}
-	query := fmt.Sprintf(`
-	SELECT
-		count(*) total,
-		sum(case when status IS NULL then 1 else 0 end) undefined,
-		sum(case when status = %d then 1 else 0 end) error,
-		sum(case when status = %d then 1 else 0 end) update_granted,
-		sum(case when status = %d then 1 else 0 end) complete,
-		sum(case when status = %d then 1 else 0 end) installed,
-		sum(case when status = %d then 1 else 0 end) downloaded,
-		sum(case when status = %d then 1 else 0 end) downloading,
-		sum(case when status = %d then 1 else 0 end) onhold
-	FROM instance_application
-	WHERE group_id=$1 AND last_check_for_updates > now() at time zone 'utc' - interval '%s' AND %s`,
-		InstanceStatusError, InstanceStatusUpdateGranted, InstanceStatusComplete, InstanceStatusInstalled,
-		InstanceStatusDownloaded, InstanceStatusDownloading, InstanceStatusOnHold, durationString, ignoreFakeInstanceCondition("instance_id"))
-	err = api.db.QueryRowx(query, groupID).StructScan(&instancesStats)
+
+	query, _, err := goqu.From("instance_application").Select(
+		goqu.COUNT("*").As("total"),
+		goqu.COALESCE(goqu.SUM(goqu.L("case when status IS NULL then 1 else 0 end")), 0).As("undefined"),
+		goqu.COALESCE(goqu.SUM(goqu.L("case when status = ? then 1 else 0 end", InstanceStatusError)), 0).As("error"),
+		goqu.COALESCE(goqu.SUM(goqu.L("case when status = ? then 1 else 0 end", InstanceStatusUpdateGranted)), 0).As("update_granted"),
+		goqu.COALESCE(goqu.SUM(goqu.L("case when status = ? then 1 else 0 end", InstanceStatusComplete)), 0).As("complete"),
+		goqu.COALESCE(goqu.SUM(goqu.L("case when status = ? then 1 else 0 end", InstanceStatusInstalled)), 0).As("installed"),
+		goqu.COALESCE(goqu.SUM(goqu.L("case when status = ? then 1 else 0 end", InstanceStatusDownloaded)), 0).As("downloaded"),
+		goqu.COALESCE(goqu.SUM(goqu.L("case when status = ? then 1 else 0 end", InstanceStatusDownloading)), 0).As("downloading"),
+		goqu.COALESCE(goqu.SUM(goqu.L("case when status = ? then 1 else 0 end", InstanceStatusOnHold)), 0).As("onhold"),
+	).Where(goqu.C("group_id").Eq(groupID), goqu.L("last_check_for_updates > now() at time zone 'utc' - interval ?", durationString),
+		goqu.L(ignoreFakeInstanceCondition("instance_id")),
+	).ToSQL()
+	if err != nil {
+		return nil, err
+	}
+	err = api.db.QueryRowx(query).StructScan(&instancesStats)
 	if err != nil {
 		return nil, err
 	}
