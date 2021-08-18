@@ -209,35 +209,39 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
       count: [{ key: 'complete' }],
     },
     {
-      status: 'InstanceStatusDownloaded',
-      count: [{ key: 'downloaded' }],
+      status: 'InstanceStatusNotUpdating',
+      count: [{ key: 'other_versions', label: t('instances|InstanceStatusOtherVersions') }],
     },
     {
-      status: 'InstanceStatusOther',
+      status: 'InstanceStatusOnHold',
+      count: [{ key: 'onhold' }],
+    },
+    {
+      status: 'InstanceStatusUpdating',
       count: [
-        { key: 'onhold', label: t('instances|InstanceStatusOnHold') },
-        { key: 'undefined', label: t('instances|InstanceStatusUndefined') },
-      ],
-    },
-    {
-      status: 'InstanceStatusInstalled',
-      count: [{ key: 'installed' }],
-    },
-    {
-      status: 'InstanceStatusDownloading',
-      count: [
-        { key: 'downloading', label: t('instances|InstanceStatusDownloading') },
         { key: 'update_granted', label: t('instances|InstanceStatusUpdateGranted') },
+        { key: 'downloading', label: t('instances|InstanceStatusDownloading') },
+        { key: 'downloaded', label: t('instances|InstanceStatusDownloaded') },
+        { key: 'installed', label: t('instances|InstanceStatusInstalled') },
       ],
     },
     {
       status: 'InstanceStatusError',
       count: [{ key: 'error' }],
     },
+    {
+      status: 'InstanceStatusTimedOut',
+      count: [{ key: 'timed_out' }],
+    },
   ];
 
-  statusDefs['InstanceStatusOther'] = { ...statusDefs['InstanceStatusUndefined'] };
-  statusDefs['InstanceStatusOther'].label = t('instances|Other');
+  statusDefs['InstanceStatusNotUpdating'] = { ...statusDefs['InstanceStatusUndefined'] };
+  statusDefs['InstanceStatusNotUpdating'].label = t('instances|Not updating');
+
+  statusDefs['InstanceStatusUpdating'] = {
+    ...statusDefs['InstanceStatusDownloading'],
+    label: t('instances|Updating'),
+  };
 
   const totalInstances = instanceStats ? instanceStats.total : 0;
 
