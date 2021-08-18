@@ -230,6 +230,26 @@ export function getInstanceStatus(statusID: number, version?: string) {
       explanation:
         'There was an update pending for the instance but it was put on hold because of the rollout policy',
     },
+    9: {
+      type: 'InstanceStatusTimedOut',
+      className: 'danger',
+      spinning: false,
+      icon: 'glyphicon glyphicon-remove',
+      description: 'Error updating',
+      bgColor: 'rgba(244, 67, 54, 0.1)',
+      textColor: '#F44336',
+      status: 'Error',
+      explanation: 'The instance reported an error while updating to version ' + version,
+    },
+    10: {
+      type: 'InstanceStatusOtherVersions',
+      className: '',
+      spinning: false,
+      icon: '',
+      description: '',
+      status: 'Undefined',
+      explanation: '',
+    },
   };
 
   const statusDetails = statusID ? status[statusID] : status[1];

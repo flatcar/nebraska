@@ -264,6 +264,7 @@ function ItemExtended(props: {
                   <InstanceStatusArea
                     instanceStats={instancesStats}
                     period={updateProgressChartDuration.displayValue}
+                    groupHasVersion={!!group.channel?.package?.version}
                     href={{
                       pathname: `/apps/${props.appID}/groups/${props.groupID}/instances`,
                       search: `period=${updateProgressChartDuration.queryValue}`,
