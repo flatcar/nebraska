@@ -187,6 +187,7 @@ interface InstanceStatusAreaProps {
   instanceStats: InstanceStats | null;
   href?: object;
   period: string;
+  groupHasVersion: boolean;
 }
 
 interface InstanceStatusCount {
@@ -202,7 +203,7 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
   const statusDefs = makeStatusDefs(theme);
   const { t } = useTranslation();
 
-  const { instanceStats, href, period } = props;
+  const { instanceStats, href, period, groupHasVersion } = props;
   const instanceStateCount: InstanceStatusCount[] = [
     {
       status: 'InstanceStatusComplete',
@@ -255,37 +256,46 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
         <InstanceCountLabel countText={totalInstances} href={href} />
       </Grid>
       <Grid item container justify="space-between" xs={8}>
-        {instanceStateCount.map(({ status, count }, i) => {
-          // Sort the data entries so the smaller amounts are shown first.
-          count.sort((obj1, obj2) => {
-            const stats1 = instanceStats[obj1.key];
-            const stats2 = instanceStats[obj2.key];
-            if (stats1 === stats2) return 0;
-            if (stats1 < stats2) return -1;
-            return 1;
-          });
+        {!groupHasVersion ? (
+          <Empty>
+            <Trans ns="instances">
+              It's not possible to get an accurate report as the group has no channel/version
+              assigned to it.
+            </Trans>
+          </Empty>
+        ) : (
+          instanceStateCount.map(({ status, count }, i) => {
+            // Sort the data entries so the smaller amounts are shown first.
+            count.sort((obj1, obj2) => {
+              const stats1 = instanceStats[obj1.key];
+              const stats2 = instanceStats[obj2.key];
+              if (stats1 === stats2) return 0;
+              if (stats1 < stats2) return -1;
+              return 1;
+            });
 
-          return (
-            <Grid item key={i}>
-              <ProgressDoughnut
-                data={count.map(({ key, label = status }) => {
-                  const statusLabel = statusDefs[label].label;
-                  return {
-                    value: instanceStats[key] / instanceStats.total,
-                    color: statusDefs[label].color,
-                    description: t('{{statusLabel}}: {{stat, number}} instances', {
-                      statusLabel: statusLabel,
-                      stat: instanceStats[key],
-                    }),
-                  };
-                })}
-                width={140}
-                height={140}
-                {...statusDefs[status]}
-              />
-            </Grid>
-          );
-        })}
+            return (
+              <Grid item key={i}>
+                <ProgressDoughnut
+                  data={count.map(({ key, label = status }) => {
+                    const statusLabel = statusDefs[label].label;
+                    return {
+                      value: instanceStats[key] / instanceStats.total,
+                      color: statusDefs[label].color,
+                      description: t('{{statusLabel}}: {{stat, number}} instances', {
+                        statusLabel: statusLabel,
+                        stat: instanceStats[key],
+                      }),
+                    };
+                  })}
+                  width={140}
+                  height={140}
+                  {...statusDefs[status]}
+                />
+              </Grid>
+            );
+          })
+        )}
       </Grid>
     </Grid>
   ) : (
