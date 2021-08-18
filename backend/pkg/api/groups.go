@@ -136,6 +136,8 @@ type InstancesStatusStats struct {
 	Downloaded    null.Int `db:"downloaded" json:"downloaded"`
 	Downloading   null.Int `db:"downloading" json:"downloading"`
 	OnHold        null.Int `db:"onhold" json:"onhold"`
+	OtherVersions null.Int `db:"other_versions" json:"other_versions"`
+	TimedOut      null.Int `db:"timed_out" json:"timed_out"`
 }
 
 // UpdatesStats represents a set of statistics about the status of the updates
@@ -557,19 +559,42 @@ func (api *API) GetGroupInstancesStats(groupID, duration string) (*InstancesStat
 		return nil, err
 	}
 
-	query, _, err := goqu.From("instance_application").Select(
-		goqu.COUNT("*").As("total"),
-		goqu.COALESCE(goqu.SUM(goqu.L("case when status IS NULL then 1 else 0 end")), 0).As("undefined"),
-		goqu.COALESCE(goqu.SUM(goqu.L("case when status = ? then 1 else 0 end", InstanceStatusError)), 0).As("error"),
-		goqu.COALESCE(goqu.SUM(goqu.L("case when status = ? then 1 else 0 end", InstanceStatusUpdateGranted)), 0).As("update_granted"),
-		goqu.COALESCE(goqu.SUM(goqu.L("case when status = ? then 1 else 0 end", InstanceStatusComplete)), 0).As("complete"),
-		goqu.COALESCE(goqu.SUM(goqu.L("case when status = ? then 1 else 0 end", InstanceStatusInstalled)), 0).As("installed"),
-		goqu.COALESCE(goqu.SUM(goqu.L("case when status = ? then 1 else 0 end", InstanceStatusDownloaded)), 0).As("downloaded"),
-		goqu.COALESCE(goqu.SUM(goqu.L("case when status = ? then 1 else 0 end", InstanceStatusDownloading)), 0).As("downloading"),
-		goqu.COALESCE(goqu.SUM(goqu.L("case when status = ? then 1 else 0 end", InstanceStatusOnHold)), 0).As("onhold"),
-	).Where(goqu.C("group_id").Eq(groupID), goqu.L("last_check_for_updates > now() at time zone 'utc' - interval ?", durationString),
-		goqu.L(ignoreFakeInstanceCondition("instance_id")),
-	).ToSQL()
+	packageVersion := ""
+	group, err := api.GetGroup(groupID)
+
+	if err == nil {
+		packageVersion = ""
+		if group.Channel != nil && group.Channel.Package != nil {
+			packageVersion = group.Channel.Package.Version
+		}
+	}
+
+	query := ""
+	// If we have no package assigned, then we cannot thoroughly report on the status for the group's version,
+	// so we send out just the total
+	if packageVersion == "" {
+		query, _, err = goqu.From("instance_application").Select(
+			goqu.COUNT("*").As("total"),
+		).Where(goqu.C("group_id").Eq(groupID), goqu.L("last_check_for_updates > now() at time zone 'utc' - interval ?", durationString),
+			goqu.L(ignoreFakeInstanceCondition("instance_id")),
+		).ToSQL()
+	} else {
+		query, _, err = goqu.From("instance_application").Select(
+			goqu.COUNT("*").As("total"),
+			goqu.COALESCE(goqu.SUM(goqu.L("case when (update_in_progress = 'false' or now() at time zone 'utc' - last_update_granted_ts < interval ?) and version != ? and status IS NULL then 1 else 0 end", group.PolicyUpdateTimeout, packageVersion)), 0).As("undefined"),
+			goqu.COALESCE(goqu.SUM(goqu.L("case when (update_in_progress = 'false' or now() at time zone 'utc' - last_update_granted_ts < interval ?) and last_update_version = ? and status = ? then 1 else 0 end", group.PolicyUpdateTimeout, packageVersion, InstanceStatusError)), 0).As("error"),
+			goqu.COALESCE(goqu.SUM(goqu.L("case when (update_in_progress = 'false' or now() at time zone 'utc' - last_update_granted_ts < interval ?) and last_update_version = ? and status = ? then 1 else 0 end", group.PolicyUpdateTimeout, packageVersion, InstanceStatusUpdateGranted)), 0).As("update_granted"),
+			goqu.COALESCE(goqu.SUM(goqu.L("case when (update_in_progress = 'false' or now() at time zone 'utc' - last_update_granted_ts < interval ?) and (version = ? and status IS NULL) or (version = ? and status = ?) then 1 else 0 end", group.PolicyUpdateTimeout, packageVersion, packageVersion, InstanceStatusComplete)), 0).As("complete"),
+			goqu.COALESCE(goqu.SUM(goqu.L("case when (update_in_progress = 'false' or now() at time zone 'utc' - last_update_granted_ts < interval ?) and last_update_version = ? and status = ? then 1 else 0 end", group.PolicyUpdateTimeout, packageVersion, InstanceStatusInstalled)), 0).As("installed"),
+			goqu.COALESCE(goqu.SUM(goqu.L("case when (update_in_progress = 'false' or now() at time zone 'utc' - last_update_granted_ts < interval ?) and last_update_version = ? and status = ? then 1 else 0 end", group.PolicyUpdateTimeout, packageVersion, InstanceStatusDownloaded)), 0).As("downloaded"),
+			goqu.COALESCE(goqu.SUM(goqu.L("case when (update_in_progress = 'false' or now() at time zone 'utc' - last_update_granted_ts < interval ?) and last_update_version = ? and status = ? then 1 else 0 end", group.PolicyUpdateTimeout, packageVersion, InstanceStatusDownloading)), 0).As("downloading"),
+			goqu.COALESCE(goqu.SUM(goqu.L("case when (update_in_progress = 'false' or now() at time zone 'utc' - last_update_granted_ts < interval ?) and last_update_version = ? and status = ? then 1 else 0 end", group.PolicyUpdateTimeout, packageVersion, InstanceStatusOnHold)), 0).As("onhold"),
+			goqu.COALESCE(goqu.SUM(goqu.L("case when (update_in_progress = 'false' or now() at time zone 'utc' - last_update_granted_ts < interval ?) and last_update_version != ? and version != ? and status IS NOT NULL then 1 else 0 end", group.PolicyUpdateTimeout, packageVersion, packageVersion)), 0).As("other_versions"),
+			goqu.COALESCE(goqu.SUM(goqu.L("case when update_in_progress = 'true' and now() at time zone 'utc' - last_update_granted_ts > interval ? then 1 else 0 end", group.PolicyUpdateTimeout)), 0).As("timed_out"),
+		).Where(goqu.C("group_id").Eq(groupID), goqu.L("last_check_for_updates > now() at time zone 'utc' - interval ?", durationString),
+			goqu.L(ignoreFakeInstanceCondition("instance_id")),
+		).ToSQL()
+	}
 	if err != nil {
 		return nil, err
 	}
