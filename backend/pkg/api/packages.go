@@ -49,6 +49,33 @@ type Package struct {
 	Arch              Arch           `db:"arch" json:"arch"`
 }
 
+// checkMatchingArch returns an error if the arch does not match the channels
+func (api *API) checkMatchingArch(channelIDs StringArray, arch Arch) error {
+	if len(channelIDs) == 0 {
+		return nil
+	}
+
+	query, _, err := goqu.From("channel").
+		Select(goqu.COUNT("*")).
+		Where(goqu.Ex{"id": channelIDs}).
+		Where(goqu.C("arch").Neq(arch)).
+		ToSQL()
+
+	if err != nil {
+		return err
+	}
+	count := 0
+	if err := api.db.QueryRow(query).Scan(&count); err != nil {
+		return err
+	}
+
+	if count > 0 {
+		return ErrArchMismatch
+	}
+
+	return nil
+}
+
 // AddPackage registers the provided package.
 func (api *API) AddPackage(pkg *Package) (*Package, error) {
 	if !isValidSemver(pkg.Version) {
@@ -57,16 +84,9 @@ func (api *API) AddPackage(pkg *Package) (*Package, error) {
 	if !pkg.Arch.IsValid() {
 		return nil, ErrInvalidArch
 	}
-	if len(pkg.ChannelsBlacklist) > 0 {
-		blacklistedChannels, err := api.getSpecificChannels(pkg.ChannelsBlacklist...)
-		if err != nil {
-			return nil, err
-		}
-		for _, channel := range blacklistedChannels {
-			if pkg.Arch != channel.Arch {
-				return nil, ErrArchMismatch
-			}
-		}
+	err := api.checkMatchingArch(pkg.ChannelsBlacklist, pkg.Arch)
+	if err != nil {
+		return nil, err
 	}
 
 	tx, err := api.db.Beginx()
