@@ -27,14 +27,7 @@ function Item(props: {
   const theme = useTheme();
   const classes = useStyles();
   const { t } = useTranslation();
-  const {
-    channel,
-    packages,
-    handleUpdateChannel,
-    showArch = true,
-    isAppView = false,
-    ...others
-  } = props;
+  const { channel, showArch = true, isAppView = false, ...others } = props;
   const name = channel.name;
   const version = channel.package
     ? cleanSemverVersion(channel.package.version)

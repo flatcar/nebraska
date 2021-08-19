@@ -34,11 +34,11 @@ function List(props: { appID: string }) {
     applicationsStore.addChangeListener(onChange);
     if (!packages) {
       API.getPackages(props.appID).then(result => {
-        if (_.isNull(result)) {
+        if (_.isNull(result.packages)) {
           setPackages([]);
           return;
         }
-        setPackages(result);
+        setPackages(result.packages);
       });
     }
 

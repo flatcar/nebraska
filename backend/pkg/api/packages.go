@@ -273,6 +273,27 @@ func (api *API) GetPackageByVersionAndArch(appID, version string, arch Arch) (*P
 	return &pkg, nil
 }
 
+// GetPackagesCount retuns the total number of package in an app
+func (api *API) GetPackagesCount(appID string) (int, error) {
+	query := goqu.From(goqu.L("package LEFT JOIN package_channel_blacklist pcb ON package.id = pcb.package_id")).
+		Select(goqu.L(`package.*,
+	    array_agg(pcb.channel_id) FILTER (WHERE pcb.channel_id IS NOT NULL) as channels_blacklist
+	    `)).Where(goqu.C("application_id").Eq(appID)).
+		GroupBy("package.id")
+
+	query = goqu.From(query).Select(goqu.L("count (*)"))
+	q, _, err := query.ToSQL()
+	if err != nil {
+		return 0, err
+	}
+	count := 0
+	err = api.db.QueryRow(q).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 // GetPackages returns all packages associated to the application provided.
 func (api *API) GetPackages(appID string, page, perPage uint64) ([]*Package, error) {
 	page, perPage = validatePaginationParams(page, perPage)

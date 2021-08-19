@@ -268,12 +268,12 @@ class API {
     PubSub.publish(MAIN_PROGRESS_BAR, 'add');
     const nebraska_config = localStorage.getItem(CONFIG_STORAGE_KEY) || '{}';
     const config = JSON.parse(nebraska_config) || {};
-    let headers = {};
+    const headers: { [key: string]: string } = {
+      'Content-Type': 'application/json',
+    };
 
     if (Object.keys(config).length > 0 && config.auth_mode === 'oidc') {
-      headers = {
-        Authorization: `Bearer ${token}`,
-      };
+      headers['Authorization'] = `Bearer ${token}`;
     }
     let fetchConfigObject: {
       method: string;

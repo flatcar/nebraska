@@ -23,11 +23,11 @@ import { applicationsStore } from '../../stores/Stores';
 import { ARCHES } from '../../utils/helpers';
 import { REGEX_SEMVER } from '../../utils/regex';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
   topSelect: {
     width: '10rem',
   },
-}));
+});
 
 function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide: () => void }) {
   const classes = useStyles();

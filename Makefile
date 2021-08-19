@@ -118,6 +118,18 @@ container-nebraska:
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_NEBRASKA):latest" \
 		-f Dockerfile .
 
+.PHONY: backend/tools/codegen
+backend/tools/codegen:
+	go get github.com/deepmap/oapi-codegen/cmd/oapi-codegen;
+
+.PHONY: codegen
+codegen: backend/tools/codegen
+	oapi-codegen --generate=server --package codegen -o ./backend/pkg/codegen/server.gen.go ./backend/api/spec.yaml;
+	oapi-codegen --generate=spec --package codegen -o ./backend/pkg/codegen/spec.gen.go ./backend/api/spec.yaml;
+	oapi-codegen --generate=client --package codegen -o ./backend/pkg/codegen/client.gen.go ./backend/api/spec.yaml; 
+	oapi-codegen --generate=types --package codegen -o ./backend/pkg/codegen/types.gen.go ./backend/api/spec.yaml;
+
+
 .PHONY: container
 container: container-nebraska
 
@@ -143,10 +155,3 @@ backend-code-checks: backend/tools/golangci-lint
 	cd backend && ./tools/golangci-lint run --fix
 	cd backend && go mod tidy
 
-.PHONY: swagger-install
-swagger-install:
-	go get -u github.com/swaggo/swag/cmd/swag
-
-.PHONY: swagger-init
-swagger-init:  swagger-install
-	cd backend && swag init -g cmd/userctl/main.go -o api

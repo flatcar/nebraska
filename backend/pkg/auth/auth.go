@@ -1,9 +1,8 @@
 package auth
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo/v4"
 
-	"github.com/kinvolk/nebraska/backend/cmd/nebraska/ginhelpers"
 	"github.com/kinvolk/nebraska/backend/pkg/util"
 )
 
@@ -14,11 +13,6 @@ var (
 // Authenticator provides a way to authenticate a user sending an HTTP
 // request.
 type Authenticator interface {
-	// SetupRouter allows the authenticator to add more
-	// middlewares and routes to the router. It may be useful for
-	// authenticators talking to third party services that provide
-	// authentication functionality.
-	SetupRouter(router ginhelpers.Router)
 	// Authenticate checks if the user is authenticated. It should
 	// return an ID of a team from the database if user is
 	// authenticated. If authentication fails, the function should
@@ -26,5 +20,11 @@ type Authenticator interface {
 	// return value. Similar should happen if the authentication
 	// routine requires redirection - issue a redirection HTTP
 	// reply and return true for "replied".
-	Authenticate(c *gin.Context) (teamID string, replied bool)
+	Authenticate(c echo.Context) (teamID string, replied bool)
+
+	Login(ctx echo.Context) error
+
+	LoginCb(ctx echo.Context) error
+
+	ValidateToken(ctx echo.Context) error
 }
