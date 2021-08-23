@@ -138,8 +138,7 @@ function Item(props: {
           </Box>
           <Grid item xs={7} container direction="column" className={classes.itemSection}>
             <Grid item>
-              <CardFeatureLabel>{t('groups|Channel')}</CardFeatureLabel>
-              {groupChannel}
+              <CardFeatureLabel>{t('groups|Channel')}</CardFeatureLabel> {groupChannel}
             </Grid>
             <Grid item>
               <CardFeatureLabel>{t('groups|Updates')}</CardFeatureLabel>
