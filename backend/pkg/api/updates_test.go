@@ -284,6 +284,84 @@ func TestGetUpdatePackage_RolloutStats(t *testing.T) {
 	assert.Equal(t, int64(3), stats.Complete.Int64)
 }
 
+func TestGetUpdatePackage_CompletionStats(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := a.AddGroup(&Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 4, PolicyUpdateTimeout: "60 minutes"})
+
+	addAndUpdateInstance := func() {
+		tInstance, err := a.RegisterInstance(uuid.New().String(), "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
+		assert.NoError(t, err)
+
+		_, err = a.GetUpdatePackage(tInstance.ID, "", "10.0.0.1", "12.0.0", tApp.ID, tGroup.ID)
+		assert.NoError(t, err)
+
+		err = a.RegisterEvent(tInstance.ID, "{"+tApp.ID+"}", tGroup.ID, EventUpdateDownloadStarted, ResultSuccess, "11.0.0", "")
+		assert.NoError(t, err)
+		instance, _ := a.GetInstance(tInstance.ID, tApp.ID)
+		assert.Equal(t, null.IntFrom(int64(InstanceStatusDownloading)), instance.Application.Status)
+
+		err = a.RegisterEvent(tInstance.ID, tApp.ID, "{"+tGroup.ID+"}", EventUpdateDownloadFinished, ResultSuccess, "11.0.0", "")
+		assert.NoError(t, err)
+		instance, _ = a.GetInstance(tInstance.ID, tApp.ID)
+		assert.Equal(t, null.IntFrom(int64(InstanceStatusDownloaded)), instance.Application.Status)
+
+		err = a.RegisterEvent(tInstance.ID, tApp.ID, tGroup.ID, EventUpdateInstalled, ResultSuccess, "11.0.0", "")
+		assert.NoError(t, err)
+		instance, _ = a.GetInstance(tInstance.ID, tApp.ID)
+		assert.Equal(t, null.IntFrom(int64(InstanceStatusInstalled)), instance.Application.Status)
+
+		err = a.RegisterEvent(tInstance.ID, tApp.ID, tGroup.ID, EventUpdateComplete, ResultSuccessReboot, "11.0.0", "")
+		assert.NoError(t, err)
+		instance, _ = a.GetInstance(tInstance.ID, tApp.ID)
+		assert.Equal(t, null.IntFrom(int64(InstanceStatusComplete)), instance.Application.Status)
+	}
+
+	addAndUpdateInstance()
+
+	stats, _ := a.GetGroupInstancesStats(tGroup.ID, testDuration)
+	assert.Equal(t, 1, stats.Total)
+
+	// This instance has the group's current package's version already and reports no status.
+	// We need to make sure it doesn't show up as undefined.
+	instance1, _ := a.RegisterInstance(uuid.New().String(), "", "10.0.0.1", tPkg.Version, tApp.ID, tGroup.ID)
+
+	stats, _ = a.GetGroupInstancesStats(tGroup.ID, testDuration)
+	assert.Equal(t, int64(0), stats.Undefined.Int64)
+	assert.Equal(t, int64(2), stats.Complete.Int64)
+
+	// Just ensuring that a call for getting an update in an already up to date instance won't change its status
+	_, err := a.GetUpdatePackage(instance1.ID, "", "10.0.0.1", tPkg.Version, tApp.ID, tGroup.ID)
+	assert.Error(t, err, "nebraska: no update package available")
+
+	// This version has a version different from the group's current one, and reports no status, so the
+	// status should be undefined.
+	_, err = a.RegisterInstance(uuid.New().String(), "", "10.0.0.1", "0.1.0", tApp.ID, tGroup.ID)
+	assert.NoError(t, err)
+
+	stats, _ = a.GetGroupInstancesStats(tGroup.ID, testDuration)
+	assert.Equal(t, 3, stats.Total)
+	assert.Equal(t, int64(1), stats.Undefined.Int64)
+	assert.Equal(t, int64(2), stats.Complete.Int64)
+
+	// Remove channel from group
+	tGroup.ChannelID = null.StringFromPtr(nil)
+	err = a.UpdateGroup(tGroup)
+	assert.NoError(t, err)
+
+	// Without the channel set to the group, we cannot know the version pointed to by that group,
+	// so all instances that don't have the explicit "complete" status will be reported as undefined.
+	stats, _ = a.GetGroupInstancesStats(tGroup.ID, testDuration)
+	assert.Equal(t, 3, stats.Total)
+	assert.Equal(t, int64(2), stats.Undefined.Int64)
+	assert.Equal(t, int64(1), stats.Complete.Int64)
+}
+
 func TestGetUpdatePackage_UpdateInProgressOnInstance(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
