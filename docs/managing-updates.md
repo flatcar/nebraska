@@ -94,11 +94,28 @@ prefer to use it, you should pass the option `-enable-syncer=true` when running 
 
 Notice that by default Nebraska only stores metadata about the Flatcar Container Linux updates, not the updates payload. This means that the updates served to your instances contain instructions to download the packages payload from the public Flatcar Container Linux update servers directly, so your servers need access to the Internet to download them.
 
+### Hosting synchronized packages
+
 It is also possible to host the Flatcar Container Linux packages payload in Nebraska. In this case, in addition to get the packages metadata, Nebraska will also download the package payload itself so that it can serve it to your instances when serving updates.
 
 This functionality is turned off by default. So to make Nebraska host the Flatcar Container Linux packages payload, the following options have to be passed to it:
 
     nebraska -host-flatcar-packages=true -flatcar-packages-path=/PATH/TO/STORE/PACKAGES -nebraska-url=http://your.Nebraska.host:port
+
+### Overriding synchronized packages' URLs
+
+Some users may choose to host their own packages elsewhere (i.e. without using the
+host function explained above), and thus it is desired to synchronize the packages
+from upstream but giving them a custom URL for the actual update download.
+
+This can be achieved by setting the `syncer-packages-url` CLI option. This should
+be set as a URL, and any `{{VERSION}}` and `{{ARCH}}` keywords in the URL will be
+replaced by the packages' version and arch, respectively.
+
+For example:
+```bash
+nebraska -enable-syncer=true -syncer-packages-url=https://mysepcialstorage.io/flatcar/{{ARCH}}/{{VERSION}}
+```
 
 ## Managing updates for your own applications
 
