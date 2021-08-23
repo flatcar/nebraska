@@ -32,15 +32,13 @@ function List(props: { appID: string }) {
 
   React.useEffect(() => {
     applicationsStore.addChangeListener(onChange);
-    if (!packages) {
-      API.getPackages(props.appID).then(result => {
-        if (_.isNull(result)) {
-          setPackages([]);
-          return;
-        }
-        setPackages(result);
-      });
-    }
+    API.getPackages(props.appID).then(result => {
+      if (_.isNull(result)) {
+        setPackages([]);
+        return;
+      }
+      setPackages(result);
+    });
 
     if (application === null) {
       applicationsStore.getApplication(props.appID);
@@ -49,7 +47,7 @@ function List(props: { appID: string }) {
     return function cleanup() {
       applicationsStore.removeChangeListener(onChange);
     };
-  }, [application, packages]);
+  }, [props.appID, application]);
 
   function onCloseEditDialog() {
     setPackageToUpdate(null);
