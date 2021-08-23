@@ -55,13 +55,17 @@ func TestAddPackage(t *testing.T) {
 	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, ChannelsBlacklist: []string{"invalidChannelID"}})
 	assert.Error(t, err, "Blacklisted channels must be valid existing channels ids.")
 
-	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, ChannelsBlacklist: []string{tChannel1.ID}})
-	assert.Error(t, err, "Blacklisted channels must have a matching arch.")
+	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0",
+		ApplicationID: tApp.ID, ChannelsBlacklist: []string{tChannel1.ID}})
+	assert.Equal(t, ErrArchMismatch, err, "When using Blacklisted channels, an Arch must be supplied.")
 
-	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: Arch(77777)})
-	assert.Error(t, err, "Arch must be a valid architecture")
+	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg",
+		Version: "12.2.0", ApplicationID: tApp.ID,
+		ChannelsBlacklist: []string{tChannel1.ID},
+		Arch:              ArchAMD64})
+	assert.Equal(t, ErrArchMismatch, err, "Blacklisted channels must have a matching arch.")
 
-	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: Arch(77777)})
+	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.3.0", ApplicationID: tApp.ID, Arch: Arch(77777)})
 	assert.Error(t, err, "Arch must be a valid architecture")
 }
 
