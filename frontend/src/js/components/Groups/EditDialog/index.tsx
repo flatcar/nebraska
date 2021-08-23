@@ -55,7 +55,7 @@ function EditDialog(props: {
       policy_updates_enabled: values.updatesEnabled,
       policy_safe_mode: values.safeMode,
       policy_office_hours: values.onlyOfficeHours,
-      policy_max_updates_per_period: values.maxUpdates,
+      policy_max_updates_per_period: parseInt(values.maxUpdates),
       policy_period_interval: updatesPeriodPolicy,
       policy_update_timeout: updatesTimeoutPolicy,
     };
