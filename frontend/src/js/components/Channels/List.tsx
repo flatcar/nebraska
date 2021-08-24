@@ -10,6 +10,7 @@ import API from '../../api/API';
 import { Application, Channel, Package } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import { ARCHES } from '../../utils/helpers';
+import Empty from '../Common/EmptyContent';
 import Loader from '../Common/Loader';
 import ModalButton from '../Common/ModalButton';
 import SectionPaper from '../Common/SectionPaper';
@@ -35,6 +36,7 @@ function ChannelList(props: {
 }) {
   const { application, onEdit } = props;
   const classes = useStyles();
+  const { t } = useTranslation();
 
   function getChannelsPerArch() {
     const perArch: {
@@ -56,9 +58,18 @@ function ChannelList(props: {
     return perArch;
   }
 
+  const channelsPerArch = getChannelsPerArch();
+  const noChannels = !Object.values(channelsPerArch).find(
+    (channels: Channel[]) => !!channels && channels.length > 0
+  );
+
+  if (noChannels) {
+    return <Empty>{t('channels|No channels created for this application yet')}</Empty>;
+  }
+
   return (
     <React.Fragment>
-      {Object.entries(getChannelsPerArch()).map(([arch, channels]) => (
+      {Object.entries(channelsPerArch).map(([arch, channels]) => (
         <MuiList
           key={arch}
           subheader={<ListSubheader disableSticky>{ARCHES[parseInt(arch)]}</ListSubheader>}
