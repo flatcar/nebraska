@@ -132,6 +132,7 @@ export default function GroupPolicyForm(props: {
                   setFieldValue('maxUpdates', e.target.value);
                 }}
                 defaultValue={values.maxUpdates}
+                inputProps={{ min: 0 }}
               />
             </Box>
           </Grid>
@@ -150,6 +151,7 @@ export default function GroupPolicyForm(props: {
                 onChange={(e: any) => {
                   setFieldValue('updatesPeriodRange', e.target.value);
                 }}
+                inputProps={{ min: 0 }}
               />
             </Box>
           </Grid>
@@ -193,6 +195,7 @@ export default function GroupPolicyForm(props: {
                   onChange={(e: any) => {
                     setFieldValue('updatesTimeout', e.target.value);
                   }}
+                  inputProps={{ min: 0 }}
                 />
               </Grid>
               <Grid item xs={3}>
