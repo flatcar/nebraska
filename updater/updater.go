@@ -41,6 +41,28 @@ var (
 	}
 )
 
+type Handlers interface {
+	GetUpdate(ctx context.Context) error
+	ApplyUpdate(ctx context.Context) error
+}
+
+type emptyHandler struct {
+}
+
+func NewEmptyHandler() Handlers {
+	return emptyHandler{}
+}
+
+func (e emptyHandler) GetUpdate(ctx context.Context) error {
+	fmt.Println("Downloading the upload payload")
+	return nil
+}
+
+func (e emptyHandler) ApplyUpdate(ctx context.Context) error {
+	fmt.Println("Installing the update")
+	return nil
+}
+
 type Updater interface {
 	Ping(ctx context.Context) (*omaha.Response, error)
 	UpdateCheck(ctx context.Context) (*omaha.Response, error)
@@ -224,8 +246,8 @@ func main() {
 
 	omahaURL := "http://localhost:8000/v1/update/"
 
-	appID := "e96281a6-d1af-4bde-9a0a-97b76e56dc57"
-	appVersion := "2191.3.0"
+	appID := "4f101e1e-7fca-4a45-a222-c2aa2fd78d84"
+	appVersion := "0.3.0"
 
 	emptyHandler := NewEmptyHandler()
 
