@@ -74,6 +74,11 @@ type Updater struct {
 	httpClient *retryablehttp.Client
 }
 
+type UpdateHandler interface {
+	FetchUpdate(ctx context.Context) error
+	ApplyUpdate(ctx context.Context) error
+}
+
 func New(omahaURL string, instanceID string, instanceVersion string, appID string, channel string) (*Updater, error) {
 	return NewWithHttpClient(omahaURL, instanceID, instanceVersion, appID, channel, retryablehttp.NewClient())
 }
@@ -179,8 +184,7 @@ func (u *Updater) SendOmahaEvent(ctx context.Context, event *omaha.EventRequest)
 	return u.SendOmahaRequest(u.omahaURL, req)
 }
 
-func (u *Updater) TryUpdate(ctx context.Context, handlers Handlers) error {
-
+func (u *Updater) TryUpdate(ctx context.Context, handler UpdateHandler) error {
 	fmt.Println("Version before run:", u.instanceVersion)
 
 	// Check for updates
@@ -190,7 +194,7 @@ func (u *Updater) TryUpdate(ctx context.Context, handlers Handlers) error {
 	}
 
 	// Fetch update
-	err = handlers.FetchUpdate(ctx)
+	err = handler.FetchUpdate(ctx)
 	if err != nil {
 		err := u.ReportProgress(ctx, ProgressError)
 		if err != nil {
@@ -203,7 +207,7 @@ func (u *Updater) TryUpdate(ctx context.Context, handlers Handlers) error {
 		return err
 	}
 
-	err = handlers.ApplyUpdate(ctx)
+	err = handler.ApplyUpdate(ctx)
 	if err != nil {
 		err := u.ReportProgress(ctx, ProgressError)
 		if err != nil {
