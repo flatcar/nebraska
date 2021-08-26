@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 	"net/url"
+	"os"
 
 	"github.com/google/uuid"
 	retryablehttp "github.com/hashicorp/go-retryablehttp"
@@ -75,8 +76,58 @@ type Updater struct {
 }
 
 type UpdateHandler interface {
-	FetchUpdate(ctx context.Context) error
-	ApplyUpdate(ctx context.Context) error
+	FetchUpdate(info *UpdateInfo) error
+	ApplyUpdate(info *UpdateInfo) error
+}
+
+type UpdateInfo struct {
+	HasUpdate bool
+	omahaResp *omaha.Response
+}
+
+func (u *UpdateInfo) GetVersion() string {
+	app := u.getApp()
+	if app != nil && app.UpdateCheck != nil {
+		return app.UpdateCheck.Manifest.Version
+	}
+
+	return ""
+}
+
+func (u *UpdateInfo) GetURLs() []string {
+	app := u.getApp()
+	if app != nil && app.UpdateCheck != nil {
+		omahaURLs := app.UpdateCheck.URLs
+		urls := make([]string, len(omahaURLs))
+		for i, url := range omahaURLs {
+			urls[i] = url.CodeBase
+		}
+
+		return urls
+	}
+
+	return nil
+}
+
+func (u *UpdateInfo) GetUpdateStatus() string {
+	app := u.getApp()
+	if app != nil && app.UpdateCheck != nil {
+		return string(app.UpdateCheck.Status)
+	}
+
+	return ""
+}
+
+func (u *UpdateInfo) GetOmahaResponse() *omaha.Response {
+	return u.omahaResp
+}
+
+func (u *UpdateInfo) getApp() *omaha.AppResponse {
+	if u.omahaResp != nil {
+		return u.omahaResp.Apps[0]
+	}
+
+	return nil
 }
 
 func New(omahaURL string, instanceID string, instanceVersion string, appID string, channel string) (*Updater, error) {
@@ -137,7 +188,7 @@ func (u *Updater) SendOmahaRequest(url string, req *omaha.Request) (*omaha.Respo
 	return omahaResp, nil
 }
 
-func (u *Updater) CheckForUpdates(ctx context.Context) (*omaha.Response, error) {
+func (u *Updater) CheckForUpdates(ctx context.Context) (*UpdateInfo, error) {
 	req := NewAppRequest(u)
 	app := req.GetApp(u.appID)
 	app.AddUpdateCheck()
@@ -149,12 +200,12 @@ func (u *Updater) CheckForUpdates(ctx context.Context) (*omaha.Response, error) 
 		return nil, err
 	}
 	appResp := resp.GetApp(u.appID)
-	if appResp.Status != omaha.AppOK {
-		u.ReportProgress(ctx, ProgressError)
-		return nil, errors.New(fmt.Sprintf("No updates avaiable for appID: %s appVersion: %s", u.appID, u.instanceVersion))
+	info := &UpdateInfo{
+		HasUpdate: appResp != nil && appResp.Status == omaha.AppOK && appResp.UpdateCheck.Status == "ok",
+		omahaResp: resp,
 	}
 
-	return resp, nil
+	return info, nil
 }
 
 func (u *Updater) ReportProgress(ctx context.Context, progress Progress) error {
@@ -188,9 +239,13 @@ func (u *Updater) TryUpdate(ctx context.Context, handler UpdateHandler) error {
 	fmt.Println("Version before run:", u.instanceVersion)
 
 	// Check for updates
-	resp, err := u.CheckForUpdates(ctx)
+	info, err := u.CheckForUpdates(ctx)
 	if err != nil {
 		return err
+	}
+
+	if !info.HasUpdate {
+		return fmt.Errorf("No update available for app %v, channel %v: %v", u.appID, u.channel, info.GetUpdateStatus())
 	}
 
 	// Fetch update
@@ -220,8 +275,8 @@ func (u *Updater) TryUpdate(ctx context.Context, handler UpdateHandler) error {
 		return err
 	}
 
-	app := resp.GetApp(u.appID)
-	fmt.Println("Version after run:", app.UpdateCheck.Manifest.Version)
+	version := info.GetVersion()
+	fmt.Println("Version after run:", version)
 
 	err = u.ReportProgress(ctx, ProgressUpdateComplete)
 	if err != nil {
