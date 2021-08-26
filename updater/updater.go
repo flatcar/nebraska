@@ -109,6 +109,14 @@ func (u *UpdateInfo) GetURLs() []string {
 	return nil
 }
 
+func (u *UpdateInfo) GetURL() string {
+	if urls := u.GetURLs(); urls != nil {
+		return urls[0]
+	}
+
+	return ""
+}
+
 func (u *UpdateInfo) GetUpdateStatus() string {
 	app := u.getApp()
 	if app != nil && app.UpdateCheck != nil {
@@ -249,7 +257,7 @@ func (u *Updater) TryUpdate(ctx context.Context, handler UpdateHandler) error {
 	}
 
 	// Fetch update
-	err = handler.FetchUpdate(ctx)
+	err = handler.FetchUpdate(info)
 	if err != nil {
 		err := u.ReportProgress(ctx, ProgressError)
 		if err != nil {
@@ -262,7 +270,7 @@ func (u *Updater) TryUpdate(ctx context.Context, handler UpdateHandler) error {
 		return err
 	}
 
-	err = handler.ApplyUpdate(ctx)
+	err = handler.ApplyUpdate(info)
 	if err != nil {
 		err := u.ReportProgress(ctx, ProgressError)
 		if err != nil {
@@ -294,6 +302,11 @@ func main() {
 
 	instanceID := "Test8cd4-a18e-466c-b8e1-431b849bfb4c"
 	instanceVersion := "0.2.0"
+
+	versionOverride := os.Getenv("UPDATER_INSTANCE_VERSION")
+	if versionOverride != "" {
+		instanceVersion = versionOverride
+	}
 
 	emptyHandler := NewEmptyHandler()
 
