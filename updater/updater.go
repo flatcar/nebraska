@@ -64,45 +64,45 @@ type Updater struct {
 	omahaURL      string
 	clientVersion string
 
-	userID    string
-	sessionID string
+	instanceID      string
+	instanceVersion string
+	sessionID       string
 
-	appID      string
-	appVersion string
-	channel    string
+	appID   string
+	channel string
 
 	httpClient *retryablehttp.Client
 }
 
-func New(omahaURL string, userID string, appID string, appVersion string, channel string) (*Updater, error) {
-	return NewWithHttpClient(omahaURL, userID, appID, appVersion, channel, retryablehttp.NewClient())
+func New(omahaURL string, instanceID string, instanceVersion string, appID string, channel string) (*Updater, error) {
+	return NewWithHttpClient(omahaURL, instanceID, instanceVersion, appID, channel, retryablehttp.NewClient())
 }
 
-func NewWithHttpClient(omahaURL string, userID string, appID string, appVersion string, channel string, httpClient *retryablehttp.Client) (*Updater, error) {
+func NewWithHttpClient(omahaURL string, instanceID string, instanceVersion string, appID string, channel string, httpClient *retryablehttp.Client) (*Updater, error) {
 	_, err := url.Parse(omahaURL)
 	if err != nil {
 		return nil, err
 	}
 	return &Updater{
-		omahaURL:      omahaURL,
-		clientVersion: defaultClientVersion,
-		userID:        userID,
-		sessionID:     uuid.New().String(),
-		appID:         appID,
-		appVersion:    appVersion,
-		channel:       channel,
-		httpClient:    retryablehttp.NewClient(),
+		omahaURL:        omahaURL,
+		clientVersion:   defaultClientVersion,
+		instanceID:      instanceID,
+		sessionID:       uuid.New().String(),
+		appID:           appID,
+		instanceVersion: instanceVersion,
+		channel:         channel,
+		httpClient:      retryablehttp.NewClient(),
 	}, nil
 }
 
 func NewAppRequest(u *Updater) *omaha.Request {
 	req := omaha.NewRequest()
 	req.Version = u.clientVersion
-	req.UserID = u.userID
+	req.UserID = u.instanceID
 	req.SessionID = u.sessionID
 
-	app := req.AddApp(u.appID, u.appVersion)
-	app.MachineID = u.userID
+	app := req.AddApp(u.appID, u.instanceVersion)
+	app.MachineID = u.instanceID
 	app.BootID = u.sessionID
 	app.Track = u.channel
 
@@ -133,7 +133,6 @@ func (u *Updater) SendOmahaRequest(url string, req *omaha.Request) (*omaha.Respo
 }
 
 func (u *Updater) CheckForUpdates(ctx context.Context) (*omaha.Response, error) {
-
 	req := NewAppRequest(u)
 	app := req.GetApp(u.appID)
 	app.AddUpdateCheck()
@@ -147,7 +146,7 @@ func (u *Updater) CheckForUpdates(ctx context.Context) (*omaha.Response, error) 
 	appResp := resp.GetApp(u.appID)
 	if appResp.Status != omaha.AppOK {
 		u.ReportProgress(ctx, ProgressError)
-		return nil, errors.New(fmt.Sprintf("No updates avaiable for appID: %s appVersion: %s", u.appID, u.appVersion))
+		return nil, errors.New(fmt.Sprintf("No updates avaiable for appID: %s appVersion: %s", u.appID, u.instanceVersion))
 	}
 
 	return resp, nil
@@ -180,48 +179,47 @@ func (u *Updater) SendOmahaEvent(ctx context.Context, event *omaha.EventRequest)
 	return u.SendOmahaRequest(u.omahaURL, req)
 }
 
-func TestUpdate(ctx context.Context, appID string, appVersion string, updater *Updater, handlers Handlers) error {
+func (u *Updater) TryUpdate(ctx context.Context, handlers Handlers) error {
 
-	fmt.Println("Version before run:", appVersion)
+	fmt.Println("Version before run:", u.instanceVersion)
 
 	// Check for updates
-	resp, err := updater.CheckForUpdates(ctx)
+	resp, err := u.CheckForUpdates(ctx)
 	if err != nil {
 		return err
 	}
 
 	// Fetch update
-
 	err = handlers.FetchUpdate(ctx)
 	if err != nil {
-		err := updater.ReportProgress(ctx, ProgressError)
+		err := u.ReportProgress(ctx, ProgressError)
 		if err != nil {
 			return err
 		}
 	}
 
-	err = updater.ReportProgress(ctx, ProgressDownloadFinished)
+	err = u.ReportProgress(ctx, ProgressDownloadFinished)
 	if err != nil {
 		return err
 	}
 
 	err = handlers.ApplyUpdate(ctx)
 	if err != nil {
-		err := updater.ReportProgress(ctx, ProgressError)
+		err := u.ReportProgress(ctx, ProgressError)
 		if err != nil {
 			return err
 		}
 	}
 
-	err = updater.ReportProgress(ctx, ProgressInstallationFinished)
+	err = u.ReportProgress(ctx, ProgressInstallationFinished)
 	if err != nil {
 		return err
 	}
 
-	app := resp.GetApp(appID)
+	app := resp.GetApp(u.appID)
 	fmt.Println("Version after run:", app.UpdateCheck.Manifest.Version)
 
-	err = updater.ReportProgress(ctx, ProgressUpdateComplete)
+	err = u.ReportProgress(ctx, ProgressUpdateComplete)
 	if err != nil {
 		return err
 	}
@@ -234,11 +232,13 @@ func main() {
 	omahaURL := "http://localhost:8000/v1/update/"
 
 	appID := "4f101e1e-7fca-4a45-a222-c2aa2fd78d84"
-	appVersion := "0.2.0"
+
+	instanceID := "Test8cd4-a18e-466c-b8e1-431b849bfb4c"
+	instanceVersion := "0.2.0"
 
 	emptyHandler := NewEmptyHandler()
 
-	updater, err := New(omahaURL, "Test8cd4-a18e-466c-b8e1-431b849bfb4c", appID, appVersion, "stable")
+	updater, err := New(omahaURL, instanceID, instanceVersion, appID, "stable")
 
 	if err != nil {
 		log.Fatal("up err", err)
@@ -246,7 +246,7 @@ func main() {
 
 	ctx := context.TODO()
 
-	err = TestUpdate(ctx, appID, appVersion, updater, emptyHandler)
+	err = updater.TryUpdate(ctx, emptyHandler)
 	fmt.Println("Err", err)
 
 }
