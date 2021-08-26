@@ -5,15 +5,10 @@ import (
 	"fmt"
 )
 
-type Handlers interface {
-	FetchUpdate(ctx context.Context) error
-	ApplyUpdate(ctx context.Context) error
-}
-
 type emptyHandler struct {
 }
 
-func NewEmptyHandler() Handlers {
+func NewEmptyHandler() UpdateHandler {
 	return emptyHandler{}
 }
 
