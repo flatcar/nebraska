@@ -33,8 +33,8 @@ class ApplicationsStore extends Store {
 
   getApplications() {
     API.getApplications()
-      .then(applications => {
-        this.applications = applications;
+      .then(response => {
+        this.applications = response.applications;
         this.emitChange();
       })
       .catch(error => {

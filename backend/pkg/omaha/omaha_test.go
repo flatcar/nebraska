@@ -81,7 +81,7 @@ func TestInvalidRequests(t *testing.T) {
 	checkOmahaResponse(t, omahaResp, tApp.ID, omahaSpec.AppStatus("error-instanceRegistrationFailed"))
 
 	omahaResp = doOmahaRequest(t, h, "invalid-app-uuid", validUnverifiedAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, updateCheck, noEventInfo)
-	checkOmahaResponse(t, omahaResp, "invalid-app-uuid", omahaSpec.AppStatus("error-instanceRegistrationFailed"))
+	checkOmahaResponse(t, omahaResp, "invalid-app-uuid", omahaSpec.AppStatus("error-failedToRetrieveUpdatePackageInfo"))
 
 	omahaResp = doOmahaRequest(t, h, tApp.ID, "", validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, updateCheck, noEventInfo)
 	checkOmahaResponse(t, omahaResp, tApp.ID, omahaSpec.AppStatus("error-instanceRegistrationFailed"))

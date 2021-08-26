@@ -77,6 +77,7 @@ type groupVersionCountCache struct {
 }
 
 type GroupDescriptor struct {
+	AppID string
 	Track string
 	Arch  Arch
 }
@@ -312,7 +313,7 @@ func (api *API) GetGroup(groupID string) (*Group, error) {
 // GetGroupID returns the ID of the first group identified by the track name and the channel architecture.
 // The track names should be unique in combination with the group's channel architecture but this is not
 // enforced on the DB level and the newest entry wins.
-func (api *API) GetGroupID(trackName string, arch Arch) (string, error) {
+func (api *API) GetGroupID(appID, trackName string, arch Arch) (string, error) {
 	var cachedGroupsRef map[GroupDescriptor]string
 	cachedGroupsLock.RLock()
 	if cachedGroups != nil {
@@ -340,7 +341,7 @@ func (api *API) GetGroupID(trackName string, arch Arch) (string, error) {
 			} else {
 				for _, group := range groups {
 					if group.Channel != nil {
-						descriptor := GroupDescriptor{Track: group.Track, Arch: group.Channel.Arch}
+						descriptor := GroupDescriptor{AppID: group.ApplicationID, Track: group.Track, Arch: group.Channel.Arch}
 						// The groups are sorted descendingly by the creation time.
 						// The newest group with the track name and arch wins.
 						if otherID, ok := cachedGroups[descriptor]; ok {
@@ -359,9 +360,15 @@ func (api *API) GetGroupID(trackName string, arch Arch) (string, error) {
 		cachedGroupsLock.Unlock()
 	}
 
-	cachedGroupID, ok := cachedGroupsRef[GroupDescriptor{Track: trackName, Arch: arch}]
+	// Trim space and the {} that may surround the ID
+	appIDNoBrackets := strings.TrimSpace(appID)
+	if len(appIDNoBrackets) > 1 && appIDNoBrackets[0] == '{' {
+		appIDNoBrackets = strings.TrimSpace(appIDNoBrackets[1 : len(appIDNoBrackets)-1])
+	}
+
+	cachedGroupID, ok := cachedGroupsRef[GroupDescriptor{AppID: appIDNoBrackets, Track: trackName, Arch: arch}]
 	if !ok {
-		return "", fmt.Errorf("no group found for track %v and architecture %v", trackName, arch)
+		return "", fmt.Errorf("no group found for app %v, track %v, and architecture %v", appID, trackName, arch)
 	}
 	return cachedGroupID, nil
 }
@@ -374,6 +381,21 @@ func (api *API) updateCachedGroups() {
 	// Generating the map is not always possible here because the database
 	// can be closed.
 	cachedGroupsLock.Unlock()
+}
+
+// GetGroupsCount retuns the total number of groups in an app
+func (api *API) GetGroupsCount(appID string) (int, error) {
+	query, _, err := goqu.From("groups").Where(goqu.C("application_id").Eq(appID)).Select(goqu.L("count(*)")).ToSQL()
+	if err != nil {
+		return 0, err
+	}
+	count := 0
+	err = api.db.QueryRow(query).Scan(&count)
+
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }
 
 // GetGroups returns all groups that belong to the application provided.

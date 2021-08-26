@@ -101,7 +101,7 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 			logger.Info().Str("machineId", reqApp.MachineID).Str("uuid", group).Msgf("buildOmahaResponse - found client using a hard-coded group UUID")
 			group = trackName
 		}
-		groupID, err := h.crAPI.GetGroupID(group, getArch(omahaReq.OS, reqApp))
+		groupID, err := h.crAPI.GetGroupID(respApp.ID, group, getArch(omahaReq.OS, reqApp))
 		if err == nil {
 			group = groupID
 		} else {
