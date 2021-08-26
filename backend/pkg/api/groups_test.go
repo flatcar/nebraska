@@ -331,17 +331,43 @@ func TestGroupTrackName(t *testing.T) {
 	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
 	tGroup1, _ := a.AddGroup(&Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes", Track: trackName})
 
-	id, err := a.GetGroupID(trackName, ArchAll)
+	id, err := a.GetGroupID(tApp.ID, trackName, ArchAll)
 	assert.NoError(t, err)
 	assert.Equal(t, tGroup1.ID, id)
 
-	_, err = a.GetGroupID("", ArchAll)
+	_, err = a.GetGroupID(tApp.ID, "", ArchAll)
 	assert.Error(t, err, "no group found for track  and architecture amd64")
 
-	_, err = a.GetGroupID("Phony", ArchAll)
+	_, err = a.GetGroupID(tApp.ID, "Phony", ArchAll)
 	assert.Error(t, err, "no group found for track Phony and architecture amd64")
 
 	tGroup2, err := a.AddGroup(&Group{Name: "test_group2", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	assert.NoError(t, err)
 	assert.Equal(t, tGroup2.Track, tGroup2.ID)
+
+	// Check adding two groups with the same track name, in different apps, and getting them
+	tApp2, err := a.AddApp(&Application{Name: "test_app2", TeamID: tTeam.ID})
+	assert.NoError(t, err)
+	tPkgApp2, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp2.ID})
+	tChannelApp2, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp2.ID, PackageID: null.StringFrom(tPkgApp2.ID)})
+	tGroupApp2, err := a.AddGroup(&Group{Name: "beta", ApplicationID: tApp2.ID, ChannelID: null.StringFrom(tChannelApp2.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes", Track: "beta"})
+	assert.NoError(t, err)
+
+	tGroup3, err := a.AddGroup(&Group{Name: "beta", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes", Track: "beta"})
+	assert.NoError(t, err)
+
+	betaGroupID, err := a.GetGroupID(tApp2.ID, "beta", ArchAll)
+	assert.NoError(t, err)
+	assert.Equal(t, tGroupApp2.ID, betaGroupID)
+
+	betaGroupID, err = a.GetGroupID(tApp.ID, "beta", ArchAll)
+	assert.NoError(t, err)
+	assert.Equal(t, tGroup3.ID, betaGroupID)
+
+	// Test group with a track name but no arch (because there's no channel assigned to it)
+	tGroupNoChannel, err := a.AddGroup(&Group{Name: "unknown", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes", Track: "unknown"})
+	assert.NoError(t, err)
+
+	_, err = a.GetGroupID(tApp.ID, tGroupNoChannel.Track, ArchAll)
+	assert.Error(t, err, "no group found")
 }
