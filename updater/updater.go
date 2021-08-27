@@ -7,7 +7,6 @@ import (
 	"net/url"
 
 	"github.com/google/uuid"
-	retryablehttp "github.com/hashicorp/go-retryablehttp"
 	"github.com/kinvolk/go-omaha/omaha"
 )
 
@@ -75,10 +74,10 @@ type Updater struct {
 }
 
 func New(omahaURL string, appID string, channel string, instanceID string, instanceVersion string) (*Updater, error) {
-	return NewWithHttpClient(omahaURL, appID, channel, instanceID, instanceVersion, retryablehttp.NewClient())
+	return NewWithOmahaRequestHandler(omahaURL, appID, channel, instanceID, instanceVersion, NewHttpOmahaReqHandler(omahaURL))
 }
 
-func NewWithHttpClient(omahaURL string, appID string, channel string, instanceID string, instanceVersion string, httpClient *retryablehttp.Client) (*Updater, error) {
+func NewWithOmahaRequestHandler(omahaURL string, appID string, channel string, instanceID string, instanceVersion string, handler OmahaRequestHandler) (*Updater, error) {
 	_, err := url.Parse(omahaURL)
 	if err != nil {
 		return nil, err
@@ -91,7 +90,7 @@ func NewWithHttpClient(omahaURL string, appID string, channel string, instanceID
 		appID:           appID,
 		instanceVersion: instanceVersion,
 		channel:         channel,
-		omahaReqHandler: NewHttpOmahaReqHandler(omahaURL),
+		omahaReqHandler: handler,
 	}, nil
 }
 
