@@ -139,3 +139,4 @@ swagger-install:
 .PHONY: swagger-init
 swagger-init:
 	$(MAKE) -C backend $@
+
