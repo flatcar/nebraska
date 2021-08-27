@@ -41,7 +41,7 @@ function StatusHistoryItem(props: StatusHistoryItemProps) {
   const errorCode = props.entry.error_code;
   let extendedErrorExplanation = '';
   if (props.entry.status === ERROR_STATUS_CODE && errorCode !== null) {
-    const [errorMessages, flags] = getErrorAndFlags(parseInt(errorCode));
+    const [errorMessages, flags] = getErrorAndFlags(errorCode);
     extendedErrorExplanation = prepareErrorMessage(errorMessages, flags);
   }
   const instanceLabel = className ? (

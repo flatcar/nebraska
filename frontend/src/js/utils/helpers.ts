@@ -6,7 +6,7 @@ import orange from '@material-ui/core/colors/orange';
 import red from '@material-ui/core/colors/red';
 import React from 'react';
 import API from '../api/API';
-import { Channel, Group } from '../api/apiDataTypes';
+import { Channel, Group, VersionBreakdownEntry } from '../api/apiDataTypes';
 
 // Indexes/keys for the architectures need to match the ones in
 // pkg/api/arches.go.
@@ -122,7 +122,7 @@ export function makeColorsForVersions(
   return versionColors;
 }
 
-export function getInstanceStatus(statusID: number, version?: string) {
+export function getInstanceStatus(statusID: number | null, version?: string) {
   const status: {
     [x: number]: {
       type: string;
@@ -238,7 +238,7 @@ export function getInstanceStatus(statusID: number, version?: string) {
 }
 
 export function useGroupVersionBreakdown(group: Group) {
-  const [versionBreakdown, setVersionBreakdown] = React.useState([]);
+  const [versionBreakdown, setVersionBreakdown] = React.useState<VersionBreakdownEntry[]>([]);
 
   React.useEffect(() => {
     if (!group) {
@@ -246,8 +246,8 @@ export function useGroupVersionBreakdown(group: Group) {
     }
 
     API.getGroupVersionBreakdown(group.application_id, group.id)
-      .then(version_breakdown => {
-        setVersionBreakdown(version_breakdown || []);
+      .then(versions => {
+        setVersionBreakdown(versions);
       })
       .catch(err => {
         console.error('Error getting version breakdown for group', group.id, '\nError:', err);

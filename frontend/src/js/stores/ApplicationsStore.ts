@@ -6,10 +6,10 @@ import { setUser } from './redux/features/user';
 import store from './redux/store';
 
 class ApplicationsStore extends Store {
-  applications: Application[] | null;
+  applications: Application[];
   constructor() {
     super();
-    this.applications = null;
+    this.applications = [];
     this.getApplications();
 
     setInterval(() => {
@@ -94,13 +94,12 @@ class ApplicationsStore extends Store {
     data.id = applicationID;
 
     return API.updateApplication(data).then(application => {
-      const applicationItem = application;
       const applicationToUpdate = _.findWhere(this.applications as Collection<any>, {
-        id: applicationItem.id,
+        id: application.id,
       });
 
-      applicationToUpdate.name = applicationItem.name;
-      applicationToUpdate.description = applicationItem.description;
+      applicationToUpdate.name = application.name;
+      applicationToUpdate.description = application.description;
       this.emitChange();
     });
   }
@@ -172,21 +171,20 @@ class ApplicationsStore extends Store {
 
   getGroup(applicationID: string, groupID: string) {
     API.getGroup(applicationID, groupID).then(group => {
-      const groupItem = group;
       const applicationToUpdate = _.findWhere(this.applications as Collection<any>, {
-        id: groupItem.application_id,
+        id: group.application_id,
       });
-      const index = _.findIndex(applicationToUpdate.groups, { id: groupItem.id });
+      const index = _.findIndex(applicationToUpdate.groups, { id: group.id });
 
       if (applicationToUpdate) {
         if (applicationToUpdate.groups) {
           if (index >= 0) {
-            applicationToUpdate.groups[index] = groupItem;
+            applicationToUpdate.groups[index] = group;
           } else {
-            applicationToUpdate.groups.unshift(groupItem);
+            applicationToUpdate.groups.unshift(group);
           }
         } else {
-          applicationToUpdate.groups = [groupItem];
+          applicationToUpdate.groups = [group];
         }
       }
       this.emitChange();
@@ -207,20 +205,20 @@ class ApplicationsStore extends Store {
 
   // Channels
 
-  createChannel(data: Channel) {
+  createChannel(data: Channel): Promise<void> {
     return API.createChannel(data).then(channel => {
       const channelItem = channel;
       this.getAndUpdateApplication(channelItem.application_id);
     });
   }
 
-  deleteChannel(applicationID: string, channelID: string) {
-    API.deleteChannel(applicationID, channelID).then(() => {
+  deleteChannel(applicationID: string, channelID: string): Promise<void> {
+    return API.deleteChannel(applicationID, channelID).then(() => {
       this.getAndUpdateApplication(applicationID);
     });
   }
 
-  updateChannel(data: Channel) {
+  updateChannel(data: Channel): Promise<void> {
     return API.updateChannel(data).then(channel => {
       const channelItem = channel;
       this.getAndUpdateApplication(channelItem.application_id);
@@ -229,20 +227,20 @@ class ApplicationsStore extends Store {
 
   // Packages
 
-  createPackage(data: Partial<Package>) {
+  createPackage(data: Partial<Package>): Promise<void> {
     return API.createPackage(data).then(packageItem => {
       const newpackage = packageItem;
       this.getAndUpdateApplication(newpackage.application_id);
     });
   }
 
-  deletePackage(applicationID: string, packageID: string) {
-    API.deletePackage(applicationID, packageID).then(() => {
+  deletePackage(applicationID: string, packageID: string): Promise<void> {
+    return API.deletePackage(applicationID, packageID).then(() => {
       this.getAndUpdateApplication(applicationID);
     });
   }
 
-  updatePackage(data: Partial<Package>) {
+  updatePackage(data: Partial<Package>): Promise<void> {
     return API.updatePackage(data).then(packageItem => {
       const updatedpackage = packageItem;
       this.getAndUpdateApplication(updatedpackage.application_id);

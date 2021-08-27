@@ -1,9 +1,20 @@
 import PubSub from 'pubsub-js';
 import queryString from 'querystring';
 import _ from 'underscore';
-import { CONFIG_STORAGE_KEY } from '../stores/redux/features/config';
+import { CONFIG_STORAGE_KEY, NebraskaConfig } from '../stores/redux/features/config';
 import { getToken, setToken } from '../utils/auth';
-import { Application, Channel, FlatcarAction, Group, Package } from './apiDataTypes';
+import {
+  Activity,
+  Application,
+  Channel,
+  FlatcarAction,
+  Group,
+  Instance,
+  Instances,
+  InstanceStatusHistory,
+  Package,
+  VersionBreakdownEntry,
+} from './apiDataTypes';
 
 const MAIN_PROGRESS_BAR = 'main_progress_bar';
 const BASE_URL = '/api';
@@ -21,11 +32,11 @@ type REQUEST_DATA_TYPE =
 class API {
   // Applications
 
-  static getApplications() {
+  static getApplications(): Promise<Application[]> {
     return API.getJSON(BASE_URL + '/apps');
   }
 
-  static getApplication(applicationID: string) {
+  static getApplication(applicationID: string): Promise<Application> {
     return API.getJSON(BASE_URL + '/apps/' + applicationID);
   }
 
@@ -38,7 +49,7 @@ class API {
   static createApplication(
     applicationData: { name: string; description: string },
     clonedFromAppID: string
-  ) {
+  ): Promise<Application> {
     let url = BASE_URL + '/apps';
     if (clonedFromAppID) {
       url += '?clone_from=' + clonedFromAppID;
@@ -47,7 +58,7 @@ class API {
     return API.doRequest('POST', url, JSON.stringify(applicationData));
   }
 
-  static updateApplication(applicationData: Application) {
+  static updateApplication(applicationData: Application): Promise<Application> {
     const url = BASE_URL + '/apps/' + applicationData.id;
 
     return API.doRequest('PUT', url, JSON.stringify(applicationData));
@@ -55,7 +66,7 @@ class API {
 
   // Groups
 
-  static getGroup(applicationID: string, groupID: string) {
+  static getGroup(applicationID: string, groupID: string): Promise<Group> {
     return API.getJSON(BASE_URL + '/apps/' + applicationID + '/groups/' + groupID);
   }
 
@@ -65,13 +76,13 @@ class API {
     return API.doRequest('DELETE', url, '');
   }
 
-  static createGroup(groupData: Group) {
+  static createGroup(groupData: Group): Promise<Group> {
     const url = BASE_URL + '/apps/' + groupData.application_id + '/groups';
 
     return API.doRequest('POST', url, JSON.stringify(groupData));
   }
 
-  static updateGroup(groupData: Group) {
+  static updateGroup(groupData: Group): Promise<Group> {
     const url = BASE_URL + '/apps/' + groupData.application_id + '/groups/' + groupData.id;
 
     return API.doRequest('PUT', url, JSON.stringify(groupData));
@@ -95,7 +106,10 @@ class API {
     );
   }
 
-  static getGroupVersionBreakdown(applicationID: string, groupID: string) {
+  static getGroupVersionBreakdown(
+    applicationID: string,
+    groupID: string
+  ): Promise<VersionBreakdownEntry[]> {
     return API.getJSON(
       BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/version_breakdown'
     );
@@ -109,13 +123,13 @@ class API {
     return API.doRequest('DELETE', url, '');
   }
 
-  static createChannel(channelData: Channel) {
+  static createChannel(channelData: Channel): Promise<Channel> {
     const url = BASE_URL + '/apps/' + channelData.application_id + '/channels';
 
     return API.doRequest('POST', url, JSON.stringify(channelData));
   }
 
-  static updateChannel(channelData: Channel) {
+  static updateChannel(channelData: Channel): Promise<Channel> {
     const keysToRemove = ['id', 'created_ts', 'package'];
     const processedChannel = API.removeKeysFromObject(channelData, keysToRemove);
     const url = BASE_URL + '/apps/' + channelData.application_id + '/channels/' + channelData.id;
@@ -124,7 +138,7 @@ class API {
   }
 
   // Packages
-  static getPackages(applicationID: string) {
+  static getPackages(applicationID: string): Promise<Package[]> {
     const url = BASE_URL + '/apps/' + applicationID + '/packages/';
 
     return API.doRequest('GET', url);
@@ -136,13 +150,13 @@ class API {
     return API.doRequest('DELETE', url, '');
   }
 
-  static createPackage(packageData: Partial<Package>) {
+  static createPackage(packageData: Partial<Package>): Promise<Package> {
     const url = BASE_URL + '/apps/' + packageData.application_id + '/packages';
 
     return API.doRequest('POST', url, JSON.stringify(packageData));
   }
 
-  static updatePackage(packageData: Partial<Package>) {
+  static updatePackage(packageData: Partial<Package>): Promise<Package> {
     const keysToRemove = ['id', 'created_ts', 'package'];
     const processedPackage = API.removeKeysFromObject(packageData, keysToRemove);
     const url = BASE_URL + '/apps/' + packageData.application_id + '/packages/' + packageData.id;
@@ -152,7 +166,11 @@ class API {
 
   // Instances
 
-  static getInstances(applicationID: string, groupID: string, queryOptions = {}) {
+  static getInstances(
+    applicationID: string,
+    groupID: string,
+    queryOptions = {}
+  ): Promise<Instances> {
     let url = BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/instances';
 
     if (!_.isEmpty(queryOptions)) {
@@ -162,20 +180,32 @@ class API {
     return API.getJSON(url);
   }
 
-  static getInstancesCount(applicationID: string, groupID: string, duration: string) {
+  static getInstancesCount(
+    applicationID: string,
+    groupID: string,
+    duration: string
+  ): Promise<number> {
     const url = `${BASE_URL}/apps/${applicationID}/groups/${groupID}/instancescount?duration=${duration}`;
 
     return API.getJSON(url);
   }
 
-  static getInstance(applicationID: string, groupID: string, instanceID: string) {
+  static getInstance(
+    applicationID: string,
+    groupID: string,
+    instanceID: string
+  ): Promise<Instance> {
     const url =
       BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/instances/' + instanceID;
 
     return API.getJSON(url);
   }
 
-  static getInstanceStatusHistory(applicationID: string, groupID: string, instanceID: string) {
+  static getInstanceStatusHistory(
+    applicationID: string,
+    groupID: string,
+    instanceID: string
+  ): Promise<InstanceStatusHistory[]> {
     const url =
       BASE_URL +
       '/apps/' +
@@ -189,7 +219,7 @@ class API {
     return API.getJSON(url);
   }
 
-  static updateInstance(instanceID: string, alias: REQUEST_DATA_TYPE) {
+  static updateInstance(instanceID: string, alias: REQUEST_DATA_TYPE): Promise<Instance> {
     const url = BASE_URL + '/instances/' + instanceID;
     const params = JSON.stringify({ alias });
     return API.doRequest('PUT', url, params);
@@ -197,7 +227,7 @@ class API {
 
   // Activity
 
-  static getActivity() {
+  static getActivity(): Promise<Activity[]> {
     const currentDate = new Date();
     const now = currentDate.toISOString();
     currentDate.setDate(currentDate.getDate() - 7);
@@ -210,7 +240,7 @@ class API {
 
   // Config
 
-  static getConfig() {
+  static getConfig(): Promise<NebraskaConfig> {
     return API.doRequest('GET', '/config');
   }
 
@@ -258,10 +288,11 @@ class API {
 
   static doRequest(method: 'GET', url: string): Promise<any>;
   static doRequest(
-    method: 'POST' | 'PUT' | 'PATCH' | 'DELETE',
+    method: 'POST' | 'PUT' | 'PATCH',
     url: string,
     data: REQUEST_DATA_TYPE
   ): Promise<any>;
+  static doRequest(method: 'DELETE', url: string, data: REQUEST_DATA_TYPE): Promise<Response>;
 
   static doRequest(method: string, url: string, data: REQUEST_DATA_TYPE = '') {
     const token = getToken();

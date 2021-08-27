@@ -16,12 +16,12 @@ function ConfirmationContent(props: {
   function processClick() {
     if (props.data.type === 'application') {
       applicationsStore.deleteApplication(props.data.appID);
-    } else if (props.data.type === 'group') {
-      applicationsStore.deleteGroup(props.data.appID, props.data.groupID as string);
-    } else if (props.data.type === 'channel') {
-      applicationsStore.deleteChannel(props.data.appID, props.data.channelID as string);
-    } else if (props.data.type === 'package') {
-      applicationsStore.deletePackage(props.data.appID, props.data.packageID as string);
+    } else if (props.data.type === 'group' && props.data.groupID !== undefined) {
+      applicationsStore.deleteGroup(props.data.appID, props.data.groupID);
+    } else if (props.data.type === 'channel' && props.data.channelID !== undefined) {
+      applicationsStore.deleteChannel(props.data.appID, props.data.channelID);
+    } else if (props.data.type === 'package' && props.data.packageID !== undefined) {
+      applicationsStore.deletePackage(props.data.appID, props.data.packageID);
     }
   }
 

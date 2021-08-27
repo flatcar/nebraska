@@ -99,6 +99,11 @@ export interface Instance {
   statusHistory?: InstanceStatusHistory[];
 }
 
+export interface Instances {
+  total: number;
+  instances: Instance[];
+}
+
 export interface InstanceApplication {
   instance_id: string;
   application_id: string;
@@ -113,5 +118,11 @@ export interface InstanceStatusHistory {
   status: number;
   version: string;
   created_ts: string | Date | number;
-  error_code: string | null;
+  error_code: number | null;
+}
+
+export interface VersionBreakdownEntry {
+  version: string;
+  instances: number;
+  percentage: number;
 }
