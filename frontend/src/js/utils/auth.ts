@@ -94,7 +94,12 @@ export function useAuthRedirect() {
     }
 
     if ((!isValidToken(currentToken) || !user?.authenticated) && !!config.login_url) {
-      window.location.href = config.login_url + '?login_redirect_url=' + window.location.href;
+      var login_redirect_url = new URL(window.location.href);
+      if (login_redirect_url.pathname === '/login') {
+        login_redirect_url.pathname = '/';
+      }
+      window.location.href =
+        config.login_url + '?login_redirect_url=' + login_redirect_url.toString();
     }
   }, [history, user, config]);
 }
