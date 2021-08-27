@@ -157,6 +157,14 @@ func (u *Updater) SendOmahaEvent(ctx context.Context, event *omaha.EventRequest)
 	return u.SendOmahaRequest(req)
 }
 
+func (u *Updater) GetInstanceVersion() string {
+	return u.instanceVersion
+}
+
+func (u *Updater) SetInstanceVersion(version string) {
+	u.instanceVersion = version
+}
+
 func (u *Updater) TryUpdate(ctx context.Context, handler UpdateHandler) error {
 	fmt.Println("Version before run:", u.instanceVersion)
 
