@@ -189,7 +189,11 @@ function EditDialog(props: {
       updatesTimeout: 1,
       updatesTimeoutUnit: 'days',
       channel: '',
+      description: '',
       timezone: DEFAULT_TIMEZONE,
+      updatesEnabled: false,
+      onlyOfficeHours: false,
+      safeMode: false,
     };
   } else if (!!props.data.group) {
     const group = props.data.group;

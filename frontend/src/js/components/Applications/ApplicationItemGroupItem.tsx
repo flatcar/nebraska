@@ -30,7 +30,7 @@ function ApplicationItemGroupItem(props: { group: Group; appName: string }) {
     // in the group.
     API.getInstancesCount(group.application_id, group.id, '1d')
       .then(result => {
-        setTotalInstances(result);
+        setTotalInstances(result.count);
       })
       .catch(err => console.error('Error loading total instances in Instances/List', err));
   }, [group]);
