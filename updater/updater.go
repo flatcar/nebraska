@@ -173,10 +173,8 @@ func (u *Updater) TryUpdate(ctx context.Context, handler UpdateHandler) error {
 	// Fetch update
 	err = handler.FetchUpdate(ctx, info)
 	if err != nil {
-		err := u.ReportProgress(ctx, ProgressError)
-		if err != nil {
-			return err
-		}
+		_ = u.ReportProgress(ctx, ProgressError)
+		return err
 	}
 
 	err = u.ReportProgress(ctx, ProgressDownloadFinished)
@@ -186,10 +184,8 @@ func (u *Updater) TryUpdate(ctx context.Context, handler UpdateHandler) error {
 
 	err = handler.ApplyUpdate(ctx, info)
 	if err != nil {
-		err := u.ReportProgress(ctx, ProgressError)
-		if err != nil {
-			return err
-		}
+		_ = u.ReportProgress(ctx, ProgressError)
+		return err
 	}
 
 	err = u.ReportProgress(ctx, ProgressInstallationFinished)
@@ -198,7 +194,8 @@ func (u *Updater) TryUpdate(ctx context.Context, handler UpdateHandler) error {
 	}
 
 	version := info.GetVersion()
-	fmt.Println("Version after run:", version)
+	u.instanceVersion = version
+	fmt.Println("Version after run:", u.instanceVersion)
 
 	err = u.ReportProgress(ctx, ProgressUpdateComplete)
 	if err != nil {
