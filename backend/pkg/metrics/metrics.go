@@ -1,4 +1,4 @@
-package main
+package metrics
 
 import (
 	"fmt"
@@ -6,6 +6,9 @@ import (
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
+
+	"github.com/kinvolk/nebraska/backend/pkg/api"
+	"github.com/kinvolk/nebraska/backend/pkg/util"
 )
 
 const (
@@ -36,6 +39,7 @@ var (
 			"application",
 		},
 	)
+	logger = util.NewLogger("nebraska")
 )
 
 // registerNebraskaMetrics registers the application metrics collector with the DefaultRegistrer.
@@ -69,7 +73,7 @@ func getMetricsRefreshInterval() time.Duration {
 }
 
 // registerAndInstrumentMetrics registers the application metrics and instruments them in configurable intervals.
-func registerAndInstrumentMetrics(ctl *controller) error {
+func RegisterAndInstrument(api *api.API) error {
 	// register application metrics
 	err := registerNebraskaMetrics()
 	if err != nil {
@@ -78,12 +82,12 @@ func registerAndInstrumentMetrics(ctl *controller) error {
 
 	refreshInterval := getMetricsRefreshInterval()
 
-	metricsTicker := time.Tick(refreshInterval)
+	metricsTicker := time.NewTicker(refreshInterval)
 
 	go func() {
 		for {
-			<-metricsTicker
-			err := calculateMetrics(ctl)
+			<-metricsTicker.C
+			err := calculateMetrics(api)
 			if err != nil {
 				logger.Error().Err(err).Msg("registerAndInstrumentMetrics updating the metrics")
 			}
@@ -94,8 +98,8 @@ func registerAndInstrumentMetrics(ctl *controller) error {
 }
 
 // calculateMetrics calculates the application metrics and updates the respective metric.
-func calculateMetrics(ctl *controller) error {
-	aipcMetrics, err := ctl.api.GetAppInstancesPerChannelMetrics()
+func calculateMetrics(api *api.API) error {
+	aipcMetrics, err := api.GetAppInstancesPerChannelMetrics()
 	if err != nil {
 		return fmt.Errorf("failed to get app instances per channel metrics: %w", err)
 	}
@@ -104,7 +108,7 @@ func calculateMetrics(ctl *controller) error {
 		appInstancePerChannelGaugeMetric.WithLabelValues(metric.ApplicationName, metric.Version, metric.ChannelName).Set(float64(metric.InstancesCount))
 	}
 
-	fuMetrics, err := ctl.api.GetFailedUpdatesMetrics()
+	fuMetrics, err := api.GetFailedUpdatesMetrics()
 	if err != nil {
 		return fmt.Errorf("failed to get failed update metrics: %w", err)
 	}
