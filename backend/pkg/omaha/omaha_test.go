@@ -255,7 +255,7 @@ func ei(t omahaSpec.EventType, r omahaSpec.EventResult, pv string) *eventInfo {
 	}
 }
 
-func doOmahaRequest(t *testing.T, h *Handler, appID, appVersion, appMachineID, appTrack, ip string, addPing, updateCheck bool, eventInfo *eventInfo) *omahaSpec.Response {
+func doOmahaRequest(t *testing.T, h *Handler, appID, appVersion, appMachineID, appTrack, ip string, addPing, updateCheck bool, eventInfo *eventInfo) *ResponseExtra {
 	omahaReq := omahaSpec.NewRequest()
 	omahaReq.OS.Version = reqVersion
 	omahaReq.OS.Platform = reqPlatform
@@ -284,27 +284,27 @@ func doOmahaRequest(t *testing.T, h *Handler, appID, appVersion, appMachineID, a
 	err = h.Handle(bytes.NewReader(omahaReqXML), omahaRespXML, ip)
 	assert.NoError(t, err)
 
-	var omahaResp *omahaSpec.Response
+	var omahaResp *ResponseExtra
 	err = xml.NewDecoder(omahaRespXML).Decode(&omahaResp)
 	assert.NoError(t, err)
 
 	return omahaResp
 }
 
-func checkOmahaResponse(t *testing.T, omahaResp *omahaSpec.Response, expectedAppID string, expectedError omahaSpec.AppStatus) {
+func checkOmahaResponse(t *testing.T, omahaResp *ResponseExtra, expectedAppID string, expectedError omahaSpec.AppStatus) {
 	appResp := omahaResp.Apps[0]
 
 	assert.Equal(t, expectedError, appResp.Status)
 	assert.Equal(t, expectedAppID, appResp.ID)
 }
 
-func checkOmahaNoUpdateResponse(t *testing.T, omahaResp *omahaSpec.Response) {
+func checkOmahaNoUpdateResponse(t *testing.T, omahaResp *ResponseExtra) {
 	appResp := omahaResp.Apps[0]
 
 	assert.Nil(t, appResp.UpdateCheck)
 }
 
-func checkOmahaUpdateResponse(t *testing.T, omahaResp *omahaSpec.Response, expectedVersion, expectedPackageName, expectedUpdateURL string, expectedError omahaSpec.UpdateStatus) {
+func checkOmahaUpdateResponse(t *testing.T, omahaResp *ResponseExtra, expectedVersion, expectedPackageName, expectedUpdateURL string, expectedError omahaSpec.UpdateStatus) {
 	appResp := omahaResp.Apps[0]
 
 	assert.NotNil(t, appResp.UpdateCheck)
@@ -321,7 +321,7 @@ func checkOmahaUpdateResponse(t *testing.T, omahaResp *omahaSpec.Response, expec
 	}
 }
 
-func checkOmahaEventResponse(t *testing.T, omahaResp *omahaSpec.Response, expectedAppID string, expectedEventCount int) {
+func checkOmahaEventResponse(t *testing.T, omahaResp *ResponseExtra, expectedAppID string, expectedEventCount int) {
 	appResp := omahaResp.Apps[0]
 
 	assert.Equal(t, expectedAppID, appResp.ID)
@@ -331,7 +331,7 @@ func checkOmahaEventResponse(t *testing.T, omahaResp *omahaSpec.Response, expect
 	}
 }
 
-func checkOmahaPingResponse(t *testing.T, omahaResp *omahaSpec.Response, expectedAppID string, expectedPingResponse bool) {
+func checkOmahaPingResponse(t *testing.T, omahaResp *ResponseExtra, expectedAppID string, expectedPingResponse bool) {
 	appResp := omahaResp.Apps[0]
 
 	assert.Equal(t, expectedAppID, appResp.ID)

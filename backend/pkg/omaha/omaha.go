@@ -87,8 +87,51 @@ func getArch(os *omahaSpec.OS, appReq *omahaSpec.AppRequest) api.Arch {
 	return api.ArchAMD64
 }
 
-func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*omahaSpec.Response, error) {
-	omahaResp := omahaSpec.NewResponse()
+// We want to use extra fields or attributes to what omahaSpec.Response uses.
+type ResponseExtra struct {
+	omahaSpec.Response
+	Apps []*AppResponseExtra `xml:"app"`
+}
+type AppResponseExtra struct {
+	omahaSpec.AppResponse
+	UpdateCheck *UpdateResponseExtra `xml:"updatecheck"`
+}
+type UpdateResponseExtra struct {
+	omahaSpec.UpdateResponse
+	Payload Payload
+}
+
+// <_payload>
+//   <type>application/container-image</type>
+//   <registryRef>gchr.io/kinvolk/headlamp</registryRef>
+//   <policy>always-pull</policy>
+// </_payload>
+
+type Payload struct {
+	XMLName  	  xml.Name       `xml:"_payload" json:"-"`
+	Type     	  string         `xml:"type"`
+	RegistryRef   string         `xml:"registryRef"`
+	Policy     	  string         `xml:"policy"`
+}
+	// v := &Payload{
+	// 	Type: "application/container-image",
+	// 	RegistryRef: "gchr.io/kinvolk/headlamp",
+	// 	Policy: "always-pull",
+	// }
+
+func (r *ResponseExtra) AddApp(id string, status omahaSpec.AppStatus) *AppResponseExtra {
+	a := &AppResponseExtra{AppResponse: omahaSpec.AppResponse{ID: id, Status: status}}
+	r.Apps = append(r.Apps, a)
+	return a
+}
+
+func (a *AppResponseExtra) AddUpdateCheck(status omahaSpec.UpdateStatus) *UpdateResponseExtra {
+	a.UpdateCheck = &UpdateResponseExtra{UpdateResponse: omahaSpec.UpdateResponse{Status: status}}
+	return a.UpdateCheck
+}
+
+func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*ResponseExtra, error) {
+	omahaResp := &ResponseExtra{Response: *omahaSpec.NewResponse()}
 	omahaResp.Server = "nebraska"
 
 	for _, reqApp := range omahaReq.Apps {
@@ -179,7 +222,9 @@ func (h *Handler) getStatusMessageStr(crErr error) string {
 	return "error-failedToRetrieveUpdatePackageInfo"
 }
 
-func (h *Handler) prepareUpdateCheck(appResp *omahaSpec.AppResponse, pkg *api.Package) {
+// prepareUpdateCheck adds an update check response to the appResp for the given pkg.
+// appResp is modified
+func (h *Handler) prepareUpdateCheck(appResp *AppResponseExtra, pkg *api.Package) {
 	if pkg == nil {
 		appResp.AddUpdateCheck(omahaSpec.NoUpdate)
 		return
