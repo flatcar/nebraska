@@ -1,4 +1,4 @@
-package main
+package updater
 
 import "github.com/kinvolk/go-omaha/omaha"
 
