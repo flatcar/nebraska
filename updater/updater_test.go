@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"context"
 	"encoding/xml"
+	"errors"
+	"log"
+	"os"
 	"testing"
 
 	"github.com/google/uuid"
@@ -104,4 +107,59 @@ func TestCheckForUpdates(t *testing.T) {
 	info, err = u.CheckForUpdates(context.TODO())
 	assert.NoError(t, err)
 	assert.True(t, info.HasUpdate)
+}
+
+type updateTestHandler struct {
+	fetchUpdateResult error
+	applyUpdateResult error
+}
+
+func (u updateTestHandler) FetchUpdate(ctx context.Context, info *UpdateInfo) error {
+	// Nothing to do
+	return u.fetchUpdateResult
+}
+
+func (u updateTestHandler) ApplyUpdate(ctx context.Context, info *UpdateInfo) error {
+	// Nothing to do
+	return u.applyUpdateResult
+}
+
+func TestTryUpdate(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	tTeam, _ := a.AddTeam(&api.Team{Name: "test_team"})
+	tApp, _ := a.AddApp(&api.Application{Name: "io.phony.App", TeamID: tTeam.ID})
+	tPkg, _ := a.AddPackage(&api.Package{Type: api.PkgTypeOther, URL: "http://sample.url/pkg", Version: "0.4.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64})
+	tChannel, _ := a.AddChannel(&api.Channel{Name: "channel1", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID), Arch: api.ArchAMD64})
+	tGroup, err := a.AddGroup(&api.Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 10, PolicyUpdateTimeout: "60 minutes", Track: "stable"})
+	assert.NoError(t, err)
+
+	oldVersion := "0.2.0"
+
+	u := newUpdater(a, tApp.ID, tGroup.Track, "instance-0001", "0.2.0")
+	assert.Equal(t, oldVersion, u.instanceVersion)
+
+	// Error when fetching update
+	err = u.TryUpdate(context.TODO(), &updateTestHandler{
+		errors.New("something went wrong fetching the update"),
+		nil,
+	})
+	assert.Error(t, err)
+	assert.Equal(t, oldVersion, u.instanceVersion)
+
+	// Error when applying update
+	err = u.TryUpdate(context.TODO(), &updateTestHandler{
+		nil,
+		errors.New("something went wrong applying the update"),
+	})
+	assert.Error(t, err)
+	assert.Equal(t, oldVersion, u.instanceVersion)
+
+	err = u.TryUpdate(context.TODO(), updateTestHandler{
+		nil,
+		nil,
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, tPkg.Version, u.instanceVersion)
 }
