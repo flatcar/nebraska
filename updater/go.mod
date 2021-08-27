@@ -1,4 +1,4 @@
-module updater
+module github.com/kinvolk/nebraska/updater
 
 go 1.16
 
