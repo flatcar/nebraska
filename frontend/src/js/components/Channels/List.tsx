@@ -109,10 +109,10 @@ function List(props: { appID: string }) {
     } else {
       // Fetch packages
       API.getPackages(application.id).then(result => {
-        if (_.isNull(result)) {
+        if (_.isNull(result.packages)) {
           setPackages([]);
         } else {
-          setPackages(result);
+          setPackages(result.packages);
         }
       });
     }
