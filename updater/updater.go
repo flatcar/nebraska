@@ -1,12 +1,9 @@
 package updater
 
 import (
-	"bytes"
 	"context"
-	"encoding/xml"
 	"errors"
 	"fmt"
-	"io"
 	"net/url"
 
 	"github.com/google/uuid"
@@ -59,6 +56,10 @@ var progressEventMap = map[Progress]*omaha.EventRequest{
 	},
 }
 
+type OmahaRequestHandler interface {
+	Handle(req *omaha.Request) (*omaha.Response, error)
+}
+
 type Updater struct {
 	omahaURL      string
 	clientVersion string
@@ -70,14 +71,14 @@ type Updater struct {
 	appID   string
 	channel string
 
-	httpClient *retryablehttp.Client
+	omahaReqHandler OmahaRequestHandler
 }
 
-func New(omahaURL string, instanceID string, instanceVersion string, appID string, channel string) (*Updater, error) {
-	return NewWithHttpClient(omahaURL, instanceID, instanceVersion, appID, channel, retryablehttp.NewClient())
+func New(omahaURL string, appID string, channel string, instanceID string, instanceVersion string) (*Updater, error) {
+	return NewWithHttpClient(omahaURL, appID, channel, instanceID, instanceVersion, retryablehttp.NewClient())
 }
 
-func NewWithHttpClient(omahaURL string, instanceID string, instanceVersion string, appID string, channel string, httpClient *retryablehttp.Client) (*Updater, error) {
+func NewWithHttpClient(omahaURL string, appID string, channel string, instanceID string, instanceVersion string, httpClient *retryablehttp.Client) (*Updater, error) {
 	_, err := url.Parse(omahaURL)
 	if err != nil {
 		return nil, err
@@ -90,7 +91,7 @@ func NewWithHttpClient(omahaURL string, instanceID string, instanceVersion strin
 		appID:           appID,
 		instanceVersion: instanceVersion,
 		channel:         channel,
-		httpClient:      retryablehttp.NewClient(),
+		omahaReqHandler: NewHttpOmahaReqHandler(omahaURL),
 	}, nil
 }
 
@@ -109,25 +110,7 @@ func NewAppRequest(u *Updater) *omaha.Request {
 }
 
 func (u *Updater) SendOmahaRequest(url string, req *omaha.Request) (*omaha.Response, error) {
-	requestByte, err := xml.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := u.httpClient.Post(url, "text/xml", bytes.NewReader(requestByte))
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	// A response over 1M in size is certainly bogus.
-	respBody := &io.LimitedReader{R: resp.Body, N: 1024 * 1024}
-	contentType := resp.Header.Get("Content-Type")
-	omahaResp, err := omaha.ParseResponse(contentType, respBody)
-	if err != nil {
-		return nil, err
-	}
-	return omahaResp, nil
+	return u.omahaReqHandler.Handle(req)
 }
 
 func (u *Updater) CheckForUpdates(ctx context.Context) (*UpdateInfo, error) {
