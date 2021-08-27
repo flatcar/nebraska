@@ -110,10 +110,10 @@ function List(props: { appID: string }) {
       // Fetch packages
       API.getPackages(application.id)
         .then(result => {
-          if (_.isNull(result)) {
+          if (_.isNull(result.packages)) {
             setPackages([]);
           } else {
-            setPackages(result);
+            setPackages(result.packages);
           }
         })
         .catch(err => {

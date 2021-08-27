@@ -20,7 +20,7 @@ endif
 
 LDFLAGS := "-w -X github.com/kinvolk/nebraska/backend/pkg/version.Version=$(VERSION) -extldflags \"-static\""
 .PHONY: all
-all: run-generators code-checks build
+all: codegen run-generators code-checks build
 
 .PHONY: check
 check:
@@ -102,3 +102,14 @@ code-checks: tools/golangci-lint
 .PHONY: swagger-init
 swagger-init:  tools/swag
 	./tools/swag init -g cmd/userctl/main.go -o api
+
+.PHONY: tools/codegen
+tools/codegen:
+	go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.9.0
+
+.PHONY: codegen
+codegen: tools/codegen
+	PATH=$$GOPATH/bin:$$PATH oapi-codegen --generate=server --package codegen -o ./pkg/codegen/server.gen.go ./api/spec.yaml;
+	PATH=$$GOPATH/bin:$$PATH oapi-codegen --generate=spec --package codegen -o ./pkg/codegen/spec.gen.go ./api/spec.yaml;
+	PATH=$$GOPATH/bin:$$PATH oapi-codegen --generate=client --package codegen -o ./pkg/codegen/client.gen.go ./api/spec.yaml;
+	PATH=$$GOPATH/bin:$$PATH oapi-codegen --generate=types --package codegen -o ./pkg/codegen/types.gen.go ./api/spec.yaml;
