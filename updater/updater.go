@@ -108,7 +108,7 @@ func NewAppRequest(u *Updater) *omaha.Request {
 	return req
 }
 
-func (u *Updater) SendOmahaRequest(url string, req *omaha.Request) (*omaha.Response, error) {
+func (u *Updater) SendOmahaRequest(req *omaha.Request) (*omaha.Response, error) {
 	return u.omahaReqHandler.Handle(req)
 }
 
@@ -117,7 +117,7 @@ func (u *Updater) CheckForUpdates(ctx context.Context) (*UpdateInfo, error) {
 	app := req.GetApp(u.appID)
 	app.AddUpdateCheck()
 
-	resp, err := u.SendOmahaRequest(u.omahaURL, req)
+	resp, err := u.SendOmahaRequest(req)
 	if err != nil {
 		return nil, err
 	}
@@ -154,7 +154,7 @@ func (u *Updater) SendOmahaEvent(ctx context.Context, event *omaha.EventRequest)
 	app := req.GetApp(u.appID)
 	app.Events = append(app.Events, event)
 
-	return u.SendOmahaRequest(u.omahaURL, req)
+	return u.SendOmahaRequest(req)
 }
 
 func (u *Updater) TryUpdate(ctx context.Context, handler UpdateHandler) error {
