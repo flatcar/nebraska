@@ -52,6 +52,66 @@ type ActivityQueryParams struct {
 	PerPage    uint64    `json:"perpage"`
 }
 
+func (api *API) GetActivityCount(teamID string, p ActivityQueryParams) (int, error) {
+	var start, end time.Time
+	if !p.Start.IsZero() {
+		start = p.Start.UTC()
+	} else {
+		start = time.Now().UTC().AddDate(0, 0, -3)
+	}
+	if !p.End.IsZero() {
+		end = p.End.UTC()
+	} else {
+		end = time.Now().UTC()
+	}
+	query := goqu.From(goqu.L(`
+	activity AS a 
+	INNER JOIN application AS app ON (a.application_id = app.id)
+	LEFT JOIN groups AS g ON (a.group_id = g.id)
+	LEFT JOIN channel AS c ON (a.channel_id = c.id)
+`)).Select(goqu.L(`count(a)`)).
+		Where(goqu.I("app.team_id").Eq(teamID), goqu.And(goqu.I("a.created_ts").Gte(start),
+			goqu.I("a.created_ts").Lt(end)))
+
+	if p.AppID != "" {
+		query = query.Where(goqu.I("app.id").Eq(p.AppID))
+	}
+
+	if p.GroupID != "" {
+		query = query.Where(goqu.I("g.id").Eq(p.GroupID))
+	}
+
+	if p.ChannelID != "" {
+		query = query.Where(goqu.I("c.id").Eq(p.ChannelID))
+	}
+
+	if p.InstanceID != "" {
+		query = query.Where(goqu.I("a.instance_id").Eq(p.InstanceID))
+	} else {
+		query = query.Where(goqu.L(ignoreFakeInstanceCondition("a.instance_id")))
+	}
+
+	if p.Version != "" {
+		query = query.Where(goqu.I("a.version").Eq(p.Version))
+	}
+
+	if p.Severity != 0 {
+		query = query.Where(goqu.I("a.severity").Eq(p.Severity))
+	}
+
+	count := 0
+	q, _, err := query.ToSQL()
+	if err != nil {
+		return 0, err
+	}
+	err = api.db.QueryRow(q).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}
+
 // GetActivity returns a list of activity entries that match the specified
 // criteria in the query parameters.
 func (api *API) GetActivity(teamID string, p ActivityQueryParams) ([]*Activity, error) {

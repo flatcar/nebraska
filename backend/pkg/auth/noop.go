@@ -1,9 +1,9 @@
 package auth
 
 import (
-	"github.com/gin-gonic/gin"
+	"net/http"
 
-	"github.com/kinvolk/nebraska/backend/cmd/nebraska/ginhelpers"
+	"github.com/labstack/echo/v4"
 )
 
 type (
@@ -35,13 +35,29 @@ func NewNoopAuthenticator(config *NoopAuthConfig) Authenticator {
 
 // SetupRouter is a part of the Authenticator interface
 // implementation.
-func (noa *noopAuth) SetupRouter(router ginhelpers.Router) {
+func (noa *noopAuth) SetupRouter(router *echo.Echo) {
 }
 
 // Authenticate is a part of the Authenticator interface
 // implementation.
-func (noa *noopAuth) Authenticate(c *gin.Context) (teamID string, replied bool) {
+func (noa *noopAuth) Authenticate(c echo.Context) (teamID string, replied bool) {
 	teamID = noa.defaultTeamID
 	replied = false
 	return
+}
+
+func (noa *noopAuth) Login(ctx echo.Context) error {
+	return ctx.NoContent(http.StatusNotImplemented)
+}
+
+func (noa *noopAuth) LoginCb(ctx echo.Context) error {
+	return ctx.NoContent(http.StatusNotImplemented)
+}
+
+func (noa *noopAuth) ValidateToken(ctx echo.Context) error {
+	return ctx.NoContent(http.StatusNotImplemented)
+}
+
+func (noa *noopAuth) LoginWebhook(ctx echo.Context) error {
+	return ctx.NoContent(http.StatusNotImplemented)
 }

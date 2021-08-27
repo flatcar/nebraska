@@ -34,11 +34,11 @@ function List(props: { appID: string }) {
     applicationsStore.addChangeListener(onChange);
     API.getPackages(props.appID)
       .then(result => {
-        if (_.isNull(result)) {
+        if (_.isNull(result.packages)) {
           setPackages([]);
           return;
         }
-        setPackages(result);
+        setPackages(result.packages);
       })
       .catch(err => {
         console.error('Error getting the packages in the Packages/List: ', err);

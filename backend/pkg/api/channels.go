@@ -156,6 +156,21 @@ func (api *API) GetChannel(channelID string) (*Channel, error) {
 	return &channel, nil
 }
 
+// GetChannelsCount retuns the total number of channels in an app
+func (api *API) GetChannelsCount(appID string) (int, error) {
+	query, _, err := goqu.From("channel").Where(goqu.C("application_id").Eq(appID)).Select(goqu.L("count(*)")).ToSQL()
+	if err != nil {
+		return 0, err
+	}
+	count := 0
+	err = api.db.QueryRow(query).Scan(&count)
+
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 // GetChannels returns all channels associated to the application provided.
 func (api *API) GetChannels(appID string, page, perPage uint64) ([]*Channel, error) {
 	page, perPage = validatePaginationParams(page, perPage)

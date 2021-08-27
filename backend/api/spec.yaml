@@ -1,0 +1,1835 @@
+openapi: "3.0.0"
+info:
+  version: 0.0.1
+  title: Nebraska
+  description: Nebraska is an update manager.
+  contact:
+    name: Kinvolk
+    email: hello@kinvolk.io
+    url: http://kinvolk.io
+paths:
+  /login:
+    get:
+      operationId: login
+      description: login
+      responses:
+        "302":
+          description: login response
+  /login/cb: 
+    get:
+      operationId: loginCb
+      description: login callback
+      responses:
+        "200":
+          description: login cb success response
+  /login/validate_token:
+    get:
+      operationId: validateToken
+      description: validate token
+      responses:
+        "200":
+          description: validate token response
+  /login/webhook:
+    post:
+      operationId: loginWebhook
+      description: login web hook
+      responses:
+        "200":
+          description: login webhook response
+  /config:
+    get:
+      operationId: getConfig
+      description: get app config
+      responses:
+        "200":
+          description: get config response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/config"
+  /v1/update:
+    post:
+      operationId: omaha
+      description: omaha endpoint
+      requestBody:
+        description: payload for omaha endpoint
+        required: true
+        content:
+          text/xml:
+            schema:
+              $ref: "#/components/schemas/omahaRequest"
+      responses:
+        "200":
+          description: Omaha Response
+  /api/apps:
+    get:
+      description: get Apps
+      operationId: paginateApps
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: perpage
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Get App success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/appsPage"
+        "404":
+          description: Apps not found response
+        "400":
+          description: Bad request response
+    post:
+      description: create app
+      operationId: createApp
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: query
+          name: clone_from
+          required: false
+          schema:
+            type: string
+      requestBody:
+        description: payload for create app
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/appConfig"
+      responses:
+        "200":
+          description: Create App success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/application"
+        "400":
+          description: Bad request response
+        "500":
+          description: Create App error response
+
+  /api/apps/{appID}:
+    get:
+      description: get app
+      operationId: getApp
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Get app success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/application"
+        "404":
+          description: App not found response
+        "500":
+          description: Get App error response
+    put:
+      description: update app
+      operationId: updateApp
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: payload for update app
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/appConfig"
+      responses:
+        "200":
+          description: Update App success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/application"
+        "400":
+          description: Bad request response
+        "500":
+          description: Update app error response
+    delete:
+      description: delete app
+      operationId: deleteApp
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Delete App success response
+        "500":
+          description: Delete App error response
+
+  /api/apps/{appID}/groups:
+    get:
+      description: paginate groups of an app
+      operationId: paginateGroups
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: perpage
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: get Groups success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/groupPage"
+        "404":
+          description: Groups not found response
+        "500":
+          description: get Groups error response
+    post:
+      description: create group in app
+      operationId: createGroup
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: payload for create group
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/groupConfig"
+      responses:
+        "200":
+          description: Create Group success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/group"
+        "400":
+          description: Bad request response
+        "500":
+          description: Create Group error response
+
+  /api/apps/{appID}/groups/{groupID}:
+    get:
+      description: get group given its groupID and appID
+      operationId: getGroup
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: groupID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Get Group success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/group"
+        "404":
+          description: Group not found response
+        "500":
+          description: Get Group error response
+    put:
+      description: update group given its groupID and appID
+      operationId: updateGroup
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: groupID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: payload for update group
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/groupConfig"      
+      responses:
+        "200":
+          description: Update Group success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/group"
+        "404":
+          description: Group not found response
+        "400":
+          description: Update Group Bad request response
+        "500":
+          description: Update Group error response
+    delete:
+      description: delete group given its groupID and appID
+      operationId: deleteGroup
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: groupID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Delete Group success response
+        "404":
+          description: Group not found response
+        "500":
+          description: Delete Group error response
+
+  /api/apps/{appID}/groups/{groupID}/version_timeline:
+    get:
+      description: get version timeline of a group given its groupID and appID
+      operationId: getGroupVersionTimeline
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: groupID
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: duration
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Version Timeline of group success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/groupVersionCountTimeline"
+        "404":
+          description: Group not found response
+        "500":
+          description: Version Timeline of group error response
+  /api/apps/{appID}/groups/{groupID}/status_timeline:
+    get:
+      description: get status timeline of a group given its groupID and appID
+      operationId: getGroupStatusTimeline
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: groupID
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: duration
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Status Timeline of group success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/groupStatusCountTimeline"
+        "404":
+          description: Group not found response        
+        "500":
+          description: Status Timeline of group error response
+
+  /api/apps/{appID}/groups/{groupID}/instances_stats:
+    get:
+      description: get instance stats of a group given its groupID and appID
+      operationId: getGroupInstanceStats
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: groupID
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: duration
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Instance Stats of group success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/groupInstanceStats"
+        "404":
+          description: Group not found response
+        "500":
+           description: Instance Stats of group error response
+  /api/apps/{appID}/groups/{groupID}/version_breakdown:
+    get:
+      description: get version breakdown of a group given its groupID and appID
+      operationId: getGroupVersionBreakdown
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: groupID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Version Breakdown of group success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/groupVersionBreakdown"
+        "404":
+          description: Group not found response
+        "500":
+          description:  Version Breakdown of group error response
+  /api/apps/{appID}/channels:
+    get:
+      description: paginate channels of an app
+      operationId: paginateChannels
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in : path
+          name: appID
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: perpage
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Get channels success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/channelPage"
+        "404":
+          description: Channel not found response
+        "500":
+          description: Get channels error response
+    post:
+      description: create channel
+      operationId: createChannel
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in : path
+          name: appID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: payload for create channel
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/channelConfig"      
+      responses:
+        "200":
+          description: Create channel success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/channel"
+        "400":
+          description: Bad request response
+        "500":
+          description: Create channel error response
+  /api/apps/{appID}/channels/{channelID}:
+    get:
+      description: get channel by id
+      operationId: getChannel
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: channelID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Get channel success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/channel"
+        "404":
+          description: Channel not found response
+        "500":
+          description: Get channel error response
+    put:
+      description: update channel by id
+      operationId: updateChannel
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: channelID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: payload for create channel
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/channelConfig"      
+      responses:
+        "200":
+          description: Update channel success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/channel"
+        "404":
+          description: Channel not found response
+        "400":
+          description: Bad request response
+        "500":
+          description: Update channel error response
+    delete:
+      description: delete channel by id
+      operationId: deleteChannel
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: channelID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Delete channel success response
+        "500":
+          description: Delete channel error response
+  /api/apps/{appID}/packages:
+    get:
+      description: paginate packages of an app
+      operationId: paginatePackages
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: perpage
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: get Packages success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/packages"
+        "404":
+          description: Packages not found response
+    post:
+      description: create package
+      operationId: createPackage
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: payload for create package
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/packageConfig"
+      responses:
+        "200":
+          description: Create Package success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/package"
+        "400": 
+          description: Create Package bad request response
+        "500":
+          description: Create package error response
+  /api/apps/{appID}/packages/{packageID}:
+    get:
+      description: get package given its packageID and appID
+      operationId: getPackage
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: packageID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Get Package success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/package"
+        "404":
+          description: Package not found response
+        "500":
+          description: Get Package error response
+    put:
+      description: update package given its packageID and appID
+      operationId: updatePackage
+      security:
+        - {}
+        - bearerAuth: []         
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: packageID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: payload for update package
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/packageConfig"
+      responses:
+        "200":
+          description: Update Package success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/package"
+        "404":
+          description: Package not found response
+        "500":
+          description: Update package error response
+    delete:
+      description: delete package given its packageID and appID
+      operationId: deletePackage
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: packageID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Delete Package success response
+        "404":
+          description: Package not found response
+        "500":
+          description: Delete package error response
+  /api/apps/{appID}/groups/{groupID}/instances:
+    get:
+      description: get instances of a group given its groupID and appID
+      operationId: getGroupInstances
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: groupID
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: status 
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: perpage
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: sortFilter
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: sortOrder
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: searchFilter
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: searchValue
+          required: false
+          schema:
+            type: string        
+        - in: query
+          name: duration
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: version
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Get Instances of a Group success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/instancePage"
+        "500":
+          description: Get Instances of a Group error response
+  /api/apps/{appID}/groups/{groupID}/instancescount:
+    get:
+      description: get instance count of a group given its groupID and appID
+      operationId: getGroupInstancesCount
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: groupID
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: duration
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Get Instance count of a Group success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/instanceCount"
+        "500":
+          description: Get Instance count of a Group error response
+  /api/apps/{appID}/groups/{groupID}/instances/{instanceID}:
+    get:
+      description: get instance of a group given its groupID and appID
+      operationId: getInstance
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: groupID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: instanceID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Get instance success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/instance"
+        "404":
+          description: Instance not found response
+        "500":
+          description: Get instance error response
+  /api/apps/{appID}/groups/{groupID}/instances/{instanceID}/status_history:
+    get:
+      description: get instance status_history.
+      operationId: getInstanceStatusHistory
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: appID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: groupID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: instanceID
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Get instance status history success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/instanceStatusHistories"
+        "404":
+          description: Instance not found response
+        "500":
+          description: Get instance status history error response
+  /api/instances/{instanceID}:
+    put:
+      description: update instance
+      operationId: updateInstance
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: path
+          name: instanceID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: payload for update instance
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/updateInstanceConfig"
+
+      responses:
+        "200":
+          description: Update instance success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/instance"
+        "500":
+          description: Update instance error response
+  /api/activity:
+    get:
+      description: paginate activity
+      operationId: paginateActivity
+      security:
+        - {}
+        - bearerAuth: []   
+      parameters:
+        - in: query
+          name: appID
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: groupID
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: channelID
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: instanceID
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: version
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: severity
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: start
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: end
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: perpage
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List activity success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/activityPage"
+        "404":
+          description: Activity not found response
+        "500":
+          description: List activity error response
+components:
+  schemas:
+    ## request Body
+    appConfig:
+      type: object
+      required:
+        - name
+        - description
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        product_id:
+          type: string
+
+    groupConfig:
+      type: object
+      required:
+        - name
+        - description
+        - policy_max_updates_per_period
+        - policy_period_interval
+        - policy_timezone
+        - policy_office_hours
+        - policy_safe_mode
+        - policy_update_timeout
+        - policy_updates_enabled
+        - track
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        channel_id:
+          type: string
+        policy_updates_enabled:
+          type: boolean
+        policy_safe_mode:
+          type: boolean
+        policy_office_hours:
+          type: boolean
+        policy_timezone:
+          type: string
+        policy_period_interval:
+          type: string
+        policy_max_updates_per_period:
+          type: integer
+        policy_update_timeout:
+          type: string
+        track:
+          type: string
+
+    flatcarActionPackage:
+      type: object
+      properties:
+        id:
+          type: string
+        sha256: 
+          type: string
+      x-oapi-codegen-extra-tags:
+        json: flatcar_action
+
+    packageConfig:
+      type: object
+      required:
+        - application_id
+        - arch
+        - channels_blacklist
+        - description
+        - filename
+        - hash
+        - size
+        - type
+        - url 
+        - version
+      properties:
+        application_id:
+          type: string
+        arch:
+          type: integer
+        channels_blacklist:
+          type: array
+          items:
+            type: string
+        description:
+          type: string
+        filename:
+          type: string
+        hash:
+          type: string
+        size:
+          type: string
+        url:
+          type: string
+        version:
+          type: string
+        type:
+          type: integer
+        flatcarAction:
+          $ref: "#/components/schemas/flatcarActionPackage"
+        
+    updateInstanceConfig:
+      type: object
+      required:
+        - alias
+      properties:
+        alias:
+          type: string   
+    
+    omahaRequest:
+      type: object
+
+    channelConfig:
+      type: object
+      required:
+        - application_id
+        - arch
+        - color
+        - name
+      properties:
+        application_id:
+          type: string
+        arch:
+          type: integer
+          x-go-type: uint
+        color:
+          type: string
+        name:
+          type: string
+        package_id:
+          type: string
+
+
+    ## response     
+    config:
+      type: object
+      required:
+        - accessManagementUrl
+        - logoutUrl
+        - nebraskaVersion
+        - logo
+        - title
+        - headerStyle
+        - loginUrl
+        - authMode
+      properties:
+        accessManagementUrl:
+          type: string
+        logoutUrl:
+          type: string
+        nebraskaVersion:
+          type: string
+        logo:
+          type: string
+        title:
+          type: string
+        headerStyle:
+          type: string
+        loginUrl:
+          type: string
+        authMode:
+          type: string
+    flatcarAction:
+      type: object
+      required:
+        - id
+        - event
+        - chromeOSVersion
+        - sha256
+        - needsAdmin
+        - isDelta
+        - disablePayloadBackoff
+        - metadataSignatureRsa
+        - metadataSize
+        - deadline
+        - createdTs
+        - packageID
+      properties:
+        id:
+          type: string
+        event:
+          type: string
+        chromeOSVersion:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: chromeos_version
+        sha256:
+          type: string
+        needsAdmin:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: needs_admin
+        isDelta:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: is_delta
+        disablePayloadBackoff:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: disable_payload_backoff
+        metadataSignatureRsa:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: metadata_signature_rsa
+        metadataSize:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: metadata_size
+        deadline:
+          type: string
+        createdTs:
+          type: string
+          format: date-time
+          x-oapi-codegen-extra-tags:
+            json: created_ts
+        packageID:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: "-"
+      x-oapi-codegen-extra-tags:
+        json: flatcar_action
+
+    package:
+      type: object
+      required:
+        - id
+        - type
+        - version
+        - url
+        - filename
+        - description
+        - size
+        - hash
+        - createdTs
+        - channelsBlacklist
+        - applicationID
+        - arch
+      properties:
+        id:
+          type: string
+        type:
+          type: integer
+        version:
+          type: string
+        url:
+          type: string
+        filename:
+          type: string
+        description:
+          type: string
+        size:
+          type: string
+        hash:
+          type: string
+        createdTs:
+          type: string
+          format: date-time
+          x-oapi-codegen-extra-tags:
+            json: created_ts
+        channelsBlacklist:
+          type: array
+          items:
+            type: string
+          x-oapi-codegen-extra-tags:
+            json: channels_blacklist
+        applicationID:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: application_id
+        flatcarAction:
+          $ref: "#/components/schemas/flatcarAction"
+        arch:
+          $ref: "#/components/schemas/arch"
+
+    arch:
+      type: integer
+
+    channel:
+      type: object
+      required:
+        - id
+        - name
+        - color
+        - createdTs
+        - applicationID
+        - packageID
+        - arch
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        color:
+          type: string
+        createdTs:
+          type: string
+          format: date-time
+          x-oapi-codegen-extra-tags:
+            json: created_ts
+        applicationID:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: application_id
+        packageID:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: package_id
+        package:
+          $ref: "#/components/schemas/package"
+        arch:
+          $ref: "#/components/schemas/arch"
+      x-oapi-codegen-extra-tags:
+        db: channel
+
+    group:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - createdTs
+        - rolloutInProgress
+        - applicationID
+        - channelID
+        - policyUpdatesEnabled
+        - policySafeMode
+        - policyOfficeHours
+        - policyTimezone
+        - policyPeriodInterval
+        - policyMaxUpdatesPerPeriod
+        - policyUpdateTimeout
+        - track
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        createdTs:
+          type: string
+          format: date-time
+          x-oapi-codegen-extra-tags:
+            json: created_ts
+        rolloutInProgress:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: rollout_in_progress
+        applicationID:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: application_id
+        channelID:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: channel_id
+        policyUpdatesEnabled:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: policy_updates_enabled
+        policySafeMode:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: policy_safe_mode
+        policyOfficeHours:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: policy_office_hours
+        policyTimezone:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: policy_timezone
+        policyPeriodInterval:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: policy_period_interval
+        policyMaxUpdatesPerPeriod:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: policy_max_updates_per_period
+        policyUpdateTimeout:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: policy_update_timeout
+        channel:
+          $ref: "#/components/schemas/channel"
+        track:
+          type: string
+          
+    groupVersionCountTimeline:
+      type: object
+      x-go-type: map[time.Time]map[string]uint64
+      
+    groupStatusCountTimeline:
+      type: object
+      x-go-type: map[time.Time]map[int]map[string]uint64
+
+    versionBreakdownEntry:
+      type: object
+      required:
+        - version
+        - instance
+        - percentage
+      properties:
+        version:
+          type: string
+        instances:
+          type: integer
+        percentage:
+          type: number
+          format: double
+        
+    groupVersionBreakdown:
+      type: array
+      items: 
+        $ref:  "#/components/schemas/versionBreakdownEntry"
+
+    application:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - createdTs
+        - groups
+        - channels
+        - instances
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        createdTs:
+          type: string
+          format: date-time
+          x-oapi-codegen-extra-tags:
+            json: created_ts
+        teamId:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: "-"
+        groups:
+          type: array
+          items:
+            $ref: "#/components/schemas/group"
+
+        channels:
+          type: array
+          items:
+            $ref: "#/components/schemas/channel"
+
+        instances:
+          type: object
+          properties:
+            count:
+              type: string
+
+    groupInstanceStats:
+      type: object
+      required:
+        - total
+        - undefined
+        - updateGranted
+        - error
+        - complete
+        - installed
+        - downloaded
+        - downloading
+        - onHold
+      properties:
+        total:
+          type: integer
+        undefined:
+          type: integer
+        updateGranted:
+          type: integer
+          x-oapi-codegen-extra-tags:
+            json: update_granted
+        error:
+          type: integer
+        complete:
+          type: integer
+        installed:
+          type: integer
+        downloaded:
+          type: integer
+        downloading:
+          type: integer
+        onHold:
+          type: integer
+
+    instanceApplication:
+      type: object
+      required:
+        - instanceID
+        - applicationID
+        - groupID
+        - version
+        - createdTs
+        - status
+        - lastCheckForUpdates
+        - lastUpdateGrantedTs
+        - lastUpdateVersion
+        - updateInProgress
+      properties:
+        instanceID:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: instance_id
+        applicationID:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: application_id
+        groupID:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: group_id
+        version:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: version
+        createdTs:
+          type: string
+          format: date-time
+          x-oapi-codegen-extra-tags:
+            json: created_ts
+        status:
+          type: integer
+        lastCheckForUpdates:
+          type: string
+          format: date-time
+          x-oapi-codegen-extra-tags:
+            json: last_check_for_updates
+        lastUpdateGrantedTs:
+          type: string
+          format: date-time
+          x-oapi-codegen-extra-tags:
+            json: last_update_granted_ts
+        lastUpdateVersion:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: last_update_version
+        updateInProgress:
+          type: boolean
+          x-oapi-codegen-extra-tags:
+            json: update_in_progress
+      x-oapi-codegen-extra-tags:
+        json: application
+
+    instance:
+      type: object
+      required:
+        - id
+        - ip
+        - createdTs
+        - application
+        - alias
+      properties:
+        id:
+          type: string
+        ip:
+          type: string
+        createdTs:
+          type: string
+          format: date-time
+          x-oapi-codegen-extra-tags:
+            json: created_ts
+        application:
+          $ref: "#/components/schemas/instanceApplication"
+        alias:
+          type: string
+
+    instancePage:
+      type: object
+      required:
+        - total
+        - instances
+      properties:
+        total:
+          type: integer
+        instances:
+          type: array
+          items:
+            $ref: "#/components/schemas/instance"
+
+    instanceCount:
+      type: object
+      required:
+        - count
+      properties:
+        count:
+          type: integer
+          x-go-type: uint64
+
+    instanceStatusHistory:
+      type: object
+      required:
+        - id
+        - status
+        - verison
+        - createdTs
+        - instanceID
+        - applicationID
+        - groupID
+        - errorCode
+      properties:
+        id:
+          type: integer
+          x-oapi-codegen-extra-tags:
+            json: "-"
+        status:
+          type: integer
+        verison:
+          type: string
+        createdTs:
+          type: string
+          format: date-time
+          x-oapi-codegen-extra-tags:
+            json: created_ts
+        instanceID:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: "-"
+        applicationID:
+          type: string
+          x-oapi-codegen-extra-tags:
+            db: application_id
+            json: "-"
+        groupID:
+          type: string
+          x-oapi-codegen-extra-tags:
+            db: group_id
+            json: "-"
+        errorCode:
+          type: string
+          x-oapi-codegen-extra-tags:
+            db: error_code
+            json: error_code
+
+    activity:
+      type: object
+      required:
+        - appID
+        - groupID
+        - createdTs
+        - class
+        - severity
+        - version
+        - applicationName
+        - groupName
+        - channelName
+        - instanceID
+      properties:
+        appID:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: application_id
+        groupID:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: group_id
+        createdTs:
+          type: string
+          format: date-time
+          x-oapi-codegen-extra-tags:
+            db: created_ts
+            json: created_ts
+        class:
+          type: integer
+        severity:
+          type: integer
+        version:
+          type: string
+        applicationName:
+          type: string 
+          x-oapi-codegen-extra-tags:
+            json: application_name
+        groupName:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: group_name
+        channelName:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: channel_name
+        instanceID:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: instance_id
+
+    instanceStatusHistories:
+      type: array
+      items:
+        $ref: "#/components/schemas/instanceStatusHistory"
+    
+    appsPage:
+      type: object
+      required:
+        - totalCount
+        - count
+        - applications
+      properties:
+        totalCount:
+          type: integer
+        count:
+          type: integer
+        applications:
+          type: array
+          items:
+            $ref: "#/components/schemas/application"
+
+    groupPage:
+      type: object
+      required:
+        - totalCount
+        - count
+        - groups
+      properties:
+        totalCount:
+          type: integer
+        count:
+          type: integer
+        groups:
+          type: array
+          items:
+            $ref: "#/components/schemas/group"
+
+    channelPage:
+      type: object
+      required:
+        - totalCount
+        - count
+        - channels
+      properties:
+        totalCount:
+          type: integer
+        count:
+          type: integer
+        channels:
+          type: array
+          items:
+            $ref: "#/components/schemas/channel"
+
+    packages:
+      type: array
+      items:
+        $ref: "#/components/schemas/package"
+
+    activityPage:
+      type: object
+      required:
+        - totalCount
+        - count
+        - activities
+      properties:
+        totalCount:
+          type: integer
+        count:
+          type: integer
+        activities:
+          type: array
+          items:
+            $ref: "#/components/schemas/activity"
+
+  securitySchemes:
+    bearerAuth:           
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    
