@@ -32,13 +32,15 @@ function List(props: { appID: string }) {
 
   React.useEffect(() => {
     applicationsStore.addChangeListener(onChange);
-    API.getPackages(props.appID).then(result => {
-      if (_.isNull(result)) {
-        setPackages([]);
-        return;
-      }
-      setPackages(result);
-    });
+    if (!packages) {
+      API.getPackages(props.appID).then(result => {
+        if (_.isNull(result.packages)) {
+          setPackages([]);
+          return;
+        }
+        setPackages(result.packages);
+      });
+    }
 
     if (application === null) {
       applicationsStore.getApplication(props.appID);

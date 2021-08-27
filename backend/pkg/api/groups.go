@@ -383,6 +383,21 @@ func (api *API) updateCachedGroups() {
 	cachedGroupsLock.Unlock()
 }
 
+// GetGroupsCount retuns the total number of groups in an app
+func (api *API) GetGroupsCount(appID string) (int, error) {
+	query, _, err := goqu.From("groups").Where(goqu.C("application_id").Eq(appID)).Select(goqu.L("count(*)")).ToSQL()
+	if err != nil {
+		return 0, err
+	}
+	count := 0
+	err = api.db.QueryRow(query).Scan(&count)
+
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 // GetGroups returns all groups that belong to the application provided.
 func (api *API) GetGroups(appID string, page, perPage uint64) ([]*Group, error) {
 	page, perPage = validatePaginationParams(page, perPage)
