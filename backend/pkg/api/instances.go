@@ -424,7 +424,7 @@ func (api *API) GetInstances(p InstancesQueryParams, duration string) (Instances
 		return InstancesWithTotal{}, err
 	}
 	result := InstancesWithTotal{
-		TotalInstances: totalCount,
+		TotalInstances: uint64(totalCount),
 		Instances:      instances,
 	}
 	return result, nil
@@ -433,8 +433,7 @@ func prepareInstanceAppQuery() *goqu.SelectDataset {
 	return goqu.From("instance_application").
 		Select("version", "status", "last_check_for_updates", "last_update_version", "update_in_progress", "application_id", "group_id", "instance_id")
 }
-func (api *API) GetInstancesCount(p InstancesQueryParams, duration string) (uint64, error) {
-	var totalCount uint64
+func (api *API) GetInstancesCount(p InstancesQueryParams, duration string) (int, error) {
 	var err error
 
 	var dbDuration postgresDuration
@@ -450,15 +449,7 @@ func (api *API) GetInstancesCount(p InstancesQueryParams, duration string) (uint
 	finalQuery := prepareGetInstancesQuery(instancesQuery, instanceAppQuery)
 	finalQuery = prepareSearchQuery(finalQuery, p).Select(goqu.L("COUNT(*)"))
 
-	countQuery, _, err := finalQuery.ToSQL()
-	if err != nil {
-		return 0, err
-	}
-	err = api.db.QueryRow(countQuery).Scan(&totalCount)
-	if err != nil {
-		return 0, err
-	}
-	return totalCount, nil
+	return api.GetCountQuery(finalQuery)
 }
 
 func (api *API) UpdateInstance(instanceID string, alias string) (*Instance, error) {

@@ -3,3 +3,4 @@ coverage.out
 tools/go-bindata
 tools/golangci-lint
 tools/swag
+.env

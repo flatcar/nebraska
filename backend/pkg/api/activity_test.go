@@ -54,6 +54,7 @@ func TestGetActivity(t *testing.T) {
 	activityEntries, err = a.GetActivity(tTeam.ID, ActivityQueryParams{})
 	assert.NoError(t, err)
 	assert.Equal(t, 5, len(activityEntries))
+	anActivity := activityEntries[0]
 
 	hasRecentActivity := a.hasRecentActivity(activityInstanceUpdateFailed, ActivityQueryParams{Severity: activitySuccess, AppID: tApp.ID, Version: tVersion, GroupID: tGroup.ID})
 	assert.True(t, hasRecentActivity)
@@ -64,4 +65,27 @@ func TestGetActivity(t *testing.T) {
 	activityEntries, err = a.GetActivity(uuid.New().String(), ActivityQueryParams{})
 	assert.NoError(t, err)
 	assert.Nil(t, activityEntries, "Team with this id doesn't exist")
+
+	// We try counting with default Start==-3days, End==Now
+	totalCount, err := a.GetActivityCount(tTeam.ID, ActivityQueryParams{})
+	assert.NoError(t, err)
+	assert.Equal(t, 5, totalCount)
+
+	totalCount, err = a.GetActivityCount(tTeam.ID,
+		ActivityQueryParams{
+			Start: anActivity.CreatedTs.Add(time.Duration(-10) * time.Minute),
+			End:   anActivity.CreatedTs.Add(time.Duration(10) * time.Minute),
+		},
+	)
+	assert.NoError(t, err)
+	assert.Equal(t, 5, totalCount)
+
+	// Can filter by GroupID, ChannelID, AppID, and InstanceID.
+	totalCount, err = a.GetActivityCount(tTeam.ID,
+		ActivityQueryParams{
+			GroupID: tGroup.ID,
+		},
+	)
+	assert.NoError(t, err)
+	assert.Equal(t, 3, totalCount)
 }
