@@ -1,3 +1,4 @@
+import infoIcon from '@iconify/icons-mdi/information-circle-outline';
 import searchIcon from '@iconify/icons-mdi/search';
 import Icon from '@iconify/react';
 import { makeStyles, Theme } from '@material-ui/core';
@@ -5,6 +6,7 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
 import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -28,6 +30,7 @@ import {
   useGroupVersionBreakdown,
 } from '../../utils/helpers';
 import Empty from '../Common/EmptyContent';
+import LightTooltip from '../Common/LightTooltip';
 import ListHeader from '../Common/ListHeader';
 import SearchInput from '../Common/ListSearch';
 import Loader from '../Common/Loader';
@@ -381,6 +384,15 @@ function ListView(props: { application: Application; group: Group }) {
     }
   }
 
+  function getSearchTooltipText() {
+    return t(`instances|You can search by typing and pressing enter.
+     The search will show matches for the instances id, alias, and ip fields, in this order. 
+     It is also possible to match only one field by using its classifier, for example: 
+     id:0001
+     alias:"My instance" 
+     ip:256.0.0.1`);
+  }
+
   return (
     <>
       <ListHeader title={t('instances|Instance List')} />
@@ -414,20 +426,32 @@ function ListView(props: { application: Application; group: Group }) {
                     <Box ml={2}>
                       <InstanceCountLabel countText={getInstanceCount()} instanceListView />
                     </Box>
-                    <Box ml={4}>
-                      <InputLabel htmlFor="instance-search-filter" shrink>
-                        {t('frequent|Search')}
-                      </InputLabel>
-                      <SearchInput
-                        id="instance-search-filter"
-                        startAdornment={
-                          <InputAdornment position="start">
-                            <Icon icon={searchIcon} />
-                          </InputAdornment>
-                        }
-                        onChange={searchHandler}
-                        onKeyPress={handleSearchSubmit}
-                      />
+                    <Box ml={4} display="flex" alignItems="flex-end">
+                      <Box>
+                        <InputLabel htmlFor="instance-search-filter" shrink>
+                          {t('frequent|Search')}
+                        </InputLabel>
+                        <SearchInput
+                          id="instance-search-filter"
+                          startAdornment={
+                            <InputAdornment position="start">
+                              <Icon icon={searchIcon} />
+                            </InputAdornment>
+                          }
+                          endAdornment={
+                            <InputAdornment position="end">
+                              <LightTooltip title={getSearchTooltipText()}>
+                                <IconButton>
+                                  <Icon icon={infoIcon} width="20" height="20" />
+                                </IconButton>
+                              </LightTooltip>
+                            </InputAdornment>
+                          }
+                          onChange={searchHandler}
+                          onKeyPress={handleSearchSubmit}
+                        />
+                      </Box>
+                      <Box></Box>
                     </Box>
                   </Box>
                 </Grid>
