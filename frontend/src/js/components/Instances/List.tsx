@@ -393,6 +393,8 @@ function ListView(props: { application: Application; group: Group }) {
      ip:256.0.0.1`);
   }
 
+  const searchInputRef = React.createRef<HTMLInputElement>();
+
   return (
     <>
       <ListHeader title={t('instances|Instance List')} />
@@ -411,6 +413,33 @@ function ListView(props: { application: Application; group: Group }) {
                 </Box>
               </Grid>
               <Grid item>
+                <InputLabel htmlFor="instance-search-filter" shrink>
+                  {t('frequent|Search')}
+                </InputLabel>
+                <SearchInput
+                  id="instance-search-filter"
+                  startAdornment={
+                    <InputAdornment position="start">
+                      <IconButton onClick={() => searchInputRef.current?.focus()}>
+                        <Icon icon={searchIcon} width="15" height="15" />
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <LightTooltip title={getSearchTooltipText()}>
+                        <IconButton>
+                          <Icon icon={infoIcon} width="20" height="20" />
+                        </IconButton>
+                      </LightTooltip>
+                    </InputAdornment>
+                  }
+                  onChange={searchHandler}
+                  onKeyPress={handleSearchSubmit}
+                  inputRef={searchInputRef}
+                />
+              </Grid>
+              <Grid item>
                 <TimeIntervalLinks
                   intervalChangeHandler={duration => addQuery({ period: duration.queryValue })}
                   selectedInterval={getDuration()}
@@ -425,33 +454,6 @@ function ListView(props: { application: Application; group: Group }) {
                   <Box display="flex" alignItems="center">
                     <Box ml={2}>
                       <InstanceCountLabel countText={getInstanceCount()} instanceListView />
-                    </Box>
-                    <Box ml={4} display="flex" alignItems="flex-end">
-                      <Box>
-                        <InputLabel htmlFor="instance-search-filter" shrink>
-                          {t('frequent|Search')}
-                        </InputLabel>
-                        <SearchInput
-                          id="instance-search-filter"
-                          startAdornment={
-                            <InputAdornment position="start">
-                              <Icon icon={searchIcon} />
-                            </InputAdornment>
-                          }
-                          endAdornment={
-                            <InputAdornment position="end">
-                              <LightTooltip title={getSearchTooltipText()}>
-                                <IconButton>
-                                  <Icon icon={infoIcon} width="20" height="20" />
-                                </IconButton>
-                              </LightTooltip>
-                            </InputAdornment>
-                          }
-                          onChange={searchHandler}
-                          onKeyPress={handleSearchSubmit}
-                        />
-                      </Box>
-                      <Box></Box>
                     </Box>
                   </Box>
                 </Grid>
