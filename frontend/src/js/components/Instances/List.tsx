@@ -15,7 +15,7 @@ import React, { ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import API from '../../api/API';
-import { Application, Group } from '../../api/apiDataTypes';
+import { Application, Group, Instance, Instances } from '../../api/apiDataTypes';
 import {
   getInstanceStatus,
   getKeyByValue,
@@ -144,7 +144,10 @@ function ListView(props: { application: Application; group: Group }) {
     version: '',
     sortOrder: SORT_ORDERS[1],
   });
-  const [instancesObj, setInstancesObj] = React.useState({ instances: [], total: -1 });
+  const [instancesObj, setInstancesObj] = React.useState<Instances>({
+    instances: [],
+    total: -1,
+  });
   const [instanceFetchLoading, setInstanceFetchLoading] = React.useState(false);
   const [totalInstances, setTotalInstances] = React.useState(-1);
   const location = useLocation();
@@ -226,7 +229,7 @@ function ListView(props: { application: Application; group: Group }) {
           setTotalInstances(result.total);
         }
         if (result.instances) {
-          const massagedInstances = result.instances.map((instance: any) => {
+          const massagedInstances = result.instances.map((instance: Instance) => {
             instance.statusInfo = getInstanceStatus(instance.application.status);
             return instance;
           });

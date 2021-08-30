@@ -28,7 +28,7 @@ import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 import * as Yup from 'yup';
 import API from '../../api/API';
-import { Application, Group, Instance } from '../../api/apiDataTypes';
+import { Application, Group, Instance, InstanceStatusHistory } from '../../api/apiDataTypes';
 import {
   ERROR_STATUS_CODE,
   getErrorAndFlags,
@@ -125,15 +125,8 @@ function StatusLabel(props: StatusLabelProps) {
   );
 }
 
-interface StatusEvent {
-  status: number;
-  version: string;
-  error_code?: number;
-  created_ts: string | Date | number;
-}
-
 interface StatusRow {
-  entry: StatusEvent;
+  entry: InstanceStatusHistory;
 }
 
 function StatusRow(props: StatusRow) {
@@ -180,7 +173,7 @@ function StatusRow(props: StatusRow) {
   );
 }
 
-function EventTable(props: { events: StatusEvent[] }) {
+function EventTable(props: { events: InstanceStatusHistory[] }) {
   const { t } = useTranslation();
 
   return props.events.length === 0 ? (
@@ -299,7 +292,7 @@ function DetailsView(props: DetailsViewProps) {
   const classes = useDetailsStyles();
   const theme = useTheme<Theme>();
   const { application, group, instance, onInstanceUpdated } = props;
-  const [eventHistory, setEventHistory] = React.useState<StatusEvent[] | null>(null);
+  const [eventHistory, setEventHistory] = React.useState<InstanceStatusHistory[] | null>(null);
   const [showEdit, setShowEdit] = React.useState(false);
   const { t } = useTranslation();
 
