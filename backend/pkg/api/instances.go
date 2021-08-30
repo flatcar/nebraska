@@ -104,6 +104,8 @@ type InstancesQueryParams struct {
 	PerPage       uint64 `json:"perpage"`
 	SortFilter    string `json:"sort_filter"`
 	SortOrder     string `json:"sort_order"`
+	SearchFilter  string `json:"search_filter"`
+	SearchValue   string `json:"search_value"`
 }
 
 type instanceFilterItem int
@@ -341,6 +343,29 @@ func prepareGetInstancesQuery(instanceQuery *goqu.SelectDataset, instanceAppQuer
 	).Select(goqu.L("*"))
 }
 
+func prepareSearchQuery(finalQuery *goqu.SelectDataset, p InstancesQueryParams) *goqu.SelectDataset {
+	searchFilter := p.SearchFilter
+	searchValue := p.SearchValue
+	searchExpression := "%" + searchValue + "%"
+	outputQuery := finalQuery
+	if searchFilter == "All" && searchValue != "" {
+		// search by alias -> ids -> ip -> date
+		outputQuery = finalQuery.Where(
+			goqu.Or(goqu.I("alias").ILike(searchExpression),
+				goqu.I("id").ILike(searchExpression),
+				goqu.L("text(ip)").Like(searchExpression)))
+	} else if searchFilter != "" && searchValue != "" {
+		if searchFilter == "ip" {
+			outputQuery = finalQuery.Where(
+				goqu.L("text(ip)").Like(searchExpression))
+		} else {
+			outputQuery = finalQuery.Where(
+				goqu.I(searchFilter).ILike(searchExpression))
+		}
+	}
+	return outputQuery
+}
+
 // GetInstances returns all instances that match with the provided criteria.
 func (api *API) GetInstances(p InstancesQueryParams, duration string) (InstancesWithTotal, error) {
 	var instances []*Instance
@@ -363,9 +388,7 @@ func (api *API) GetInstances(p InstancesQueryParams, duration string) (Instances
 	instancesQuery = instancesQuery.Select("id", "ip", "created_ts", goqu.Case().
 		When(goqu.C("alias").Neq(""), goqu.C("alias")).Else(goqu.C("id")).As("alias"))
 
-	instanceAppQuery := goqu.From("instance_application").
-		Select("version", "status", "last_check_for_updates", "last_update_version", "update_in_progress", "application_id", "group_id", "instance_id")
-
+	instanceAppQuery := prepareInstanceAppQuery()
 	finalQuery := prepareGetInstancesQuery(instancesQuery, instanceAppQuery)
 	if sortOrder == sortOrderAsc {
 		finalQuery = finalQuery.Order(goqu.I(sortFilter).Asc().NullsLast())
@@ -373,6 +396,7 @@ func (api *API) GetInstances(p InstancesQueryParams, duration string) (Instances
 		finalQuery = finalQuery.Order(goqu.I(sortFilter).Desc().NullsLast())
 	}
 
+	finalQuery = prepareSearchQuery(finalQuery, p)
 	query, _, err := finalQuery.
 		Limit(limit).
 		Offset(offset).
@@ -405,6 +429,10 @@ func (api *API) GetInstances(p InstancesQueryParams, duration string) (Instances
 	}
 	return result, nil
 }
+func prepareInstanceAppQuery() *goqu.SelectDataset {
+	return goqu.From("instance_application").
+		Select("version", "status", "last_check_for_updates", "last_update_version", "update_in_progress", "application_id", "group_id", "instance_id")
+}
 func (api *API) GetInstancesCount(p InstancesQueryParams, duration string) (uint64, error) {
 	var totalCount uint64
 	var err error
@@ -414,7 +442,15 @@ func (api *API) GetInstancesCount(p InstancesQueryParams, duration string) (uint
 	if err != nil {
 		return 0, err
 	}
-	countQuery, _, err := api.getFilterInstancesQuery(goqu.L("COUNT (*)"), p, dbDuration).ToSQL()
+	instancesQuery := api.instancesQuery(p, dbDuration)
+	instancesQuery = instancesQuery.Select("id", "ip", "created_ts", goqu.Case().
+		When(goqu.C("alias").Neq(""), goqu.C("alias")).Else(goqu.C("id")).As("alias"))
+
+	instanceAppQuery := prepareInstanceAppQuery()
+	finalQuery := prepareGetInstancesQuery(instancesQuery, instanceAppQuery)
+	finalQuery = prepareSearchQuery(finalQuery, p).Select(goqu.L("COUNT(*)"))
+
+	countQuery, _, err := finalQuery.ToSQL()
 	if err != nil {
 		return 0, err
 	}
@@ -544,9 +580,7 @@ func (api *API) updateInstanceObjStatus(instance *Instance, newStatus int) error
 // instanceAppQuery returns a SelectDataset prepared to return the app status
 // of the app identified by the application id provided for a given instance.
 func (api *API) instanceAppQuery(appID, instanceID string, duration postgresDuration, sortFilter string, orderOfSort sortOrder) *goqu.SelectDataset {
-	query := goqu.From("instance_application").
-		Select("version", "status", "last_check_for_updates", "last_update_version", "update_in_progress", "application_id", "group_id", "instance_id").
-		Where(goqu.C("application_id").Eq(appID)).
+	query := prepareInstanceAppQuery().Where(goqu.C("application_id").Eq(appID)).
 		Where(goqu.L("last_check_for_updates > now() at time zone 'utc' - interval ?", duration))
 
 	if instanceID != "" {

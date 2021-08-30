@@ -862,6 +862,8 @@ func (ctl *controller) getInstances(c *gin.Context) {
 	p.PerPage, _ = strconv.ParseUint(c.Query("perpage"), 10, 64)
 	p.SortFilter = c.Query("sort")
 	p.SortOrder = c.Query("sortOrder")
+	p.SearchFilter = c.Query("searchFilter")
+	p.SearchValue = c.Query("searchValue")
 	duration := c.Query("duration")
 	result, err := ctl.api.GetInstances(p, duration)
 	if err == nil {
