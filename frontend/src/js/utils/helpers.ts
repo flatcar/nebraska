@@ -8,6 +8,24 @@ import React from 'react';
 import API from '../api/API';
 import { Channel, Group } from '../api/apiDataTypes';
 
+export const SearchFilterClassifiers = [
+  {
+    name: 'id',
+    queryValue: 'id',
+  },
+  {
+    name: 'ip',
+    queryValue: 'ip',
+  },
+  {
+    name: 'alias',
+    queryValue: 'alias',
+  },
+  {
+    name: 'name',
+    queryValue: 'alias',
+  },
+];
 // Indexes/keys for the architectures need to match the ones in
 // pkg/api/arches.go.
 export const ARCHES: {
