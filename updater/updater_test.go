@@ -98,6 +98,7 @@ func TestCheckForUpdates(t *testing.T) {
 	info, err := u.CheckForUpdates(context.TODO())
 	assert.NoError(t, err)
 	assert.False(t, info.HasUpdate)
+	assert.Equal(t, "", info.GetVersion())
 
 	newPkg, _ := a.AddPackage(&api.Package{Type: api.PkgTypeOther, URL: "http://sample.url/pkg", Version: "0.3.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64})
 	tChannel.PackageID = null.StringFrom(newPkg.ID)
