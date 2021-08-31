@@ -100,7 +100,7 @@ func TestCheckForUpdates(t *testing.T) {
 	assert.False(t, info.HasUpdate)
 	assert.Equal(t, "", info.GetVersion())
 
-	newPkg, _ := a.AddPackage(&api.Package{Type: api.PkgTypeOther, URL: "http://sample.url/pkg", Version: "0.3.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64})
+	newPkg, _ := a.AddPackage(&api.Package{Type: api.PkgTypeOther, URL: "http://sample.url/pkg", Version: "0.3.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64, Filename: null.StringFrom("updatefile.txt")})
 	tChannel.PackageID = null.StringFrom(newPkg.ID)
 	err = a.UpdateChannel(tChannel)
 	assert.NoError(t, err)
@@ -108,6 +108,19 @@ func TestCheckForUpdates(t *testing.T) {
 	info, err = u.CheckForUpdates(context.TODO())
 	assert.NoError(t, err)
 	assert.True(t, info.HasUpdate)
+
+	version := info.GetVersion()
+	assert.Equal(t, "0.3.0", version)
+
+	urls := info.GetURLs()
+	assert.NotNil(t, urls)
+	assert.Equal(t, 1, len(urls))
+	assert.Equal(t, urls[len(urls)-1], info.GetURL())
+	assert.Equal(t, "http://sample.url/pkg", info.GetURL())
+
+	pkg := info.GetPackage()
+	assert.NotNil(t, pkg)
+	assert.Equal(t, "updatefile.txt", pkg.Name)
 }
 
 type updateTestHandler struct {
