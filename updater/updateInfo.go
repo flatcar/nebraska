@@ -39,6 +39,26 @@ func (u *UpdateInfo) GetURL() string {
 	return ""
 }
 
+func (u *UpdateInfo) GetPackages() []*omaha.Package {
+	app := u.getApp()
+	if app != nil && app.UpdateCheck != nil {
+		if app.UpdateCheck.Manifest != nil {
+			return app.UpdateCheck.Manifest.Packages
+		}
+	}
+
+	return nil
+}
+
+func (u *UpdateInfo) GetPackage() *omaha.Package {
+	pkgs := u.GetPackages()
+	if pkgs != nil {
+		return pkgs[0]
+	}
+
+	return nil
+}
+
 func (u *UpdateInfo) GetUpdateStatus() string {
 	app := u.getApp()
 	if app != nil && app.UpdateCheck != nil {
