@@ -9,7 +9,7 @@ type UpdateInfo struct {
 
 func (u *UpdateInfo) GetVersion() string {
 	app := u.getApp()
-	if app != nil && app.UpdateCheck != nil {
+	if app != nil && app.UpdateCheck != nil && app.UpdateCheck.Manifest != nil {
 		return app.UpdateCheck.Manifest.Version
 	}
 
