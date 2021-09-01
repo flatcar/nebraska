@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"sync"
 
 	"github.com/google/uuid"
 	"github.com/kinvolk/go-omaha/omaha"
@@ -71,6 +72,7 @@ type Updater struct {
 	channel string
 
 	omahaReqHandler OmahaRequestHandler
+	mu              sync.RWMutex
 }
 
 func New(omahaURL string, appID string, channel string, instanceID string, instanceVersion string) (*Updater, error) {
@@ -100,7 +102,7 @@ func NewAppRequest(u *Updater) *omaha.Request {
 	req.UserID = u.instanceID
 	req.SessionID = u.sessionID
 
-	app := req.AddApp(u.appID, u.instanceVersion)
+	app := req.AddApp(u.appID, u.GetInstanceVersion())
 	app.MachineID = u.instanceID
 	app.BootID = u.sessionID
 	app.Track = u.channel
@@ -124,6 +126,7 @@ func (u *Updater) CheckForUpdates(ctx context.Context) (*UpdateInfo, error) {
 	appResp := resp.GetApp(u.appID)
 	info := &UpdateInfo{
 		HasUpdate: appResp != nil && appResp.Status == omaha.AppOK && appResp.UpdateCheck.Status == "ok",
+		appID:     u.appID,
 		omahaResp: resp,
 	}
 
@@ -158,15 +161,19 @@ func (u *Updater) SendOmahaEvent(ctx context.Context, event *omaha.EventRequest)
 }
 
 func (u *Updater) GetInstanceVersion() string {
+	u.mu.RLock()
+	defer u.mu.RUnlock()
 	return u.instanceVersion
 }
 
 func (u *Updater) SetInstanceVersion(version string) {
+	u.mu.Lock()
+	defer u.mu.Unlock()
 	u.instanceVersion = version
 }
 
 func (u *Updater) TryUpdate(ctx context.Context, handler UpdateHandler) error {
-	fmt.Println("Version before run:", u.instanceVersion)
+	fmt.Println("Version before run:", u.GetInstanceVersion())
 
 	// Check for updates
 	info, err := u.CheckForUpdates(ctx)
@@ -202,8 +209,8 @@ func (u *Updater) TryUpdate(ctx context.Context, handler UpdateHandler) error {
 	}
 
 	version := info.GetVersion()
-	u.instanceVersion = version
-	fmt.Println("Version after run:", u.instanceVersion)
+	u.SetInstanceVersion(version)
+	fmt.Println("Version after run:", u.GetInstanceVersion())
 
 	err = u.ReportProgress(ctx, ProgressUpdateComplete)
 	if err != nil {

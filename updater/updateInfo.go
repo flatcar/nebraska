@@ -4,6 +4,7 @@ import "github.com/kinvolk/go-omaha/omaha"
 
 type UpdateInfo struct {
 	HasUpdate bool
+	appID     string
 	omahaResp *omaha.Response
 }
 
@@ -33,7 +34,9 @@ func (u *UpdateInfo) GetURLs() []string {
 
 func (u *UpdateInfo) GetURL() string {
 	if urls := u.GetURLs(); urls != nil {
-		return urls[0]
+		if len(urls) > 0 {
+			return urls[0]
+		}
 	}
 
 	return ""
@@ -53,9 +56,5 @@ func (u *UpdateInfo) GetOmahaResponse() *omaha.Response {
 }
 
 func (u *UpdateInfo) getApp() *omaha.AppResponse {
-	if u.omahaResp != nil {
-		return u.omahaResp.Apps[0]
-	}
-
-	return nil
+	return u.omahaResp.GetApp(u.appID)
 }
