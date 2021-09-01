@@ -79,7 +79,7 @@ func newUpdater(a *api.API, appID string, channel string, instanceID string, ins
 }
 
 func TestNewUpdater(t *testing.T) {
-	_, err := New("http://localhost:8000", "io.phony.App", "stable", "instance001", "0.1.0")
+	_, err := New("http://localhost:8000", "io.phony.App", "stable", "instance001", "0.1.0", false)
 	assert.NoError(t, err)
 }
 

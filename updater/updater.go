@@ -69,15 +69,16 @@ type Updater struct {
 
 	appID   string
 	channel string
+	debug   bool
 
 	omahaReqHandler OmahaRequestHandler
 }
 
-func New(omahaURL string, appID string, channel string, instanceID string, instanceVersion string) (*Updater, error) {
-	return NewWithOmahaRequestHandler(omahaURL, appID, channel, instanceID, instanceVersion, NewHttpOmahaReqHandler(omahaURL))
+func New(omahaURL string, appID string, channel string, instanceID string, instanceVersion string, debug bool) (*Updater, error) {
+	return NewWithOmahaRequestHandler(omahaURL, appID, channel, instanceID, instanceVersion, debug, NewHttpOmahaReqHandler(omahaURL, debug))
 }
 
-func NewWithOmahaRequestHandler(omahaURL string, appID string, channel string, instanceID string, instanceVersion string, handler OmahaRequestHandler) (*Updater, error) {
+func NewWithOmahaRequestHandler(omahaURL string, appID string, channel string, instanceID string, instanceVersion string, debug bool, handler OmahaRequestHandler) (*Updater, error) {
 	_, err := url.Parse(omahaURL)
 	if err != nil {
 		return nil, err
@@ -90,6 +91,7 @@ func NewWithOmahaRequestHandler(omahaURL string, appID string, channel string, i
 		appID:           appID,
 		instanceVersion: instanceVersion,
 		channel:         channel,
+		debug:           debug,
 		omahaReqHandler: handler,
 	}, nil
 }
