@@ -109,7 +109,8 @@ func TestGetApp(t *testing.T) {
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tApp, err := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	assert.NoError(t, err)
 	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID})
 	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	_, _ = a.RegisterInstance(uuid.New().String(), "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
@@ -117,11 +118,32 @@ func TestGetApp(t *testing.T) {
 	app, err := a.GetApp(tApp.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, tApp.Name, app.Name)
+	assert.False(t, tApp.ProductID.Valid)
 	assert.Equal(t, tChannel.Name, app.Channels[0].Name)
 	assert.Equal(t, 1, app.Instances.Count)
 
 	_, err = a.GetApp(uuid.New().String())
 	assert.Error(t, err, "Trying to get non existent app.")
+
+	tApp1, err := a.AddApp(&Application{Name: "test_app1", ProductID: null.StringFrom("io.kinvolk.MyNewApp"), TeamID: tTeam.ID})
+	assert.NoError(t, err)
+	assert.NotEqual(t, null.StringFrom(""), tApp1.ProductID)
+
+	app, err = a.GetApp(tApp1.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, tApp1.Name, app.Name)
+
+	app, err = a.GetApp(*tApp1.ProductID.Ptr())
+	assert.NoError(t, err)
+	assert.Equal(t, tApp1.ProductID, app.ProductID)
+
+	// App with same product_id
+	_, err = a.AddApp(&Application{Name: "test_app2", ProductID: null.StringFrom("io.kinvolk.MyNewApp"), TeamID: tTeam.ID})
+	assert.Error(t, err)
+
+	// App with a default product_id, to test the constraint is not limiting too much
+	_, err = a.AddApp(&Application{Name: "test_app3", TeamID: tTeam.ID})
+	assert.NoError(t, err)
 }
 
 func TestGetApps(t *testing.T) {
