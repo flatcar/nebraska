@@ -96,8 +96,20 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 	omahaResp.Server = "nebraska"
 
 	for _, reqApp := range omahaReq.Apps {
-		respApp := omahaResp.AddApp(reqApp.ID, omahaSpec.AppOK)
+		var respApp *omahaSpec.AppResponse
 
+		appID, err := h.crAPI.GetAppID(reqApp.ID)
+		if err != nil {
+			logger.Info().Str("machineId", reqApp.MachineID).Str("app", reqApp.ID).Msgf("buildOmahaResponse - no app found for %s", err.Error())
+
+			respApp = omahaResp.AddApp(reqApp.ID, omahaSpec.AppUnknownID)
+			respApp.Status = h.getStatusMessage(err)
+			respApp.AddUpdateCheck(omahaSpec.UpdateInternalError)
+
+			return omahaResp, nil
+		}
+
+		respApp = omahaResp.AddApp(reqApp.ID, omahaSpec.AppOK)
 		// Use the Omaha track field to find the group. It preferably contains the group's track name
 		// but also allows the old hard-coded CoreOS group UUIDs until we now that they are not used.
 		group := reqApp.Track
@@ -105,7 +117,7 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 			logger.Info().Str("machineId", reqApp.MachineID).Str("uuid", group).Msgf("buildOmahaResponse - found client using a hard-coded group UUID")
 			group = trackName
 		}
-		groupID, err := h.crAPI.GetGroupID(respApp.ID, group, getArch(omahaReq.OS, reqApp))
+		groupID, err := h.crAPI.GetGroupID(appID, group, getArch(omahaReq.OS, reqApp))
 		if err == nil {
 			group = groupID
 		} else {
@@ -116,21 +128,21 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 		}
 
 		for _, event := range reqApp.Events {
-			if err := h.processEvent(reqApp.MachineID, reqApp.ID, group, event); err != nil {
+			if err := h.processEvent(reqApp.MachineID, appID, group, event); err != nil {
 				logger.Debug().Str("machineId", reqApp.MachineID).Msgf("processEvent error %s", err.Error())
 			}
 			respApp.AddEvent()
 		}
 
 		if reqApp.Ping != nil {
-			if _, err := h.crAPI.RegisterInstance(reqApp.MachineID, reqApp.MachineAlias, ip, reqApp.Version, reqApp.ID, group); err != nil {
+			if _, err := h.crAPI.RegisterInstance(reqApp.MachineID, reqApp.MachineAlias, ip, reqApp.Version, appID, group); err != nil {
 				logger.Debug().Str("machineId", reqApp.MachineID).Msgf("processPing error %s", err.Error())
 			}
 			respApp.AddPing()
 		}
 
 		if reqApp.UpdateCheck != nil {
-			pkg, err := h.crAPI.GetUpdatePackage(reqApp.MachineID, reqApp.MachineAlias, ip, reqApp.Version, reqApp.ID, group)
+			pkg, err := h.crAPI.GetUpdatePackage(reqApp.MachineID, reqApp.MachineAlias, ip, reqApp.Version, appID, group)
 			if err != nil && err != api.ErrNoUpdatePackageAvailable {
 				respApp.Status = h.getStatusMessage(err)
 				respApp.AddUpdateCheck(omahaSpec.UpdateInternalError)
