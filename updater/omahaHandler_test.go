@@ -30,7 +30,7 @@ func TestHttpOmahaHandler(t *testing.T) {
 	defer s.Destroy()
 	go s.Serve()
 
-	omahaRequestHandler := NewHttpOmahaReqHandler("http://127.0.0.1:6000/v1/update")
+	omahaRequestHandler := NewDefaultOmahaRequestHandler("http://127.0.0.1:6000/v1/update")
 
 	var omahaRequest omaha.Request
 

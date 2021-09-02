@@ -9,19 +9,29 @@ import (
 	"github.com/kinvolk/go-omaha/omaha"
 )
 
-type HttpOmahaReqHandler struct {
+type httpOmahaReqHandler struct {
 	url        string
 	httpClient *retryablehttp.Client
 }
 
-func NewHttpOmahaReqHandler(url string) *HttpOmahaReqHandler {
-	return &HttpOmahaReqHandler{
-		url,
-		retryablehttp.NewClient(),
+// NewDefaultOmahaRequestHandler returns a OmahaRequestHandler which uses default retryable http client
+// to handle the omaha request.
+func NewDefaultOmahaRequestHandler(url string) OmahaRequestHandler {
+	return NewHttpOmahaRequestHandler(url, retryablehttp.NewClient())
+}
+
+// NewHttpOmahaRequestHandler returns a OmahaRequestHandler which uses the provided retryable http client
+// to handle the omaha request.
+func NewHttpOmahaRequestHandler(url string, client *retryablehttp.Client) OmahaRequestHandler {
+	return &httpOmahaReqHandler{
+		url:        url,
+		httpClient: client,
 	}
 }
 
-func (h *HttpOmahaReqHandler) Handle(req *omaha.Request) (*omaha.Response, error) {
+// Handle uses the httpClient to process the omaha request and returns omaha response
+// and error.
+func (h *httpOmahaReqHandler) Handle(req *omaha.Request) (*omaha.Response, error) {
 	requestByte, err := xml.Marshal(req)
 	if err != nil {
 		return nil, err

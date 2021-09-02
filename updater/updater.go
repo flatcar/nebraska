@@ -74,7 +74,7 @@ type Updater struct {
 }
 
 func New(omahaURL string, appID string, channel string, instanceID string, instanceVersion string) (*Updater, error) {
-	return NewWithOmahaRequestHandler(omahaURL, appID, channel, instanceID, instanceVersion, NewHttpOmahaReqHandler(omahaURL))
+	return NewWithOmahaRequestHandler(omahaURL, appID, channel, instanceID, instanceVersion, NewDefaultOmahaRequestHandler(omahaURL))
 }
 
 func NewWithOmahaRequestHandler(omahaURL string, appID string, channel string, instanceID string, instanceVersion string, handler OmahaRequestHandler) (*Updater, error) {
