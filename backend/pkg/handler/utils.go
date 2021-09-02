@@ -8,7 +8,6 @@ import (
 )
 
 func getTeamID(c echo.Context) string {
-
 	if val, ok := c.Get("team_id").(string); ok {
 		return val
 	}
