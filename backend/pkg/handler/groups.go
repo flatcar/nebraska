@@ -12,7 +12,6 @@ import (
 )
 
 func (h *Handler) PaginateGroups(ctx echo.Context, appID string, params codegen.PaginateGroupsParams) error {
-
 	if params.Page == nil {
 		params.Page = &defaultPage
 	}
@@ -201,7 +200,6 @@ func (h *Handler) GetGroupVersionBreakdown(ctx echo.Context, appID string, group
 }
 
 func (h *Handler) GetGroupInstances(ctx echo.Context, appID string, groupID string, params codegen.GetGroupInstancesParams) error {
-
 	if params.Page == nil {
 		params.Page = &defaultPage
 	}
