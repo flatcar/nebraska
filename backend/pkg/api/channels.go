@@ -156,45 +156,6 @@ func (api *API) GetChannel(channelID string) (*Channel, error) {
 	return &channel, nil
 }
 
-func (api *API) getSpecificChannels(channelID ...string) ([]*Channel, error) {
-	var channels []*Channel
-
-	query, _, err := goqu.From("channel").
-		Where(goqu.Ex{"id": channelID}).
-		ToSQL()
-	if err != nil {
-		return nil, err
-	}
-	rows, err := api.db.Queryx(query)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var err error
-		var channel Channel
-		var packageEntity *Package
-		err = rows.StructScan(&channel)
-		if err != nil {
-			return nil, err
-		}
-		packageEntity, err = api.getPackage(channel.PackageID)
-		switch err {
-		case nil:
-			channel.Package = packageEntity
-		case sql.ErrNoRows:
-			channel.Package = nil
-		default:
-			return nil, err
-		}
-		channels = append(channels, &channel)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return channels, err
-}
-
 // GetChannelsCount retuns the total number of channels in an app
 func (api *API) GetChannelsCount(appID string) (int, error) {
 	query, _, err := goqu.From("channel").Where(goqu.C("application_id").Eq(appID)).Select(goqu.L("count(*)")).ToSQL()
