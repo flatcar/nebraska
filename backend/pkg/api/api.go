@@ -128,6 +128,7 @@ func New(options ...func(*API) error) (*API, error) {
 		return nil, err
 	}
 	api.updateCachedGroups()
+	api.clearCachedAppIDs()
 
 	return api, nil
 }
@@ -180,6 +181,7 @@ func NewForTest(options ...func(*API) error) (*API, error) {
 		return nil, err
 	}
 	a.updateCachedGroups()
+	a.clearCachedAppIDs()
 
 	return a, nil
 }
