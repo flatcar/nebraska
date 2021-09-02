@@ -166,6 +166,57 @@ func TestGetApps(t *testing.T) {
 	assert.NoError(t, err, "should not have any error for non existing appID")
 }
 
+func TestGetAppIDs(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
+	tApp1, _ := a.AddApp(&Application{Name: "test_app1", TeamID: tTeam.ID})
+	tApp2, _ := a.AddApp(&Application{Name: "test_app2", TeamID: tTeam.ID, ProductID: null.StringFrom("io.kinvolk.MyApp2")})
+
+	apps, err := a.GetApps(tTeam.ID, 0, 0)
+	assert.NoError(t, err)
+	assert.Equal(t, 2, len(apps))
+	assert.Equal(t, tApp1.Name, apps[1].Name)
+	assert.Equal(t, tApp2.Name, apps[0].Name)
+
+	app1ID, err := a.GetAppID(tApp1.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, tApp1.ID, app1ID)
+
+	app2ID, err := a.GetAppID(tApp2.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, tApp2.ID, app2ID)
+
+	_, err = a.GetAppID("io.kinvolk.InvalidApp")
+	assert.Error(t, err)
+
+	_, err = a.GetAppID("")
+	assert.Error(t, err)
+
+	app2ID, err = a.GetAppID("io.kinvolk.MyApp2")
+	assert.NoError(t, err)
+	assert.Equal(t, tApp2.ID, app2ID)
+
+	tApp3, _ := a.AddApp(&Application{Name: "test_app3", TeamID: tTeam.ID, ProductID: null.StringFrom("io.kinvolk.MyApp3")})
+
+	app3ID, err := a.GetAppID("io.kinvolk.MyApp3")
+	assert.NoError(t, err)
+	assert.Equal(t, tApp3.ID, app3ID)
+
+	tApp2.ProductID = null.StringFrom("io.kinvolk.App")
+	err = a.UpdateApp(tApp2)
+	assert.NoError(t, err)
+
+	_, err = a.GetAppID("io.kinvolk.MyApp2")
+	assert.Error(t, err)
+	assert.Equal(t, tApp2.ID, app2ID)
+
+	app2ID, err = a.GetAppID("io.kinvolk.App")
+	assert.NoError(t, err)
+	assert.Equal(t, tApp2.ID, app2ID)
+}
+
 func TestGetAppsFiltered(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
