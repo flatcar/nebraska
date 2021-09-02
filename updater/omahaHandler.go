@@ -3,6 +3,7 @@ package updater
 import (
 	"bytes"
 	"encoding/xml"
+	"fmt"
 	"io"
 
 	retryablehttp "github.com/hashicorp/go-retryablehttp"
@@ -34,12 +35,12 @@ func NewHttpOmahaRequestHandler(url string, client *retryablehttp.Client) OmahaR
 func (h *httpOmahaReqHandler) Handle(req *omaha.Request) (*omaha.Response, error) {
 	requestByte, err := xml.Marshal(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("encoding request as XML: %w", err)
 	}
 
 	resp, err := h.httpClient.Post(h.url, "text/xml", bytes.NewReader(requestByte))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("http post request: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -48,7 +49,7 @@ func (h *httpOmahaReqHandler) Handle(req *omaha.Request) (*omaha.Response, error
 	contentType := resp.Header.Get("Content-Type")
 	omahaResp, err := omaha.ParseResponse(contentType, respBody)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("parse response to omaha response: %w", err)
 	}
 
 	return omahaResp, nil
