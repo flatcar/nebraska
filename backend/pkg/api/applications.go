@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/doug-martin/goqu/v9"
+	"github.com/google/uuid"
 	"gopkg.in/guregu/null.v4"
 )
 
@@ -14,13 +15,14 @@ const (
 
 // Application represents a Nebraska application instance.
 type Application struct {
-	ID          string     `db:"id" json:"id"`
-	Name        string     `db:"name" json:"name"`
-	Description string     `db:"description" json:"description"`
-	CreatedTs   time.Time  `db:"created_ts" json:"created_ts"`
-	TeamID      string     `db:"team_id" json:"-"`
-	Groups      []*Group   `db:"groups" json:"groups"`
-	Channels    []*Channel `db:"channels" json:"channels"`
+	ID          string      `db:"id" json:"id"`
+	ProductID   null.String `db:"product_id" json:"product_id"`
+	Name        string      `db:"name" json:"name"`
+	Description string      `db:"description" json:"description"`
+	CreatedTs   time.Time   `db:"created_ts" json:"created_ts"`
+	TeamID      string      `db:"team_id" json:"-"`
+	Groups      []*Group    `db:"groups" json:"groups"`
+	Channels    []*Channel  `db:"channels" json:"channels"`
 
 	Instances struct {
 		Count int `db:"count" json:"count"`
@@ -30,8 +32,8 @@ type Application struct {
 // AddApp registers the provided application.
 func (api *API) AddApp(app *Application) (*Application, error) {
 	query, _, err := goqu.Insert("application").
-		Cols("name", "description", "team_id").
-		Vals(goqu.Vals{app.Name, app.Description, app.TeamID}).
+		Cols("name", "product_id", "description", "team_id").
+		Vals(goqu.Vals{app.Name, app.ProductID, app.Description, app.TeamID}).
 		Returning(goqu.T("application").All()).
 		ToSQL()
 	if err != nil {
@@ -101,6 +103,7 @@ func (api *API) UpdateApp(app *Application) error {
 		Set(
 			goqu.Record{
 				"name":        app.Name,
+				"product_id":  app.ProductID,
 				"description": app.Description,
 			},
 		).
@@ -125,7 +128,12 @@ func (api *API) UpdateApp(app *Application) error {
 
 // DeleteApp removes the application identified by the id provided.
 func (api *API) DeleteApp(appID string) error {
-	query, _, err := goqu.Delete("application").Where(goqu.C("id").Eq(appID)).ToSQL()
+	realAppID, err := api.GetAppID(appID)
+	if err != nil {
+		return err
+	}
+
+	query, _, err := goqu.Delete("application").Where(goqu.C("id").Eq(realAppID)).ToSQL()
 	if err != nil {
 		return err
 	}
@@ -146,9 +154,14 @@ func (api *API) DeleteApp(appID string) error {
 
 // GetApp returns the application identified by the id provided.
 func (api *API) GetApp(appID string) (*Application, error) {
+	realAppID, err := api.GetAppID(appID)
+	if err != nil {
+		return nil, err
+	}
+
 	var app Application
 	query, _, err := goqu.From("application").
-		Where(goqu.C("id").Eq(appID)).ToSQL()
+		Where(goqu.C("id").Eq(realAppID)).ToSQL()
 	if err != nil {
 		return nil, err
 	}
@@ -236,13 +249,31 @@ func (api *API) GetApps(teamID string, page, perPage uint64) ([]*Application, er
 	return apps, nil
 }
 
+func (api *API) GetAppID(appOrProductID string) (string, error) {
+	colCheck := goqu.C("id").Eq(appOrProductID)
+	if _, err := uuid.Parse(appOrProductID); err != nil {
+		colCheck = goqu.C("product_id").Eq(null.StringFrom(appOrProductID))
+	}
+	query, _, err := goqu.From("application").Where(colCheck).Select("id").ToSQL()
+	if err != nil {
+		return "", err
+	}
+	var appID string
+	err = api.db.QueryRow(query).Scan(&appID)
+
+	if err != nil {
+		return "", err
+	}
+	return appID, nil
+}
+
 // appsQuery returns a SelectDataset prepared to return all applications.
 // This query is meant to be extended later in the methods using it to filter
 // by a specific application id, all applications that belong to a given team,
 // specify how to query the rows or their destination.
 func (api *API) appsQuery() *goqu.SelectDataset {
 	query := goqu.From("application").
-		Select("id", "name", "description", "created_ts").
+		Select("id", "product_id", "name", "description", "created_ts").
 		Order(goqu.I("created_ts").Desc())
 	return query
 }
