@@ -15,6 +15,7 @@
 // db/migrations/0011_add_composite_indexes.sql (760B)
 // db/migrations/0012_drop_unused_indexes.sql (696B)
 // db/migrations/0013_add_stats_indexes.sql (426B)
+// db/migrations/0014_add_application_product_id.sql (316B)
 
 package api
 
@@ -383,6 +384,26 @@ func dbMigrations0013_add_stats_indexesSql() (*asset, error) {
 	return a, nil
 }
 
+var _dbMigrations0014_add_application_product_idSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8c\x8f\x41\xca\xc2\x40\x0c\x46\xf7\x73\x8a\x2c\x5b\x7e\x0a\xfd\xd7\xdd\x7a\x05\xd7\x25\x4e\x46\x0d\xa4\x99\x31\x26\x7a\x7d\x17\x0a\x16\xa1\xe8\xf6\x05\x5e\xde\x37\x0c\xf0\xb7\xf0\xc9\xd0\x0b\xec\x5b\x4a\x28\x5e\x0c\x1c\x0f\x52\x00\x5b\x13\xce\xe8\x5c\x15\x90\x08\x72\x95\x58\x14\x9a\x55\x8a\xec\x33\x13\xdc\xd0\xf2\x19\xad\xfb\x1f\xc7\x1e\xa8\x1c\x31\xc4\x41\x43\x64\xfa\x22\xd2\xab\x1b\xb2\xfa\xfa\x34\x87\xf2\x25\xca\xbc\xf2\x3f\x49\xf7\x26\xfd\x94\xd2\x3a\x79\x57\xef\xba\x1d\x4d\x56\xdb\xcf\xcf\xb6\x93\x5f\x9a\x8f\xf1\x53\x7a\x04\x00\x00\xff\xff\xe1\x72\x9e\xd4\x3c\x01\x00\x00")
+
+func dbMigrations0014_add_application_product_idSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_dbMigrations0014_add_application_product_idSql,
+		"db/migrations/0014_add_application_product_id.sql",
+	)
+}
+
+func dbMigrations0014_add_application_product_idSql() (*asset, error) {
+	bytes, err := dbMigrations0014_add_application_product_idSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "db/migrations/0014_add_application_product_id.sql", size: 316, mode: os.FileMode(0644), modTime: time.Unix(1, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x56, 0x83, 0x6d, 0x86, 0x4e, 0x4e, 0x4b, 0xb2, 0x10, 0x50, 0xd2, 0xe5, 0xd2, 0x3e, 0x5e, 0xfe, 0x67, 0xca, 0x30, 0xb6, 0xf8, 0x82, 0x42, 0x7b, 0x22, 0xb9, 0x92, 0x84, 0x9b, 0x3, 0x7f, 0xf}}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -474,21 +495,22 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"db/drop_all_tables.sql":                       dbDrop_all_tablesSql,
-	"db/sample_data.sql":                           dbSample_dataSql,
-	"db/migrations/0001_initial.sql":               dbMigrations0001_initialSql,
-	"db/migrations/0002_event_data.sql":            dbMigrations0002_event_dataSql,
-	"db/migrations/0003_longer_team_names.sql":     dbMigrations0003_longer_team_namesSql,
-	"db/migrations/0004_rename_coreos_action.sql":  dbMigrations0004_rename_coreos_actionSql,
-	"db/migrations/0005_default_team_id.sql":       dbMigrations0005_default_team_idSql,
-	"db/migrations/0006_initial_application.sql":   dbMigrations0006_initial_applicationSql,
-	"db/migrations/0007_add_package_arch.sql":      dbMigrations0007_add_package_archSql,
-	"db/migrations/0008-arm-channels-groups.sql":   dbMigrations0008ArmChannelsGroupsSql,
-	"db/migrations/0009_group_track_names.sql":     dbMigrations0009_group_track_namesSql,
-	"db/migrations/0010_add_instance_alias.sql":    dbMigrations0010_add_instance_aliasSql,
-	"db/migrations/0011_add_composite_indexes.sql": dbMigrations0011_add_composite_indexesSql,
-	"db/migrations/0012_drop_unused_indexes.sql":   dbMigrations0012_drop_unused_indexesSql,
-	"db/migrations/0013_add_stats_indexes.sql":     dbMigrations0013_add_stats_indexesSql,
+	"db/drop_all_tables.sql":                            dbDrop_all_tablesSql,
+	"db/sample_data.sql":                                dbSample_dataSql,
+	"db/migrations/0001_initial.sql":                    dbMigrations0001_initialSql,
+	"db/migrations/0002_event_data.sql":                 dbMigrations0002_event_dataSql,
+	"db/migrations/0003_longer_team_names.sql":          dbMigrations0003_longer_team_namesSql,
+	"db/migrations/0004_rename_coreos_action.sql":       dbMigrations0004_rename_coreos_actionSql,
+	"db/migrations/0005_default_team_id.sql":            dbMigrations0005_default_team_idSql,
+	"db/migrations/0006_initial_application.sql":        dbMigrations0006_initial_applicationSql,
+	"db/migrations/0007_add_package_arch.sql":           dbMigrations0007_add_package_archSql,
+	"db/migrations/0008-arm-channels-groups.sql":        dbMigrations0008ArmChannelsGroupsSql,
+	"db/migrations/0009_group_track_names.sql":          dbMigrations0009_group_track_namesSql,
+	"db/migrations/0010_add_instance_alias.sql":         dbMigrations0010_add_instance_aliasSql,
+	"db/migrations/0011_add_composite_indexes.sql":      dbMigrations0011_add_composite_indexesSql,
+	"db/migrations/0012_drop_unused_indexes.sql":        dbMigrations0012_drop_unused_indexesSql,
+	"db/migrations/0013_add_stats_indexes.sql":          dbMigrations0013_add_stats_indexesSql,
+	"db/migrations/0014_add_application_product_id.sql": dbMigrations0014_add_application_product_idSql,
 }
 
 // AssetDebug is true if the assets were built with the debug flag enabled.
@@ -551,6 +573,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"0011_add_composite_indexes.sql": {dbMigrations0011_add_composite_indexesSql, map[string]*bintree{}},
 			"0012_drop_unused_indexes.sql": {dbMigrations0012_drop_unused_indexesSql, map[string]*bintree{}},
 			"0013_add_stats_indexes.sql": {dbMigrations0013_add_stats_indexesSql, map[string]*bintree{}},
+			"0014_add_application_product_id.sql": {dbMigrations0014_add_application_product_idSql, map[string]*bintree{}},
 		}},
 		"sample_data.sql": {dbSample_dataSql, map[string]*bintree{}},
 	}},
