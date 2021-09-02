@@ -1,9 +1,14 @@
+import infoIcon from '@iconify/icons-mdi/information-circle-outline';
+import searchIcon from '@iconify/icons-mdi/search';
+import Icon from '@iconify/react';
 import { makeStyles, Theme } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
 import Input from '@material-ui/core/Input';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
@@ -14,16 +19,20 @@ import PropTypes from 'prop-types';
 import React, { ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
+import _ from 'underscore';
 import API from '../../api/API';
 import { Application, Group, Instance, Instances } from '../../api/apiDataTypes';
 import {
   getInstanceStatus,
   getKeyByValue,
   InstanceSortFilters,
+  SearchFilterClassifiers,
   useGroupVersionBreakdown,
 } from '../../utils/helpers';
 import Empty from '../Common/EmptyContent';
+import LightTooltip from '../Common/LightTooltip';
 import ListHeader from '../Common/ListHeader';
+import SearchInput from '../Common/ListSearch';
 import Loader from '../Common/Loader';
 import TimeIntervalLinks from '../Common/TimeIntervalLinks';
 import { InstanceCountLabel } from './Common';
@@ -150,6 +159,10 @@ function ListView(props: { application: Application; group: Group }) {
   });
   const [instanceFetchLoading, setInstanceFetchLoading] = React.useState(false);
   const [totalInstances, setTotalInstances] = React.useState(-1);
+  const [searchObject, setSearchObject] = React.useState<{
+    searchFilter?: string;
+    searchValue?: string;
+  }>({});
   const location = useLocation();
   const history = useHistory();
 
@@ -204,7 +217,8 @@ function ListView(props: { application: Application; group: Group }) {
     filters: { [key: string]: any },
     page: number,
     perPage: number,
-    duration: string
+    duration: string,
+    searchObject: { searchFilter?: string; searchValue?: string }
   ) {
     setInstanceFetchLoading(true);
     const fetchFilters = { ...filters };
@@ -220,6 +234,7 @@ function ListView(props: { application: Application; group: Group }) {
       page: page + 1,
       perpage: perPage,
       duration,
+      ...searchObject,
     })
       .then(result => {
         setInstanceFetchLoading(false);
@@ -270,7 +285,10 @@ function ListView(props: { application: Application; group: Group }) {
     applyFilters();
   }
 
-  React.useEffect(() => {
+  function handleInstanceFetch(searchObject: {
+    searchFilter?: string | undefined;
+    searchValue?: string | undefined;
+  }) {
     fetchFiltersFromURL(
       (
         status: string,
@@ -286,14 +304,17 @@ function ListView(props: { application: Application; group: Group }) {
         setIsDescSortOrder(isDescSortOrder);
         setSortQuery(sort);
         setRowsPerPage(perPageParam);
-        fetchInstances({ status, version, sort }, pageParam, perPageParam, duration);
+        fetchInstances({ status, version, sort }, pageParam, perPageParam, duration, searchObject);
       }
     );
+  }
+  React.useEffect(() => {
+    handleInstanceFetch(searchObject);
   }, [location]);
 
   React.useEffect(() => {
-    // We only want to run it once ATM.
-    if (totalInstances > 0) {
+    // We want to run it only if the searchValue is empty and once for change in totalInstances.
+    if (totalInstances > 0 && searchObject.searchValue) {
       return;
     }
 
@@ -306,12 +327,15 @@ function ListView(props: { application: Application; group: Group }) {
         setTotalInstances(result);
       })
       .catch(err => console.error('Error loading total instances in Instances/List', err));
-  }, [totalInstances]);
+  }, [totalInstances, searchObject]);
 
   function getInstanceCount() {
     const total = totalInstances > -1 ? totalInstances : '…';
     const instancesTotal = instancesObj.total > -1 ? instancesObj.total : '...';
-    if ((!filters.status && !filters.version) || instancesTotal === total) {
+    if (
+      (!searchObject.searchValue && !filters.status && !filters.version) ||
+      instancesTotal === total
+    ) {
       return total;
     }
     return `${instancesTotal}/${total}`;
@@ -327,6 +351,52 @@ function ListView(props: { application: Application; group: Group }) {
     const sortAliasKey = getKeyByValue(InstanceSortFilters, sortQuery);
     addQuery({ sort: sortAliasKey, sortOrder: SORT_ORDERS[Number(isDescSortOrder)] });
   }
+
+  function searchHandler(e: React.ChangeEvent<{ value: string }>) {
+    const value = e.target.value;
+    // This means user has reseted the input field, and now we need to fetch all the instances
+    if (value === '') {
+      handleInstanceFetch({});
+    }
+    // handle if a classifier is present
+    const [classifierName] = value.split(':');
+    const classifierVal = value.substring(value.indexOf(':') + 1);
+    const classifiedFilter = SearchFilterClassifiers.find(
+      classifier => classifier.name === classifierName
+    );
+    if (classifierVal !== undefined && classifiedFilter) {
+      setSearchObject({
+        searchValue: classifierVal,
+        searchFilter: classifiedFilter.queryValue,
+      });
+      return;
+    }
+    if (!classifiedFilter) {
+      // this means user is trying to search without any classifier
+      setSearchObject({
+        searchFilter: 'All',
+        searchValue: value,
+      });
+    }
+  }
+
+  function handleSearchSubmit(e: any) {
+    if (e.key === 'Enter' && Object.keys(searchObject).length !== 0) {
+      const debouncedFetch = _.debounce(handleInstanceFetch, 100);
+      debouncedFetch(searchObject);
+    }
+  }
+
+  function getSearchTooltipText() {
+    return t(`instances|You can search by typing and pressing enter.
+     The search will show matches for the instances id, alias, and ip fields, in this order. 
+     It is also possible to match only one field by using its classifier, for example: 
+     id:0001
+     alias:"My instance" 
+     ip:256.0.0.1`);
+  }
+
+  const searchInputRef = React.createRef<HTMLInputElement>();
 
   return (
     <>
@@ -346,6 +416,37 @@ function ListView(props: { application: Application; group: Group }) {
                 </Box>
               </Grid>
               <Grid item>
+                <InputLabel htmlFor="instance-search-filter" shrink>
+                  {t('frequent|Search')}
+                </InputLabel>
+                <SearchInput
+                  id="instance-search-filter"
+                  startAdornment={
+                    <InputAdornment position="start">
+                      <IconButton
+                        onClick={() => searchInputRef.current?.focus()}
+                        title="Search Icon"
+                      >
+                        <Icon icon={searchIcon} width="15" height="15" />
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <LightTooltip title={getSearchTooltipText()}>
+                        <IconButton>
+                          <Icon icon={infoIcon} width="20" height="20" />
+                        </IconButton>
+                      </LightTooltip>
+                    </InputAdornment>
+                  }
+                  onChange={searchHandler}
+                  onKeyPress={handleSearchSubmit}
+                  inputRef={searchInputRef}
+                  ariaLabel="Search"
+                />
+              </Grid>
+              <Grid item>
                 <TimeIntervalLinks
                   intervalChangeHandler={duration => addQuery({ period: duration.queryValue })}
                   selectedInterval={getDuration()}
@@ -357,8 +458,10 @@ function ListView(props: { application: Application; group: Group }) {
             <Box width="100%" borderTop={1} borderColor={'#E0E0E0'} className={classes.root}>
               <Grid item container md={12} alignItems="stretch" justify="space-between">
                 <Grid item md>
-                  <Box ml={2}>
-                    <InstanceCountLabel countText={getInstanceCount()} instanceListView />
+                  <Box display="flex" alignItems="center">
+                    <Box ml={2}>
+                      <InstanceCountLabel countText={getInstanceCount()} instanceListView />
+                    </Box>
                   </Box>
                 </Grid>
                 <Grid item md>

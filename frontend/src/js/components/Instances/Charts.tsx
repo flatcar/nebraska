@@ -1,13 +1,13 @@
 import { IconifyIcon, InlineIcon } from '@iconify/react';
 import { Theme } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
-import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles, useTheme, withStyles } from '@material-ui/styles';
+import { makeStyles, useTheme } from '@material-ui/styles';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Cell, Label, Pie, PieChart } from 'recharts';
 import Empty from '../Common/EmptyContent';
+import LightTooltip from '../Common/LightTooltip';
 import Loader from '../Common/Loader';
 import { InstanceCountLabel } from './Common';
 import makeStatusDefs from './StatusDefs';
@@ -25,16 +25,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     boxShadow: 'none',
   }),
 }));
-
-const LightTooltip = withStyles(theme => ({
-  tooltip: {
-    backgroundColor: theme.palette.common.white,
-    color: 'rgba(0, 0, 0, 0.87)',
-    boxShadow: theme.shadows[1],
-    fontSize: '1rem',
-    whiteSpace: 'pre-line',
-  },
-}))(Tooltip);
 
 interface ProgressData {
   value: number;

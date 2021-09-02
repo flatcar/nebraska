@@ -181,6 +181,41 @@ func TestGetInstances(t *testing.T) {
 	assert.Error(t, err, "Application id and group id are required and must be valid uuids.")
 }
 
+func TestGetInstancesSearch(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tInstance, _ := a.RegisterInstance(uuid.New().String(), "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
+	_, _ = a.RegisterInstance(uuid.New().String(), "", "10.0.0.2", "1.0.1", tApp.ID, tGroup.ID)
+	_, _ = a.RegisterInstance(uuid.New().String(), "", "10.0.0.3", "1.0.2", tApp.ID, tGroup.ID)
+
+	instanceAlias := "instance_alias"
+	_, _ = a.RegisterInstance(uuid.New().String(), instanceAlias, "10.0.0.4", "1.0.4", tApp.ID, tGroup.ID)
+
+	result, err := a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Page: 1, PerPage: 10, SearchFilter: "All", SearchValue: tInstance.ID}, testDuration)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(result.Instances))
+	assert.Equal(t, result.Instances[0].ID, tInstance.ID)
+
+	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Page: 1, PerPage: 10, SearchFilter: "id", SearchValue: tInstance.ID}, testDuration)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(result.Instances))
+	assert.Equal(t, result.Instances[0].ID, tInstance.ID)
+
+	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Page: 1, PerPage: 10, SearchFilter: "ip", SearchValue: "10.0"}, testDuration)
+	assert.NoError(t, err)
+	assert.Equal(t, 4, len(result.Instances))
+
+	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Page: 1, PerPage: 10, SearchFilter: "alias", SearchValue: instanceAlias}, testDuration)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(result.Instances))
+}
+
 func TestGetInstancesFiltered(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()

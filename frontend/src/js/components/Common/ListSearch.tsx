@@ -22,7 +22,7 @@ export default function SearchInput(props: { [key: string]: any }) {
       <Input
         className={classes.input}
         inputProps={{
-          'aria-label': t('frequent|description'),
+          'aria-label': t(`frequent|${props.ariaLabel}`),
         }}
         {...props}
       />
