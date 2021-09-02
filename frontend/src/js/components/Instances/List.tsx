@@ -420,7 +420,10 @@ function ListView(props: { application: Application; group: Group }) {
                   id="instance-search-filter"
                   startAdornment={
                     <InputAdornment position="start">
-                      <IconButton onClick={() => searchInputRef.current?.focus()}>
+                      <IconButton
+                        onClick={() => searchInputRef.current?.focus()}
+                        title="Search Icon"
+                      >
                         <Icon icon={searchIcon} width="15" height="15" />
                       </IconButton>
                     </InputAdornment>
@@ -437,6 +440,7 @@ function ListView(props: { application: Application; group: Group }) {
                   onChange={searchHandler}
                   onKeyPress={handleSearchSubmit}
                   inputRef={searchInputRef}
+                  ariaLabel="Search"
                 />
               </Grid>
               <Grid item>

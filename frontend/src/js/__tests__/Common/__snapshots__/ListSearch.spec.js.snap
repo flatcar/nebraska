@@ -9,7 +9,7 @@ exports[`List Search should render correct ListSearch 1`] = `
       class="MuiInputBase-root MuiInput-root MuiInput-underline makeStyles-input-2"
     >
       <input
-        aria-label="description"
+        aria-label="undefined"
         class="MuiInputBase-input MuiInput-input"
         type="text"
         value=""
