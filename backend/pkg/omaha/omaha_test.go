@@ -241,6 +241,32 @@ func TestFlatcarGroupNamesConversionToIds(t *testing.T) {
 	checkOmahaResponse(t, omahaResp, flatcarAppIDWithCurlyBraces, omahaSpec.AppOK)
 }
 
+func TestProductIDBasedRequest(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	h := NewHandler(a)
+
+	tTeam, _ := a.AddTeam(&api.Team{Name: "test_team"})
+	tApp, _ := a.AddApp(&api.Application{Name: "test_app", Description: "Test app", TeamID: tTeam.ID, ProductID: null.StringFrom("io.kinvolk.MyApp")})
+	tPkg, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "640.0.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64})
+	tChannel, _ := a.AddChannel(&api.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID), Arch: api.ArchAMD64})
+	tGroup, _ := a.AddGroup(&api.Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 4, PolicyUpdateTimeout: "60 minutes"})
+
+	validAppProductID := "io.kinvolk.MyApp"
+	validUnregisteredIP := "127.0.0.1"
+	validUnregisteredMachineID := "some-id"
+	validUnverifiedAppVersion := "100.0.1"
+	addPing := false
+	updateCheck := true
+	noEventInfo := (*eventInfo)(nil)
+
+	omahaResp := doOmahaRequest(t, h, tApp.ID, validUnverifiedAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, updateCheck, noEventInfo)
+	checkOmahaResponse(t, omahaResp, tApp.ID, omahaSpec.AppOK)
+
+	omahaResp = doOmahaRequest(t, h, validAppProductID, validUnverifiedAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, updateCheck, noEventInfo)
+	checkOmahaResponse(t, omahaResp, *tApp.ProductID.Ptr(), omahaSpec.AppOK)
+}
+
 type eventInfo struct {
 	Type            omahaSpec.EventType
 	Result          omahaSpec.EventResult
