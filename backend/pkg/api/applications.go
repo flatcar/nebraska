@@ -2,11 +2,29 @@ package api
 
 import (
 	"database/sql"
+	"fmt"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/doug-martin/goqu/v9"
-	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
 	"gopkg.in/guregu/null.v4"
+)
+
+type appsCache map[string]string
+
+var (
+	// cachedApps caches the mapping of apps' product-ids and UUIDs to apps' UUIDs.
+	// The UUID -> UUID seeming redundancy is because this way we can use it to
+	// validate also the UUIDs against existing apps.
+	// It must not be modified directly but replaced (atomically or via lock)
+	// by a new map to prevent data races.
+	// An update must be triggered through clearCachedAppIDs() each time
+	// an apps change. A RW lock was chosen to prevent data
+	// races over the pointer itself.
+	cachedAppIDs      appsCache
+	cachedAppsIDsLock sync.RWMutex
 )
 
 const (
@@ -44,6 +62,7 @@ func (api *API) AddApp(app *Application) (*Application, error) {
 		return nil, err
 	}
 
+	api.clearCachedAppIDs()
 	return app, nil
 }
 
@@ -92,7 +111,9 @@ func (api *API) AddAppCloning(app *Application, sourceAppID string) (*Applicatio
 			}
 		}
 	}
-
+	// Even though AddApp will invalidate the cache, we need to do it again here
+	// to prevent eventual race issues.
+	api.clearCachedAppIDs()
 	return app, nil
 }
 
@@ -123,6 +144,8 @@ func (api *API) UpdateApp(app *Application) error {
 	if rowsAffected == 0 {
 		return ErrNoRowsAffected
 	}
+
+	api.clearCachedAppIDs()
 	return nil
 }
 
@@ -149,6 +172,7 @@ func (api *API) DeleteApp(appID string) error {
 		return ErrNoRowsAffected
 	}
 
+	api.clearCachedAppIDs()
 	return nil
 }
 
@@ -240,22 +264,76 @@ func (api *API) GetApps(teamID string, page, perPage uint64) ([]*Application, er
 	return apps, nil
 }
 
-func (api *API) GetAppID(appOrProductID string) (string, error) {
-	colCheck := goqu.C("id").Eq(appOrProductID)
-	if _, err := uuid.Parse(appOrProductID); err != nil {
-		colCheck = goqu.C("product_id").Eq(null.StringFrom(appOrProductID))
-	}
-	query, _, err := goqu.From("application").Where(colCheck).Select("id").ToSQL()
-	if err != nil {
-		return "", err
-	}
-	var appID string
-	err = api.db.QueryRow(query).Scan(&appID)
+// clearCachedAppIDs invalidates the cached app IDs in cachedApps and
+// must be called whenever the apps entries are modified.
+func (api *API) clearCachedAppIDs() {
+	cachedAppsIDsLock.Lock()
+	cachedAppIDs = nil
+	// Generating the map is not always possible here because the database
+	// can be closed.
+	cachedAppsIDsLock.Unlock()
+}
 
-	if err != nil {
-		return "", err
+func (api *API) GetAppID(appOrProductID string) (string, error) {
+	var cachedAppsRef appsCache
+	cachedAppsIDsLock.RLock()
+	if cachedAppIDs != nil {
+		// Keep a reference to the map that we found.
+		cachedAppsRef = cachedAppIDs
 	}
-	return appID, nil
+	cachedAppsIDsLock.RUnlock()
+
+	// Generate map on startup or if invalidated.
+	if cachedAppsRef == nil {
+		cachedAppsIDsLock.Lock()
+		cachedAppsRef = cachedAppIDs
+
+		if cachedAppsRef == nil {
+			cachedAppIDs = make(appsCache)
+
+			query, _, err := goqu.From("application").ToSQL()
+
+			var rows *sqlx.Rows
+			if err == nil {
+				rows, err = api.db.Queryx(query)
+			}
+
+			if err == nil {
+				defer rows.Close()
+				for rows.Next() {
+					app := Application{}
+					err := rows.StructScan(&app)
+					if err != nil {
+						logger.Warn().Err(err).Msg("Failed to read app from DB")
+					}
+
+					if prodIDPtr := app.ProductID.Ptr(); prodIDPtr != nil {
+						cachedAppIDs[*prodIDPtr] = app.ID
+					}
+
+					// So we can quickly validate the UUID based IDs
+					cachedAppIDs[app.ID] = app.ID
+				}
+			} else {
+				logger.Error().Err(err).Msg("Failed to get apps")
+			}
+
+			cachedAppsRef = cachedAppIDs
+		}
+		cachedAppsIDsLock.Unlock()
+	}
+
+	// Trim space and the {} that may surround the ID
+	appIDNoBrackets := strings.TrimSpace(appOrProductID)
+	if len(appIDNoBrackets) > 1 && appIDNoBrackets[0] == '{' {
+		appIDNoBrackets = strings.TrimSpace(appIDNoBrackets[1 : len(appIDNoBrackets)-1])
+	}
+
+	cachedAppID, ok := cachedAppsRef[appIDNoBrackets]
+	if !ok {
+		return "", fmt.Errorf("no app found for ID %v", appOrProductID)
+	}
+	return cachedAppID, nil
 }
 
 // appsQuery returns a SelectDataset prepared to return all applications.
