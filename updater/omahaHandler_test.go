@@ -1,11 +1,14 @@
-package updater
+package updater_test
 
 import (
 	"encoding/xml"
+	"fmt"
 	"testing"
 
+	"github.com/hashicorp/go-retryablehttp"
 	"github.com/kinvolk/go-omaha/omaha"
-	"github.com/stretchr/testify/assert"
+	"github.com/kinvolk/nebraska/updater"
+	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -22,21 +25,70 @@ const (
 )
 
 func TestHttpOmahaHandler(t *testing.T) {
-	serverURL := "127.0.0.1:6000"
+	t.Parallel()
+
+	serverURL := "127.0.0.1:0"
 	s, err := omaha.NewTrivialServer(serverURL)
 
-	assert.NoError(t, err)
-	assert.NotNil(t, s)
-	defer s.Destroy()
+	require.NoError(t, err)
+	require.NotNil(t, s)
 	go s.Serve()
 
-	omahaRequestHandler := NewDefaultOmahaRequestHandler("http://127.0.0.1:6000/v1/update")
+	t.Cleanup(func() {
+		s.Destroy()
+	})
 
 	var omahaRequest omaha.Request
 
 	err = xml.Unmarshal([]byte(sampleRequest), &omahaRequest)
-	assert.NoError(t, err)
-	resp, err := omahaRequestHandler.Handle(&omahaRequest)
-	assert.NoError(t, err)
-	assert.NotNil(t, resp)
+
+	validHandler := updater.NewDefaultOmahaRequestHandler(fmt.Sprintf("http://%s/v1/update", s.Addr().String()))
+
+	// Default retryablehttp Client has retry max count of 4 which makes
+	// the test case too long to complete, so we use a custom Client
+	// with retry max count of 0.
+	client := retryablehttp.NewClient()
+	client.RetryMax = 0
+	invalidHandler := updater.NewHttpOmahaRequestHandler("http:/127.0.0.67/v1/update", client)
+
+	type test struct {
+		name    string
+		handler updater.OmahaRequestHandler
+		request *omaha.Request
+		isErr   bool
+	}
+
+	tests := []test{
+		{
+			name:    "valid request",
+			handler: validHandler,
+			request: &omahaRequest,
+			isErr:   false,
+		},
+		{
+			name:    "invalid request",
+			handler: validHandler,
+			request: nil,
+			isErr:   true,
+		},
+		{
+			name:    "invalid server url",
+			handler: invalidHandler,
+			request: &omahaRequest,
+			isErr:   true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			resp, err := tc.handler.Handle(tc.request)
+			if tc.isErr {
+				require.Error(t, err)
+				require.Nil(t, resp)
+			} else {
+				require.NoError(t, err)
+				require.NotNil(t, resp)
+			}
+		})
+	}
 }
