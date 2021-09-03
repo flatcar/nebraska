@@ -79,7 +79,10 @@ class ApplicationsStore extends Store {
     return channels;
   }
 
-  createApplication(data: { name: string; description: string }, clonedApplication: string) {
+  createApplication(
+    data: Pick<Application, 'name' | 'description' | 'product_id'>,
+    clonedApplication: string
+  ) {
     return API.createApplication(data, clonedApplication).then(application => {
       const applicationItem = application;
       if (this.applications) {
@@ -100,6 +103,8 @@ class ApplicationsStore extends Store {
 
       applicationToUpdate.name = application.name;
       applicationToUpdate.description = application.description;
+      applicationToUpdate.product_id = application.product_id;
+
       this.emitChange();
     });
   }

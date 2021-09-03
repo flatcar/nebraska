@@ -67,6 +67,7 @@ export interface Application {
   id: string;
   name: string;
   description: string;
+  product_id: string;
   created_ts: string;
   team_id: string;
   groups: Group[];
