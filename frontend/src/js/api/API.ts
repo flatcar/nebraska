@@ -36,7 +36,7 @@ class API {
   }
 
   static createApplication(
-    applicationData: { name: string; description: string },
+    applicationData: Pick<Application, 'name' | 'description' | 'product_id'>,
     clonedFromAppID: string
   ) {
     let url = BASE_URL + '/apps';
