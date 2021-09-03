@@ -26,6 +26,7 @@ function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () 
     var data = {
       name: values.name,
       description: values.description,
+      product_id: values.product_id,
     };
 
     let appFunctionCall;
@@ -73,6 +74,15 @@ function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () 
             type="text"
             fullWidth
             required
+          />
+          <Field
+            name="product_id"
+            component={TextField}
+            margin="dense"
+            label={t('frequent|Product ID')}
+            type="text"
+            fullWidth
+            helperText={t('applications|Example: io.example.MyApp')}
           />
           <Field
             name="description"
@@ -127,6 +137,16 @@ function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () 
     name: Yup.string()
       .max(50, t('applications|Must be less than 50 characters'))
       .required('Required'),
+    product_id: Yup.string()
+      // This regex matches an ID that matches
+      // * At least two segments.
+      // * All characters must be alphanumeric, an underscore, or a dash [a-zA-Z0-9_].
+      // Each segment must start with a letter.
+      // Each segment must not end with an underscore or dash.
+      .matches(
+        /^[a-zA-Z]+([a-zA-Z0-9_\-]*[a-zA-Z0-9])*(\.[a-zA-Z]+([a-zA-Z0-9_\-]*[a-zA-Z0-9])*)+$/,
+        t('applications|Must be a reverse domain ID like io.example.MyApp')
+      ),
     description: Yup.string().max(250, t('applications|Must be less than 250 characters')),
   });
 
@@ -136,7 +156,11 @@ function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () 
         {isCreation ? t('applications|Add Application') : t('applications|Update Application')}
       </DialogTitle>
       <Formik
-        initialValues={{ name: props.data.name, description: props.data.description }}
+        initialValues={{
+          name: props.data.name,
+          description: props.data.description,
+          product_id: props.data.product_id,
+        }}
         onSubmit={handleSubmit}
         validationSchema={validation}
         //@todo add better types for renderForm
