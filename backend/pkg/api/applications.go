@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"fmt"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -49,6 +50,9 @@ type Application struct {
 
 // AddApp registers the provided application.
 func (api *API) AddApp(app *Application) (*Application, error) {
+	if err := validateProductID(app.ProductID); err != nil {
+		return nil, fmt.Errorf("cannot add application %v: %w", app.ID, err)
+	}
 	query, _, err := goqu.Insert("application").
 		Cols("name", "product_id", "description", "team_id").
 		Vals(goqu.Vals{app.Name, app.ProductID, app.Description, app.TeamID}).
@@ -117,9 +121,35 @@ func (api *API) AddAppCloning(app *Application, sourceAppID string) (*Applicatio
 	return app, nil
 }
 
+func validateProductID(productID null.String) error {
+	if productID.Ptr() == nil {
+		return nil
+	}
+
+	// This regex matches an ID that matches
+	// * At least two segments.
+	// * All characters must be alphanumeric, an underscore, or a dash [a-zA-Z0-9_].
+	// Each segment must start with a letter.
+	// Each segment must not end with an underscore or dash.
+	matches, err := regexp.MatchString("^[a-zA-Z]+([a-zA-Z0-9_\\-]*[a-zA-Z0-9])*(\\.[a-zA-Z]+([a-zA-Z0-1_\\-]*[a-zA-Z0-9])*)+$", *productID.Ptr())
+	if err != nil {
+		return err
+	}
+
+	if !matches {
+		return fmt.Errorf("product ID %v is not valid (has to be in the form e.g. io.example.App)", *productID.Ptr())
+	}
+
+	return nil
+}
+
 // UpdateApp updates an existing application using the content of the
 // application provided.
 func (api *API) UpdateApp(app *Application) error {
+	if err := validateProductID(app.ProductID); err != nil {
+		return fmt.Errorf("cannot add application %v: %w", app.ID, err)
+	}
+
 	query, _, err := goqu.Update("application").
 		Set(
 			goqu.Record{
