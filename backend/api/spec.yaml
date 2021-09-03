@@ -1064,7 +1064,6 @@ components:
       type: object
       required:
         - name
-        - description
       properties:
         name:
           type: string
