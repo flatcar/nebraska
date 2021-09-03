@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"gopkg.in/guregu/null.v4"
 
 	"github.com/kinvolk/nebraska/backend/pkg/api"
 	"github.com/kinvolk/nebraska/backend/pkg/codegen"
@@ -51,7 +52,7 @@ func (h *Handler) CreateApp(ctx echo.Context, params codegen.CreateAppParams) er
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	app := appFromRequest(request.Name, request.Description, "", teamID)
+	app := appFromRequest(request.Name, request.Description, "", teamID, request.ProductId)
 
 	source := ""
 	if params.CloneFrom != nil {
@@ -102,7 +103,7 @@ func (h *Handler) UpdateApp(ctx echo.Context, appID string) error {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	app := appFromRequest(request.Name, request.Description, appID, "")
+	app := appFromRequest(request.Name, request.Description, appID, "", request.ProductId)
 
 	err = h.db.UpdateApp(app)
 	if err != nil {
@@ -141,11 +142,16 @@ func (h *Handler) DeleteApp(ctx echo.Context, appID string) error {
 	return ctx.NoContent(http.StatusOK)
 }
 
-func appFromRequest(name string, description string, appID string, teamID string) *api.Application {
+func appFromRequest(name string, description string, appID string, teamID string, productID *string) *api.Application {
+	productIDNullString := null.String{}
+	if productID != nil && *productID != "" {
+		productIDNullString = null.StringFrom(*productID)
+	}
 	app := api.Application{
 		TeamID:      teamID,
 		Name:        name,
 		Description: description,
+		ProductID:   productIDNullString,
 	}
 	if teamID != "" {
 		app.TeamID = teamID

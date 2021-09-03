@@ -89,8 +89,9 @@ type Config struct {
 
 // CreateAppInfo defines model for createAppInfo.
 type CreateAppInfo struct {
-	Description string `json:"description"`
-	Name        string `json:"name"`
+	Description string  `json:"description"`
+	Name        string  `json:"name"`
+	ProductId   *string `json:"product_id,omitempty"`
 }
 
 // CreateChannelInfo defines model for createChannelInfo.
