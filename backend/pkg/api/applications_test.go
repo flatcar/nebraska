@@ -60,6 +60,30 @@ func TestAddAppCloning(t *testing.T) {
 
 	_, err = a.AddAppCloning(&Application{Name: "app2", TeamID: tTeam.ID}, "")
 	assert.NoError(t, err, "Using an empty source app id when cloning has the same effect as not cloning.")
+
+	_, err = a.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("io.invalid. Name")})
+	assert.Error(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("1io.invalid.Name")})
+	assert.Error(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("")})
+	assert.Error(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("io.invalid-.Name")})
+	assert.Error(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("io.invalid_.Name")})
+	assert.Error(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("io.valid.Name")})
+	assert.NoError(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp2", TeamID: tTeam.ID, ProductID: null.StringFrom("io.valid.New-Name")})
+	assert.NoError(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp3", TeamID: tTeam.ID, ProductID: null.StringFrom("io2.valid12.New_Name")})
+	assert.NoError(t, err)
 }
 
 func TestUpdateApp(t *testing.T) {
