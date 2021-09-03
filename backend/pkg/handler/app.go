@@ -142,15 +142,21 @@ func (h *Handler) DeleteApp(ctx echo.Context, appID string) error {
 	return ctx.NoContent(http.StatusOK)
 }
 
-func appFromRequest(name string, description string, appID string, teamID string, productID *string) *api.Application {
+func appFromRequest(name string, description *string, appID string, teamID string, productID *string) *api.Application {
 	productIDNullString := null.String{}
 	if productID != nil && *productID != "" {
 		productIDNullString = null.StringFrom(*productID)
 	}
+
+	desc := ""
+	if description != nil {
+		desc = *description
+	}
+
 	app := api.Application{
 		TeamID:      teamID,
 		Name:        name,
-		Description: description,
+		Description: desc,
 		ProductID:   productIDNullString,
 	}
 	if teamID != "" {
