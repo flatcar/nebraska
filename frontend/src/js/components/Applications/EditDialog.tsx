@@ -26,6 +26,7 @@ function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () 
     var data = {
       name: values.name,
       description: values.description,
+      product_id: values.product_id,
     };
 
     let appFunctionCall;
@@ -73,6 +74,15 @@ function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () 
             type="text"
             fullWidth
             required
+          />
+          <Field
+            name="product_id"
+            component={TextField}
+            margin="dense"
+            label={t('frequent|Product ID')}
+            type="text"
+            fullWidth
+            helperText={t('applications|Example: io.example.MyApp')}
           />
           <Field
             name="description"
@@ -147,7 +157,11 @@ function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () 
         {isCreation ? t('applications|Add Application') : t('applications|Update Application')}
       </DialogTitle>
       <Formik
-        initialValues={{ name: props.data.name, description: props.data.description }}
+        initialValues={{
+          name: props.data.name,
+          description: props.data.description,
+          product_id: props.data.product_id,
+        }}
         onSubmit={handleSubmit}
         validationSchema={validation}
         //@todo add better types for renderForm
