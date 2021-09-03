@@ -28,8 +28,9 @@ function Item(props: {
   const { t } = useTranslation();
   const description = props.application.description || t('applications|No description provided');
   const groups = props.application.groups || [];
-  const instances = props.application.instances.count || t('applications|None');
+  const instances = props.application.instances?.count || t('applications|None');
   const appID = props.application ? props.application.id : '';
+  const appProductID = props.application.product_id || '';
 
   function updateApplication() {
     props.handleUpdateApplication(props.application.id);
@@ -50,7 +51,7 @@ function Item(props: {
             cardMainLinkLabel={props.application.name}
             cardMainLinkPath={{ pathname: `/apps/${appID}` }}
             cardId={appID}
-            cardTrack=""
+            cardTrack={appProductID}
             cardDescription={description}
           >
             <MoreMenu
