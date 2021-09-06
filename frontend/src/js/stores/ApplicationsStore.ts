@@ -24,7 +24,7 @@ class ApplicationsStore extends Store {
   }
 
   getCachedApplication(applicationID: string) {
-    const app = _.findWhere(this.applications as Collection<any>, { id: applicationID });
+    const app = _.findWhere(this.applications, { id: applicationID });
     if (!app) {
       return null;
     }

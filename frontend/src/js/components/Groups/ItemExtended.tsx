@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import _ from 'underscore';
 import API from '../../api/API';
-import { Group } from '../../api/apiDataTypes';
+import { Application, Group } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import { defaultTimeInterval, timeIntervalsDefault } from '../../utils/helpers';
 import ChannelItem from '../Channels/Item';
@@ -38,7 +38,7 @@ function ItemExtended(props: {
   groupID: string;
   handleUpdateGroup: (groupID: string, appID: string) => void;
 }) {
-  const [application, setApplication] = React.useState(null);
+  const [application, setApplication] = React.useState<Application | null>(null);
   const [group, setGroup] = React.useState<Group | null>(null);
   const [instancesStats, setInstancesStats] = React.useState<{
     [key: string]: any;
@@ -69,7 +69,7 @@ function ItemExtended(props: {
 
     const groupFound = app ? _.findWhere(app.groups, { id: props.groupID }) : null;
     if (groupFound !== group) {
-      setGroup(groupFound);
+      setGroup(groupFound || null);
     }
   }
   function updateGroup() {

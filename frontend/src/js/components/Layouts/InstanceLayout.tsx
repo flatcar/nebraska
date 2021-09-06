@@ -18,7 +18,7 @@ export default function InstanceLayout() {
   const [application, setApplication] = React.useState(
     applicationsStore.getCachedApplication(appID)
   );
-  const [group, setGroup] = React.useState(getGroupFromApplication(application));
+  const [group, setGroup] = React.useState(getGroupFromApplication(application || null));
   const [instance, setInstance] = React.useState<Instance | null>(null);
   const { t } = useTranslation();
 
@@ -31,14 +31,14 @@ export default function InstanceLayout() {
       setInstance(instance);
     });
     const apps = applicationsStore.getCachedApplications() || [];
-    const app = apps.find(({ id }) => id === appID);
+    const app = apps.find(({ id }) => id === appID) || null;
     if (app !== application) {
       setApplication(app);
       setGroup(getGroupFromApplication(app));
     }
   }
 
-  function getGroupFromApplication(app: Application | undefined) {
+  function getGroupFromApplication(app: Application | null) {
     if (!app) {
       return null;
     }
