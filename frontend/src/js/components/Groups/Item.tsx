@@ -175,7 +175,7 @@ function Item(props: {
                 <CardFeatureLabel>{t('groups|Version breakdown')}</CardFeatureLabel>
               </Grid>
               <Grid item xs={12}>
-                {version_breakdown.length > 0 ? (
+                {version_breakdown?.length > 0 ? (
                   <VersionProgressBar version_breakdown={version_breakdown} channel={channel} />
                 ) : (
                   <Empty>{t('groups|No instances available.')}</Empty>
