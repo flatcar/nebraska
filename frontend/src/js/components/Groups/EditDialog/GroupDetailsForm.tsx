@@ -31,7 +31,7 @@ export default function GroupDetailsForm(props: {
         </Grid>
         <Grid item xs={4}>
           <FormControl margin="dense" fullWidth>
-            <InputLabel shrink>Channel</InputLabel>
+            <InputLabel shrink>{t('groups|Channel')}</InputLabel>
             <Field
               name="channel"
               component={Select}
