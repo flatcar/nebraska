@@ -71,6 +71,7 @@ export interface Application {
   team_id: string;
   groups: Group[];
   channels: Channel[];
+  packages: Package[];
   instances: {
     count: number;
   };
