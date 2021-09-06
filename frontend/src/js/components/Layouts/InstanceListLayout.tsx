@@ -17,14 +17,14 @@ export default function InstanceLayout() {
 
   function onChange() {
     const apps = applicationsStore.getCachedApplications() || [];
-    const app = apps.find(({ id }) => id === appID);
+    const app = apps.find(({ id }) => id === appID) || null;
     if (app !== application) {
       setApplication(app);
       setGroup(getGroupFromApplication(app));
     }
   }
 
-  function getGroupFromApplication(app: Application | undefined) {
+  function getGroupFromApplication(app: Application | null) {
     if (!app) {
       return null;
     }
@@ -63,7 +63,7 @@ export default function InstanceLayout() {
           },
         ]}
       />
-      {group === null ? <Loader /> : <List application={application} group={group} />}
+      {!group || !application ? <Loader /> : <List application={application} group={group} />}
     </React.Fragment>
   );
 }

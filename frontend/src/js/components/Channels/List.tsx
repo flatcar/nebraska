@@ -129,13 +129,13 @@ function List(props: { appID: string }) {
   }
 
   function onChannelEditOpen(channelID: string) {
-    let channels = [];
+    let channels: Channel[] = [];
     if (application) {
       channels = application.channels ? application.channels : [];
     }
 
     const channelToUpdate =
-      !_.isEmpty(channels) && channelID ? _.findWhere(channels, { id: channelID }) : null;
+      !_.isEmpty(channels) && channelID ? _.findWhere(channels, { id: channelID }) || null : null;
 
     setChannelToEdit(channelToUpdate);
   }
