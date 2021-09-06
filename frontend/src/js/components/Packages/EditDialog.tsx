@@ -84,22 +84,26 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
       data.flatcar_action = { sha256: values.flatcarHash };
     }
 
-    isCreation
-      ? applicationsStore.createPackage(data)
-      : applicationsStore
-          .updatePackage({ ...data, id: props.data.channel.id })
-          .then(() => {
-            props.onHide();
-            actions.setSubmitting(false);
-          })
-          .catch(() => {
-            actions.setSubmitting(false);
-            actions.setStatus({
-              statusMessage: t(
-                'packages|Something went wrong, or the version you are trying to add already exists for the arch and package type. Check the form or try again later...'
-              ),
-            });
-          });
+    let pkgFunc: Promise<void>;
+    if (isCreation) {
+      pkgFunc = applicationsStore.createPackage(data);
+    } else {
+      pkgFunc = applicationsStore.updatePackage({ ...data, id: props.data.channel.id });
+    }
+
+    pkgFunc
+      .then(() => {
+        props.onHide();
+        actions.setSubmitting(false);
+      })
+      .catch(() => {
+        actions.setSubmitting(false);
+        actions.setStatus({
+          statusMessage: t(
+            'packages|Something went wrong, or the version you are trying to add already exists for the arch and package type. Check the form or try again later...'
+          ),
+        });
+      });
   }
 
   function handleClose() {
