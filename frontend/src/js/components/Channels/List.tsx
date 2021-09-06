@@ -106,23 +106,21 @@ function List(props: { appID: string }) {
     // In case the application was not yet cached, we fetch it here
     if (application === null) {
       applicationsStore.getApplication(props.appID);
-    }
-
-    // Fetch packages
-    if (!packages) {
-      API.getPackages(props.appID).then(result => {
+    } else {
+      // Fetch packages
+      API.getPackages(application.id).then(result => {
         if (_.isNull(result)) {
           setPackages([]);
-          return;
+        } else {
+          setPackages(result);
         }
-        setPackages(result);
       });
     }
 
     return function cleanup() {
       applicationsStore.removeChangeListener(onStoreChange);
     };
-  }, [appID]);
+  }, [application]);
 
   function onStoreChange() {
     setApplication(applicationsStore.getCachedApplication(appID));
