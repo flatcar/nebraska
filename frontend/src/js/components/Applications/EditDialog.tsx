@@ -86,10 +86,10 @@ function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () 
             <Field
               type="text"
               name="appToClone"
-              label={t('Applications|Groups/Channels')}
+              label={t('applications|Groups/Channels')}
               select
               helperText={t(
-                'Applications|Clone channels and groups from another other application'
+                'applications|Clone channels and groups from another other application'
               )}
               margin="normal"
               component={TextField}
@@ -98,7 +98,7 @@ function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () 
               }}
             >
               <MenuItem value="none" key="none">
-                Do not copy
+                {t('applications|Do not copy')}
               </MenuItem>
               {props.data.applications &&
                 props.data.applications.map((application: Application, i: number) => {
