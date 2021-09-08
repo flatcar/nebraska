@@ -4,7 +4,7 @@ export GO111MODULE
 TAG := `git describe --tags --always`
 SHELL = /bin/bash
 DOCKER_CMD ?= "docker"
-DOCKER_REPO ?= "quay.io/flatcar"
+DOCKER_REPO ?= "ghcr.io/kinvolk"
 DOCKER_IMAGE_NEBRASKA ?= "nebraska"
 VERSION ?=
 ifeq ($(VERSION),)
