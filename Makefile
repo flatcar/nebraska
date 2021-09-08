@@ -117,8 +117,8 @@ backend/tools/go-bindata: backend/go.mod backend/go.sum
 backend/tools/golangci-lint: backend/go.mod backend/go.sum
 	cd backend && go build -o ./tools/golangci-lint github.com/golangci/golangci-lint/cmd/golangci-lint
 
-.PHONY: container-nebraska
-container-nebraska:
+.PHONY: image
+image:
 	$(DOCKER_CMD) build \
 		--no-cache \
 		--build-arg NEBRASKA_VERSION=$(VERSION) \
@@ -127,7 +127,7 @@ container-nebraska:
 		-f Dockerfile .
 
 .PHONY: container
-container: container-nebraska
+container: image
 
 .PHONY: backend-ci
 backend-ci: backend test-clean-work-tree-backend check-backend-with-container
