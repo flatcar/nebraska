@@ -4,7 +4,6 @@ go 1.15
 
 require (
 	github.com/blang/semver/v4 v4.0.0
-	github.com/caarlos0/env v3.5.0+incompatible
 	github.com/coreos/go-oidc/v3 v3.0.0
 	github.com/deepmap/oapi-codegen v1.8.1
 	github.com/doug-martin/goqu/v9 v9.12.0
@@ -18,6 +17,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.3
 	github.com/kevinburke/go-bindata v3.22.0+incompatible
 	github.com/kinvolk/go-omaha v0.0.1
+	github.com/knadh/koanf v1.2.2
 	github.com/labstack/echo-contrib v0.11.0
 	github.com/labstack/echo/v4 v4.4.0
 	github.com/labstack/gommon v0.3.0
