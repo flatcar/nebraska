@@ -27,6 +27,9 @@ const useStyles = makeStyles({
   topSelect: {
     width: '10rem',
   },
+  textarea: {
+    resize: 'both',
+  },
 });
 
 function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide: () => void }) {
@@ -73,8 +76,10 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
       url: values.url,
       version: values.version,
       type: packageType,
-      size: values.size.toString(),
+      size: values.size?.toString(),
       hash: values.hash,
+      metadata_type: values.metadataType,
+      metadata_content: values.metadataContent,
       application_id:
         isCreation && props.data.appID ? props.data.appID : props.data.channel.application_id,
       channels_blacklist: values.channelsBlacklist ? values.channelsBlacklist : [],
@@ -171,7 +176,7 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
             margin="dense"
             label={t('packages|Filename')}
             type="text"
-            required
+            required={isFlatcarType(packageType)}
             fullWidth
           />
           <Field
@@ -203,7 +208,7 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
                 margin="dense"
                 label={t('packages|Size')}
                 type="number"
-                required
+                required={isFlatcarType(packageType)}
                 helperText={t('packages|In bytes')}
                 fullWidth
               />
@@ -215,11 +220,11 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
             margin="dense"
             label={t('packages|Hash')}
             type="text"
-            required
+            required={isFlatcarType(packageType)}
             helperText={t('packages|Tip: cat update.gz | openssl dgst -sha1 -binary | base64')}
             fullWidth
           />
-          {isFlatcarType(packageType) && (
+          {isFlatcarType(packageType) ? (
             <Field
               name="flatcarHash"
               component={TextField}
@@ -230,7 +235,32 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
               helperText={t('packages|Tip: cat update.gz | openssl dgst -sha256 -binary | base64')}
               fullWidth
             />
+          ) : (
+            <>
+              <Field
+                name="metadataType"
+                component={TextField}
+                margin="dense"
+                label={t('packages|Metadata Content Type')}
+                type="text"
+                helperText={t('packages|E.g. text/json')}
+                fullWidth
+              />
+              <Field
+                name="metadataContent"
+                component={TextField}
+                margin="dense"
+                label={t('packages|Metadata Content')}
+                type="texta"
+                multiline
+                rows={4}
+                fullWidth
+                variant="outlined"
+                inputProps={{ className: classes.textarea }}
+              />
+            </>
           )}
+
           <FormControl margin="dense" fullWidth>
             <InputLabel>Channels Blacklist</InputLabel>
             <Field
@@ -284,9 +314,10 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
     [key: string]: any;
   } = Yup.object().shape({
     url: Yup.string().url(),
-    filename: Yup.string()
-      .max(100, t('packages|Must enter a valid filename (less than 100 characters)'))
-      .required(t('frequent|Required')),
+    filename: Yup.string().max(
+      100,
+      t('packages|Must enter a valid filename (less than 100 characters)')
+    ),
     // @todo: Validate whether the version already exists so we can provide
     // better feedback.
     version: Yup.string()
@@ -294,12 +325,15 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
       .required(t('frequent|Required')),
     size: Yup.number()
       .integer(t('packages|Must be an integer number'))
-      .positive(t('packages|Must be a positive number'))
-      .required(t('frequent|Required')),
-    hash: Yup.string()
-      .max(64, t('packages|Must be a valid hash (less than 64 characters)'))
-      .required(t('frequent|Required')),
+      .positive(t('packages|Must be a positive number')),
+    hash: Yup.string().max(64, t('packages|Must be a valid hash (less than 64 characters)')),
   });
+
+  if (isFlatcarType(packageType)) {
+    ['filename', 'size', 'hash'].forEach(schema => {
+      validation.fields[schema] = validation.fields[schema].required(t('frequent|Required'));
+    });
+  }
 
   let initialValues: { [key: string]: any } = { channelsBlacklist: [] };
   if (!isCreation) {
