@@ -228,6 +228,18 @@ func (h *Handler) prepareUpdateCheck(appResp *omahaSpec.AppResponse, pkg *api.Pa
 		a.MetadataSignatureRsa = cra.MetadataSignatureRsa
 		a.MetadataSize = cra.MetadataSize
 		a.Deadline = cra.Deadline
+	default:
+		mtdContents := ""
+		if pkg.MetadataContent.Ptr() != nil {
+			mtdContents = *pkg.MetadataContent.Ptr()
+		}
+
+		mtdContentType := ""
+		if pkg.MetadataType.Ptr() != nil {
+			mtdContentType = *pkg.MetadataType.Ptr()
+		}
+
+		mpkg.AddMetadata(mtdContents, mtdContentType)
 	}
 
 	updateCheck := appResp.AddUpdateCheck(omahaSpec.UpdateOK)

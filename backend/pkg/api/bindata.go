@@ -16,6 +16,7 @@
 // db/migrations/0012_drop_unused_indexes.sql (696B)
 // db/migrations/0013_add_stats_indexes.sql (426B)
 // db/migrations/0014_add_application_product_id.sql (316B)
+// db/migrations/0015_add_package_metadata.sql (271B)
 
 package api
 
@@ -404,6 +405,26 @@ func dbMigrations0014_add_application_product_idSql() (*asset, error) {
 	return a, nil
 }
 
+var _dbMigrations0015_add_package_metadataSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x8c\xce\xbd\xaa\x02\x31\x14\x45\xe1\x3e\x4f\xb1\xcb\x7b\x91\x01\x11\xac\xa6\xf5\x15\xac\x65\x9b\x1c\x47\xf1\x4c\x12\xc2\x1e\x7f\xde\xde\xc6\x42\x24\x85\xfd\x62\xf1\x0d\x03\x56\xf3\x65\x6a\x94\x61\x5f\x43\xa0\xcb\x1a\xc4\xa3\x1b\x2a\xe3\x95\x93\x81\x29\x21\x16\x5f\xe6\x8c\xd9\xc4\x44\xf1\xa0\x67\x35\xdc\xd8\xe2\x99\xed\x6f\xb3\x5d\xff\x23\xd9\x89\x8b\x0b\x79\x71\x1f\x7f\xfe\xc4\x92\x65\x59\x90\x3d\xf4\xb5\x08\x9f\xb6\x5d\xb9\xe7\xbe\x2e\xb5\x52\xbb\xbc\x3e\xa2\x9b\xbf\x15\x63\x78\x05\x00\x00\xff\xff\x12\x7f\x57\xa2\x0f\x01\x00\x00")
+
+func dbMigrations0015_add_package_metadataSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_dbMigrations0015_add_package_metadataSql,
+		"db/migrations/0015_add_package_metadata.sql",
+	)
+}
+
+func dbMigrations0015_add_package_metadataSql() (*asset, error) {
+	bytes, err := dbMigrations0015_add_package_metadataSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "db/migrations/0015_add_package_metadata.sql", size: 271, mode: os.FileMode(0644), modTime: time.Unix(1, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x2a, 0x28, 0x78, 0x98, 0x4c, 0xfe, 0x25, 0x31, 0xd8, 0x8b, 0x43, 0x9f, 0x50, 0x89, 0xe7, 0x40, 0x3a, 0x7f, 0xc5, 0x37, 0xbd, 0x96, 0xa2, 0xe, 0xb2, 0xfb, 0x98, 0xc1, 0xf2, 0x13, 0xb5, 0x80}}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -511,6 +532,7 @@ var _bindata = map[string]func() (*asset, error){
 	"db/migrations/0012_drop_unused_indexes.sql":        dbMigrations0012_drop_unused_indexesSql,
 	"db/migrations/0013_add_stats_indexes.sql":          dbMigrations0013_add_stats_indexesSql,
 	"db/migrations/0014_add_application_product_id.sql": dbMigrations0014_add_application_product_idSql,
+	"db/migrations/0015_add_package_metadata.sql":       dbMigrations0015_add_package_metadataSql,
 }
 
 // AssetDebug is true if the assets were built with the debug flag enabled.
@@ -574,6 +596,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"0012_drop_unused_indexes.sql": {dbMigrations0012_drop_unused_indexesSql, map[string]*bintree{}},
 			"0013_add_stats_indexes.sql": {dbMigrations0013_add_stats_indexesSql, map[string]*bintree{}},
 			"0014_add_application_product_id.sql": {dbMigrations0014_add_application_product_idSql, map[string]*bintree{}},
+			"0015_add_package_metadata.sql": {dbMigrations0015_add_package_metadataSql, map[string]*bintree{}},
 		}},
 		"sample_data.sql": {dbSample_dataSql, map[string]*bintree{}},
 	}},

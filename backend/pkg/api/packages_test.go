@@ -300,3 +300,27 @@ func TestGetPackages(t *testing.T) {
 	_, err = a.GetPackages(uuid.New().String(), 0, 0)
 	assert.NoError(t, err, "should be no error for non existing appID")
 }
+
+func TestMetadataPackages(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	_, _ = a.AddPackage(
+		&Package{
+			Type:            PkgTypeOther,
+			URL:             "http://sample.url/pkg1",
+			Version:         "1010.5.0+2016-05-27-1832",
+			ApplicationID:   tApp.ID,
+			MetadataContent: null.StringFrom("{}"),
+			MetadataType:    null.StringFrom("text/json"),
+		},
+	)
+
+	pkgs, err := a.GetPackages(tApp.ID, 0, 0)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, len(pkgs))
+	assert.Equal(t, "text/json", pkgs[0].MetadataType.String)
+	assert.Equal(t, "{}", pkgs[0].MetadataContent.String)
+}
