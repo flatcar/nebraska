@@ -6,6 +6,11 @@ SHELL = /bin/bash
 DOCKER_CMD ?= "docker"
 DOCKER_REPO ?= "ghcr.io/kinvolk"
 DOCKER_IMAGE_NEBRASKA ?= "nebraska"
+ifndef $(GOPATH)
+	GOPATH=$(shell go env GOPATH)
+	export GOPATH
+endif
+
 VERSION ?=
 ifeq ($(VERSION),)
 	## Adds a '-dirty' suffix to version string if there are uncommitted changes
@@ -91,7 +96,7 @@ run-backend: backend-binary
 	cd backend && ./bin/nebraska -auth-mode noop -debug
 
 .PHONY: backend
-backend: run-generators backend-code-checks build-backend-binary
+backend: codegen run-generators backend-code-checks build-backend-binary
 
 .PHONY: backend-binary
 backend-binary: run-generators build-backend-binary
@@ -129,15 +134,14 @@ image:
 
 .PHONY: backend/tools/codegen
 backend/tools/codegen:
-	go get github.com/deepmap/oapi-codegen/cmd/oapi-codegen;
+	go get github.com/deepmap/oapi-codegen/cmd/oapi-codegen
 
 .PHONY: codegen
 codegen: backend/tools/codegen
-	oapi-codegen --generate=server --package codegen -o ./backend/pkg/codegen/server.gen.go ./backend/api/spec.yaml;
-	oapi-codegen --generate=spec --package codegen -o ./backend/pkg/codegen/spec.gen.go ./backend/api/spec.yaml;
-	oapi-codegen --generate=client --package codegen -o ./backend/pkg/codegen/client.gen.go ./backend/api/spec.yaml; 
-	oapi-codegen --generate=types --package codegen -o ./backend/pkg/codegen/types.gen.go ./backend/api/spec.yaml;
-
+	PATH=$$GOPATH/bin:$$PATH oapi-codegen --generate=server --package codegen -o ./backend/pkg/codegen/server.gen.go ./backend/api/spec.yaml;
+	PATH=$$GOPATH/bin:$$PATH oapi-codegen --generate=spec --package codegen -o ./backend/pkg/codegen/spec.gen.go ./backend/api/spec.yaml;
+	PATH=$$GOPATH/bin:$$PATH oapi-codegen --generate=client --package codegen -o ./backend/pkg/codegen/client.gen.go ./backend/api/spec.yaml;
+	PATH=$$GOPATH/bin:$$PATH oapi-codegen --generate=types --package codegen -o ./backend/pkg/codegen/types.gen.go ./backend/api/spec.yaml;
 
 .PHONY: container
 container: image
