@@ -46,6 +46,8 @@ export interface Package {
   application_id: string;
   flatcar_action?: FlatcarAction;
   arch: Arch;
+  metadata_type?: string;
+  metadata_content?: string;
 }
 
 export interface FlatcarAction {
