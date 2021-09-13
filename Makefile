@@ -6,6 +6,11 @@ SHELL = /bin/bash
 DOCKER_CMD ?= "docker"
 DOCKER_REPO ?= "ghcr.io/kinvolk"
 DOCKER_IMAGE_NEBRASKA ?= "nebraska"
+ifndef $(GOPATH)
+	GOPATH=$(shell go env GOPATH)
+	export GOPATH
+endif
+
 VERSION ?=
 ifeq ($(VERSION),)
 	## Adds a '-dirty' suffix to version string if there are uncommitted changes
