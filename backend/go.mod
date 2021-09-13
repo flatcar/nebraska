@@ -11,12 +11,12 @@ require (
 	github.com/go-openapi/swag v0.19.11 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golangci/golangci-lint v1.41.1
-	github.com/google/uuid v1.2.0
+	github.com/google/uuid v1.3.0
 	github.com/gorilla/securecookie v1.1.1
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/jmoiron/sqlx v1.3.3
 	github.com/kevinburke/go-bindata v3.22.0+incompatible
-	github.com/kinvolk/go-omaha v0.0.1
+	github.com/kinvolk/go-omaha v0.0.2-0.20210907164120-855d26e1d0eb
 	github.com/knadh/koanf v1.2.2
 	github.com/labstack/echo-contrib v0.11.0
 	github.com/labstack/echo/v4 v4.4.0
