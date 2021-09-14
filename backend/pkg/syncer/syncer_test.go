@@ -245,3 +245,38 @@ func TestSyncer_GetPackageWithDiffURL(t *testing.T) {
 	assert.Equal(t, conf.PackagesURL, tGroup.Channel.Package.URL)
 	assert.Equal(t, update.Manifest.Packages[0].Name, tGroup.Channel.Package.Filename.String)
 }
+
+func TestSyncer_GetPackageWithGeneratedURL(t *testing.T) {
+	baseURL := "https://my.super.different.packagesurl.io/bucket/"
+	conf := &Config{
+		PackagesURL: baseURL + "{{ARCH}}/{{VERSION}}",
+	}
+	syncer := newForTest(t, conf)
+	a := syncer.api
+	t.Cleanup(func() {
+		a.Close()
+	})
+
+	tGroup := setupFlatcarAppStableGroup(t, a)
+	tChannel := tGroup.Channel
+
+	err := syncer.initialize()
+	require.NoError(t, err)
+
+	update := createOmahaUpdate()
+
+	desc := channelDescriptor{
+		name: tChannel.Name,
+		arch: tChannel.Arch,
+	}
+	err = syncer.processUpdate(desc, update)
+	require.NoError(t, err)
+
+	// Get updated group
+	tGroup, err = a.GetGroup(tGroup.ID)
+	require.NoError(t, err)
+
+	assert.Equal(t, update.Manifest.Version, tGroup.Channel.Package.Version)
+	assert.Equal(t, baseURL+getArchString(tChannel.Arch)+"/"+tGroup.Channel.Package.Version, tGroup.Channel.Package.URL)
+	assert.Equal(t, update.Manifest.Packages[0].Name, tGroup.Channel.Package.Filename.String)
+}

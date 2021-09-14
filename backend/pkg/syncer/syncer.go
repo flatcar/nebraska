@@ -261,7 +261,8 @@ func (s *Syncer) processUpdate(descriptor channelDescriptor, update *omaha.Updat
 
 		// Allow to override the URL if needed.
 		if s.packagesURL != "" {
-			url = s.packagesURL
+			url = strings.ReplaceAll(s.packagesURL, "{{VERSION}}", update.Manifest.Version)
+			url = strings.ReplaceAll(url, "{{ARCH}}", getArchString(descriptor.arch))
 		}
 
 		if s.hostPackages {
