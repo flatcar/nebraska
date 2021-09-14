@@ -80,6 +80,12 @@ func New(conf *Config) (*Syncer, error) {
 		return nil, ErrInvalidAPIInstance
 	}
 
+	if conf.PackagesURL != "" {
+		if _, err := url.Parse(conf.PackagesURL); err != nil {
+			return nil, fmt.Errorf("invalid package url: %w", err)
+		}
+	}
+
 	s := &Syncer{
 		api:               conf.API,
 		hostPackages:      conf.HostPackages,
@@ -253,8 +259,12 @@ func (s *Syncer) processUpdate(descriptor channelDescriptor, update *omaha.Updat
 		url := update.URLs[0].CodeBase
 		filename := update.Manifest.Packages[0].Name
 
-		if s.hostPackages {
+		// Allow to override the URL if needed.
+		if s.packagesURL != "" {
 			url = s.packagesURL
+		}
+
+		if s.hostPackages {
 			filename = fmt.Sprintf("flatcar-%s-%s.gz", getArchString(descriptor.arch), update.Manifest.Version)
 			if err := s.downloadPackage(update, filename); err != nil {
 				logger.Error().Err(err).Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Msg("processUpdate, downloading package")

@@ -59,6 +59,52 @@ func TestSyncer_NoAPI(t *testing.T) {
 	assert.ErrorIs(t, err, ErrInvalidAPIInstance)
 }
 
+func TestSyncer_InvalidPkgsURL(t *testing.T) {
+	a := newAPI(t)
+	t.Cleanup(func() {
+		a.Close()
+	})
+
+	tests := []struct {
+		url   string
+		isErr bool
+	}{
+		{
+			url:   "",
+			isErr: false,
+		},
+		{
+			url:   ":file",
+			isErr: true,
+		},
+		{
+			url:   "https://myphony.url",
+			isErr: false,
+		},
+		{
+			url:   "file:///my/file",
+			isErr: false,
+		},
+	}
+
+	for _, tc := range tests {
+		testCase := tc
+		t.Run(testCase.url, func(t *testing.T) {
+			t.Parallel()
+
+			_, err := New(&Config{
+				API:         a,
+				PackagesURL: testCase.url,
+			})
+			if testCase.isErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
 func TestSyncer_Init(t *testing.T) {
 	syncer := newForTest(t, &Config{})
 	a := syncer.api
@@ -71,20 +117,20 @@ func TestSyncer_Init(t *testing.T) {
 	tPkg, err := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64})
 	require.NoError(t, err)
 	groupID, err := a.GetGroupID(flatcarAppID, "stable", tPkg.Arch)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	tGroup, err := a.GetGroup(groupID)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	tChannel := tGroup.Channel
 
 	tChannel.PackageID = null.StringFrom(tPkg.ID)
 
 	err = a.UpdateChannel(tChannel)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	err = syncer.initialize()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	desc := channelDescriptor{
 		name: tChannel.Name,
@@ -163,5 +209,39 @@ func TestSyncer_GetPackage(t *testing.T) {
 
 	assert.Equal(t, update.Manifest.Version, tGroup.Channel.Package.Version)
 	assert.Equal(t, update.URLs[0].CodeBase, tGroup.Channel.Package.URL)
+	assert.Equal(t, update.Manifest.Packages[0].Name, tGroup.Channel.Package.Filename.String)
+}
+
+func TestSyncer_GetPackageWithDiffURL(t *testing.T) {
+	conf := &Config{
+		PackagesURL: "https://my.super.different.packagesurl.io/bucket/",
+	}
+	syncer := newForTest(t, conf)
+	a := syncer.api
+	t.Cleanup(func() {
+		a.Close()
+	})
+
+	tGroup := setupFlatcarAppStableGroup(t, a)
+	tChannel := tGroup.Channel
+
+	err := syncer.initialize()
+	require.NoError(t, err)
+
+	update := createOmahaUpdate()
+
+	desc := channelDescriptor{
+		name: tChannel.Name,
+		arch: tChannel.Arch,
+	}
+	err = syncer.processUpdate(desc, update)
+	require.NoError(t, err)
+
+	// Get updated group
+	tGroup, err = a.GetGroup(tGroup.ID)
+	require.NoError(t, err)
+
+	assert.Equal(t, update.Manifest.Version, tGroup.Channel.Package.Version)
+	assert.Equal(t, conf.PackagesURL, tGroup.Channel.Package.URL)
 	assert.Equal(t, update.Manifest.Packages[0].Name, tGroup.Channel.Package.Filename.String)
 }

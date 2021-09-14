@@ -47,6 +47,7 @@ var (
 	hostFlatcarPackages   = flag.Bool("host-flatcar-packages", false, "Host Flatcar packages in Nebraska")
 	flatcarPackagesPath   = flag.String("flatcar-packages-path", "", "Path where Flatcar packages files should be stored")
 	nebraskaURL           = flag.String("nebraska-url", "http://localhost:8000", "nebraska URL (http://host:port - required when hosting Flatcar packages in nebraska)")
+	syncerPkgsURL         = flag.String("syncer-packages-url", "", "use this URL instead of the original one for packages created by the syncer; any {{ARCH}} and {{VERSION}} in the URL will be replaced by the original package's architecture and version, respectively. If this option is not used but the 'host-flatcar-packages' one is, then the URL will be nebraska-url/flatcar/ .")
 	httpLog               = flag.Bool("http-log", false, "Enable http requests logging")
 	httpStaticDir         = flag.String("http-static-dir", "../frontend/build", "Path to frontend static files")
 	authMode              = flag.String("auth-mode", "github", "authentication mode, available modes: noop, github, oidc")
@@ -208,6 +209,7 @@ func mainWithError() error {
 		oidcAuthConfig:      oidcAuthConfig,
 		flatcarUpdatesURL:   *flatcarUpdatesURL,
 		checkFrequency:      checkFrequency,
+		syncerPkgsURL:       *syncerPkgsURL,
 	}
 	ctl, err := newController(conf)
 	if err != nil {
