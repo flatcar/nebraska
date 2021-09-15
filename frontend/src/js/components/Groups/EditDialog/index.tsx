@@ -129,9 +129,7 @@ function EditDialog(props: {
           <TabPanel
             index={0}
             value={groupEditActiveTab}
-            render={() => (
-              <GroupDetailsForm channels={channels} values={values} setFieldValue={setFieldValue} />
-            )}
+            render={() => <GroupDetailsForm channels={channels} values={values} />}
           />
           <TabPanel
             index={1}

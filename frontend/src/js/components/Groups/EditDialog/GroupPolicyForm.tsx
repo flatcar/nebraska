@@ -7,12 +7,12 @@ import {
   Grid,
   MenuItem,
   Switch,
-  TextField,
   Tooltip,
   Typography,
 } from '@material-ui/core';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import { Field } from 'formik';
+import { TextField } from 'formik-material-ui';
 import { useTranslation } from 'react-i18next';
 import TimezonePicker from '../../Common/TimezonePicker';
 
@@ -128,9 +128,6 @@ export default function GroupPolicyForm(props: {
                 type="number"
                 fullWidth
                 minValue={0}
-                onChange={(e: any) => {
-                  setFieldValue('maxUpdates', e.target.value);
-                }}
                 defaultValue={values.maxUpdates}
                 inputProps={{ min: 0 }}
               />
@@ -148,9 +145,6 @@ export default function GroupPolicyForm(props: {
                 type="number"
                 fullWidth
                 defaultValue={values.updatesPeriodRange}
-                onChange={(e: any) => {
-                  setFieldValue('updatesPeriodRange', e.target.value);
-                }}
                 inputProps={{ min: 0 }}
               />
             </Box>
@@ -164,9 +158,6 @@ export default function GroupPolicyForm(props: {
                 select
                 fullWidth
                 defaultValue={values.updatesPeriodUnit}
-                onChange={(e: any) => {
-                  setFieldValue('updatesPeriodUnit', e.target.value);
-                }}
               >
                 <MenuItem value={'hours'} key={'hours'}>
                   {t('groups|hours')}
@@ -192,9 +183,6 @@ export default function GroupPolicyForm(props: {
                   margin="dense"
                   type="number"
                   defaultValue={values.updatesTimeout}
-                  onChange={(e: any) => {
-                    setFieldValue('updatesTimeout', e.target.value);
-                  }}
                   inputProps={{ min: 0 }}
                 />
               </Grid>
@@ -207,9 +195,6 @@ export default function GroupPolicyForm(props: {
                     select
                     fullWidth
                     defaultValue={values.updatesTimeoutUnit}
-                    onChange={(e: any) => {
-                      setFieldValue('updatesTimeoutUnit', e.target.value);
-                    }}
                   >
                     <MenuItem value={'hours'} key={'hours'}>
                       {t('groups|hours')}
