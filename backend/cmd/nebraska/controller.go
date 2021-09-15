@@ -61,6 +61,7 @@ type controllerConfig struct {
 	oidcAuthConfig      *auth.OIDCAuthConfig
 	flatcarUpdatesURL   string
 	checkFrequency      time.Duration
+	syncerPkgsURL       string
 }
 
 func loggerWithUsername(l zerolog.Logger, c *gin.Context) zerolog.Logger {
@@ -85,12 +86,16 @@ func newController(conf *controllerConfig) (*controller, error) {
 		auth:         authenticator,
 	}
 
+	if conf.syncerPkgsURL == "" && conf.hostFlatcarPackages {
+		conf.syncerPkgsURL = conf.nebraskaURL + "/flatcar/"
+	}
+
 	if conf.enableSyncer {
 		syncerConf := &syncer.Config{
 			API:               conf.api,
 			HostPackages:      conf.hostFlatcarPackages,
 			PackagesPath:      conf.flatcarPackagesPath,
-			PackagesURL:       conf.nebraskaURL + "/flatcar/",
+			PackagesURL:       conf.syncerPkgsURL,
 			FlatcarUpdatesURL: conf.flatcarUpdatesURL,
 			CheckFrequency:    conf.checkFrequency,
 		}
