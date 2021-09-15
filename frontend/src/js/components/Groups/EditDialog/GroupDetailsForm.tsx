@@ -1,5 +1,6 @@
-import { FormControl, Grid, InputLabel, MenuItem, Select, TextField } from '@material-ui/core';
+import { FormControl, Grid, InputLabel, MenuItem, Select } from '@material-ui/core';
 import { Field } from 'formik';
+import { TextField } from 'formik-material-ui';
 import { useTranslation } from 'react-i18next';
 import { Channel } from '../../../api/apiDataTypes';
 import { ARCHES } from '../../../utils/helpers';
@@ -7,10 +8,9 @@ import { ARCHES } from '../../../utils/helpers';
 export default function GroupDetailsForm(props: {
   channels: Channel[];
   values: { [key: string]: string };
-  setFieldValue: (formField: string, value: any) => any;
 }) {
   const { t } = useTranslation();
-  const { channels, values, setFieldValue } = props;
+  const { channels, values } = props;
 
   return (
     <div style={{ padding: '1rem' }}>
@@ -24,23 +24,12 @@ export default function GroupDetailsForm(props: {
             required
             fullWidth
             defaultValue={values.name}
-            onChange={(e: any) => {
-              setFieldValue('name', e.target.value);
-            }}
           />
         </Grid>
         <Grid item xs={4}>
           <FormControl margin="dense" fullWidth>
             <InputLabel shrink>{t('groups|Channel')}</InputLabel>
-            <Field
-              name="channel"
-              component={Select}
-              displayEmpty
-              defaultValue={values.channel}
-              onChange={(e: any) => {
-                setFieldValue('channel', e.target.value);
-              }}
-            >
+            <Field name="channel" component={Select} displayEmpty defaultValue={values.channel}>
               <MenuItem value="" key="">
                 {t('groups|None yet')}
               </MenuItem>
@@ -60,9 +49,6 @@ export default function GroupDetailsForm(props: {
             label={t('groups|Description')}
             fullWidth
             defaultValue={values.description}
-            onChange={(e: any) => {
-              setFieldValue('description', e.target.value);
-            }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -72,9 +58,6 @@ export default function GroupDetailsForm(props: {
             margin="dense"
             label={t('groups|Track (identifier for clients, filled with the group ID if omitted)')}
             fullWidth
-            onChange={(e: any) => {
-              setFieldValue('track', e.target.value);
-            }}
             defaultValue={values.track}
           />
         </Grid>

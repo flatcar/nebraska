@@ -129,9 +129,7 @@ function EditDialog(props: {
           <TabPanel
             index={0}
             value={groupEditActiveTab}
-            render={() => (
-              <GroupDetailsForm channels={channels} values={values} setFieldValue={setFieldValue} />
-            )}
+            render={() => <GroupDetailsForm channels={channels} values={values} />}
           />
           <TabPanel
             index={1}
@@ -163,7 +161,10 @@ function EditDialog(props: {
   }
 
   function maxCharacters(maxChars: number, required = false) {
-    let validation = Yup.string().max(maxChars, t('groups|Must be less than $maxChars characters'));
+    let validation = Yup.string().max(
+      maxChars,
+      t(`groups|Must be less than ${maxChars} characters`)
+    );
 
     if (required) validation = validation.required('Required');
 
@@ -171,7 +172,7 @@ function EditDialog(props: {
   }
 
   const validation = Yup.object().shape({
-    name: maxCharacters(50, true),
+    name: maxCharacters(50, true).required(),
     track: maxCharacters(256),
     description: maxCharacters(250),
     maxUpdates: positiveNum(),
