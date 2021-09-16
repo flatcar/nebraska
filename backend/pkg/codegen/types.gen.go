@@ -127,6 +127,8 @@ type CreatePackageInfo struct {
 	Filename          *string               `json:"filename,omitempty"`
 	FlatcarAction     *FlatcarActionPackage `json:"flatcar_action"`
 	Hash              *string               `json:"hash,omitempty"`
+	MetadataContent   *string               `json:"metadata_content,omitempty"`
+	MetadataType      *string               `json:"metadata_type,omitempty"`
 	Size              *string               `json:"size,omitempty"`
 	Type              int                   `json:"type"`
 	Url               *string               `json:"url,omitempty"`
