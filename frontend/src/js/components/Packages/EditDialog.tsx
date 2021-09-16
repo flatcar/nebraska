@@ -78,8 +78,8 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
       type: packageType,
       size: values.size?.toString(),
       hash: values.hash,
-      metadata_type: values.metadataType,
-      metadata_content: values.metadataContent,
+      metadata_type: values.metadata_type,
+      metadata_content: values.metadata_content,
       application_id:
         isCreation && props.data.appID ? props.data.appID : props.data.channel.application_id,
       channels_blacklist: values.channelsBlacklist ? values.channelsBlacklist : [],
@@ -167,7 +167,7 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
             margin="dense"
             label={t('packages|URL')}
             type="url"
-            required
+            required={isFlatcarType(packageType)}
             fullWidth
           />
           <Field
@@ -238,7 +238,7 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
           ) : (
             <>
               <Field
-                name="metadataType"
+                name="metadata_type"
                 component={TextField}
                 margin="dense"
                 label={t('packages|Metadata Content Type')}
@@ -247,7 +247,7 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
                 fullWidth
               />
               <Field
-                name="metadataContent"
+                name="metadata_content"
                 component={TextField}
                 margin="dense"
                 label={t('packages|Metadata Content')}
@@ -351,6 +351,8 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
       channelsBlacklist: props.data.channel.channels_blacklist
         ? props.data.channel.channels_blacklist
         : [],
+      metadata_type: props.data.channel.metadata_type,
+      metadata_content: props.data.channel.metadata_content,
     };
 
     if (isFlatcarType(packageType)) {
