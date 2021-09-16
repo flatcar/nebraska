@@ -244,7 +244,7 @@ func (h *Handler) prepareUpdateCheck(appResp *omahaSpec.AppResponse, pkg *api.Pa
 
 	updateCheck := appResp.AddUpdateCheck(omahaSpec.UpdateOK)
 	updateCheck.Manifest = manifest
-	updateCheck.AddURL(pkg.URL)
+	updateCheck.AddURL(pkg.URL.String)
 }
 
 func trace(v interface{}) {

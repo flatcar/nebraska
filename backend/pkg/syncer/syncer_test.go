@@ -114,7 +114,7 @@ func TestSyncer_Init(t *testing.T) {
 
 	tApp, err := a.GetApp(flatcarAppID)
 	require.NoError(t, err)
-	tPkg, err := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64})
+	tPkg, err := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: null.StringFrom("http://sample.url/pkg"), Version: "12.1.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64})
 	require.NoError(t, err)
 	groupID, err := a.GetGroupID(flatcarAppID, "stable", tPkg.Arch)
 	require.NoError(t, err)
@@ -166,7 +166,7 @@ func setupFlatcarAppStableGroup(t *testing.T, a *api.API) *api.Group {
 	t.Helper()
 	tApp, err := a.GetApp(flatcarAppID)
 	require.NoError(t, err)
-	tPkg, err := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "0.1.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64})
+	tPkg, err := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: null.StringFrom("http://sample.url/pkg"), Version: "0.1.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64})
 	require.NoError(t, err)
 	groupID, err := a.GetGroupID(flatcarAppID, "stable", tPkg.Arch)
 	require.NoError(t, err)
@@ -208,7 +208,7 @@ func TestSyncer_GetPackage(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, update.Manifest.Version, tGroup.Channel.Package.Version)
-	assert.Equal(t, update.URLs[0].CodeBase, tGroup.Channel.Package.URL)
+	assert.Equal(t, update.URLs[0].CodeBase, tGroup.Channel.Package.URL.String)
 	assert.Equal(t, update.Manifest.Packages[0].Name, tGroup.Channel.Package.Filename.String)
 }
 
@@ -242,7 +242,7 @@ func TestSyncer_GetPackageWithDiffURL(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, update.Manifest.Version, tGroup.Channel.Package.Version)
-	assert.Equal(t, conf.PackagesURL, tGroup.Channel.Package.URL)
+	assert.Equal(t, conf.PackagesURL, tGroup.Channel.Package.URL.String)
 	assert.Equal(t, update.Manifest.Packages[0].Name, tGroup.Channel.Package.Filename.String)
 }
 

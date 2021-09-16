@@ -330,7 +330,7 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
   });
 
   if (isFlatcarType(packageType)) {
-    ['filename', 'size', 'hash'].forEach(schema => {
+    ['filename', 'size', 'hash', 'url'].forEach(schema => {
       validation.fields[schema] = validation.fields[schema].required(t('frequent|Required'));
     });
   }

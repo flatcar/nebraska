@@ -129,7 +129,7 @@ type CreatePackageInfo struct {
 	Hash              *string               `json:"hash,omitempty"`
 	Size              *string               `json:"size,omitempty"`
 	Type              int                   `json:"type"`
-	Url               string                `json:"url"`
+	Url               *string               `json:"url,omitempty"`
 	Version           string                `json:"version"`
 }
 
