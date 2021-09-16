@@ -49,7 +49,7 @@ func (h *Handler) CreatePackage(ctx echo.Context, appID string) error {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	if request.Type == 1 && (request.Filename == nil || request.Hash == nil || request.Size == nil) {
+	if request.Type == 1 && (request.Filename == nil || request.Hash == nil || request.Size == nil || request.Url == nil) {
 		// For the Flatcar type of package these fields are required.
 
 		err := errors.New("required field missing")
@@ -100,7 +100,7 @@ func (h *Handler) UpdatePackage(ctx echo.Context, appID string, packageID string
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	if request.Type == 1 && (request.Filename == nil || request.Hash == nil || request.Size == nil) {
+	if request.Type == 1 && (request.Filename == nil || request.Hash == nil || request.Size == nil || request.Url == nil) {
 		// For the Flatcar type of package these fields are required.
 		err := errors.New("required field missing")
 		logger.Error().Err(err).Msg("updatePackage - required field missing")
@@ -155,7 +155,7 @@ func (h *Handler) DeletePackage(ctx echo.Context, appID string, packageID string
 	return ctx.NoContent(http.StatusOK)
 }
 
-func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, description string, filename *string, hash *string, size *string, url string, version string, packageType int, flAction *codegen.FlatcarActionPackage, ID string) *api.Package {
+func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, description string, filename *string, hash *string, size *string, url *string, version string, packageType int, flAction *codegen.FlatcarActionPackage, ID string) *api.Package {
 	var flatcarAction *api.FlatcarAction
 
 	if flAction != nil {
@@ -188,7 +188,7 @@ func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, desc
 		Hash:          null.StringFromPtr(hash),
 		Size:          null.StringFromPtr(size),
 		Type:          packageType,
-		URL:           url,
+		URL:           null.StringFromPtr(url),
 		Version:       version,
 		FlatcarAction: flatcarAction,
 	}

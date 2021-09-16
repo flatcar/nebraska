@@ -37,7 +37,7 @@ type Package struct {
 	ID                string         `db:"id" json:"id"`
 	Type              int            `db:"type" json:"type"`
 	Version           string         `db:"version" json:"version"`
-	URL               string         `db:"url" json:"url"`
+	URL               null.String    `db:"url" json:"url"`
 	Filename          null.String    `db:"filename" json:"filename"`
 	Description       null.String    `db:"description" json:"description"`
 	Size              null.String    `db:"size" json:"size"`
