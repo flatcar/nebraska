@@ -277,6 +277,6 @@ func TestSyncer_GetPackageWithGeneratedURL(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, update.Manifest.Version, tGroup.Channel.Package.Version)
-	assert.Equal(t, baseURL+getArchString(tChannel.Arch)+"/"+tGroup.Channel.Package.Version, tGroup.Channel.Package.URL)
+	assert.Equal(t, baseURL+getArchString(tChannel.Arch)+"/"+tGroup.Channel.Package.Version, tGroup.Channel.Package.URL.String)
 	assert.Equal(t, update.Manifest.Packages[0].Name, tGroup.Channel.Package.Filename.String)
 }
