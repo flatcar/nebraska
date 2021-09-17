@@ -2,7 +2,6 @@ package handler
 
 import (
 	"database/sql"
-	"errors"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -49,14 +48,6 @@ func (h *Handler) CreatePackage(ctx echo.Context, appID string) error {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	if request.Type == 1 && (request.Filename == nil || request.Hash == nil || request.Size == nil || request.Url == nil) {
-		// For the Flatcar type of package these fields are required.
-
-		err := errors.New("required field missing")
-		logger.Error().Err(err).Msg("addPackage - required field missing")
-		return ctx.NoContent(http.StatusBadRequest)
-	}
-
 	pkg := packageFromRequest(appID, request.Arch, request.ChannelsBlacklist, request.Description, request.Filename, request.Hash, request.Size, request.Url, request.Version, request.Type, request.FlatcarAction, "", request.MetadataType, request.MetadataContent)
 
 	pkg, err = h.db.AddPackage(pkg)
@@ -97,13 +88,6 @@ func (h *Handler) UpdatePackage(ctx echo.Context, appID string, packageID string
 	err := ctx.Bind(&request)
 	if err != nil {
 		logger.Error().Err(err).Msg("updatePackage - decoding payload")
-		return ctx.NoContent(http.StatusBadRequest)
-	}
-
-	if request.Type == 1 && (request.Filename == nil || request.Hash == nil || request.Size == nil || request.Url == nil) {
-		// For the Flatcar type of package these fields are required.
-		err := errors.New("required field missing")
-		logger.Error().Err(err).Msg("updatePackage - required field missing")
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 

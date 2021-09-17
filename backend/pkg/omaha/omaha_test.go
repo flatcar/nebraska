@@ -63,7 +63,7 @@ func TestInvalidRequests(t *testing.T) {
 
 	tTeam, _ := a.AddTeam(&api.Team{Name: "test_team"})
 	tApp, _ := a.AddApp(&api.Application{Name: "test_app", Description: "Test app", TeamID: tTeam.ID})
-	tPkg, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: null.StringFrom("http://sample.url/pkg"), Version: "640.0.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64})
+	tPkg, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: null.StringFrom("http://sample.url/pkg"), Version: "640.0.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64, Filename: null.StringFrom("fname.txt"), Hash: null.StringFrom("2222222"), Size: null.StringFrom("22")})
 	tChannel, _ := a.AddChannel(&api.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID), Arch: api.ArchAMD64})
 	tGroup, _ := a.AddGroup(&api.Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
@@ -93,7 +93,7 @@ func TestAppNoUpdateForAppWithChannelAndPackageName(t *testing.T) {
 	h := NewHandler(a)
 
 	tAppFlatcar, _ := a.GetApp(flatcarAppID)
-	tPkgFlatcar640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: null.StringFrom("http://sample.url/pkg"), Version: "640.0.0", ApplicationID: tAppFlatcar.ID, Arch: api.ArchAMD64})
+	tPkgFlatcar640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: null.StringFrom("http://sample.url/pkg"), Version: "640.0.0", ApplicationID: tAppFlatcar.ID, Arch: api.ArchAMD64, Filename: null.StringFrom("fname.txt"), Hash: null.StringFrom("2222222"), Size: null.StringFrom("22")})
 	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppFlatcar.ID, PackageID: null.StringFrom(tPkgFlatcar640.ID), Arch: api.ArchAMD64})
 	tGroup, _ := a.AddGroup(&api.Group{Name: "Production", ApplicationID: tAppFlatcar.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
@@ -145,7 +145,7 @@ func TestAppRegistrationForAppWithChannelAndPackageName(t *testing.T) {
 	h := NewHandler(a)
 
 	tAppFlatcar, _ := a.GetApp(flatcarAppID)
-	tPkgFlatcar640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: null.StringFrom("http://sample.url/pkg"), Version: "640.0.0", ApplicationID: tAppFlatcar.ID, Arch: api.ArchAMD64})
+	tPkgFlatcar640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: null.StringFrom("http://sample.url/pkg"), Version: "640.0.0", ApplicationID: tAppFlatcar.ID, Arch: api.ArchAMD64, Filename: null.StringFrom("fname.txt"), Hash: null.StringFrom("2222222"), Size: null.StringFrom("22")})
 	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppFlatcar.ID, PackageID: null.StringFrom(tPkgFlatcar640.ID), Arch: api.ArchAMD64})
 	tGroup, _ := a.AddGroup(&api.Group{Name: "Production", ApplicationID: tAppFlatcar.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
@@ -174,7 +174,7 @@ func TestAppUpdateForAppWithChannelAndPackageName(t *testing.T) {
 
 	tAppFlatcar, _ := a.GetApp(flatcarAppID)
 	tFilenameFlatcar := "flatcarupdate.tgz"
-	tPkgFlatcar640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: null.StringFrom("http://sample.url/pkg"), Filename: null.StringFrom(tFilenameFlatcar), Version: "99640.0.0", ApplicationID: tAppFlatcar.ID, Arch: api.ArchAMD64})
+	tPkgFlatcar640, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: null.StringFrom("http://sample.url/pkg"), Filename: null.StringFrom(tFilenameFlatcar), Version: "99640.0.0", ApplicationID: tAppFlatcar.ID, Arch: api.ArchAMD64, Hash: null.StringFrom("2222222"), Size: null.StringFrom("22")})
 	tChannel, _ := a.AddChannel(&api.Channel{Name: "mychannel", Color: "white", ApplicationID: tAppFlatcar.ID, PackageID: null.StringFrom(tPkgFlatcar640.ID), Arch: api.ArchAMD64})
 	tGroup, _ := a.AddGroup(&api.Group{Name: "Production", ApplicationID: tAppFlatcar.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	flatcarAction, _ := a.AddFlatcarAction(&api.FlatcarAction{Event: "postinstall", Sha256: "fsdkjjfghsdakjfgaksdjfasd", PackageID: tPkgFlatcar640.ID})
@@ -248,7 +248,7 @@ func TestProductIDBasedRequest(t *testing.T) {
 
 	tTeam, _ := a.AddTeam(&api.Team{Name: "test_team"})
 	tApp, _ := a.AddApp(&api.Application{Name: "test_app", Description: "Test app", TeamID: tTeam.ID, ProductID: null.StringFrom("io.kinvolk.MyApp")})
-	tPkg, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: null.StringFrom("http://sample.url/pkg"), Version: "640.0.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64})
+	tPkg, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: null.StringFrom("http://sample.url/pkg"), Version: "640.0.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64, Filename: null.StringFrom("fname.txt"), Hash: null.StringFrom("2222222"), Size: null.StringFrom("22")})
 	tChannel, _ := a.AddChannel(&api.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID), Arch: api.ArchAMD64})
 	tGroup, _ := a.AddGroup(&api.Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 4, PolicyUpdateTimeout: "60 minutes"})
 
