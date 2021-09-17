@@ -2,7 +2,6 @@ package api
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"time"
 
@@ -24,12 +23,6 @@ const (
 
 	// PkgTypeOther is the generic package type.
 	PkgTypeOther
-)
-
-var (
-	// ErrBlacklistingChannel error indicates that the channel the package is
-	// trying to blacklist is already pointing to the package.
-	ErrBlacklistingChannel = errors.New("nebraska: channel trying to blacklist is already pointing to the package")
 )
 
 // Package represents a Nebraska application's package.
@@ -78,15 +71,39 @@ func (api *API) checkMatchingArch(channelIDs StringArray, arch Arch) error {
 	return nil
 }
 
-// AddPackage registers the provided package.
-func (api *API) AddPackage(pkg *Package) (*Package, error) {
+func (api *API) checkPackage(pkg *Package) error {
 	if !isValidSemver(pkg.Version) {
-		return nil, ErrInvalidSemver
+		return ErrInvalidSemver
 	}
+
 	if !pkg.Arch.IsValid() {
-		return nil, ErrInvalidArch
+		return ErrInvalidArch
 	}
 	err := api.checkMatchingArch(pkg.ChannelsBlacklist, pkg.Arch)
+	if err != nil {
+		return err
+	}
+
+	if pkg.Type == PkgTypeFlatcar {
+		if !pkg.Filename.Valid {
+			return ErrPackageFilenameRequired
+		}
+		if !pkg.Hash.Valid {
+			return ErrPackageHashRequired
+		}
+		if !pkg.Size.Valid {
+			return ErrPackageSizeRequired
+		}
+		if !pkg.URL.Valid {
+			return ErrPackageURLRequired
+		}
+	}
+	return nil
+}
+
+// AddPackage registers the provided package.
+func (api *API) AddPackage(pkg *Package) (*Package, error) {
+	err := api.checkPackage(pkg)
 	if err != nil {
 		return nil, err
 	}
@@ -172,9 +189,11 @@ func (api *API) AddPackage(pkg *Package) (*Package, error) {
 // UpdatePackage updates an existing package using the content of the package
 // provided.
 func (api *API) UpdatePackage(pkg *Package) error {
-	if !isValidSemver(pkg.Version) {
-		return ErrInvalidSemver
+	err := api.checkPackage(pkg)
+	if err != nil {
+		return err
 	}
+
 	tx, err := api.db.Beginx()
 	if err != nil {
 		return err
