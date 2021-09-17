@@ -53,6 +53,15 @@ var (
 	// ErrArchMismatch indicates that arches of two objects didn't
 	// match (for example, for a package and channel)
 	ErrArchMismatch = errors.New("nebraska: mismatched arches")
+
+	ErrPackageFilenameRequired = errors.New("nebraska: Filename required for PkgTypeFlatcar packages")
+	ErrPackageHashRequired     = errors.New("nebraska: Hash required for PkgTypeFlatcar packages")
+	ErrPackageSizeRequired     = errors.New("nebraska: Size required for PkgTypeFlatcar packages")
+	ErrPackageURLRequired      = errors.New("nebraska: URL required for PkgTypeFlatcar packages")
+
+	// ErrBlacklistingChannel error indicates that the channel the package is
+	// trying to blacklist is already pointing to the package.
+	ErrBlacklistingChannel = errors.New("nebraska: channel trying to blacklist is already pointing to the package")
 )
 
 // API represents an api instance used to interact with Nebraska entities.

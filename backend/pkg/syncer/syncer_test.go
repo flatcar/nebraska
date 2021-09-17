@@ -114,7 +114,7 @@ func TestSyncer_Init(t *testing.T) {
 
 	tApp, err := a.GetApp(flatcarAppID)
 	require.NoError(t, err)
-	tPkg, err := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: null.StringFrom("http://sample.url/pkg"), Version: "12.1.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64})
+	tPkg, err := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: null.StringFrom("http://sample.url/pkg"), Version: "12.1.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64, Filename: null.StringFrom("example.txt"), Hash: null.StringFrom("22"), Size: null.StringFrom("22")})
 	require.NoError(t, err)
 	groupID, err := a.GetGroupID(flatcarAppID, "stable", tPkg.Arch)
 	require.NoError(t, err)
@@ -166,7 +166,7 @@ func setupFlatcarAppStableGroup(t *testing.T, a *api.API) *api.Group {
 	t.Helper()
 	tApp, err := a.GetApp(flatcarAppID)
 	require.NoError(t, err)
-	tPkg, err := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: null.StringFrom("http://sample.url/pkg"), Version: "0.1.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64})
+	tPkg, err := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: null.StringFrom("http://sample.url/pkg"), Version: "0.1.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64, Filename: null.StringFrom("example.txt"), Hash: null.StringFrom("22"), Size: null.StringFrom("22")})
 	require.NoError(t, err)
 	groupID, err := a.GetGroupID(flatcarAppID, "stable", tPkg.Arch)
 	require.NoError(t, err)
