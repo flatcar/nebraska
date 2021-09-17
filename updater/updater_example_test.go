@@ -1,10 +1,11 @@
-package updater
+package updater_test
 
 import (
 	"context"
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/kinvolk/nebraska/updater"
 )
 
 func someFunctionThatDownloadsAFile(ctx context.Context, url string) (string, error) {
@@ -20,7 +21,7 @@ func someFunctionThatExtractsTheUpdateAndInstallIt(ctx context.Context, filePath
 // ExampleUpdater shows how to use the updater package to
 // update an application manually.
 func ExampleUpdater() error {
-	conf := Config{
+	conf := updater.Config{
 		OmahaURL:        "http://test.omahaserver.com/v1/update/",
 		AppID:           "application_id",
 		Channel:         "stable",
@@ -28,7 +29,7 @@ func ExampleUpdater() error {
 		InstanceVersion: "0.0.1",
 	}
 
-	appUpdater, err := New(conf)
+	appUpdater, err := updater.New(conf)
 	if err != nil {
 		return fmt.Errorf("init updater: %w", err)
 	}
@@ -45,7 +46,7 @@ func ExampleUpdater() error {
 	}
 
 	// So we got an update, let's report we'll start downloading it.
-	if err := appUpdater.ReportProgress(ctx, ProgressDownloadStarted); err != nil {
+	if err := appUpdater.ReportProgress(ctx, updater.ProgressDownloadStarted); err != nil {
 		if progressErr := appUpdater.ReportError(ctx, nil); progressErr != nil {
 			fmt.Println("Reporting progress error:", progressErr)
 		}
@@ -63,7 +64,7 @@ func ExampleUpdater() error {
 	}
 
 	// The download was successful, let's inform that to the Omaha server.
-	if err := appUpdater.ReportProgress(ctx, ProgressDownloadFinished); err != nil {
+	if err := appUpdater.ReportProgress(ctx, updater.ProgressDownloadFinished); err != nil {
 		if progressErr := appUpdater.ReportError(ctx, nil); progressErr != nil {
 			fmt.Println("Reporting progress error:", progressErr)
 		}
@@ -71,7 +72,7 @@ func ExampleUpdater() error {
 	}
 
 	// We got our update file, let's install it!
-	if err := appUpdater.ReportProgress(ctx, ProgressInstallationStarted); err != nil {
+	if err := appUpdater.ReportProgress(ctx, updater.ProgressInstallationStarted); err != nil {
 		if progressErr := appUpdater.ReportError(ctx, nil); progressErr != nil {
 			fmt.Println("reporting progress error:", progressErr)
 		}

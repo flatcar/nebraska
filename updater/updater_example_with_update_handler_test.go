@@ -1,15 +1,16 @@
-package updater
+package updater_test
 
 import (
 	"context"
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/kinvolk/nebraska/updater"
 )
 
 type exampleUpdateHandler struct{}
 
-func (e exampleUpdateHandler) FetchUpdate(ctx context.Context, info UpdateInfo) error {
+func (e exampleUpdateHandler) FetchUpdate(ctx context.Context, info updater.UpdateInfo) error {
 	// download, err := someFunctionThatDownloadsAFile(ctx, info.GetURL())
 	// if err != nil {
 	// 	return err
@@ -17,7 +18,7 @@ func (e exampleUpdateHandler) FetchUpdate(ctx context.Context, info UpdateInfo) 
 	return nil
 }
 
-func (e exampleUpdateHandler) ApplyUpdate(ctx context.Context, info UpdateInfo) error {
+func (e exampleUpdateHandler) ApplyUpdate(ctx context.Context, info updater.UpdateInfo) error {
 	// err := someFunctionThatExtractsTheUpdateAndInstallIt(ctx, getDownloadFile(ctx))
 	// if err != nil {
 	// 	// Oops something went wrong
@@ -35,7 +36,7 @@ func (e exampleUpdateHandler) ApplyUpdate(ctx context.Context, info UpdateInfo) 
 // ExampleUpdater_withUpdateHandler shows how to use the updater package to
 // update an application automatically using exampleUpdateHandler.
 func ExampleUpdater_withUpdateHandler() error {
-	conf := Config{
+	conf := updater.Config{
 		OmahaURL:        "http://test.omahaserver.com/v1/update/",
 		AppID:           "application_id",
 		Channel:         "stable",
@@ -43,7 +44,7 @@ func ExampleUpdater_withUpdateHandler() error {
 		InstanceVersion: "0.0.1",
 	}
 
-	appUpdater, err := New(conf)
+	appUpdater, err := updater.New(conf)
 	if err != nil {
 		return fmt.Errorf("init updater: %w", err)
 	}
