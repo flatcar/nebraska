@@ -38,7 +38,7 @@ func TestAddPackage(t *testing.T) {
 	assert.Error(t, err, "Package type is required.")
 
 	_, err = a.AddPackage(&Package{Type: PkgTypeOther, Version: "12.1.0", ApplicationID: tApp.ID})
-	assert.Error(t, err, "Package url is required.")
+	assert.NoError(t, err, "Package url is not required for PkgTypeOther.")
 
 	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: null.StringFrom("http://sample.url/pkg"), ApplicationID: tApp.ID})
 	assert.Error(t, err, "Package version is required.")
@@ -92,6 +92,25 @@ func TestAddPackageFlatcar(t *testing.T) {
 	assert.Equal(t, false, pkg.FlatcarAction.IsDelta)
 	assert.Equal(t, true, pkg.FlatcarAction.DisablePayloadBackoff)
 	assert.Equal(t, "sha256:blablablabla", pkg.FlatcarAction.Sha256)
+}
+
+func TestAddPackageFlatcarUrlRequired(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	pkg := &Package{
+		Type:          PkgTypeFlatcar,
+		Filename:      null.StringFrom("update.gz"),
+		Version:       "2016.6.6",
+		Size:          null.StringFrom("123456"),
+		Hash:          null.StringFrom("sha1:blablablabla"),
+		ApplicationID: flatcarAppID,
+		FlatcarAction: &FlatcarAction{
+			Sha256: "sha256:blablablabla",
+		},
+	}
+	_, err := a.AddPackage(pkg)
+	assert.Error(t, err, "Package url is required for PkgTypeFlatcar.")
 }
 
 func TestUpdatePackage(t *testing.T) {
