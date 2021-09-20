@@ -43,22 +43,22 @@ export default function GroupDetailsForm(props: {
         </Grid>
         <Grid item xs={12}>
           <Field
-            name="description"
-            component={TextField}
-            margin="dense"
-            label={t('groups|Description')}
-            fullWidth
-            defaultValue={values.description}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Field
             name="track"
             component={TextField}
             margin="dense"
             label={t('groups|Track (identifier for clients, filled with the group ID if omitted)')}
             fullWidth
             defaultValue={values.track}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Field
+            name="description"
+            component={TextField}
+            margin="dense"
+            label={t('groups|Description')}
+            fullWidth
+            defaultValue={values.description}
           />
         </Grid>
       </Grid>
