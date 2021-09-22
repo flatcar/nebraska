@@ -207,6 +207,9 @@ type ClientInterface interface {
 	// LoginCb request
 	LoginCb(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// LoginToken request with any body
+	LoginTokenWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ValidateToken request
 	ValidateToken(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -708,6 +711,18 @@ func (c *Client) Login(ctx context.Context, reqEditors ...RequestEditorFn) (*htt
 
 func (c *Client) LoginCb(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewLoginCbRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) LoginTokenWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewLoginTokenRequestWithBody(c.Server, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -2612,6 +2627,35 @@ func NewLoginCbRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
+// NewLoginTokenRequestWithBody generates requests for LoginToken with any type of body
+func NewLoginTokenRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/login/token")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewValidateTokenRequest generates requests for ValidateToken
 func NewValidateTokenRequest(server string) (*http.Request, error) {
 	var err error
@@ -2827,6 +2871,9 @@ type ClientWithResponsesInterface interface {
 
 	// LoginCb request
 	LoginCbWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*LoginCbResponse, error)
+
+	// LoginToken request with any body
+	LoginTokenWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*LoginTokenResponse, error)
 
 	// ValidateToken request
 	ValidateTokenWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ValidateTokenResponse, error)
@@ -3555,6 +3602,27 @@ func (r LoginCbResponse) StatusCode() int {
 	return 0
 }
 
+type LoginTokenResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r LoginTokenResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r LoginTokenResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type ValidateTokenResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -3964,6 +4032,15 @@ func (c *ClientWithResponses) LoginCbWithResponse(ctx context.Context, reqEditor
 		return nil, err
 	}
 	return ParseLoginCbResponse(rsp)
+}
+
+// LoginTokenWithBodyWithResponse request with arbitrary body returning *LoginTokenResponse
+func (c *ClientWithResponses) LoginTokenWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*LoginTokenResponse, error) {
+	rsp, err := c.LoginTokenWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseLoginTokenResponse(rsp)
 }
 
 // ValidateTokenWithResponse request returning *ValidateTokenResponse
@@ -4775,6 +4852,22 @@ func ParseLoginCbResponse(rsp *http.Response) (*LoginCbResponse, error) {
 	}
 
 	response := &LoginCbResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseLoginTokenResponse parses an HTTP response from a LoginTokenWithResponse call
+func ParseLoginTokenResponse(rsp *http.Response) (*LoginTokenResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &LoginTokenResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
