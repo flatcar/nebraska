@@ -98,7 +98,7 @@ backend-binary: run-generators build-backend-binary
 .PHONY: test-clean-work-tree-backend
 test-clean-work-tree-backend:
 	@cd backend && \
-	if ! git diff --quiet -- go.mod go.sum pkg cmd updaters tools/tools.go; then \
+	if ! git diff --quiet -- go.mod go.sum pkg cmd tools/tools.go; then \
 	  echo; \
 	  echo 'Working tree of backend code is not clean'; \
 	  echo; \
