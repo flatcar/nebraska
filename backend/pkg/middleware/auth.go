@@ -10,7 +10,7 @@ import (
 func NewAuthSkipper(auth string) middleware.Skipper {
 	return func(c echo.Context) bool {
 		if auth == "oidc" {
-			paths := []string{"/login", "/config", "/*", "/login/cb", "/v1/update/"}
+			paths := []string{"/login", "/config", "/*", "/login/cb", "/login/token", "/v1/update/"}
 			for _, path := range paths {
 				if c.Path() == path {
 					return true
