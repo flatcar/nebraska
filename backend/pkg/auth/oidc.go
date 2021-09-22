@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -58,6 +59,7 @@ type oidcAuth struct {
 	oauthConfig       *oauth2.Config
 	defaultTeamID     string
 	clientID          string    // OIDC Client ID
+	clientSecret      string    // OIDC Client Secret
 	issuerURL         string    // OIDC Issuer URL
 	callbackURL       string    // OIDC Callback URL, should be configured in OIDC provider. Default value is: http://localhost:8000/login/cb
 	validRedirectURLs []string  // List of valid redirect URLs that the browser can redirect to after successful login
@@ -108,6 +110,7 @@ func NewOIDCAuthenticator(config *OIDCAuthConfig) Authenticator {
 		oauthConfig:       oauthConfig,
 		defaultTeamID:     config.DefaultTeamID,
 		clientID:          config.ClientID,
+		clientSecret:      config.ClientSecret,
 		issuerURL:         config.IssuerURL,
 		callbackURL:       config.CallbackURL,
 		validRedirectURLs: config.ValidRedirectURLs,
@@ -237,7 +240,73 @@ func (oa *oidcAuth) LoginCb(c echo.Context) error {
 	return nil
 }
 
+// Response struct used to bind response from OIDC provider
+type OIDCTokenProviderResp struct {
+	AccessToken      string `json:"access_token"`
+	ExpiresIn        int    `json:"expires_in"`
+	RefreshExpiresIn int    `json:"refresh_expires_in"`
+	RefreshToken     string `json:"refresh_token"`
+	TokenType        string `json:"token_type"`
+	IDToken          string `json:"id_token"`
+	NotBeforePolicy  int    `json:"not-before-policy"`
+	SessionState     string `json:"session_state"`
+	Scope            string `json:"scope"`
+}
+
 func (oa *oidcAuth) Login(c echo.Context) error {
+	// get request id from response header
+	requestID := c.Response().Writer.Header().Get("X-Request-ID")
+
+	loginType, ok := c.Get("type").(string)
+	if !ok {
+		httpError(c, http.StatusBadRequest)
+		return nil
+	}
+
+	if loginType == "Token" {
+		resp, err := http.PostForm(oa.provider.Endpoint().TokenURL, url.Values{
+			"client_id":     {oa.clientID},
+			"client_secret": {oa.clientSecret},
+			"grant_type":    {"password"},
+			"scope":         {strings.Join(oa.scopes, " ")},
+			"username":      {c.Request().FormValue("username")},
+			"password":      {c.Request().FormValue("password")},
+		})
+
+		if err != nil && resp.StatusCode == 200 {
+			var oidcTokenResp OIDCTokenProviderResp
+
+			respBytes, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				httpError(c, http.StatusInternalServerError)
+				return nil
+			}
+
+			err = json.Unmarshal(respBytes, &oidcTokenResp)
+			if err != nil {
+				httpError(c, http.StatusInternalServerError)
+				return nil
+			}
+			oidcToken, err := oa.verifier.Verify(c.Request().Context(), oidcTokenResp.IDToken)
+			if err != nil {
+				logger.Error().Str("request_id", requestID).AnErr("error", err).Msg("Can't verify the token")
+				httpError(c, http.StatusInternalServerError)
+				return nil
+			}
+
+			// Store refresh_token in session
+			session := echosessions.GetSession(c)
+			session.Set("refresh_token", oidcTokenResp.RefreshToken)
+			session.Set("username", oidcToken.Subject)
+			sessionSave(c, session, "login_cb")
+			//nolint:errcheck
+			c.JSON(http.StatusOK, map[string]string{
+				"token": oidcTokenResp.AccessToken,
+			})
+			return nil
+		}
+	}
+
 	// check if login_redirect_url is present in query params
 	loginRedirectURL := c.Request().URL.Query().Get("login_redirect_url")
 	isValidRedirect := false

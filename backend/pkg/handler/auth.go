@@ -5,6 +5,12 @@ import (
 )
 
 func (h *Handler) Login(ctx echo.Context) error {
+	ctx.Set("type", "Browser")
+	return h.auth.Login(ctx)
+}
+
+func (h *Handler) LoginToken(ctx echo.Context) error {
+	ctx.Set("type", "Token")
 	return h.auth.Login(ctx)
 }
 

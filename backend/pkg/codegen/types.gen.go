@@ -252,6 +252,12 @@ type InstanceStatusHistory struct {
 	Verison       string    `json:"verison"`
 }
 
+// LoginInfo defines model for loginInfo.
+type LoginInfo struct {
+	Password *string `json:"password,omitempty"`
+	Username *string `json:"username,omitempty"`
+}
+
 // OmahaRequest defines model for omahaRequest.
 type OmahaRequest map[string]interface{}
 
