@@ -211,7 +211,7 @@ issuer: http://0.0.0.0:5556/dex
 storage:
   type: sqlite3
   config:
-    file: dex.db
+    file: /var/dex/dex.db
 
 web:
   http: 0.0.0.0:5556
