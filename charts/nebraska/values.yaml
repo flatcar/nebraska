@@ -5,8 +5,8 @@
 replicaCount: 1
 
 image:
-  registry: quay.io
-  repository: flatcar/nebraska
+  registry: ghcr.io
+  repository: kinvolk/nebraska
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
   pullPolicy: IfNotPresent

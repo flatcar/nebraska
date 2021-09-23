@@ -22,8 +22,8 @@ $ helm install my-nebraska nebraska/nebraska
 | Parameter                               | Description                                                                                                                              | Default                               |
 |-----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------|
 | `replicaCount`                          | Number of desired pods                                                                                                                   | `1`                                   |
-| `image.registry`                        | Container image registry                                                                                                                 | `quay.io`                             |
-| `image.repository`                      | Container image name                                                                                                                     | `flatcar/nebraska`                    |
+| `image.registry`                        | Container image registry                                                                                                                 | `ghcr.io`                             |
+| `image.repository`                      | Container image name                                                                                                                     | `kinvolk/nebraska`                    |
 | `image.tag`                             | Container image tag                                                                                                                      | `""` (use appVersion in `Chart.yaml`) |
 | `image.pullPolicy`                      | Image pull policy. One of `Always`, `Never`, `IfNotPresent`                                                                              | `IfNotPresent`                        |
 | `image.pullSecrets`                     | An optional list of references to secrets in the same namespace to use for pulling any of the images used                                | `[]`                                  |
@@ -77,7 +77,7 @@ $ helm install my-nebraska nebraska/nebraska
 | `config.auth.github.webhookSecret`                    | GitHub webhook secret used for validing webhook messages                                                                             | `nil`                                                                   |
 | `config.auth.github.readWriteTeams`                   | comma-separated list of read-write GitHub teams in the org/team format                                                               | `nil`                                                                   |
 | `config.auth.github.readOnlyTeams`                    | comma-separated list of read-only GitHub teams in the org/team format                                                                | `nil`                                                                   |
-| `config.auth.github.enterpriseURL`                    | Base URL of the enterprise instance if using GHE                                                                                     | `nil`    |                          
+| `config.auth.github.enterpriseURL`                    | Base URL of the enterprise instance if using GHE                                                                                     | `nil`    |
 | `config.auth.oidc.clientID`                           | OIDC client ID used for authentication  | `nil`  |
 | `config.auth.oidc.clientSecret`                       | OIDC client Secret used for authentication | `nil`  |
 | `config.auth.oidc.issuerURL`                          | OIDC issuer URL used for authentication | `nil`  |
