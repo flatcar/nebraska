@@ -19,8 +19,8 @@ sources:
 maintainers:
   - name: kinvolk
     url: https://kinvolk.io/
-version: 0.1.6
-appVersion: "2.4.1"
+version: 0.1.7
+appVersion: "2.5.0"
 
 dependencies:
   - name: postgresql
