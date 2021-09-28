@@ -224,7 +224,7 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
             helperText={t('packages|Tip: cat update.gz | openssl dgst -sha1 -binary | base64')}
             fullWidth
           />
-          {isFlatcarType(packageType) ? (
+          {isFlatcarType(packageType) && (
             <Field
               name="flatcarHash"
               component={TextField}
@@ -235,32 +235,28 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
               helperText={t('packages|Tip: cat update.gz | openssl dgst -sha256 -binary | base64')}
               fullWidth
             />
-          ) : (
-            <>
-              <Field
-                name="metadata_type"
-                component={TextField}
-                margin="dense"
-                label={t('packages|Metadata Content Type')}
-                type="text"
-                helperText={t('packages|E.g. text/json')}
-                fullWidth
-              />
-              <Field
-                name="metadata_content"
-                component={TextField}
-                margin="dense"
-                label={t('packages|Metadata Content')}
-                type="texta"
-                multiline
-                rows={4}
-                fullWidth
-                variant="outlined"
-                inputProps={{ className: classes.textarea }}
-              />
-            </>
           )}
-
+          <Field
+            name="metadata_type"
+            component={TextField}
+            margin="dense"
+            label={t('packages|Metadata Content Type')}
+            type="text"
+            helperText={t('packages|E.g. text/json')}
+            fullWidth
+          />
+          <Field
+            name="metadata_content"
+            component={TextField}
+            margin="dense"
+            label={t('packages|Metadata Content')}
+            type="texta"
+            multiline
+            rows={4}
+            fullWidth
+            variant="outlined"
+            inputProps={{ className: classes.textarea }}
+          />
           <FormControl margin="dense" fullWidth>
             <InputLabel>Channels Blacklist</InputLabel>
             <Field
