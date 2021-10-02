@@ -32,6 +32,13 @@ type ActivityPage struct {
 	TotalCount int        `json:"totalCount"`
 }
 
+// AppConfig defines model for appConfig.
+type AppConfig struct {
+	Description *string `json:"description,omitempty"`
+	Name        string  `json:"name"`
+	ProductId   *string `json:"product_id,omitempty"`
+}
+
 // Application defines model for application.
 type Application struct {
 	Channels    []Channel `json:"channels"`
@@ -40,10 +47,11 @@ type Application struct {
 	Groups      []Group   `json:"groups"`
 	Id          string    `json:"id"`
 	Instances   struct {
-		Count *string `json:"count,omitempty"`
+		Count *int `json:"count,omitempty"`
 	} `json:"instances"`
-	Name   string  `json:"name"`
-	TeamId *string `json:"-"`
+	Name      string  `json:"name"`
+	ProductId string  `json:"product_id"`
+	TeamId    *string `json:"-"`
 }
 
 // AppsPage defines model for appsPage.
@@ -68,6 +76,15 @@ type Channel struct {
 	PackageID     string    `json:"package_id"`
 }
 
+// ChannelConfig defines model for channelConfig.
+type ChannelConfig struct {
+	ApplicationId string  `json:"application_id"`
+	Arch          uint    `json:"arch"`
+	Color         string  `json:"color"`
+	Name          string  `json:"name"`
+	PackageId     *string `json:"package_id,omitempty"`
+}
+
 // ChannelPage defines model for channelPage.
 type ChannelPage struct {
 	Channels   []Channel `json:"channels"`
@@ -77,62 +94,14 @@ type ChannelPage struct {
 
 // Config defines model for config.
 type Config struct {
-	AccessManagementUrl string `json:"accessManagementUrl"`
-	AuthMode            string `json:"authMode"`
-	HeaderStyle         string `json:"headerStyle"`
-	LoginUrl            string `json:"loginUrl"`
+	AccessManagementUrl string `json:"access_management_url"`
+	AuthMode            string `json:"auth_mode"`
+	HeaderStyle         string `json:"header_style"`
+	LoginUrl            string `json:"login_url"`
 	Logo                string `json:"logo"`
-	LogoutUrl           string `json:"logoutUrl"`
-	NebraskaVersion     string `json:"nebraskaVersion"`
+	LogoutUrl           string `json:"logout_url"`
+	NebraskaVersion     string `json:"nebraska_version"`
 	Title               string `json:"title"`
-}
-
-// CreateAppInfo defines model for createAppInfo.
-type CreateAppInfo struct {
-	Description *string `json:"description,omitempty"`
-	Name        string  `json:"name"`
-	ProductId   *string `json:"product_id,omitempty"`
-}
-
-// CreateChannelInfo defines model for createChannelInfo.
-type CreateChannelInfo struct {
-	ApplicationId string  `json:"application_id"`
-	Arch          uint    `json:"arch"`
-	Color         string  `json:"color"`
-	Name          string  `json:"name"`
-	PackageId     *string `json:"package_id,omitempty"`
-}
-
-// CreateGroupInfo defines model for createGroupInfo.
-type CreateGroupInfo struct {
-	ChannelId                 *string `json:"channel_id,omitempty"`
-	Description               string  `json:"description"`
-	Name                      string  `json:"name"`
-	PolicyMaxUpdatesPerPeriod int     `json:"policy_max_updates_per_period"`
-	PolicyOfficeHours         bool    `json:"policy_office_hours"`
-	PolicyPeriodInterval      string  `json:"policy_period_interval"`
-	PolicySafeMode            bool    `json:"policy_safe_mode"`
-	PolicyTimezone            string  `json:"policy_timezone"`
-	PolicyUpdateTimeout       string  `json:"policy_update_timeout"`
-	PolicyUpdatesEnabled      bool    `json:"policy_updates_enabled"`
-	Track                     string  `json:"track"`
-}
-
-// CreatePackageInfo defines model for createPackageInfo.
-type CreatePackageInfo struct {
-	ApplicationId     string                `json:"application_id"`
-	Arch              int                   `json:"arch"`
-	ChannelsBlacklist []string              `json:"channels_blacklist"`
-	Description       string                `json:"description"`
-	Filename          *string               `json:"filename"`
-	FlatcarAction     *FlatcarActionPackage `json:"flatcar_action"`
-	Hash              *string               `json:"hash"`
-	MetadataContent   *string               `json:"metadata_content,omitempty"`
-	MetadataType      *string               `json:"metadata_type,omitempty"`
-	Size              *string               `json:"size"`
-	Type              int                   `json:"type"`
-	Url               *string               `json:"url"`
-	Version           string                `json:"version"`
 }
 
 // FlatcarAction defines model for flatcarAction.
@@ -166,7 +135,7 @@ type Group struct {
 	Description               string    `json:"description"`
 	Id                        string    `json:"id"`
 	Name                      string    `json:"name"`
-	PolicyMaxUpdatesPerPeriod string    `json:"policy_max_updates_per_period"`
+	PolicyMaxUpdatesPerPeriod int       `json:"policy_max_updates_per_period"`
 	PolicyOfficeHours         bool      `json:"policy_office_hours"`
 	PolicyPeriodInterval      string    `json:"policy_period_interval"`
 	PolicySafeMode            bool      `json:"policy_safe_mode"`
@@ -175,6 +144,21 @@ type Group struct {
 	PolicyUpdatesEnabled      bool      `json:"policy_updates_enabled"`
 	RolloutInProgress         bool      `json:"rollout_in_progress"`
 	Track                     string    `json:"track"`
+}
+
+// GroupConfig defines model for groupConfig.
+type GroupConfig struct {
+	ChannelId                 *string `json:"channel_id,omitempty"`
+	Description               string  `json:"description"`
+	Name                      string  `json:"name"`
+	PolicyMaxUpdatesPerPeriod int     `json:"policy_max_updates_per_period"`
+	PolicyOfficeHours         bool    `json:"policy_office_hours"`
+	PolicyPeriodInterval      string  `json:"policy_period_interval"`
+	PolicySafeMode            bool    `json:"policy_safe_mode"`
+	PolicyTimezone            string  `json:"policy_timezone"`
+	PolicyUpdateTimeout       string  `json:"policy_update_timeout"`
+	PolicyUpdatesEnabled      bool    `json:"policy_updates_enabled"`
+	Track                     string  `json:"track"`
 }
 
 // GroupInstanceStats defines model for groupInstanceStats.
@@ -255,8 +239,8 @@ type InstanceStatusHistory struct {
 	Verison       string    `json:"verison"`
 }
 
-// LoginInfo defines model for loginInfo.
-type LoginInfo struct {
+// LoginConfig defines model for loginConfig.
+type LoginConfig struct {
 	Password string `json:"password"`
 	Username string `json:"username"`
 }
@@ -281,25 +265,30 @@ type Package struct {
 	Version           string         `json:"version"`
 }
 
+// PackageConfig defines model for packageConfig.
+type PackageConfig struct {
+	ApplicationId     string                `json:"application_id"`
+	Arch              int                   `json:"arch"`
+	ChannelsBlacklist []string              `json:"channels_blacklist"`
+	Description       string                `json:"description"`
+	Filename          *string               `json:"filename"`
+	FlatcarAction     *FlatcarActionPackage `json:"flatcar_action"`
+	Hash              *string               `json:"hash"`
+	MetadataContent   *string               `json:"metadata_content,omitempty"`
+	MetadataType      *string               `json:"metadata_type,omitempty"`
+	Size              *string               `json:"size"`
+	Type              int                   `json:"type"`
+	Url               *string               `json:"url"`
+	Version           string                `json:"version"`
+}
+
 // Packages defines model for packages.
 type Packages []Package
 
-// UpdateAppInfo defines model for updateAppInfo.
-type UpdateAppInfo CreateAppInfo
-
-// UpdateChannelInfo defines model for updateChannelInfo.
-type UpdateChannelInfo CreateChannelInfo
-
-// UpdateGroupInfo defines model for updateGroupInfo.
-type UpdateGroupInfo CreateGroupInfo
-
-// UpdateInstanceInfo defines model for updateInstanceInfo.
-type UpdateInstanceInfo struct {
+// UpdateInstanceConfig defines model for updateInstanceConfig.
+type UpdateInstanceConfig struct {
 	Alias string `json:"alias"`
 }
-
-// UpdatePackageInfo defines model for updatePackageInfo.
-type UpdatePackageInfo CreatePackageInfo
 
 // VersionBreakdownEntry defines model for versionBreakdownEntry.
 type VersionBreakdownEntry struct {
@@ -318,18 +307,18 @@ type PaginateActivityParams struct {
 	Severity   *int      `json:"severity,omitempty"`
 	Start      time.Time `json:"start"`
 	End        time.Time `json:"end"`
-	Page       *uint64   `json:"page,omitempty"`
-	Perpage    *uint64   `json:"perpage,omitempty"`
+	Page       *int      `json:"page,omitempty"`
+	Perpage    *int      `json:"perpage,omitempty"`
 }
 
 // PaginateAppsParams defines parameters for PaginateApps.
 type PaginateAppsParams struct {
-	Page    *uint64 `json:"page,omitempty"`
-	Perpage *uint64 `json:"perpage,omitempty"`
+	Page    *int `json:"page,omitempty"`
+	Perpage *int `json:"perpage,omitempty"`
 }
 
 // CreateAppJSONBody defines parameters for CreateApp.
-type CreateAppJSONBody CreateAppInfo
+type CreateAppJSONBody AppConfig
 
 // CreateAppParams defines parameters for CreateApp.
 type CreateAppParams struct {
@@ -337,37 +326,37 @@ type CreateAppParams struct {
 }
 
 // UpdateAppJSONBody defines parameters for UpdateApp.
-type UpdateAppJSONBody UpdateAppInfo
+type UpdateAppJSONBody AppConfig
 
 // PaginateChannelsParams defines parameters for PaginateChannels.
 type PaginateChannelsParams struct {
-	Page    *uint64 `json:"page,omitempty"`
-	Perpage *uint64 `json:"perpage,omitempty"`
+	Page    *int `json:"page,omitempty"`
+	Perpage *int `json:"perpage,omitempty"`
 }
 
 // CreateChannelJSONBody defines parameters for CreateChannel.
-type CreateChannelJSONBody CreateChannelInfo
+type CreateChannelJSONBody ChannelConfig
 
 // UpdateChannelJSONBody defines parameters for UpdateChannel.
-type UpdateChannelJSONBody UpdateChannelInfo
+type UpdateChannelJSONBody ChannelConfig
 
 // PaginateGroupsParams defines parameters for PaginateGroups.
 type PaginateGroupsParams struct {
-	Page    *uint64 `json:"page,omitempty"`
-	Perpage *uint64 `json:"perpage,omitempty"`
+	Page    *int `json:"page,omitempty"`
+	Perpage *int `json:"perpage,omitempty"`
 }
 
 // CreateGroupJSONBody defines parameters for CreateGroup.
-type CreateGroupJSONBody CreateGroupInfo
+type CreateGroupJSONBody GroupConfig
 
 // UpdateGroupJSONBody defines parameters for UpdateGroup.
-type UpdateGroupJSONBody UpdateGroupInfo
+type UpdateGroupJSONBody GroupConfig
 
 // GetGroupInstancesParams defines parameters for GetGroupInstances.
 type GetGroupInstancesParams struct {
 	Status       int     `json:"status"`
-	Page         *uint64 `json:"page,omitempty"`
-	Perpage      *uint64 `json:"perpage,omitempty"`
+	Page         *int    `json:"page,omitempty"`
+	Perpage      *int    `json:"perpage,omitempty"`
 	SortFilter   *string `json:"sortFilter,omitempty"`
 	SortOrder    *string `json:"sortOrder,omitempty"`
 	SearchFilter *string `json:"searchFilter,omitempty"`
@@ -378,7 +367,7 @@ type GetGroupInstancesParams struct {
 
 // GetInstanceStatusHistoryParams defines parameters for GetInstanceStatusHistory.
 type GetInstanceStatusHistoryParams struct {
-	Limit uint64 `json:"limit"`
+	Limit int `json:"limit"`
 }
 
 // GetGroupInstanceStatsParams defines parameters for GetGroupInstanceStats.
@@ -403,18 +392,18 @@ type GetGroupVersionTimelineParams struct {
 
 // PaginatePackagesParams defines parameters for PaginatePackages.
 type PaginatePackagesParams struct {
-	Page    *uint64 `json:"page,omitempty"`
-	Perpage *uint64 `json:"perpage,omitempty"`
+	Page    *int `json:"page,omitempty"`
+	Perpage *int `json:"perpage,omitempty"`
 }
 
 // CreatePackageJSONBody defines parameters for CreatePackage.
-type CreatePackageJSONBody CreatePackageInfo
+type CreatePackageJSONBody PackageConfig
 
 // UpdatePackageJSONBody defines parameters for UpdatePackage.
-type UpdatePackageJSONBody UpdatePackageInfo
+type UpdatePackageJSONBody PackageConfig
 
 // UpdateInstanceJSONBody defines parameters for UpdateInstance.
-type UpdateInstanceJSONBody UpdateInstanceInfo
+type UpdateInstanceJSONBody UpdateInstanceConfig
 
 // CreateAppJSONRequestBody defines body for CreateApp for application/json ContentType.
 type CreateAppJSONRequestBody CreateAppJSONBody

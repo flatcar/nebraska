@@ -25,7 +25,7 @@ func (h *Handler) PaginatePackages(ctx echo.Context, appID string, params codege
 		logger.Error().Err(err).Str("appID", appID).Msg("getPackages count - encoding packages")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
-	pkgs, err := h.db.GetPackages(appID, *params.Page, *params.Perpage)
+	pkgs, err := h.db.GetPackages(appID, uint64(*params.Page), uint64(*params.Perpage))
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
@@ -40,7 +40,7 @@ func (h *Handler) PaginatePackages(ctx echo.Context, appID string, params codege
 func (h *Handler) CreatePackage(ctx echo.Context, appID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
-	var request codegen.CreatePackageInfo
+	var request codegen.PackageConfig
 
 	err := ctx.Bind(&request)
 	if err != nil {
@@ -83,7 +83,7 @@ func (h *Handler) GetPackage(ctx echo.Context, appID string, packageID string) e
 func (h *Handler) UpdatePackage(ctx echo.Context, appID string, packageID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
-	var request codegen.UpdatePackageInfo
+	var request codegen.PackageConfig
 
 	err := ctx.Bind(&request)
 	if err != nil {

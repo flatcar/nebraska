@@ -26,7 +26,7 @@ func (h *Handler) PaginateGroups(ctx echo.Context, appID string, params codegen.
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	groups, err := h.db.GetGroups(appID, *params.Page, *params.Perpage)
+	groups, err := h.db.GetGroups(appID, uint64(*params.Page), uint64(*params.Perpage))
 	if err != nil {
 		if err == sql.ErrNoRows {
 			logger.Error().Err(err).Msg("getGroups - getting groups not found error")
@@ -42,7 +42,7 @@ func (h *Handler) PaginateGroups(ctx echo.Context, appID string, params codegen.
 func (h *Handler) CreateGroup(ctx echo.Context, appID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
-	var request codegen.CreateGroupInfo
+	var request codegen.GroupConfig
 	err := ctx.Bind(&request)
 	if err != nil {
 		logger.Error().Err(err).Msg("addGroup - decoding payload")
@@ -83,7 +83,7 @@ func (h *Handler) GetGroup(ctx echo.Context, appID string, groupID string) error
 func (h *Handler) UpdateGroup(ctx echo.Context, appID string, groupID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
-	var request codegen.UpdateGroupInfo
+	var request codegen.GroupConfig
 	err := ctx.Bind(&request)
 	if err != nil {
 		logger.Error().Err(err).Msg("updateGroup - decoding payload")
@@ -212,8 +212,8 @@ func (h *Handler) GetGroupInstances(ctx echo.Context, appID string, groupID stri
 		ApplicationID: appID,
 		GroupID:       groupID,
 		Status:        params.Status,
-		Page:          *params.Page,
-		PerPage:       *params.Perpage,
+		Page:          uint64(*params.Page),
+		PerPage:       uint64(*params.Perpage),
 	}
 	if params.Version != nil {
 		p.Version = *params.Version

@@ -26,7 +26,7 @@ func (h *Handler) PaginateChannels(ctx echo.Context, appID string, params codege
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	channels, err := h.db.GetChannels(appID, *params.Page, *params.Perpage)
+	channels, err := h.db.GetChannels(appID, uint64(*params.Page), uint64(*params.Perpage))
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
@@ -40,7 +40,7 @@ func (h *Handler) PaginateChannels(ctx echo.Context, appID string, params codege
 func (h *Handler) CreateChannel(ctx echo.Context, appID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
-	var request codegen.CreateChannelInfo
+	var request codegen.ChannelConfig
 	err := ctx.Bind(&request)
 	if err != nil {
 		logger.Error().Err(err).Msg("addChannel")
@@ -79,7 +79,7 @@ func (h *Handler) GetChannel(ctx echo.Context, appID string, channelID string) e
 func (h *Handler) UpdateChannel(ctx echo.Context, appID string, channelID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
-	var request codegen.UpdateChannelInfo
+	var request codegen.ChannelConfig
 
 	err := ctx.Bind(&request)
 	if err != nil {

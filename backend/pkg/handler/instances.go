@@ -22,7 +22,7 @@ func (h *Handler) GetInstance(ctx echo.Context, appID string, groupID string, in
 }
 
 func (h *Handler) GetInstanceStatusHistory(ctx echo.Context, appID string, groupID string, instanceID string, params codegen.GetInstanceStatusHistoryParams) error {
-	instanceStatusHistory, err := h.db.GetInstanceStatusHistory(instanceID, appID, groupID, params.Limit)
+	instanceStatusHistory, err := h.db.GetInstanceStatusHistory(instanceID, appID, groupID, uint64(params.Limit))
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
@@ -37,7 +37,7 @@ func (h *Handler) GetInstanceStatusHistory(ctx echo.Context, appID string, group
 func (h *Handler) UpdateInstance(ctx echo.Context, instanceID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
-	var request codegen.UpdateInstanceInfo
+	var request codegen.UpdateInstanceConfig
 
 	err := ctx.Bind(&request)
 	if err != nil {

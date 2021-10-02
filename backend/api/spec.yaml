@@ -25,7 +25,7 @@ paths:
         content:
           application/x-www-form-urlencoded:
             schema:
-              $ref: "#/components/schemas/loginInfo"
+              $ref: "#/components/schemas/loginConfig"
       responses:
         "200":
           description: login token response      
@@ -82,13 +82,11 @@ paths:
           required: false
           schema:
             type: integer
-            x-go-type: uint64
         - in: query
           name: perpage
           required: false
           schema:
             type: integer
-            x-go-type: uint64
       responses:
         "200":
           description: Get App success response
@@ -118,7 +116,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/createAppInfo"
+              $ref: "#/components/schemas/appConfig"
       responses:
         "200":
           description: Create App success response
@@ -173,7 +171,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/updateAppInfo"
+              $ref: "#/components/schemas/appConfig"
       responses:
         "200":
           description: Update App success response
@@ -221,13 +219,11 @@ paths:
           required: false
           schema:
             type: integer
-            x-go-type: uint64
         - in: query
           name: perpage
           required: false
           schema:
             type: integer
-            x-go-type: uint64
       responses:
         "200":
           description: get Groups success response
@@ -257,7 +253,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/createGroupInfo"
+              $ref: "#/components/schemas/groupConfig"
       responses:
         "200":
           description: Create Group success response
@@ -322,7 +318,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/updateGroupInfo"      
+              $ref: "#/components/schemas/groupConfig"      
       responses:
         "200":
           description: Update Group success response
@@ -511,13 +507,11 @@ paths:
           required: false
           schema:
             type: integer
-            x-go-type: uint64
         - in: query
           name: perpage
           required: false
           schema:
             type: integer
-            x-go-type: uint64
       responses:
         "200":
           description: Get channels success response
@@ -547,7 +541,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/createChannelInfo"      
+              $ref: "#/components/schemas/channelConfig"      
       responses:
         "200":
           description: Create channel success response
@@ -611,7 +605,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/updateChannelInfo"      
+              $ref: "#/components/schemas/channelConfig"      
       responses:
         "200":
           description: Update channel success response
@@ -665,13 +659,11 @@ paths:
           required: false
           schema:
             type: integer
-            x-go-type: uint64
         - in: query
           name: perpage
           required: false
           schema:
             type: integer
-            x-go-type: uint64
       responses:
         "200":
           description: get Packages success response
@@ -699,7 +691,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/createPackageInfo"
+              $ref: "#/components/schemas/packageConfig"
       responses:
         "200":
           description: Create Package success response
@@ -763,7 +755,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/updatePackageInfo"
+              $ref: "#/components/schemas/packageConfig"
       responses:
         "200":
           description: Update Package success response
@@ -827,13 +819,11 @@ paths:
           required: false
           schema:
             type: integer
-            x-go-type: uint64
         - in: query
           name: perpage
           required: false
           schema:
             type: integer
-            x-go-type: uint64
         - in: query
           name: sortFilter
           required: false
@@ -967,7 +957,6 @@ paths:
           required: true
           schema:
             type: integer
-            x-go-type: uint64
       responses:
         "200":
           description: Get instance status history success response
@@ -998,7 +987,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/updateInstanceInfo"
+              $ref: "#/components/schemas/updateInstanceConfig"
 
       responses:
         "200":
@@ -1064,13 +1053,11 @@ paths:
           required: false
           schema:
             type: integer
-            x-go-type: uint64
         - in: query
           name: perpage
           required: false
           schema:
             type: integer
-            x-go-type: uint64
       responses:
         "200":
           description: List activity success response
@@ -1085,7 +1072,7 @@ paths:
 components:
   schemas:
     ## request Body
-    loginInfo:
+    loginConfig:
       type: object
       required:
         - username
@@ -1096,7 +1083,7 @@ components:
         password:
           type: string
 
-    createAppInfo:
+    appConfig:
       type: object
       required:
         - name
@@ -1108,10 +1095,7 @@ components:
         product_id:
           type: string
 
-    updateAppInfo:
-      $ref:  "#/components/schemas/createAppInfo"
-
-    createGroupInfo:
+    groupConfig:
       type: object
       required:
         - name
@@ -1149,9 +1133,6 @@ components:
           type: string
 
 
-    updateGroupInfo:
-      $ref:  "#/components/schemas/createGroupInfo"
-
     flatcarActionPackage:
       type: object
       properties:
@@ -1162,7 +1143,7 @@ components:
       x-oapi-codegen-extra-tags:
         json: flatcar_action
 
-    createPackageInfo:
+    packageConfig:
       type: object
       required:
         - application_id
@@ -1205,10 +1186,7 @@ components:
         metadata_content:
           type: string
         
-    updatePackageInfo:
-      $ref:  "#/components/schemas/createPackageInfo"
-
-    updateInstanceInfo:
+    updateInstanceConfig:
       type: object
       required:
         - alias
@@ -1219,7 +1197,7 @@ components:
     omahaRequest:
       type: object
 
-    createChannelInfo:
+    channelConfig:
       type: object
       required:
         - application_id
@@ -1239,38 +1217,34 @@ components:
         package_id:
           type: string
 
-    updateChannelInfo:
-      $ref:  "#/components/schemas/createChannelInfo"
-
-
     ## response     
     config:
       type: object
       required:
-        - accessManagementUrl
-        - logoutUrl
-        - nebraskaVersion
+        - access_management_url
+        - logout_url
+        - nebraska_version
         - logo
         - title
-        - headerStyle
-        - loginUrl
-        - authMode
+        - header_style
+        - login_url
+        - auth_mode
       properties:
-        accessManagementUrl:
+        access_management_url:
           type: string
-        logoutUrl:
+        logout_url:
           type: string
-        nebraskaVersion:
+        nebraska_version:
           type: string
         logo:
           type: string
         title:
           type: string
-        headerStyle:
+        header_style:
           type: string
-        loginUrl:
+        login_url:
           type: string
-        authMode:
+        auth_mode:
           type: string
     flatcarAction:
       type: object
@@ -1487,7 +1461,7 @@ components:
           x-oapi-codegen-extra-tags:
             json: policy_period_interval
         policyMaxUpdatesPerPeriod:
-          type: string
+          type: integer
           x-oapi-codegen-extra-tags:
             json: policy_max_updates_per_period
         policyUpdateTimeout:
@@ -1537,8 +1511,11 @@ components:
         - groups
         - channels
         - instances
+        - product_id
       properties:
         id:
+          type: string
+        product_id:
           type: string
         name:
           type: string
@@ -1557,17 +1534,15 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/group"
-
         channels:
           type: array
           items:
             $ref: "#/components/schemas/channel"
-
         instances:
           type: object
           properties:
             count:
-              type: string
+              type: integer
 
     groupInstanceStats:
       type: object

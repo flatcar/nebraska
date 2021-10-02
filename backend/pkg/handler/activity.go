@@ -42,8 +42,8 @@ func (h *Handler) PaginateActivity(ctx echo.Context, params codegen.PaginateActi
 	}
 	p.Start = params.Start
 	p.End = params.End
-	p.Page = *params.Page
-	p.PerPage = *params.Perpage
+	p.Page = uint64(*params.Page)
+	p.PerPage = uint64(*params.Perpage)
 
 	totalCount, err := h.db.GetActivityCount(teamID, p)
 	if err != nil {

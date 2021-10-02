@@ -28,7 +28,7 @@ func (h *Handler) PaginateApps(ctx echo.Context, params codegen.PaginateAppsPara
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	apps, err := h.db.GetApps(teamID, *params.Page, *params.Perpage)
+	apps, err := h.db.GetApps(teamID, uint64(*params.Page), uint64(*params.Perpage))
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
@@ -45,7 +45,7 @@ func (h *Handler) CreateApp(ctx echo.Context, params codegen.CreateAppParams) er
 
 	teamID := getTeamID(ctx)
 
-	var request codegen.CreateAppInfo
+	var request codegen.AppConfig
 	err := ctx.Bind(&request)
 	if err != nil {
 		logger.Error().Err(err).Msg("addApp - decoding payload")
@@ -90,7 +90,7 @@ func (h *Handler) GetApp(ctx echo.Context, appID string) error {
 func (h *Handler) UpdateApp(ctx echo.Context, appID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
-	var request codegen.UpdateAppInfo
+	var request codegen.AppConfig
 	err := ctx.Bind(&request)
 	if err != nil {
 		logger.Error().Err(err).Msg("updateApp - decoding payload")

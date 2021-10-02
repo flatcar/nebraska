@@ -37,8 +37,8 @@ type Handler struct {
 	auth         auth.Authenticator
 }
 
-var defaultPage uint64 = 1
-var defaultPerPage uint64 = 10
+var defaultPage int = 1
+var defaultPerPage int = 10
 
 var logger = util.NewLogger("nebraska")
 
