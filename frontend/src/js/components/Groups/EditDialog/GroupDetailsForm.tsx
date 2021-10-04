@@ -8,9 +8,10 @@ import { ARCHES } from '../../../utils/helpers';
 export default function GroupDetailsForm(props: {
   channels: Channel[];
   values: { [key: string]: string };
+  setFieldValue: (formField: string, value: any) => any;
 }) {
   const { t } = useTranslation();
-  const { channels, values } = props;
+  const { channels, values, setFieldValue } = props;
 
   return (
     <div style={{ padding: '1rem' }}>
@@ -29,7 +30,15 @@ export default function GroupDetailsForm(props: {
         <Grid item xs={4}>
           <FormControl margin="dense" fullWidth>
             <InputLabel shrink>{t('groups|Channel')}</InputLabel>
-            <Field name="channel" component={Select} displayEmpty defaultValue={values.channel}>
+            <Field
+              name="channel"
+              component={Select}
+              displayEmpty
+              defaultValue={values.channel}
+              onChange={(e: any) => {
+                setFieldValue('channel', e.target.value);
+              }}
+            >
               <MenuItem value="" key="">
                 {t('groups|None yet')}
               </MenuItem>
