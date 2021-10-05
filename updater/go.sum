@@ -465,6 +465,8 @@ github.com/karrick/godirwalk v1.15.8/go.mod h1:j4mkqPuvaLI8mp1DroR3P6ad7cyYd4c1q
 github.com/kevinburke/go-bindata v3.22.0+incompatible/go.mod h1:/pEEZ72flUW2p0yi30bslSp9YqD9pysLxunQDdb2CPM=
 github.com/kinvolk/go-omaha v0.0.1 h1:/h9tGiCxnk4h//Vhzg5VniEe8CtLz2SBwD7X06Rt/dg=
 github.com/kinvolk/go-omaha v0.0.1/go.mod h1:iEx6ZzqUoKoGQvQuLqI9fgQ8MbaZVstj2y+g7/nJwgE=
+github.com/kinvolk/go-omaha v0.0.2-0.20210913111157-799c84c6ec9e h1:TGZGADjEDEe7NNDXlABfXqCTjMj6WGWdC+RGBUzGdfg=
+github.com/kinvolk/go-omaha v0.0.2-0.20210913111157-799c84c6ec9e/go.mod h1:SAEkKv9dpmCAVA3KxGdlHMoO4VaCAfIZuui57PqGQbg=
 github.com/kinvolk/nebraska/backend v0.0.0-20210826093658-9a22e1e98f4b h1:ME8iBZFRUyNOSNjv6iSjRkSBff8f+H9Od/kEmrwa3lA=
 github.com/kinvolk/nebraska/backend v0.0.0-20210826093658-9a22e1e98f4b/go.mod h1:cq4IxRSxlfldRR0sbHqDOY3uE+CPyMdhCFWlC10pTLs=
 github.com/kisielk/errcheck v1.1.0/go.mod h1:EZBBE59ingxPouuu3KfxchcWSUPOHkagtvWXihfKN4Q=
