@@ -1081,13 +1081,14 @@ components:
       type: object
       required:
         - name
-        - description
       properties:
         name:
           type: string
         description:
           type: string
-    
+        product_id:
+          type: string
+
     updateAppInfo:
       $ref:  "#/components/schemas/createAppInfo"
 
