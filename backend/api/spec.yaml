@@ -1151,7 +1151,6 @@ components:
         - channels_blacklist
         - description
         - type
-        - url 
         - version
       properties:
         application_id:
