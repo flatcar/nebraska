@@ -24,7 +24,7 @@ import (
 	"github.com/kinvolk/nebraska/backend/pkg/config"
 	"github.com/kinvolk/nebraska/backend/pkg/handler"
 	"github.com/kinvolk/nebraska/backend/pkg/metrics"
-	authmiddleware "github.com/kinvolk/nebraska/backend/pkg/middleware"
+	custommiddleware "github.com/kinvolk/nebraska/backend/pkg/middleware"
 	"github.com/kinvolk/nebraska/backend/pkg/sessions"
 	echosessions "github.com/kinvolk/nebraska/backend/pkg/sessions/echo"
 	"github.com/kinvolk/nebraska/backend/pkg/sessions/memcache"
@@ -114,6 +114,10 @@ func main() {
 	}
 
 	// setup middlewares
+	e.Pre(custommiddleware.SanitizePath())
+	if conf.APIEndpointSuffix != "" {
+		e.Pre(custommiddleware.OmahaSecret(conf.APIEndpointSuffix))
+	}
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestID())
 	e.Use(middleware.CORS())
@@ -124,7 +128,7 @@ func main() {
 	if sessionStore != nil {
 		e.Use(echosessions.SessionsMiddleware(sessionStore, conf.AuthMode))
 	}
-	e.Use(authmiddleware.AuthMiddleware(authenticator, authmiddleware.AuthConfig{Skipper: authmiddleware.NewAuthSkipper(conf.AuthMode)}))
+	e.Use(custommiddleware.Auth(authenticator, custommiddleware.AuthConfig{Skipper: custommiddleware.NewAuthSkipper(conf.AuthMode)}))
 	e.Use(oapimiddleware.OapiRequestValidatorWithOptions(swagger, &oapimiddleware.Options{Options: openapi3filter.Options{AuthenticationFunc: nebraskaAuthenticationFunc(conf.AuthMode)}, Skipper: middlewareSkipper}))
 
 	// setup syncer

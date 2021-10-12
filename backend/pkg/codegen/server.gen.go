@@ -122,7 +122,7 @@ type ServerInterface interface {
 	// (POST /login/webhook)
 	LoginWebhook(ctx echo.Context) error
 
-	// (POST /v1/update/)
+	// (POST /v1/update)
 	Omaha(ctx echo.Context) error
 }
 
@@ -1184,6 +1184,6 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.POST(baseURL+"/login/token", wrapper.LoginToken)
 	router.GET(baseURL+"/login/validate_token", wrapper.ValidateToken)
 	router.POST(baseURL+"/login/webhook", wrapper.LoginWebhook)
-	router.POST(baseURL+"/v1/update/", wrapper.Omaha)
+	router.POST(baseURL+"/v1/update", wrapper.Omaha)
 
 }

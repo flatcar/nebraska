@@ -11,14 +11,14 @@ func NewAuthSkipper(auth string) middleware.Skipper {
 	return func(c echo.Context) bool {
 		switch auth {
 		case "oidc":
-			paths := []string{"/login", "/config", "/*", "/login/cb", "/login/token", "/v1/update/"}
+			paths := []string{"/login", "/config", "/*", "/login/cb", "/login/token", "/v1/update"}
 			for _, path := range paths {
 				if c.Path() == path {
 					return true
 				}
 			}
 		case "github":
-			paths := []string{"/v1/update/", "/login/cb", "/login/webhook"}
+			paths := []string{"/v1/update", "/login/cb", "/login/webhook"}
 			for _, path := range paths {
 				if c.Path() == path {
 					return true
@@ -34,7 +34,7 @@ type AuthConfig struct {
 	Skipper middleware.Skipper
 }
 
-func AuthMiddleware(auth auth.Authenticator, conf AuthConfig) echo.MiddlewareFunc {
+func Auth(auth auth.Authenticator, conf AuthConfig) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			if conf.Skipper(c) {

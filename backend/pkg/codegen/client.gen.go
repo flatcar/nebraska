@@ -2734,7 +2734,7 @@ func NewOmahaRequestWithBody(server string, contentType string, body io.Reader) 
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/v1/update/")
+	operationPath := fmt.Sprintf("/v1/update")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}

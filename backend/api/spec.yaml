@@ -61,7 +61,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/config"
-  /v1/update/:
+  /v1/update:
     post:
       operationId: omaha
       description: omaha endpoint
