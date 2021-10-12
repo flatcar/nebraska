@@ -47,6 +47,8 @@ type Package struct {
 	ApplicationID     string         `db:"application_id" json:"application_id"`
 	FlatcarAction     *FlatcarAction `db:"flatcar_action" json:"flatcar_action"`
 	Arch              Arch           `db:"arch" json:"arch"`
+	MetadataType      null.String    `db:"metadata_type" json:"metadata_type"`
+	MetadataContent   null.String    `db:"metadata_content" json:"metadata_content"`
 }
 
 // checkMatchingArch returns an error if the arch does not match the channels
@@ -100,7 +102,7 @@ func (api *API) AddPackage(pkg *Package) (*Package, error) {
 	}()
 
 	query, _, err := goqu.Insert("package").
-		Cols("type", "filename", "description", "size", "hash", "url", "version", "application_id", "arch").
+		Cols("type", "filename", "description", "size", "hash", "url", "version", "application_id", "arch", "metadata_type", "metadata_content").
 		Vals(goqu.Vals{
 			pkg.Type,
 			pkg.Filename,
@@ -111,6 +113,8 @@ func (api *API) AddPackage(pkg *Package) (*Package, error) {
 			pkg.Version,
 			pkg.ApplicationID,
 			pkg.Arch,
+			pkg.MetadataType,
+			pkg.MetadataContent,
 		}).
 		Returning(goqu.T("package").All()).
 		ToSQL()
@@ -182,13 +186,15 @@ func (api *API) UpdatePackage(pkg *Package) error {
 	}()
 	query, _, err := goqu.Update("package").
 		Set(goqu.Record{
-			"type":        pkg.Type,
-			"filename":    pkg.Filename,
-			"description": pkg.Description,
-			"size":        pkg.Size,
-			"hash":        pkg.Hash,
-			"url":         pkg.URL,
-			"version":     pkg.Version,
+			"type":             pkg.Type,
+			"filename":         pkg.Filename,
+			"description":      pkg.Description,
+			"size":             pkg.Size,
+			"hash":             pkg.Hash,
+			"url":              pkg.URL,
+			"version":          pkg.Version,
+			"metadata_type":    pkg.MetadataType,
+			"metadata_content": pkg.MetadataContent,
 		}).
 		Where(goqu.C("id").Eq(pkg.ID)).
 		ToSQL()

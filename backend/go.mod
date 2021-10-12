@@ -17,7 +17,7 @@ require (
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/jmoiron/sqlx v1.3.3
 	github.com/kevinburke/go-bindata v3.22.0+incompatible
-	github.com/kinvolk/go-omaha v0.0.1
+	github.com/kinvolk/go-omaha v0.0.2-0.20210907164120-855d26e1d0eb
 	github.com/knadh/koanf v1.2.2
 	github.com/labstack/echo-contrib v0.11.0
 	github.com/labstack/echo/v4 v4.4.0
