@@ -11,6 +11,7 @@ require (
 	github.com/go-openapi/swag v0.19.11 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golangci/golangci-lint v1.41.1
+	github.com/google/go-github/v28 v28.1.1
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/securecookie v1.1.1
 	github.com/jackc/pgx/v4 v4.11.0

@@ -29,7 +29,6 @@ paths:
       responses:
         "200":
           description: login token response      
-
   /login/cb: 
     get:
       operationId: loginCb
@@ -44,6 +43,13 @@ paths:
       responses:
         "200":
           description: validate token response
+  /login/webhook:
+    post:
+      operationId: loginWebhook
+      description: login web hook
+      responses:
+        "200":
+          description: login webhook response
   /config:
     get:
       operationId: getConfig

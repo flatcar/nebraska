@@ -15,14 +15,32 @@ import (
 )
 
 type Config struct {
-	EnableSyncer          bool   `koanf:"enable-syncer"`
-	HostFlatcarPackages   bool   `koanf:"host-flatcar-packages"`
-	FlatcarPackagesPath   string `koanf:"flatcar-packages-path"`
-	NebraskaURL           string `koanf:"nebraska-url"`
-	SyncerPkgsURL         string `koanf:"syncer-packages-url"`
-	HTTPLog               bool   `koanf:"http-log"`
-	HTTPStaticDir         string `koanf:"http-static-dir"`
-	AuthMode              string `koanf:"auth-mode"`
+	EnableSyncer        bool   `koanf:"enable-syncer"`
+	HostFlatcarPackages bool   `koanf:"host-flatcar-packages"`
+	FlatcarPackagesPath string `koanf:"flatcar-packages-path"`
+	NebraskaURL         string `koanf:"nebraska-url"`
+	SyncerPkgsURL       string `koanf:"syncer-packages-url"`
+	HTTPLog             bool   `koanf:"http-log"`
+	HTTPStaticDir       string `koanf:"http-static-dir"`
+	AuthMode            string `koanf:"auth-mode"`
+	FlatcarUpdatesURL   string `koanf:"sync-update-url"`
+	CheckFrequencyVal   string `koanf:"sync-interval"`
+	AppLogoPath         string `koanf:"client-logo"`
+	AppTitle            string `koanf:"client-title"`
+	AppHeaderStyle      string `koanf:"client-header-style"`
+	APIEndpointSuffix   string `koanf:"api-endpoint-suffix"`
+	Debug               bool   `koanf:"debug"`
+	ServerPort          uint   `koanf:"port"`
+
+	GhClientID        string `koanf:"gh-client-id"`
+	GhClientSecret    string `koanf:"gh-client-secret"`
+	GhSessionAuthKey  string `koanf:"gh-session-secret"`
+	GhSessionCryptKey string `koanf:"gh-session-crypt-key"`
+	GhWebhookSecret   string `koanf:"gh-webhook-secret"`
+	GhReadWriteTeams  string `koanf:"gh-rw-teams"`
+	GhReadOnlyTeams   string `koanf:"gh-ro-teams"`
+	GhEnterpriseURL   string `koanf:"gh-enterprise-url"`
+
 	OidcClientID          string `koanf:"oidc-client-id"`
 	OidcClientSecret      string `koanf:"oidc-client-secret"`
 	OidcIssuerURL         string `koanf:"oidc-issuer-url"`
@@ -35,14 +53,6 @@ type Config struct {
 	OidcSessionCryptKey   string `koanf:"oidc-session-crypt_key"`
 	OidcManagementURL     string `koanf:"oidc-management-url"`
 	OidcLogutURL          string `koanf:"oidc-logout-url"`
-	FlatcarUpdatesURL     string `koanf:"sync-update-url"`
-	CheckFrequencyVal     string `koanf:"sync-interval"`
-	AppLogoPath           string `koanf:"client-logo"`
-	AppTitle              string `koanf:"client-title"`
-	AppHeaderStyle        string `koanf:"client-header-style"`
-	APIEndpointSuffix     string `koanf:"api-endpoint-suffix"`
-	Debug                 bool   `koanf:"debug"`
-	ServerPort            uint   `koanf:"port"`
 }
 
 const (
@@ -50,6 +60,12 @@ const (
 	oidcClientSecretEnvName    = "NEBRASKA_OIDC_CLIENT_SECRET"
 	oidcSessionAuthKeyEnvName  = "NEBRASKA_OIDC_SESSION_SECRET"
 	oidcSessionCryptKeyEnvName = "NEBRASKA_OIDC_SESSION_CRYPT_KEY"
+	ghClientIDEnvName          = "NEBRASKA_GITHUB_OAUTH_CLIENT_ID"
+	ghClientSecretEnvName      = "NEBRASKA_GITHUB_OAUTH_CLIENT_SECRET"
+	ghSessionAuthKeyEnvName    = "NEBRASKA_GITHUB_SESSION_SECRET"
+	ghSessionCryptKeyEnvName   = "NEBRASKA_GITHUB_SESSION_CRYPT_KEY"
+	ghWebhookSecretEnvName     = "NEBRASKA_GITHUB_WEBHOOK_SECRET"
+	ghEnterpriseURLEnvName     = "NEBRASKA_GITHUB_ENTERPRISE_URL"
 )
 
 func (c *Config) Validate() error {
@@ -68,6 +84,18 @@ func (c *Config) Validate() error {
 			return errors.New("invalid Nebraska URL, please ensure the value provided using -nebraska-url is a valid url")
 		}
 	}
+
+	switch c.AuthMode {
+	case "github":
+		if c.GhClientID == "" || c.GhClientSecret == "" || c.GhReadOnlyTeams == "" || c.GhReadWriteTeams == "" {
+			return errors.New("Invalid github configuration")
+		}
+	case "oidc":
+		if c.OidcClientID == "" || c.OidcClientSecret == "" || c.OidcIssuerURL == "" || c.OidcAdminRoles == "" || c.OidcViewerRoles == "" || c.OidcValidRedirectURLs == "" {
+			return errors.New("Invalid OIDC configuration")
+		}
+	}
+
 	return nil
 }
 
@@ -83,6 +111,16 @@ func Parse() (*Config, error) {
 	f.Bool("http-log", false, "Enable http requests logging")
 	f.String("http-static-dir", "../frontend/build", "Path to frontend static files")
 	f.String("auth-mode", "oidc", "authentication mode, available modes: noop, github, oidc")
+
+	f.String("gh-client-id", "", fmt.Sprintf("GitHub client ID used for authentication; can be taken from %s env var too", ghClientIDEnvName))
+	f.String("gh-client-secret", "", fmt.Sprintf("GitHub client secret used for authentication; can be taken from %s env var too", ghClientSecretEnvName))
+	f.String("gh-session-secret", "", fmt.Sprintf("Session secret used for authenticating sessions in cookies used for storing GitHub info , will be generated if none is passed; can be taken from %s env var too", ghSessionAuthKeyEnvName))
+	f.String("gh-session-crypt-key", "", fmt.Sprintf("Session key used for encrypting sessions in cookies used for storing GitHub info, will be generated if none is passed; can be taken from %s env var too", ghSessionCryptKeyEnvName))
+	f.String("gh-webhook-secret", "", fmt.Sprintf("GitHub webhook secret used for validing webhook messages; can be taken from %s env var too", ghWebhookSecretEnvName))
+	f.String("gh-rw-teams", "", "comma-separated list of read-write GitHub teams in the org/team format")
+	f.String("gh-ro-teams", "", "comma-separated list of read-only GitHub teams in the org/team format")
+	f.String("gh-enterprise-url", "", fmt.Sprintf("base URL of the enterprise instance if using GHE; can be taken from %s env var too", ghEnterpriseURLEnvName))
+
 	f.String("oidc-client-id", "", fmt.Sprintf("OIDC client ID used for authentication;can be taken from %s env var too", oidcClientIDEnvName))
 	f.String("oidc-client-secret", "", fmt.Sprintf("OIDC client Secret used for authentication; can be taken from %s env var too", oidcClientSecretEnvName))
 	f.String("oidc-issuer-url", "", "OIDC issuer URL used for authentication")
@@ -122,16 +160,36 @@ func Parse() (*Config, error) {
 		return nil, fmt.Errorf("error unmarshal config: %w", err)
 	}
 
-	config.OidcClientID = getPotentialOrEnv(config.OidcClientID, oidcClientIDEnvName)
-	config.OidcClientSecret = getPotentialOrEnv(config.OidcClientSecret, oidcClientSecretEnvName)
-	config.OidcSessionAuthKey = getPotentialOrEnv(config.OidcSessionAuthKey, oidcSessionAuthKeyEnvName)
-	config.OidcSessionCryptKey = getPotentialOrEnv(config.OidcSessionCryptKey, oidcSessionCryptKeyEnvName)
+	switch config.AuthMode {
+	case "oidc":
+		config.OidcClientID = getPotentialOrEnv(config.OidcClientID, oidcClientIDEnvName)
+		config.OidcClientSecret = getPotentialOrEnv(config.OidcClientSecret, oidcClientSecretEnvName)
+		config.OidcSessionAuthKey = getPotentialOrEnv(config.OidcSessionAuthKey, oidcSessionAuthKeyEnvName)
+		config.OidcSessionCryptKey = getPotentialOrEnv(config.OidcSessionCryptKey, oidcSessionCryptKeyEnvName)
 
-	if config.OidcSessionAuthKey == "" {
-		config.OidcSessionAuthKey = string(random.Data(32))
-	}
-	if config.OidcSessionCryptKey == "" {
-		config.OidcSessionCryptKey = string(random.Data(32))
+		if config.OidcSessionAuthKey == "" {
+			config.OidcSessionAuthKey = string(random.Data(32))
+		}
+		if config.OidcSessionCryptKey == "" {
+			config.OidcSessionCryptKey = string(random.Data(32))
+		}
+
+	case "github":
+		config.GhClientID = getPotentialOrEnv(config.GhClientID, ghClientIDEnvName)
+		config.GhClientSecret = getPotentialOrEnv(config.GhClientSecret, ghClientSecretEnvName)
+		config.GhSessionAuthKey = getPotentialOrEnv(config.GhSessionAuthKey, ghSessionAuthKeyEnvName)
+		config.GhSessionCryptKey = getPotentialOrEnv(config.GhSessionCryptKey, ghSessionCryptKeyEnvName)
+		config.GhWebhookSecret = getPotentialOrEnv(config.GhWebhookSecret, ghWebhookSecretEnvName)
+		config.GhEnterpriseURL = getPotentialOrEnv(config.GhEnterpriseURL, ghEnterpriseURLEnvName)
+
+		if config.GhSessionAuthKey == "" {
+			config.GhSessionAuthKey = string(random.Data(32))
+		}
+
+		if config.GhSessionCryptKey == "" {
+			config.GhSessionCryptKey = string(random.Data(32))
+		}
+
 	}
 
 	return &config, nil

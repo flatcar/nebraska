@@ -61,3 +61,7 @@ func (noa *noopAuth) LoginToken(ctx echo.Context) error {
 func (noa *noopAuth) ValidateToken(ctx echo.Context) error {
 	return ctx.NoContent(http.StatusNotImplemented)
 }
+
+func (noa *noopAuth) LoginWebhook(ctx echo.Context) error {
+	return ctx.NoContent(http.StatusNotImplemented)
+}

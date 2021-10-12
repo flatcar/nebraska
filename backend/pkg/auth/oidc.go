@@ -19,9 +19,6 @@ import (
 
 	"github.com/kinvolk/nebraska/backend/pkg/sessions"
 	echosessions "github.com/kinvolk/nebraska/backend/pkg/sessions/echo"
-	"github.com/kinvolk/nebraska/backend/pkg/sessions/memcache"
-	memcachegob "github.com/kinvolk/nebraska/backend/pkg/sessions/memcache/gob"
-	"github.com/kinvolk/nebraska/backend/pkg/sessions/securecookie"
 )
 
 const (
@@ -46,10 +43,9 @@ type OIDCAuthConfig struct {
 	ValidRedirectURLs []string
 	AdminRoles        []string
 	ViewerRoles       []string
-	SessionAuthKey    []byte
-	SessionCryptKey   []byte
 	RolesPath         string
 	Scopes            []string
+	SessionStore      *sessions.Store
 }
 
 type oidcAuth struct {
@@ -111,11 +107,6 @@ func NewOIDCAuthenticator(config *OIDCAuthConfig) Authenticator {
 	// state map is used keep track of login and callback requests
 	var stateMap sync.Map
 
-	// setup session store
-	cache := memcache.New(memcachegob.New())
-	codec := securecookie.New(config.SessionAuthKey, config.SessionCryptKey)
-	sessionStore := sessions.NewStore(cache, codec)
-
 	oidcAuthenticator := &oidcAuth{
 		provider:          provider,
 		verifier:          verifier,
@@ -131,7 +122,7 @@ func NewOIDCAuthenticator(config *OIDCAuthConfig) Authenticator {
 		scopes:            config.Scopes,
 		stateMap:          &stateMap,
 		rolesPath:         config.RolesPath,
-		sessionStore:      sessionStore,
+		sessionStore:      config.SessionStore,
 	}
 
 	stateTicker := time.NewTicker(stateCleanupDuration)
@@ -491,6 +482,10 @@ func (oa *oidcAuth) cleanState() {
 		}
 		return true
 	})
+}
+
+func (oa *oidcAuth) LoginWebhook(ctx echo.Context) error {
+	return ctx.NoContent(http.StatusNotImplemented)
 }
 
 func httpError(c echo.Context, status int) {

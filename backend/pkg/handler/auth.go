@@ -19,3 +19,7 @@ func (h *Handler) LoginToken(ctx echo.Context) error {
 func (h *Handler) ValidateToken(ctx echo.Context) error {
 	return h.auth.ValidateToken(ctx)
 }
+
+func (h *Handler) LoginWebhook(ctx echo.Context) error {
+	return h.auth.LoginWebhook(ctx)
+}

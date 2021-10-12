@@ -101,16 +101,17 @@ func main() {
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Cannot fetch the default teamID")
 	}
-	authenticator, err := setupAuthenticator(*conf, defaultTeam.ID)
+
+	// setup session store
+	sessionStore := setupSessionStore(*conf)
+
+	authenticator, err := setupAuthenticator(*conf, sessionStore, defaultTeam.ID)
 	if err != nil {
 		logger.Fatal().Err(err).Msg("Authenticator error")
 	}
 	if authenticator == nil {
 		logger.Fatal().Msgf("Invalid auth mode %s", conf.AuthMode)
 	}
-
-	// setup session store
-	sessionStore := setupSessionStore(*conf)
 
 	// setup middlewares
 	e.Use(middleware.Recover())
@@ -178,13 +179,25 @@ func main() {
 	log.Fatal(e.Start(fmt.Sprintf(":%d", conf.ServerPort)))
 }
 
-func setupAuthenticator(conf config.Config, defaultTeamID string) (auth.Authenticator, error) {
+func setupAuthenticator(conf config.Config, sessionStore *sessions.Store, defaultTeamID string) (auth.Authenticator, error) {
 	switch conf.AuthMode {
 	case "noop":
 		noopAuthConfig := &auth.NoopAuthConfig{
 			DefaultTeamID: defaultTeamID,
 		}
 		return auth.NewNoopAuthenticator(noopAuthConfig), nil
+	case "github":
+		gituhbAuthConfig := &auth.GithubAuthConfig{
+			EnterpriseURL:     conf.GhEnterpriseURL,
+			SessionStore:      sessionStore,
+			OAuthClientID:     conf.GhClientID,
+			OAuthClientSecret: conf.GhClientSecret,
+			WebhookSecret:     conf.GhWebhookSecret,
+			ReadWriteTeams:    strings.Split(conf.GhReadWriteTeams, ","),
+			ReadOnlyTeams:     strings.Split(conf.GhReadOnlyTeams, ","),
+			DefaultTeamID:     defaultTeamID,
+		}
+		return auth.NewGithubAuthenticator(gituhbAuthConfig), nil
 	case "oidc":
 		url, err := url.Parse(conf.NebraskaURL)
 		if err != nil {
@@ -205,8 +218,7 @@ func setupAuthenticator(conf config.Config, defaultTeamID string) (auth.Authenti
 			AdminRoles:        strings.Split(conf.OidcAdminRoles, ","),
 			ViewerRoles:       strings.Split(conf.OidcViewerRoles, ","),
 			Scopes:            strings.Split(conf.OidcScopes, ","),
-			SessionAuthKey:    []byte(conf.OidcSessionAuthKey),
-			SessionCryptKey:   []byte(conf.OidcSessionCryptKey),
+			SessionStore:      sessionStore,
 			RolesPath:         conf.OidcRolesPath,
 		}
 		return auth.NewOIDCAuthenticator(oidcAuthConfig), nil
@@ -221,6 +233,10 @@ func setupSessionStore(conf config.Config) *sessions.Store {
 	case "oidc":
 		cache := memcache.New(memcachegob.New())
 		codec := securecookie.New([]byte(conf.OidcSessionAuthKey), []byte(conf.OidcSessionCryptKey))
+		return sessions.NewStore(cache, codec)
+	case "github":
+		cache := memcache.New(memcachegob.New())
+		codec := securecookie.New([]byte(conf.GhSessionAuthKey), []byte(conf.GhSessionCryptKey))
 		return sessions.NewStore(cache, codec)
 	}
 	return nil
