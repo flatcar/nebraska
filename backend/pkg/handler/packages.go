@@ -2,6 +2,7 @@ package handler
 
 import (
 	"database/sql"
+	"errors"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -48,6 +49,14 @@ func (h *Handler) CreatePackage(ctx echo.Context, appID string) error {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
+	if request.Type == 1 && (request.Filename == nil || request.Hash == nil || request.Size == nil) {
+		// For the Flatcar type of package these fields are required.
+
+		err := errors.New("required field missing")
+		logger.Error().Err(err).Msg("addPackage - required field missing")
+		return ctx.NoContent(http.StatusBadRequest)
+	}
+
 	pkg := packageFromRequest(appID, request.Arch, request.ChannelsBlacklist, request.Description, request.Filename, request.Hash, request.Size, request.Url, request.Version, request.Type, request.FlatcarAction, "")
 
 	pkg, err = h.db.AddPackage(pkg)
@@ -88,6 +97,13 @@ func (h *Handler) UpdatePackage(ctx echo.Context, appID string, packageID string
 	err := ctx.Bind(&request)
 	if err != nil {
 		logger.Error().Err(err).Msg("updatePackage - decoding payload")
+		return ctx.NoContent(http.StatusBadRequest)
+	}
+
+	if request.Type == 1 && (request.Filename == nil || request.Hash == nil || request.Size == nil) {
+		// For the Flatcar type of package these fields are required.
+		err := errors.New("required field missing")
+		logger.Error().Err(err).Msg("updatePackage - required field missing")
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
@@ -139,7 +155,7 @@ func (h *Handler) DeletePackage(ctx echo.Context, appID string, packageID string
 	return ctx.NoContent(http.StatusOK)
 }
 
-func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, description string, filename string, hash string, size string, url string, version string, packageType int, flAction *codegen.FlatcarActionPackage, ID string) *api.Package {
+func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, description string, filename *string, hash *string, size *string, url string, version string, packageType int, flAction *codegen.FlatcarActionPackage, ID string) *api.Package {
 	var flatcarAction *api.FlatcarAction
 
 	if flAction != nil {
@@ -168,9 +184,9 @@ func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, desc
 		ApplicationID: appID,
 		Arch:          api.Arch(arch),
 		Description:   null.StringFrom(description),
-		Filename:      null.StringFrom(filename),
-		Hash:          null.StringFrom(hash),
-		Size:          null.StringFrom(size),
+		Filename:      null.StringFromPtr(filename),
+		Hash:          null.StringFromPtr(hash),
+		Size:          null.StringFromPtr(size),
 		Type:          packageType,
 		URL:           url,
 		Version:       version,
