@@ -1165,12 +1165,16 @@ components:
           type: string
         filename:
           type: string
+          nullable: true
         hash:
           type: string
+          nullable: true
         size:
           type: string
+          nullable: true
         url:
           type: string
+          nullable: true
         version:
           type: string
         type:
