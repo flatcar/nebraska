@@ -150,13 +150,51 @@ func sanitizeSortFilterParams(sortFilter string) string {
 	return sortFilterMap[id]
 }
 
-func (api *API) UpsertInstance(instance *Instance) error {
+func (api *API) upsertInstance(instance *Instance) (*Instance, error) {
 	extraData := make(map[string]interface{})
 	if instance.Application.Status.Valid {
-		extraData["status"] = int(instance.Application.Status.Int64)
+		status := int(instance.Application.Status.Int64)
+		extraData["status"] = status
+		if status == InstanceStatusComplete {
+			extraData["version"] = goqu.L("CASE WHEN last_update_version IS NOT NULL THEN last_update_version ELSE version END")
+		}
+
+		if status == InstanceStatusComplete || status == InstanceStatusError || status == InstanceStatusUndefined || status == InstanceStatusOnHold {
+			extraData["update_in_progress"] = false
+		}
 	}
 
-	return api.RegisterInstanceWithData(instance.ID, instance.Alias, instance.IP, instance.Application.Version, instance.Application.ApplicationID, instance.Application.GroupID, extraData)
+	logger.Info().Msgf(">>>>>>>>>>>>>>>>>>>>>>> %v", instance.Application.LastUpdateGrantedTs)
+	if instance.Application.LastUpdateGrantedTs.Valid {
+		extraData["last_update_granted_ts"] = instance.Application.LastUpdateGrantedTs.Time
+	}
+
+	if instance.Application.LastUpdateVersion.Valid {
+		extraData["last_update_version"] = instance.Application.LastUpdateVersion
+	}
+
+	inst, err := api.RegisterInstanceWithData(instance.ID, instance.Alias, instance.IP, instance.Application.Version, instance.Application.ApplicationID, instance.Application.GroupID.String, extraData)
+	if err != nil {
+		return nil, ErrRegisterInstanceFailed
+	}
+
+	if inst.Application.Status.Valid {
+		insertQuery, _, err := goqu.Insert("instance_status_history").
+			Cols("status", "version", "instance_id", "application_id", "group_id").
+			Vals(goqu.Vals{int(inst.Application.Status.Int64), inst.Application.LastUpdateVersion, inst.ID, inst.Application.ApplicationID, inst.Application.GroupID.String}).
+			ToSQL()
+
+		if err != nil {
+			return nil, err
+		}
+
+		_, err = api.db.Exec(insertQuery)
+		if err != nil {
+			logger.Error().Err(err).Msgf("Failed to set status_history for instance %v", instance.ID)
+		}
+	}
+
+	return inst, nil
 }
 
 // RegisterInstance registers an instance into Nebraska, with only the default values.
@@ -533,17 +571,6 @@ func (api *API) validateApplicationAndGroup(appID, groupID string) (string, stri
 }
 
 // updateInstanceStatus updates the status for the provided instance in the
-// context of the given application, storing it as well in the instance status
-// history registry.
-func (api *API) updateInstanceStatus(instanceID, appID string, newStatus int) error {
-	instance, err := api.GetInstance(instanceID, appID)
-	if err != nil {
-		return err
-	}
-	return api.updateInstanceObjStatus(instance, newStatus)
-}
-
-// upInstanceStatus updates the status for the provided instance in the
 // context of the given application, storing it as well in the instance status
 // history registry.
 func (api *API) updateInstanceStatus(instanceID, appID string, newStatus int) error {
