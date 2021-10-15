@@ -45,6 +45,11 @@ func TestRegisterInstance(t *testing.T) {
 	_, err = a.RegisterInstance(instanceID, "", "10.0.0.1", "1.0.0", tApp.ID, tGroup2.ID)
 	assert.Equal(t, ErrInvalidApplicationOrGroup, err, "The group provided doesn't belong to the application provided.")
 
+	instance2ID := uuid.New().String()
+	instance2, err := a.RegisterInstanceWithData(instance2ID, "myalias2", "10.0.0.1", "1.0.0", "{"+tApp.ID+"}", "{"+tGroup.ID+"}", map[string]interface{}{"version": "1234.5.6"})
+	assert.NoError(t, err)
+	assert.Equal(t, instance2.Application.Version, "1234.5.6")
+
 	instance, err := a.RegisterInstance(instanceID, "myalias", "10.0.0.1", "1.0.0", "{"+tApp.ID+"}", "{"+tGroup.ID+"}")
 	assert.NoError(t, err)
 	assert.Equal(t, instanceID, instance.ID)

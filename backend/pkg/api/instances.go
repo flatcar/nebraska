@@ -150,8 +150,13 @@ func sanitizeSortFilterParams(sortFilter string) string {
 	return sortFilterMap[id]
 }
 
-// RegisterInstance registers an instance into Nebraska.
+// RegisterInstance registers an instance into Nebraska, with only the default values.
 func (api *API) RegisterInstance(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID string) (*Instance, error) {
+	return api.RegisterInstanceWithData(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID, nil)
+}
+
+// RegisterInstanceWithData registers an instance into Nebraska, allowing to override default values.
+func (api *API) RegisterInstanceWithData(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID string, extraData map[string]interface{}) (*Instance, error) {
 	if !isValidSemver(instanceVersion) {
 		return nil, ErrInvalidSemver
 	}
@@ -198,10 +203,20 @@ func (api *API) RegisterInstance(instanceID, instanceAlias, instanceIP, instance
 		return nil, err
 	}
 
+	insertData := map[string]interface{}{
+		"instance_id":            instanceID,
+		"application_id":         appID,
+		"group_id":               groupID,
+		"version":                instanceVersion,
+		"last_check_for_updates": nowUTC(),
+	}
+	for key, val := range extraData {
+		insertData[key] = val
+	}
+
 	upsertInstanceApplication, _, err := goqu.Insert("instance_application").
-		Cols("instance_id", "application_id", "group_id", "version", "last_check_for_updates").
-		Vals(goqu.Vals{instanceID, appID, groupID, instanceVersion, nowUTC()}).
-		OnConflict(goqu.DoUpdate("ON CONSTRAINT instance_application_pkey", goqu.Record{"group_id": groupID, "version": instanceVersion, "last_check_for_updates": nowUTC()})).
+		Rows(insertData).
+		OnConflict(goqu.DoUpdate("ON CONSTRAINT instance_application_pkey", goqu.Record(insertData))).
 		ToSQL()
 	if err != nil {
 		return nil, err
@@ -519,15 +534,18 @@ func (api *API) updateInstanceStatus(instanceID, appID string, newStatus int) er
 	return api.updateInstanceObjStatus(instance, newStatus)
 }
 
+func (api *API) makeUpdateGrantInfo(version string) map[string]interface{} {
+	grantData := make(map[string]interface{})
+	grantData["last_update_granted_ts"] = nowUTC()
+	grantData["last_update_version"] = version
+	grantData["status"] = InstanceStatusUpdateGranted
+	grantData["update_in_progress"] = true
+	return grantData
+}
+
 // InstanceStatusUpdateGranted for an instance and version
 func (api *API) grantUpdate(instance *Instance, version string) error {
-	insertData := make(map[string]interface{})
-	insertData["last_update_granted_ts"] = nowUTC()
-	insertData["last_update_version"] = version
-	insertData["status"] = InstanceStatusUpdateGranted
-	insertData["update_in_progress"] = true
-
-	return api.updateInstanceData(instance, insertData)
+	return api.updateInstanceData(instance, api.makeUpdateGrantInfo(version))
 }
 
 func (api *API) updateInstanceData(instance *Instance, data map[string]interface{}) error {
