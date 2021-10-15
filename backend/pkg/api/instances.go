@@ -150,6 +150,15 @@ func sanitizeSortFilterParams(sortFilter string) string {
 	return sortFilterMap[id]
 }
 
+func (api *API) UpsertInstance(instance *Instance) error {
+	extraData := make(map[string]interface{})
+	if instance.Application.Status.Valid {
+		extraData["status"] = int(instance.Application.Status.Int64)
+	}
+
+	return api.RegisterInstanceWithData(instance.ID, instance.Alias, instance.IP, instance.Application.Version, instance.Application.ApplicationID, instance.Application.GroupID, extraData)
+}
+
 // RegisterInstance registers an instance into Nebraska, with only the default values.
 func (api *API) RegisterInstance(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID string) (*Instance, error) {
 	return api.RegisterInstanceWithData(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID, nil)
@@ -524,6 +533,17 @@ func (api *API) validateApplicationAndGroup(appID, groupID string) (string, stri
 }
 
 // updateInstanceStatus updates the status for the provided instance in the
+// context of the given application, storing it as well in the instance status
+// history registry.
+func (api *API) updateInstanceStatus(instanceID, appID string, newStatus int) error {
+	instance, err := api.GetInstance(instanceID, appID)
+	if err != nil {
+		return err
+	}
+	return api.updateInstanceObjStatus(instance, newStatus)
+}
+
+// upInstanceStatus updates the status for the provided instance in the
 // context of the given application, storing it as well in the instance status
 // history registry.
 func (api *API) updateInstanceStatus(instanceID, appID string, newStatus int) error {

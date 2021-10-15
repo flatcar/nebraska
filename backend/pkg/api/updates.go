@@ -58,32 +58,52 @@ var (
 // provided. The instance details and the application it's running will be
 // registered in Nebraska (or updated if it's already registered).
 func (api *API) GetUpdatePackage(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID string) (*Package, error) {
+	group, err := api.GetGroup(groupID)
+	if err != nil {
+		logger.Error().Msgf("GetUpdatePackage - failed to get group with id %v on app %v. Not registering/updating instance with ID %v (alias=%v)", groupID, appID, instanceID, instanceAlias)
+		return nil, err
+	}
+
 	instance, err := api.GetInstance(instanceID, appID)
 	if err != nil {
 		logger.Info().Msgf("GetUpdatePackage - instance %v (alias=%v) not yet registered.", instanceID, instanceAlias)
+		instance = Instance{
+			ID: instanceID,
+			IP: instanceIP,
+			Application: InstanceApplication{
+				InstanceID: instanceID,
+				ApplicationID: appID,
+				GroupID: groupID,
+				Version: instanceVersion,
+			},
+			Alias: instanceAlias,
+		}
 	}
 
 	updateAlreadyGranted := false
 
-	if instance != nil && instance.Application.Status.Valid {
+	if instance.Application.Status.Valid {
 		switch int(instance.Application.Status.Int64) {
 		case InstanceStatusDownloading, InstanceStatusDownloaded, InstanceStatusInstalled:
+			if err := api.UpsertInstance(instance); err != nil {
+				logger.Error().Err(err).Msg("GetUpdatePackage - failed to register instance %v: %w", instance.ID, err)
+				return nil, err
+			}
 			return nil, ErrUpdateInProgressOnInstance
 		case InstanceStatusUpdateGranted:
 			updateAlreadyGranted = true
 		}
 	}
 
-	group, err := api.GetGroup(groupID)
-	if err != nil {
-		return nil, err
-	}
+	errReturn error
+	statusToSet := 0
 
 	if group.Channel == nil || group.Channel.Package == nil {
 		if err := api.newGroupActivityEntry(activityPackageNotFound, activityWarning, "0.0.0", appID, groupID); err != nil {
 			logger.Error().Err(err).Msg("GetUpdatePackage - could not add new group activity entry")
 		}
-		return nil, ErrNoPackageFound
+		errReturn = ErrNoPackageFound
+		goto registerAndReturn
 	}
 
 	for _, blacklistedChannelID := range group.Channel.Package.ChannelsBlacklist {
@@ -93,28 +113,26 @@ func (api *API) GetUpdatePackage(instanceID, instanceAlias, instanceIP, instance
 					logger.Error().Err(err).Msg("GetUpdatePackage - could not update instance status")
 				}
 			}
-			return nil, ErrNoUpdatePackageAvailable
+			errReturn = ErrNoUpdatePackageAvailable
+			goto registerAndReturn
 		}
 	}
 
 	instanceSemver, _ := semver.Make(instanceVersion)
 	packageSemver, _ := semver.Make(group.Channel.Package.Version)
 	if !instanceSemver.LT(packageSemver) {
+		errReturn = ErrNoUpdatePackageAvailable
 		if instance == nil {
-			_, err := api.RegisterInstance(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID)
-			if err != nil {
-				logger.Error().Err(err).Msg("GetUpdatePackage - could not register instance (propagates as ErrRegisterInstanceFailed)")
-				return nil, ErrRegisterInstanceFailed
-			}
+			goto registerAndReturn
 		} else if updateAlreadyGranted {
-			if err := api.updateInstanceObjStatus(instance, InstanceStatusComplete); err != nil {
-				logger.Error().Err(err).Msg("GetUpdatePackage - could not update instance status")
-			}
+			statusToSet = InstanceStatusComplete
+			goto registerAndReturn
 		}
-		return nil, ErrNoUpdatePackageAvailable
+		return nil, errReturn
 	}
 
 	if updateAlreadyGranted {
+////		_, err = api.RegisterInstanceWithData(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID)
 		return group.Channel.Package, nil
 	}
 
@@ -148,6 +166,16 @@ func (api *API) GetUpdatePackage(instanceID, instanceAlias, instanceIP, instance
 	}
 
 	return group.Channel.Package, nil
+
+registerAndReturn:
+	if instance == nil {
+		_, err = api.RegisterInstanceWithData(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID)
+		if err != nil {
+			logger.Error().Err(err).Msg("GetUpdatePackage - could not register instance before returning error %d: %w", errReturn, err)
+		}
+	}
+
+	return nil, errReturn
 }
 
 // enforceRolloutPolicy validates if an update should be provided to the
