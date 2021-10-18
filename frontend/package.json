@@ -69,9 +69,9 @@
     "prettier": "^2.3.2"
   },
   "scripts": {
-    "build-icons": "node tools/build-icons.js ./src/img ./src/js/icons",
-    "start": "npm run build-icons && react-scripts start",
-    "build": "npm run build-icons && react-scripts build",
+    "build-icons": "node tools/build-icons.js ./src/img ./src/js/icons && npm run format",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
     "test": "react-scripts test --silent",
     "test:coverage": "react-scripts test --silent --watchAll=false --env=jsdom --coverage  --reporters=default --coverageDirectory=coverage/report",
     "eject": "react-scripts eject",
