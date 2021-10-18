@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
-import AppRoutes from './js/App';
+import AppRoutes from './App';
 
 if (process.env.NODE_ENV !== 'production') {
   const axe = require('@axe-core/react');

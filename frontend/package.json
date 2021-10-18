@@ -69,7 +69,7 @@
     "prettier": "^2.3.2"
   },
   "scripts": {
-    "build-icons": "node tools/build-icons.js ./src/img ./src/js/icons && npm run format",
+    "build-icons": "node tools/build-icons.js ./src/img ./src/icons && npm run format",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --silent",
