@@ -1,13 +1,12 @@
-import green from '@material-ui/core/colors/green';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Link from '@material-ui/core/Link';
-import { createMuiTheme } from '@material-ui/core/styles';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import API from '../api/API';
 import ThemeProviderNexti18n from '../i18n/ThemeProviderNexti18n';
+import themes, { getThemeName, usePrefersColorScheme } from '../lib/themes';
 import { setConfig } from '../stores/redux/features/config';
 import { useDispatch } from '../stores/redux/hooks';
 import { useAuthRedirect } from '../utils/auth';
@@ -19,53 +18,6 @@ import InstanceLayout from './layouts/InstanceLayout';
 import InstanceListLayout from './layouts/InstanceListLayout';
 import MainLayout from './layouts/MainLayout';
 import PageNotFoundLayout from './layouts/PageNotFoundLayout';
-declare module '@material-ui/core/styles/createPalette' {
-  interface Palette {
-    titleColor: '#000000';
-    lightSilverShade: '#F0F0F0';
-    greyShadeColor: '#474747';
-    sapphireColor: '#061751';
-  }
-}
-
-const nebraskaTheme = createMuiTheme({
-  palette: {
-    primary: {
-      contrastText: '#fff',
-      main: process.env.REACT_APP_PRIMARY_COLOR ? process.env.REACT_APP_PRIMARY_COLOR : '#2C98F0',
-    },
-    success: {
-      main: green['500'],
-      ...green,
-    },
-  },
-  typography: {
-    fontFamily: 'Overpass, sans-serif',
-    h1: {
-      fontSize: '1.875rem',
-      fontWeight: 900,
-    },
-    h2: {
-      fontSize: '1.875rem',
-      fontWeight: 900,
-    },
-    h3: {
-      fontSize: '1.875rem',
-      fontWeight: 900,
-    },
-    h4: {
-      fontSize: '1.875rem',
-      fontWeight: 900,
-    },
-    subtitle1: {
-      fontSize: '0.875rem',
-      color: 'rgba(0,0,0,0.6)',
-    },
-  },
-  shape: {
-    borderRadius: 0,
-  },
-});
 
 const useStyle = makeStyles(() => ({
   // importing visuallyHidden has typing issues at time of writing.
@@ -86,6 +38,13 @@ const useStyle = makeStyles(() => ({
 export default function Main() {
   const dispatch = useDispatch();
   const classes = useStyle();
+  // let themeName = useTypedSelector(state => state.ui.theme.name);
+  let themeName = 'light';
+  usePrefersColorScheme();
+
+  if (!themeName) {
+    themeName = getThemeName();
+  }
 
   React.useEffect(() => {
     API.getConfig().then(config => {
@@ -97,7 +56,7 @@ export default function Main() {
   useAuthRedirect();
 
   return (
-    <ThemeProviderNexti18n theme={nebraskaTheme}>
+    <ThemeProviderNexti18n theme={themes[themeName]}>
       <CssBaseline />
       <Link href="#main" className={classes.visuallyHidden}>
         Skip to main content

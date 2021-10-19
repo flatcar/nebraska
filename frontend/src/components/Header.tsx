@@ -3,13 +3,7 @@ import { Box, Button } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import IconButton from '@material-ui/core/IconButton';
 import Menu, { MenuProps } from '@material-ui/core/Menu';
-import {
-  createMuiTheme,
-  makeStyles,
-  Theme,
-  ThemeProvider,
-  useTheme,
-} from '@material-ui/core/styles';
+import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -19,6 +13,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
 import nebraskaLogo from '../icons/nebraska-logo.json';
+import themes from '../lib/themes';
 import { UserState } from '../stores/redux/features/user';
 import { useSelector } from '../stores/redux/hooks';
 
@@ -46,19 +41,6 @@ const useStyles = makeStyles(theme => ({
     fontSize: '1.2em',
   },
 }));
-
-function prepareDarkTheme(theme: Theme) {
-  return createMuiTheme({
-    ...theme,
-    palette: {
-      type: 'dark',
-      primary: {
-        contrastText: '#fff',
-        main: '#000',
-      },
-    },
-  });
-}
 
 interface NebraskaConfig {
   title?: string;
@@ -158,7 +140,6 @@ function Appbar(props: AppbarProps) {
 
 export default function Header() {
   const { config, user } = useSelector(state => ({ config: state.config, user: state.user }));
-  const theme = useTheme();
   const projectLogo = _.isEmpty(nebraskaLogo) ? null : nebraskaLogo;
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLButtonElement | null>(null);
 
@@ -180,10 +161,11 @@ export default function Header() {
   } as AppbarProps;
   const appBar = <Appbar {...props} />;
   // cachedConfig.appBarColor is for backward compatibility (the name used for the setting before).
+  // @todo: Use themes@getThemeName to get the name.
   return config &&
     (config.header_style === 'dark' ||
       (config.header_style === undefined && config.appBarColor === 'dark')) ? (
-    <ThemeProvider theme={prepareDarkTheme(theme)}>{appBar}</ThemeProvider>
+    <ThemeProvider theme={themes.dark}>{appBar}</ThemeProvider>
   ) : (
     appBar
   );
