@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Card Something 1`] = `
+<div
+  id="root"
+>
+  <span
+    class="MuiTypography-root makeStyles-featureLabel MuiTypography-body1"
+  >
+    meow
+  </span>
+</div>
+`;

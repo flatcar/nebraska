@@ -44,7 +44,11 @@ const useStyles = makeStyles(theme => ({
   }),
 }));
 
-export function CardFeatureLabel(props: { children: React.ReactNode }) {
+export interface CardFeatureLabelProps {
+  children: React.ReactNode;
+}
+
+export function CardFeatureLabel(props: CardFeatureLabelProps) {
   const classes = useStyles();
   return (
     <Typography component="span" className={classes.featureLabel}>

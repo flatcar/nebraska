@@ -1,20 +1,20 @@
 import React from 'react';
 import themesConf from '../src/lib/themes';
-import { ThemeProvider, StylesProvider } from '@material-ui/core/styles';
+import { StylesProvider } from '@material-ui/core/styles';
+import '../src/i18n/config';
+import ThemeProviderNexti18n from '../src/i18n/ThemeProviderNexti18n';
 
 const darkTheme = themesConf['dark'];
 const lightTheme = themesConf['light'];
 
 const withThemeProvider = (Story, context) => {
-  const backgroundColor = context.globals.backgrounds
-    ? context.globals.backgrounds.value
-    : 'light';
+  const backgroundColor = context.globals.backgrounds ? context.globals.backgrounds.value : 'light';
   const theme = backgroundColor !== 'dark' ? lightTheme : darkTheme;
 
   const ourThemeProvider = (
-    <ThemeProvider theme={theme}>
+    <ThemeProviderNexti18n theme={theme}>
       <Story {...context} />
-    </ThemeProvider>
+    </ThemeProviderNexti18n>
   );
   if (process.env.NODE_ENV !== 'test') {
     return ourThemeProvider;
@@ -23,10 +23,8 @@ const withThemeProvider = (Story, context) => {
       `${styleSheet?.options.classNamePrefix}-${rule.key}`;
 
     return (
-      <StylesProvider generateClassName={generateClassName}>
-        {ourThemeProvider}
-      </StylesProvider>
-    )
+      <StylesProvider generateClassName={generateClassName}>{ourThemeProvider}</StylesProvider>
+    );
   }
 };
 export const decorators = [withThemeProvider];
