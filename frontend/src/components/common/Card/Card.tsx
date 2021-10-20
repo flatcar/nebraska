@@ -57,7 +57,11 @@ export function CardFeatureLabel(props: CardFeatureLabelProps) {
   );
 }
 
-export function CardDescriptionLabel(props: { children: React.ReactNode }) {
+export interface CardDescriptionLabelProps {
+  children: React.ReactNode;
+}
+
+export function CardDescriptionLabel(props: CardDescriptionLabelProps) {
   const classes = useStyles();
   return (
     <Box mt={2}>
@@ -68,7 +72,12 @@ export function CardDescriptionLabel(props: { children: React.ReactNode }) {
   );
 }
 
-export function CardLabel(props: { children: React.ReactNode; labelStyle?: object }) {
+export interface CardLabelProps {
+  children: React.ReactNode;
+  labelStyle?: object;
+}
+
+export function CardLabel(props: CardLabelProps) {
   const { labelStyle = {} } = props;
   const classes = useStyles(labelStyle);
   return (
@@ -78,7 +87,7 @@ export function CardLabel(props: { children: React.ReactNode; labelStyle?: objec
   );
 }
 
-interface CardHeaderProps {
+export interface CardHeaderProps {
   cardMainLinkPath?: string | { pathname: string };
   cardMainLinkLabel?: string;
   cardTrack?: string;
