@@ -409,9 +409,6 @@ func (api *API) GetInstances(p InstancesQueryParams, duration string) (Instances
 		return InstancesWithTotal{}, err
 	}
 	defer rows.Close()
-	if err := rows.Err(); err != nil {
-		return InstancesWithTotal{}, err
-	}
 	for rows.Next() {
 		var instance Instance
 		err = rows.Scan(&instance.ID, &instance.IP, &instance.CreatedTs, &instance.Alias,
@@ -422,6 +419,9 @@ func (api *API) GetInstances(p InstancesQueryParams, duration string) (Instances
 			return InstancesWithTotal{}, err
 		}
 		instances = append(instances, &instance)
+	}
+	if err := rows.Err(); err != nil {
+		return InstancesWithTotal{}, err
 	}
 	result := InstancesWithTotal{
 		TotalInstances: totalCount,
