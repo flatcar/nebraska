@@ -142,7 +142,7 @@ func (api *API) hasRecentActivity(class int, p ActivityQueryParams) bool {
 	recent := time.Now().UTC().Add(-24 * time.Hour)
 
 	query := goqu.From("activity").
-		Select("*").
+		Select("id").
 		Where(goqu.C("class").Eq(class)).
 		Where(goqu.C("created_ts").Gt(recent))
 
@@ -172,17 +172,18 @@ func (api *API) hasRecentActivity(class int, p ActivityQueryParams) bool {
 		query = query.Where(goqu.L(ignoreFakeInstanceCondition("instance_id")))
 	}
 
+	query = query.Limit(1)
+
 	sql, _, err := query.ToSQL()
 	if err != nil {
 		return false
 	}
 
-	rows, err := api.db.Queryx(sql)
-	if err != nil {
+	id := 0
+	if err := api.db.QueryRow(sql).Scan(&id); err != nil {
 		return false
 	}
-	defer rows.Close()
-	return rows.Next()
+	return true
 }
 
 // newGroupActivityEntry creates a new activity entry related to a specific
