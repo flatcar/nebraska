@@ -4,10 +4,12 @@ on:
     paths:
     - 'backend/cmd/**'
     - 'backend/pkg/**'
+    - 'backend/tools/**'
     - 'backend/go.mod'
     - 'backend/go.sum'
     - 'updaters/**'
     - '.github/**'
+    - Makefile
 
 jobs:
 
