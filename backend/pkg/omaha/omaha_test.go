@@ -375,7 +375,7 @@ func Test_getArch(t *testing.T) {
 				os: &omahaSpec.OS{
 					Arch: "all",
 				},
-				appReq: &omahaSpec.AppRequest{},
+				appReq: nil,
 			},
 			want: api.ArchAll,
 		},
@@ -392,9 +392,7 @@ func Test_getArch(t *testing.T) {
 		{
 			name: "coreOS amd64",
 			args: args{
-				os: &omahaSpec.OS{
-					Arch: "",
-				},
+				os: nil,
 				appReq: &omahaSpec.AppRequest{
 					Board: "amd64-usr",
 				},
@@ -442,6 +440,14 @@ func Test_getArch(t *testing.T) {
 				appReq: &omahaSpec.AppRequest{},
 			},
 			want: api.ArchX86,
+		},
+		{
+			name: "nil",
+			args: args{
+				os:     nil,
+				appReq: nil,
+			},
+			want: api.ArchAMD64,
 		},
 	}
 	for _, tt := range tests {

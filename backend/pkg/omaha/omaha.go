@@ -73,9 +73,12 @@ func (h *Handler) Handle(rawReq io.Reader, respWriter io.Writer, ip string) erro
 }
 
 func getArch(os *omahaSpec.OS, appReq *omahaSpec.AppRequest) api.Arch {
-	if arch, err := api.ArchFromCoreosString(appReq.Board); err == nil {
-		return arch
+	if appReq != nil {
+		if arch, err := api.ArchFromCoreosString(appReq.Board); err == nil {
+			return arch
+		}
 	}
+
 	if os != nil {
 		if arch, err := api.ArchFromOmahaString(os.Arch); err == nil {
 			return arch
