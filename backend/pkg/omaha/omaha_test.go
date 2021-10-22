@@ -3,13 +3,12 @@ package omaha
 import (
 	"bytes"
 	"encoding/xml"
-	"log"
 	"os"
+	"reflect"
 	"testing"
 
-	"github.com/kinvolk/nebraska/backend/pkg/api"
-
 	omahaSpec "github.com/kinvolk/go-omaha/omaha"
+	"github.com/kinvolk/nebraska/backend/pkg/api"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/guregu/null.v4"
@@ -26,7 +25,23 @@ const (
 	reqArch     string = "x64"
 )
 
+func checkDB(t *testing.T) {
+	if _, ok := os.LookupEnv("NEBRASKA_DB_URL"); !ok {
+		t.Logf("NEBRASKA_DB_URL not set, setting to default %q\n", defaultTestDbURL)
+		_ = os.Setenv("NEBRASKA_DB_URL", defaultTestDbURL)
+	}
+
+	a, err := api.New(api.OptionInitDB)
+	if err != nil {
+		t.Error("These tests require PostgreSQL running and a tests database created, please adjust NEBRASKA_DB_URL as needed.")
+		t.Fatalf("Failed to init DB: %v\n", err)
+	}
+	a.Close()
+}
+
 func newForTest(t *testing.T) *api.API {
+	checkDB(t)
+
 	a, err := api.NewForTest(api.OptionInitDB, api.OptionDisableUpdatesOnFailedRollout)
 
 	require.NoError(t, err)
@@ -39,19 +54,6 @@ func TestMain(m *testing.M) {
 	if os.Getenv("NEBRASKA_SKIP_TESTS") != "" {
 		return
 	}
-
-	if _, ok := os.LookupEnv("NEBRASKA_DB_URL"); !ok {
-		log.Printf("NEBRASKA_DB_URL not set, setting to default %q\n", defaultTestDbURL)
-		_ = os.Setenv("NEBRASKA_DB_URL", defaultTestDbURL)
-	}
-
-	a, err := api.New(api.OptionInitDB)
-	if err != nil {
-		log.Printf("Failed to init DB: %v\n", err)
-		log.Println("These tests require PostgreSQL running and a tests database created, please adjust NEBRASKA_DB_URL as needed.")
-		os.Exit(1)
-	}
-	a.Close()
 
 	os.Exit(m.Run())
 }
