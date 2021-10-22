@@ -108,13 +108,17 @@ function List(props: { appID: string }) {
       applicationsStore.getApplication(props.appID);
     } else {
       // Fetch packages
-      API.getPackages(application.id).then(result => {
-        if (_.isNull(result)) {
-          setPackages([]);
-        } else {
-          setPackages(result);
-        }
-      });
+      API.getPackages(application.id)
+        .then(result => {
+          if (_.isNull(result)) {
+            setPackages([]);
+          } else {
+            setPackages(result);
+          }
+        })
+        .catch(err => {
+          console.error('Error getting the packages for the channel: ', err);
+        });
     }
 
     return function cleanup() {
