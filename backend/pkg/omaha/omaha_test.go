@@ -26,6 +26,8 @@ const (
 )
 
 func checkDB(t *testing.T) {
+	t.Helper()
+
 	if _, ok := os.LookupEnv("NEBRASKA_DB_URL"); !ok {
 		t.Logf("NEBRASKA_DB_URL not set, setting to default %q\n", defaultTestDbURL)
 		_ = os.Setenv("NEBRASKA_DB_URL", defaultTestDbURL)
@@ -355,4 +357,98 @@ func checkOmahaFlatcarAction(t *testing.T, c *api.FlatcarAction, r *omahaSpec.Ac
 	assert.Equal(t, c.MetadataSize, r.MetadataSize)
 	assert.Equal(t, c.NeedsAdmin, r.NeedsAdmin)
 	assert.Equal(t, c.MetadataSignatureRsa, r.MetadataSignatureRsa)
+}
+
+func Test_getArch(t *testing.T) {
+	type args struct {
+		os     *omahaSpec.OS
+		appReq *omahaSpec.AppRequest
+	}
+	tests := []struct {
+		name string
+		args args
+		want api.Arch
+	}{
+		{
+			name: "all",
+			args: args{
+				os: &omahaSpec.OS{
+					Arch: "all",
+				},
+				appReq: &omahaSpec.AppRequest{},
+			},
+			want: api.ArchAll,
+		},
+		{
+			name: "empty",
+			args: args{
+				os: &omahaSpec.OS{
+					Arch: "",
+				},
+				appReq: &omahaSpec.AppRequest{},
+			},
+			want: api.ArchAMD64,
+		},
+		{
+			name: "coreOS amd64",
+			args: args{
+				os: &omahaSpec.OS{
+					Arch: "",
+				},
+				appReq: &omahaSpec.AppRequest{
+					Board: "amd64-usr",
+				},
+			},
+			want: api.ArchAMD64,
+		},
+		{
+			name: "coreOS arm64",
+			args: args{
+				os: &omahaSpec.OS{
+					Arch: "",
+				},
+				appReq: &omahaSpec.AppRequest{
+					Board: "arm64-usr",
+				},
+			},
+			want: api.ArchAArch64,
+		},
+		{
+			name: "flatpak amd64",
+			args: args{
+				os: &omahaSpec.OS{
+					Arch: "x64",
+				},
+				appReq: &omahaSpec.AppRequest{},
+			},
+			want: api.ArchAMD64,
+		},
+		{
+			name: "flatpak arm64",
+			args: args{
+				os: &omahaSpec.OS{
+					Arch: "arm",
+				},
+				appReq: &omahaSpec.AppRequest{},
+			},
+			want: api.ArchAArch64,
+		},
+		{
+			name: "flatpak x86",
+			args: args{
+				os: &omahaSpec.OS{
+					Arch: "x86",
+				},
+				appReq: &omahaSpec.AppRequest{},
+			},
+			want: api.ArchX86,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := getArch(tt.args.os, tt.args.appReq); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("getArch() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
