@@ -56,6 +56,7 @@ id_file=''
 db_name=''
 password=''
 port=''
+pg_version='latest'
 
 # This is used as a bare variable (without putting into double quotes)
 # to enable the use of DOCKER_CMD="sudo docker".
@@ -77,6 +78,10 @@ while true; do
             ;;
         '-P'|'--port')
             port="${2}"
+            shift 2
+            ;;
+        '-d'|'--pg_version')
+            pg_version="${2}"
             shift 2
             ;;
         '--')
@@ -101,6 +106,9 @@ if [[ -z "${db_name}" ]]; then
 fi
 if [[ -z "${port}" ]]; then
     port=5432
+fi
+if [[ -z "${pg_version}" ]]; then
+    pg_version="latest"
 fi
 
 cleanup_stage=0
@@ -131,7 +139,7 @@ else
 fi
 
 run_opts+=(
-    postgres
+    postgres:"${pg_version}"
 )
 
 cleanup_stage=1

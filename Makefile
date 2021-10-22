@@ -39,6 +39,7 @@ container_id:
 		--id-file container_id.tmp \
 		--db-name nebraska_tests \
 		--password nebraska
+		--pg_version 13.3
 	cd backend && mv container_id.tmp container_id
 
 .PHONY: check-backend-with-container
