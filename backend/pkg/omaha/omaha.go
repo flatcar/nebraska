@@ -87,7 +87,7 @@ func getArch(os *omahaSpec.OS, appReq *omahaSpec.AppRequest) api.Arch {
 			return arch
 		}
 	}
-	logger.Debug().Msg("getArch - unknown arch, assuming amd64 arch")
+	logger.Debug().Msgf("getArch - unknown arch, assuming amd64 arch")
 	return api.ArchAMD64
 }
 
