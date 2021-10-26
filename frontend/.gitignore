@@ -21,3 +21,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+node_modules
+yarn-error.log
+src/js/icons/*.json
