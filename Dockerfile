@@ -1,10 +1,13 @@
-FROM golang:1.16-alpine as nebraska-build
+# syntax=docker/dockerfile:1.3
+
+FROM docker.io/library/golang:1.16 as backend
 
 ARG NEBRASKA_VERSION=""
 
 ENV GOPATH=/go \
-    GOPROXY=https://proxy.golang.org \
-	GO111MODULE=on
+	GOPROXY=https://proxy.golang.org \
+	GO111MODULE=on \
+	CGO_ENABLED=0
 
 # We optionally allow to set the version to display for the image.
 # This is mainly used because when copying the source dir, docker will
@@ -13,23 +16,33 @@ ENV GOPATH=/go \
 # there's none).
 ENV VERSION=${NEBRASKA_VERSION}
 
-RUN apk update && \
-	apk add gcc git nodejs npm ca-certificates make musl-dev bash
+WORKDIR /app
 
-COPY . /nebraska-source/
+COPY backend .
 
-WORKDIR /nebraska-source
+RUN --mount=type=cache,target=$GOPATH/pkg/mod \
+	make build
 
-RUN make frontend build-backend-binary
+FROM docker.io/library/node:15 as frontend
 
-FROM alpine:3.14.0
+WORKDIR /app
 
-RUN apk update && \
-	apk add ca-certificates tzdata
+COPY frontend/package*.json .
 
-COPY --from=nebraska-build /nebraska-source/backend/bin/nebraska /nebraska/
-COPY --from=nebraska-build /nebraska-source/frontend/build/ /nebraska/static/
+RUN --mount=type=cache,target=node_modules \
+	npm install
+
+COPY frontend .
+
+RUN --mount=type=cache,target=node_modules \
+	make
+
+FROM gcr.io/distroless/static
+
+COPY --from=backend /app/bin/nebraska /nebraska/
+COPY --from=frontend /app/build/ /nebraska/static/
 
 ENV NEBRASKA_DB_URL "postgres://postgres@postgres:5432/nebraska?sslmode=disable&connect_timeout=10"
 EXPOSE 8000
-CMD ["/nebraska/nebraska", "-http-static-dir=/nebraska/static"]
+USER nobody
+ENTRYPOINT ["/nebraska/nebraska", "-http-static-dir=/nebraska/static"]
