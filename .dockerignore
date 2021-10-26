@@ -1,7 +1,18 @@
+Dockerfile
+.dockerignore
+
+.git
+.gitignore
+
+# frontend
 **/node_modules
 frontend/build
-docs/
-bin/nebraska
-backend/tools/
+
+# backend
 backend/bin
+backend/coverage.out
+backend/tools/go-bindata
+backend/tools/golangci-lint
+
+docs/
 charts/
