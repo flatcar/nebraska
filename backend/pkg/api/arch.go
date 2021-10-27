@@ -69,7 +69,7 @@ func (a Arch) IsValid() bool {
 
 func pkgArchFromIdxString(s string, idx int) (Arch, error) {
 	if s == "" {
-		return ArchAll, ErrInvalidArch
+		return 0, ErrInvalidArch
 	}
 	for i := 0; i < len(archStringData); i++ {
 		if s == archStringData[i][idx] {

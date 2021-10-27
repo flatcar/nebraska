@@ -3,16 +3,16 @@ package omaha
 import (
 	"bytes"
 	"encoding/xml"
-	"log"
 	"os"
+	"reflect"
 	"testing"
-
-	"github.com/kinvolk/nebraska/backend/pkg/api"
 
 	omahaSpec "github.com/kinvolk/go-omaha/omaha"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/guregu/null.v4"
+
+	"github.com/kinvolk/nebraska/backend/pkg/api"
 )
 
 const (
@@ -26,7 +26,25 @@ const (
 	reqArch     string = "x64"
 )
 
+func checkDB(t *testing.T) {
+	t.Helper()
+
+	if _, ok := os.LookupEnv("NEBRASKA_DB_URL"); !ok {
+		t.Logf("NEBRASKA_DB_URL not set, setting to default %q\n", defaultTestDbURL)
+		_ = os.Setenv("NEBRASKA_DB_URL", defaultTestDbURL)
+	}
+
+	a, err := api.New(api.OptionInitDB)
+	if err != nil {
+		t.Error("These tests require PostgreSQL running and a tests database created, please adjust NEBRASKA_DB_URL as needed.")
+		t.Fatalf("Failed to init DB: %v\n", err)
+	}
+	a.Close()
+}
+
 func newForTest(t *testing.T) *api.API {
+	checkDB(t)
+
 	a, err := api.NewForTest(api.OptionInitDB, api.OptionDisableUpdatesOnFailedRollout)
 
 	require.NoError(t, err)
@@ -39,19 +57,6 @@ func TestMain(m *testing.M) {
 	if os.Getenv("NEBRASKA_SKIP_TESTS") != "" {
 		return
 	}
-
-	if _, ok := os.LookupEnv("NEBRASKA_DB_URL"); !ok {
-		log.Printf("NEBRASKA_DB_URL not set, setting to default %q\n", defaultTestDbURL)
-		_ = os.Setenv("NEBRASKA_DB_URL", defaultTestDbURL)
-	}
-
-	a, err := api.New(api.OptionInitDB)
-	if err != nil {
-		log.Printf("Failed to init DB: %v\n", err)
-		log.Println("These tests require PostgreSQL running and a tests database created, please adjust NEBRASKA_DB_URL as needed.")
-		os.Exit(1)
-	}
-	a.Close()
 
 	os.Exit(m.Run())
 }
@@ -353,4 +358,104 @@ func checkOmahaFlatcarAction(t *testing.T, c *api.FlatcarAction, r *omahaSpec.Ac
 	assert.Equal(t, c.MetadataSize, r.MetadataSize)
 	assert.Equal(t, c.NeedsAdmin, r.NeedsAdmin)
 	assert.Equal(t, c.MetadataSignatureRsa, r.MetadataSignatureRsa)
+}
+
+func Test_getArch(t *testing.T) {
+	type args struct {
+		os     *omahaSpec.OS
+		appReq *omahaSpec.AppRequest
+	}
+	tests := []struct {
+		name string
+		args args
+		want api.Arch
+	}{
+		{
+			name: "all",
+			args: args{
+				os: &omahaSpec.OS{
+					Arch: "all",
+				},
+				appReq: nil,
+			},
+			want: api.ArchAll,
+		},
+		{
+			name: "empty",
+			args: args{
+				os: &omahaSpec.OS{
+					Arch: "",
+				},
+				appReq: &omahaSpec.AppRequest{},
+			},
+			want: api.ArchAMD64,
+		},
+		{
+			name: "coreOS amd64",
+			args: args{
+				os: nil,
+				appReq: &omahaSpec.AppRequest{
+					Board: "amd64-usr",
+				},
+			},
+			want: api.ArchAMD64,
+		},
+		{
+			name: "coreOS arm64",
+			args: args{
+				os: &omahaSpec.OS{
+					Arch: "",
+				},
+				appReq: &omahaSpec.AppRequest{
+					Board: "arm64-usr",
+				},
+			},
+			want: api.ArchAArch64,
+		},
+		{
+			name: "flatpak amd64",
+			args: args{
+				os: &omahaSpec.OS{
+					Arch: "x64",
+				},
+				appReq: &omahaSpec.AppRequest{},
+			},
+			want: api.ArchAMD64,
+		},
+		{
+			name: "flatpak arm64",
+			args: args{
+				os: &omahaSpec.OS{
+					Arch: "arm",
+				},
+				appReq: &omahaSpec.AppRequest{},
+			},
+			want: api.ArchAArch64,
+		},
+		{
+			name: "flatpak x86",
+			args: args{
+				os: &omahaSpec.OS{
+					Arch: "x86",
+				},
+				appReq: &omahaSpec.AppRequest{},
+			},
+			want: api.ArchX86,
+		},
+		{
+			name: "nil",
+			args: args{
+				os:     nil,
+				appReq: nil,
+			},
+			want: api.ArchAMD64,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := getArch(tt.args.os, tt.args.appReq); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("getArch() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
