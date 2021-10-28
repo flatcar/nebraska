@@ -22,8 +22,7 @@ import { Channel, Package } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import { ARCHES } from '../../utils/helpers';
 import AutoCompletePicker from '../common/AutoCompletePicker';
-import { ColorPickerButton } from '../common/ColorPicker';
-import ChannelAvatar from './ChannelAvatar';
+import ColorPicker from '../common/ColorPicker';
 
 const useStyles = makeStyles({
   nameField: {
@@ -96,10 +95,6 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
           ),
         });
       });
-  }
-
-  function handleColorPicked(color: { hex: string }) {
-    setChannelColor(color.hex);
   }
 
   function handleArchChange(event: React.ChangeEvent<{ value: any }>) {
@@ -178,13 +173,9 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
           )}
           <Grid container spacing={2} justify="space-between" alignItems="center" wrap="nowrap">
             <Grid item>
-              <ColorPickerButton
-                color={channelColor}
-                onColorPicked={handleColorPicked}
-                componentColorProp="color"
-              >
-                <ChannelAvatar>{values.name ? values.name[0] : ''}</ChannelAvatar>
-              </ColorPickerButton>
+              <ColorPicker color={channelColor} onColorPicked={color => setChannelColor(color.hex)}>
+                {values.name ? values.name[0] : ''}
+              </ColorPicker>
             </Grid>
             <Grid item container alignItems="flex-start" spacing={2}>
               <Grid item className={classes.nameField}>

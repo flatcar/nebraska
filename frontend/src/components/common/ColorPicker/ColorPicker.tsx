@@ -14,22 +14,22 @@ const useStyles = makeStyles({
   },
 });
 
-interface ColorPickerButtonProps {
+export interface ColorPickerProps {
+  /** Text color, applied to the children and used in the popover. */
   color: string;
+  /** When a color is chosen. */
   onColorPicked: (color: { hex: string }) => void;
-  componentColorProp: string;
+  /** Should the color picker be displayed initially? */
+  initialOpen?: boolean;
   children: React.ReactElement<any>;
 }
 
-export function ColorPickerButton(props: ColorPickerButtonProps) {
+export default function ColorPicker(props: ColorPickerProps) {
   const classes = useStyles();
   const [channelColor, setChannelColor] = React.useState(props.color);
-  const [displayColorPicker, setDisplayColorPicker] = React.useState(false);
+  const [displayColorPicker, setDisplayColorPicker] = React.useState(props.initialOpen);
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const { onColorPicked, componentColorProp } = props;
-
-  const componentProps: { [key: string]: string } = {};
-  componentProps[componentColorProp] = channelColor;
+  const { onColorPicked } = props;
 
   function handleColorChange(color: { hex: string }) {
     setChannelColor(color.hex);
@@ -54,12 +54,12 @@ export function ColorPickerButton(props: ColorPickerButtonProps) {
         data-testid="icon-button"
       >
         {props.children ? (
-          React.cloneElement(props.children as React.ReactElement<any>, componentProps)
+          <ChannelAvatar color={channelColor}>{props.children}</ChannelAvatar>
         ) : (
           <ChannelAvatar color={channelColor} />
         )}
       </IconButton>
-      {displayColorPicker && (
+      {displayColorPicker && anchorEl && (
         <Popover
           data-testid="popover"
           open={displayColorPicker}
