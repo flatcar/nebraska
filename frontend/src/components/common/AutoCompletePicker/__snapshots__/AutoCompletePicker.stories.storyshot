@@ -1,0 +1,63 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots AutoCompletePicker Closed 1`] = `
+<div
+  id="root"
+>
+  <div>
+    <div
+      class="MuiFormControl-root MuiFormControl-fullWidth"
+    >
+      <label
+        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiFormLabel-filled"
+        data-shrink="true"
+      >
+        Package
+      </label>
+      <div
+        class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-formControl MuiInput-formControl"
+      >
+        <input
+          aria-invalid="false"
+          class="MuiInputBase-input MuiInput-input makeStyles-pickerButtonInput"
+          placeholder="Pick a package"
+          readonly=""
+          type="text"
+          value="2261.0.0"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Storyshots AutoCompletePicker Open 1`] = `
+<div
+  id="root"
+>
+  <div>
+    <div
+      class="MuiFormControl-root MuiFormControl-fullWidth"
+    >
+      <label
+        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiFormLabel-filled"
+        data-shrink="true"
+      >
+        Package
+      </label>
+      <div
+        class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-formControl MuiInput-formControl"
+      >
+        <input
+          aria-invalid="false"
+          class="MuiInputBase-input MuiInput-input makeStyles-pickerButtonInput"
+          placeholder="Pick a package"
+          readonly=""
+          type="text"
+          value="2261.0.0"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;

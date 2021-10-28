@@ -97,14 +97,6 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
       });
   }
 
-  function handleArchChange(event: React.ChangeEvent<{ value: any }>) {
-    setArch(event.target.value);
-  }
-
-  function handleClose() {
-    props.onHide();
-  }
-
   function fetchPackages(term: string, page: number) {
     API.getPackages(props.data.applicationID, term || '', {
       page: (page || 0) + 1,
@@ -197,7 +189,10 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
           </Grid>
           <FormControl margin="dense" disabled={!isCreation} fullWidth>
             <InputLabel>Architecture</InputLabel>
-            <MuiSelect value={arch} onChange={handleArchChange}>
+            <MuiSelect
+              value={arch}
+              onChange={(event: React.ChangeEvent<{ value: any }>) => setArch(event.target.value)}
+            >
               {Object.keys(ARCHES).map((key: string) => {
                 const archName = ARCHES[parseInt(key)];
                 return (
@@ -226,7 +221,7 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
                 .filter((packageItem: Package) => packageItem.version === packageVersion);
               setFieldValue('package', selectedPackage[0].id);
             }}
-            getSuggestions={packages.packages
+            suggestions={packages.packages
               .filter((packageItem: Package) => packageItem.arch === arch)
               .map((packageItem: Package) => {
                 const date = new Date(packageItem.created_ts);
@@ -248,7 +243,7 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={() => props.onHide()} color="primary">
             {t('frequent|Cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting} color="primary">
@@ -272,7 +267,7 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
   }
 
   return (
-    <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
+    <Dialog open={props.show} onClose={() => props.onHide()} aria-labelledby="form-dialog-title">
       <DialogTitle>
         {isCreation ? t('channels|Add New Channel') : t('channels|Edit Channel')}
       </DialogTitle>

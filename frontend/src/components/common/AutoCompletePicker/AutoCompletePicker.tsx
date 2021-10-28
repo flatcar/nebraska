@@ -61,7 +61,6 @@ interface RenderSuggestionProps {
   itemProps: object;
   selectedItem: string;
   suggestion: {
-    label: string;
     primary: string;
     secondary: string;
   };
@@ -80,24 +79,27 @@ function renderSuggestion(suggestionProps: RenderSuggestionProps) {
   );
 }
 
-function getSuggestions(
+/**
+ * Filters suggestions to those which match value.
+ * @param value to search for.
+ * @param selectedItem if the value is already selected, return unfiltered suggestions.
+ * @param suggestions to search through.
+ * @returns filtered suggestions that match value.
+ */
+function filterSuggestions(
   value: string | null,
   selectedItem: string,
   suggestions: RenderSuggestionProps['suggestion'][]
 ) {
-  if (!value) {
+  if (!value || value === selectedItem) {
     return suggestions;
   }
 
   const inputValue = value.toLowerCase();
 
-  if (value === selectedItem) return suggestions;
-
-  return inputValue.length === 0
-    ? suggestions
-    : suggestions.filter(suggestion => {
-        return suggestion.primary.toLowerCase().includes(inputValue);
-      });
+  return suggestions.filter(suggestion => {
+    return suggestion.primary.toLowerCase().includes(inputValue);
+  });
 }
 
 const useStyles = makeStyles({
@@ -155,45 +157,39 @@ function LazyList(props: LazyListProps) {
     </FixedSizeList>
   );
 }
-interface AutoCompletePickerProps {
+
+export interface AutoCompletePickerProps {
+  /** The default value. Use when the component is not controlled. */
   defaultValue: string;
-  getSuggestions: RenderSuggestionProps['suggestion'][];
+  /** Suggestions that can be picked. */
+  suggestions: RenderSuggestionProps['suggestion'][];
+  /** Callback fired when the value is selected. */
   onSelect: (selectedValue: string) => void;
+  /** The label content. */
   label: string;
+  /** The short hint displayed in the input before the user enters a value. */
   placeholder: string;
+  /** Title shown when the picker is being displayed. */
   dialogTitle: string;
+  /** A separate placeholder for the picker. */
   pickerPlaceholder: string;
   onValueChanged: (value?: string | null) => void;
+  /**  */
   onBottomScrolled?: () => void;
+  /** Should the color picker be displayed initially? */
+  initialOpen?: boolean;
 }
 
 export default function AutoCompletePicker(props: AutoCompletePickerProps) {
-  const [showPicker, setShowPicker] = React.useState(false);
+  const [showPicker, setShowPicker] = React.useState(props.initialOpen);
   const [selectedValue, setSelectedValue] = React.useState(props.defaultValue);
   const [currentValue, setCurrentValue] = React.useState(props.defaultValue);
-  const suggestions = props.getSuggestions;
   const { onBottomScrolled } = props;
   const { t } = useTranslation();
-
   const classes = useStyles();
-  function onInputActivate() {
-    setShowPicker(true);
-  }
-
-  function handleClose() {
-    setShowPicker(false);
-    // It's important to send this value as a way to tell that no value is
-    // selected any longer.
-    props.onValueChanged(null);
-  }
-
-  function handleSelect() {
-    setShowPicker(false);
-    setCurrentValue(selectedValue);
-    props.onSelect(selectedValue);
-  }
 
   function onInputChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    setSelectedValue(event.target.value);
     props.onValueChanged(event.target.value);
   }
 
@@ -215,7 +211,9 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
       <FormControl fullWidth>
         <InputLabel shrink>{props.label}</InputLabel>
         <Input
-          onClick={onInputActivate}
+          onClick={() => {
+            setShowPicker(true);
+          }}
           inputProps={{
             className: classes.pickerButtonInput,
           }}
@@ -224,7 +222,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
           readOnly
         />
       </FormControl>
-      <Dialog open={showPicker}>
+      <Dialog open={showPicker || false}>
         <DialogTitle>{props.dialogTitle}</DialogTitle>
         <DialogContent>
           <Downshift id="downshift-options">
@@ -236,8 +234,6 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
               inputValue,
               selectedItem,
             }) => {
-              setSelectedValue(selectedItem);
-
               const { onBlur, onFocus, ...inputProps } = getInputProps();
 
               return (
@@ -255,7 +251,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
                     onKeyDown: handleEscape,
                   })}
                   <LazyList
-                    options={getSuggestions(inputValue, selectedItem, suggestions)}
+                    options={filterSuggestions(inputValue, selectedItem, props.suggestions)}
                     itemData={{
                       getItemProps,
                       highlightedIndex,
@@ -272,10 +268,25 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
           </Downshift>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button
+            onClick={() => {
+              setShowPicker(false);
+              // It's important to send this value as a way to tell that no value is
+              // selected any longer.
+              props.onValueChanged(null);
+            }}
+            color="primary"
+          >
             {t('frequent|Cancel')}
           </Button>
-          <Button onClick={handleSelect} color="primary">
+          <Button
+            onClick={() => {
+              setShowPicker(false);
+              setCurrentValue(selectedValue);
+              props.onSelect(selectedValue);
+            }}
+            color="primary"
+          >
             {t('frequent|Select')}
           </Button>
         </DialogActions>
