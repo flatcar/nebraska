@@ -275,7 +275,7 @@ func (s *Syncer) processUpdate(descriptor channelDescriptor, update *omaha.Updat
 
 		pkg = &api.Package{
 			Type:          api.PkgTypeFlatcar,
-			URL:           url,
+			URL:           null.StringFrom(url),
 			Version:       update.Manifest.Version,
 			Filename:      null.StringFrom(filename),
 			Size:          null.StringFrom(strconv.FormatUint(update.Manifest.Packages[0].Size, 10)),
