@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"fmt"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -49,6 +50,9 @@ type Application struct {
 
 // AddApp registers the provided application.
 func (api *API) AddApp(app *Application) (*Application, error) {
+	if err := validateProductID(app.ProductID); err != nil {
+		return nil, fmt.Errorf("cannot add application %v: %w", app.ID, err)
+	}
 	query, _, err := goqu.Insert("application").
 		Cols("name", "product_id", "description", "team_id").
 		Vals(goqu.Vals{app.Name, app.ProductID, app.Description, app.TeamID}).
@@ -117,9 +121,40 @@ func (api *API) AddAppCloning(app *Application, sourceAppID string) (*Applicatio
 	return app, nil
 }
 
+func validateProductID(productID null.String) error {
+	if productID.Ptr() == nil {
+		return nil
+	}
+
+	if len(*productID.Ptr()) > 155 {
+		return fmt.Errorf("product ID %v is not valid (max length 155)", *productID.Ptr())
+	}
+
+	// This regex matches an ID that matches
+	// * At least two segments.
+	// * All characters must be alphanumeric, a dash.
+	// Each segment must start with a letter.
+	// Each segment must not end with a dash.
+	regMatcher := "^[a-zA-Z]+([a-zA-Z0-9\\-]*[a-zA-Z0-9])*(\\.[a-zA-Z]+([a-zA-Z0-1\\-]*[a-zA-Z0-9])*)+$"
+	matches, err := regexp.MatchString(regMatcher, *productID.Ptr())
+	if err != nil {
+		return err
+	}
+
+	if !matches {
+		return fmt.Errorf("product ID %v is not valid (has to be in the form e.g. io.example.App)", *productID.Ptr())
+	}
+
+	return nil
+}
+
 // UpdateApp updates an existing application using the content of the
 // application provided.
 func (api *API) UpdateApp(app *Application) error {
+	if err := validateProductID(app.ProductID); err != nil {
+		return fmt.Errorf("cannot add application %v: %w", app.ID, err)
+	}
+
 	query, _, err := goqu.Update("application").
 		Set(
 			goqu.Record{
@@ -308,7 +343,9 @@ func (api *API) GetAppID(appOrProductID string) (string, error) {
 					}
 
 					if prodIDPtr := app.ProductID.Ptr(); prodIDPtr != nil {
-						cachedAppIDs[*prodIDPtr] = app.ID
+						// lower case so lookups are case insensitive
+						prodIDLower := strings.ToLower(*prodIDPtr)
+						cachedAppIDs[prodIDLower] = app.ID
 					}
 
 					// So we can quickly validate the UUID based IDs
@@ -325,9 +362,13 @@ func (api *API) GetAppID(appOrProductID string) (string, error) {
 
 	// Trim space and the {} that may surround the ID
 	appIDNoBrackets := strings.TrimSpace(appOrProductID)
-	if len(appIDNoBrackets) > 1 && appIDNoBrackets[0] == '{' {
-		appIDNoBrackets = strings.TrimSpace(appIDNoBrackets[1 : len(appIDNoBrackets)-1])
+	lastIdx := len(appIDNoBrackets) - 1
+	if len(appIDNoBrackets) > 2 && appIDNoBrackets[0] == '{' && appIDNoBrackets[lastIdx] == '}' {
+		appIDNoBrackets = strings.TrimSpace(appIDNoBrackets[1:lastIdx])
 	}
+
+	// Case insensitive, so use lower case as key
+	appIDNoBrackets = strings.ToLower(appIDNoBrackets)
 
 	cachedAppID, ok := cachedAppsRef[appIDNoBrackets]
 	if !ok {
