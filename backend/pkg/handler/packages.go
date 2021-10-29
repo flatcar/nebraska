@@ -57,7 +57,7 @@ func (h *Handler) CreatePackage(ctx echo.Context, appID string) error {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	pkg := packageFromRequest(appID, request.Arch, request.ChannelsBlacklist, request.Description, request.Filename, request.Hash, request.Size, request.Url, request.Version, request.Type, request.FlatcarAction, "")
+	pkg := packageFromRequest(appID, request.Arch, request.ChannelsBlacklist, request.Description, request.Filename, request.Hash, request.Size, request.Url, request.Version, request.Type, request.FlatcarAction, "", request.MetadataType, request.MetadataContent)
 
 	pkg, err = h.db.AddPackage(pkg)
 	if err != nil {
@@ -107,7 +107,7 @@ func (h *Handler) UpdatePackage(ctx echo.Context, appID string, packageID string
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	pkg := packageFromRequest(appID, request.Arch, request.ChannelsBlacklist, request.Description, request.Filename, request.Hash, request.Size, request.Url, request.Version, request.Type, request.FlatcarAction, packageID)
+	pkg := packageFromRequest(appID, request.Arch, request.ChannelsBlacklist, request.Description, request.Filename, request.Hash, request.Size, request.Url, request.Version, request.Type, request.FlatcarAction, packageID, request.MetadataType, request.MetadataContent)
 
 	oldPkg, err := h.db.GetPackage(packageID)
 	if err != nil {
@@ -155,7 +155,7 @@ func (h *Handler) DeletePackage(ctx echo.Context, appID string, packageID string
 	return ctx.NoContent(http.StatusOK)
 }
 
-func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, description string, filename *string, hash *string, size *string, url *string, version string, packageType int, flAction *codegen.FlatcarActionPackage, ID string) *api.Package {
+func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, description string, filename *string, hash *string, size *string, url *string, version string, packageType int, flAction *codegen.FlatcarActionPackage, ID string, metadataType *string, metadataContent *string) *api.Package {
 	var flatcarAction *api.FlatcarAction
 
 	if flAction != nil {
@@ -181,16 +181,18 @@ func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, desc
 	}
 
 	pkg := api.Package{
-		ApplicationID: appID,
-		Arch:          api.Arch(arch),
-		Description:   null.StringFrom(description),
-		Filename:      null.StringFromPtr(filename),
-		Hash:          null.StringFromPtr(hash),
-		Size:          null.StringFromPtr(size),
-		Type:          packageType,
-		URL:           null.StringFromPtr(url),
-		Version:       version,
-		FlatcarAction: flatcarAction,
+		ApplicationID:   appID,
+		Arch:            api.Arch(arch),
+		Description:     null.StringFrom(description),
+		Filename:        null.StringFromPtr(filename),
+		Hash:            null.StringFromPtr(hash),
+		Size:            null.StringFromPtr(size),
+		Type:            packageType,
+		URL:             null.StringFromPtr(url),
+		Version:         version,
+		FlatcarAction:   flatcarAction,
+		MetadataType:    null.StringFromPtr(metadataType),
+		MetadataContent: null.StringFromPtr(metadataContent),
 	}
 	if ChannelsBlacklist != nil {
 		pkg.ChannelsBlacklist = ChannelsBlacklist

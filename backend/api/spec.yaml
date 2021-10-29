@@ -1157,6 +1157,10 @@ components:
           type: integer
         flatcarAction:
           $ref: "#/components/schemas/flatcarActionPackage"
+        metadata_type:
+          type: string
+        metadata_content:
+          type: string
         
     updateInstanceConfig:
       type: object
