@@ -1,7 +1,6 @@
 import '../../i18n/config.ts';
 import { fireEvent, render } from '@testing-library/react';
-import React from 'react';
-import Item from '../../components/Channels/Item';
+import ChannelItem from '../../components/Channels/ChannelItem';
 
 describe('Channel Item', () => {
   const minProps = {
@@ -29,17 +28,17 @@ describe('Channel Item', () => {
       },
       arch: 0,
     },
-    handleUpdateChannel: jest.fn(() => {}),
+    onChannelUpdate: jest.fn(() => {}),
   };
   it('should show confirmation box on delete click', () => {
-    const { getByText } = render(<Item {...minProps} />);
+    const { getByText } = render(<ChannelItem {...minProps} />);
     window.confirm = jest.fn(() => true);
     fireEvent.click(getByText('Delete'));
     expect(window.confirm).toBeCalled();
   });
   it('should call edit handler on edit click', () => {
-    const { getByText } = render(<Item {...minProps} />);
+    const { getByText } = render(<ChannelItem {...minProps} />);
     fireEvent.click(getByText('Edit'));
-    expect(minProps.handleUpdateChannel).toBeCalled();
+    expect(minProps.onChannelUpdate).toBeCalled();
   });
 });

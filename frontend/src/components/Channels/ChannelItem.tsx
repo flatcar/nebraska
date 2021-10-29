@@ -3,9 +3,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import ScheduleIcon from '@material-ui/icons/Schedule';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Channel, Package } from '../../api/apiDataTypes';
+import { Channel } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import { ARCHES, cleanSemverVersion } from '../../utils/helpers';
 import MoreMenu from '../common/MoreMenu';
@@ -17,17 +16,21 @@ const useStyles = makeStyles({
   },
 });
 
-function Item(props: {
+export interface ChannelItemProps {
   channel: Channel;
-  packages?: Package[];
+  /** The default is to display the arch. */
   showArch?: boolean;
+  /** The default is to not display the arch. */
   isAppView?: boolean;
-  handleUpdateChannel?: (channelID: string) => void;
-}) {
+  /** When an update to the channel happens. */
+  onChannelUpdate?: (channelID: string) => void;
+}
+
+export default function ChannelItem(props: ChannelItemProps) {
   const theme = useTheme();
   const classes = useStyles();
   const { t } = useTranslation();
-  const { channel, showArch = true, isAppView = false, ...others } = props;
+  const { channel, showArch = true, isAppView = false, onChannelUpdate = null, ...others } = props;
   const name = channel.name;
   const version = channel.package
     ? cleanSemverVersion(channel.package.version)
@@ -41,8 +44,8 @@ function Item(props: {
   }
 
   function updateChannel() {
-    if (props.handleUpdateChannel) {
-      props.handleUpdateChannel(channel.id);
+    if (onChannelUpdate) {
+      onChannelUpdate(channel.id);
     }
   }
 
@@ -104,7 +107,7 @@ function Item(props: {
           />
         </Grid>
       </Grid>
-      {props.handleUpdateChannel && (
+      {onChannelUpdate && (
         <ListItemSecondaryAction>
           <MoreMenu
             options={[
@@ -117,5 +120,3 @@ function Item(props: {
     </ListItem>
   );
 }
-
-export default Item;

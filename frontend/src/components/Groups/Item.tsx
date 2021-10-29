@@ -12,7 +12,7 @@ import API from '../../api/API';
 import { Channel, Group } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import { useGroupVersionBreakdown } from '../../utils/helpers';
-import ChannelItem from '../Channels/Item';
+import ChannelItem from '../Channels/ChannelItem';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../common/Card';
 import Empty from '../common/EmptyContent';
 import ListItem from '../common/ListItem';

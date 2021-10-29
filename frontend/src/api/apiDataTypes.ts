@@ -28,7 +28,7 @@ export interface Channel {
   created_ts: string;
   application_id: string;
   package_id: null | string;
-  package: Package;
+  package: null | Package;
   arch: Arch;
 }
 
@@ -50,9 +50,9 @@ export interface Package {
   size: null | string;
   hash: null | string;
   created_ts: string;
-  channels_blacklist: string[];
+  channels_blacklist: null | string[];
   application_id: string;
-  flatcar_action?: FlatcarAction;
+  flatcar_action?: null | FlatcarAction;
   arch: Arch;
   extra_files: File[];
 }

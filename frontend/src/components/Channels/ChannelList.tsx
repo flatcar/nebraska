@@ -7,15 +7,15 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
 import API from '../../api/API';
-import { Application, Channel, Package } from '../../api/apiDataTypes';
+import { Channel, Package } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import { ARCHES } from '../../utils/helpers';
 import Empty from '../common/EmptyContent';
 import Loader from '../common/Loader';
 import ModalButton from '../common/ModalButton';
 import SectionPaper from '../common/SectionPaper';
-import EditDialog from './EditDialog';
-import Item from './Item';
+import ChannelEdit from './ChannelEdit';
+import ChannelItem from './ChannelItem';
 
 const useStyles = makeStyles({
   root: {
@@ -25,30 +25,17 @@ const useStyles = makeStyles({
   },
 });
 
-interface PackageChannelApplication extends Application {
-  packages: Package[];
-  channels: Channel[];
-}
-
-function ChannelList(props: {
-  application: PackageChannelApplication;
-  onEdit: (channelId: string) => void;
-}) {
-  const { application, onEdit } = props;
+function Channels(props: { channels: null | Channel[]; onEdit: (channelId: string) => void }) {
+  const { channels, onEdit } = props;
   const classes = useStyles();
   const { t } = useTranslation();
 
-  function getChannelsPerArch() {
+  const channelsPerArch = (function () {
     const perArch: {
-      [key: number]: any[];
+      [key: number]: Channel[];
     } = {};
 
-    // If application doesn't have any channel return empty object.
-    if (application.channels === null) {
-      return perArch;
-    }
-
-    application.channels.forEach((channel: Channel) => {
+    (channels ? channels : []).forEach((channel: Channel) => {
       if (!perArch[channel.arch]) {
         perArch[channel.arch] = [];
       }
@@ -56,11 +43,10 @@ function ChannelList(props: {
     });
 
     return perArch;
-  }
+  })();
 
-  const channelsPerArch = getChannelsPerArch();
   const noChannels = !Object.values(channelsPerArch).find(
-    (channels: Channel[]) => !!channels && channels.length > 0
+    channels => !!channels && channels.length > 0
   );
 
   if (noChannels) {
@@ -77,12 +63,11 @@ function ChannelList(props: {
           className={classes.root}
         >
           {channels.map(channel => (
-            <Item
+            <ChannelItem
               key={'channelID_' + channel.id}
               channel={channel}
-              packages={application.packages || []}
               showArch={false}
-              handleUpdateChannel={onEdit}
+              onChannelUpdate={onEdit}
             />
           ))}
         </MuiList>
@@ -91,14 +76,19 @@ function ChannelList(props: {
   );
 }
 
-function List(props: { appID: string }) {
+export interface ChannelListProps {
+  appID: string;
+}
+export default function ChannelList(props: ChannelListProps) {
   const { appID } = props;
   const [application, setApplication] = React.useState(
     applicationsStore().getCachedApplication(appID)
   );
   const [packages, setPackages] = React.useState<null | Package[]>(null);
-  const [channelToEdit, setChannelToEdit] = React.useState<null | Channel>(null);
-  const { t } = useTranslation();
+
+  function onStoreChange() {
+    setApplication(applicationsStore().getCachedApplication(appID));
+  }
 
   React.useEffect(() => {
     applicationsStore().addChangeListener(onStoreChange);
@@ -126,18 +116,40 @@ function List(props: { appID: string }) {
     };
   }, [application]);
 
-  function onStoreChange() {
-    setApplication(applicationsStore().getCachedApplication(appID));
-  }
+  const channels = application ? (application.channels ? application.channels : []) : [];
+  const loading = (application ? application.channels === null : true) || packages === null;
+
+  return (
+    <ChannelListPure
+      channels={channels}
+      appID={appID}
+      packages={packages ? packages : []}
+      loading={loading}
+    />
+  );
+}
+
+export interface ChannelListPureProps {
+  /** Application ID for these channels. */
+  appID: string;
+  /** The Packages to choose from when adding or editing a channel. */
+  packages: Package[];
+  /** The channels to list. */
+  channels: Channel[];
+  /** If we are waiting on channels or packages data. */
+  loading: boolean;
+}
+
+export function ChannelListPure(props: ChannelListPureProps) {
+  const [channelToEdit, setChannelToEdit] = React.useState<null | Channel>(null);
+  const { t } = useTranslation();
+  const { packages, appID, channels, loading } = props;
 
   function onChannelEditOpen(channelID: string) {
-    let channels: Channel[] = [];
-    if (application) {
-      channels = application.channels ? application.channels : [];
-    }
-
     const channelToUpdate =
-      !_.isEmpty(channels) && channelID ? _.findWhere(channels, { id: channelID }) || null : null;
+      !_.isEmpty(channels) && channelID
+        ? _.findWhere(channels ? channels : [], { id: channelID }) || null
+        : null;
 
     setChannelToEdit(channelToUpdate);
   }
@@ -165,13 +177,9 @@ function List(props: { appID: string }) {
         </Grid>
       </Box>
       <SectionPaper>
-        {!application ? (
-          <Loader />
-        ) : (
-          <ChannelList application={application} onEdit={onChannelEditOpen} />
-        )}
+        {loading ? <Loader /> : <Channels channels={channels} onEdit={onChannelEditOpen} />}
         {channelToEdit && (
-          <EditDialog
+          <ChannelEdit
             data={{ packages: packages, applicationID: appID, channel: channelToEdit }}
             show={channelToEdit !== null}
             onHide={onChannelEditClose}
@@ -181,5 +189,3 @@ function List(props: { appID: string }) {
     </Box>
   );
 }
-
-export default List;

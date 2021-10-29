@@ -1,9 +1,8 @@
 import { Theme } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import makeStyles from '@material-ui/styles/makeStyles';
-import React from 'react';
 
-interface ChannelAvatarProps {
+export interface ChannelAvatarProps {
   backgroundColor?: string;
   color?: string;
   size?: string | number;

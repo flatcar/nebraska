@@ -277,10 +277,10 @@ function EditDialog(props: EditDialogProps) {
                             .map((packageItem: Channel) => {
                               const label = packageItem.name;
                               const isDisabled =
-                                !isCreation &&
-                                packageItem.package &&
-                                props.data.package.version === packageItem.package.version;
-
+                                (!isCreation &&
+                                  packageItem.package &&
+                                  props.data.package.version === packageItem.package.version) ||
+                                false;
                               return (
                                 <MenuItem
                                   value={packageItem.id}

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import _ from 'underscore';
 import { applicationsStore } from '../../../stores/Stores';
-import ChannelsList from '../../Channels/List';
+import ChannelList from '../../Channels/ChannelList';
 import SectionHeader from '../../common/SectionHeader';
 import GroupsList from '../../Groups/List';
 import PackagesList from '../../Packages/List';
@@ -52,7 +52,7 @@ function ApplicationLayout() {
         <Grid item xs={12} sm={4}>
           <Grid container direction="column" alignItems="stretch" spacing={2}>
             <Grid item xs={12}>
-              <ChannelsList appID={appID} />
+              <ChannelList appID={appID} />
             </Grid>
             <Grid item xs={12}>
               <PackagesList appID={appID} />

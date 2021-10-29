@@ -1,6 +1,5 @@
 import { render } from '@testing-library/react';
-import React from 'react';
-import List from '../../components/Channels/List';
+import ChannelList from '../../components/Channels/ChannelList';
 
 describe('Channel List', () => {
   const minProps = {
@@ -33,7 +32,7 @@ describe('Channel List', () => {
     ],
   };
   it('should render channel list correctly with data', () => {
-    const { asFragment } = render(<List {...minProps} />);
+    const { asFragment } = render(<ChannelList {...minProps} />);
     expect(asFragment).toMatchSnapshot();
   });
 });

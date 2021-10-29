@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import ApplicationEditDialog from '../../Applications/EditDialog';
-import ChannelEditDialog from '../../Channels/EditDialog';
+import ChannelEdit from '../../Channels/ChannelEdit';
 import GroupEditDialog from '../../Groups/EditDialog';
 import PackageEditDialog, {
   EditDialogProps as PackageEditDialogProps,
@@ -45,7 +45,7 @@ function ModalButton(props: { data: object; modalToOpen: string; icon?: string }
       modal = <GroupEditDialog {...options} />;
       break;
     case 'AddChannelModal':
-      modal = <ChannelEditDialog {...options} />;
+      modal = <ChannelEdit {...options} />;
       break;
     case 'AddPackageModal':
       modal = <PackageEditDialog {...(options as PackageEditDialogProps)} />;

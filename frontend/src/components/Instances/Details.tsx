@@ -36,12 +36,12 @@ import {
   makeLocaleTime,
   prepareErrorMessage,
 } from '../../utils/helpers';
-import ChannelItem from '../Channels/Item';
+import ChannelItem from '../Channels/ChannelItem';
 import { CardFeatureLabel, CardLabel } from '../common/Card';
 import Empty from '../common/EmptyContent';
 import ListHeader from '../common/ListHeader';
-import Loader from '../common/Loader';
-import MoreMenu from '../common/MoreMenu';
+import Loader from '../common/Loader/Loader';
+import MoreMenu from '../common/MoreMenu/MoreMenu';
 import makeStatusDefs from './StatusDefs';
 
 const useDetailsStyles = makeStyles((theme: Theme) => ({

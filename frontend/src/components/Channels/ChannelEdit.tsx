@@ -13,7 +13,6 @@ import MuiSelect from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
 import { Field, Form, Formik } from 'formik';
 import { TextField } from 'formik-material-ui';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
@@ -32,7 +31,14 @@ const useStyles = makeStyles({
 
 const PackagesPerPage = 15;
 
-function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide: () => void }) {
+export interface ChannelEditProps {
+  data: any;
+  create?: boolean;
+  show: boolean;
+  onHide: () => void;
+}
+
+export default function ChannelEdit(props: ChannelEditProps) {
   const classes = useStyles();
   const { t } = useTranslation();
   const defaultColor = '';
@@ -282,11 +288,3 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
     </Dialog>
   );
 }
-
-EditDialog.propTypes = {
-  data: PropTypes.object,
-  show: PropTypes.bool,
-  create: PropTypes.bool,
-};
-
-export default EditDialog;

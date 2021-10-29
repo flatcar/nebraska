@@ -57,7 +57,7 @@ export default function ApplicationItem(props: ApplicationItemProps) {
                     window.confirm(
                       t('applications|Are you sure you want to delete this application?')
                     )
-                      ? applicationsStore.deleteApplication(id)
+                      ? applicationsStore().deleteApplication(id)
                       : null;
                   },
                 },

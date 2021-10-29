@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 import API from '../../api/API';
 import { Group } from '../../api/apiDataTypes';
-import ChannelItem from '../Channels/Item';
+import ChannelItem from '../Channels/ChannelItem';
 
 const useStyles = makeStyles({
   groupLink: {

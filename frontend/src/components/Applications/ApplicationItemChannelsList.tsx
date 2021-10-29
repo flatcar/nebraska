@@ -1,7 +1,7 @@
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
 import { Channel } from '../../api/apiDataTypes';
-import ChannelItem from '../Channels/Item';
+import ChannelItem from '../Channels/ChannelItem';
 
 function ApplicationItemChannelsList(props: { channels?: Channel[] }) {
   const channels = props.channels || [];

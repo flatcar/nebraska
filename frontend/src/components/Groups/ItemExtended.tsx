@@ -13,7 +13,7 @@ import API from '../../api/API';
 import { Application, Group } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import { defaultTimeInterval, timeIntervalsDefault } from '../../utils/helpers';
-import ChannelItem from '../Channels/Item';
+import ChannelItem from '../Channels/ChannelItem';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../common/Card';
 import MoreMenu from '../common/MoreMenu';
 import TimeIntervalLinks from '../common/TimeIntervalLinks';

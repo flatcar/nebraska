@@ -357,3 +357,15 @@ exports[`Storyshots Card Label With Styles 1`] = `
   </span>
 </div>
 `;
+
+exports[`Storyshots Card White 1`] = `
+<div
+  id="root"
+>
+  <div
+    class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+  >
+    ABC
+  </div>
+</div>
+`;
