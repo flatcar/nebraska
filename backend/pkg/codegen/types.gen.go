@@ -34,7 +34,7 @@ type ActivityPage struct {
 
 // AppConfig defines model for appConfig.
 type AppConfig struct {
-	Description string  `json:"description"`
+	Description *string `json:"description,omitempty"`
 	Name        string  `json:"name"`
 	ProductId   *string `json:"product_id,omitempty"`
 }
