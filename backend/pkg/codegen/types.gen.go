@@ -264,10 +264,10 @@ type PackageConfig struct {
 	Arch              int                   `json:"arch"`
 	ChannelsBlacklist []string              `json:"channels_blacklist"`
 	Description       string                `json:"description"`
-	Filename          string                `json:"filename"`
+	Filename          *string               `json:"filename,omitempty"`
 	FlatcarAction     *FlatcarActionPackage `json:"flatcar_action"`
-	Hash              string                `json:"hash"`
-	Size              string                `json:"size"`
+	Hash              *string               `json:"hash,omitempty"`
+	Size              *string               `json:"size,omitempty"`
 	Type              int                   `json:"type"`
 	Url               string                `json:"url"`
 	Version           string                `json:"version"`

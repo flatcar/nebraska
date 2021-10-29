@@ -1130,9 +1130,6 @@ components:
         - arch
         - channels_blacklist
         - description
-        - filename
-        - hash
-        - size
         - type
         - url 
         - version
