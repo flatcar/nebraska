@@ -113,6 +113,9 @@ type ServerInterface interface {
 	// (GET /login/cb)
 	LoginCb(ctx echo.Context) error
 
+	// (POST /login/token)
+	LoginToken(ctx echo.Context) error
+
 	// (GET /login/validate_token)
 	ValidateToken(ctx echo.Context) error
 
@@ -1081,6 +1084,15 @@ func (w *ServerInterfaceWrapper) LoginCb(ctx echo.Context) error {
 	return err
 }
 
+// LoginToken converts echo context to params.
+func (w *ServerInterfaceWrapper) LoginToken(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.LoginToken(ctx)
+	return err
+}
+
 // ValidateToken converts echo context to params.
 func (w *ServerInterfaceWrapper) ValidateToken(ctx echo.Context) error {
 	var err error
@@ -1169,6 +1181,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/config", wrapper.GetConfig)
 	router.GET(baseURL+"/login", wrapper.Login)
 	router.GET(baseURL+"/login/cb", wrapper.LoginCb)
+	router.POST(baseURL+"/login/token", wrapper.LoginToken)
 	router.GET(baseURL+"/login/validate_token", wrapper.ValidateToken)
 	router.POST(baseURL+"/login/webhook", wrapper.LoginWebhook)
 	router.POST(baseURL+"/v1/update", wrapper.Omaha)

@@ -12,6 +12,10 @@ func (h *Handler) LoginCb(ctx echo.Context) error {
 	return h.auth.LoginCb(ctx)
 }
 
+func (h *Handler) LoginToken(ctx echo.Context) error {
+	return h.auth.LoginToken(ctx)
+}
+
 func (h *Handler) ValidateToken(ctx echo.Context) error {
 	return h.auth.ValidateToken(ctx)
 }
