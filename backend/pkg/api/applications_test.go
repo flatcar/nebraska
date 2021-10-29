@@ -60,6 +60,51 @@ func TestAddAppCloning(t *testing.T) {
 
 	_, err = a.AddAppCloning(&Application{Name: "app2", TeamID: tTeam.ID}, "")
 	assert.NoError(t, err, "Using an empty source app id when cloning has the same effect as not cloning.")
+
+	_, err = a.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("io.invalid. Name")})
+	assert.Error(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("1io.invalid.Name")})
+	assert.Error(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("")})
+	assert.Error(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("io.invalid-.Name")})
+	assert.Error(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("io.invalid_.Name")})
+	assert.Error(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("io.valid.Name")})
+	assert.NoError(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp2", TeamID: tTeam.ID, ProductID: null.StringFrom("io.valid.New-Name")})
+	assert.NoError(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp3", TeamID: tTeam.ID, ProductID: null.StringFrom("io2.valid12.New-Name")})
+	assert.NoError(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp4", TeamID: tTeam.ID, ProductID: null.StringFrom("io.invalid.New_Name")})
+	assert.Error(t, err)
+
+	tooLongName := `io.` +
+		`loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong` +
+		`loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong` +
+		`loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong` +
+		`loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong.example.com`
+
+	_, err = a.AddApp(&Application{Name: "productIDApp5", TeamID: tTeam.ID, ProductID: null.StringFrom(tooLongName)})
+	assert.Error(t, err)
+
+	_, err = a.AddApp(
+		&Application{
+			Name:      "productIDApp4",
+			TeamID:    tTeam.ID,
+			ProductID: null.StringFrom("io.VALID.Name"),
+		},
+	)
+	assert.Error(t, err, "duplicate name because it is case insensitive")
 }
 
 func TestUpdateApp(t *testing.T) {
@@ -194,11 +239,15 @@ func TestGetAppIDs(t *testing.T) {
 	_, err = a.GetAppID("")
 	assert.Error(t, err)
 
+	_, err = a.GetAppID("{")
+	assert.Error(t, err)
+
 	app2ID, err = a.GetAppID("io.kinvolk.MyApp2")
 	assert.NoError(t, err)
 	assert.Equal(t, tApp2.ID, app2ID)
 
-	tApp3, _ := a.AddApp(&Application{Name: "test_app3", TeamID: tTeam.ID, ProductID: null.StringFrom("io.kinvolk.MyApp3")})
+	tApp3, err := a.AddApp(&Application{Name: "test_app3", TeamID: tTeam.ID, ProductID: null.StringFrom("io.kinvolk.MyApp3")})
+	assert.NoError(t, err)
 
 	app3ID, err := a.GetAppID("io.kinvolk.MyApp3")
 	assert.NoError(t, err)
@@ -213,6 +262,16 @@ func TestGetAppIDs(t *testing.T) {
 	assert.Equal(t, tApp2.ID, app2ID)
 
 	app2ID, err = a.GetAppID("io.kinvolk.App")
+	assert.NoError(t, err)
+	assert.Equal(t, tApp2.ID, app2ID)
+
+	wrappedInBrackets := "{io.kinvolk.App}"
+	app2ID, err = a.GetAppID(wrappedInBrackets)
+	assert.NoError(t, err)
+	assert.Equal(t, tApp2.ID, app2ID)
+
+	caseInsensitive := "io.Kinvolk.app"
+	app2ID, err = a.GetAppID(caseInsensitive)
 	assert.NoError(t, err)
 	assert.Equal(t, tApp2.ID, app2ID)
 }
