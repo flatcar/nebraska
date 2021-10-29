@@ -45,14 +45,14 @@ describe('Application List', () => {
     ],
   };
   it('should render list correctly with data', () => {
-    const getCachedApplications = applicationsStore.getCachedApplications();
-    applicationsStore.getCachedApplications = () => minProps.applications;
+    const getCachedApplications = applicationsStore().getCachedApplications();
+    applicationsStore().getCachedApplications = () => minProps.applications;
     const { asFragment } = render(
       <BrowserRouter>
         <List />
       </BrowserRouter>
     );
     expect(asFragment()).toMatchSnapshot();
-    applicationsStore.getCachedApplications = getCachedApplications;
+    applicationsStore().getCachedApplications = getCachedApplications;
   });
 });

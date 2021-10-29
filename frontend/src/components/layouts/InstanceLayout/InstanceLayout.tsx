@@ -16,7 +16,7 @@ export default function InstanceLayout() {
     instanceID: string;
   }>();
   const [application, setApplication] = React.useState(
-    applicationsStore.getCachedApplication(appID)
+    applicationsStore().getCachedApplication(appID)
   );
   const [group, setGroup] = React.useState(getGroupFromApplication(application || null));
   const [instance, setInstance] = React.useState<Instance | null>(null);
@@ -30,7 +30,7 @@ export default function InstanceLayout() {
       );
       setInstance(instance);
     });
-    const apps = applicationsStore.getCachedApplications() || [];
+    const apps = applicationsStore().getCachedApplications() || [];
     const app = apps.find(({ id }) => id === appID) || null;
     if (app !== application) {
       setApplication(app);
@@ -47,12 +47,12 @@ export default function InstanceLayout() {
   }
 
   React.useEffect(() => {
-    applicationsStore.addChangeListener(onChange);
+    applicationsStore().addChangeListener(onChange);
 
-    applicationsStore.getApplication(appID);
+    applicationsStore().getApplication(appID);
 
     return function cleanup() {
-      applicationsStore.removeChangeListener(onChange);
+      applicationsStore().removeChangeListener(onChange);
     };
   }, []);
 

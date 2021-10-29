@@ -67,10 +67,10 @@ function EditDialog(props: {
     let packageFunctionCall;
     data['application_id'] = props.data.appID;
     if (isCreation) {
-      packageFunctionCall = applicationsStore.createGroup(data as Group);
+      packageFunctionCall = applicationsStore().createGroup(data as Group);
     } else {
       data['id'] = props.data.group.id;
-      packageFunctionCall = applicationsStore.updateGroup(data as Group);
+      packageFunctionCall = applicationsStore().updateGroup(data as Group);
     }
 
     packageFunctionCall

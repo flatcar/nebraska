@@ -12,7 +12,7 @@ import PackagesList from '../../Packages/List';
 function ApplicationLayout() {
   const { appID } = useParams<{ appID: string }>();
   const [applications, setApplications] = React.useState(
-    applicationsStore.getCachedApplications() || []
+    applicationsStore().getCachedApplications() || []
   );
   const { t } = useTranslation();
 
@@ -21,9 +21,9 @@ function ApplicationLayout() {
   }
 
   React.useEffect(() => {
-    applicationsStore.addChangeListener(onChange);
+    applicationsStore().addChangeListener(onChange);
     return () => {
-      applicationsStore.removeChangeListener(onChange);
+      applicationsStore().removeChangeListener(onChange);
     };
   });
 

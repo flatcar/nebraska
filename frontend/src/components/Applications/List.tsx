@@ -22,7 +22,7 @@ const styles = () => ({
 
 function List(props: { classes: Record<'root', string> }) {
   const [applications, setApplications] = React.useState(
-    applicationsStore.getCachedApplications ? applicationsStore.getCachedApplications() : []
+    applicationsStore().getCachedApplications ? applicationsStore().getCachedApplications() : []
   );
   const [searchTerm] = React.useState('');
   const [updateAppModalVisible, setUpdateModalVisible] = React.useState(false);
@@ -39,20 +39,20 @@ function List(props: { classes: Record<'root', string> }) {
   }
 
   React.useEffect(() => {
-    applicationsStore.addChangeListener(onChange);
+    applicationsStore().addChangeListener(onChange);
     return () => {
-      applicationsStore.removeChangeListener(onChange);
+      applicationsStore().removeChangeListener(onChange);
     };
   }, []);
 
   React.useEffect(() => {
-    if (applicationsStore.getCachedApplications) {
-      setApplications(applicationsStore.getCachedApplications());
+    if (applicationsStore().getCachedApplications) {
+      setApplications(applicationsStore().getCachedApplications());
     }
-  }, [applicationsStore.getCachedApplications]);
+  }, [applicationsStore().getCachedApplications]);
 
   function onChange() {
-    setApplications(applicationsStore.getCachedApplications());
+    setApplications(applicationsStore().getCachedApplications());
   }
 
   let entries: React.ReactNode = '';

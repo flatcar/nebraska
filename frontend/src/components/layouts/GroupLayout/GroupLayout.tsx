@@ -11,21 +11,21 @@ import GroupExtended from '../../Groups/ItemExtended';
 function GroupLayout() {
   const { appID, groupID } = useParams<{ appID: string; groupID: string }>();
   const [applications, setApplications] = React.useState(
-    applicationsStore.getCachedApplications() || []
+    applicationsStore().getCachedApplications() || []
   );
   const [updateGroupModalVisible, setUpdateGroupModalVisible] = React.useState(false);
   const { t } = useTranslation();
 
   React.useEffect(() => {
-    applicationsStore.getApplication(appID);
-    applicationsStore.addChangeListener(onChange);
+    applicationsStore().getApplication(appID);
+    applicationsStore().addChangeListener(onChange);
     return () => {
-      applicationsStore.removeChangeListener(onChange);
+      applicationsStore().removeChangeListener(onChange);
     };
   }, []);
 
   function onChange() {
-    setApplications(applicationsStore.getCachedApplications() || []);
+    setApplications(applicationsStore().getCachedApplications() || []);
   }
 
   function openUpdateGroupModal() {

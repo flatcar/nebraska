@@ -105,9 +105,9 @@ function EditDialog(props: EditDialogProps) {
 
     let pkgFunc: Promise<void>;
     if (isCreation) {
-      pkgFunc = applicationsStore.createPackage(data);
+      pkgFunc = applicationsStore().createPackage(data);
     } else {
-      pkgFunc = applicationsStore.updatePackage({ ...data, id: props.data.package.id });
+      pkgFunc = applicationsStore().updatePackage({ ...data, id: props.data.package.id });
     }
 
     pkgFunc

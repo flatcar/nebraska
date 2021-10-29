@@ -39,7 +39,7 @@ function Item(props: {
   function deleteApplication() {
     const confirmationText = t('applications|Are you sure you want to delete this application?');
     if (window.confirm(confirmationText)) {
-      applicationsStore.deleteApplication(props.application.id);
+      applicationsStore().deleteApplication(props.application.id);
     }
   }
 

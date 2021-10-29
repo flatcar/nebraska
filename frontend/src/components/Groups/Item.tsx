@@ -73,7 +73,7 @@ function Item(props: {
   function deleteGroup() {
     const confirmationText = t('groups|Are you sure you want to delete this group?');
     if (window.confirm(confirmationText)) {
-      applicationsStore.deleteGroup(props.group.application_id, props.group.id);
+      applicationsStore().deleteGroup(props.group.application_id, props.group.id);
     }
   }
 

@@ -23,7 +23,7 @@ const styles = () => ({
 
 function List(props: { appID: string; classes: Record<'root', string> }) {
   const [application, setApplication] = React.useState(
-    applicationsStore.getCachedApplication(props.appID)
+    applicationsStore().getCachedApplication(props.appID)
   );
   const [updateGroupModalVisible, setUpdateGroupModalVisible] = React.useState(false);
   const [updateGroupIDModal, setUpdateGroupIDModal] = React.useState<string | null>(null);
@@ -38,14 +38,14 @@ function List(props: { appID: string; classes: Record<'root', string> }) {
   }
 
   React.useEffect(() => {
-    applicationsStore.addChangeListener(onChange);
+    applicationsStore().addChangeListener(onChange);
     return () => {
-      applicationsStore.removeChangeListener(onChange);
+      applicationsStore().removeChangeListener(onChange);
     };
   }, []);
 
   function onChange() {
-    setApplication(applicationsStore.getCachedApplication(props.appID));
+    setApplication(applicationsStore().getCachedApplication(props.appID));
   }
 
   let channels: Channel[] = [];

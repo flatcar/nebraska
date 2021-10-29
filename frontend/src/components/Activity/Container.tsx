@@ -35,10 +35,10 @@ function Container() {
   const [rowsPerPage, setRowsPerPage] = React.useState(rowsOptions[0]);
 
   React.useEffect(() => {
-    activityStore.addChangeListener(onChange);
+    activityStore().addChangeListener(onChange);
 
     return function cleanup() {
-      activityStore.removeChangeListener(onChange);
+      activityStore().removeChangeListener(onChange);
     };
   }, [activity]);
 
@@ -86,7 +86,7 @@ function Container() {
   }
 
   function getActivityEntries() {
-    const activityObj = activityStore.getCachedActivity();
+    const activityObj = activityStore().getCachedActivity();
     if (_.isNull(activityObj)) {
       return null;
     }

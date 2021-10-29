@@ -76,10 +76,10 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
 
     let channelFunctionCall;
     if (isCreation) {
-      channelFunctionCall = applicationsStore.createChannel(data as Channel);
+      channelFunctionCall = applicationsStore().createChannel(data as Channel);
     } else {
       data['id'] = props.data.channel.id;
-      channelFunctionCall = applicationsStore.updateChannel(data as Channel);
+      channelFunctionCall = applicationsStore().updateChannel(data as Channel);
     }
 
     channelFunctionCall

@@ -15,13 +15,13 @@ function ConfirmationContent(props: {
 
   function processClick() {
     if (props.data.type === 'application') {
-      applicationsStore.deleteApplication(props.data.appID);
+      applicationsStore().deleteApplication(props.data.appID);
     } else if (props.data.type === 'group' && props.data.groupID !== undefined) {
-      applicationsStore.deleteGroup(props.data.appID, props.data.groupID);
+      applicationsStore().deleteGroup(props.data.appID, props.data.groupID);
     } else if (props.data.type === 'channel' && props.data.channelID !== undefined) {
-      applicationsStore.deleteChannel(props.data.appID, props.data.channelID);
+      applicationsStore().deleteChannel(props.data.appID, props.data.channelID);
     } else if (props.data.type === 'package' && props.data.packageID !== undefined) {
-      applicationsStore.deletePackage(props.data.appID, props.data.packageID);
+      applicationsStore().deletePackage(props.data.appID, props.data.packageID);
     }
   }
 

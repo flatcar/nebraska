@@ -79,7 +79,7 @@ function Item(props: {
   function deletePackage() {
     const confirmationText = t('packages|Are you sure you want to delete this package?');
     if (window.confirm(confirmationText)) {
-      applicationsStore.deletePackage(
+      applicationsStore().deletePackage(
         props.packageItem.application_id,
         props.packageItem.id as string
       );

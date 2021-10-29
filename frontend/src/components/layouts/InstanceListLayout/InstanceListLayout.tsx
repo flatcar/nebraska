@@ -10,13 +10,13 @@ import List from '../../Instances/List';
 export default function InstanceListLayout() {
   const { appID, groupID } = useParams<{ appID: string; groupID: string }>();
   const [application, setApplication] = React.useState(
-    applicationsStore.getCachedApplication(appID)
+    applicationsStore().getCachedApplication(appID)
   );
   const [group, setGroup] = React.useState<Group | null>(getGroupFromApplication(application));
   const { t } = useTranslation();
 
   function onChange() {
-    const apps = applicationsStore.getCachedApplications() || [];
+    const apps = applicationsStore().getCachedApplications() || [];
     const app = apps.find(({ id }) => id === appID) || null;
     if (app !== application) {
       setApplication(app);
@@ -33,11 +33,11 @@ export default function InstanceListLayout() {
   }
 
   React.useEffect(() => {
-    applicationsStore.addChangeListener(onChange);
-    applicationsStore.getApplication(appID);
+    applicationsStore().addChangeListener(onChange);
+    applicationsStore().getApplication(appID);
 
     return function cleanup() {
-      applicationsStore.removeChangeListener(onChange);
+      applicationsStore().removeChangeListener(onChange);
     };
   }, []);
 

@@ -94,18 +94,18 @@ function ChannelList(props: {
 function List(props: { appID: string }) {
   const { appID } = props;
   const [application, setApplication] = React.useState(
-    applicationsStore.getCachedApplication(appID)
+    applicationsStore().getCachedApplication(appID)
   );
   const [packages, setPackages] = React.useState<null | Package[]>(null);
   const [channelToEdit, setChannelToEdit] = React.useState<null | Channel>(null);
   const { t } = useTranslation();
 
   React.useEffect(() => {
-    applicationsStore.addChangeListener(onStoreChange);
+    applicationsStore().addChangeListener(onStoreChange);
 
     // In case the application was not yet cached, we fetch it here
     if (application === null) {
-      applicationsStore.getApplication(props.appID);
+      applicationsStore().getApplication(props.appID);
     } else {
       // Fetch packages
       API.getPackages(application.id)
@@ -122,12 +122,12 @@ function List(props: { appID: string }) {
     }
 
     return function cleanup() {
-      applicationsStore.removeChangeListener(onStoreChange);
+      applicationsStore().removeChangeListener(onStoreChange);
     };
   }, [application]);
 
   function onStoreChange() {
-    setApplication(applicationsStore.getCachedApplication(appID));
+    setApplication(applicationsStore().getCachedApplication(appID));
   }
 
   function onChannelEditOpen(channelID: string) {

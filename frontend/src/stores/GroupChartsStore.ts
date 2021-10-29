@@ -25,7 +25,7 @@ export default class GroupChartsStore {
     versionCountTimeline = this.getVersionChartData(groupID, duration);
     if (!versionCountTimeline) {
       try {
-        versionCountTimeline = await applicationsStore.getGroupVersionCountTimeline(
+        versionCountTimeline = await applicationsStore().getGroupVersionCountTimeline(
           appID,
           groupID,
           duration
@@ -70,7 +70,7 @@ export default class GroupChartsStore {
     statusCountTimeline = this.getStatusChartData(groupID, duration);
     if (!statusCountTimeline) {
       try {
-        statusCountTimeline = await applicationsStore.getGroupStatusCountTimeline(
+        statusCountTimeline = await applicationsStore().getGroupStatusCountTimeline(
           appID,
           groupID,
           duration

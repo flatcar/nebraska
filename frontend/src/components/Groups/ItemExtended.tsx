@@ -56,10 +56,10 @@ function ItemExtended(props: {
   const { t } = useTranslation();
 
   function onChange() {
-    const app = applicationsStore.getCachedApplication(props.appID);
+    const app = applicationsStore().getCachedApplication(props.appID);
 
     if (!app) {
-      applicationsStore.getApplication(props.appID);
+      applicationsStore().getApplication(props.appID);
       return;
     }
 
@@ -86,11 +86,11 @@ function ItemExtended(props: {
   }
 
   React.useEffect(() => {
-    applicationsStore.addChangeListener(onChange);
+    applicationsStore().addChangeListener(onChange);
     onChange();
 
     return function cleanup() {
-      applicationsStore.removeChangeListener(onChange);
+      applicationsStore().removeChangeListener(onChange);
     };
   }, []);
 

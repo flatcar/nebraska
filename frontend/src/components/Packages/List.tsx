@@ -18,7 +18,7 @@ import Item from './Item';
 
 function List(props: { appID: string }) {
   const [application, setApplication] = React.useState(
-    applicationsStore.getCachedApplication(props.appID) || null
+    applicationsStore().getCachedApplication(props.appID) || null
   );
   const [packages, setPackages] = React.useState<Package[] | null>(null);
   const [packageToUpdate, setPackageToUpdate] = React.useState<Package | null>(null);
@@ -27,29 +27,31 @@ function List(props: { appID: string }) {
   const { t } = useTranslation();
 
   function onChange() {
-    setApplication(applicationsStore.getCachedApplication(props.appID));
+    setApplication(applicationsStore().getCachedApplication(props.appID));
   }
 
   React.useEffect(() => {
-    applicationsStore.addChangeListener(onChange);
-    API.getPackages(props.appID)
-      .then(result => {
-        if (_.isNull(result.packages)) {
-          setPackages([]);
-          return;
-        }
-        setPackages(result.packages);
-      })
-      .catch(err => {
-        console.error('Error getting the packages in the Packages/List: ', err);
-      });
+    applicationsStore().addChangeListener(onChange);
+    if (!packages) {
+      API.getPackages(props.appID)
+        .then(result => {
+          if (_.isNull(result.packages)) {
+            setPackages([]);
+            return;
+          }
+          setPackages(result.packages);
+        })
+        .catch(err => {
+          console.error('Error getting the packages in the Packages/List: ', err);
+        });
+    }
 
     if (application === null) {
-      applicationsStore.getApplication(props.appID);
+      applicationsStore().getApplication(props.appID);
     }
 
     return function cleanup() {
-      applicationsStore.removeChangeListener(onChange);
+      applicationsStore().removeChangeListener(onChange);
     };
   }, [props.appID, application]);
 

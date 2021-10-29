@@ -34,9 +34,9 @@ function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () 
       if (values.appToClone === 'none') {
         values.appToClone = '';
       }
-      appFunctionCall = applicationsStore.createApplication(data, values.appToClone);
+      appFunctionCall = applicationsStore().createApplication(data, values.appToClone);
     } else {
-      appFunctionCall = applicationsStore.updateApplication(props.data.id, data);
+      appFunctionCall = applicationsStore().updateApplication(props.data.id, data);
     }
 
     appFunctionCall

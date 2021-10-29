@@ -307,7 +307,7 @@ export function VersionCountTimeline(props: {
         const lastUpdate = new Date(timeline.lastUpdate);
         setTimelineChartData({ data: [], keys: [], colors: [] });
         try {
-          const versionCountTimeline = await groupChartStore.getGroupVersionCountTimeline(
+          const versionCountTimeline = await groupChartStore().getGroupVersionCountTimeline(
             group.application_id,
             group.id,
             duration.queryValue
@@ -540,7 +540,7 @@ export function StatusCountTimeline(props: {
       if (group) {
         setTimelineChartData({ data: [], keys: [], colors: [] });
         try {
-          const statusCountTimeline = await groupChartStore.getGroupStatusCountTimeline(
+          const statusCountTimeline = await groupChartStore().getGroupStatusCountTimeline(
             group.application_id,
             group.id,
             duration.queryValue

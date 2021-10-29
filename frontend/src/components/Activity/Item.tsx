@@ -58,12 +58,12 @@ function Item(props: { entry: Activity }) {
   const { t } = useTranslation();
 
   function fetchEntryClassFromStore() {
-    const entryClass = activityStore.getActivityEntryClass(props.entry.class, props.entry);
+    const entryClass = activityStore().getActivityEntryClass(props.entry.class, props.entry);
     setEntryClass(entryClass);
   }
 
   function fetchEntrySeverityFromStore() {
-    const entrySeverity = activityStore.getActivityEntrySeverity(props.entry.severity);
+    const entrySeverity = activityStore().getActivityEntrySeverity(props.entry.severity);
     setEntrySeverity(entrySeverity);
   }
 
