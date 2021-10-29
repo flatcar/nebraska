@@ -26,6 +26,8 @@ type Authenticator interface {
 
 	LoginCb(ctx echo.Context) error
 
+	LoginToken(ctx echo.Context) error
+
 	ValidateToken(ctx echo.Context) error
 
 	LoginWebhook(ctx echo.Context) error

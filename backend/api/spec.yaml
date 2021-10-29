@@ -11,10 +11,25 @@ paths:
   /login:
     get:
       operationId: login
-      description: login
+      description: login browser flow
       responses:
         "302":
           description: login response
+  /login/token:
+    post:
+      operationId: loginToken
+      description: login token flow
+      requestBody:
+        description: payload for login token
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/loginInfo"
+      responses:
+        "200":
+          description: login token response      
+
   /login/cb: 
     get:
       operationId: loginCb
@@ -1064,6 +1079,17 @@ paths:
 components:
   schemas:
     ## request Body
+    loginInfo:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
     appConfig:
       type: object
       required:
