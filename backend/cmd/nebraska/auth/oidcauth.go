@@ -350,8 +350,8 @@ func (oa *oidcAuth) Authenticate(c *gin.Context) (teamID string, replied bool) {
 			ts := oa.oauthConfig.TokenSource(ctx, &oauth2.Token{RefreshToken: refreshToken.(string)})
 			newToken, err := ts.Token()
 			if err != nil {
-				logger.Error().Str("request_id", requestID).AnErr("error", err).Msg("ID Token refresh error")
-				httpError(c, http.StatusInternalServerError)
+				logger.Warn().Str("request_id", requestID).AnErr("error", err).Msg("Failed to use refresh token, reauthenticating")
+				httpError(c, http.StatusUnauthorized)
 				return "", true
 			}
 
