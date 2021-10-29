@@ -313,11 +313,10 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
   const validation: {
     [key: string]: any;
   } = Yup.object().shape({
-    url: Yup.string().url(),
-    filename: Yup.string().max(
-      100,
-      t('packages|Must enter a valid filename (less than 100 characters)')
-    ),
+    url: Yup.string().url().nullable(),
+    filename: Yup.string()
+      .max(100, t('packages|Must enter a valid filename (less than 100 characters)'))
+      .nullable(),
     // @todo: Validate whether the version already exists so we can provide
     // better feedback.
     version: Yup.string()
@@ -325,8 +324,11 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
       .required(t('frequent|Required')),
     size: Yup.number()
       .integer(t('packages|Must be an integer number'))
-      .positive(t('packages|Must be a positive number')),
-    hash: Yup.string().max(64, t('packages|Must be a valid hash (less than 64 characters)')),
+      .positive(t('packages|Must be a positive number'))
+      .nullable(),
+    hash: Yup.string()
+      .max(64, t('packages|Must be a valid hash (less than 64 characters)'))
+      .nullable(),
   });
 
   if (isFlatcarType(packageType)) {
