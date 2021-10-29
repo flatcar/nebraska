@@ -54,6 +54,7 @@ type oidcAuth struct {
 	oauthConfig       *oauth2.Config
 	defaultTeamID     string
 	clientID          string    // OIDC Client ID
+	clientSecret      string    // OIDC Client Secret
 	issuerURL         string    // OIDC Issuer URL
 	callbackURL       string    // OIDC Callback URL, should be configured in OIDC provider. Default value is: http://localhost:8000/login/cb
 	validRedirectURLs []string  // List of valid redirect URLs that the browser can redirect to after successful login
@@ -111,6 +112,7 @@ func NewOIDCAuthenticator(config *OIDCAuthConfig) (Authenticator, error) {
 		oauthConfig:       oauthConfig,
 		defaultTeamID:     config.DefaultTeamID,
 		clientID:          config.ClientID,
+		clientSecret:      config.ClientSecret,
 		issuerURL:         config.IssuerURL,
 		callbackURL:       config.CallbackURL,
 		validRedirectURLs: config.ValidRedirectURLs,
@@ -235,13 +237,8 @@ func (oa *oidcAuth) LoginCb(c echo.Context) error {
 	q := redirectURL.Query()
 	q.Set("id_token", idToken)
 	redirectURL.RawQuery = q.Encode()
-	fmt.Println("Redirecting to", redirectURL.String())
 	redirectTo(c, redirectURL.String())
 	return nil
-}
-
-func (oa *oidcAuth) LoginToken(ctx echo.Context) error {
-	return ctx.NoContent(http.StatusNotImplemented)
 }
 
 func (oa *oidcAuth) Login(c echo.Context) error {
@@ -286,6 +283,52 @@ func (oa *oidcAuth) Login(c echo.Context) error {
 	// Redirect to generated AuthURL
 	redirectTo(c, authURL.String())
 	return nil
+}
+
+func (oa *oidcAuth) LoginToken(c echo.Context) error {
+	requestID := c.Response().Writer.Header().Get("X-Request-ID")
+
+	resp, err := http.PostForm(oa.provider.Endpoint().TokenURL, url.Values{
+		"client_id":     {oa.clientID},
+		"client_secret": {oa.clientSecret},
+		"grant_type":    {"password"},
+		"scope":         {strings.Join(oa.scopes, " ")},
+		"username":      {c.Request().FormValue("username")},
+		"password":      {c.Request().FormValue("password")},
+	})
+	if err != nil {
+		logger.Err(err).Str("request_id", requestID).Msg("OIDC provider password grant_type error")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		logger.Error().Str("request_id", requestID).Msgf("Invalid response code %d from OIDC provider for password grant_type", resp.StatusCode)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	var oidcTokenResp OIDCTokenProviderResp
+
+	respDecoder := json.NewDecoder(resp.Body)
+	err = respDecoder.Decode(&oidcTokenResp)
+	if err != nil {
+		logger.Err(err).Str("request_id", requestID).Msg("Can't parse response from OIDC provider for password grant_type")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	oidcToken, err := oa.verifier.Verify(c.Request().Context(), oidcTokenResp.IDToken)
+	if err != nil {
+		logger.Error().Str("request_id", requestID).AnErr("error", err).Msg("Can't verify the token returned for password grant_type")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	// Store refresh_token in session
+	session := echosessions.GetSession(c)
+	session.Set("refresh_token", oidcTokenResp.RefreshToken)
+	session.Set("username", oidcToken.Subject)
+	sessionSave(c, session, "login_token")
+
+	return c.JSON(http.StatusOK, map[string]string{
+		"token": oidcTokenResp.AccessToken,
+	})
 }
 
 // tokenFromRequest extracts token from request header. If Authorization header is not present returns id_token query param .
