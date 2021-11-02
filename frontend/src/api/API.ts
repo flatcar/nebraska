@@ -18,6 +18,7 @@ import {
 
 type WithCount<T> = T & {
   count: number;
+  totalCount: number;
 };
 
 const MAIN_PROGRESS_BAR = 'main_progress_bar';

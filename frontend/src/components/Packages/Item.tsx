@@ -13,6 +13,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
 import { Channel, Package } from '../../api/apiDataTypes';
+import { toLocaleString } from '../../i18n/dateTime';
 import flatcarIcon from '../../icons/flatcar-logo.json';
 import { applicationsStore } from '../../stores/Stores';
 import { ARCHES, cleanSemverVersion } from '../../utils/helpers';
@@ -56,8 +57,7 @@ function Item(props: {
   const classes = useStyles();
   const { t } = useTranslation();
 
-  const createdDate = new Date(props.packageItem.created_ts as string);
-  const date = createdDate.toLocaleString('default', {
+  const date = toLocaleString(props.packageItem.created_ts, undefined, {
     year: 'numeric',
     month: 'numeric',
     day: 'numeric',

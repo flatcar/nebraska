@@ -11,7 +11,7 @@ import { activityStore } from '../../stores/Stores';
 import Empty from '../common/EmptyContent';
 import ListHeader from '../common/ListHeader';
 import Loader from '../common/Loader';
-import List from './List';
+import ActivityList from './ActivityList';
 
 const useStyles = makeStyles({
   toolbar: {
@@ -24,6 +24,8 @@ const useStyles = makeStyles({
     fontSize: '.85em',
   },
 });
+
+export interface ActivityContainerProps {}
 
 function Container() {
   const classes = useStyles();
@@ -62,7 +64,7 @@ function Container() {
   }
 
   function getPagedActivity() {
-    const entriesPerTime: { [key: string]: any } = {};
+    const entriesPerTime: { [key: string]: Activity[] } = {};
     let timestamp = null;
     if (!activity) {
       return entriesPerTime;
@@ -121,8 +123,8 @@ function Container() {
             <Grid container direction="column">
               <Grid item>
                 {Object.values(
-                  _.mapObject(getPagedActivity(), (entry, timestamp) => {
-                    return <List timestamp={timestamp} entries={entry} key={timestamp} />;
+                  _.mapObject(getPagedActivity(), (entries, timestamp) => {
+                    return <ActivityList timestamp={timestamp} entries={entries} key={timestamp} />;
                   })
                 )}
               </Grid>

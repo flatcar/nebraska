@@ -4,18 +4,48 @@ import { Link as RouterLink } from 'react-router-dom';
 import _ from 'underscore';
 import API from '../api/API';
 import { Activity } from '../api/apiDataTypes';
+import { toLocaleDateString } from '../i18n/dateTime';
 import Store from './BaseStore';
 
+interface ActivityEntryClass {
+  type: string;
+  appName: string;
+  groupName: string | null;
+  channelName: string | null;
+  description: string | React.ReactElement;
+}
+interface ActivityEntrySeverity {
+  type: string;
+  className: string;
+  icon: string;
+}
+
 class ActivityStore extends Store {
-  activity: { [key: string]: Activity[] } | null | never[];
-  constructor() {
+  activity: { [key: string]: Activity[] } | null;
+  interval: null | number;
+  constructor(noRefresh?: boolean) {
     super();
     this.activity = null;
-    this.getActivity();
 
-    setInterval(() => {
+    if (noRefresh) {
+      this.interval = null;
+    } else {
       this.getActivity();
-    }, 60 * 1000);
+      this.interval = window.setInterval(() => {
+        this.getActivity();
+      }, 60 * 1000);
+    }
+  }
+
+  stopRefreshing() {
+    if (this.interval) {
+      window.clearInterval(this.interval);
+    }
+    this.interval = null;
+  }
+
+  setActivity(entries: Activity[] | null) {
+    this.activity = entries === null ? null : this.sortActivityByDate(entries);
   }
 
   getCachedActivity() {
@@ -25,14 +55,12 @@ class ActivityStore extends Store {
   getActivity() {
     API.getActivity()
       .then(response => {
-        this.activity = _.isNull(response.activities)
-          ? []
-          : this.sortActivityByDate(response.activities);
+        this.setActivity(response.totalCount === 0 ? [] : response.activities);
         this.emitChange();
       })
       .catch(error => {
         if (error.status === 404) {
-          this.activity = [];
+          this.setActivity(null);
           this.emitChange();
         }
       });
@@ -44,8 +72,7 @@ class ActivityStore extends Store {
     } = {};
 
     entries.forEach(entry => {
-      const createdDate = new Date(entry.created_ts);
-      const date = createdDate.toLocaleDateString('default', {
+      const date = toLocaleDateString(entry.created_ts, undefined, {
         day: 'numeric',
         weekday: 'short',
         month: 'short',
@@ -61,17 +88,11 @@ class ActivityStore extends Store {
     return sortedEntries;
   }
 
-  getActivityEntryClass(classID: number, entry: Activity) {
+  makeActivityEntryClass(classID: number, entry: Activity): ActivityEntryClass {
     const instancePath = `/apps/${entry.app_id}/groups/${entry.group_id}/instances/${entry.instance_id}?period=1d`;
 
-    const classType: {
-      [key: string]: {
-        type: string;
-        appName: string;
-        groupName: string | null;
-        channelName: string | null;
-        description: string | React.ReactElement;
-      };
+    const classTypes: {
+      [key: string]: ActivityEntryClass;
     } = {
       1: {
         type: 'activityPackageNotFound',
@@ -130,17 +151,13 @@ class ActivityStore extends Store {
       },
     };
 
-    const classDetails = classID ? classType[classID] : classType[1];
+    const classDetails = classID ? classTypes[classID] : classTypes[1];
     return classDetails;
   }
 
-  getActivityEntrySeverity(severityID: number) {
+  makeActivityEntrySeverity(severityID: number) {
     const severityType: {
-      [key: string]: {
-        type: string;
-        className: string;
-        icon: string;
-      };
+      [key: string]: ActivityEntrySeverity;
     } = {
       1: {
         type: 'activitySuccess',

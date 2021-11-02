@@ -88,6 +88,7 @@ export interface Application {
 }
 
 export interface Activity {
+  id: number;
   app_id: string;
   group_id: string;
   created_ts: string;

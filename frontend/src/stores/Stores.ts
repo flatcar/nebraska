@@ -9,25 +9,25 @@ interface Stores {
 }
 let stores: Stores | undefined;
 
-export function getStores(): Stores {
+export function getStores(noRefresh?: boolean): Stores {
   if (stores === undefined) {
     stores = {
-      applicationsStore: new ApplicationsStore(),
-      activityStore: new ActivityStore(),
+      applicationsStore: new ApplicationsStore(noRefresh),
+      activityStore: new ActivityStore(noRefresh),
       groupChartStore: new GroupChartsStore(),
     };
   }
   return stores;
 }
 
-export function applicationsStore() {
-  return getStores().applicationsStore;
+export function applicationsStore(noRefresh?: boolean) {
+  return getStores(noRefresh).applicationsStore;
 }
 
-export function activityStore() {
-  return getStores().activityStore;
+export function activityStore(noRefresh?: boolean) {
+  return getStores(noRefresh).activityStore;
 }
 
-export function groupChartStore() {
-  return getStores().groupChartStore;
+export function groupChartStore(noRefresh?: boolean) {
+  return getStores(noRefresh).groupChartStore;
 }

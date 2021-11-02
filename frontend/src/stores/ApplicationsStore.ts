@@ -7,14 +7,20 @@ import store from './redux/store';
 
 class ApplicationsStore extends Store {
   applications: Application[];
-  constructor() {
+  interval: null | number;
+  constructor(noRefresh?: boolean) {
     super();
     this.applications = [];
-    this.getApplications();
 
-    setInterval(() => {
+    if (noRefresh) {
+      this.interval = null;
+    } else {
       this.getApplications();
-    }, 60 * 1000);
+
+      this.interval = window.setInterval(() => {
+        this.getApplications();
+      }, 60 * 1000);
+    }
   }
 
   // Applications

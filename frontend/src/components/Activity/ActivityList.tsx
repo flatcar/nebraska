@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { Activity } from '../../api/apiDataTypes';
 import { makeLocaleTime } from '../../i18n/dateTime';
-import Item from './Item';
+import ActivityItem from './ActivityItem';
 
 const useStyles = makeStyles({
   listTitle: {
@@ -12,7 +12,12 @@ const useStyles = makeStyles({
   },
 });
 
-function List(props: { entries?: Activity[]; timestamp: string }) {
+export interface ActivityListProps {
+  entries?: Activity[];
+  timestamp: string;
+}
+
+export default function ActivityList(props: ActivityListProps) {
   const classes = useStyles();
   const entries = props.entries ? props.entries : [];
 
@@ -25,12 +30,10 @@ function List(props: { entries?: Activity[]; timestamp: string }) {
         })}
       </Typography>
       <MuiList>
-        {entries.map((entry: Activity, i: number) => (
-          <Item key={i} entry={entry} />
+        {entries.map((entry: Activity) => (
+          <ActivityItem key={entry.id} entry={entry} />
         ))}
       </MuiList>
     </React.Fragment>
   );
 }
-
-export default List;
