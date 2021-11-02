@@ -22,6 +22,7 @@ type Activity struct {
 	CreatedTs       time.Time `db:"created_ts" json:"created_ts"`
 	GroupID         string    `json:"group_id"`
 	GroupName       string    `json:"group_name"`
+	Id              string    `json:"id"`
 	InstanceID      string    `json:"instance_id"`
 	Severity        int       `json:"severity"`
 	Version         string    `json:"version"`

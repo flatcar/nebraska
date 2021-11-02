@@ -1823,6 +1823,7 @@ components:
     activity:
       type: object
       required:
+        - id
         - appID
         - groupID
         - createdTs
@@ -1834,6 +1835,8 @@ components:
         - channelName
         - instanceID
       properties:
+        id:
+          type: string
         appID:
           type: string
           x-oapi-codegen-extra-tags:
