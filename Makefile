@@ -38,8 +38,8 @@ container_id:
 	./tools/setup_local_db.sh \
 		--id-file container_id.tmp \
 		--db-name nebraska_tests \
-		--password nebraska
-		--pg_version 13.3
+		--password nebraska \
+		--pg-version 13.3
 	cd backend && mv container_id.tmp container_id
 
 .PHONY: check-backend-with-container

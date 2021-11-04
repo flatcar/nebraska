@@ -28,6 +28,7 @@
 # -f is --id-file
 # -n is --db-name
 # -P is --port
+# -d is --pg-version
 #
 # After being finished with the database, do:
 #
@@ -45,8 +46,8 @@ function fail() {
 
 opts=$(getopt \
            --name "$(basename "${0}")" \
-           --options 'f:n:p:P:' \
-           --longoptions 'id-file:,db-name:,password:,port:' \
+           --options 'f:n:p:P:d:' \
+           --longoptions 'id-file:,db-name:,password:,port:,pg-version:' \
            -- "${@}"
     )
 
@@ -80,7 +81,7 @@ while true; do
             port="${2}"
             shift 2
             ;;
-        '-d'|'--pg_version')
+        '-d'|'--pg-version')
             pg_version="${2}"
             shift 2
             ;;
