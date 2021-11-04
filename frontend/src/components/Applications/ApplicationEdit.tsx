@@ -7,13 +7,19 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Field, Form, Formik } from 'formik';
 import { TextField } from 'formik-material-ui';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import { Application } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 
-function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () => void }) {
+export interface ApplicationEditProps {
+  create?: any;
+  data: any;
+  show: boolean;
+  onHide: () => void;
+}
+
+export default function ApplicationEdit(props: ApplicationEditProps) {
   const isCreation = Boolean(props.create);
   const { t } = useTranslation();
 
@@ -171,5 +177,3 @@ function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () 
     </Dialog>
   );
 }
-
-export default EditDialog;

@@ -3,7 +3,7 @@ import AddIcon from '@material-ui/icons/Add';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import ApplicationEditDialog from '../../Applications/EditDialog';
+import ApplicationEdit from '../../Applications/ApplicationEdit';
 import ChannelEdit from '../../Channels/ChannelEdit';
 import GroupEditDialog from '../../Groups/EditDialog';
 import PackageEditDialog, {
@@ -39,7 +39,7 @@ function ModalButton(props: { data: object; modalToOpen: string; icon?: string }
   let modal = null;
   switch (props.modalToOpen) {
     case 'AddApplicationModal':
-      modal = <ApplicationEditDialog {...options} />;
+      modal = <ApplicationEdit {...options} />;
       break;
     case 'AddGroupModal':
       modal = <GroupEditDialog {...options} />;

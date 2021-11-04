@@ -1,21 +1,23 @@
 import { Box, Divider } from '@material-ui/core';
-import React from 'react';
+import { Fragment } from 'react';
 import { Group } from '../../api/apiDataTypes';
-import Item from './ApplicationItemGroupItem';
+import ApplicationItemGroupItem from './ApplicationItemGroupItem';
 
-function ApplicationItemGroupsList(props: { groups: Group[]; appID: string; appName: string }) {
+export default function ApplicationItemGroupsList(props: {
+  groups: Group[];
+  appID: string;
+  appName: string;
+}) {
   return (
     <>
       {props.groups.map((group, i) => (
-        <React.Fragment key={group.id}>
+        <Fragment key={group.id}>
           {i > 0 && <Divider variant="fullWidth" />}
           <Box mt={1}>
-            <Item group={group} appName={props.appName} key={'group_' + i} />
+            <ApplicationItemGroupItem group={group} appName={props.appName} key={'group_' + i} />
           </Box>
-        </React.Fragment>
+        </Fragment>
       ))}
     </>
   );
 }
-
-export default ApplicationItemGroupsList;

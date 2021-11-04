@@ -5,7 +5,7 @@ import ScheduleIcon from '@material-ui/icons/Schedule';
 import { useTranslation } from 'react-i18next';
 import { Group } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
-import { CardFeatureLabel, CardHeader, CardLabel } from '../common/Card';
+import { CardFeatureLabel, CardHeader, CardLabel } from '../common/Card/Card';
 import ListItem from '../common/ListItem';
 import MoreMenu from '../common/MoreMenu';
 import ApplicationItemGroupsList from './ApplicationItemGroupsList';

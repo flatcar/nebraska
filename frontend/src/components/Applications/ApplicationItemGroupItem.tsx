@@ -3,9 +3,10 @@ import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
 import LayersOutlinedIcon from '@material-ui/icons/LayersOutlined';
 import React from 'react';
+import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
-import API from '../../api/API';
+import { APIContext } from '../../api/API';
 import { Group } from '../../api/apiDataTypes';
 import ChannelItem from '../Channels/ChannelItem';
 
@@ -24,6 +25,7 @@ function ApplicationItemGroupItem(props: { group: Group; appName: string }) {
   const { group } = props;
   const [totalInstances, setTotalInstances] = React.useState(-1);
   const { t } = useTranslation();
+  const API = useContext(APIContext);
 
   React.useEffect(() => {
     // We use this function without any filter to get the total number of instances

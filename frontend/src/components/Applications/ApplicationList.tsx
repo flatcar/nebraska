@@ -1,5 +1,6 @@
-import { List as MuiList, withStyles } from '@material-ui/core';
+import { List } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
+import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import _ from 'underscore';
@@ -9,10 +10,10 @@ import Empty from '../common/EmptyContent';
 import ListHeader from '../common/ListHeader';
 import Loader from '../common/Loader';
 import ModalButton from '../common/ModalButton';
-import EditDialog from './EditDialog';
-import Item from './Item';
+import ApplicationEdit from './ApplicationEdit';
+import ApplicationItem from './ApplicationItem';
 
-const styles = () => ({
+const useStyles = makeStyles({
   root: {
     '& > hr:first-child': {
       display: 'none',
@@ -20,23 +21,12 @@ const styles = () => ({
   },
 });
 
-function List(props: { classes: Record<'root', string> }) {
+export interface ApplicationListProps {}
+
+export default function ApplicationList() {
   const [applications, setApplications] = React.useState(
     applicationsStore().getCachedApplications ? applicationsStore().getCachedApplications() : []
   );
-  const [searchTerm] = React.useState('');
-  const [updateAppModalVisible, setUpdateModalVisible] = React.useState(false);
-  const [updateAppIDModal, setUpdateAppIDModal] = React.useState<null | string>(null);
-  const { t } = useTranslation();
-
-  function closeUpdateAppModal() {
-    setUpdateModalVisible(false);
-  }
-
-  function openUpdateAppModal(appID: string) {
-    setUpdateModalVisible(true);
-    setUpdateAppIDModal(appID);
-  }
 
   React.useEffect(() => {
     applicationsStore().addChangeListener(onChange);
@@ -55,16 +45,46 @@ function List(props: { classes: Record<'root', string> }) {
     setApplications(applicationsStore().getCachedApplications());
   }
 
-  let entries: React.ReactNode = '';
-  const { classes } = props;
+  return <ApplicationListPure applications={applications} loading={applications === null} />;
+}
 
-  if (searchTerm) {
-    if (applications) {
-      setApplications(applications.filter(app => app.name.toLowerCase().includes(searchTerm)));
-    }
+export interface ApplicationListPureProps {
+  /** To show. */
+  applications: null | Application[];
+  /** If we are waiting for applications to load. */
+  loading?: boolean;
+  /** If the edit screen is open for editId */
+  editOpen?: boolean;
+  /** The id to show for editing. */
+  editId?: string;
+  /** A default term to search. */
+  defaultSearchTerm?: string;
+}
+
+export function ApplicationListPure(props: ApplicationListPureProps) {
+  const classes = useStyles();
+  const { t } = useTranslation();
+  const [editOpen, setEditOpen] = React.useState(!!props.editOpen);
+  const [editId, setEditId] = React.useState<null | string>(props.editId ? props.editId : null);
+  const [searchTerm] = React.useState(props.defaultSearchTerm);
+
+  function closeUpdateAppModal() {
+    setEditOpen(false);
   }
 
-  if (_.isNull(applications)) {
+  function openUpdateAppModal(appID: string) {
+    setEditOpen(true);
+    setEditId(appID);
+  }
+
+  let entries: React.ReactNode = '';
+  const applications = props.applications
+    ? searchTerm
+      ? props.applications.filter(app => app.name.toLowerCase().includes(searchTerm))
+      : props.applications
+    : null;
+
+  if (props.loading || applications === null) {
     entries = <Loader />;
   } else {
     if (_.isEmpty(applications)) {
@@ -85,18 +105,22 @@ function List(props: { classes: Record<'root', string> }) {
     } else {
       entries = _.map(applications, (application: Application) => {
         return (
-          <Item
+          <ApplicationItem
+            description={application.description}
+            groups={application.groups}
+            id={application.id}
             key={application.id}
-            application={application}
-            handleUpdateApplication={openUpdateAppModal}
+            name={application.name}
+            numberOfInstances={application.instances?.count || 0}
+            onUpdate={openUpdateAppModal}
+            productId={application.product_id || ''}
           />
         );
       });
     }
   }
 
-  const appToUpdate =
-    applications && updateAppIDModal ? _.findWhere(applications, { id: updateAppIDModal }) : null;
+  const appToUpdate = applications && editId ? _.findWhere(applications, { id: editId }) : null;
   return (
     <>
       <ListHeader
@@ -106,17 +130,11 @@ function List(props: { classes: Record<'root', string> }) {
         ]}
       />
       <Paper>
-        <MuiList className={classes.root}>{entries}</MuiList>
+        <List className={classes.root}>{entries}</List>
         {appToUpdate && (
-          <EditDialog
-            data={appToUpdate}
-            show={updateAppModalVisible}
-            onHide={closeUpdateAppModal}
-          />
+          <ApplicationEdit data={appToUpdate} show={editOpen} onHide={closeUpdateAppModal} />
         )}
       </Paper>
     </>
   );
 }
-
-export default withStyles(styles)(List);
