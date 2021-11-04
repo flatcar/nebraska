@@ -1,5 +1,6 @@
 import PubSub from 'pubsub-js';
 import queryString from 'querystring';
+import { createContext } from 'react';
 import _ from 'underscore';
 import { CONFIG_STORAGE_KEY, NebraskaConfig } from '../stores/redux/features/config';
 import { getToken, setToken } from '../utils/auth';
@@ -34,7 +35,7 @@ type REQUEST_DATA_TYPE =
   | null
   | undefined;
 
-class API {
+export default class API {
   // Applications
 
   static getApplications(): Promise<WithCount<{ applications: Application[] }>> {
@@ -375,4 +376,4 @@ class API {
   }
 }
 
-export default API;
+export const APIContext = createContext(API);
