@@ -18,8 +18,9 @@ import { CardFeatureLabel, CardHeader, CardLabel } from '../common/Card';
 import MoreMenu from '../common/MoreMenu';
 import TimeIntervalLinks from '../common/TimeIntervalLinks';
 import InstanceStatusArea from '../Instances/Charts';
-import { StatusCountTimeline, VersionCountTimeline } from './Charts';
-import { formatUpdateLimits } from './Item';
+import StatusCountTimeline from './GroupCharts/StatusCountTimeline';
+import VersionCountTimeline from './GroupCharts/VersionCountTimeline';
+import { formatUpdateLimits } from './GroupItem';
 
 const useStyles = makeStyles(theme => ({
   link: {

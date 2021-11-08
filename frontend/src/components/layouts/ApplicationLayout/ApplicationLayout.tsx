@@ -5,8 +5,8 @@ import { useParams } from 'react-router-dom';
 import _ from 'underscore';
 import { applicationsStore } from '../../../stores/Stores';
 import ChannelList from '../../Channels/ChannelList';
-import SectionHeader from '../../common/SectionHeader';
-import GroupsList from '../../Groups/List';
+import SectionHeader from '../../common/SectionHeader/SectionHeader';
+import GroupList from '../../Groups/GroupList';
 import PackagesList from '../../Packages/List';
 
 function ApplicationLayout() {
@@ -47,7 +47,7 @@ function ApplicationLayout() {
       />
       <Grid container spacing={1} justify="space-between">
         <Grid item xs={12} sm={8}>
-          <GroupsList appID={appID} />
+          <GroupList appID={appID} />
         </Grid>
         <Grid item xs={12} sm={4}>
           <Grid container direction="column" alignItems="stretch" spacing={2}>

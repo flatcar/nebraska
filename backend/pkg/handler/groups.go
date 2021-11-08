@@ -188,6 +188,7 @@ func (h *Handler) GetGroupInstanceStats(ctx echo.Context, appID string, groupID 
 
 func (h *Handler) GetGroupVersionBreakdown(ctx echo.Context, appID string, groupID string) error {
 	versionBreakdown, err := h.db.GetGroupVersionBreakdown(groupID)
+
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
@@ -196,6 +197,10 @@ func (h *Handler) GetGroupVersionBreakdown(ctx echo.Context, appID string, group
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
+	if len(versionBreakdown) == 0 {
+		// WAT?: because otherwise it serializes to null not []
+		return ctx.JSON(http.StatusOK, []string{})
+	}
 	return ctx.JSON(http.StatusOK, versionBreakdown)
 }
 

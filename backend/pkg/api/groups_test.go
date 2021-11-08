@@ -189,6 +189,26 @@ func TestGetGroupsFiltered(t *testing.T) {
 	}
 }
 
+func TestVersionBreakDownEmpty(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	_, err := a.AddGroup(&Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	assert.NoError(t, err)
+
+	groups, err := a.GetGroups(tApp.ID, 0, 0)
+	assert.NoError(t, err)
+	g := groups[0]
+
+	versionBreakdown, vbErr := a.GetGroupVersionBreakdown(g.ID)
+	assert.NoError(t, vbErr)
+	assert.Len(t, versionBreakdown, 0)
+}
+
 func TestGetVersionCountTimeline(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()

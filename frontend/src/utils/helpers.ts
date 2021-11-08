@@ -243,6 +243,7 @@ export function useGroupVersionBreakdown(group: Group) {
 
     API.getGroupVersionBreakdown(group.application_id, group.id)
       .then(versions => {
+        console.log('versionBreakdown versions', versions);
         setVersionBreakdown(versions);
       })
       .catch(err => {

@@ -16,10 +16,12 @@ import { TextField } from 'formik-material-ui';
 import { useTranslation } from 'react-i18next';
 import TimezonePicker from '../../common/TimezonePicker';
 
-export default function GroupPolicyForm(props: {
+export interface GroupPolicyFormProps {
   values: { [key: string]: string };
   setFieldValue: (formField: string, value: any) => any;
-}) {
+}
+
+export default function GroupPolicyForm(props: GroupPolicyFormProps) {
   const { t } = useTranslation();
   const { values, setFieldValue } = props;
 

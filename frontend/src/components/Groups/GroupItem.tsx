@@ -9,7 +9,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
 import API from '../../api/API';
-import { Channel, Group } from '../../api/apiDataTypes';
+import { Group, VersionBreakdownEntry } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import { useGroupVersionBreakdown } from '../../utils/helpers';
 import ChannelItem from '../Channels/ChannelItem';
@@ -49,40 +49,26 @@ export function formatUpdateLimits(t: TFunction, group: Group) {
   });
 }
 
-function Item(props: {
+export interface GroupItemProps {
   group: Group;
-  appName: string;
-  channels: Channel[];
   handleUpdateGroup: (appID: string, groupID: string) => void;
-}) {
-  const classes = useStyles();
+}
+
+function GroupItem({ group, handleUpdateGroup }: GroupItemProps) {
   const { t } = useTranslation();
-  const [totalInstances, setTotalInstances] = React.useState(-1);
+  const [totalInstances, setTotalInstances] = React.useState<null | number>(null);
+  const versionBreakdown = useGroupVersionBreakdown(group);
+  console.log('versionBreakdown', JSON.stringify(versionBreakdown));
 
-  const version_breakdown = useGroupVersionBreakdown(props.group);
-  const description = props.group.description || t('groups|No description provided');
-  const channel = props.group.channel || null;
-
-  const groupChannel = _.isEmpty(props.group.channel) ? (
-    <CardLabel>{t('groups|No channel provided')}</CardLabel>
-  ) : (
-    <ChannelItem channel={props.group.channel} />
-  );
-  const groupPath = `/apps/${props.group.application_id}/groups/${props.group.id}`;
-
-  function deleteGroup() {
+  function deleteGroup(appID: string, groupID: string) {
     const confirmationText = t('groups|Are you sure you want to delete this group?');
     if (window.confirm(confirmationText)) {
-      applicationsStore().deleteGroup(props.group.application_id, props.group.id);
+      applicationsStore().deleteGroup(appID, groupID);
     }
   }
 
-  function updateGroup() {
-    props.handleUpdateGroup(props.group.application_id, props.group.id);
-  }
-
   React.useEffect(() => {
-    API.getInstancesCount(props.group.application_id, props.group.id, '1d')
+    API.getInstancesCount(group.application_id, group.id, '1d')
       .then(result => {
         setTotalInstances(result);
       })
@@ -90,25 +76,63 @@ function Item(props: {
   }, []);
 
   return (
+    <PureGroupItem
+      group={group}
+      handleUpdateGroup={handleUpdateGroup}
+      deleteGroup={deleteGroup}
+      versionBreakdown={versionBreakdown}
+      totalInstances={totalInstances}
+    />
+  );
+}
+
+export interface PureGroupItemProps {
+  group: Group;
+  versionBreakdown: VersionBreakdownEntry[] | null;
+  totalInstances: number | null;
+  handleUpdateGroup: (appID: string, groupID: string) => void;
+  deleteGroup: (appID: string, groupID: string) => void;
+}
+
+export function PureGroupItem({
+  group,
+  versionBreakdown,
+  totalInstances,
+  handleUpdateGroup,
+  deleteGroup,
+}: PureGroupItemProps) {
+  const classes = useStyles();
+  const { t } = useTranslation();
+
+  const description = group.description || t('groups|No description provided');
+  const channel = group.channel || null;
+
+  const groupChannel = _.isEmpty(group.channel) ? (
+    <CardLabel>{t('groups|No channel provided')}</CardLabel>
+  ) : (
+    <ChannelItem channel={group.channel} />
+  );
+
+  return (
     <ListItem disableGutters className={classes.root}>
       <Grid container>
         <Grid item xs={12}>
           <CardHeader
-            cardMainLinkLabel={props.group.name}
-            cardMainLinkPath={groupPath}
-            cardId={props.group.id}
-            cardTrack={props.group.track}
+            cardMainLinkLabel={group.name}
+            cardMainLinkPath={`/apps/${group.application_id}/groups/${group.id}`}
+            cardId={group.id}
+            cardTrack={group.track}
             cardDescription={description}
           >
             <MoreMenu
               options={[
                 {
                   label: t('frequent|Edit'),
-                  action: updateGroup,
+                  action: () => handleUpdateGroup(group.application_id, group.id),
                 },
                 {
                   label: t('frequent|Delete'),
-                  action: deleteGroup,
+                  action: () => deleteGroup(group.application_id, group.id),
                 },
               ]}
             />
@@ -120,7 +144,15 @@ function Item(props: {
               <CardFeatureLabel>{t('groups|Instances')}</CardFeatureLabel>
               <Box>
                 <CardLabel labelStyle={{ fontSize: '1.5rem' }}>
-                  {totalInstances > 0 ? totalInstances : t('frequent|None')}
+                  {totalInstances !== null ? (
+                    totalInstances > 0 ? (
+                      totalInstances
+                    ) : (
+                      t('frequent|None')
+                    )
+                  ) : (
+                    <Empty>{t('frequent|Loading...')}</Empty>
+                  )}
                 </CardLabel>
                 <Box display="flex" mr={2}>
                   <ScheduleIcon color="disabled" />
@@ -145,7 +177,7 @@ function Item(props: {
               <Box p={1} mb={1}>
                 <CardLabel>
                   <Box display="flex">
-                    {props.group.policy_updates_enabled ? (
+                    {group.policy_updates_enabled ? (
                       <>
                         <Box>{t('frequent|Enabled')}</Box>
                         <Box>
@@ -167,7 +199,7 @@ function Item(props: {
             <Grid item>
               <CardFeatureLabel>{t('groups|Rollout Policy')}</CardFeatureLabel>
               <Box p={1} mb={1}>
-                <CardLabel>{formatUpdateLimits(t, props.group)}</CardLabel>
+                <CardLabel>{formatUpdateLimits(t, group)}</CardLabel>
               </Box>
             </Grid>
             <Grid item container>
@@ -175,8 +207,10 @@ function Item(props: {
                 <CardFeatureLabel>{t('groups|Version breakdown')}</CardFeatureLabel>
               </Grid>
               <Grid item xs={12}>
-                {version_breakdown?.length > 0 ? (
-                  <VersionProgressBar version_breakdown={version_breakdown} channel={channel} />
+                {versionBreakdown === null ? (
+                  <Empty>{t('frequent|Loading...')}</Empty>
+                ) : versionBreakdown?.length > 0 ? (
+                  <VersionProgressBar version_breakdown={versionBreakdown} channel={channel} />
                 ) : (
                   <Empty>{t('groups|No instances available.')}</Empty>
                 )}
@@ -189,4 +223,4 @@ function Item(props: {
   );
 }
 
-export default Item;
+export default GroupItem;

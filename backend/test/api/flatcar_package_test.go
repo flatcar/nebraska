@@ -10,10 +10,11 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/kinvolk/nebraska/backend/pkg/config"
-	"github.com/kinvolk/nebraska/backend/pkg/server"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/kinvolk/nebraska/backend/pkg/config"
+	"github.com/kinvolk/nebraska/backend/pkg/server"
 )
 
 func TestHostFlatcarPackage(t *testing.T) {

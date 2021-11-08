@@ -27,14 +27,16 @@ const useStyles = makeStyles({
   },
 });
 
-function EditDialog(props: {
+export interface GroupEditDialogProps {
   create?: boolean;
   data: {
     [key: string]: any;
   };
   onHide: () => void;
   show: boolean;
-}) {
+}
+
+export default function GroupEditDialog(props: GroupEditDialogProps) {
   const isCreation = Boolean(props.create);
   const classes = useStyles();
   const [groupEditActiveTab, setGroupEditActiveTab] = React.useState(0);
@@ -235,5 +237,3 @@ function EditDialog(props: {
     </Dialog>
   );
 }
-
-export default EditDialog;

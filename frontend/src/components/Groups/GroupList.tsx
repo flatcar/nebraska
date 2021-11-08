@@ -1,6 +1,6 @@
-import { withStyles } from '@material-ui/core';
 import MuiList from '@material-ui/core/List';
 import Paper from '@material-ui/core/Paper';
+import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { Trans } from 'react-i18next';
 import _ from 'underscore';
@@ -8,22 +8,27 @@ import { Channel, Group } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import Empty from '../common/EmptyContent';
 import ListHeader from '../common/ListHeader';
-import Loader from '../common/Loader';
+import Loader from '../common/Loader/Loader';
 import ModalButton from '../common/ModalButton';
-import EditDialog from './EditDialog';
-import Item from './Item';
+import GroupEditDialog from './GroupEditDialog';
+import GroupItem from './GroupItem';
 
-const styles = () => ({
+const useStyles = makeStyles(() => ({
   root: {
     '& > hr:first-child': {
       display: 'none',
     },
   },
-});
+}));
 
-function List(props: { appID: string; classes: Record<'root', string> }) {
+export interface GroupListProps {
+  appID: string;
+}
+
+function GroupList({ appID }: GroupListProps) {
+  const classes = useStyles();
   const [application, setApplication] = React.useState(
-    applicationsStore().getCachedApplication(props.appID)
+    applicationsStore().getCachedApplication(appID)
   );
   const [updateGroupModalVisible, setUpdateGroupModalVisible] = React.useState(false);
   const [updateGroupIDModal, setUpdateGroupIDModal] = React.useState<string | null>(null);
@@ -45,16 +50,14 @@ function List(props: { appID: string; classes: Record<'root', string> }) {
   }, []);
 
   function onChange() {
-    setApplication(applicationsStore().getCachedApplication(props.appID));
+    setApplication(applicationsStore().getCachedApplication(appID));
   }
 
   let channels: Channel[] = [];
   let groups: Group[] = [];
-  let name = '';
   let entries: React.ReactNode = '';
 
   if (application) {
-    name = application.name;
     groups = application.groups ? application.groups : [];
     channels = application.channels ? application.channels : [];
 
@@ -73,11 +76,9 @@ function List(props: { appID: string; classes: Record<'root', string> }) {
     } else {
       entries = _.map(groups, group => {
         return (
-          <Item
+          <GroupItem
             key={'groupID_' + group.id}
             group={group}
-            appName={name}
-            channels={channels}
             handleUpdateGroup={openUpdateGroupModal}
           />
         );
@@ -91,7 +92,6 @@ function List(props: { appID: string; classes: Record<'root', string> }) {
     !_.isEmpty(groups) && updateGroupIDModal
       ? _.findWhere(groups, { id: updateGroupIDModal })
       : null;
-  const { classes } = props;
 
   return (
     <>
@@ -103,7 +103,7 @@ function List(props: { appID: string; classes: Record<'root', string> }) {
             modalToOpen="AddGroupModal"
             data={{
               channels: channels,
-              appID: props.appID,
+              appID: appID,
             }}
           />,
         ]}
@@ -111,8 +111,8 @@ function List(props: { appID: string; classes: Record<'root', string> }) {
       <Paper>
         <MuiList className={classes.root}>{entries}</MuiList>
         {groupToUpdate && (
-          <EditDialog
-            data={{ group: groupToUpdate, channels: channels, appID: props.appID }}
+          <GroupEditDialog
+            data={{ group: groupToUpdate, channels: channels, appID: appID }}
             show={updateGroupModalVisible}
             onHide={closeUpdateGroupModal}
           />
@@ -122,4 +122,4 @@ function List(props: { appID: string; classes: Record<'root', string> }) {
   );
 }
 
-export default withStyles(styles)(List);
+export default GroupList;

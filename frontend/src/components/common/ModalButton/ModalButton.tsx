@@ -5,7 +5,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import ApplicationEdit from '../../Applications/ApplicationEdit';
 import ChannelEdit from '../../Channels/ChannelEdit';
-import GroupEditDialog from '../../Groups/EditDialog';
+import GroupEditDialog from '../../Groups/GroupEditDialog/GroupEditDialog';
 import PackageEditDialog, {
   EditDialogProps as PackageEditDialogProps,
 } from '../../Packages/EditDialog';

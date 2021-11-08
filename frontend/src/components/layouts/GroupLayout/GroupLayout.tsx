@@ -5,8 +5,8 @@ import _ from 'underscore';
 import { Channel, Group } from '../../../api/apiDataTypes';
 import { applicationsStore } from '../../../stores/Stores';
 import SectionHeader from '../../common/SectionHeader';
-import EditDialog from '../../Groups/EditDialog';
-import GroupExtended from '../../Groups/ItemExtended';
+import GroupEditDialog from '../../Groups/GroupEditDialog/GroupEditDialog';
+import GroupItemExtended from '../../Groups/GroupItemExtended';
 
 function GroupLayout() {
   const { appID, groupID } = useParams<{ appID: string; groupID: string }>();
@@ -70,8 +70,8 @@ function GroupLayout() {
           },
         ]}
       />
-      <GroupExtended appID={appID} groupID={groupID} handleUpdateGroup={openUpdateGroupModal} />
-      <EditDialog
+      <GroupItemExtended appID={appID} groupID={groupID} handleUpdateGroup={openUpdateGroupModal} />
+      <GroupEditDialog
         data={{ group: groupToUpdate, channels: channels }}
         show={updateGroupModalVisible}
         onHide={closeUpdateGroupModal}

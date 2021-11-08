@@ -5,11 +5,13 @@ import { useTranslation } from 'react-i18next';
 import { Channel } from '../../../api/apiDataTypes';
 import { ARCHES } from '../../../utils/helpers';
 
-export default function GroupDetailsForm(props: {
+export interface GroupDetailsFormProps {
   channels: Channel[];
   values: { [key: string]: string };
   setFieldValue: (formField: string, value: any) => any;
-}) {
+}
+
+export default function GroupDetailsForm(props: GroupDetailsFormProps) {
   const { t } = useTranslation();
   const { channels, values, setFieldValue } = props;
 
