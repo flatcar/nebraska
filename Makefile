@@ -82,6 +82,9 @@ frontend-tsc:
 i18n:
 	$(MAKE) -C frontend $@
 
+run:
+	$(MAKE) -j 2 run-frontend run-backend
+
 run-backend: backend-binary
 	$(MAKE) -C backend run
 
