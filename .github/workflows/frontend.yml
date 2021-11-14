@@ -24,22 +24,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Install dependencies
+    - name: run ci
       run: |
-        make frontend-install-ci
-
-    - name: Run linter
-      run: |
-        make frontend-lint
-
-    - name: Run test
-      run: |
-        make frontend-test
-                
-    - name: Build Frontend
-      run: |
-        make frontend-build
-
-    - name: Run typecheck
-      run: |
-        make frontend-tsc
+        make ci
+      working-directory: frontend
