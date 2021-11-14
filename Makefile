@@ -45,42 +45,42 @@ check-backend-with-container:
 	$(MAKE) -C backend $@
 
 .PHONY: frontend
-frontend: frontend-install
-	cd frontend && npm run build
+frontend:
+	$(MAKE) -C frontend
 
 .PHONY: frontend-watch
 frontend-watch: run-frontend
 
 run-frontend:
-	cd frontend && npm start
+	$(MAKE) -C frontend run
 
 .PHONY: frontend-install
 frontend-install:
-	cd frontend && npm install
+	$(MAKE) -C frontend install
 
 .PHONY: frontend-install-ci
 frontend-install-ci:
-	cd frontend && npm ci
+	$(MAKE) -C frontend install-ci
 
 .PHONY: frontend-build
 frontend-build:
-	cd frontend && npm run build
+	$(MAKE) -C frontend build
 
 .PHONY: frontend-test
 frontend-test:
-	cd frontend && npm run test
+	$(MAKE) -C frontend test
 
 .PHONY: frontend-lint
 frontend-lint:
-	cd frontend && npm run lint
+	$(MAKE) -C frontend lint
 
 .PHONY: frontend-tsc
 frontend-tsc:
-	cd frontend && npm run tsc
+	$(MAKE) -C frontend tsc
 
 .PHONY: i18n
 i18n:
-	cd frontend && npm run i18n
+	$(MAKE) -C frontend $@
 
 run-backend: backend-binary
 	$(MAKE) -C backend run
