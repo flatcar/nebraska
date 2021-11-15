@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	defaultMetricsUpdateInterval = 5 * time.Second
+	defaultMetricsUpdateInterval = 15 * time.Second
 )
 
 var (
