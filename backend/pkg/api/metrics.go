@@ -1,6 +1,7 @@
 package api
 
 import (
+	"database/sql"
 	"fmt"
 )
 
@@ -74,4 +75,8 @@ func (api *API) GetFailedUpdatesMetrics() ([]FailedUpdatesMetric, error) {
 		return nil, err
 	}
 	return metrics, nil
+}
+
+func (api *API) DbStats() sql.DBStats {
+	return api.db.Stats()
 }
