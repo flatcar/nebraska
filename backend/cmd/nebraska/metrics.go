@@ -36,17 +36,47 @@ var (
 			"application",
 		},
 	)
+
+	openConnections = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: "nebraska",
+			Name:      "open_db_connections",
+			Help:      "Number of established connections both in use and idle",
+		},
+	)
+
+	inUseConnections = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: "nebraska",
+			Name:      "in_use_db_connections",
+			Help:      "Number of connections currently in use",
+		},
+	)
+
+	idleConnections = prometheus.NewGauge(
+		prometheus.GaugeOpts{
+			Namespace: "nebraska",
+			Name:      "idle_db_connections",
+			Help:      "Number of idle connections",
+		},
+	)
 )
 
 // registerNebraskaMetrics registers the application metrics collector with the DefaultRegistrer.
 func registerNebraskaMetrics() error {
-	err := prometheus.Register(appInstancePerChannelGaugeMetric)
-	if err != nil {
-		return err
+	collectors := []prometheus.Collector{
+		appInstancePerChannelGaugeMetric,
+		failedUpdatesGaugeMetric,
+		openConnections,
+		inUseConnections,
+		idleConnections,
 	}
-	err = prometheus.Register(failedUpdatesGaugeMetric)
-	if err != nil {
-		return err
+
+	for _, collector := range collectors {
+		err := prometheus.Register(collector)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -112,6 +142,12 @@ func calculateMetrics(ctl *controller) error {
 	for _, metric := range fuMetrics {
 		failedUpdatesGaugeMetric.WithLabelValues(metric.ApplicationName).Set(float64(metric.FailureCount))
 	}
+
+	// db stats
+	dbStats := ctl.api.DbStats()
+	openConnections.Set(float64(dbStats.OpenConnections))
+	inUseConnections.Set(float64(dbStats.InUse))
+	idleConnections.Set(float64(dbStats.Idle))
 
 	return nil
 }
