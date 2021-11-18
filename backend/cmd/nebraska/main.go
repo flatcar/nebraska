@@ -117,7 +117,7 @@ func main() {
 	if conf.APIEndpointSuffix != "" {
 		e.Pre(custommiddleware.OmahaSecret(conf.APIEndpointSuffix))
 	}
-	e.Pre(custommiddleware.SanitizePath())
+	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestID())
 	e.Use(middleware.CORS())
