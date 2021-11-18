@@ -117,7 +117,6 @@ func (h *Handler) UpdateApp(ctx echo.Context, appID string) error {
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	// TODO: Confirm if old and new values should be logged
 	logger.Info().Msgf("updateApp - successfully updated app %+v -> %+v", oldApp, app)
 
 	return ctx.JSON(http.StatusOK, app)
