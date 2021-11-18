@@ -99,17 +99,9 @@ func (api *API) GetActivityCount(teamID string, p ActivityQueryParams) (int, err
 		query = query.Where(goqu.I("a.severity").Eq(p.Severity))
 	}
 
-	count := 0
 	q, _, err := query.ToSQL()
-	if err != nil {
-		return 0, err
-	}
-	err = api.db.QueryRow(q).Scan(&count)
-	if err != nil {
-		return 0, err
-	}
 
-	return count, nil
+	return api.GetCountSQL(q, err)
 }
 
 // GetActivity returns a list of activity entries that match the specified
