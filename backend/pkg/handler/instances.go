@@ -22,11 +22,12 @@ func (h *Handler) GetInstance(ctx echo.Context, appID string, groupID string, in
 }
 
 func (h *Handler) GetInstanceStatusHistory(ctx echo.Context, appID string, groupID string, instanceID string, params codegen.GetInstanceStatusHistoryParams) error {
-	var defaultLimit int
-	if params.Limit == nil {
-		params.Limit = &defaultLimit
+	limit := 20
+	if params.Limit != nil {
+		limit = *params.Limit
 	}
-	instanceStatusHistory, err := h.db.GetInstanceStatusHistory(instanceID, appID, groupID, uint64(*params.Limit))
+
+	instanceStatusHistory, err := h.db.GetInstanceStatusHistory(instanceID, appID, groupID, uint64(limit))
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
