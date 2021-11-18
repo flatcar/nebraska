@@ -22,6 +22,7 @@ func SessionsMiddleware(s *sessions.Store, name string) echo.MiddlewareFunc {
 func GetSession(c echo.Context) *sessions.Session {
 	session, ok := c.Get("session").(*sessions.Session)
 	if !ok {
+		// Should never happen, because session middleware is always set
 		return nil
 	}
 	return session
