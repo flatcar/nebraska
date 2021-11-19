@@ -55,6 +55,8 @@ paths:
     get:
       operationId: getConfig
       description: get app config
+      security:
+        - githubCookieAuth: [] 
       responses:
         "200":
           description: get config response
@@ -81,8 +83,9 @@ paths:
       description: get Apps
       operationId: paginateApps
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: query
           name: page
@@ -109,8 +112,9 @@ paths:
       description: create app
       operationId: createApp
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: query
           name: clone_from
@@ -141,8 +145,9 @@ paths:
       description: get app
       operationId: getApp
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -164,8 +169,9 @@ paths:
       description: update app
       operationId: updateApp
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -194,8 +200,9 @@ paths:
       description: delete app
       operationId: deleteApp
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -213,8 +220,9 @@ paths:
       description: paginate groups of an app
       operationId: paginateGroups
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -246,8 +254,9 @@ paths:
       description: create group in app
       operationId: createGroup
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -278,8 +287,9 @@ paths:
       description: get group given its groupID and appID
       operationId: getGroup
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -306,8 +316,9 @@ paths:
       description: update group given its groupID and appID
       operationId: updateGroup
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -343,8 +354,9 @@ paths:
       description: delete group given its groupID and appID
       operationId: deleteGroup
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -369,8 +381,9 @@ paths:
       description: get version timeline of a group given its groupID and appID
       operationId: getGroupVersionTimeline
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -403,8 +416,9 @@ paths:
       description: get status timeline of a group given its groupID and appID
       operationId: getGroupStatusTimeline
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -438,8 +452,9 @@ paths:
       description: get instance stats of a group given its groupID and appID
       operationId: getGroupInstanceStats
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -472,8 +487,9 @@ paths:
       description: get version breakdown of a group given its groupID and appID
       operationId: getGroupVersionBreakdown
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -501,8 +517,9 @@ paths:
       description: paginate channels of an app
       operationId: paginateChannels
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in : path
           name: appID
@@ -534,8 +551,9 @@ paths:
       description: create channel
       operationId: createChannel
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in : path
           name: appID
@@ -565,8 +583,9 @@ paths:
       description: get channel by id
       operationId: getChannel
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -593,8 +612,9 @@ paths:
       description: update channel by id
       operationId: updateChannel
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -630,8 +650,9 @@ paths:
       description: delete channel by id
       operationId: deleteChannel
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -653,8 +674,9 @@ paths:
       description: paginate packages of an app
       operationId: paginatePackages
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -684,8 +706,9 @@ paths:
       description: create package
       operationId: createPackage
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -715,8 +738,9 @@ paths:
       description: get package given its packageID and appID
       operationId: getPackage
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -743,8 +767,9 @@ paths:
       description: update package given its packageID and appID
       operationId: updatePackage
       security:
-        - {}
-        - bearerAuth: []         
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -778,8 +803,9 @@ paths:
       description: delete package given its packageID and appID
       operationId: deletePackage
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -803,8 +829,9 @@ paths:
       description: get instances of a group given its groupID and appID
       operationId: getGroupInstances
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -875,8 +902,9 @@ paths:
       description: get instance count of a group given its groupID and appID
       operationId: getGroupInstancesCount
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -907,8 +935,9 @@ paths:
       description: get instance of a group given its groupID and appID
       operationId: getInstance
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -941,8 +970,9 @@ paths:
       description: get instance status_history.
       operationId: getInstanceStatusHistory
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: appID
@@ -980,8 +1010,9 @@ paths:
       description: update instance
       operationId: updateInstance
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: path
           name: instanceID
@@ -1010,8 +1041,9 @@ paths:
       description: paginate activity
       operationId: paginateActivity
       security:
-        - {}
-        - bearerAuth: []   
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
       parameters:
         - in: query
           name: appID
@@ -1854,7 +1886,15 @@ components:
             $ref: "#/components/schemas/activity"
 
   securitySchemes:
-    bearerAuth:           
+    oidcBearerAuth:
       type: http
       scheme: bearer
-      bearerFormat: JWT    
+      bearerFormat: JWT
+    oidcCookieAuth:
+      type: apiKey
+      in: cookie
+      name: oidc
+    githubCookieAuth:
+      type: apiKey
+      in: cookie
+      name: github

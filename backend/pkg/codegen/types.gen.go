@@ -8,7 +8,9 @@ import (
 )
 
 const (
-	BearerAuthScopes = "bearerAuth.Scopes"
+	GithubCookieAuthScopes = "githubCookieAuth.Scopes"
+	OidcBearerAuthScopes   = "oidcBearerAuth.Scopes"
+	OidcCookieAuthScopes   = "oidcCookieAuth.Scopes"
 )
 
 // Activity defines model for activity.

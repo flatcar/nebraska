@@ -135,7 +135,11 @@ type ServerInterfaceWrapper struct {
 func (w *ServerInterfaceWrapper) PaginateActivity(ctx echo.Context) error {
 	var err error
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params PaginateActivityParams
@@ -218,7 +222,11 @@ func (w *ServerInterfaceWrapper) PaginateActivity(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) PaginateApps(ctx echo.Context) error {
 	var err error
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params PaginateAppsParams
@@ -245,7 +253,11 @@ func (w *ServerInterfaceWrapper) PaginateApps(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) CreateApp(ctx echo.Context) error {
 	var err error
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params CreateAppParams
@@ -272,7 +284,11 @@ func (w *ServerInterfaceWrapper) DeleteApp(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.DeleteApp(ctx, appID)
@@ -290,7 +306,11 @@ func (w *ServerInterfaceWrapper) GetApp(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GetApp(ctx, appID)
@@ -308,7 +328,11 @@ func (w *ServerInterfaceWrapper) UpdateApp(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.UpdateApp(ctx, appID)
@@ -326,7 +350,11 @@ func (w *ServerInterfaceWrapper) PaginateChannels(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params PaginateChannelsParams
@@ -360,7 +388,11 @@ func (w *ServerInterfaceWrapper) CreateChannel(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.CreateChannel(ctx, appID)
@@ -386,7 +418,11 @@ func (w *ServerInterfaceWrapper) DeleteChannel(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter channelID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.DeleteChannel(ctx, appID, channelID)
@@ -412,7 +448,11 @@ func (w *ServerInterfaceWrapper) GetChannel(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter channelID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GetChannel(ctx, appID, channelID)
@@ -438,7 +478,11 @@ func (w *ServerInterfaceWrapper) UpdateChannel(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter channelID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.UpdateChannel(ctx, appID, channelID)
@@ -456,7 +500,11 @@ func (w *ServerInterfaceWrapper) PaginateGroups(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params PaginateGroupsParams
@@ -490,7 +538,11 @@ func (w *ServerInterfaceWrapper) CreateGroup(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.CreateGroup(ctx, appID)
@@ -516,7 +568,11 @@ func (w *ServerInterfaceWrapper) DeleteGroup(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter groupID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.DeleteGroup(ctx, appID, groupID)
@@ -542,7 +598,11 @@ func (w *ServerInterfaceWrapper) GetGroup(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter groupID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GetGroup(ctx, appID, groupID)
@@ -568,7 +628,11 @@ func (w *ServerInterfaceWrapper) UpdateGroup(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter groupID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.UpdateGroup(ctx, appID, groupID)
@@ -594,7 +658,11 @@ func (w *ServerInterfaceWrapper) GetGroupInstances(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter groupID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetGroupInstancesParams
@@ -693,7 +761,11 @@ func (w *ServerInterfaceWrapper) GetInstance(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter instanceID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GetInstance(ctx, appID, groupID, instanceID)
@@ -727,7 +799,11 @@ func (w *ServerInterfaceWrapper) GetInstanceStatusHistory(ctx echo.Context) erro
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter instanceID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetInstanceStatusHistoryParams
@@ -762,7 +838,11 @@ func (w *ServerInterfaceWrapper) GetGroupInstanceStats(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter groupID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetGroupInstanceStatsParams
@@ -797,7 +877,11 @@ func (w *ServerInterfaceWrapper) GetGroupInstancesCount(ctx echo.Context) error 
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter groupID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetGroupInstancesCountParams
@@ -832,7 +916,11 @@ func (w *ServerInterfaceWrapper) GetGroupStatusTimeline(ctx echo.Context) error 
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter groupID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetGroupStatusTimelineParams
@@ -867,7 +955,11 @@ func (w *ServerInterfaceWrapper) GetGroupVersionBreakdown(ctx echo.Context) erro
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter groupID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GetGroupVersionBreakdown(ctx, appID, groupID)
@@ -893,7 +985,11 @@ func (w *ServerInterfaceWrapper) GetGroupVersionTimeline(ctx echo.Context) error
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter groupID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params GetGroupVersionTimelineParams
@@ -920,7 +1016,11 @@ func (w *ServerInterfaceWrapper) PaginatePackages(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params PaginatePackagesParams
@@ -954,7 +1054,11 @@ func (w *ServerInterfaceWrapper) CreatePackage(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.CreatePackage(ctx, appID)
@@ -980,7 +1084,11 @@ func (w *ServerInterfaceWrapper) DeletePackage(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter packageID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.DeletePackage(ctx, appID, packageID)
@@ -1006,7 +1114,11 @@ func (w *ServerInterfaceWrapper) GetPackage(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter packageID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GetPackage(ctx, appID, packageID)
@@ -1032,7 +1144,11 @@ func (w *ServerInterfaceWrapper) UpdatePackage(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter packageID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.UpdatePackage(ctx, appID, packageID)
@@ -1050,7 +1166,11 @@ func (w *ServerInterfaceWrapper) UpdateInstance(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter instanceID: %s", err))
 	}
 
-	ctx.Set(BearerAuthScopes, []string{""})
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.UpdateInstance(ctx, instanceID)
@@ -1060,6 +1180,8 @@ func (w *ServerInterfaceWrapper) UpdateInstance(ctx echo.Context) error {
 // GetConfig converts echo context to params.
 func (w *ServerInterfaceWrapper) GetConfig(ctx echo.Context) error {
 	var err error
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GetConfig(ctx)

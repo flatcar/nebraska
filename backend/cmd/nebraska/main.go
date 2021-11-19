@@ -128,8 +128,8 @@ func main() {
 	if sessionStore != nil {
 		e.Use(echosessions.SessionsMiddleware(sessionStore, conf.AuthMode))
 	}
-	e.Use(custommiddleware.Auth(authenticator, custommiddleware.AuthConfig{Skipper: custommiddleware.NewAuthSkipper(conf.AuthMode)}))
 	e.Use(oapimiddleware.OapiRequestValidatorWithOptions(swagger, &oapimiddleware.Options{Options: openapi3filter.Options{AuthenticationFunc: nebraskaAuthenticationFunc(conf.AuthMode)}, Skipper: middlewareSkipper}))
+	e.Use(custommiddleware.Auth(authenticator, custommiddleware.AuthConfig{Skipper: custommiddleware.NewAuthSkipper(conf.AuthMode)}))
 
 	// setup syncer
 	checkFrequency, err := time.ParseDuration(conf.CheckFrequencyVal)
@@ -252,6 +252,11 @@ func nebraskaAuthenticationFunc(authMode string) func(context.Context, *openapi3
 		case "noop":
 			return nil
 		case "oidc":
+			// check if token is present in query params
+			if input.RequestValidationInput.Request.URL.Query().Get("id_token") != "" {
+				return nil
+			}
+			// check if Authorization Header is present and valid
 			token := input.RequestValidationInput.Request.Header.Get("Authorization")
 			if token == "" {
 				return errors.New("Bearer token not found in request")
@@ -263,6 +268,12 @@ func nebraskaAuthenticationFunc(authMode string) func(context.Context, *openapi3
 				}
 			} else {
 				return errors.New("Invalid Bearer token")
+			}
+			return nil
+		case "github":
+			_, err := input.RequestValidationInput.Request.Cookie("github")
+			if err != nil {
+				return errors.Wrap(err, "github cookie not found")
 			}
 			return nil
 		}
