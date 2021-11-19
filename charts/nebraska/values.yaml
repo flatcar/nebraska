@@ -42,6 +42,7 @@ config:
 
   auth:
     mode: noop
+    bypassSecrets: false
     oidc:
       clientID:
       clientSecret:
@@ -89,6 +90,17 @@ extraEnvVars:
   # NEBRASKA_DB_MAX_OPEN_CONNS: 25
   # NEBRASKA_DB_MAX_IDLE_CONNS: 25
   # NEBRASKA_DB_CONN_MAX_LIFETIME: 300
+
+# extraEnv allows you to set environment variables using values found in your secrets, or any other env spec you might like.
+## extraEnv:
+## - name: VARNAME1
+##   value: value1
+## - name: VARNAME2
+##   valueFrom:
+##     secretKeyRef:
+##       name: existing-secret
+##       key: varname2-key
+extraEnv: []
 
 serviceAccount:
   # Specifies whether a service account should be created

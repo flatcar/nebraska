@@ -180,12 +180,16 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ include "nebraska.fullname" . }}
-                  key: oidcSessionCryptKey   
+                  key: oidcSessionCryptKey
               {{- end }}
             {{- end }}
             {{- range $key, $value := .Values.extraEnvVars }}
             - name: {{ $key }}
               value: {{ $value | quote }}
+            {{- end }}
+            {{- if .Values.extraEnv }}
+            # Extra environment variables
+            {{- toYaml .Values.extraEnv | nindent 12 }}
             {{- end }}
           {{- if .Values.config.hostFlatcarPackages.enabled }}
           volumeMounts:
