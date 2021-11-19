@@ -49,10 +49,10 @@ type Application struct {
 	Groups      []Group   `json:"groups"`
 	Id          string    `json:"id"`
 	Instances   struct {
-		Count *string `json:"count,omitempty"`
+		Count int `json:"count"`
 	} `json:"instances"`
-	Name   string  `json:"name"`
-	TeamId *string `json:"-"`
+	Name      string `json:"name"`
+	ProductId string `json:"product_id"`
 }
 
 // AppsPage defines model for appsPage.
@@ -117,7 +117,6 @@ type FlatcarAction struct {
 	MetadataSignatureRsa  string    `json:"metadata_signature_rsa"`
 	MetadataSize          string    `json:"metadata_size"`
 	NeedsAdmin            bool      `json:"needs_admin"`
-	PackageID             string    `json:"-"`
 	Sha256                string    `json:"sha256"`
 }
 
@@ -136,7 +135,7 @@ type Group struct {
 	Description               string    `json:"description"`
 	Id                        string    `json:"id"`
 	Name                      string    `json:"name"`
-	PolicyMaxUpdatesPerPeriod string    `json:"policy_max_updates_per_period"`
+	PolicyMaxUpdatesPerPeriod int       `json:"policy_max_updates_per_period"`
 	PolicyOfficeHours         bool      `json:"policy_office_hours"`
 	PolicyPeriodInterval      string    `json:"policy_period_interval"`
 	PolicySafeMode            bool      `json:"policy_safe_mode"`
@@ -230,14 +229,10 @@ type InstanceStatusHistories []InstanceStatusHistory
 
 // InstanceStatusHistory defines model for instanceStatusHistory.
 type InstanceStatusHistory struct {
-	ApplicationID string    `db:"application_id" json:"-"`
-	CreatedTs     time.Time `json:"created_ts"`
-	ErrorCode     string    `db:"error_code" json:"error_code"`
-	GroupID       string    `db:"group_id" json:"-"`
-	Id            int       `json:"-"`
-	InstanceID    string    `json:"-"`
-	Status        int       `json:"status"`
-	Verison       string    `json:"verison"`
+	CreatedTs time.Time `json:"created_ts"`
+	ErrorCode string    `db:"error_code" json:"error_code"`
+	Status    int       `json:"status"`
+	Verison   string    `json:"verison"`
 }
 
 // LoginInfo defines model for loginInfo.

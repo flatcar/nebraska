@@ -1308,7 +1308,6 @@ components:
         - metadataSize
         - deadline
         - createdTs
-        - packageID
       properties:
         id:
           type: string
@@ -1347,10 +1346,6 @@ components:
           format: date-time
           x-oapi-codegen-extra-tags:
             json: created_ts
-        packageID:
-          type: string
-          x-oapi-codegen-extra-tags:
-            json: "-"
       x-oapi-codegen-extra-tags:
         json: flatcar_action
 
@@ -1509,7 +1504,7 @@ components:
           x-oapi-codegen-extra-tags:
             json: policy_period_interval
         policyMaxUpdatesPerPeriod:
-          type: string
+          type: integer
           x-oapi-codegen-extra-tags:
             json: policy_max_updates_per_period
         policyUpdateTimeout:
@@ -1559,6 +1554,7 @@ components:
         - groups
         - channels
         - instances
+        - productId
       properties:
         id:
           type: string
@@ -1571,10 +1567,10 @@ components:
           format: date-time
           x-oapi-codegen-extra-tags:
             json: created_ts
-        teamId:
+        productId:
           type: string
           x-oapi-codegen-extra-tags:
-            json: "-"
+            json: "product_id"
         groups:
           type: array
           items:
@@ -1587,9 +1583,11 @@ components:
 
         instances:
           type: object
+          required:
+            - count
           properties:
             count:
-              type: string
+              type: integer
 
     groupInstanceStats:
       type: object
@@ -1731,19 +1729,11 @@ components:
     instanceStatusHistory:
       type: object
       required:
-        - id
         - status
         - verison
         - createdTs
-        - instanceID
-        - applicationID
-        - groupID
         - errorCode
       properties:
-        id:
-          type: integer
-          x-oapi-codegen-extra-tags:
-            json: "-"
         status:
           type: integer
         verison:
@@ -1753,20 +1743,6 @@ components:
           format: date-time
           x-oapi-codegen-extra-tags:
             json: created_ts
-        instanceID:
-          type: string
-          x-oapi-codegen-extra-tags:
-            json: "-"
-        applicationID:
-          type: string
-          x-oapi-codegen-extra-tags:
-            db: application_id
-            json: "-"
-        groupID:
-          type: string
-          x-oapi-codegen-extra-tags:
-            db: group_id
-            json: "-"
         errorCode:
           type: string
           x-oapi-codegen-extra-tags:
