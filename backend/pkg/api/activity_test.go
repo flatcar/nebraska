@@ -66,20 +66,26 @@ func TestGetActivity(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Nil(t, activityEntries, "Team with this id doesn't exist")
 
-	var p ActivityQueryParams
-	// p.AppID =
-	// p.GroupID =
-	// p.ChannelID =
-	// p.InstanceID =
-	// p.Version = ''
-	// p.Severity = 1
-
-	p.Start = anActivity.CreatedTs.Add(time.Duration(-10) * time.Minute)
-	p.End = anActivity.CreatedTs.Add(time.Duration(10) * time.Minute)
-	p.Page = uint64(0)
-	p.PerPage = uint64(2)
-
-	totalCount, err := a.GetActivityCount(tTeam.ID, p)
+	// We try counting with default Start==-3days, End==Now
+	totalCount, err := a.GetActivityCount(tTeam.ID, ActivityQueryParams{})
 	assert.NoError(t, err)
-	assert.Equal(t, 5, totalCount) // @TODO: should this be 2? PerPage is ignored?
+	assert.Equal(t, 5, totalCount)
+
+	totalCount, err = a.GetActivityCount(tTeam.ID,
+		ActivityQueryParams{
+			Start: anActivity.CreatedTs.Add(time.Duration(-10) * time.Minute),
+			End:   anActivity.CreatedTs.Add(time.Duration(10) * time.Minute),
+		},
+	)
+	assert.NoError(t, err)
+	assert.Equal(t, 5, totalCount)
+
+	// Can filter by GroupID, ChannelID, AppID, and InstanceID.
+	totalCount, err = a.GetActivityCount(tTeam.ID,
+		ActivityQueryParams{
+			GroupID: tGroup.ID,
+		},
+	)
+	assert.NoError(t, err)
+	assert.Equal(t, 3, totalCount)
 }
