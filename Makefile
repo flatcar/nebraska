@@ -134,7 +134,7 @@ image:
 
 .PHONY: backend/tools/codegen
 backend/tools/codegen:
-	go get github.com/deepmap/oapi-codegen/cmd/oapi-codegen
+	go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.9.0
 
 .PHONY: codegen
 codegen: backend/tools/codegen
