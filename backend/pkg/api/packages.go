@@ -302,16 +302,7 @@ func (api *API) GetPackagesCount(appID string) (int, error) {
 		GroupBy("package.id")
 
 	query = goqu.From(query).Select(goqu.L("count (*)"))
-	q, _, err := query.ToSQL()
-	if err != nil {
-		return 0, err
-	}
-	count := 0
-	err = api.db.QueryRow(q).Scan(&count)
-	if err != nil {
-		return 0, err
-	}
-	return count, nil
+	return api.GetCountQuery(query)
 }
 
 // GetPackages returns all packages associated to the application provided.

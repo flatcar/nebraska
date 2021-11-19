@@ -252,7 +252,7 @@ func (h *Handler) GetGroupInstancesCount(ctx echo.Context, appID string, groupID
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	return ctx.JSON(http.StatusOK, codegen.InstanceCount{Count: count})
+	return ctx.JSON(http.StatusOK, codegen.InstanceCount{Count: uint64(count)})
 }
 
 func groupFromRequest(name string, description string, policyMaxUpdatesPerPeriod int, policyOfficeHours bool, policyPeriodInterval string, policySafeMode bool, policyTimezone string, policyUpdateTimeout string, policyUpdatesEnabled bool, channelID *string, track string, groupID string, appID string) *api.Group {
