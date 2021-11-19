@@ -242,17 +242,8 @@ func (api *API) GetApp(appID string) (*Application, error) {
 }
 
 func (api *API) GetAppsCount(teamID string) (int, error) {
-	query, _, err := goqu.From("application").Where(goqu.C("team_id").Eq(teamID)).Select(goqu.L("count(*)")).ToSQL()
-	if err != nil {
-		return 0, err
-	}
-	count := 0
-	err = api.db.QueryRow(query).Scan(&count)
-
-	if err != nil {
-		return 0, err
-	}
-	return count, nil
+	query := goqu.From("application").Where(goqu.C("team_id").Eq(teamID)).Select(goqu.L("count(*)"))
+	return api.GetCountQuery(query)
 }
 
 // GetApps returns all applications that belong to the team id provided.

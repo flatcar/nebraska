@@ -4,7 +4,7 @@ import (
 	"github.com/doug-martin/goqu/v9"
 )
 
-func (api *API) GetCountSQL(query *goqu.SelectDataset) (int, error) {
+func (api *API) GetCountQuery(query *goqu.SelectDataset) (int, error) {
 	sql, _, err := query.ToSQL()
 
 	if err != nil {
