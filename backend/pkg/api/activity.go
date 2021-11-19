@@ -57,8 +57,7 @@ type ActivityQueryParams struct {
 // Start is nil, then it defaults -3 days.
 // End is nil, then it defaults to Now.
 func (api *API) GetActivityCount(teamID string, p ActivityQueryParams) (int, error) {
-	query, _, err := api.activityQuery(teamID, p, true).ToSQL()
-	return api.GetCountSQL(query, err)
+	return api.GetCountSQL(api.activityQuery(teamID, p, true))
 }
 
 // GetActivity returns a list of activity entries that match the specified

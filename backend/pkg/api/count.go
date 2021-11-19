@@ -1,6 +1,12 @@
 package api
 
-func (api *API) GetCountSQL(sql string, err error) (int, error) {
+import (
+	"github.com/doug-martin/goqu/v9"
+)
+
+func (api *API) GetCountSQL(query *goqu.SelectDataset) (int, error) {
+	sql, _, err := query.ToSQL()
+
 	if err != nil {
 		return 0, err
 	}
