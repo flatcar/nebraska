@@ -92,11 +92,13 @@ paths:
           required: false
           schema:
             type: integer
+            minimum: 0
         - in: query
           name: perpage
           required: false
           schema:
             type: integer
+            minimum: 10
       responses:
         "200":
           description: Get App success response
@@ -234,11 +236,13 @@ paths:
           required: false
           schema:
             type: integer
+            minimum: 0
         - in: query
           name: perpage
           required: false
           schema:
             type: integer
+            minimum: 10
       responses:
         "200":
           description: get Groups success response
@@ -531,11 +535,13 @@ paths:
           required: false
           schema:
             type: integer
+            minimum: 0
         - in: query
           name: perpage
           required: false
           schema:
             type: integer
+            minimum: 10
       responses:
         "200":
           description: Get channels success response
@@ -688,11 +694,13 @@ paths:
           required: false
           schema:
             type: integer
+            minimum: 0
         - in: query
           name: perpage
           required: false
           schema:
             type: integer
+            minimum: 10
       responses:
         "200":
           description: get Packages success response
@@ -853,11 +861,13 @@ paths:
           required: false
           schema:
             type: integer
+            minimum: 0
         - in: query
           name: perpage
           required: false
           schema:
             type: integer
+            minimum: 10
         - in: query
           name: sortFilter
           required: false
@@ -994,6 +1004,7 @@ paths:
           required: false
           schema:
             type: integer
+            minimum: 0
       responses:
         "200":
           description: Get instance status history success response
@@ -1092,11 +1103,13 @@ paths:
           required: false
           schema:
             type: integer
+            minimum: 0
         - in: query
           name: perpage
           required: false
           schema:
             type: integer
+            minimum: 10
       responses:
         "200":
           description: List activity success response
