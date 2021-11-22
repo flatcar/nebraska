@@ -22,6 +22,24 @@ the `postgres` container as follows:
 - Set the timezone to Nebraska's database:
     - `psql postgres://postgres:nebraska@localhost:5432/nebraska -c 'set timezone = "utc";'`
 
+## Tuning PostgreSQL auto-vacuum
+
+Autovacuum and autoanalyze in PostgreSQL are effectively disabled when tables
+are very large. This is because the default is 20% of a table (and 10%
+of a table for analyze).
+
+We advise to change the mentioned configuration in order to have autovacuum
+and autoanalyse run when about 5,000 rows change. This value was chosen
+based on getting the autovacuum to run every day, as it's large enough
+to not cause the autovac to run all the time, but about the right size
+to make a difference for query statistics and reducing table bloat.
+
+You can verify (and eventually use) this [SQL file](./autovacuum-tune.sql)
+where we have set up these changes.
+
+The analyze threshold was chosen at half the autovacuum threshold
+because the defaults are set at half.
+
 # Deploying Nebraska for testing on local computer (noop authentication)
 
 - Go to the nebraska project directory and run `make`
@@ -44,11 +62,11 @@ the `postgres` container as follows:
 - Setup OIDC provider (Keycloak Recommended).
 
 - Start the Nebraska backend:
-  
+
   - `nebraska --auth-mode oidc --oidc-admin-roles nebraska_admin  --oidc-viewer-roles nebraska_member --oidc-client-id nebraska --oidc-issuer-url http://localhost:8080/auth/realms/master --oidc-client-secret <Your_Client_Secret>`
 
   Note: If roles array in the token is not in `roles` key, one can specify a custom JSON path using the `oidc-roles-path` flag.
-  
+
 - In the browser, access `http://localhost:8000`
 
 # Preparing Keycloak as an OIDC provider for Nebraska
@@ -84,7 +102,7 @@ Now the member and admin roles are created, the admin role is a composite role w
 1. Click on `Clients` menu option and click `Create`.
 2. Set the client name as `nebraska` and click `Save`.
 3. Change the `Access Type` to `Confidential`
-4. Set `Valid Redirect URIs` to `http://localhost:8000/login/cb`. 
+4. Set `Valid Redirect URIs` to `http://localhost:8000/login/cb`.
 
 <p align="center">
   <img width="100%" src="./images/keycloak-client.gif">
@@ -196,7 +214,7 @@ Now the rule to add the roles to the token is setup, the roles will be available
 - Create two teams in your organization with the following names
   `admin` and `viewer`.
 
-- Add the admin users to both `admin` and `viewer` team. Add the non-admin users to 
+- Add the admin users to both `admin` and `viewer` team. Add the non-admin users to
 `viewer` team.
 
 ## Configuring and Running Dex IDP
@@ -234,7 +252,7 @@ connectors:
     loadAllGroups: true
     teamNameField: slug
     useLoginAsID: true
-    
+
 enablePasswordDB: true
 ```
 
