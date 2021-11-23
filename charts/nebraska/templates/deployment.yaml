@@ -71,11 +71,13 @@ spec:
             {{- if .Values.config.hostFlatcarPackages.enabled }}
             - "-host-flatcar-packages"
             - "-flatcar-packages-path={{ required "A valid 'packagesPath' is required when hosting Flatcar packages." .Values.config.hostFlatcarPackages.packagesPath }}"
-              {{- if .Values.config.hostFlatcarPackages.nebraskaURL }}
+            {{- end }}
+
+            {{- /* --- Nebraska URL settings ---*/}}
+            {{- if .Values.config.hostFlatcarPackages.nebraskaURL }}
             - "-nebraska-url={{ .Values.config.hostFlatcarPackages.nebraskaURL }}"
-              {{- else if .Values.ingress.enabled }}
+            {{- else if .Values.ingress.enabled }}
             - "-nebraska-url={{ printf "%s://%s"  (include "nebraska.ingressScheme" .) (index .Values.ingress.hosts 0) }}"
-              {{- end }}
             {{- end }}
 
             {{- /* --- Auth settings --- */}}
@@ -180,7 +182,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ include "nebraska.fullname" . }}
-                  key: oidcSessionCryptKey   
+                  key: oidcSessionCryptKey
               {{- end }}
             {{- end }}
             {{- range $key, $value := .Values.extraEnvVars }}
