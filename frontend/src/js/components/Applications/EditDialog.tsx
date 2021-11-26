@@ -146,7 +146,8 @@ function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () 
       .matches(
         /^[a-zA-Z]+([a-zA-Z0-9_\-]*[a-zA-Z0-9])*(\.[a-zA-Z]+([a-zA-Z0-9_\-]*[a-zA-Z0-9])*)+$/,
         t('applications|Must be a reverse domain ID like io.example.MyApp')
-      ),
+      )
+      .nullable(),
     description: Yup.string().max(250, t('applications|Must be less than 250 characters')),
   });
 
