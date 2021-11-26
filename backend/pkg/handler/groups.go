@@ -255,7 +255,7 @@ func (h *Handler) GetGroupInstancesCount(ctx echo.Context, appID string, groupID
 	return ctx.JSON(http.StatusOK, codegen.InstanceCount{Count: uint64(count)})
 }
 
-func groupFromRequest(name string, description string, policyMaxUpdatesPerPeriod int, policyOfficeHours bool, policyPeriodInterval string, policySafeMode bool, policyTimezone string, policyUpdateTimeout string, policyUpdatesEnabled bool, channelID *string, track string, groupID string, appID string) *api.Group {
+func groupFromRequest(name string, description string, policyMaxUpdatesPerPeriod int, policyOfficeHours bool, policyPeriodInterval string, policySafeMode bool, policyTimezone string, policyUpdateTimeout string, policyUpdatesEnabled bool, channelID *string, track *string, groupID string, appID string) *api.Group {
 	group := &api.Group{
 		Name:                      name,
 		Description:               description,
@@ -267,13 +267,15 @@ func groupFromRequest(name string, description string, policyMaxUpdatesPerPeriod
 		PolicyUpdateTimeout:       policyUpdateTimeout,
 		PolicyUpdatesEnabled:      policyUpdatesEnabled,
 		ChannelID:                 null.StringFromPtr(channelID),
-		Track:                     track,
 	}
 	if groupID != "" {
 		group.ID = groupID
 	}
 	if appID != "" {
 		group.ApplicationID = appID
+	}
+	if track != nil {
+		group.Track = *track
 	}
 
 	return group

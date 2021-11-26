@@ -108,7 +108,7 @@ type ServerInterface interface {
 	GetConfig(ctx echo.Context) error
 
 	// (GET /login)
-	Login(ctx echo.Context) error
+	Login(ctx echo.Context, params LoginParams) error
 
 	// (GET /login/cb)
 	LoginCb(ctx echo.Context) error
@@ -120,7 +120,7 @@ type ServerInterface interface {
 	ValidateToken(ctx echo.Context) error
 
 	// (POST /login/webhook)
-	LoginWebhook(ctx echo.Context) error
+	LoginWebhook(ctx echo.Context, params LoginWebhookParams) error
 
 	// (POST /v1/update)
 	Omaha(ctx echo.Context) error
@@ -1192,8 +1192,17 @@ func (w *ServerInterfaceWrapper) GetConfig(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) Login(ctx echo.Context) error {
 	var err error
 
+	// Parameter object where we will unmarshal all parameters from the context
+	var params LoginParams
+	// ------------- Required query parameter "login_redirect_url" -------------
+
+	err = runtime.BindQueryParameter("form", true, true, "login_redirect_url", ctx.QueryParams(), &params.LoginRedirectUrl)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter login_redirect_url: %s", err))
+	}
+
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.Login(ctx)
+	err = w.Handler.Login(ctx, params)
 	return err
 }
 
@@ -1228,8 +1237,47 @@ func (w *ServerInterfaceWrapper) ValidateToken(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) LoginWebhook(ctx echo.Context) error {
 	var err error
 
+	// Parameter object where we will unmarshal all parameters from the context
+	var params LoginWebhookParams
+
+	headers := ctx.Request().Header
+	// ------------- Required header parameter "X-Hub-Signature" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Hub-Signature")]; found {
+		var XHubSignature string
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Hub-Signature, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Hub-Signature", runtime.ParamLocationHeader, valueList[0], &XHubSignature)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Hub-Signature: %s", err))
+		}
+
+		params.XHubSignature = XHubSignature
+	} else {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Hub-Signature is required, but not found"))
+	}
+	// ------------- Required header parameter "X-Github-Event" -------------
+	if valueList, found := headers[http.CanonicalHeaderKey("X-Github-Event")]; found {
+		var XGithubEvent string
+		n := len(valueList)
+		if n != 1 {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Expected one value for X-Github-Event, got %d", n))
+		}
+
+		err = runtime.BindStyledParameterWithLocation("simple", false, "X-Github-Event", runtime.ParamLocationHeader, valueList[0], &XGithubEvent)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter X-Github-Event: %s", err))
+		}
+
+		params.XGithubEvent = XGithubEvent
+	} else {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Header parameter X-Github-Event is required, but not found"))
+	}
+
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.LoginWebhook(ctx)
+	err = w.Handler.LoginWebhook(ctx, params)
 	return err
 }
 

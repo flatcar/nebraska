@@ -38,7 +38,7 @@ type ActivityPage struct {
 type AppConfig struct {
 	Description *string `json:"description,omitempty"`
 	Name        string  `json:"name"`
-	ProductId   *string `json:"product_id,omitempty"`
+	ProductId   *string `json:"product_id"`
 }
 
 // Application defines model for application.
@@ -158,7 +158,7 @@ type GroupConfig struct {
 	PolicyTimezone            string  `json:"policy_timezone"`
 	PolicyUpdateTimeout       string  `json:"policy_update_timeout"`
 	PolicyUpdatesEnabled      bool    `json:"policy_updates_enabled"`
-	Track                     string  `json:"track"`
+	Track                     *string `json:"track,omitempty"`
 }
 
 // GroupInstanceStats defines model for groupInstanceStats.
@@ -192,11 +192,11 @@ type GroupVersionCountTimeline map[time.Time]map[string]uint64
 
 // Instance defines model for instance.
 type Instance struct {
-	Alias       string              `json:"alias"`
-	Application InstanceApplication `json:"application"`
-	CreatedTs   time.Time           `json:"created_ts"`
-	Id          string              `json:"id"`
-	Ip          string              `json:"ip"`
+	Alias       *string              `json:"alias,omitempty"`
+	Application *InstanceApplication `json:"application"`
+	CreatedTs   time.Time            `json:"created_ts"`
+	Id          string               `json:"id"`
+	Ip          string               `json:"ip"`
 }
 
 // InstanceApplication defines model for instanceApplication.
@@ -398,6 +398,17 @@ type UpdatePackageJSONBody PackageConfig
 
 // UpdateInstanceJSONBody defines parameters for UpdateInstance.
 type UpdateInstanceJSONBody UpdateInstanceConfig
+
+// LoginParams defines parameters for Login.
+type LoginParams struct {
+	LoginRedirectUrl string `json:"login_redirect_url"`
+}
+
+// LoginWebhookParams defines parameters for LoginWebhook.
+type LoginWebhookParams struct {
+	XHubSignature string `json:"X-Hub-Signature"`
+	XGithubEvent  string `json:"X-Github-Event"`
+}
 
 // CreateAppJSONRequestBody defines body for CreateApp for application/json ContentType.
 type CreateAppJSONRequestBody CreateAppJSONBody

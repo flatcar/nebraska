@@ -12,9 +12,21 @@ paths:
     get:
       operationId: login
       description: login browser flow
+      parameters:
+        - in: query
+          name: login_redirect_url
+          required: true
+          schema:
+            type: string
       responses:
         "302":
           description: login response
+        "400":
+          description: bad request
+        "500":
+          description: internal server error
+        "501":
+          description: not implemented for non oidc auth modes
   /login/token:
     post:
       operationId: loginToken
@@ -29,7 +41,10 @@ paths:
       responses:
         "200":
           description: login token response      
-
+        "500":
+          description: internal server error
+        "501":
+          description: not implemented for non oidc auth modes          
   /login/cb: 
     get:
       operationId: loginCb
@@ -37,6 +52,12 @@ paths:
       responses:
         "200":
           description: login cb success response
+        "400":
+          description: bad request
+        "401":
+          description: unauthorized
+        "500":
+          description: internal server error        
   /login/validate_token:
     get:
       operationId: validateToken
@@ -48,6 +69,17 @@ paths:
     post:
       operationId: loginWebhook
       description: login web hook
+      parameters:
+        - in: header
+          name: X-Hub-Signature
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: X-Github-Event
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: login webhook response
@@ -78,6 +110,8 @@ paths:
       responses:
         "200":
           description: Omaha Response
+        "400":
+          description: Bad Request if request size is too large 
   /api/apps:
     get:
       description: get Apps
@@ -212,7 +246,7 @@ paths:
           schema:
             type: string
       responses:
-        "204":
+        "200":
           description: Delete App success response
         "500":
           description: Delete App error response
@@ -1146,6 +1180,7 @@ components:
           type: string
         product_id:
           type: string
+          nullable: true
 
     groupConfig:
       type: object
@@ -1159,12 +1194,13 @@ components:
         - policy_safe_mode
         - policy_update_timeout
         - policy_updates_enabled
-        - track
       properties:
         name:
           type: string
+          maxLength: 50
         description:
           type: string
+          maxLength: 250
         channel_id:
           type: string
         policy_updates_enabled:
@@ -1183,6 +1219,7 @@ components:
           type: string
         track:
           type: string
+          maxLength: 256
 
     flatcarActionPackage:
       type: object
@@ -1419,6 +1456,7 @@ components:
           type: string
         name:
           type: string
+          maxLength: 50
         color:
           type: string
         createdTs:
@@ -1505,6 +1543,7 @@ components:
             json: policy_period_interval
         policyMaxUpdatesPerPeriod:
           type: integer
+          minimum: 0
           x-oapi-codegen-extra-tags:
             json: policy_max_updates_per_period
         policyUpdateTimeout:
@@ -1687,8 +1726,6 @@ components:
         - id
         - ip
         - createdTs
-        - application
-        - alias
       properties:
         id:
           type: string

@@ -202,7 +202,7 @@ type ClientInterface interface {
 	GetConfig(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// Login request
-	Login(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	Login(ctx context.Context, params *LoginParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// LoginCb request
 	LoginCb(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -214,7 +214,7 @@ type ClientInterface interface {
 	ValidateToken(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// LoginWebhook request
-	LoginWebhook(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	LoginWebhook(ctx context.Context, params *LoginWebhookParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// Omaha request with any body
 	OmahaWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -700,8 +700,8 @@ func (c *Client) GetConfig(ctx context.Context, reqEditors ...RequestEditorFn) (
 	return c.Client.Do(req)
 }
 
-func (c *Client) Login(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewLoginRequest(c.Server)
+func (c *Client) Login(ctx context.Context, params *LoginParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewLoginRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -748,8 +748,8 @@ func (c *Client) ValidateToken(ctx context.Context, reqEditors ...RequestEditorF
 	return c.Client.Do(req)
 }
 
-func (c *Client) LoginWebhook(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewLoginWebhookRequest(c.Server)
+func (c *Client) LoginWebhook(ctx context.Context, params *LoginWebhookParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewLoginWebhookRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -2593,7 +2593,7 @@ func NewGetConfigRequest(server string) (*http.Request, error) {
 }
 
 // NewLoginRequest generates requests for Login
-func NewLoginRequest(server string) (*http.Request, error) {
+func NewLoginRequest(server string, params *LoginParams) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -2610,6 +2610,22 @@ func NewLoginRequest(server string) (*http.Request, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	queryValues := queryURL.Query()
+
+	if queryFrag, err := runtime.StyleParamWithLocation("form", true, "login_redirect_url", runtime.ParamLocationQuery, params.LoginRedirectUrl); err != nil {
+		return nil, err
+	} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+		return nil, err
+	} else {
+		for k, v := range parsed {
+			for _, v2 := range v {
+				queryValues.Add(k, v2)
+			}
+		}
+	}
+
+	queryURL.RawQuery = queryValues.Encode()
 
 	req, err := http.NewRequest("GET", queryURL.String(), nil)
 	if err != nil {
@@ -2703,7 +2719,7 @@ func NewValidateTokenRequest(server string) (*http.Request, error) {
 }
 
 // NewLoginWebhookRequest generates requests for LoginWebhook
-func NewLoginWebhookRequest(server string) (*http.Request, error) {
+func NewLoginWebhookRequest(server string, params *LoginWebhookParams) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -2725,6 +2741,24 @@ func NewLoginWebhookRequest(server string) (*http.Request, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	var headerParam0 string
+
+	headerParam0, err = runtime.StyleParamWithLocation("simple", false, "X-Hub-Signature", runtime.ParamLocationHeader, params.XHubSignature)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("X-Hub-Signature", headerParam0)
+
+	var headerParam1 string
+
+	headerParam1, err = runtime.StyleParamWithLocation("simple", false, "X-Github-Event", runtime.ParamLocationHeader, params.XGithubEvent)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("X-Github-Event", headerParam1)
 
 	return req, nil
 }
@@ -2913,7 +2947,7 @@ type ClientWithResponsesInterface interface {
 	GetConfigWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetConfigResponse, error)
 
 	// Login request
-	LoginWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*LoginResponse, error)
+	LoginWithResponse(ctx context.Context, params *LoginParams, reqEditors ...RequestEditorFn) (*LoginResponse, error)
 
 	// LoginCb request
 	LoginCbWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*LoginCbResponse, error)
@@ -2925,7 +2959,7 @@ type ClientWithResponsesInterface interface {
 	ValidateTokenWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ValidateTokenResponse, error)
 
 	// LoginWebhook request
-	LoginWebhookWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*LoginWebhookResponse, error)
+	LoginWebhookWithResponse(ctx context.Context, params *LoginWebhookParams, reqEditors ...RequestEditorFn) (*LoginWebhookResponse, error)
 
 	// Omaha request with any body
 	OmahaWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*OmahaResponse, error)
@@ -4087,8 +4121,8 @@ func (c *ClientWithResponses) GetConfigWithResponse(ctx context.Context, reqEdit
 }
 
 // LoginWithResponse request returning *LoginResponse
-func (c *ClientWithResponses) LoginWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*LoginResponse, error) {
-	rsp, err := c.Login(ctx, reqEditors...)
+func (c *ClientWithResponses) LoginWithResponse(ctx context.Context, params *LoginParams, reqEditors ...RequestEditorFn) (*LoginResponse, error) {
+	rsp, err := c.Login(ctx, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -4123,8 +4157,8 @@ func (c *ClientWithResponses) ValidateTokenWithResponse(ctx context.Context, req
 }
 
 // LoginWebhookWithResponse request returning *LoginWebhookResponse
-func (c *ClientWithResponses) LoginWebhookWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*LoginWebhookResponse, error) {
-	rsp, err := c.LoginWebhook(ctx, reqEditors...)
+func (c *ClientWithResponses) LoginWebhookWithResponse(ctx context.Context, params *LoginWebhookParams, reqEditors ...RequestEditorFn) (*LoginWebhookResponse, error) {
+	rsp, err := c.LoginWebhook(ctx, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
