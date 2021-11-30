@@ -13,6 +13,7 @@ keywords:
   - Omaha protocol
   - flatcar
   - Flatcar Container Linux
+  - Test
 sources:
   - https://github.com/kinvolk/nebraska
   - https://kinvolk.io/
