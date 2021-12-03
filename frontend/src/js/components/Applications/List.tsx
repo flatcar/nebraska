@@ -74,7 +74,7 @@ function List(props: { classes: Record<'root', string> }) {
         entries = (
           <Empty>
             <Trans ns="applications">
-              Ops, it looks like you have not created any application yet..
+              Oops, it looks like you have not created any application yet..
               <br />
               <br /> Now is a great time to create your first one, just click on the plus symbol
               above.
