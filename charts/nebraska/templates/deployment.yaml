@@ -116,6 +116,13 @@ spec:
             - "-oidc-scopes={{ . }}"
               {{- end }}
             {{- end }}
+
+            {{- /* --- Extra Args --- */ -}}
+            {{- if .Values.extraArgs }}
+            {{- range .Values.extraArgs }}
+            - "{{ . }}"
+            {{- end }}
+            {{- end }}
           env:
             - name: DB_PASSWORD
               valueFrom:
