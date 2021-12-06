@@ -144,17 +144,29 @@ spec:
             - name: "NEBRASKA_GITHUB_OAUTH_CLIENT_SECRET"
               valueFrom:
                 secretKeyRef:
+                  {{- if not .Values.config.auth.github.existingSecret }}
                   name: {{ include "nebraska.fullname" . }}
+                  {{- else }}
+                  name: {{ .Values.config.auth.github.existingSecret }}
+                  {{- end }}
                   key: ghClientSecret
             - name: "NEBRASKA_GITHUB_SESSION_SECRET"
               valueFrom:
                 secretKeyRef:
+                  {{- if not .Values.config.auth.github.existingSecret }}
                   name: {{ include "nebraska.fullname" . }}
+                  {{- else }}
+                  name: {{ .Values.config.auth.github.existingSecret }}
+                  {{- end }}
                   key: ghSessionAuthKey
             - name: "NEBRASKA_GITHUB_SESSION_CRYPT_KEY"
               valueFrom:
                 secretKeyRef:
+                  {{- if not .Values.config.auth.github.existingSecret }}
                   name: {{ include "nebraska.fullname" . }}
+                  {{- else }}
+                  name: {{ .Values.config.auth.github.existingSecret }}
+                  {{- end }}
                   key: ghSessionCryptKey
             - name: "NEBRASKA_GITHUB_WEBHOOK_SECRET"
               valueFrom:
@@ -170,27 +182,35 @@ spec:
             - name: "NEBRASKA_OIDC_CLIENT_ID"
               valueFrom:
                 secretKeyRef:
+                  {{- if not .Values.config.auth.oidc.existingSecret }}
                   name: {{ include "nebraska.fullname" . }}
+                  {{- else }}
+                  name: {{ .Values.config.auth.oidc.existingSecret }}
+                  {{- end }}
                   key: oidcClientID
             - name: "NEBRASKA_OIDC_CLIENT_SECRET"
               valueFrom:
                 secretKeyRef:
+                  {{- if not .Values.config.auth.oidc.existingSecret }}
                   name: {{ include "nebraska.fullname" . }}
+                  {{- else }}
+                  name: {{ .Values.config.auth.oidc.existingSecret }}
+                  {{- end }}
                   key: oidcClientSecret
-              {{- if .Values.config.auth.oidc.sessionAuthKey }}
+            {{- if .Values.config.auth.oidc.sessionAuthKey }}
             - name: "NEBRASKA_OIDC_SESSION_SECRET"
               valueFrom:
                 secretKeyRef:
                   name: {{ include "nebraska.fullname" . }}
                   key: oidcSessionAuthKey
-              {{- end }}
-              {{- if .Values.config.auth.oidc.sessionCryptKey }}
+            {{- end }}
+            {{- if .Values.config.auth.oidc.sessionCryptKey }}
             - name: "NEBRASKA_OIDC_SESSION_CRYPT_KEY"
               valueFrom:
                 secretKeyRef:
                   name: {{ include "nebraska.fullname" . }}
                   key: oidcSessionCryptKey
-              {{- end }}
+            {{- end }}
             {{- end }}
             {{- range $key, $value := .Values.extraEnvVars }}
             - name: {{ $key }}

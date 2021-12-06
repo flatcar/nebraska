@@ -42,10 +42,10 @@ config:
 
   auth:
     mode: noop
-    bypassSecrets: false
     oidc:
       clientID:
       clientSecret:
+      existingSecret:
       issuerURL:
       validRedirectURLs:
       managementURL:
@@ -59,6 +59,7 @@ config:
     github:
       clientID:
       clientSecret:
+      existingSecret:
       sessionAuthKey:
       sessionCryptKey:
       webhookSecret:
