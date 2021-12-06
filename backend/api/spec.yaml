@@ -12,6 +12,7 @@ paths:
     get:
       operationId: login
       description: login browser flow
+      security: []
       parameters:
         - in: query
           name: login_redirect_url
@@ -31,6 +32,7 @@ paths:
     post:
       operationId: loginToken
       description: login token flow
+      security: []
       requestBody:
         description: payload for login token
         required: true
@@ -49,6 +51,7 @@ paths:
     get:
       operationId: loginCb
       description: login callback
+      security: []
       responses:
         "200":
           description: login cb success response
@@ -62,6 +65,7 @@ paths:
     get:
       operationId: validateToken
       description: validate token
+      security: []
       responses:
         "200":
           description: validate token response
@@ -69,6 +73,7 @@ paths:
     post:
       operationId: loginWebhook
       description: login web hook
+      security: []
       parameters:
         - in: header
           name: X-Hub-Signature
@@ -100,6 +105,7 @@ paths:
     post:
       operationId: omaha
       description: omaha endpoint
+      security: []
       requestBody:
         description: payload for omaha endpoint
         required: true
