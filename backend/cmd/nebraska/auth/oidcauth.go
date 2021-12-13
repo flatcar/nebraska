@@ -245,7 +245,7 @@ func (oa *oidcAuth) login(c *gin.Context) {
 	loginRedirectURL := c.Request.URL.Query().Get("login_redirect_url")
 	isValidRedirect := false
 	for _, redirectURL := range oa.validRedirectURLs {
-		if glob.Glob(redirectURL, loginRedirectURL) {
+		if glob.Glob(fmt.Sprintf("%s*", redirectURL), loginRedirectURL) {
 			isValidRedirect = true
 			break
 		}
