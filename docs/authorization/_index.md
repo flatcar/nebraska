@@ -167,6 +167,8 @@ function (user, context, callback) {
 ```
 Now the rule to add the roles to the token is setup, the roles will be available in the key `http://kinvolk.io/roles`.
 
+Note: The `oidc-roles-path` argument accepts a JSONPath to fetch roles from the token, in this case set the value to `http://kinvolk\.io/roles`.
+
 <p align="center">
   <img width="100%" src="./images/auth0-token.gif">
 </p>
