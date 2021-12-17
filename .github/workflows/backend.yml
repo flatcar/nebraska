@@ -26,9 +26,9 @@ jobs:
       id: go
 
     - name: Check out code
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2
 
     - name: Build, Lint & Check
       run: |
-        cd $GITHUB_WORKSPACE
-        make backend-ci
+        make ci
+      working-directory: backend

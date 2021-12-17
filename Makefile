@@ -17,106 +17,92 @@ ifeq ($(VERSION),)
 	endif
 endif
 
-LDFLAGS := "-X github.com/kinvolk/nebraska/backend/pkg/version.Version=$(VERSION) -extldflags "-static""
 .PHONY: all
 all: backend tools frontend
 
 .PHONY: check
 check:
-	cd backend && \
-	go test -p 1 ./...
+	$(MAKE) -C backend $@
+
+.PHONY: check-code-coverage
 check-code-coverage:
-	cd backend && \
-	go test -p 1 -coverprofile=coverage.out ./...
+	$(MAKE) -C backend $@
+
+.PHONY: coverage.out
 coverage.out:
-	make check-code-coverage
-print-code-coverage: coverage.out
-	cd backend && \
-	go tool cover -html=coverage.out
+	$(MAKE) -C backend $@
+
+.PHONY: print-code-coverage
+print-code-coverage:
+	$(MAKE) -C backend $@
+
+.PHONY: container_id
 container_id:
-	cd backend && \
-	./tools/setup_local_db.sh \
-		--id-file container_id.tmp \
-		--db-name nebraska_tests \
-		--password nebraska \
-		--pg-version 13.3
-	cd backend && mv container_id.tmp container_id
+	$(MAKE) -C backend $@
 
 .PHONY: check-backend-with-container
-check-backend-with-container: container_id
-	set -e; \
-	cd backend && \
-	trap "$(DOCKER_CMD) kill $$(cat container_id); $(DOCKER_CMD) rm $$(cat container_id); rm -f container_id" EXIT; \
-	go test -p 1 ./...
+check-backend-with-container:
+	$(MAKE) -C backend $@
 
 .PHONY: frontend
-frontend: frontend-install
-	cd frontend && npm run build
+frontend:
+	$(MAKE) -C frontend
 
 .PHONY: frontend-watch
 frontend-watch: run-frontend
 
 run-frontend:
-	cd frontend && npm start
+	$(MAKE) -C frontend run
 
 .PHONY: frontend-install
 frontend-install:
-	cd frontend && npm install
+	$(MAKE) -C frontend install
 
 .PHONY: frontend-install-ci
 frontend-install-ci:
-	cd frontend && npm ci
+	$(MAKE) -C frontend install-ci
 
 .PHONY: frontend-build
 frontend-build:
-	cd frontend && npm run build
+	$(MAKE) -C frontend build
 
 .PHONY: frontend-test
 frontend-test:
-	cd frontend && npm run test
+	$(MAKE) -C frontend test
 
 .PHONY: frontend-lint
 frontend-lint:
-	cd frontend && npm run lint
+	$(MAKE) -C frontend lint
 
 .PHONY: frontend-tsc
 frontend-tsc:
-	cd frontend && npm run tsc
+	$(MAKE) -C frontend tsc
 
 .PHONY: i18n
 i18n:
-	cd frontend && npm run i18n
+	$(MAKE) -C frontend $@
+
+run:
+	$(MAKE) -j 2 run-frontend run-backend
 
 run-backend: backend-binary
-	cd backend && ./bin/nebraska -auth-mode noop -debug
+	$(MAKE) -C backend run
 
 .PHONY: backend
-backend: run-generators backend-code-checks build-backend-binary
+backend:
+	$(MAKE) -C backend
 
 .PHONY: backend-binary
-backend-binary: run-generators build-backend-binary
+backend-binary:
+	$(MAKE) -C backend build
 
 .PHONY: test-clean-work-tree-backend
 test-clean-work-tree-backend:
-	@cd backend && \
-	if ! git diff --quiet -- go.mod go.sum pkg cmd tools/tools.go; then \
-	  echo; \
-	  echo 'Working tree of backend code is not clean'; \
-	  echo; \
-	  git status; \
-	  exit 1; \
-	fi
+	$(MAKE) -C backend $@
 
 .PHONY: tools
 tools:
-	cd backend && go build -o bin/initdb ./cmd/initdb
-	cd backend && go build -o bin/userctl ./cmd/userctl
-
-backend/tools/go-bindata: backend/go.mod backend/go.sum
-	cd backend && go build -o ./tools/go-bindata github.com/kevinburke/go-bindata/go-bindata
-
-backend/tools/golangci-lint: backend/go.mod backend/go.sum
-	cd backend && go build -o ./tools/golangci-lint github.com/golangci/golangci-lint/cmd/golangci-lint
+	$(MAKE) -C backend $@
 
 .PHONY: image
 image:
@@ -131,31 +117,25 @@ image:
 container: image
 
 .PHONY: backend-ci
-backend-ci: backend test-clean-work-tree-backend check-backend-with-container
+backend-ci:
+	$(MAKE) -C backend ci
 
 .PHONY: run-generators
-run-generators: backend/tools/go-bindata
-	cd backend && PATH="$(abspath backend/tools):$${PATH}" go generate ./...
+run-generators:
+	$(MAKE) -C backend $@
 
 .PHONY: build-backend-binary
 build-backend-binary:
-	cd backend && go build -trimpath -ldflags ${LDFLAGS} -o bin/nebraska ./cmd/nebraska
+	$(MAKE) -C backend build
 
 .PHONY: backend-code-checks
-backend-code-checks: backend/tools/golangci-lint
-	# this is to get nice error messages when something doesn't
-	# build (both the project and the tests), golangci-lint's
-	# output in this regard in unreadable.
-	cd backend && go build ./...
-	cd backend && ./tools/check_pkg_test.sh
-	cd backend && NEBRASKA_SKIP_TESTS=1 go test ./... >/dev/null
-	cd backend && ./tools/golangci-lint run --fix
-	cd backend && go mod tidy
+backend-code-checks:
+	$(MAKE) -C backend code-checks
 
 .PHONY: swagger-install
 swagger-install:
-	go get -u github.com/swaggo/swag/cmd/swag
+	$(MAKE) -C backend tools/swag
 
 .PHONY: swagger-init
-swagger-init:  swagger-install
-	cd backend && swag init -g cmd/userctl/main.go -o api
+swagger-init:
+	$(MAKE) -C backend $@
