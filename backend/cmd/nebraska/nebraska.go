@@ -62,7 +62,7 @@ var (
 	oidcClientID          = flag.String("oidc-client-id", "", "OIDC client ID used for authentication")
 	oidcClientSecret      = flag.String("oidc-client-secret", "", fmt.Sprintf("OIDC client Secret used for authentication; can be taken from %s env var too", oidcClientIDEnvName))
 	oidcIssuerURL         = flag.String("oidc-issuer-url", "", fmt.Sprintf("OIDC issuer URL used for authentication;can be taken from %s env var too", oidcClientSecretEnvName))
-	oidcValidRedirectURLs = flag.String("oidc-valid-redirect-urls", "http://localhost:8000/*", "OIDC valid Redirect URLs")
+	oidcValidRedirectURLs = flag.String("oidc-valid-redirect-urls", "http://localhost:8000/*", "OIDC valid Redirect URLs accepts comma separated values with wildcard *, for example if nebraska is hosted at http://nebraska.kinvolk.io the value should be http://nebraska.kinvolk.io/*")
 	oidcAdminRoles        = flag.String("oidc-admin-roles", "", "comma-separated list of accepted roles with admin access")
 	oidcViewerRoles       = flag.String("oidc-viewer-roles", "", "comma-separated list of accepted roles with viewer access")
 	oidcRolesPath         = flag.String("oidc-roles-path", "roles", "json path in which the roles array is present in the id token")
