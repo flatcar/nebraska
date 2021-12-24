@@ -62,7 +62,7 @@ var (
 	oidcClientID          = flag.String("oidc-client-id", "", "OIDC client ID used for authentication")
 	oidcClientSecret      = flag.String("oidc-client-secret", "", fmt.Sprintf("OIDC client Secret used for authentication; can be taken from %s env var too", oidcClientIDEnvName))
 	oidcIssuerURL         = flag.String("oidc-issuer-url", "", fmt.Sprintf("OIDC issuer URL used for authentication;can be taken from %s env var too", oidcClientSecretEnvName))
-	oidcValidRedirectURLs = flag.String("oidc-valid-redirect-urls", "http://localhost:8000/*", "OIDC valid Redirect URLs accepts comma separated values with wildcard *, for example if nebraska is hosted at http://nebraska.kinvolk.io the value should be http://nebraska.kinvolk.io/*")
+	oidcValidRedirectURLs = flag.String("oidc-valid-redirect-urls", "", "OIDC valid Redirect URLs; accepts comma separated values and supports wildcards (*), for example http://nebraska.example.io/*. If not set defaults to <nebraska-url>/*")
 	oidcAdminRoles        = flag.String("oidc-admin-roles", "", "comma-separated list of accepted roles with admin access")
 	oidcViewerRoles       = flag.String("oidc-viewer-roles", "", "comma-separated list of accepted roles with viewer access")
 	oidcRolesPath         = flag.String("oidc-roles-path", "roles", "json path in which the roles array is present in the id token")
@@ -70,7 +70,7 @@ var (
 	oidcSessionAuthKey    = flag.String("oidc-session-secret", "", fmt.Sprintf("Session secret used for authenticating sessions in cookies used for storing OIDC info , will be generated if none is passed; can be taken from %s env var too", oidcSessionAuthKeyEnvName))
 	oidcSessionCryptKey   = flag.String("oidc-session-crypt-key", "", fmt.Sprintf("Session key used for encrypting sessions in cookies used for storing OIDC info, will be generated if none is passed; can be taken from %s env var too", oidcSessionCryptKeyEnvName))
 	oidcManagementURL     = flag.String("oidc-management-url", "", "OIDC management url for managing the account")
-	oidcLogutURL          = flag.String("oidc-logout-url", "", "URL to logout the user from current session")
+	oidcLogoutURL         = flag.String("oidc-logout-url", "", "URL to logout the user from current session")
 	flatcarUpdatesURL     = flag.String("sync-update-url", "https://public.update.flatcar-linux.net/v1/update/", "Flatcar update URL to sync from")
 	checkFrequencyVal     = flag.String("sync-interval", "1h", "Sync check interval (the minimum depends on the number of channels to sync, e.g., 8m for 8 channels incl. different architectures)")
 	appLogoPath           = flag.String("client-logo", "", "Client app logo, should be a path to svg file")
@@ -165,6 +165,16 @@ func mainWithError() error {
 
 		url.Path = "/login/cb"
 
+		if *oidcValidRedirectURLs == "" {
+			url, err := url.Parse(*nebraskaURL)
+			if err != nil {
+				return fmt.Errorf("nebraska-url is invalid, can't generate valid redirect URL, Err: %w", err)
+			}
+			url.Path = strings.TrimSuffix(url.Path, "/")
+			generatedValidRedirectURLs := fmt.Sprintf("%s/*", url.String())
+			oidcValidRedirectURLs = &generatedValidRedirectURLs
+		}
+
 		clientID, err := obtainOIDCClientID(*oidcClientID)
 		if err != nil {
 			return err
@@ -182,7 +192,7 @@ func mainWithError() error {
 			CallbackURL:       url.String(),
 			ValidRedirectURLs: strings.Split(*oidcValidRedirectURLs, ","),
 			ManagementURL:     *oidcManagementURL,
-			LogoutURL:         *oidcLogutURL,
+			LogoutURL:         *oidcLogoutURL,
 			AdminRoles:        strings.Split(*oidcAdminRoles, ","),
 			ViewerRoles:       strings.Split(*oidcViewerRoles, ","),
 			Scopes:            strings.Split(*oidcScopes, ","),
