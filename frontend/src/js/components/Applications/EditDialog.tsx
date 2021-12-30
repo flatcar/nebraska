@@ -140,15 +140,15 @@ function EditDialog(props: { create?: any; data: any; show: boolean; onHide: () 
     product_id: Yup.string()
       // This regex matches an ID that matches
       // * At least two segments.
-      // * All characters must be alphanumeric, an underscore, or a dash [a-zA-Z0-9_].
+      // * All characters must be alphanumeric, or a dash.
       // Each segment must start with a letter.
-      // Each segment must not end with an underscore or dash.
+      // Each segment must not end with a dash.
       .matches(
-        /^[a-zA-Z]+([a-zA-Z0-9_\-]*[a-zA-Z0-9])*(\.[a-zA-Z]+([a-zA-Z0-9_\-]*[a-zA-Z0-9])*)+$/,
+        /^[a-zA-Z]+([a-zA-Z0-9\-]*[a-zA-Z0-9])*(\.[a-zA-Z]+([a-zA-Z0-9\-]*[a-zA-Z0-9])*)+$/,
         t('applications|Must be a reverse domain ID like io.example.MyApp')
       )
       .nullable(),
-    description: Yup.string().max(250, t('applications|Must be less than 250 characters')),
+    description: Yup.string().max(250, t('applications|Must be less than 155 characters')),
   });
 
   return (
