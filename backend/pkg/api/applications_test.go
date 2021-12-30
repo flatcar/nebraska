@@ -82,8 +82,20 @@ func TestAddAppCloning(t *testing.T) {
 	_, err = a.AddApp(&Application{Name: "productIDApp2", TeamID: tTeam.ID, ProductID: null.StringFrom("io.valid.New-Name")})
 	assert.NoError(t, err)
 
-	_, err = a.AddApp(&Application{Name: "productIDApp3", TeamID: tTeam.ID, ProductID: null.StringFrom("io2.valid12.New_Name")})
+	_, err = a.AddApp(&Application{Name: "productIDApp3", TeamID: tTeam.ID, ProductID: null.StringFrom("io2.valid12.New-Name")})
 	assert.NoError(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp4", TeamID: tTeam.ID, ProductID: null.StringFrom("io.invalid.New_Name")})
+	assert.Error(t, err)
+
+	tooLongName := `io.` +
+		`loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong` +
+		`loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong` +
+		`loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong` +
+		`loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong.example.com`
+
+	_, err = a.AddApp(&Application{Name: "productIDApp5", TeamID: tTeam.ID, ProductID: null.StringFrom(tooLongName)})
+	assert.Error(t, err)
 }
 
 func TestUpdateApp(t *testing.T) {

@@ -126,12 +126,17 @@ func validateProductID(productID null.String) error {
 		return nil
 	}
 
+	if len(*productID.Ptr()) > 155 {
+		return fmt.Errorf("product ID %v is not valid (max length 155)", *productID.Ptr())
+	}
+
 	// This regex matches an ID that matches
 	// * At least two segments.
-	// * All characters must be alphanumeric, an underscore, or a dash [a-zA-Z0-9_].
+	// * All characters must be alphanumeric, a dash.
 	// Each segment must start with a letter.
-	// Each segment must not end with an underscore or dash.
-	matches, err := regexp.MatchString("^[a-zA-Z]+([a-zA-Z0-9_\\-]*[a-zA-Z0-9])*(\\.[a-zA-Z]+([a-zA-Z0-1_\\-]*[a-zA-Z0-9])*)+$", *productID.Ptr())
+	// Each segment must not end with a dash.
+	regMatcher := "^[a-zA-Z]+([a-zA-Z0-9\\-]*[a-zA-Z0-9])*(\\.[a-zA-Z]+([a-zA-Z0-1\\-]*[a-zA-Z0-9])*)+$"
+	matches, err := regexp.MatchString(regMatcher, *productID.Ptr())
 	if err != nil {
 		return err
 	}
