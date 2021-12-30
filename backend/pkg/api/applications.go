@@ -343,7 +343,9 @@ func (api *API) GetAppID(appOrProductID string) (string, error) {
 					}
 
 					if prodIDPtr := app.ProductID.Ptr(); prodIDPtr != nil {
-						cachedAppIDs[*prodIDPtr] = app.ID
+						// lower case so lookups are case insensitive
+						prodIDLower := strings.ToLower(*prodIDPtr)
+						cachedAppIDs[prodIDLower] = app.ID
 					}
 
 					// So we can quickly validate the UUID based IDs
@@ -360,9 +362,13 @@ func (api *API) GetAppID(appOrProductID string) (string, error) {
 
 	// Trim space and the {} that may surround the ID
 	appIDNoBrackets := strings.TrimSpace(appOrProductID)
-	if len(appIDNoBrackets) > 1 && appIDNoBrackets[0] == '{' {
-		appIDNoBrackets = strings.TrimSpace(appIDNoBrackets[1 : len(appIDNoBrackets)-1])
+	lastIdx := len(appIDNoBrackets) - 1
+	if len(appIDNoBrackets) > 2 && appIDNoBrackets[0] == '{' && appIDNoBrackets[lastIdx] == '}' {
+		appIDNoBrackets = strings.TrimSpace(appIDNoBrackets[1:lastIdx])
 	}
+
+	// Case insensitive, so use lower case as key
+	appIDNoBrackets = strings.ToLower(appIDNoBrackets)
 
 	cachedAppID, ok := cachedAppsRef[appIDNoBrackets]
 	if !ok {
