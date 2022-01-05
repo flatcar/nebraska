@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:13.3
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: nebraska
+      POSTGRES_DB: nebraska_tests
+      POSTGRES_USER: postgres
+      TZ: UTC 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5      
+
+  server:
+    build: 
+      context: ../../../
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - NEBRASKA_DB_URL=postgres://postgres:nebraska@postgres:5432/nebraska_tests?sslmode=disable&connect_timeout=10
+    command: sh -c "/nebraska/nebraska --auth-mode=noop --http-static-dir=/nebraska/static"
