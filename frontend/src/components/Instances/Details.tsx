@@ -29,11 +29,11 @@ import { Link as RouterLink } from 'react-router-dom';
 import * as Yup from 'yup';
 import API from '../../api/API';
 import { Application, Group, Instance, InstanceStatusHistory } from '../../api/apiDataTypes';
+import { makeLocaleTime } from '../../i18n/dateTime';
 import {
   ERROR_STATUS_CODE,
   getErrorAndFlags,
   getInstanceStatus,
-  makeLocaleTime,
   prepareErrorMessage,
 } from '../../utils/helpers';
 import ChannelItem from '../Channels/ChannelItem';

@@ -13,7 +13,8 @@ import semver from 'semver';
 import _ from 'underscore';
 import API from '../../api/API';
 import { Instance } from '../../api/apiDataTypes';
-import { cleanSemverVersion, makeLocaleTime } from '../../utils/helpers';
+import { makeLocaleTime } from '../../i18n/dateTime';
+import { cleanSemverVersion } from '../../utils/helpers';
 import StatusHistoryContainer from './StatusHistoryContainer';
 
 const TableLabel = function (props: PropsWithChildren<{ bgColor?: string; textColor?: string }>) {

@@ -3,11 +3,11 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import React from 'react';
 import { InstanceStatusHistory } from '../../api/apiDataTypes';
+import { makeLocaleTime } from '../../i18n/dateTime';
 import {
   ERROR_STATUS_CODE,
   getErrorAndFlags,
   getInstanceStatus,
-  makeLocaleTime,
   prepareErrorMessage,
 } from '../../utils/helpers';
 
