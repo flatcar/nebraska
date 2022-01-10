@@ -30,19 +30,18 @@ coverage.out: check-code-coverage
 check-code-coverage:
 	go test -p 1 -coverprofile=coverage.out ./...
 
-container_id:
-	./tools/setup_local_db.sh \
-		--id-file container_id.tmp \
-		--db-name nebraska_tests \
-		--password nebraska \
-		--pg-version 13.3
-	mv container_id.tmp container_id
+.PHONY: test-service-up
+test-service-up:
+	docker compose -f ./docker-compose.test.yaml up -d
+
+.PHONY: test-service-down
+test-service-down:
+	docker compose -f ./docker-compose.test.yaml down
 
 .PHONY: check-backend-with-container
-check-backend-with-container: container_id
-	set -e; \
-	trap "$(DOCKER_CMD) kill $$(cat container_id); $(DOCKER_CMD) rm $$(cat container_id); rm -f container_id" EXIT; \
-	go test -p 1 ./...
+check-backend-with-container: test-service-up
+	go clean -testcache && go test -p 1 ./...
+	$(MAKE) test-service-down
 
 run: bin/nebraska
 	./bin/nebraska -auth-mode noop -debug
