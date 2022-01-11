@@ -15,6 +15,7 @@ require (
 	github.com/google/uuid v1.2.0
 	github.com/gorilla/securecookie v1.1.1
 	github.com/jackc/pgx/v4 v4.11.0
+	github.com/jinzhu/copier v0.3.4
 	github.com/jmoiron/sqlx v1.3.3
 	github.com/kevinburke/go-bindata v3.22.0+incompatible
 	github.com/kinvolk/go-omaha v0.0.1

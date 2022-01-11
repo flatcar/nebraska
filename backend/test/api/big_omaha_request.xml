@@ -1,0 +1,1892 @@
+<request protocol="3.0" installsource="scheduler">
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+    <os platform="CoreOS" version="lsb"></os>
+    <app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+     <ping r="1" status="1"></ping>
+     <updatecheck></updatecheck>
+     <event eventtype="3" eventresult="1"></event>
+    </app>
+</request>
