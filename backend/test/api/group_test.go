@@ -9,9 +9,10 @@ import (
 	"testing"
 
 	"github.com/jinzhu/copier"
-	"github.com/kinvolk/nebraska/backend/pkg/api"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/kinvolk/nebraska/backend/pkg/api"
 )
 
 func TestListGroups(t *testing.T) {
@@ -102,7 +103,8 @@ func TestUpdateGroup(t *testing.T) {
 
 		// update group request
 		var groupDB api.Group
-		copier.Copy(&groupDB, app.Groups[0])
+		err := copier.Copy(&groupDB, app.Groups[0])
+		require.NoError(t, err)
 
 		groupName := "test_group"
 		groupDB.Name = groupName

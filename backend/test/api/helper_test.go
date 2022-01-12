@@ -10,8 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kinvolk/nebraska/backend/pkg/api"
 	"github.com/stretchr/testify/require"
+
+	"github.com/kinvolk/nebraska/backend/pkg/api"
 )
 
 // newDBForTest is a helper function that

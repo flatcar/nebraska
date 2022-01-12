@@ -6,9 +6,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/kinvolk/nebraska/backend/pkg/api"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/kinvolk/nebraska/backend/pkg/api"
 )
 
 func TestListApp(t *testing.T) {

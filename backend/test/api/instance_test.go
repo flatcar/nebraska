@@ -7,9 +7,10 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/kinvolk/nebraska/backend/pkg/api"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/kinvolk/nebraska/backend/pkg/api"
 )
 
 func TestListInstances(t *testing.T) {

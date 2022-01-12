@@ -9,9 +9,10 @@ import (
 	"testing"
 
 	"github.com/jinzhu/copier"
-	"github.com/kinvolk/nebraska/backend/pkg/api"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/kinvolk/nebraska/backend/pkg/api"
 )
 
 func TestListChannels(t *testing.T) {
@@ -103,7 +104,8 @@ func TestUpdateChannel(t *testing.T) {
 
 	// update channel request
 	var channelDB api.Channel
-	copier.Copy(&channelDB, app.Channels[0])
+	err := copier.Copy(&channelDB, app.Channels[0])
+	require.NoError(t, err)
 
 	channelName := "test_channel"
 	channelDB.Name = channelName
