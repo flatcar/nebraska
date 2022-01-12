@@ -9,9 +9,10 @@ import (
 	"testing"
 
 	"github.com/jinzhu/copier"
-	"github.com/kinvolk/nebraska/backend/pkg/api"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/kinvolk/nebraska/backend/pkg/api"
 )
 
 func TestListPackages(t *testing.T) {
@@ -114,7 +115,8 @@ func TestUpdatePackage(t *testing.T) {
 
 		// update package request
 		var packageDB api.Package
-		copier.Copy(&packageDB, packagesDB[0])
+		err = copier.Copy(&packageDB, packagesDB[0])
+		require.NoError(t, err)
 
 		packageVersion := "20.2.2"
 		packageDB.Version = packageVersion

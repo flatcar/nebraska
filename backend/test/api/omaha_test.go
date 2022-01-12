@@ -14,14 +14,12 @@ import (
 )
 
 func TestOmaha(t *testing.T) {
-
 	// establish db connection
 	db := newDBForTest(t)
 
 	app := getAppWithInstance(t, db)
 
 	t.Run("success", func(t *testing.T) {
-
 		track := app.Groups[0].Track
 
 		url := fmt.Sprintf("%s/omaha", testServerURL)
