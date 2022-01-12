@@ -5,6 +5,7 @@ on:
     - 'backend/cmd/**'
     - 'backend/pkg/**'
     - 'backend/tools/**'
+    - 'backend/test/**'
     - 'backend/go.mod'
     - 'backend/go.sum'
     - 'updaters/**'
