@@ -53,6 +53,19 @@ Any changes to the backend means that the `make run-backend` command should be
 run again. Changes to the frontend should be automatically re-built and the
 opened browser page should automatically refresh.
 
+## Docker compose V2
+
+You may be missing the `docker compose` plugin, which is required to run some tests.
+
+```bash
+docker compose version
+
+cd backend
+make check-backend-with-container
+```
+
+If so, see https://docs.docker.com/compose/cli-command/#install-on-linux
+
 # Development Concepts
 
 ## Frontend
