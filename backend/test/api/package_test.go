@@ -9,11 +9,14 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/jinzhu/copier"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"gopkg.in/guregu/null.v4"
 
 	"github.com/kinvolk/nebraska/backend/pkg/api"
+	"github.com/kinvolk/nebraska/backend/pkg/codegen"
 )
 
 func TestListPackages(t *testing.T) {
@@ -35,12 +38,16 @@ func TestListPackages(t *testing.T) {
 
 		// response
 		// TODO: will require change as response struct is changed in POC2 branch
-		var packages []*api.Package
+		var packagesResp codegen.PackagePage
 
-		httpDo(t, url, method, nil, http.StatusOK, "json", &packages)
+		httpDo(t, url, method, nil, http.StatusOK, "json", &packagesResp)
 
-		assert.NotEqual(t, 0, len(packages))
-		assert.Equal(t, len(packagesDB), len(packages))
+		assert.NotEqual(t, 0, len(packagesResp.Packages))
+		assert.Equal(t, len(packagesDB), len(packagesResp.Packages))
+		for i := range packagesDB {
+			assert.Equal(t, packagesDB[i].ApplicationID, packagesResp.Packages[i].ApplicationID)
+			assert.Equal(t, packagesDB[i].ID, packagesResp.Packages[i].Id)
+		}
 	})
 }
 
@@ -118,6 +125,19 @@ func TestUpdatePackage(t *testing.T) {
 		var packageDB api.Package
 		err = copier.Copy(&packageDB, packagesDB[0])
 		require.NoError(t, err)
+
+		if packageDB.ChannelsBlacklist == nil {
+			packageDB.ChannelsBlacklist = []string{}
+		}
+		if packageDB.Description.IsZero() {
+			packageDB.Description = null.StringFrom("some desc")
+		}
+		if packageDB.Size.IsZero() {
+			packageDB.Size = null.StringFrom("20")
+		}
+		if packageDB.Hash.IsZero() {
+			packageDB.Hash = null.StringFrom(uuid.New().String())
+		}
 
 		packageVersion := "20.2.2"
 		packageDB.Version = packageVersion
