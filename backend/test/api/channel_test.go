@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/kinvolk/nebraska/backend/pkg/api"
+	"github.com/kinvolk/nebraska/backend/pkg/codegen"
 )
 
 func TestListChannels(t *testing.T) {
@@ -32,15 +33,15 @@ func TestListChannels(t *testing.T) {
 		url := fmt.Sprintf("%s/api/apps/%s/channels", testServerURL, app.ID)
 		method := "GET"
 
-		// response
-		// TODO: will require change as response struct is changed in POC2 branch
-		var channels []*api.Channel
+		var channelsResp codegen.ChannelPage
 
-		httpDo(t, url, method, nil, http.StatusOK, "json", &channels)
+		httpDo(t, url, method, nil, http.StatusOK, "json", &channelsResp)
 
-		assert.NotEqual(t, 0, len(channels))
-		assert.Equal(t, len(channelsDB), len(channels))
-		assert.Equal(t, channelsDB[0].ApplicationID, channels[0].ApplicationID)
+		for i := range channelsDB {
+			assert.NotEqual(t, 0, len(channelsResp.Channels))
+			assert.Equal(t, len(channelsDB), len(channelsResp.Channels))
+			assert.Equal(t, channelsDB[i].ApplicationID, channelsResp.Channels[i].ApplicationID)
+		}
 	})
 }
 

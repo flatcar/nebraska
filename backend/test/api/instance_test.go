@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/kinvolk/nebraska/backend/pkg/api"
+	"github.com/kinvolk/nebraska/backend/pkg/codegen"
 )
 
 func TestListInstances(t *testing.T) {
@@ -63,10 +64,9 @@ func TestGetInstanceCount(t *testing.T) {
 		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/instancescount?duration=30d", testServerURL, appWithInstance.ID, appWithInstance.Groups[0].ID)
 		method := "GET"
 
-		// TODO: will require change as response struct is changed in POC2 branch
-		var instancesCount int
+		var instancesCountResp codegen.InstanceCount
 
-		httpDo(t, url, method, nil, http.StatusOK, "json", &instancesCount)
+		httpDo(t, url, method, nil, http.StatusOK, "json", &instancesCountResp)
 
 		count, err := db.GetInstancesCount(api.InstancesQueryParams{
 			ApplicationID: appWithInstance.ID,
@@ -74,7 +74,7 @@ func TestGetInstanceCount(t *testing.T) {
 		}, "30d")
 
 		require.NoError(t, err)
-		assert.Equal(t, int(count), instancesCount)
+		assert.Equal(t, uint64(count), instancesCountResp.Count)
 	})
 }
 

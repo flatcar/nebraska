@@ -17,7 +17,7 @@ func TestConfig(t *testing.T) {
 
 		httpDo(t, url, method, nil, http.StatusOK, "json", &rMap)
 
-		assert.Equal(t, "", rMap["auth_mode"])
+		assert.Equal(t, "noop", rMap["auth_mode"])
 		assert.Equal(t, "", rMap["access_management_url"])
 		assert.Equal(t, "", rMap["login_url"])
 		assert.Equal(t, "", rMap["logout_url"])

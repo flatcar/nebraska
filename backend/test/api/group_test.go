@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/kinvolk/nebraska/backend/pkg/api"
+	"github.com/kinvolk/nebraska/backend/pkg/codegen"
 )
 
 func TestListGroups(t *testing.T) {
@@ -32,14 +33,17 @@ func TestListGroups(t *testing.T) {
 		url := fmt.Sprintf("%s/api/apps/%s/groups", testServerURL, app.ID)
 		method := "GET"
 
-		// response
-		// TODO: will require change as response struct is changed in POC2 branch
-		var groups []*api.Group
+		var groupResp codegen.GroupPage
 
-		httpDo(t, url, method, nil, http.StatusOK, "json", &groups)
+		httpDo(t, url, method, nil, http.StatusOK, "json", &groupResp)
 
-		assert.NotEqual(t, 0, len(groups))
-		assert.Equal(t, len(groupsDB), len(groups))
+		assert.NotEqual(t, 0, len(groupResp.Groups))
+		assert.Equal(t, len(groupsDB), len(groupResp.Groups))
+
+		for i := range groupsDB {
+			assert.Equal(t, groupsDB[i].ID, groupResp.Groups[i].Id)
+			assert.Equal(t, groupsDB[i].Name, groupResp.Groups[i].Name)
+		}
 	})
 }
 

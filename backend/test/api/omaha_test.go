@@ -22,7 +22,7 @@ func TestOmaha(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		track := app.Groups[0].Track
 
-		url := fmt.Sprintf("%s/omaha", testServerURL)
+		url := fmt.Sprintf("%s/v1/update", testServerURL)
 
 		method := "POST"
 
@@ -52,7 +52,7 @@ func TestOmaha(t *testing.T) {
 	})
 
 	t.Run("large_request_body", func(t *testing.T) {
-		url := fmt.Sprintf("%s/omaha", testServerURL)
+		url := fmt.Sprintf("%s/v1/update", testServerURL)
 
 		method := "POST"
 

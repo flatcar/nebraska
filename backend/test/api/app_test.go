@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/kinvolk/nebraska/backend/pkg/api"
+	"github.com/kinvolk/nebraska/backend/pkg/codegen"
 )
 
 func TestListApp(t *testing.T) {
@@ -29,26 +30,23 @@ func TestListApp(t *testing.T) {
 		url := fmt.Sprintf("%s/api/apps", testServerURL)
 		method := "GET"
 
-		// TODO: will require change as response struct is changed in POC2 branch
-		var appsResp []*api.Application
-
+		var appsResp codegen.AppsPage
 		httpDo(t, url, method, nil, http.StatusOK, "json", &appsResp)
 
 		assert.NotEqual(t, len(appsDB), 0)
-		assert.Equal(t, len(appsDB), len(appsResp))
-
+		assert.Equal(t, len(appsDB), len(appsResp.Applications))
 		for i := range appsDB {
-			assert.Equal(t, appsResp[i].ID, appsDB[i].ID)
-			assert.Equal(t, appsResp[i].Name, appsDB[i].Name)
+			assert.Equal(t, appsDB[i].ID, appsResp.Applications[i].Id)
+			assert.Equal(t, appsDB[i].Name, appsResp.Applications[i].Name)
 		}
 	})
 }
 
 func TestCreateApp(t *testing.T) {
-	// establish DB connection
-	db := newDBForTest(t)
-
 	t.Run("success_do_not_copy", func(t *testing.T) {
+		// establish DB connection
+		db := newDBForTest(t)
+
 		// Create App request
 		url := fmt.Sprintf("%s%s", testServerURL, "/api/apps")
 		method := "POST"
@@ -71,6 +69,9 @@ func TestCreateApp(t *testing.T) {
 	})
 
 	t.Run("success_with_copy", func(t *testing.T) {
+		// establish DB connection
+		db := newDBForTest(t)
+
 		app := getRandomApp(t, db)
 
 		// Create App request
@@ -85,8 +86,14 @@ func TestCreateApp(t *testing.T) {
 
 		httpDo(t, url, method, payload, http.StatusOK, "json", &application)
 
+		// close and create new db session to clear and update cached appIds
+		db.Close()
+		db, err := api.New()
+		require.NoError(t, err)
+		require.NotNil(t, db)
+
 		// check if app exists in DB
-		app, err := db.GetApp(application.ID)
+		app, err = db.GetApp(application.ID)
 		require.NoError(t, err)
 
 		assert.Equal(t, application.ID, app.ID)
