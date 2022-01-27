@@ -3,6 +3,7 @@ package api_test
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"testing"
 
@@ -22,7 +23,7 @@ func TestListInstances(t *testing.T) {
 		appWithInstance := getAppWithInstance(t, db)
 
 		// fetch instances from API
-		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/instances?status=0&version=&sort=2&sortOrder=0&page=1&perpage=10&duration=30d", testServerURL, appWithInstance.ID, appWithInstance.Groups[0].ID)
+		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/instances?status=0&version=&sort=2&sortOrder=0&page=1&perpage=10&duration=30d", os.Getenv("NEBRASKA_TEST_SERVER_URL"), appWithInstance.ID, appWithInstance.Groups[0].ID)
 		method := "GET"
 
 		// response
@@ -60,7 +61,7 @@ func TestGetInstanceCount(t *testing.T) {
 		appWithInstance := getAppWithInstance(t, db)
 
 		// fetch instanceCount from API
-		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/instancescount?duration=30d", testServerURL, appWithInstance.ID, appWithInstance.Groups[0].ID)
+		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/instancescount?duration=30d", os.Getenv("NEBRASKA_TEST_SERVER_URL"), appWithInstance.ID, appWithInstance.Groups[0].ID)
 		method := "GET"
 
 		// TODO: will require change as response struct is changed in POC2 branch
@@ -92,7 +93,7 @@ func TestGetInstance(t *testing.T) {
 		require.NoError(t, err)
 
 		// fetch instance from API
-		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/instances/%s", testServerURL, app.ID, app.Groups[0].ID, instanceDB.ID)
+		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/instances/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID, app.Groups[0].ID, instanceDB.ID)
 		method := "GET"
 
 		var instance api.Instance
@@ -126,7 +127,7 @@ func TestGetInstanceStatusHistory(t *testing.T) {
 		require.NoError(t, err)
 
 		// fetch instance status_history
-		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/instances/%s/status_history", testServerURL, app.ID, app.Groups[0].ID, instanceDB.ID)
+		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/instances/%s/status_history", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID, app.Groups[0].ID, instanceDB.ID)
 		method := "GET"
 
 		var instanceEvents []api.InstanceStatusHistoryEntry
@@ -154,7 +155,7 @@ func TestUpdateInstance(t *testing.T) {
 		require.NoError(t, err)
 
 		// fetch instance from API
-		url := fmt.Sprintf("%s/api/instances/%s", testServerURL, instanceDB.ID)
+		url := fmt.Sprintf("%s/api/instances/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), instanceDB.ID)
 		method := "PUT"
 
 		newAlias := "new_alias"

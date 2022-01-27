@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	testServerURL    = "http://localhost:8000"
-	defaultTestDbURL = "postgres://postgres:nebraska@127.0.0.1:5432/nebraska_tests?sslmode=disable&connect_timeout=10"
+	defaultTestServerURL = "http://localhost:8000"
+	defaultTestDbURL     = "postgres://postgres:nebraska@127.0.0.1:5432/nebraska_tests?sslmode=disable&connect_timeout=10"
 )
 
 func TestMain(m *testing.M) {
@@ -21,6 +21,11 @@ func TestMain(m *testing.M) {
 	if _, ok := os.LookupEnv("NEBRASKA_DB_URL"); !ok {
 		log.Printf("NEBRASKA_DB_URL not set, setting to default %q\n", defaultTestDbURL)
 		_ = os.Setenv("NEBRASKA_DB_URL", defaultTestDbURL)
+	}
+
+	if _, ok := os.LookupEnv("NEBRASKA_TEST_SERVER_URL"); !ok {
+		log.Printf("NEBRASKA_TEST_SERVER_URL not set, setting to default %q\n", defaultTestServerURL)
+		_ = os.Setenv("NEBRASKA_TEST_SERVER_URL", defaultTestServerURL)
 	}
 
 	a, err := api.New(api.OptionInitDB)
