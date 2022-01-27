@@ -40,7 +40,7 @@ test-service-down:
 
 .PHONY: check-backend-with-container
 check-backend-with-container: test-service-up
-	go clean -testcache && go test -p 1 ./...
+	go clean -testcache && NEBRASKA_RUN_SERVER_TESTS=1 go test -p 1 ./...
 	$(MAKE) test-service-down
 
 run: bin/nebraska

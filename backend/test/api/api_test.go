@@ -14,7 +14,7 @@ const (
 )
 
 func TestMain(m *testing.M) {
-	if os.Getenv("NEBRASKA_SKIP_TESTS") != "" {
+	if os.Getenv("NEBRASKA_SKIP_TESTS") != "" || os.Getenv("NEBRASKA_RUN_SERVER_TESTS") == "" {
 		return
 	}
 
