@@ -32,7 +32,7 @@ check-code-coverage:
 
 .PHONY: test-service-up
 test-service-up:
-	docker compose -f ./docker-compose.test.yaml up -d
+	docker compose -f ./docker-compose.test.yaml up -d --build
 
 .PHONY: test-service-down
 test-service-down:
