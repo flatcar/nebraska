@@ -72,3 +72,47 @@ The Nebraska backend is written in Go. The backend source code is structured as 
 - **`cmd/nebraska`**: is the main backend process, exposing the functionality described above in the different packages through its http server. It provides several http endpoints used to drive most of the functionality of the dashboard as well as handling the Omaha updates and events requests received from your servers and applications.
 
 - **`cmd/initdb`**: is just a helper to reset your database, and causing the migrations to be re-run. `nebraska` will apply all database migrations automatically, so this process should only be used to wipe out all your data and start from a clean state (you should probably never need it).
+
+
+### Backend Testing
+
+Most unit tests like beside the code for example inside `backend/pkg/`.
+Tests which depend on a database mostly live in `backend/pkg/api`.
+Some "server" binary integration tests are separate, and live in `backend/test/api/`.
+
+#### Environment variables
+
+NEBRASKA_SKIP_TESTS, if set do not run slow tests like DB using tests.
+NEBRASKA_RUN_SERVER_TESTS, if set run the integration tests.
+
+#### Test make targets.
+
+There are a number of make targets setup to run different tests.
+
+##### make ci
+
+Run all the tests that are run on CI with github actions.
+
+##### make code-checks
+
+Just build it, run quick tests, and lint it.
+
+Does not run tests that require a testing db, or a test server.
+
+##### make check
+
+Run tests except for the integration tests by default. Requires a test database to be running.
+
+You can use `NEBRASKA_RUN_SERVER_TESTS=1 make check` to also test the server integration tests, 
+but you need to be running a server (with `make run-backend`).
+
+##### make check-backend-with-container
+
+Run tests inside a container, including the integration tests.
+
+It starts it's own test server and test database.
+
+##### make check-code-coverage
+
+Like make check, but it outputs test coverage information.
+
