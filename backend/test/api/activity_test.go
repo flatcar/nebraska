@@ -3,6 +3,7 @@ package api_test
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"testing"
 	"time"
 
@@ -25,7 +26,7 @@ func TestListActivity(t *testing.T) {
 		require.NotNil(t, activitiesDB)
 
 		// fetch activity from api
-		url := fmt.Sprintf("%s/api/activity?start=%s&end=%s", testServerURL, startTime.Format(time.RFC3339), endTime.Format(time.RFC3339))
+		url := fmt.Sprintf("%s/api/activity?start=%s&end=%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), startTime.Format(time.RFC3339), endTime.Format(time.RFC3339))
 		method := "GET"
 
 		// response

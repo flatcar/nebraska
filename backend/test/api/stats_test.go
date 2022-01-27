@@ -3,6 +3,7 @@ package api_test
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"sort"
 	"testing"
 	"time"
@@ -28,7 +29,7 @@ func TestGroupVersionTimeline(t *testing.T) {
 		appWithInstance := getAppWithInstance(t, db)
 
 		// fetch group version timeline from API
-		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/version_timeline?duration=1d", testServerURL, appWithInstance.ID, appWithInstance.Groups[0].ID)
+		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/version_timeline?duration=1d", os.Getenv("NEBRASKA_TEST_SERVER_URL"), appWithInstance.ID, appWithInstance.Groups[0].ID)
 		method := "GET"
 
 		// response
@@ -93,7 +94,7 @@ func TestGroupVersionBreakdown(t *testing.T) {
 		require.NotNil(t, breakdownDB)
 
 		// fetch version breakdown from API
-		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/version_breakdown", testServerURL, appWithInstance.ID, appWithInstance.Groups[0].ID)
+		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/version_breakdown", os.Getenv("NEBRASKA_TEST_SERVER_URL"), appWithInstance.ID, appWithInstance.Groups[0].ID)
 		method := "GET"
 
 		// response
@@ -138,7 +139,7 @@ func TestGroupStatusTimeline(t *testing.T) {
 		require.NotNil(t, groupStatusCountTimelineDB)
 
 		// fetch group status timeleine from API
-		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/status_timeline?duration=1d", testServerURL, app.ID, app.Groups[0].ID)
+		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/status_timeline?duration=1d", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID, app.Groups[0].ID)
 		method := "GET"
 
 		// response
@@ -198,7 +199,7 @@ func TestGroupInstanceStats(t *testing.T) {
 		require.NotNil(t, instanceStatsDB)
 
 		// fetch instances stats from API
-		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/instances_stats?duration=1d", testServerURL, appWithInstance.ID, appWithInstance.Groups[0].ID)
+		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/instances_stats?duration=1d", os.Getenv("NEBRASKA_TEST_SERVER_URL"), appWithInstance.ID, appWithInstance.Groups[0].ID)
 		method := "GET"
 
 		// response

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"testing"
 
@@ -29,7 +30,7 @@ func TestListGroups(t *testing.T) {
 		require.NotNil(t, groupsDB)
 
 		// fetch groups from API
-		url := fmt.Sprintf("%s/api/apps/%s/groups", testServerURL, app.ID)
+		url := fmt.Sprintf("%s/api/apps/%s/groups", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID)
 		method := "GET"
 
 		// response
@@ -52,7 +53,7 @@ func TestCreateGroup(t *testing.T) {
 		app := getRandomApp(t, db)
 
 		// create group using the API
-		url := fmt.Sprintf("%s/api/apps/%s/groups", testServerURL, app.ID)
+		url := fmt.Sprintf("%s/api/apps/%s/groups", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID)
 		method := "POST"
 
 		groupName := "test_group"
@@ -81,7 +82,7 @@ func TestGetGroup(t *testing.T) {
 		app := getRandomApp(t, db)
 
 		// fetch group by id request
-		url := fmt.Sprintf("%s/api/apps/%s/groups/%s", testServerURL, app.ID, app.Groups[0].ID)
+		url := fmt.Sprintf("%s/api/apps/%s/groups/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID, app.Groups[0].ID)
 		method := "GET"
 
 		// response
@@ -112,7 +113,7 @@ func TestUpdateGroup(t *testing.T) {
 		payload, err := json.Marshal(groupDB)
 		require.NoError(t, err)
 
-		url := fmt.Sprintf("%s/api/apps/%s/groups/%s", testServerURL, groupDB.ApplicationID, groupDB.ID)
+		url := fmt.Sprintf("%s/api/apps/%s/groups/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), groupDB.ApplicationID, groupDB.ID)
 		method := "PUT"
 
 		// response
@@ -137,7 +138,7 @@ func TestDeleteGroup(t *testing.T) {
 		app := getRandomApp(t, db)
 
 		groupDB := app.Groups[0]
-		url := fmt.Sprintf("%s/api/apps/%s/groups/%s", testServerURL, groupDB.ApplicationID, groupDB.ID)
+		url := fmt.Sprintf("%s/api/apps/%s/groups/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), groupDB.ApplicationID, groupDB.ID)
 		method := "DELETE"
 
 		httpDo(t, url, method, nil, http.StatusNoContent, "", nil)

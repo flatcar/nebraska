@@ -4,7 +4,7 @@ services:
   postgres:
     image: postgres:13.3
     ports:
-      - "5432:5432"
+      - "8001:5432"
     environment:
       POSTGRES_PASSWORD: nebraska
       POSTGRES_DB: nebraska_tests
@@ -21,7 +21,7 @@ services:
       context: ../
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "8002:8000"
     depends_on:
       postgres:
         condition: service_healthy

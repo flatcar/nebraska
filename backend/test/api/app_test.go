@@ -3,6 +3,7 @@ package api_test
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"testing"
 
@@ -26,7 +27,7 @@ func TestListApp(t *testing.T) {
 		require.NotNil(t, appsDB)
 
 		// fetch apps from the API
-		url := fmt.Sprintf("%s/api/apps", testServerURL)
+		url := fmt.Sprintf("%s/api/apps", os.Getenv("NEBRASKA_TEST_SERVER_URL"))
 		method := "GET"
 
 		// TODO: will require change as response struct is changed in POC2 branch
@@ -50,7 +51,7 @@ func TestCreateApp(t *testing.T) {
 
 	t.Run("success_do_not_copy", func(t *testing.T) {
 		// Create App request
-		url := fmt.Sprintf("%s%s", testServerURL, "/api/apps")
+		url := fmt.Sprintf("%s%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), "/api/apps")
 		method := "POST"
 
 		appName := "test"
@@ -74,7 +75,7 @@ func TestCreateApp(t *testing.T) {
 		app := getRandomApp(t, db)
 
 		// Create App request
-		url := fmt.Sprintf("%s/api/apps?clone_from=%s", testServerURL, app.ID)
+		url := fmt.Sprintf("%s/api/apps?clone_from=%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID)
 		method := "POST"
 
 		appName := "test_with_clone"
@@ -101,7 +102,7 @@ func TestGetApp(t *testing.T) {
 		app := getRandomApp(t, db)
 
 		// fetch app by id request
-		url := fmt.Sprintf("%s/api/apps/%s", testServerURL, app.ID)
+		url := fmt.Sprintf("%s/api/apps/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID)
 		method := "GET"
 
 		// check response
@@ -123,7 +124,7 @@ func TestUpdateApp(t *testing.T) {
 		app := getRandomApp(t, db)
 
 		// Update App Request
-		url := fmt.Sprintf("%s/api/apps/%s", testServerURL, app.ID)
+		url := fmt.Sprintf("%s/api/apps/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID)
 		method := "PUT"
 
 		name := "updated_name"
@@ -154,7 +155,7 @@ func TestDeleteApp(t *testing.T) {
 		app := getRandomApp(t, db)
 
 		// Update App Request
-		url := fmt.Sprintf("%s/api/apps/%s", testServerURL, app.ID)
+		url := fmt.Sprintf("%s/api/apps/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID)
 		method := "DELETE"
 
 		httpDo(t, url, method, nil, http.StatusNoContent, "", nil)

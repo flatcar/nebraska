@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"testing"
 
@@ -29,7 +30,7 @@ func TestListPackages(t *testing.T) {
 		require.NotNil(t, packagesDB)
 
 		// fetch packages from API
-		url := fmt.Sprintf("%s/api/apps/%s/packages", testServerURL, app.ID)
+		url := fmt.Sprintf("%s/api/apps/%s/packages", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID)
 		method := "GET"
 
 		// response
@@ -52,7 +53,7 @@ func TestCreatePackage(t *testing.T) {
 		app := getRandomApp(t, db)
 
 		// create group using the API
-		url := fmt.Sprintf("%s/api/apps/%s/packages", testServerURL, app.ID)
+		url := fmt.Sprintf("%s/api/apps/%s/packages", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID)
 		method := "POST"
 
 		packageName := "test_package"
@@ -88,7 +89,7 @@ func TestGetPackage(t *testing.T) {
 		require.NotNil(t, packagesDB)
 
 		// fetch group by id request
-		url := fmt.Sprintf("%s/api/apps/%s/packages/%s", testServerURL, packagesDB[0].ApplicationID, packagesDB[0].ID)
+		url := fmt.Sprintf("%s/api/apps/%s/packages/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), packagesDB[0].ApplicationID, packagesDB[0].ID)
 		method := "GET"
 
 		var packageResp api.Package
@@ -125,7 +126,7 @@ func TestUpdatePackage(t *testing.T) {
 		require.NoError(t, err)
 
 		// fetch group by id request
-		url := fmt.Sprintf("%s/api/apps/%s/packages/%s", testServerURL, packageDB.ApplicationID, packageDB.ID)
+		url := fmt.Sprintf("%s/api/apps/%s/packages/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), packageDB.ApplicationID, packageDB.ID)
 		method := "PUT"
 
 		var packageResp api.Package
@@ -155,7 +156,7 @@ func TestDeletePackage(t *testing.T) {
 		require.NotNil(t, packagesDB)
 
 		// delte package by id request
-		url := fmt.Sprintf("%s/api/apps/%s/packages/%s", testServerURL, packagesDB[0].ApplicationID, packagesDB[0].ID)
+		url := fmt.Sprintf("%s/api/apps/%s/packages/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), packagesDB[0].ApplicationID, packagesDB[0].ID)
 		method := "DELETE"
 
 		httpDo(t, url, method, nil, http.StatusNoContent, "", nil)

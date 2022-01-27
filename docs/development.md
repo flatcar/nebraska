@@ -82,8 +82,12 @@ Some "server" binary integration tests are separate, and live in `backend/test/a
 
 #### Environment variables
 
-NEBRASKA_SKIP_TESTS, if set do not run slow tests like DB using tests.
-NEBRASKA_RUN_SERVER_TESTS, if set run the integration tests.
+Here are some test related environment variables.
+
+- NEBRASKA_SKIP_TESTS, if set do not run slow tests like DB using tests.
+- NEBRASKA_RUN_SERVER_TESTS, if set run the integration tests.
+- NEBRASKA_DB_URL, database connection URL.
+- NEBRASKA_TEST_SERVER_URL, where the test server is running "http://localhost:8000"
 
 #### Test make targets.
 

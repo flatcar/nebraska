@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"testing"
 
@@ -29,7 +30,7 @@ func TestListChannels(t *testing.T) {
 		require.NotNil(t, channelsDB)
 
 		// fetch channels from API
-		url := fmt.Sprintf("%s/api/apps/%s/channels", testServerURL, app.ID)
+		url := fmt.Sprintf("%s/api/apps/%s/channels", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID)
 		method := "GET"
 
 		// response
@@ -53,7 +54,7 @@ func TestCreateChannel(t *testing.T) {
 		app := getRandomApp(t, db)
 
 		// create channel using the API
-		url := fmt.Sprintf("%s/api/apps/%s/channels", testServerURL, app.ID)
+		url := fmt.Sprintf("%s/api/apps/%s/channels", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID)
 		method := "POST"
 
 		channelName := "test_channel"
@@ -82,7 +83,7 @@ func TestGetChannel(t *testing.T) {
 		app := getRandomApp(t, db)
 
 		// fetch channel by id request
-		url := fmt.Sprintf("%s/api/apps/%s/channels/%s", testServerURL, app.ID, app.Channels[0].ID)
+		url := fmt.Sprintf("%s/api/apps/%s/channels/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID, app.Channels[0].ID)
 		method := "GET"
 
 		// response
@@ -113,7 +114,7 @@ func TestUpdateChannel(t *testing.T) {
 	payload, err := json.Marshal(channelDB)
 	require.NoError(t, err)
 
-	url := fmt.Sprintf("%s/api/apps/%s/channels/%s", testServerURL, channelDB.ApplicationID, channelDB.ID)
+	url := fmt.Sprintf("%s/api/apps/%s/channels/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), channelDB.ApplicationID, channelDB.ID)
 	method := "PUT"
 
 	// response
@@ -138,7 +139,7 @@ func TestDeleteChannel(t *testing.T) {
 		app := getRandomApp(t, db)
 
 		channelDB := app.Channels[0]
-		url := fmt.Sprintf("%s/api/apps/%s/channels/%s", testServerURL, channelDB.ApplicationID, channelDB.ID)
+		url := fmt.Sprintf("%s/api/apps/%s/channels/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), channelDB.ApplicationID, channelDB.ID)
 		method := "DELETE"
 
 		httpDo(t, url, method, nil, http.StatusNoContent, "", nil)

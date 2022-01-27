@@ -7,6 +7,7 @@ DOCKER_CMD ?= "docker"
 DOCKER_REPO ?= "ghcr.io/kinvolk"
 DOCKER_IMAGE_NEBRASKA ?= "nebraska"
 VERSION ?=
+CONTAINER_NEBRASKA_DB_URL ?= "postgres://postgres:nebraska@127.0.0.1:8001/nebraska_tests?sslmode=disable&connect_timeout=10"
 ifeq ($(VERSION),)
 	## Adds a '-dirty' suffix to version string if there are uncommitted changes
 	changes := $(shell git status ./backend ./frontend --porcelain)
@@ -40,7 +41,7 @@ test-service-down:
 
 .PHONY: check-backend-with-container
 check-backend-with-container: test-service-up
-	go clean -testcache && NEBRASKA_RUN_SERVER_TESTS=1 go test -p 1 ./...
+	go clean -testcache && NEBRASKA_RUN_SERVER_TESTS=1 NEBRASKA_TEST_SERVER_URL="http://localhost:8002" NEBRASKA_DB_URL=$(CONTAINER_NEBRASKA_DB_URL) go test -p 1 ./...
 	$(MAKE) test-service-down
 
 run: bin/nebraska
