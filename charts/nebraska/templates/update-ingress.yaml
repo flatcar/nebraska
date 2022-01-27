@@ -1,14 +1,7 @@
 {{- if and .Values.ingress.enabled .Values.ingress.update.enabled }}
 {{- $fullName := include "nebraska.fullname" . }}
 {{- $svcPort := .Values.service.port }}
-{{- $kubeGitVersion := .Capabilities.KubeVersion.GitVersion }}
-{{- if semverCompare ">=1.19-0" $kubeGitVersion }}
-apiVersion: networking.k8s.io/v1
-{{- else if semverCompare ">=1.14-0" $kubeGitVersion }}
-apiVersion: networking.k8s.io/v1beta1
-{{- else }}
-apiVersion: extensions/v1beta1
-{{- end }}
+apiVersion: {{ include "nebraska.ingress.apiVersion" . }}
 kind: Ingress
 metadata:
   name: {{ $fullName | trunc 56 | trimSuffix "-" }}-update
@@ -19,6 +12,11 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
+  {{- if eq (include "nebraska.ingress.apiVersion" $) "networking.k8s.io/v1" }}
+  {{- with .Values.ingress.update.ingressClassName }}
+  ingressClassName: {{ . }}
+  {{- end }}
+  {{- end }}
   {{- if .Values.ingress.tls }}
   tls:
     {{- range .Values.ingress.tls }}
@@ -36,7 +34,7 @@ spec:
         paths:
           - path: /v1/update
             backend:
-            {{- if semverCompare ">=1.19-0" $kubeGitVersion }}
+            {{- if eq (include "nebraska.ingress.apiVersion" $) "networking.k8s.io/v1" }}
               service:
                 name: {{ $fullName }}
                 port:
@@ -53,7 +51,7 @@ spec:
           - path: /flatcar
           {{- end }}
             backend:
-            {{- if semverCompare ">=1.19-0" $kubeGitVersion }}
+            {{- if eq (include "nebraska.ingress.apiVersion" $) "networking.k8s.io/v1" }}
               service:
                 name: {{ $fullName }}
                 port:
