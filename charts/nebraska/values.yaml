@@ -195,7 +195,7 @@ postgresql:
   postgresqlUsername: postgres
   postgresqlPassword: changeIt
   image:
-    tag: 12.5.0-debian-10-r76
+    tag: 12.9.0-debian-10-r72
   persistence:
     enabled: false
     storageClass:
