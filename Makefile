@@ -106,7 +106,7 @@ tools:
 
 .PHONY: image
 image:
-	$(DOCKER_CMD) build \
+	DOCKER_BUILDKIT=1 $(DOCKER_CMD) build \
 		--no-cache \
 		--build-arg NEBRASKA_VERSION=$(VERSION) \
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_NEBRASKA):$(VERSION)" \
