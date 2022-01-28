@@ -117,7 +117,7 @@ $ helm install my-nebraska nebraska/nebraska
 | `postgresql.postgresqlUsername`         | PostgreSQL user (creates a non-admin user when `postgresqlUsername` is not `postgres`)          | `postgres`             |
 | `postgresql.postgresqlPassword`         | PostgreSQL user password **Recommended to change it to something secure for security reasons.** | `changeIt`             |
 | `postgresql.postgresqlPostgresPassword` | PostgreSQL admin password (used when `postgresqlUsername` is not `postgres`)                    | `-`                    |
-| `postgresql.image.tag`                  | PostgreSQL Image tag                                                                            | `12.5.0-debian-10-r76` |
+| `postgresql.image.tag`                  | PostgreSQL Image tag                                                                            | `12.9.0-debian-10-r72` |
 | `postgresql.persistence.enabled`        | Enable persistence using PVC                                                                    | `false`                |
 | `postgresql.persistence.storageClass`   | PVC Storage Class for PostgreSQL volume                                                         | `nil`                  |
 | `postgresql.persistence.accessModes`    | PVC Access Mode for PostgreSQL volume                                                           | `["ReadWriteOnce"]`    |
