@@ -4,6 +4,7 @@ export GO111MODULE
 TAG := `git describe --tags --always`
 SHELL = /bin/bash
 DOCKER_CMD ?= "docker"
+DOCKER_COMPOSE_CMD = COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker compose
 DOCKER_REPO ?= "ghcr.io/kinvolk"
 DOCKER_IMAGE_NEBRASKA ?= "nebraska"
 VERSION ?=
@@ -32,11 +33,11 @@ check-code-coverage:
 
 .PHONY: test-service-up
 test-service-up:
-	docker compose -f ./docker-compose.test.yaml up -d
+	$(DOCKER_COMPOSE_CMD) -f ./docker-compose.test.yaml up -d
 
 .PHONY: test-service-down
 test-service-down:
-	docker compose -f ./docker-compose.test.yaml down
+	$(DOCKER_COMPOSE_CMD) -f ./docker-compose.test.yaml down
 
 .PHONY: check-backend-with-container
 check-backend-with-container: test-service-up
