@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jinzhu/copier"
@@ -89,6 +90,11 @@ func TestLogin(t *testing.T) {
 		//nolint:errcheck
 		go server.Start(serverPortStr)
 
+		time.Sleep(100 * time.Millisecond)
+
+		defer server.Shutdown(context.Background())
+		defer oidcServer.Shutdown()
+
 		req, err := http.NewRequest("GET", fmt.Sprintf("%s/login", testServerURL), nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
@@ -102,11 +108,6 @@ func TestLogin(t *testing.T) {
 
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
 		assert.Contains(t, string(bodyBytes), `parameter \"login_redirect_url\" in query has an error: value is required but missing: value is required but missing`)
-
-		err = server.Shutdown(context.Background())
-		require.NoError(t, err)
-		err = oidcServer.Shutdown()
-		require.NoError(t, err)
 	})
 
 	t.Run("invalid_login_redirect_url", func(t *testing.T) {
@@ -126,6 +127,11 @@ func TestLogin(t *testing.T) {
 		//nolint:errcheck
 		go server.Start(serverPortStr)
 
+		time.Sleep(100 * time.Millisecond)
+
+		defer server.Shutdown(context.Background())
+		defer oidcServer.Shutdown()
+
 		req, err := http.NewRequest("GET", fmt.Sprintf("%s/login?login_redirect_url=http://localhost:9000", testServerURL), nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
@@ -140,10 +146,6 @@ func TestLogin(t *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
 		assert.Contains(t, string(bodyBytes), `Invalid login_redirect_url`)
 
-		err = server.Shutdown(context.Background())
-		require.NoError(t, err)
-		err = oidcServer.Shutdown()
-		require.NoError(t, err)
 	})
 
 	t.Run("invalid_oidc_client_id", func(t *testing.T) {
@@ -163,6 +165,11 @@ func TestLogin(t *testing.T) {
 		//nolint:errcheck
 		go server.Start(serverPortStr)
 
+		time.Sleep(100 * time.Millisecond)
+
+		defer server.Shutdown(context.Background())
+		defer oidcServer.Shutdown()
+
 		req, err := http.NewRequest("GET", fmt.Sprintf("%s/login?login_redirect_url=%s/", testServerURL, testServerURL), nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
@@ -176,11 +183,6 @@ func TestLogin(t *testing.T) {
 
 		assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 		assert.Contains(t, string(bodyBytes), `Invalid client id: clientID`)
-
-		err = server.Shutdown(context.Background())
-		require.NoError(t, err)
-		err = oidcServer.Shutdown()
-		require.NoError(t, err)
 	})
 
 	t.Run("invalid_oidc_scope", func(t *testing.T) {
@@ -209,6 +211,11 @@ func TestLogin(t *testing.T) {
 		//nolint:errcheck
 		go server.Start(serverPortStr)
 
+		time.Sleep(100 * time.Millisecond)
+
+		defer server.Shutdown(context.Background())
+		defer oidcServer.Shutdown()
+
 		req, err := http.NewRequest("GET", fmt.Sprintf("%s/login?login_redirect_url=%s/", testServerURL, testServerURL), nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
@@ -229,11 +236,6 @@ func TestLogin(t *testing.T) {
 
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
 		assert.Contains(t, string(bodyBytes), "The request is missing the required parameter: scope")
-
-		err = server.Shutdown(context.Background())
-		require.NoError(t, err)
-		err = oidcServer.Shutdown()
-		require.NoError(t, err)
 	})
 
 	t.Run("invalid_callback_state", func(t *testing.T) {
@@ -254,6 +256,11 @@ func TestLogin(t *testing.T) {
 
 		//nolint:errcheck
 		go server.Start(serverPortStr)
+
+		time.Sleep(100 * time.Millisecond)
+
+		defer server.Shutdown(context.Background())
+		defer oidcServer.Shutdown()
 
 		req, err := http.NewRequest("GET", fmt.Sprintf("%s/login?login_redirect_url=%s/", testServerURL, testServerURL), nil)
 		require.NoError(t, err)
@@ -285,11 +292,6 @@ func TestLogin(t *testing.T) {
 		t.Log(string(bodyBytes))
 
 		assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-		err = server.Shutdown(context.Background())
-		require.NoError(t, err)
-		err = oidcServer.Shutdown()
-		require.NoError(t, err)
 	})
 
 	t.Run("invalid_client_secret", func(t *testing.T) {
@@ -311,6 +313,11 @@ func TestLogin(t *testing.T) {
 		//nolint:errcheck
 		go server.Start(serverPortStr)
 
+		time.Sleep(100 * time.Millisecond)
+
+		defer server.Shutdown(context.Background())
+		defer oidcServer.Shutdown()
+
 		req, err := http.NewRequest("GET", fmt.Sprintf("%s/login?login_redirect_url=%s/", testServerURL, testServerURL), nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
@@ -327,11 +334,6 @@ func TestLogin(t *testing.T) {
 		require.NotNil(t, resp)
 
 		assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-		err = server.Shutdown(context.Background())
-		require.NoError(t, err)
-		err = oidcServer.Shutdown()
-		require.NoError(t, err)
 	})
 
 	t.Run("token_exchange_error", func(t *testing.T) {
@@ -352,6 +354,11 @@ func TestLogin(t *testing.T) {
 
 		//nolint:errcheck
 		go server.Start(serverPortStr)
+
+		time.Sleep(100 * time.Millisecond)
+
+		defer server.Shutdown(context.Background())
+		defer oidcServer.Shutdown()
 
 		req, err := http.NewRequest("GET", fmt.Sprintf("%s/login?login_redirect_url=%s/", testServerURL, testServerURL), nil)
 		require.NoError(t, err)
@@ -386,11 +393,6 @@ func TestLogin(t *testing.T) {
 		require.NotNil(t, resp)
 
 		assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
-
-		err = server.Shutdown(context.Background())
-		require.NoError(t, err)
-		err = oidcServer.Shutdown()
-		require.NoError(t, err)
 	})
 
 	t.Run("no_roles_in_jwt", func(t *testing.T) {
@@ -411,6 +413,11 @@ func TestLogin(t *testing.T) {
 
 		//nolint:errcheck
 		go server.Start(serverPortStr)
+
+		time.Sleep(100 * time.Millisecond)
+
+		defer server.Shutdown(context.Background())
+		defer oidcServer.Shutdown()
 
 		req, err := http.NewRequest("GET", fmt.Sprintf("%s/login?login_redirect_url=%s/", testServerURL, testServerURL), nil)
 		require.NoError(t, err)
@@ -451,11 +458,6 @@ func TestLogin(t *testing.T) {
 		require.NotNil(t, resp)
 
 		assert.Equal(t, http.StatusForbidden, resp.StatusCode)
-
-		err = server.Shutdown(context.Background())
-		require.NoError(t, err)
-		err = oidcServer.Shutdown()
-		require.NoError(t, err)
 	})
 
 	t.Run("invalid_access", func(t *testing.T) {
@@ -479,6 +481,11 @@ func TestLogin(t *testing.T) {
 
 		//nolint:errcheck
 		go server.Start(serverPortStr)
+
+		time.Sleep(100 * time.Millisecond)
+
+		defer server.Shutdown(context.Background())
+		defer oidcServer.Shutdown()
 
 		req, err := http.NewRequest("GET", fmt.Sprintf("%s/login?login_redirect_url=%s/", testServerURL, testServerURL), nil)
 		require.NoError(t, err)
@@ -521,11 +528,6 @@ func TestLogin(t *testing.T) {
 		require.NotNil(t, resp)
 
 		assert.Equal(t, http.StatusForbidden, resp.StatusCode)
-
-		err = server.Shutdown(context.Background())
-		require.NoError(t, err)
-		err = oidcServer.Shutdown()
-		require.NoError(t, err)
 	})
 
 	t.Run("invalid_token", func(t *testing.T) {
@@ -550,6 +552,11 @@ func TestLogin(t *testing.T) {
 		//nolint:errcheck
 		go server.Start(serverPortStr)
 
+		time.Sleep(100 * time.Millisecond)
+
+		defer server.Shutdown(context.Background())
+		defer oidcServer.Shutdown()
+
 		req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/apps", testServerURL), nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
@@ -571,11 +578,6 @@ func TestLogin(t *testing.T) {
 		require.NotNil(t, resp)
 
 		assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
-
-		err = server.Shutdown(context.Background())
-		require.NoError(t, err)
-		err = oidcServer.Shutdown()
-		require.NoError(t, err)
 	})
 
 	t.Run("success", func(t *testing.T) {
@@ -599,6 +601,11 @@ func TestLogin(t *testing.T) {
 
 		//nolint:errcheck
 		go server.Start(serverPortStr)
+
+		time.Sleep(100 * time.Millisecond)
+
+		defer server.Shutdown(context.Background())
+		defer oidcServer.Shutdown()
 
 		req, err := http.NewRequest("GET", fmt.Sprintf("%s/login?login_redirect_url=%s/", testServerURL, testServerURL), nil)
 		require.NoError(t, err)
@@ -644,11 +651,6 @@ func TestLogin(t *testing.T) {
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 		assert.Contains(t, string(bodyBytes), "totalCount")
 		assert.Contains(t, string(bodyBytes), "count")
-
-		err = server.Shutdown(context.Background())
-		require.NoError(t, err)
-		err = oidcServer.Shutdown()
-		require.NoError(t, err)
 	})
 }
 
@@ -674,6 +676,11 @@ func TestValidateToken(t *testing.T) {
 
 		//nolint:errcheck
 		go server.Start(serverPortStr)
+
+		time.Sleep(100 * time.Millisecond)
+
+		defer server.Shutdown(context.Background())
+		defer oidcServer.Shutdown()
 
 		req, err := http.NewRequest("GET", fmt.Sprintf("%s/login?login_redirect_url=%s/", testServerURL, testServerURL), nil)
 		require.NoError(t, err)
@@ -719,10 +726,5 @@ func TestValidateToken(t *testing.T) {
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 		assert.Contains(t, string(bodyBytes), "valid")
 		assert.Contains(t, string(bodyBytes), "true")
-
-		err = server.Shutdown(context.Background())
-		require.NoError(t, err)
-		err = oidcServer.Shutdown()
-		require.NoError(t, err)
 	})
 }
