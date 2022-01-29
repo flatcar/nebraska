@@ -201,6 +201,9 @@ type ClientInterface interface {
 	// GetConfig request
 	GetConfig(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// Health request
+	Health(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// Login request
 	Login(ctx context.Context, params *LoginParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -690,6 +693,18 @@ func (c *Client) UpdateInstance(ctx context.Context, instanceID string, body Upd
 
 func (c *Client) GetConfig(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetConfigRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) Health(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewHealthRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -2592,6 +2607,33 @@ func NewGetConfigRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
+// NewHealthRequest generates requests for Health
+func NewHealthRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/health")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewLoginRequest generates requests for Login
 func NewLoginRequest(server string, params *LoginParams) (*http.Request, error) {
 	var err error
@@ -2945,6 +2987,9 @@ type ClientWithResponsesInterface interface {
 
 	// GetConfig request
 	GetConfigWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetConfigResponse, error)
+
+	// Health request
+	HealthWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*HealthResponse, error)
 
 	// Login request
 	LoginWithResponse(ctx context.Context, params *LoginParams, reqEditors ...RequestEditorFn) (*LoginResponse, error)
@@ -3643,6 +3688,27 @@ func (r GetConfigResponse) StatusCode() int {
 	return 0
 }
 
+type HealthResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r HealthResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r HealthResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type LoginResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -4118,6 +4184,15 @@ func (c *ClientWithResponses) GetConfigWithResponse(ctx context.Context, reqEdit
 		return nil, err
 	}
 	return ParseGetConfigResponse(rsp)
+}
+
+// HealthWithResponse request returning *HealthResponse
+func (c *ClientWithResponses) HealthWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*HealthResponse, error) {
+	rsp, err := c.Health(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseHealthResponse(rsp)
 }
 
 // LoginWithResponse request returning *LoginResponse
@@ -4935,6 +5010,22 @@ func ParseGetConfigResponse(rsp *http.Response) (*GetConfigResponse, error) {
 		}
 		response.JSON200 = &dest
 
+	}
+
+	return response, nil
+}
+
+// ParseHealthResponse parses an HTTP response from a HealthWithResponse call
+func ParseHealthResponse(rsp *http.Response) (*HealthResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &HealthResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
 	}
 
 	return response, nil

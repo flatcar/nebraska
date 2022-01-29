@@ -107,6 +107,9 @@ type ServerInterface interface {
 	// (GET /config)
 	GetConfig(ctx echo.Context) error
 
+	// (GET /health)
+	Health(ctx echo.Context) error
+
 	// (GET /login)
 	Login(ctx echo.Context, params LoginParams) error
 
@@ -1188,6 +1191,15 @@ func (w *ServerInterfaceWrapper) GetConfig(ctx echo.Context) error {
 	return err
 }
 
+// Health converts echo context to params.
+func (w *ServerInterfaceWrapper) Health(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.Health(ctx)
+	return err
+}
+
 // Login converts echo context to params.
 func (w *ServerInterfaceWrapper) Login(ctx echo.Context) error {
 	var err error
@@ -1349,6 +1361,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.PUT(baseURL+"/api/apps/:appID/packages/:packageID", wrapper.UpdatePackage)
 	router.PUT(baseURL+"/api/instances/:instanceID", wrapper.UpdateInstance)
 	router.GET(baseURL+"/config", wrapper.GetConfig)
+	router.GET(baseURL+"/health", wrapper.Health)
 	router.GET(baseURL+"/login", wrapper.Login)
 	router.GET(baseURL+"/login/cb", wrapper.LoginCb)
 	router.POST(baseURL+"/login/token", wrapper.LoginToken)
