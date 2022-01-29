@@ -2,6 +2,7 @@ package auth_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -73,6 +74,36 @@ func TestOIDCAuthModeSetup(t *testing.T) {
 	})
 }
 
+var ErrOutOfRetries = errors.New("test: out of retries")
+
+func waitServerReady() (bool, error) {
+	retries := 5
+	for i := 0; i < retries; i++ {
+		if i != 0 {
+			time.Sleep(100 * time.Millisecond)
+		}
+		req, err := http.NewRequest("GET", fmt.Sprintf("%s/health", testServerURL), nil)
+		if err != nil {
+			continue
+		}
+
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			continue
+		}
+
+		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			continue
+		}
+
+		if (http.StatusOK == resp.StatusCode) && ("OK" == string(bodyBytes)) {
+			return true, nil
+		}
+	}
+	fmt.Println(err)
+	return false, ErrOutOfRetries
+}
 func TestLogin(t *testing.T) {
 	t.Run("no_login_redirect_url", func(t *testing.T) {
 		// establish db connection
@@ -90,10 +121,12 @@ func TestLogin(t *testing.T) {
 		//nolint:errcheck
 		go server.Start(serverPortStr)
 
-		time.Sleep(100 * time.Millisecond)
-
+		//nolint:errcheck
 		defer server.Shutdown(context.Background())
 		defer oidcServer.Shutdown()
+
+		_, err = waitServerReady()
+		require.NoError(t, err)
 
 		req, err := http.NewRequest("GET", fmt.Sprintf("%s/login", testServerURL), nil)
 		require.NoError(t, err)
@@ -127,10 +160,13 @@ func TestLogin(t *testing.T) {
 		//nolint:errcheck
 		go server.Start(serverPortStr)
 
-		time.Sleep(100 * time.Millisecond)
+		// time.Sleep(100 * time.Millisecond)
 
 		defer server.Shutdown(context.Background())
 		defer oidcServer.Shutdown()
+
+		_, err = waitServerReady()
+		require.NoError(t, err)
 
 		req, err := http.NewRequest("GET", fmt.Sprintf("%s/login?login_redirect_url=http://localhost:9000", testServerURL), nil)
 		require.NoError(t, err)
@@ -145,7 +181,6 @@ func TestLogin(t *testing.T) {
 
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
 		assert.Contains(t, string(bodyBytes), `Invalid login_redirect_url`)
-
 	})
 
 	t.Run("invalid_oidc_client_id", func(t *testing.T) {
