@@ -88,6 +88,14 @@ paths:
       responses:
         "200":
           description: login webhook response
+  /health:
+    get:
+      operationId: health
+      description: health endpoint
+      security: []
+      responses:
+        "200":
+          description: health response
   /config:
     get:
       operationId: getConfig

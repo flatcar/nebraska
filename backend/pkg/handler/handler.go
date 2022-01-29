@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/xml"
 	"io/ioutil"
+	"net/http"
 	"net/url"
 
 	"github.com/kinvolk/nebraska/backend/pkg/api"
@@ -11,6 +12,7 @@ import (
 	"github.com/kinvolk/nebraska/backend/pkg/omaha"
 	"github.com/kinvolk/nebraska/backend/pkg/util"
 	"github.com/kinvolk/nebraska/backend/pkg/version"
+	"github.com/labstack/echo/v4"
 )
 
 const (
@@ -76,4 +78,8 @@ func New(db *api.API, conf *config.Config, auth auth.Authenticator) (*Handler, e
 	}
 
 	return &Handler{db, omaha.NewHandler(db), conf, clientConfig, auth}, nil
+}
+
+func (h *Handler) Health(ctx echo.Context) error {
+	return ctx.String(http.StatusOK, "OK")
 }
