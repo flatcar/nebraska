@@ -47,6 +47,10 @@ var (
 	}
 )
 
+func handleHealthcheck(c echo.Context) error {
+	return c.String(http.StatusOK, "OK")
+}
+
 // New takes the config and db connection to create the server and returns it.
 func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 	// Setup Echo Server
@@ -107,6 +111,8 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 	}
 
 	e.Static("/", conf.HTTPStaticDir)
+
+	e.GET("/health", handleHealthcheck)
 
 	e.HTTPErrorHandler = func(err error, c echo.Context) {
 		code := http.StatusNotFound
