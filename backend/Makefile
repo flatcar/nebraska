@@ -40,7 +40,8 @@ test-service-down:
 	docker compose -f ./docker-compose.test.yaml down
 
 .PHONY: check-backend-with-container
-check-backend-with-container: test-service-up
+check-backend-with-container: test-service-down
+	$(MAKE) test-service-up
 	go clean -testcache && NEBRASKA_RUN_SERVER_TESTS=1 NEBRASKA_TEST_SERVER_URL="http://localhost:8002" NEBRASKA_DB_URL=$(CONTAINER_NEBRASKA_DB_URL) go test -p 1 ./...
 	$(MAKE) test-service-down
 
