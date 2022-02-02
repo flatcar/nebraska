@@ -2,10 +2,30 @@ package api
 
 import (
 	"database/sql"
+	"fmt"
+	"regexp"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/doug-martin/goqu/v9"
+	"github.com/jmoiron/sqlx"
 	"gopkg.in/guregu/null.v4"
+)
+
+type appsCache map[string]string
+
+var (
+	// cachedApps caches the mapping of apps' product-ids and UUIDs to apps' UUIDs.
+	// The UUID -> UUID seeming redundancy is because this way we can use it to
+	// validate also the UUIDs against existing apps.
+	// It must not be modified directly but replaced (atomically or via lock)
+	// by a new map to prevent data races.
+	// An update must be triggered through clearCachedAppIDs() each time
+	// an apps change. A RW lock was chosen to prevent data
+	// races over the pointer itself.
+	cachedAppIDs      appsCache
+	cachedAppsIDsLock sync.RWMutex
 )
 
 const (
@@ -14,13 +34,14 @@ const (
 
 // Application represents a Nebraska application instance.
 type Application struct {
-	ID          string     `db:"id" json:"id"`
-	Name        string     `db:"name" json:"name"`
-	Description string     `db:"description" json:"description"`
-	CreatedTs   time.Time  `db:"created_ts" json:"created_ts"`
-	TeamID      string     `db:"team_id" json:"-"`
-	Groups      []*Group   `db:"groups" json:"groups"`
-	Channels    []*Channel `db:"channels" json:"channels"`
+	ID          string      `db:"id" json:"id"`
+	ProductID   null.String `db:"product_id" json:"product_id"`
+	Name        string      `db:"name" json:"name"`
+	Description string      `db:"description" json:"description"`
+	CreatedTs   time.Time   `db:"created_ts" json:"created_ts"`
+	TeamID      string      `db:"team_id" json:"-"`
+	Groups      []*Group    `db:"groups" json:"groups"`
+	Channels    []*Channel  `db:"channels" json:"channels"`
 
 	Instances struct {
 		Count int `db:"count" json:"count"`
@@ -29,9 +50,12 @@ type Application struct {
 
 // AddApp registers the provided application.
 func (api *API) AddApp(app *Application) (*Application, error) {
+	if err := validateProductID(app.ProductID); err != nil {
+		return nil, fmt.Errorf("cannot add application %v: %w", app.ID, err)
+	}
 	query, _, err := goqu.Insert("application").
-		Cols("name", "description", "team_id").
-		Vals(goqu.Vals{app.Name, app.Description, app.TeamID}).
+		Cols("name", "product_id", "description", "team_id").
+		Vals(goqu.Vals{app.Name, app.ProductID, app.Description, app.TeamID}).
 		Returning(goqu.T("application").All()).
 		ToSQL()
 	if err != nil {
@@ -42,6 +66,7 @@ func (api *API) AddApp(app *Application) (*Application, error) {
 		return nil, err
 	}
 
+	api.clearCachedAppIDs()
 	return app, nil
 }
 
@@ -90,17 +115,51 @@ func (api *API) AddAppCloning(app *Application, sourceAppID string) (*Applicatio
 			}
 		}
 	}
-
+	// Even though AddApp will invalidate the cache, we need to do it again here
+	// to prevent eventual race issues.
+	api.clearCachedAppIDs()
 	return app, nil
+}
+
+func validateProductID(productID null.String) error {
+	if productID.Ptr() == nil {
+		return nil
+	}
+
+	if len(*productID.Ptr()) > 155 {
+		return fmt.Errorf("product ID %v is not valid (max length 155)", *productID.Ptr())
+	}
+
+	// This regex matches an ID that matches
+	// * At least two segments.
+	// * All characters must be alphanumeric, a dash.
+	// Each segment must start with a letter.
+	// Each segment must not end with a dash.
+	regMatcher := "^[a-zA-Z]+([a-zA-Z0-9\\-]*[a-zA-Z0-9])*(\\.[a-zA-Z]+([a-zA-Z0-1\\-]*[a-zA-Z0-9])*)+$"
+	matches, err := regexp.MatchString(regMatcher, *productID.Ptr())
+	if err != nil {
+		return err
+	}
+
+	if !matches {
+		return fmt.Errorf("product ID %v is not valid (has to be in the form e.g. io.example.App)", *productID.Ptr())
+	}
+
+	return nil
 }
 
 // UpdateApp updates an existing application using the content of the
 // application provided.
 func (api *API) UpdateApp(app *Application) error {
+	if err := validateProductID(app.ProductID); err != nil {
+		return fmt.Errorf("cannot add application %v: %w", app.ID, err)
+	}
+
 	query, _, err := goqu.Update("application").
 		Set(
 			goqu.Record{
 				"name":        app.Name,
+				"product_id":  app.ProductID,
 				"description": app.Description,
 			},
 		).
@@ -120,12 +179,19 @@ func (api *API) UpdateApp(app *Application) error {
 	if rowsAffected == 0 {
 		return ErrNoRowsAffected
 	}
+
+	api.clearCachedAppIDs()
 	return nil
 }
 
 // DeleteApp removes the application identified by the id provided.
 func (api *API) DeleteApp(appID string) error {
-	query, _, err := goqu.Delete("application").Where(goqu.C("id").Eq(appID)).ToSQL()
+	realAppID, err := api.GetAppID(appID)
+	if err != nil {
+		return err
+	}
+
+	query, _, err := goqu.Delete("application").Where(goqu.C("id").Eq(realAppID)).ToSQL()
 	if err != nil {
 		return err
 	}
@@ -141,14 +207,20 @@ func (api *API) DeleteApp(appID string) error {
 		return ErrNoRowsAffected
 	}
 
+	api.clearCachedAppIDs()
 	return nil
 }
 
 // GetApp returns the application identified by the id provided.
 func (api *API) GetApp(appID string) (*Application, error) {
+	realAppID, err := api.GetAppID(appID)
+	if err != nil {
+		return nil, err
+	}
+
 	var app Application
 	query, _, err := goqu.From("application").
-		Where(goqu.C("id").Eq(appID)).ToSQL()
+		Where(goqu.C("id").Eq(realAppID)).ToSQL()
 	if err != nil {
 		return nil, err
 	}
@@ -172,6 +244,11 @@ func (api *API) GetApp(appID string) (*Application, error) {
 		return nil, err
 	}
 	return &app, nil
+}
+
+func (api *API) GetAppsCount(teamID string) (int, error) {
+	query := goqu.From("application").Where(goqu.C("team_id").Eq(teamID)).Select(goqu.L("count(*)"))
+	return api.GetCountQuery(query)
 }
 
 // GetApps returns all applications that belong to the team id provided.
@@ -222,13 +299,91 @@ func (api *API) GetApps(teamID string, page, perPage uint64) ([]*Application, er
 	return apps, nil
 }
 
+// clearCachedAppIDs invalidates the cached app IDs in cachedApps and
+// must be called whenever the apps entries are modified.
+func (api *API) clearCachedAppIDs() {
+	cachedAppsIDsLock.Lock()
+	cachedAppIDs = nil
+	// Generating the map is not always possible here because the database
+	// can be closed.
+	cachedAppsIDsLock.Unlock()
+}
+
+func (api *API) GetAppID(appOrProductID string) (string, error) {
+	var cachedAppsRef appsCache
+	cachedAppsIDsLock.RLock()
+	if cachedAppIDs != nil {
+		// Keep a reference to the map that we found.
+		cachedAppsRef = cachedAppIDs
+	}
+	cachedAppsIDsLock.RUnlock()
+
+	// Generate map on startup or if invalidated.
+	if cachedAppsRef == nil {
+		cachedAppsIDsLock.Lock()
+		cachedAppsRef = cachedAppIDs
+
+		if cachedAppsRef == nil {
+			cachedAppIDs = make(appsCache)
+
+			query, _, err := goqu.From("application").ToSQL()
+
+			var rows *sqlx.Rows
+			if err == nil {
+				rows, err = api.db.Queryx(query)
+			}
+
+			if err == nil {
+				defer rows.Close()
+				for rows.Next() {
+					app := Application{}
+					err := rows.StructScan(&app)
+					if err != nil {
+						logger.Warn().Err(err).Msg("Failed to read app from DB")
+					}
+
+					if prodIDPtr := app.ProductID.Ptr(); prodIDPtr != nil {
+						// lower case so lookups are case insensitive
+						prodIDLower := strings.ToLower(*prodIDPtr)
+						cachedAppIDs[prodIDLower] = app.ID
+					}
+
+					// So we can quickly validate the UUID based IDs
+					cachedAppIDs[app.ID] = app.ID
+				}
+			} else {
+				logger.Error().Err(err).Msg("Failed to get apps")
+			}
+
+			cachedAppsRef = cachedAppIDs
+		}
+		cachedAppsIDsLock.Unlock()
+	}
+
+	// Trim space and the {} that may surround the ID
+	appIDNoBrackets := strings.TrimSpace(appOrProductID)
+	lastIdx := len(appIDNoBrackets) - 1
+	if len(appIDNoBrackets) > 2 && appIDNoBrackets[0] == '{' && appIDNoBrackets[lastIdx] == '}' {
+		appIDNoBrackets = strings.TrimSpace(appIDNoBrackets[1:lastIdx])
+	}
+
+	// Case insensitive, so use lower case as key
+	appIDNoBrackets = strings.ToLower(appIDNoBrackets)
+
+	cachedAppID, ok := cachedAppsRef[appIDNoBrackets]
+	if !ok {
+		return "", fmt.Errorf("no app found for ID %v", appOrProductID)
+	}
+	return cachedAppID, nil
+}
+
 // appsQuery returns a SelectDataset prepared to return all applications.
 // This query is meant to be extended later in the methods using it to filter
 // by a specific application id, all applications that belong to a given team,
 // specify how to query the rows or their destination.
 func (api *API) appsQuery() *goqu.SelectDataset {
 	query := goqu.From("application").
-		Select("id", "name", "description", "created_ts").
+		Select("id", "product_id", "name", "description", "created_ts").
 		Order(goqu.I("created_ts").Desc())
 	return query
 }

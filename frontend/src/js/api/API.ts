@@ -16,6 +16,10 @@ import {
   VersionBreakdownEntry,
 } from './apiDataTypes';
 
+type WithCount<T> = T & {
+  count: number;
+};
+
 const MAIN_PROGRESS_BAR = 'main_progress_bar';
 const BASE_URL = '/api';
 type REQUEST_DATA_TYPE =
@@ -32,7 +36,7 @@ type REQUEST_DATA_TYPE =
 class API {
   // Applications
 
-  static getApplications(): Promise<Application[]> {
+  static getApplications(): Promise<WithCount<{ applications: Application[] }>> {
     return API.getJSON(BASE_URL + '/apps');
   }
 
@@ -47,7 +51,7 @@ class API {
   }
 
   static createApplication(
-    applicationData: { name: string; description: string },
+    applicationData: Pick<Application, 'name' | 'description' | 'product_id'>,
     clonedFromAppID: string
   ): Promise<Application> {
     let url = BASE_URL + '/apps';
@@ -138,8 +142,8 @@ class API {
   }
 
   // Packages
-  static getPackages(applicationID: string): Promise<Package[]> {
-    const url = BASE_URL + '/apps/' + applicationID + '/packages/';
+  static getPackages(applicationID: string): Promise<WithCount<{ packages: Package[] }>> {
+    const url = BASE_URL + '/apps/' + applicationID + '/packages';
 
     return API.doRequest('GET', url);
   }
@@ -187,7 +191,9 @@ class API {
   ): Promise<number> {
     const url = `${BASE_URL}/apps/${applicationID}/groups/${groupID}/instancescount?duration=${duration}`;
 
-    return API.getJSON(url);
+    return new Promise(resolve =>
+      API.getJSON(url).then((response: { count: number }) => resolve(response.count))
+    );
   }
 
   static getInstance(
@@ -227,7 +233,7 @@ class API {
 
   // Activity
 
-  static getActivity(): Promise<Activity[]> {
+  static getActivity(): Promise<WithCount<{ activities: Activity[] }>> {
     const currentDate = new Date();
     const now = currentDate.toISOString();
     currentDate.setDate(currentDate.getDate() - 7);
@@ -299,12 +305,12 @@ class API {
     PubSub.publish(MAIN_PROGRESS_BAR, 'add');
     const nebraska_config = localStorage.getItem(CONFIG_STORAGE_KEY) || '{}';
     const config = JSON.parse(nebraska_config) || {};
-    let headers = {};
+    const headers: { [key: string]: string } = {
+      'Content-Type': 'application/json',
+    };
 
     if (Object.keys(config).length > 0 && config.auth_mode === 'oidc') {
-      headers = {
-        Authorization: `Bearer ${token}`,
-      };
+      headers['Authorization'] = `Bearer ${token}`;
     }
     let fetchConfigObject: {
       method: string;

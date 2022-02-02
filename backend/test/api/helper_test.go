@@ -3,6 +3,7 @@ package api_test
 import (
 	"encoding/json"
 	"encoding/xml"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"math/rand"
@@ -83,6 +84,9 @@ func httpDo(t *testing.T, url string, method string, payload io.Reader, statusco
 	require.NoError(t, err)
 	require.NotNil(t, req)
 
+	req.Header = http.Header{
+		"Content-Type": []string{fmt.Sprintf("application/%s", responseType)},
+	}
 	resp, err := http.DefaultClient.Do(req)
 	require.NoError(t, err)
 	require.NotNil(t, resp)

@@ -11,18 +11,14 @@ import (
 	"time"
 
 	"github.com/coreos/go-oidc/v3/oidc"
-	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/labstack/echo/v4"
 	glob "github.com/ryanuber/go-glob"
 	"github.com/tidwall/gjson"
 	"golang.org/x/oauth2"
 
-	"github.com/kinvolk/nebraska/backend/cmd/nebraska/ginhelpers"
 	"github.com/kinvolk/nebraska/backend/pkg/sessions"
-	ginsessions "github.com/kinvolk/nebraska/backend/pkg/sessions/gin"
-	"github.com/kinvolk/nebraska/backend/pkg/sessions/memcache"
-	memcachegob "github.com/kinvolk/nebraska/backend/pkg/sessions/memcache/gob"
-	"github.com/kinvolk/nebraska/backend/pkg/sessions/securecookie"
+	echosessions "github.com/kinvolk/nebraska/backend/pkg/sessions/echo"
 )
 
 const (
@@ -47,10 +43,9 @@ type OIDCAuthConfig struct {
 	ValidRedirectURLs []string
 	AdminRoles        []string
 	ViewerRoles       []string
-	SessionAuthKey    []byte
-	SessionCryptKey   []byte
 	RolesPath         string
 	Scopes            []string
+	SessionStore      *sessions.Store
 }
 
 type oidcAuth struct {
@@ -59,6 +54,7 @@ type oidcAuth struct {
 	oauthConfig       *oauth2.Config
 	defaultTeamID     string
 	clientID          string    // OIDC Client ID
+	clientSecret      string    // OIDC Client Secret
 	issuerURL         string    // OIDC Issuer URL
 	callbackURL       string    // OIDC Callback URL, should be configured in OIDC provider. Default value is: http://localhost:8000/login/cb
 	validRedirectURLs []string  // List of valid redirect URLs that the browser can redirect to after successful login
@@ -70,14 +66,26 @@ type oidcAuth struct {
 	sessionStore      *sessions.Store
 }
 
-func NewOIDCAuthenticator(config *OIDCAuthConfig) Authenticator {
+// OIDCTokenProviderResp is used to bind response from OIDC provider password grant_type
+type OIDCTokenProviderResp struct {
+	AccessToken      string `json:"access_token"`
+	ExpiresIn        int    `json:"expires_in"`
+	RefreshExpiresIn int    `json:"refresh_expires_in"`
+	RefreshToken     string `json:"refresh_token"`
+	TokenType        string `json:"token_type"`
+	IDToken          string `json:"id_token"`
+	NotBeforePolicy  int    `json:"not-before-policy"`
+	SessionState     string `json:"session_state"`
+	Scope            string `json:"scope"`
+}
+
+func NewOIDCAuthenticator(config *OIDCAuthConfig) (Authenticator, error) {
 	ctx := context.Background()
 
 	// setup oidc provider
 	provider, err := oidc.NewProvider(ctx, config.IssuerURL)
 	if err != nil {
-		logger.Error().AnErr("error", err).Msg("Error setting up oidc provider")
-		return nil
+		return nil, fmt.Errorf("Error setting up oidc provider: %w", err)
 	}
 
 	oidcProviderConfig := &oidc.Config{
@@ -98,17 +106,13 @@ func NewOIDCAuthenticator(config *OIDCAuthConfig) Authenticator {
 	// state map is used keep track of login and callback requests
 	var stateMap sync.Map
 
-	// setup session store
-	cache := memcache.New(memcachegob.New())
-	codec := securecookie.New(config.SessionAuthKey, config.SessionCryptKey)
-	sessionStore := sessions.NewStore(cache, codec)
-
 	oidcAuthenticator := &oidcAuth{
 		provider:          provider,
 		verifier:          verifier,
 		oauthConfig:       oauthConfig,
 		defaultTeamID:     config.DefaultTeamID,
 		clientID:          config.ClientID,
+		clientSecret:      config.ClientSecret,
 		issuerURL:         config.IssuerURL,
 		callbackURL:       config.CallbackURL,
 		validRedirectURLs: config.ValidRedirectURLs,
@@ -117,7 +121,7 @@ func NewOIDCAuthenticator(config *OIDCAuthConfig) Authenticator {
 		scopes:            config.Scopes,
 		stateMap:          &stateMap,
 		rolesPath:         config.RolesPath,
-		sessionStore:      sessionStore,
+		sessionStore:      config.SessionStore,
 	}
 
 	stateTicker := time.NewTicker(stateCleanupDuration)
@@ -129,63 +133,59 @@ func NewOIDCAuthenticator(config *OIDCAuthConfig) Authenticator {
 		}
 	}()
 
-	return oidcAuthenticator
+	return oidcAuthenticator, nil
 }
 
-func (oa *oidcAuth) SetupRouter(router ginhelpers.Router) {
-	router.Use(ginsessions.SessionsMiddleware(oa.sessionStore, "oidc"))
-	oidcRouter := router.Group("/login", "oidc")
-	oidcRouter.GET("/cb", oa.loginCb)
-	oidcRouter.GET("/", oa.login)
-	oidcRouter.GET("/validate_token", oa.validateToken)
+func (oa *oidcAuth) SetupRouter(router *echo.Echo) {
+	router.Use(echosessions.SessionsMiddleware(oa.sessionStore, "oidc"))
 }
 
-func (oa *oidcAuth) validateToken(c *gin.Context) {
-	ctx := c.Request.Context()
+func (oa *oidcAuth) ValidateToken(c echo.Context) error {
+	ctx := c.Request().Context()
 
 	// set request id in response header
-	requestID := c.Writer.Header().Get("X-Request-ID")
+	requestID := c.Response().Writer.Header().Get("X-Request-ID")
 
 	// Check is the id token exists in the request
 	token := tokenFromRequest(c)
 	if token == "" {
 		logger.Debug().Str("request_id", requestID).Msg("ValidateToken, Authorization header is empty")
 		httpError(c, http.StatusUnauthorized)
-		return
+		return nil
 	}
 
 	// If refresh token is not available in the session
 	// mark the request as unauthorized so that the session
 	// can be recreated with refresh_token
-	session := ginsessions.GetSession(c)
+	session := echosessions.GetSession(c)
 	refreshToken := session.Get("refresh_token")
 	if refreshToken == nil {
 		logger.Debug().Str("request_id", requestID).Msg("ValidateToken, Refresh token not found in session")
 		httpError(c, http.StatusUnauthorized)
-		return
+		return nil
 	}
 
 	_, err := oa.verifier.Verify(ctx, token)
 	if err != nil {
 		logger.Error().Str("request_id", requestID).AnErr("error", err).Msg("ValidateToken, Token verification error")
 		httpError(c, http.StatusUnauthorized)
-		return
+		return nil
 	}
-	c.JSON(http.StatusOK, map[string]bool{"valid": true})
+	return c.JSON(http.StatusOK, map[string]bool{"valid": true})
 }
 
-func (oa *oidcAuth) loginCb(c *gin.Context) {
+func (oa *oidcAuth) LoginCb(c echo.Context) error {
 	// get request id from response header
-	requestID := c.Writer.Header().Get("X-Request-ID")
+	requestID := c.Response().Writer.Header().Get("X-Request-ID")
 
 	// Validate State received from provider
-	state := c.Request.URL.Query().Get("state")
+	state := c.Request().URL.Query().Get("state")
 
 	rurl, ok := oa.stateMap.Load(state)
 	if !ok {
 		logger.Error().Str("request_id", requestID).Msg("Returned state not found in state map")
 		httpError(c, http.StatusInternalServerError)
-		return
+		return nil
 	}
 
 	// delete state from map as the callback is processed.
@@ -196,15 +196,15 @@ func (oa *oidcAuth) loginCb(c *gin.Context) {
 	if !ok {
 		logger.Error().Str("request_id", requestID).Msg("Cannot get stateMessage from state value")
 		httpError(c, http.StatusInternalServerError)
-		return
+		return nil
 	}
 
 	// Exchange code for token from oidc provider
-	token, err := oa.oauthConfig.Exchange(c.Request.Context(), c.Request.URL.Query().Get("code"))
+	token, err := oa.oauthConfig.Exchange(c.Request().Context(), c.Request().URL.Query().Get("code"))
 	if err != nil {
 		logger.Error().Str("request_id", requestID).AnErr("error", err).Msg("Can't exchange code for token")
 		httpError(c, http.StatusInternalServerError)
-		return
+		return nil
 	}
 
 	// Extract id_token from claims
@@ -212,17 +212,17 @@ func (oa *oidcAuth) loginCb(c *gin.Context) {
 	if !ok {
 		logger.Error().Str("request_id", requestID).Msg("Token doesn't contain ID Token")
 		httpError(c, http.StatusInternalServerError)
-		return
+		return nil
 	}
-	oidcToken, err := oa.verifier.Verify(c.Request.Context(), idToken)
+	oidcToken, err := oa.verifier.Verify(c.Request().Context(), idToken)
 	if err != nil {
 		logger.Error().Str("request_id", requestID).AnErr("error", err).Msg("Can't verify the token")
 		httpError(c, http.StatusInternalServerError)
-		return
+		return nil
 	}
 
 	// Store refresh_token in session
-	session := ginsessions.GetSession(c)
+	session := echosessions.GetSession(c)
 	session.Set("refresh_token", token.RefreshToken)
 	session.Set("username", oidcToken.Subject)
 	sessionSave(c, session, "login_cb")
@@ -232,17 +232,18 @@ func (oa *oidcAuth) loginCb(c *gin.Context) {
 	if err != nil {
 		logger.Error().Str("request_id", requestID).Msg(fmt.Sprintf("Invalid redirect URL: %s", rurl))
 		httpError(c, http.StatusBadRequest)
-		return
+		return nil
 	}
 	q := redirectURL.Query()
 	q.Set("id_token", idToken)
 	redirectURL.RawQuery = q.Encode()
 	redirectTo(c, redirectURL.String())
+	return nil
 }
 
-func (oa *oidcAuth) login(c *gin.Context) {
+func (oa *oidcAuth) Login(c echo.Context) error {
 	// check if login_redirect_url is present in query params
-	loginRedirectURL := c.Request.URL.Query().Get("login_redirect_url")
+	loginRedirectURL := c.Request().URL.Query().Get("login_redirect_url")
 	isValidRedirect := false
 	for _, redirectURL := range oa.validRedirectURLs {
 		if glob.Glob(redirectURL, loginRedirectURL) {
@@ -252,15 +253,13 @@ func (oa *oidcAuth) login(c *gin.Context) {
 	}
 
 	if !isValidRedirect {
-		c.String(http.StatusBadRequest, "Invalid login_redirect_url")
-		return
+		return c.String(http.StatusBadRequest, "Invalid login_redirect_url")
 	}
 
 	// Generate AuthURL of the OIDC provider
 	authURL, err := url.Parse(oa.provider.Endpoint().AuthURL)
 	if err != nil {
-		c.String(http.StatusInternalServerError, "Invalid Auth Endpoint by Provider")
-		return
+		return c.String(http.StatusInternalServerError, "Invalid Auth Endpoint by Provider")
 	}
 	// Generate state to validate callback from provider
 	state := uuid.New().String()
@@ -283,16 +282,63 @@ func (oa *oidcAuth) login(c *gin.Context) {
 
 	// Redirect to generated AuthURL
 	redirectTo(c, authURL.String())
+	return nil
+}
+
+func (oa *oidcAuth) LoginToken(c echo.Context) error {
+	requestID := c.Response().Writer.Header().Get("X-Request-ID")
+
+	resp, err := http.PostForm(oa.provider.Endpoint().TokenURL, url.Values{
+		"client_id":     {oa.clientID},
+		"client_secret": {oa.clientSecret},
+		"grant_type":    {"password"},
+		"scope":         {strings.Join(oa.scopes, " ")},
+		"username":      {c.Request().FormValue("username")},
+		"password":      {c.Request().FormValue("password")},
+	})
+	if err != nil {
+		logger.Err(err).Str("request_id", requestID).Msg("OIDC provider password grant_type error")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		logger.Error().Str("request_id", requestID).Msgf("Invalid response code %d from OIDC provider for password grant_type", resp.StatusCode)
+		return c.NoContent(http.StatusInternalServerError)
+	}
+	var oidcTokenResp OIDCTokenProviderResp
+
+	respDecoder := json.NewDecoder(resp.Body)
+	err = respDecoder.Decode(&oidcTokenResp)
+	if err != nil {
+		logger.Err(err).Str("request_id", requestID).Msg("Can't parse response from OIDC provider for password grant_type")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	oidcToken, err := oa.verifier.Verify(c.Request().Context(), oidcTokenResp.IDToken)
+	if err != nil {
+		logger.Error().Str("request_id", requestID).AnErr("error", err).Msg("Can't verify the token returned for password grant_type")
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	// Store refresh_token in session
+	session := echosessions.GetSession(c)
+	session.Set("refresh_token", oidcTokenResp.RefreshToken)
+	session.Set("username", oidcToken.Subject)
+	sessionSave(c, session, "login_token")
+
+	return c.JSON(http.StatusOK, map[string]string{
+		"token": oidcTokenResp.AccessToken,
+	})
 }
 
 // tokenFromRequest extracts token from request header. If Authorization header is not present returns id_token query param .
-func tokenFromRequest(c *gin.Context) string {
-	token := c.Request.Header.Get("Authorization")
+func tokenFromRequest(c echo.Context) string {
+	token := c.Request().Header.Get("Authorization")
 	split := strings.Split(token, " ")
 	if len(split) == 2 && split[0] == "Bearer" {
 		return split[1]
 	}
-	return c.Request.URL.Query().Get("id_token")
+	return c.Request().URL.Query().Get("id_token")
 }
 
 // rolesFromToken extracts roles from a token. Returns empty array if not present.
@@ -316,11 +362,11 @@ func rolesFromToken(token *oidc.IDToken, rolesPath string) ([]string, error) {
 	return roles, nil
 }
 
-func (oa *oidcAuth) Authenticate(c *gin.Context) (teamID string, replied bool) {
-	ctx := c.Request.Context()
+func (oa *oidcAuth) Authenticate(c echo.Context) (teamID string, replied bool) {
+	ctx := c.Request().Context()
 
 	// get request id from response header
-	requestID := c.Writer.Header().Get("X-Request-ID")
+	requestID := c.Response().Writer.Header().Get("X-Request-ID")
 
 	// Check if the id token exists in the request
 	token := tokenFromRequest(c)
@@ -333,7 +379,7 @@ func (oa *oidcAuth) Authenticate(c *gin.Context) (teamID string, replied bool) {
 	// If refresh token is not available in the session
 	// mark the request as unauthorized so that the session
 	// can be recreated with refresh_token
-	session := ginsessions.GetSession(c)
+	session := echosessions.GetSession(c)
 	refreshToken := session.Get("refresh_token")
 	if refreshToken == nil {
 		logger.Debug().Str("request_id", requestID).Msg("Refresh token not found in session")
@@ -361,7 +407,7 @@ func (oa *oidcAuth) Authenticate(c *gin.Context) (teamID string, replied bool) {
 				httpError(c, http.StatusInternalServerError)
 				return "", true
 			}
-			c.Writer.Header().Set("id_token", idToken)
+			c.Response().Writer.Header().Set("id_token", idToken)
 			session.Set("refresh_token", newToken.RefreshToken)
 			tk, err = oa.verifier.Verify(ctx, idToken)
 			if err != nil {
@@ -411,7 +457,7 @@ checkloop:
 		httpError(c, http.StatusForbidden)
 		return "", true
 	} else if accessLevel != "admin" {
-		if c.Request.Method != "HEAD" && c.Request.Method != "GET" {
+		if c.Request().Method != "HEAD" && c.Request().Method != "GET" {
 			logger.Error().Str("request_id", requestID).Msg("User doesn't have admin access")
 			httpError(c, http.StatusForbidden)
 			return "", true
@@ -435,4 +481,25 @@ func (oa *oidcAuth) cleanState() {
 		}
 		return true
 	})
+}
+
+func (oa *oidcAuth) LoginWebhook(ctx echo.Context) error {
+	return ctx.NoContent(http.StatusNotImplemented)
+}
+
+func httpError(c echo.Context, status int) {
+	//nolint:errcheck
+	c.NoContent(status)
+}
+
+func redirectTo(c echo.Context, where string) {
+	//nolint:errcheck
+	c.Redirect(http.StatusTemporaryRedirect, where)
+}
+
+func sessionSave(c echo.Context, session *sessions.Session, msg string) {
+	if err := echosessions.SaveSession(c, session); err != nil {
+		logger.Error().Err(err).Str("failed to save the session", msg).Send()
+		httpError(c, http.StatusInternalServerError)
+	}
 }

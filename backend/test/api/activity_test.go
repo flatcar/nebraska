@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/kinvolk/nebraska/backend/pkg/api"
+	"github.com/kinvolk/nebraska/backend/pkg/codegen"
 )
 
 func TestListActivity(t *testing.T) {
@@ -30,13 +31,17 @@ func TestListActivity(t *testing.T) {
 		method := "GET"
 
 		// response
-		var activities []api.Activity
+		var activityResp codegen.ActivityPage
 
-		httpDo(t, url, method, nil, http.StatusOK, "json", &activities)
+		httpDo(t, url, method, nil, http.StatusOK, "json", &activityResp)
+
+		activities := activityResp.Activities
 
 		assert.Equal(t, len(activitiesDB), len(activities))
-		assert.Equal(t, activitiesDB[0].AppID, activities[0].AppID)
-		assert.Equal(t, activitiesDB[0].GroupID, activities[0].GroupID)
-		assert.Equal(t, activitiesDB[0].GroupName, activities[0].GroupName)
+		for i := range activitiesDB {
+			assert.Equal(t, activitiesDB[i].AppID.String, activities[i].AppID)
+			assert.Equal(t, activitiesDB[i].GroupID.String, activities[i].GroupID)
+			assert.Equal(t, activitiesDB[i].GroupName.String, activities[i].GroupName)
+		}
 	})
 }

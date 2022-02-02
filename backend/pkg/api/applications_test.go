@@ -60,6 +60,51 @@ func TestAddAppCloning(t *testing.T) {
 
 	_, err = a.AddAppCloning(&Application{Name: "app2", TeamID: tTeam.ID}, "")
 	assert.NoError(t, err, "Using an empty source app id when cloning has the same effect as not cloning.")
+
+	_, err = a.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("io.invalid. Name")})
+	assert.Error(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("1io.invalid.Name")})
+	assert.Error(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("")})
+	assert.Error(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("io.invalid-.Name")})
+	assert.Error(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("io.invalid_.Name")})
+	assert.Error(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("io.valid.Name")})
+	assert.NoError(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp2", TeamID: tTeam.ID, ProductID: null.StringFrom("io.valid.New-Name")})
+	assert.NoError(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp3", TeamID: tTeam.ID, ProductID: null.StringFrom("io2.valid12.New-Name")})
+	assert.NoError(t, err)
+
+	_, err = a.AddApp(&Application{Name: "productIDApp4", TeamID: tTeam.ID, ProductID: null.StringFrom("io.invalid.New_Name")})
+	assert.Error(t, err)
+
+	tooLongName := `io.` +
+		`loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong` +
+		`loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong` +
+		`loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong` +
+		`loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong.example.com`
+
+	_, err = a.AddApp(&Application{Name: "productIDApp5", TeamID: tTeam.ID, ProductID: null.StringFrom(tooLongName)})
+	assert.Error(t, err)
+
+	_, err = a.AddApp(
+		&Application{
+			Name:      "productIDApp4",
+			TeamID:    tTeam.ID,
+			ProductID: null.StringFrom("io.VALID.Name"),
+		},
+	)
+	assert.Error(t, err, "duplicate name because it is case insensitive")
 }
 
 func TestUpdateApp(t *testing.T) {
@@ -109,7 +154,8 @@ func TestGetApp(t *testing.T) {
 	defer a.Close()
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tApp, err := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	assert.NoError(t, err)
 	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID})
 	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	_, _ = a.RegisterInstance(uuid.New().String(), "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
@@ -117,11 +163,32 @@ func TestGetApp(t *testing.T) {
 	app, err := a.GetApp(tApp.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, tApp.Name, app.Name)
+	assert.False(t, tApp.ProductID.Valid)
 	assert.Equal(t, tChannel.Name, app.Channels[0].Name)
 	assert.Equal(t, 1, app.Instances.Count)
 
 	_, err = a.GetApp(uuid.New().String())
 	assert.Error(t, err, "Trying to get non existent app.")
+
+	tApp1, err := a.AddApp(&Application{Name: "test_app1", ProductID: null.StringFrom("io.kinvolk.MyNewApp"), TeamID: tTeam.ID})
+	assert.NoError(t, err)
+	assert.NotEqual(t, null.StringFrom(""), tApp1.ProductID)
+
+	app, err = a.GetApp(tApp1.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, tApp1.Name, app.Name)
+
+	app, err = a.GetApp(*tApp1.ProductID.Ptr())
+	assert.NoError(t, err)
+	assert.Equal(t, tApp1.ProductID, app.ProductID)
+
+	// App with same product_id
+	_, err = a.AddApp(&Application{Name: "test_app2", ProductID: null.StringFrom("io.kinvolk.MyNewApp"), TeamID: tTeam.ID})
+	assert.Error(t, err)
+
+	// App with a default product_id, to test the constraint is not limiting too much
+	_, err = a.AddApp(&Application{Name: "test_app3", TeamID: tTeam.ID})
+	assert.NoError(t, err)
 }
 
 func TestGetApps(t *testing.T) {
@@ -142,6 +209,71 @@ func TestGetApps(t *testing.T) {
 
 	_, err = a.GetApps(uuid.New().String(), 0, 0)
 	assert.NoError(t, err, "should not have any error for non existing appID")
+}
+
+func TestGetAppIDs(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
+	tApp1, _ := a.AddApp(&Application{Name: "test_app1", TeamID: tTeam.ID})
+	tApp2, _ := a.AddApp(&Application{Name: "test_app2", TeamID: tTeam.ID, ProductID: null.StringFrom("io.kinvolk.MyApp2")})
+
+	apps, err := a.GetApps(tTeam.ID, 0, 0)
+	assert.NoError(t, err)
+	assert.Equal(t, 2, len(apps))
+	assert.Equal(t, tApp1.Name, apps[1].Name)
+	assert.Equal(t, tApp2.Name, apps[0].Name)
+
+	app1ID, err := a.GetAppID(tApp1.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, tApp1.ID, app1ID)
+
+	app2ID, err := a.GetAppID(tApp2.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, tApp2.ID, app2ID)
+
+	_, err = a.GetAppID("io.kinvolk.InvalidApp")
+	assert.Error(t, err)
+
+	_, err = a.GetAppID("")
+	assert.Error(t, err)
+
+	_, err = a.GetAppID("{")
+	assert.Error(t, err)
+
+	app2ID, err = a.GetAppID("io.kinvolk.MyApp2")
+	assert.NoError(t, err)
+	assert.Equal(t, tApp2.ID, app2ID)
+
+	tApp3, err := a.AddApp(&Application{Name: "test_app3", TeamID: tTeam.ID, ProductID: null.StringFrom("io.kinvolk.MyApp3")})
+	assert.NoError(t, err)
+
+	app3ID, err := a.GetAppID("io.kinvolk.MyApp3")
+	assert.NoError(t, err)
+	assert.Equal(t, tApp3.ID, app3ID)
+
+	tApp2.ProductID = null.StringFrom("io.kinvolk.App")
+	err = a.UpdateApp(tApp2)
+	assert.NoError(t, err)
+
+	_, err = a.GetAppID("io.kinvolk.MyApp2")
+	assert.Error(t, err)
+	assert.Equal(t, tApp2.ID, app2ID)
+
+	app2ID, err = a.GetAppID("io.kinvolk.App")
+	assert.NoError(t, err)
+	assert.Equal(t, tApp2.ID, app2ID)
+
+	wrappedInBrackets := "{io.kinvolk.App}"
+	app2ID, err = a.GetAppID(wrappedInBrackets)
+	assert.NoError(t, err)
+	assert.Equal(t, tApp2.ID, app2ID)
+
+	caseInsensitive := "io.Kinvolk.app"
+	app2ID, err = a.GetAppID(caseInsensitive)
+	assert.NoError(t, err)
+	assert.Equal(t, tApp2.ID, app2ID)
 }
 
 func TestGetAppsFiltered(t *testing.T) {

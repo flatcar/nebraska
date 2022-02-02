@@ -23,6 +23,7 @@ import (
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/kinvolk/nebraska/backend/pkg/api"
+	"github.com/kinvolk/nebraska/backend/pkg/config"
 	"github.com/kinvolk/nebraska/backend/pkg/util"
 )
 
@@ -72,6 +73,31 @@ type Config struct {
 	PackagesURL       string
 	FlatcarUpdatesURL string
 	CheckFrequency    time.Duration
+}
+
+// Setup creates a new syncer from config and db connection, and returns it.
+func Setup(conf *config.Config, db *api.API) (*Syncer, error) {
+	checkFrequency, err := time.ParseDuration(conf.CheckFrequencyVal)
+	if err != nil {
+		return nil, fmt.Errorf("Invalid Check Frequency value: %w", err)
+	}
+
+	if conf.SyncerPkgsURL == "" && conf.HostFlatcarPackages {
+		conf.SyncerPkgsURL = conf.NebraskaURL + "/flatcar/"
+	}
+
+	syncer, err := New(&Config{
+		API:               db,
+		HostPackages:      conf.HostFlatcarPackages,
+		PackagesPath:      conf.FlatcarPackagesPath,
+		PackagesURL:       conf.SyncerPkgsURL,
+		FlatcarUpdatesURL: conf.FlatcarUpdatesURL,
+		CheckFrequency:    checkFrequency,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("Error setting up syncer: %w", err)
+	}
+	return syncer, nil
 }
 
 // New creates a new Syncer instance.
