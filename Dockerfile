@@ -1,4 +1,4 @@
-FROM golang:1.16-alpine as nebraska-build
+FROM golang:1.17-alpine as nebraska-build
 
 ARG NEBRASKA_VERSION=""
 
