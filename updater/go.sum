@@ -463,7 +463,6 @@ github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88/go.mod h1:3w7q
 github.com/karrick/godirwalk v1.15.8 h1:7+rWAZPn9zuRxaIqqT8Ohs2Q2Ac0msBqwRdxNCr2VVs=
 github.com/karrick/godirwalk v1.15.8/go.mod h1:j4mkqPuvaLI8mp1DroR3P6ad7cyYd4c1qeJ3RV7ULlk=
 github.com/kevinburke/go-bindata v3.22.0+incompatible/go.mod h1:/pEEZ72flUW2p0yi30bslSp9YqD9pysLxunQDdb2CPM=
-github.com/kinvolk/go-omaha v0.0.1 h1:/h9tGiCxnk4h//Vhzg5VniEe8CtLz2SBwD7X06Rt/dg=
 github.com/kinvolk/go-omaha v0.0.1/go.mod h1:iEx6ZzqUoKoGQvQuLqI9fgQ8MbaZVstj2y+g7/nJwgE=
 github.com/kinvolk/go-omaha v0.0.2-0.20210913111157-799c84c6ec9e h1:TGZGADjEDEe7NNDXlABfXqCTjMj6WGWdC+RGBUzGdfg=
 github.com/kinvolk/go-omaha v0.0.2-0.20210913111157-799c84c6ec9e/go.mod h1:SAEkKv9dpmCAVA3KxGdlHMoO4VaCAfIZuui57PqGQbg=
