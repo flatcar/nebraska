@@ -25,7 +25,7 @@ storage:
           SERVER=http://your.nebraska.host:port/v1/update/
 ```
 
-In addition to the default `stable`, `beta` and `alpha` groups, you can also create and use **custom groups** for greater control over the updates. In that case, you **must** use the group id (not the name) you will find next to the group name in the dashboard.
+In addition to the default `stable`, `beta` and `alpha` groups, you can also create and use **custom groups** for greater control over the updates.
 
 
 ```yaml
@@ -42,19 +42,15 @@ storage:
 
 **Note**: The sample Nebraska containers provided use the `port 8000` by default (**plain HTTP, no SSL**). Please adjust the update URL setup in your servers to match your Nebraska deployment.
 
+**Note**: You must not combine the special `locksmith:` CLC section with the above CLC `files:` section (or a similar one with `/etc/coreos/update.conf`) because it results in a conflict where only one entry wins.
+
+More documentation for the `update.conf` file is [on the Flatcar website](https://www.flatcar.org/docs/latest/setup/releases/update-conf/).
+
 ## Existing machines
 
 To update the update server in existing instances please edit `/etc/flatcar/update.conf` and update the `SERVER` value (and optionally `GROUP` if needed):
 
 	SERVER=https://your.nebraska.host/v1/update/
-
-Again, when using custom groups instead of the official ones (stable, beta, alpha) the group id **must** be used, not the group name:
-
-    GROUP=ab51a000-02dc-4fc7-a6b0-c42881c89856
-
-To apply these changes run:
-
-	sudo systemctl restart update-engine
 
 In may take a few minutes to see an update request coming through. If you want to see it sooner, you can force it running this command:
 
@@ -76,15 +72,15 @@ storage:
       mode: 0644
       contents:
         inline: |
-          MACHINE_ALIAS=myhost a.b.c
+          MACHINE_ALIAS="myhost a.b.c"
 ```
 
-The `MACHINE_ALIAS` value is not quoted and can contain whitespace.
+The `MACHINE_ALIAS` value can be used without quotes when it contains no whitespace.
 For dynamic contents like the IP address, you may write the value through a script:
 
 ```
 sudo sed -i "/MACHINE_ALIAS=.*/d" /etc/flatcar/update.conf
-echo "MACHINE_ALIAS=$(hostname) ${MY_IP_ADDR}" | sudo tee -a /etc/flatcar/update.conf
+echo "MACHINE_ALIAS=\"$(hostname) ${MY_IP_ADDR}\"" | sudo tee -a /etc/flatcar/update.conf
 ```
 
 ## Flatcar Container Linux packages in Nebraska
