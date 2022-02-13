@@ -28,7 +28,7 @@ func TestListPackages(t *testing.T) {
 		app := getRandomApp(t, db)
 
 		// get packages from DB for app
-		packagesDB, err := db.GetPackages(app.ID, 1, 10)
+		packagesDB, err := db.GetPackages(app.ID, 1, 10, nil)
 		require.NoError(t, err)
 		require.NotNil(t, packagesDB)
 
@@ -91,7 +91,7 @@ func TestGetPackage(t *testing.T) {
 		app := getRandomApp(t, db)
 
 		// get packages from DB for app[0]
-		packagesDB, err := db.GetPackages(app.ID, 1, 10)
+		packagesDB, err := db.GetPackages(app.ID, 1, 10, nil)
 		require.NoError(t, err)
 		require.NotNil(t, packagesDB)
 
@@ -117,7 +117,7 @@ func TestUpdatePackage(t *testing.T) {
 		app := getRandomApp(t, db)
 
 		// get packages from DB for app[0]
-		packagesDB, err := db.GetPackages(app.ID, 1, 10)
+		packagesDB, err := db.GetPackages(app.ID, 1, 10, nil)
 		require.NoError(t, err)
 		require.NotNil(t, packagesDB)
 
@@ -171,7 +171,7 @@ func TestDeletePackage(t *testing.T) {
 		app := getRandomApp(t, db)
 
 		// get packages from DB for app[0]
-		packagesDB, err := db.GetPackages(app.ID, 1, 10)
+		packagesDB, err := db.GetPackages(app.ID, 1, 10, nil)
 		require.NoError(t, err)
 		require.NotNil(t, packagesDB)
 
