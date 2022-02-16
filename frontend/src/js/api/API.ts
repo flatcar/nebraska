@@ -142,8 +142,15 @@ class API {
   }
 
   // Packages
-  static getPackages(applicationID: string): Promise<WithCount<{ packages: Package[] }>> {
-    const url = BASE_URL + '/apps/' + applicationID + '/packages';
+  static getPackages(
+    applicationID: string,
+    searchTerm?: string
+  ): Promise<WithCount<{ packages: Package[] }>> {
+    let query = '';
+    if (!!searchTerm) {
+      query = '?' + queryString.stringify({ searchTerm });
+    }
+    const url = BASE_URL + '/apps/' + applicationID + '/packages' + query;
 
     return API.doRequest('GET', url);
   }
