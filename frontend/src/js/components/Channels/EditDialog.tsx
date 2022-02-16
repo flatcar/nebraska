@@ -224,7 +224,7 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            Cancel
+            {t('frequent|Cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting} color="primary">
             {isCreation ? t('frequent|Add') : t('frequent|Save')}
