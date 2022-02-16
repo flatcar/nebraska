@@ -28,7 +28,7 @@ interface RenderInputProps {
   InputLabelProps: (options?: GetLabelPropsOptions | undefined) => void;
   InputProps: {
     onBlur: () => void;
-    onChange: () => void;
+    onChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
     onFocus: () => void;
   };
   inputProps: object;
@@ -155,6 +155,7 @@ interface AutoCompletePickerProps {
   placeholder: string;
   dialogTitle: string;
   pickerPlaceholder: string;
+  onValueChanged: (value?: string | null) => void;
 }
 
 export default function AutoCompletePicker(props: AutoCompletePickerProps) {
@@ -170,11 +171,18 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
 
   function handleClose() {
     setShowPicker(false);
+    // It's important to send this value as a way to tell that no value is
+    // selected any longer.
+    props.onValueChanged(null);
   }
 
   function handleSelect() {
     setShowPicker(false);
     props.onSelect(selectedValue);
+  }
+
+  function onInputChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    props.onValueChanged(event.target.value);
   }
 
   return (
@@ -205,7 +213,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
             }) => {
               setSelectedValue(selectedItem);
 
-              const { onBlur, onChange, onFocus, ...inputProps } = getInputProps();
+              const { onBlur, onFocus, ...inputProps } = getInputProps();
 
               return (
                 <div className={classes.container}>
@@ -216,7 +224,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
                     label: props.label,
                     placeholder: props.pickerPlaceholder,
                     InputLabelProps: getLabelProps(),
-                    InputProps: { onBlur, onChange, onFocus },
+                    InputProps: { onBlur, onChange: onInputChange, onFocus },
                     inputProps,
                     variant: 'outlined',
                   })}
