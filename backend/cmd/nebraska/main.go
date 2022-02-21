@@ -29,7 +29,7 @@ func main() {
 	// create new DB
 	db, err := db.New()
 	if err != nil {
-		log.Fatalf("Api err: %w\n", err)
+		log.Fatal("DB connection err:", err)
 	}
 
 	// setup logger
