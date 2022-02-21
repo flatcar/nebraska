@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/doug-martin/goqu/v9"
@@ -294,30 +295,37 @@ func (api *API) GetPackageByVersionAndArch(appID, version string, arch Arch) (*P
 }
 
 // GetPackagesCount retuns the total number of package in an app
-func (api *API) GetPackagesCount(appID string) (int, error) {
+func (api *API) GetPackagesCount(appID string, searchVersion *string) (int, error) {
 	query := goqu.From(goqu.L("package LEFT JOIN package_channel_blacklist pcb ON package.id = pcb.package_id")).
 		Select(goqu.L(`package.*,
 	    array_agg(pcb.channel_id) FILTER (WHERE pcb.channel_id IS NOT NULL) as channels_blacklist
 	    `)).Where(goqu.C("application_id").Eq(appID)).
 		GroupBy("package.id")
-
+	if searchVersion != nil {
+		*searchVersion = "%" + strings.ToLower(*searchVersion) + "%"
+		query = query.Where(goqu.I("version").ILike(*searchVersion))
+	}
 	query = goqu.From(query).Select(goqu.L("count (*)"))
 	return api.GetCountQuery(query)
 }
 
 // GetPackages returns all packages associated to the application provided.
-func (api *API) GetPackages(appID string, page, perPage uint64) ([]*Package, error) {
+func (api *API) GetPackages(appID string, page, perPage uint64, searchVersion *string) ([]*Package, error) {
 	page, perPage = validatePaginationParams(page, perPage)
 	limit, offset := sqlPaginate(page, perPage)
-	query, _, err := api.packagesQuery().
+	query := api.packagesQuery().
 		Where(goqu.C("application_id").Eq(appID)).
 		Limit(limit).
-		Offset(offset).
-		ToSQL()
+		Offset(offset)
+	if searchVersion != nil {
+		*searchVersion = "%" + strings.ToLower(*searchVersion) + "%"
+		query = query.Where(goqu.I("version").ILike(*searchVersion))
+	}
+	queryString, _, err := query.ToSQL()
 	if err != nil {
 		return nil, err
 	}
-	return api.getPackagesFromQuery(query)
+	return api.getPackagesFromQuery(queryString)
 }
 
 func (api *API) getPackagesFromQuery(query string) ([]*Package, error) {

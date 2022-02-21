@@ -205,27 +205,34 @@ func nebraskaAuthenticationFunc(authMode string) func(context.Context, *openapi3
 			if input.RequestValidationInput.Request.URL.Query().Get("id_token") != "" {
 				return nil
 			}
-			// check if Authorization Header is present and valid
-			token := input.RequestValidationInput.Request.Header.Get("Authorization")
-			if token == "" {
-				return errors.New("Bearer token not found in request")
-			}
-			split := strings.Split(token, " ")
-			if len(split) == 2 {
-				if split[0] != "Bearer" {
-					return errors.New("Bearer token not found in request")
-				}
-			} else {
-				return errors.New("Invalid Bearer token")
-			}
-			return nil
+			return validateAuthorizationToken(input)
 		case "github":
-			_, err := input.RequestValidationInput.Request.Cookie("github")
+			err := validateAuthorizationToken(input)
 			if err != nil {
-				return errors.Wrap(err, "github cookie not found")
+				_, err := input.RequestValidationInput.Request.Cookie("github")
+				if err != nil {
+					return errors.Wrap(err, "github cookie not found")
+				}
 			}
 			return nil
 		}
 		return nil
 	}
+}
+
+// check if Authorization Header is present and valid
+func validateAuthorizationToken(input *openapi3filter.AuthenticationInput) error {
+	token := input.RequestValidationInput.Request.Header.Get("Authorization")
+	if token == "" {
+		return errors.New("Bearer token not found in request")
+	}
+	split := strings.Split(token, " ")
+	if len(split) == 2 {
+		if split[0] != "Bearer" {
+			return errors.New("Bearer token not found in request")
+		}
+	} else {
+		return errors.New("Invalid Bearer token")
+	}
+	return nil
 }

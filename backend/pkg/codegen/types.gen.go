@@ -390,8 +390,9 @@ type GetGroupVersionTimelineParams struct {
 
 // PaginatePackagesParams defines parameters for PaginatePackages.
 type PaginatePackagesParams struct {
-	Page    *int `json:"page,omitempty"`
-	Perpage *int `json:"perpage,omitempty"`
+	Page          *int    `json:"page,omitempty"`
+	Perpage       *int    `json:"perpage,omitempty"`
+	SearchVersion *string `json:"searchVersion,omitempty"`
 }
 
 // CreatePackageJSONBody defines parameters for CreatePackage.

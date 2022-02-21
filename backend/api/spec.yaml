@@ -749,6 +749,10 @@ paths:
           schema:
             type: integer
             minimum: 10
+        - in: query
+          name: searchVersion
+          schema:
+            type: string
       responses:
         "200":
           description: get Packages success response

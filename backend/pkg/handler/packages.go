@@ -20,12 +20,12 @@ func (h *Handler) PaginatePackages(ctx echo.Context, appID string, params codege
 		params.Perpage = &defaultPerPage
 	}
 
-	totalCount, err := h.db.GetPackagesCount(appID)
+	totalCount, err := h.db.GetPackagesCount(appID, params.SearchVersion)
 	if err != nil {
 		logger.Error().Err(err).Str("appID", appID).Msg("getPackages count - encoding packages")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
-	pkgs, err := h.db.GetPackages(appID, uint64(*params.Page), uint64(*params.Perpage))
+	pkgs, err := h.db.GetPackages(appID, uint64(*params.Page), uint64(*params.Perpage), params.SearchVersion)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)

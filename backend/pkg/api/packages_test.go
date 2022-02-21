@@ -281,7 +281,7 @@ func TestGetPackages(t *testing.T) {
 	_, _ = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg3", Version: "14.1.0", ApplicationID: tApp.ID, Arch: ArchAArch64})
 	_, _ = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg4", Version: "1010.6.0-blabla", ApplicationID: tApp.ID})
 
-	pkgs, err := a.GetPackages(tApp.ID, 0, 0)
+	pkgs, err := a.GetPackages(tApp.ID, 0, 0, nil)
 	assert.NoError(t, err)
 	assert.Equal(t, 4, len(pkgs))
 	assert.Equal(t, "http://sample.url/pkg4", pkgs[0].URL)
@@ -294,9 +294,13 @@ func TestGetPackages(t *testing.T) {
 	assert.Equal(t, ArchAArch64, pkgs[2].Arch)
 	assert.Equal(t, ArchX86, pkgs[3].Arch)
 
-	_, err = a.GetPackages("invalidAppID", 0, 0)
+	_, err = a.GetPackages("invalidAppID", 0, 0, nil)
 	assert.Error(t, err, "Add id must be a valid uuid.")
 
-	_, err = a.GetPackages(uuid.New().String(), 0, 0)
+	_, err = a.GetPackages(uuid.New().String(), 0, 0, nil)
 	assert.NoError(t, err, "should be no error for non existing appID")
+
+	searchVersion := ".1.0"
+	pkgs, err = a.GetPackages(tApp.ID, 0, 0, &searchVersion)
+	assert.Equal(t, 2, len(pkgs))
 }

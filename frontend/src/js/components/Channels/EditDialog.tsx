@@ -17,6 +17,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
+import API from '../../api/API';
 import { Channel, Package } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import { ARCHES } from '../../utils/helpers';
@@ -35,10 +36,13 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
   const { t } = useTranslation();
   const defaultColor = '';
   const [channelColor, setChannelColor] = React.useState(defaultColor);
+  const [packages, setPackages] = React.useState<Package[]>(props.data.packages || []);
   const defaultArch = 1;
   const [arch, setArch] = React.useState(defaultArch);
   const isCreation = Boolean(props.create);
   const { channel } = props.data;
+  const inputSearchTimeout = 250; // ms
+  const [packageSearchTerm, setPackageSearchTerm] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     setArch(props.data.channel ? props.data.channel.arch : defaultArch);
@@ -99,10 +103,43 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
   function handleClose() {
     props.onHide();
   }
+
+  React.useEffect(() => {
+    let timeoutHandler: NodeJS.Timeout;
+    function searchOnTimeout(terms: string | null) {
+      if (timeoutHandler !== undefined) {
+        // Always clear the timeout before eventually starting a new one.
+        clearTimeout(timeoutHandler);
+      }
+
+      if (!terms) {
+        // Skip searching as there's no search terms set.
+        return;
+      }
+
+      // Use a timeout to avoid searching on every key strike.
+      timeoutHandler = setTimeout(() => {
+        API.getPackages(props.data.applicationID, terms || '')
+          .then(({ packages: pkgs }) => {
+            setPackages(pkgs || []);
+          })
+          .catch(e => {
+            console.error('Failed to get packages for Channels/EditDialog: ', e);
+            setPackages([]);
+          });
+      }, inputSearchTimeout);
+    }
+
+    searchOnTimeout(packageSearchTerm);
+
+    return function cleanup() {
+      searchOnTimeout(null);
+    };
+  }, [packageSearchTerm]);
+
   //@todo add better types
   //@ts-ignore
   function renderForm({ values, status, setFieldValue, isSubmitting }) {
-    const packages = props.data.packages ? props.data.packages : [];
     return (
       <Form data-testid="channel-edit-form">
         <DialogContent>
@@ -182,11 +219,12 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
             data={packages.filter((packageItem: Package) => packageItem.arch === arch)}
             dialogTitle={t('channels|Choose a package')}
             defaultValue={channel && channel.package ? channel.package.version : ''}
+            onValueChanged={setPackageSearchTerm}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            Cancel
+            {t('frequent|Cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting} color="primary">
             {isCreation ? t('frequent|Add') : t('frequent|Save')}
