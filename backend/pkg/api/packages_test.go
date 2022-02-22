@@ -302,5 +302,6 @@ func TestGetPackages(t *testing.T) {
 
 	searchVersion := ".1.0"
 	pkgs, err = a.GetPackages(tApp.ID, 0, 0, &searchVersion)
+	assert.NoError(t, err)
 	assert.Equal(t, 2, len(pkgs))
 }

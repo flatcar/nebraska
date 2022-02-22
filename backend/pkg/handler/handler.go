@@ -6,13 +6,14 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/labstack/echo/v4"
+
 	"github.com/kinvolk/nebraska/backend/pkg/api"
 	"github.com/kinvolk/nebraska/backend/pkg/auth"
 	"github.com/kinvolk/nebraska/backend/pkg/config"
 	"github.com/kinvolk/nebraska/backend/pkg/omaha"
 	"github.com/kinvolk/nebraska/backend/pkg/util"
 	"github.com/kinvolk/nebraska/backend/pkg/version"
-	"github.com/labstack/echo/v4"
 )
 
 const (
