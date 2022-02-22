@@ -87,7 +87,7 @@ run-generators: tools/go-bindata
 	PATH="$(abspath tools):$${PATH}" go generate ./...
 
 bin/nebraska: run-generators
-	 go build -a -tags netgo -trimpath -ldflags ${LDFLAGS} -o bin/nebraska ./cmd/nebraska
+	go build -a -tags netgo -trimpath -ldflags ${LDFLAGS} -o bin/nebraska ./cmd/nebraska
 
 .PHONY: code-checks
 code-checks: tools/golangci-lint
