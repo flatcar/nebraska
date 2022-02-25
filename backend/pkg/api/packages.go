@@ -33,6 +33,19 @@ var (
 	ErrBlacklistingChannel = errors.New("nebraska: channel trying to blacklist is already pointing to the package")
 )
 
+type File struct {
+	ID        int64       `db:"id" json:"id"`
+	PackageID string      `db:"package_id" json:"package_id"`
+	Name      null.String `db:"name" json:"name"`
+	Size      null.String `db:"size" json:"size"`
+	Hash      null.String `db:"hash" json:"hash"`
+	CreatedTs time.Time   `db:"created_ts" json:"created_ts"`
+}
+
+func (f File) Equals(otherFile File) bool {
+	return f.Name.String == otherFile.Name.String && f.Size.String == otherFile.Size.String && f.Hash.String == otherFile.Hash.String
+}
+
 // Package represents a Nebraska application's package.
 type Package struct {
 	ID                string         `db:"id" json:"id"`
@@ -48,6 +61,7 @@ type Package struct {
 	ApplicationID     string         `db:"application_id" json:"application_id"`
 	FlatcarAction     *FlatcarAction `db:"flatcar_action" json:"flatcar_action"`
 	Arch              Arch           `db:"arch" json:"arch"`
+	ExtraFiles        []File         `db:"extra_files" json:"extra_files"`
 }
 
 // checkMatchingArch returns an error if the arch does not match the channels
@@ -139,6 +153,10 @@ func (api *API) AddPackage(pkg *Package) (*Package, error) {
 		}
 	}
 
+	if err = api.updatePackageFiles(tx, pkg, nil); err != nil {
+		return nil, err
+	}
+
 	if pkg.Type == PkgTypeFlatcar && pkg.FlatcarAction != nil {
 		query, _, err := goqu.Insert("flatcar_action").
 			Cols("package_id", "sha256").
@@ -207,7 +225,16 @@ func (api *API) UpdatePackage(pkg *Package) error {
 		return ErrNoRowsAffected
 	}
 
-	if err := api.updatePackageBlacklistedChannels(tx, pkg); err != nil {
+	oldPkg, err := api.GetPackage(pkg.ID)
+	if err != nil {
+		return err
+	}
+
+	if err = api.updatePackageBlacklistedChannels(tx, pkg, oldPkg); err != nil {
+		return err
+	}
+
+	if err = api.updatePackageFiles(tx, pkg, oldPkg); err != nil {
 		return err
 	}
 
@@ -353,6 +380,15 @@ func (api *API) getPackagesFromQuery(query string) ([]*Package, error) {
 		default:
 			return nil, err
 		}
+		extraFiles, err := api.getExtraFiles(pkg.ID)
+		switch err {
+		case nil:
+			pkg.ExtraFiles = extraFiles
+		case sql.ErrNoRows:
+			pkg.ExtraFiles = nil
+		default:
+			return nil, err
+		}
 		pkgs = append(pkgs, &pkg)
 	}
 	if err := rows.Err(); err != nil {
@@ -391,6 +427,32 @@ func (api *API) getFlatcarAction(packageID string) (*FlatcarAction, error) {
 	return &flatcarAction, nil
 }
 
+func (api *API) getExtraFiles(packageID string) ([]File, error) {
+	query, _, err := goqu.From("package_file").Where(goqu.C("package_id").Eq(packageID)).Order(goqu.C("id").Asc()).ToSQL()
+	if err != nil {
+		return nil, err
+	}
+
+	var files []File
+	rows, err := api.db.Queryx(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		f := File{}
+		if err := rows.StructScan(&f); err != nil {
+			return nil, err
+		}
+
+		files = append(files, f)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return files, nil
+}
+
 func (api *API) getPackage(packageID null.String) (*Package, error) {
 	query, _, err := api.packagesQuery().Where(goqu.C("id").Eq(packageID)).ToSQL()
 	if err != nil {
@@ -411,6 +473,16 @@ func (api *API) getPackage(packageID null.String) (*Package, error) {
 		return nil, err
 	}
 
+	extraFiles, err := api.getExtraFiles(packageEntity.ID)
+	switch err {
+	case nil:
+		packageEntity.ExtraFiles = extraFiles
+	case sql.ErrNoRows:
+		packageEntity.ExtraFiles = nil
+	default:
+		return nil, err
+	}
+
 	return &packageEntity, nil
 }
 
@@ -421,11 +493,8 @@ func (api *API) getPackage(packageID null.String) (*Package, error) {
 // This method is part of the transaction that updates a package and when it's
 // called, the package has already been updated except for the channels
 // blacklist, that may happen here if needed.
-func (api *API) updatePackageBlacklistedChannels(tx *sqlx.Tx, pkg *Package) error {
-	pkgUpdated, err := api.GetPackage(pkg.ID)
-	if err != nil {
-		return err
-	}
+func (api *API) updatePackageBlacklistedChannels(tx *sqlx.Tx, pkg *Package, oldPkg *Package) error {
+	pkgUpdated := oldPkg
 
 	newChannelsBlacklist := make(map[string]struct{}, len(pkg.ChannelsBlacklist))
 	for _, channelID := range pkg.ChannelsBlacklist {
@@ -468,6 +537,91 @@ func (api *API) updatePackageBlacklistedChannels(tx *sqlx.Tx, pkg *Package) erro
 		}
 		query, _, err := goqu.Delete("package_channel_blacklist").
 			Where(goqu.C("package_id").Eq(pkg.ID), goqu.C("channel_id").Eq(channelID)).
+			ToSQL()
+		if err != nil {
+			return err
+		}
+		_, err = tx.Exec(query)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// updatePackageFiles adds or removes as needed files to the
+// package's extra files list based on the new entries provided in the updated
+// package entry.
+//
+// This method is part of the transaction that updates a package and when it's
+// called, the package has already been updated except for the files, that may
+// happen here if needed.
+func (api *API) updatePackageFiles(tx *sqlx.Tx, pkg *Package, oldPkg *Package) error {
+	var oldFiles map[int64]File
+
+	if oldPkg != nil {
+		oldFiles = make(map[int64]File, len(oldPkg.ExtraFiles))
+		for _, fileInfo := range oldPkg.ExtraFiles {
+			oldFiles[fileInfo.ID] = fileInfo
+		}
+	}
+
+	for _, newFile := range pkg.ExtraFiles {
+		isUpdate := false
+		if fileInfo, ok := oldFiles[newFile.ID]; ok {
+			if fileInfo.ID == newFile.ID {
+				delete(oldFiles, newFile.ID)
+
+				// If nothing changed, don't touch this file
+				if fileInfo.Equals(newFile) {
+					continue
+				}
+
+				isUpdate = true
+			}
+		}
+
+		if isUpdate {
+			query, _, err := goqu.Update("package_file").
+				Set(goqu.Record{
+					"name": newFile.Name.String,
+					"size": newFile.Size.String,
+					"hash": newFile.Hash.String,
+				}).
+				Where(goqu.C("id").Eq(newFile.ID)).
+				ToSQL()
+			if err != nil {
+				return err
+			}
+			_, err = tx.Exec(query)
+
+			if err != nil {
+				return err
+			}
+
+			continue
+		}
+
+		query, _, err := goqu.Insert("package_file").
+			Cols("package_id", "name", "size", "hash").
+			Vals(goqu.Vals{pkg.ID, newFile.Name.String, newFile.Size.String, newFile.Hash.String}).
+			ToSQL()
+		if err != nil {
+			return err
+		}
+		_, err = tx.Exec(query)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	for fileName := range oldFiles {
+		oldFile := oldFiles[fileName]
+		query, _, err := goqu.Delete("package_file").
+			Where(goqu.C("package_id").Eq(pkg.ID), goqu.C("id").Eq(oldFile.ID)).
 			ToSQL()
 		if err != nil {
 			return err
