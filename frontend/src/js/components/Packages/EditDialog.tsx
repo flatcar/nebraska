@@ -29,18 +29,29 @@ const useStyles = makeStyles({
   },
 });
 
-function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide: () => void }) {
+export interface EditDialogProps {
+  create?: boolean;
+  data: {
+    appID: string;
+    channels: Channel[];
+    package: Package;
+  };
+  show: boolean;
+  onHide: () => void;
+}
+
+function EditDialog(props: EditDialogProps) {
   const classes = useStyles();
   const [flatcarType, otherType] = [1, 4];
   const [packageType, setPackageType] = React.useState(
-    props.data.channel ? props.data.channel.type : flatcarType
+    props.data.package ? props.data.package.type : flatcarType
   );
-  const [arch, setArch] = React.useState(props.data.channel ? props.data.channel.arch : 1);
+  const [arch, setArch] = React.useState(props.data.package ? props.data.package.arch : 1);
   const { t } = useTranslation();
   const isCreation = Boolean(props.create);
 
   function getFlatcarActionHash() {
-    return props.data.channel.flatcar_action ? props.data.channel.flatcar_action.sha256 : '';
+    return props.data.package.flatcar_action ? props.data.package.flatcar_action.sha256 : '';
   }
 
   function isFlatcarType(_type: number) {
@@ -76,7 +87,7 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
       size: values.size.toString(),
       hash: values.hash,
       application_id:
-        isCreation && props.data.appID ? props.data.appID : props.data.channel.application_id,
+        isCreation && props.data.appID ? props.data.appID : props.data.package.application_id,
       channels_blacklist: values.channelsBlacklist ? values.channelsBlacklist : [],
     };
 
@@ -88,7 +99,7 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
     if (isCreation) {
       pkgFunc = applicationsStore.createPackage(data);
     } else {
-      pkgFunc = applicationsStore.updatePackage({ ...data, id: props.data.channel.id });
+      pkgFunc = applicationsStore.updatePackage({ ...data, id: props.data.package.id });
     }
 
     pkgFunc
@@ -246,7 +257,7 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
                   const isDisabled =
                     !isCreation &&
                     packageItem.package &&
-                    props.data.channel.version === packageItem.package.version;
+                    props.data.package.version === packageItem.package.version;
 
                   return (
                     <MenuItem value={packageItem.id} disabled={isDisabled} key={packageItem.id}>
@@ -308,14 +319,14 @@ function EditDialog(props: { data: any; show: boolean; create?: boolean; onHide:
       .required(t('frequent|Required'));
 
     initialValues = {
-      url: props.data.channel.url,
-      filename: props.data.channel.filename,
-      description: props.data.channel.description,
-      version: props.data.channel.version,
-      size: props.data.channel.size,
-      hash: props.data.channel.hash,
-      channelsBlacklist: props.data.channel.channels_blacklist
-        ? props.data.channel.channels_blacklist
+      url: props.data.package.url,
+      filename: props.data.package.filename,
+      description: props.data.package.description,
+      version: props.data.package.version,
+      size: props.data.package.size,
+      hash: props.data.package.hash,
+      channelsBlacklist: props.data.package.channels_blacklist
+        ? props.data.package.channels_blacklist
         : [],
     };
 

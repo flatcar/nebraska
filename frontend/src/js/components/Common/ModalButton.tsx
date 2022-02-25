@@ -6,7 +6,9 @@ import { useTranslation } from 'react-i18next';
 import ApplicationEditDialog from '../Applications/EditDialog';
 import ChannelEditDialog from '../Channels/EditDialog';
 import GroupEditDialog from '../Groups/EditDialog';
-import PackageEditDialog from '../Packages/EditDialog';
+import PackageEditDialog, {
+  EditDialogProps as PackageEditDialogProps,
+} from '../Packages/EditDialog';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -46,7 +48,7 @@ function ModalButton(props: { data: object; modalToOpen: string; icon?: string }
       modal = <ChannelEditDialog {...options} />;
       break;
     case 'AddPackageModal':
-      modal = <PackageEditDialog {...options} />;
+      modal = <PackageEditDialog {...(options as PackageEditDialogProps)} />;
       break;
   }
 

@@ -110,7 +110,11 @@ function List(props: { appID: string }) {
                 </MuiList>
                 {packageToUpdate && (
                   <EditDialog
-                    data={{ channels: application.channels, channel: packageToUpdate }}
+                    data={{
+                      appID: application.id,
+                      channels: application.channels,
+                      package: packageToUpdate,
+                    }}
                     show={Boolean(packageToUpdate)}
                     onHide={onCloseEditDialog}
                   />
