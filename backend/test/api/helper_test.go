@@ -3,6 +3,7 @@ package api_test
 import (
 	"encoding/json"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -106,4 +107,34 @@ func httpDo(t *testing.T, url string, method string, payload io.Reader, statusco
 		err = xml.Unmarshal(bodyBytes, response)
 		require.NoError(t, err)
 	}
+}
+
+var ErrOutOfRetries = errors.New("test: out of retries")
+
+func waitServerReady(serverURL string) (bool, error) {
+	retries := 5
+	for i := 0; i < retries; i++ {
+		if i != 0 {
+			time.Sleep(100 * time.Millisecond)
+		}
+		req, err := http.NewRequest("GET", fmt.Sprintf("%s/health", serverURL), nil)
+		if err != nil {
+			continue
+		}
+
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			continue
+		}
+
+		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			continue
+		}
+
+		if (http.StatusOK == resp.StatusCode) && ("OK" == string(bodyBytes)) {
+			return true, nil
+		}
+	}
+	return false, ErrOutOfRetries
 }

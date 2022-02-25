@@ -36,8 +36,7 @@ var (
 	logger            = util.NewLogger("nebraska")
 	middlewareSkipper = func(c echo.Context) bool {
 		requestPath := c.Path()
-
-		paths := []string{"/health", "/metrics", "/config", "/v1/update", "/*"}
+		paths := []string{"/health", "/metrics", "/config", "/v1/update", "/flatcar/*", "/*"}
 		for _, path := range paths {
 			if requestPath == path {
 				return true
@@ -108,12 +107,18 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 
 	e.Static("/", conf.HTTPStaticDir)
 
+	if conf.HostFlatcarPackages && conf.FlatcarPackagesPath != "" {
+		e.Static("/flatcar/", conf.FlatcarPackagesPath)
+	}
+
 	e.HTTPErrorHandler = func(err error, c echo.Context) {
 		code := http.StatusNotFound
 		if he, ok := err.(*echo.HTTPError); ok {
 			if code == he.Code {
 				fileErr := c.File(path.Join(conf.HTTPStaticDir, "index.html"))
-				logger.Err(fileErr).Msg("Error serving index.html")
+				if fileErr != nil {
+					logger.Err(fileErr).Msg("Error serving index.html")
+				}
 				return
 			}
 		}
