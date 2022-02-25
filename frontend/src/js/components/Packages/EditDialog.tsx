@@ -1,3 +1,4 @@
+import { Box } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import Dialog from '@material-ui/core/Dialog';
@@ -22,10 +23,15 @@ import { Channel, Package } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import { ARCHES } from '../../utils/helpers';
 import { REGEX_SEMVER } from '../../utils/regex';
+import Tabs from '../Common/Tabs';
+import FileList from './FileList';
 
 const useStyles = makeStyles({
   topSelect: {
     width: '10rem',
+  },
+  dialog: {
+    height: 'calc(100% - 64px)',
   },
 });
 
@@ -49,6 +55,7 @@ function EditDialog(props: EditDialogProps) {
   const [arch, setArch] = React.useState(props.data.package ? props.data.package.arch : 1);
   const { t } = useTranslation();
   const isCreation = Boolean(props.create);
+  const [isAddingFiles, setIsAddingFiles] = React.useState(false);
 
   function getFlatcarActionHash() {
     return props.data.package.flatcar_action ? props.data.package.flatcar_action.sha256 : '';
@@ -89,6 +96,7 @@ function EditDialog(props: EditDialogProps) {
       application_id:
         isCreation && props.data.appID ? props.data.appID : props.data.package.application_id,
       channels_blacklist: values.channelsBlacklist ? values.channelsBlacklist : [],
+      extra_files: values.filesList,
     };
 
     if (isFlatcarType(packageType)) {
@@ -123,7 +131,7 @@ function EditDialog(props: EditDialogProps) {
 
   //@todo add better types
   //@ts-ignore
-  function renderForm({ values, status, isSubmitting }) {
+  function renderForm({ values, status, isSubmitting, setValues }) {
     const channels = props.data.channels ? props.data.channels : [];
     return (
       <Form data-testid="package-edit-form">
@@ -167,123 +175,163 @@ function EditDialog(props: EditDialogProps) {
               </FormControl>
             </Grid>
           </Grid>
-          <Field
-            name="url"
-            component={TextField}
-            margin="dense"
-            label={t('packages|URL')}
-            type="url"
-            required
-            fullWidth
-          />
-          <Field
-            name="filename"
-            component={TextField}
-            margin="dense"
-            label={t('packages|Filename')}
-            type="text"
-            required
-            fullWidth
-          />
-          <Field
-            name="description"
-            component={TextField}
-            margin="dense"
-            label={t('packages|Description')}
-            type="text"
-            required
-            fullWidth
-          />
-          <Grid container justify="space-between" spacing={4}>
-            <Grid item xs={6}>
-              <Field
-                name="version"
-                component={TextField}
-                margin="dense"
-                label={t('packages|Version')}
-                type="text"
-                required
-                helperText={t('packages|Use SemVer format (1.0.1)')}
-                fullWidth
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <Field
-                name="size"
-                component={TextField}
-                margin="dense"
-                label={t('packages|Size')}
-                type="number"
-                required
-                helperText={t('packages|In bytes')}
-                fullWidth
-              />
-            </Grid>
-          </Grid>
-          <Field
-            name="hash"
-            component={TextField}
-            margin="dense"
-            label={t('packages|Hash')}
-            type="text"
-            required
-            helperText={t('packages|Tip: cat update.gz | openssl dgst -sha1 -binary | base64')}
-            fullWidth
-          />
-          {isFlatcarType(packageType) && (
-            <Field
-              name="flatcarHash"
-              component={TextField}
-              margin="dense"
-              label={t('packages|Flatcar Action SHA256')}
-              type="text"
-              required
-              helperText={t('packages|Tip: cat update.gz | openssl dgst -sha256 -binary | base64')}
-              fullWidth
-            />
-          )}
-          <FormControl margin="dense" fullWidth>
-            <InputLabel>Channels Blacklist</InputLabel>
-            <Field
-              name="channelsBlacklist"
-              component={Select}
-              multiple
-              renderValue={(selected: string[]) => getChannelsNames(selected).join(' / ')}
-            >
-              {channels
-                .filter((channelItem: Channel) => channelItem.arch === arch)
-                .map((packageItem: Channel) => {
-                  const label = packageItem.name;
-                  const isDisabled =
-                    !isCreation &&
-                    packageItem.package &&
-                    props.data.package.version === packageItem.package.version;
-
-                  return (
-                    <MenuItem value={packageItem.id} disabled={isDisabled} key={packageItem.id}>
-                      <Checkbox checked={values.channelsBlacklist.indexOf(packageItem.id) > -1} />
-                      <ListItemText
-                        primary={label}
-                        secondary={
-                          isDisabled ? t('packages|channel pointing to this package') : null
-                        }
+          <Box maxHeight="calc(100% - 100px)">
+            <Tabs
+              tabProps={{ centered: true, variant: 'standard' }}
+              tabs={[
+                {
+                  label: t('frequent|Main'),
+                  component: (
+                    <>
+                      <Field
+                        name="url"
+                        component={TextField}
+                        margin="dense"
+                        label={t('packages|URL')}
+                        type="url"
+                        required
+                        fullWidth
                       />
-                    </MenuItem>
-                  );
-                })}
-            </Field>
-            <FormHelperText>
-              Blacklisted channels cannot point to this package.
-              <br />
-              Showing only channels with the same architecture ({ARCHES[arch]}).
-            </FormHelperText>
-          </FormControl>
+                      <Field
+                        name="filename"
+                        component={TextField}
+                        margin="dense"
+                        label={t('packages|Filename')}
+                        type="text"
+                        required
+                        fullWidth
+                      />
+                      <Field
+                        name="description"
+                        component={TextField}
+                        margin="dense"
+                        label={t('packages|Description')}
+                        type="text"
+                        required
+                        fullWidth
+                      />
+                      <Grid container justify="space-between" spacing={4}>
+                        <Grid item xs={6}>
+                          <Field
+                            name="version"
+                            component={TextField}
+                            margin="dense"
+                            label={t('packages|Version')}
+                            type="text"
+                            required
+                            helperText={t('packages|Use SemVer format (1.0.1)')}
+                            fullWidth
+                          />
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Field
+                            name="size"
+                            component={TextField}
+                            margin="dense"
+                            label={t('packages|Size')}
+                            type="number"
+                            required
+                            helperText={t('packages|In bytes')}
+                            fullWidth
+                          />
+                        </Grid>
+                      </Grid>
+                      <Field
+                        name="hash"
+                        component={TextField}
+                        margin="dense"
+                        label={t('packages|Hash')}
+                        type="text"
+                        required
+                        helperText={t(
+                          'packages|Tip: cat update.gz | openssl dgst -sha1 -binary | base64'
+                        )}
+                        fullWidth
+                      />
+                      {isFlatcarType(packageType) && (
+                        <Field
+                          name="flatcarHash"
+                          component={TextField}
+                          margin="dense"
+                          label={t('packages|Flatcar Action SHA256')}
+                          type="text"
+                          required
+                          helperText={t(
+                            'packages|Tip: cat update.gz | openssl dgst -sha256 -binary | base64'
+                          )}
+                          fullWidth
+                        />
+                      )}
+                      <FormControl margin="dense" fullWidth>
+                        <InputLabel>Channels Blacklist</InputLabel>
+                        <Field
+                          name="channelsBlacklist"
+                          component={Select}
+                          multiple
+                          renderValue={(selected: string[]) =>
+                            getChannelsNames(selected).join(' / ')
+                          }
+                        >
+                          {channels
+                            .filter((channelItem: Channel) => channelItem.arch === arch)
+                            .map((packageItem: Channel) => {
+                              const label = packageItem.name;
+                              const isDisabled =
+                                !isCreation &&
+                                packageItem.package &&
+                                props.data.package.version === packageItem.package.version;
+
+                              return (
+                                <MenuItem
+                                  value={packageItem.id}
+                                  disabled={isDisabled}
+                                  key={packageItem.id}
+                                >
+                                  <Checkbox
+                                    checked={values.channelsBlacklist.indexOf(packageItem.id) > -1}
+                                  />
+                                  <ListItemText
+                                    primary={label}
+                                    secondary={
+                                      isDisabled
+                                        ? t('packages|channel pointing to this package')
+                                        : null
+                                    }
+                                  />
+                                </MenuItem>
+                              );
+                            })}
+                        </Field>
+                        <FormHelperText>
+                          Blacklisted channels cannot point to this package.
+                          <br />
+                          Showing only channels with the same architecture ({ARCHES[arch]}).
+                        </FormHelperText>
+                      </FormControl>
+                    </>
+                  ),
+                },
+                {
+                  label: t('frequent|Extra Files'),
+                  component: (
+                    <FileList
+                      files={values.filesList}
+                      onFilesChanged={files => {
+                        setValues({ ...values, filesList: files });
+                      }}
+                      onEditChanged={setIsAddingFiles}
+                    />
+                  ),
+                },
+              ]}
+            />
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
             {t('frequent|Cancel')}
           </Button>
-          <Button type="submit" disabled={isSubmitting} color="primary">
+          <Button type="submit" disabled={isSubmitting || isAddingFiles} color="primary">
             {isCreation ? t('frequent|Add') : t('frequent|Save')}
           </Button>
         </DialogActions>
@@ -328,6 +376,7 @@ function EditDialog(props: EditDialogProps) {
       channelsBlacklist: props.data.package.channels_blacklist
         ? props.data.package.channels_blacklist
         : [],
+      filesList: props.data.package.extra_files,
     };
 
     if (isFlatcarType(packageType)) {
@@ -336,7 +385,7 @@ function EditDialog(props: EditDialogProps) {
   }
 
   return (
-    <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
+    <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title" fullWidth>
       <DialogTitle>
         {isCreation ? t('packages|Add Package') : t('packages|Edit Package')}
       </DialogTitle>

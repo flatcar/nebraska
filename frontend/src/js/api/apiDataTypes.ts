@@ -32,6 +32,14 @@ export interface Channel {
   arch: Arch;
 }
 
+export interface File {
+  id?: number;
+  name: string;
+  hash: string;
+  size: string;
+  created_ts?: string;
+}
+
 export interface Package {
   id?: string;
   type: number;
@@ -46,6 +54,7 @@ export interface Package {
   application_id: string;
   flatcar_action?: FlatcarAction;
   arch: Arch;
+  extra_files: File[];
 }
 
 export interface FlatcarAction {
