@@ -305,3 +305,151 @@ func TestGetPackages(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 2, len(pkgs))
 }
+
+func TestMultiFilePackage(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
+	tApp, err := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	assert.NoError(t, err)
+
+	pkg := &Package{
+		Type:          PkgTypeOther,
+		URL:           "https://myurl.io",
+		Filename:      null.StringFrom("update.gz"),
+		Version:       "1.2.3",
+		Size:          null.StringFrom("123456"),
+		Hash:          null.StringFrom("sha1:blablablabla"),
+		ApplicationID: tApp.ID,
+	}
+
+	pkg, err = a.AddPackage(pkg)
+	assert.NoError(t, err)
+	assert.Nil(t, pkg.ExtraFiles)
+
+	pkg.ExtraFiles = []File{
+		{
+			Name: null.StringFrom("myfile1.txt"),
+			Size: null.StringFrom("1234"),
+			Hash: null.StringFrom("abcd"),
+		},
+		{
+			Name: null.StringFrom("myfile2.txt"),
+			Size: null.StringFrom("12345"),
+			Hash: null.StringFrom("abcde"),
+		},
+	}
+	err = a.UpdatePackage(pkg)
+	assert.NoError(t, err)
+
+	oldFile1ID := pkg.ExtraFiles[0].ID
+
+	pkg.ExtraFiles = []File{
+		{
+			Name: null.StringFrom("myfile1.txt"),
+			Size: null.StringFrom(""),
+			Hash: null.StringFrom("abcd"),
+		},
+		{
+			Name: null.StringFrom("myfile2.txt"),
+			Size: null.StringFrom("12345"),
+			Hash: null.StringFrom("abcde"),
+		},
+	}
+	err = a.UpdatePackage(pkg)
+	assert.NoError(t, err)
+
+	// Verify order after a lower-position file is updated.
+	pkg, err = a.GetPackage(pkg.ID)
+	assert.NoError(t, err)
+	assert.NotEqual(t, oldFile1ID, pkg.ExtraFiles[0].ID)
+	assert.Equal(t, "myfile1.txt", pkg.ExtraFiles[0].Name.String)
+	assert.Equal(t, "abcd", pkg.ExtraFiles[0].Hash.String)
+	assert.Equal(t, "abcde", pkg.ExtraFiles[1].Hash.String)
+	assert.Equal(t, "", pkg.ExtraFiles[0].Size.String)
+	assert.Equal(t, "12345", pkg.ExtraFiles[1].Size.String)
+
+	// Modify same files
+	oldFile1ID = pkg.ExtraFiles[0].ID
+
+	// Switch file names without creating new files
+	pkg.ExtraFiles = []File{
+		{
+			ID:   pkg.ExtraFiles[0].ID,
+			Name: null.StringFrom("myfile2.txt"),
+			Size: null.StringFrom(""),
+			Hash: null.StringFrom("abcd"),
+		},
+		{
+			ID:   pkg.ExtraFiles[1].ID,
+			Name: null.StringFrom("myfile1.txt"),
+			Size: null.StringFrom("12345"),
+			Hash: null.StringFrom("abcde"),
+		},
+	}
+	err = a.UpdatePackage(pkg)
+	assert.NoError(t, err)
+
+	// Verify order after a lower-position file is updated.
+	pkg, err = a.GetPackage(pkg.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, oldFile1ID, pkg.ExtraFiles[0].ID)
+	assert.Equal(t, "myfile2.txt", pkg.ExtraFiles[0].Name.String)
+	assert.Equal(t, "abcd", pkg.ExtraFiles[0].Hash.String)
+	assert.Equal(t, "abcde", pkg.ExtraFiles[1].Hash.String)
+	assert.Equal(t, "", pkg.ExtraFiles[0].Size.String)
+	assert.Equal(t, "12345", pkg.ExtraFiles[1].Size.String)
+
+	// Switch positions by recreating files
+	pkg.ExtraFiles = []File{
+		{
+			Name: null.StringFrom("myfile2.txt"),
+			Size: null.StringFrom("12345"),
+			Hash: null.StringFrom("abcde"),
+		},
+		{
+			Name: null.StringFrom("myfile1.txt"),
+			Size: null.StringFrom(""),
+			Hash: null.StringFrom("abcd"),
+		},
+	}
+	err = a.UpdatePackage(pkg)
+	assert.NoError(t, err)
+
+	// Verify order after a lower-position file is updated.
+	pkg, err = a.GetPackage(pkg.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, "myfile2.txt", pkg.ExtraFiles[0].Name.String)
+	assert.NotEqual(t, oldFile1ID, pkg.ExtraFiles[0].ID)
+
+	pkg, err = a.GetPackage(pkg.ID)
+	assert.NoError(t, err)
+	assert.NotNil(t, pkg.ExtraFiles)
+	assert.Equal(t, 2, len(pkg.ExtraFiles))
+
+	pkg = &Package{
+		Type:          PkgTypeOther,
+		URL:           "https://myurl.io",
+		Filename:      null.StringFrom("update.gz"),
+		Version:       "1.2.33",
+		Size:          null.StringFrom("123456"),
+		Hash:          null.StringFrom("sha1:blablablabla"),
+		ApplicationID: tApp.ID,
+		ExtraFiles: []File{
+			{
+				Name: null.StringFrom("newfile1.txt"),
+				Size: null.StringFrom("1234"),
+				Hash: null.StringFrom("abcd"),
+			},
+			{
+				Name: null.StringFrom("newfile2.txt"),
+				Size: null.StringFrom("12345"),
+				Hash: null.StringFrom("abcde"),
+			},
+		},
+	}
+	pkg, err = a.AddPackage(pkg)
+	assert.NoError(t, err)
+	assert.NotNil(t, pkg.ExtraFiles)
+}

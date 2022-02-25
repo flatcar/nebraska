@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"os"
 	"reflect"
+	"strconv"
 	"testing"
 
 	omahaSpec "github.com/kinvolk/go-omaha/omaha"
@@ -270,6 +271,73 @@ func TestProductIDBasedRequest(t *testing.T) {
 
 	omahaResp = doOmahaRequest(t, h, validAppProductID, validUnverifiedAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, updateCheck, noEventInfo)
 	checkOmahaResponse(t, omahaResp, *tApp.ProductID.Ptr(), omahaSpec.AppOK)
+}
+
+func TestMultiPackageResponse(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	h := NewHandler(a)
+
+	extraFiles := []api.File{
+		{
+			Name: null.StringFrom("myfile1.txt"),
+			Size: null.StringFrom("1234"),
+			Hash: null.StringFrom("abcd"),
+		},
+		{
+			Name: null.StringFrom("myfile2.txt"),
+			Size: null.StringFrom("12345"),
+			Hash: null.StringFrom("abcde"),
+		},
+	}
+
+	tTeam, _ := a.AddTeam(&api.Team{Name: "test_team"})
+	tApp, _ := a.AddApp(&api.Application{Name: "test_app", Description: "Test app", TeamID: tTeam.ID, ProductID: null.StringFrom("io.kinvolk.MyApp")})
+	tPkg, _ := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "640.0.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64, ExtraFiles: extraFiles})
+	tChannel, _ := a.AddChannel(&api.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID), Arch: api.ArchAMD64})
+	tGroup, _ := a.AddGroup(&api.Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 100, PolicyUpdateTimeout: "60 minutes"})
+	_, err := a.AddFlatcarAction(&api.FlatcarAction{Event: "postinstall", Sha256: "fsdkjjfghsdakjfgaksdjfasd", PackageID: tPkg.ID})
+
+	assert.NoError(t, err)
+
+	validUnregisteredIP := "127.0.0.1"
+	validUnregisteredMachineID := "65e1266d-6f54-4b87-9080-23b99ca9c12f"
+	oldAppVersion := "610.0.0"
+	updateCheck := true
+	addPing := true
+
+	omahaResp := doOmahaRequest(t, h, tApp.ID, oldAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, updateCheck, nil)
+	checkOmahaResponse(t, omahaResp, tApp.ID, omahaSpec.AppOK)
+
+	appResp := omahaResp.Apps[0]
+	assert.NotNil(t, appResp)
+
+	updateResp := appResp.UpdateCheck
+
+	assert.NotNil(t, updateResp)
+	assert.NotNil(t, updateResp.Manifest)
+
+	// The packages shipped in the response are the main one + the extras
+	packages := updateResp.Manifest.Packages
+	assert.Equal(t, len(extraFiles)+1, len(packages))
+
+	extraFile1 := extraFiles[0]
+	shippedExtraFile1 := packages[1]
+
+	assert.Equal(t, extraFile1.Name.String, shippedExtraFile1.Name)
+
+	extraFile1Size, _ := strconv.ParseUint(extraFile1.Size.String, 10, 64)
+	assert.Equal(t, extraFile1Size, shippedExtraFile1.Size)
+
+	assert.Equal(t, extraFile1.Hash.String, shippedExtraFile1.SHA1)
+
+	extraFile2 := extraFiles[1]
+	shippedExtraFile2 := packages[2]
+
+	assert.Equal(t, extraFile2.Name.String, shippedExtraFile2.Name)
+
+	mainFile := packages[0]
+	assert.Equal(t, tPkg.Filename.String, mainFile.Name)
 }
 
 type eventInfo struct {
