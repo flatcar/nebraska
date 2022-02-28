@@ -291,11 +291,40 @@ func (s *Syncer) processUpdate(descriptor channelDescriptor, update *omaha.Updat
 			url = strings.ReplaceAll(url, "{{ARCH}}", getArchString(descriptor.arch))
 		}
 
+		var extraFiles []api.File
+		if len(update.Manifest.Packages) > 1 {
+			extraFiles = make([]api.File, len(update.Manifest.Packages)-1)
+			for i := 1; i < len(update.Manifest.Packages); i++ {
+				omahaPkg := update.Manifest.Packages[i]
+				hash := ""
+				if omahaPkg.SHA256 != "" {
+					hash = omahaPkg.SHA256
+				} else {
+					hash = omahaPkg.SHA1
+				}
+
+				size := strconv.FormatUint(omahaPkg.Size, 10)
+				extraFiles[i-1] = api.File{
+					Name: null.StringFrom(omahaPkg.Name),
+					Size: null.StringFrom(size),
+					Hash: null.StringFrom(hash),
+				}
+			}
+		}
+
 		if s.hostPackages {
 			filename = fmt.Sprintf("flatcar-%s-%s.gz", getArchString(descriptor.arch), update.Manifest.Version)
-			if err := s.downloadPackage(update, filename); err != nil {
+			if err := s.downloadPackage(update, update.Manifest.Packages[0].Name, update.Manifest.Actions[0].SHA256, filename); err != nil {
 				logger.Error().Err(err).Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Msg("processUpdate, downloading package")
 				return err
+			}
+
+			for _, fileInfo := range extraFiles {
+				downloadName := fmt.Sprintf("extrafile-%s-%s-%s", getArchString(descriptor.arch), update.Manifest.Version, fileInfo.Name.String)
+				if err := s.downloadPackage(update, fileInfo.Name.String, fileInfo.Hash.String, downloadName); err != nil {
+					logger.Error().Err(err).Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Msgf("processUpdate, downloading package %s", fileInfo.Name.String)
+					return err
+				}
 			}
 		}
 
@@ -308,6 +337,7 @@ func (s *Syncer) processUpdate(descriptor channelDescriptor, update *omaha.Updat
 			Hash:          null.StringFrom(update.Manifest.Packages[0].SHA1),
 			ApplicationID: flatcarAppID,
 			Arch:          descriptor.arch,
+			ExtraFiles:    extraFiles,
 		}
 		if _, err = s.api.AddPackage(pkg); err != nil {
 			logger.Error().Err(err).Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Msg("processUpdate, adding package")
@@ -354,7 +384,7 @@ func getArchString(arch api.Arch) string {
 // downloadPackage downloads and verifies the package payload referenced in the
 // update provided. The downloaded package payload is stored in packagesPath
 // using the filename provided.
-func (s *Syncer) downloadPackage(update *omaha.UpdateResponse, filename string) error {
+func (s *Syncer) downloadPackage(update *omaha.UpdateResponse, pkgName, sha256Checksum, filename string) error {
 	tmpFile, err := ioutil.TempFile(s.packagesPath, "tmp_flatcar_pkg_")
 	if err != nil {
 		return err
@@ -366,7 +396,7 @@ func (s *Syncer) downloadPackage(update *omaha.UpdateResponse, filename string) 
 		return err
 	}
 
-	updateURL.Path = path.Join(updateURL.Path, update.Manifest.Packages[0].Name)
+	updateURL.Path = path.Join(updateURL.Path, pkgName)
 
 	pkgURL := updateURL.String()
 	resp, err := http.Get(pkgURL)
@@ -383,7 +413,8 @@ func (s *Syncer) downloadPackage(update *omaha.UpdateResponse, filename string) 
 	if _, err := io.Copy(io.MultiWriter(tmpFile, hashSha256), resp.Body); err != nil {
 		return err
 	}
-	if base64.StdEncoding.EncodeToString(hashSha256.Sum(nil)) != update.Manifest.Actions[0].SHA256 {
+	// Only check the checksums if it's provided
+	if sha256Checksum != "" && base64.StdEncoding.EncodeToString(hashSha256.Sum(nil)) != sha256Checksum {
 		return errors.New("downloaded file hash mismatch")
 	}
 
