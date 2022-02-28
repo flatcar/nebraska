@@ -154,6 +154,14 @@ func createOmahaUpdate() *omaha.UpdateResponse {
 					Name: "updatepayload.tgz",
 					SHA1: "00000000000000000",
 				},
+				{
+					Name: "extra-file1.tgz",
+					SHA1: "00000000000000001",
+				},
+				{
+					Name: "extra-file2.tgz",
+					SHA1: "00000000000000002",
+				},
 			},
 			Actions: []*omaha.Action{
 				{},
@@ -210,6 +218,40 @@ func TestSyncer_GetPackage(t *testing.T) {
 	assert.Equal(t, update.Manifest.Version, tGroup.Channel.Package.Version)
 	assert.Equal(t, update.URLs[0].CodeBase, tGroup.Channel.Package.URL)
 	assert.Equal(t, update.Manifest.Packages[0].Name, tGroup.Channel.Package.Filename.String)
+}
+
+func TestSyncer_GetMultiFilePackage(t *testing.T) {
+	syncer := newForTest(t, &Config{})
+	a := syncer.api
+	t.Cleanup(func() {
+		a.Close()
+	})
+
+	tGroup := setupFlatcarAppStableGroup(t, a)
+	tChannel := tGroup.Channel
+
+	err := syncer.initialize()
+	require.NoError(t, err)
+
+	update := createOmahaUpdate()
+
+	desc := channelDescriptor{
+		name: tChannel.Name,
+		arch: tChannel.Arch,
+	}
+	err = syncer.processUpdate(desc, update)
+	require.NoError(t, err)
+
+	// Get updated group
+	tGroup, err = a.GetGroup(tGroup.ID)
+	require.NoError(t, err)
+
+	assert.Equal(t, update.Manifest.Version, tGroup.Channel.Package.Version)
+	assert.Equal(t, update.URLs[0].CodeBase, tGroup.Channel.Package.URL)
+	assert.Equal(t, update.Manifest.Packages[0].Name, tGroup.Channel.Package.Filename.String)
+	assert.Equal(t, len(update.Manifest.Packages), len(tGroup.Channel.Package.ExtraFiles)+1)
+	assert.Equal(t, update.Manifest.Packages[1].Name, tGroup.Channel.Package.ExtraFiles[0].Name.String)
+	assert.Equal(t, update.Manifest.Packages[2].Name, tGroup.Channel.Package.ExtraFiles[1].Name.String)
 }
 
 func TestSyncer_GetPackageWithDiffURL(t *testing.T) {
