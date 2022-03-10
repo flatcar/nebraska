@@ -31,18 +31,24 @@ const useStyles = makeStyles({
   },
 });
 
+const PackagesPerPage = 15;
+
 function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide: () => void }) {
   const classes = useStyles();
   const { t } = useTranslation();
   const defaultColor = '';
   const [channelColor, setChannelColor] = React.useState(defaultColor);
-  const [packages, setPackages] = React.useState<Package[]>(props.data.packages || []);
+  const [packages, setPackages] = React.useState<{ total: number; packages: Package[] }>({
+    packages: [],
+    total: props.data.packages ? -1 : 0,
+  });
   const defaultArch = 1;
   const [arch, setArch] = React.useState(defaultArch);
   const isCreation = Boolean(props.create);
   const { channel } = props.data;
   const inputSearchTimeout = 250; // ms
-  const [packageSearchTerm, setPackageSearchTerm] = React.useState<string | null>(null);
+  const [packageSearchTerm, setPackageSearchTerm] = React.useState<string>('');
+  const [searchPage, setSearchPage] = React.useState<number>(0);
 
   React.useEffect(() => {
     setArch(props.data.channel ? props.data.channel.arch : defaultArch);
@@ -104,38 +110,62 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
     props.onHide();
   }
 
+  function fetchPackages(term: string, page: number) {
+    API.getPackages(props.data.applicationID, term || '', {
+      page: (page || 0) + 1,
+      perpage: PackagesPerPage,
+    })
+      .then(({ packages: pkgs, totalCount }) => {
+        setPackages(({ packages }) => ({
+          packages: (page === 0 ? [] : packages).concat(pkgs || []),
+          total: totalCount,
+        }));
+      })
+      .catch(e => {
+        console.error('Failed to get packages for Channels/EditDialog: ', e);
+        setPackages({ packages: [], total: 0 });
+      });
+  }
+
   React.useEffect(() => {
     let timeoutHandler: NodeJS.Timeout;
-    function searchOnTimeout(terms: string | null) {
+    function searchOnTimeout(term: string) {
       if (timeoutHandler !== undefined) {
         // Always clear the timeout before eventually starting a new one.
         clearTimeout(timeoutHandler);
       }
 
-      if (!terms) {
-        // Skip searching as there's no search terms set.
-        return;
-      }
-
       // Use a timeout to avoid searching on every key strike.
       timeoutHandler = setTimeout(() => {
-        API.getPackages(props.data.applicationID, terms || '')
-          .then(({ packages: pkgs }) => {
-            setPackages(pkgs || []);
-          })
-          .catch(e => {
-            console.error('Failed to get packages for Channels/EditDialog: ', e);
-            setPackages([]);
-          });
+        fetchPackages(term, 0);
       }, inputSearchTimeout);
     }
 
+    setSearchPage(0);
     searchOnTimeout(packageSearchTerm);
 
     return function cleanup() {
-      searchOnTimeout(null);
+      if (timeoutHandler !== undefined) {
+        // Always clear the timeout on unmount.
+        clearTimeout(timeoutHandler);
+      }
     };
   }, [packageSearchTerm]);
+
+  React.useEffect(() => {
+    if (searchPage === 0) {
+      // This is handled by the term search.
+      return;
+    }
+
+    fetchPackages(packageSearchTerm, searchPage);
+  }, [searchPage]);
+
+  function loadMorePackages() {
+    if ((searchPage + 1) * PackagesPerPage < packages.total) {
+      setSearchPage(page => page + 1);
+    }
+  }
 
   //@todo add better types
   //@ts-ignore
@@ -200,12 +230,12 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
             })}
             fullWidth
             onSelect={(packageVersion: string) => {
-              const selectedPackage = packages
+              const selectedPackage = packages.packages
                 .filter((packageItem: Package) => packageItem.arch === arch)
                 .filter((packageItem: Package) => packageItem.version === packageVersion);
               setFieldValue('package', selectedPackage[0].id);
             }}
-            getSuggestions={packages
+            getSuggestions={packages.packages
               .filter((packageItem: Package) => packageItem.arch === arch)
               .map((packageItem: Package) => {
                 const date = new Date(packageItem.created_ts);
@@ -216,10 +246,14 @@ function EditDialog(props: { data: any; create?: boolean; show: boolean; onHide:
               })}
             placeholder={t('channels|Pick a package')}
             pickerPlaceholder={t('channels|Start typing to search a package')}
-            data={packages.filter((packageItem: Package) => packageItem.arch === arch)}
+            data={packages.packages.filter((packageItem: Package) => packageItem.arch === arch)}
             dialogTitle={t('channels|Choose a package')}
             defaultValue={channel && channel.package ? channel.package.version : ''}
-            onValueChanged={setPackageSearchTerm}
+            onValueChanged={(term: string | null) => {
+              setPackageSearchTerm(term || '');
+              setSearchPage(0);
+            }}
+            onBottomScrolled={loadMorePackages}
           />
         </DialogContent>
         <DialogActions>
