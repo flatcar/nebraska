@@ -144,13 +144,26 @@ class API {
   // Packages
   static getPackages(
     applicationID: string,
-    searchTerm?: string
-  ): Promise<WithCount<{ packages: Package[] }>> {
-    let query = '';
-    if (!!searchTerm) {
-      query = '?' + queryString.stringify({ searchVersion: searchTerm });
+    searchTerm?: string,
+    queryOptions?: {
+      [key: string]: any;
     }
-    const url = BASE_URL + '/apps/' + applicationID + '/packages' + query;
+  ): Promise<WithCount<{ packages: Package[]; totalCount: number }>> {
+    const query: string[] = [];
+
+    if (!!searchTerm) {
+      query.push(queryString.stringify({ searchVersion: searchTerm }));
+    }
+    if (!_.isEmpty(queryOptions)) {
+      query.push(queryString.stringify(queryOptions));
+    }
+
+    let queryStr = '';
+    if (query.length > 0) {
+      queryStr = '?' + query.join('&');
+    }
+
+    const url = BASE_URL + '/apps/' + applicationID + '/packages' + queryStr;
 
     return API.doRequest('GET', url);
   }
