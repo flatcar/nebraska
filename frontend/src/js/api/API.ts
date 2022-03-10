@@ -148,7 +148,7 @@ class API {
   ): Promise<WithCount<{ packages: Package[] }>> {
     let query = '';
     if (!!searchTerm) {
-      query = '?' + queryString.stringify({ searchTerm });
+      query = '?' + queryString.stringify({ searchVersion: searchTerm });
     }
     const url = BASE_URL + '/apps/' + applicationID + '/packages' + query;
 
