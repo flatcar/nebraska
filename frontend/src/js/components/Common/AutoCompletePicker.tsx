@@ -33,10 +33,11 @@ interface RenderInputProps {
   };
   inputProps: object;
   variant: 'outlined';
+  onKeyDown: React.KeyboardEventHandler<HTMLDivElement>;
 }
 
 function renderInput(inputProps: RenderInputProps) {
-  const { InputProps, classes, ref, ...other } = inputProps;
+  const { InputProps, classes, ref, onKeyDown, ...other } = inputProps;
 
   return (
     <TextField
@@ -48,6 +49,7 @@ function renderInput(inputProps: RenderInputProps) {
         },
         ...InputProps,
       }}
+      onKeyDown={onKeyDown}
       {...other}
     />
   );
@@ -185,6 +187,12 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
     props.onValueChanged(event.target.value);
   }
 
+  function handleEscape(event: React.KeyboardEvent<HTMLDivElement>) {
+    if (event.key === 'Escape') {
+      props.onValueChanged('');
+    }
+  }
+
   return (
     <div>
       <FormControl fullWidth>
@@ -227,6 +235,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
                     InputProps: { onBlur, onChange: onInputChange, onFocus },
                     inputProps,
                     variant: 'outlined',
+                    onKeyDown: handleEscape,
                   })}
                   <LazyList
                     options={getSuggestions(inputValue, selectedItem, suggestions)}
