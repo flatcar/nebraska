@@ -1245,6 +1245,22 @@ components:
       x-oapi-codegen-extra-tags:
         json: flatcar_action
 
+    extraFiles:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+          name:
+            type: string
+          hash:
+            type: string
+          size:
+            type: string
+      x-oapi-codegen-extra-tags:
+        json: extra_files
+
     packageConfig:
       type: object
       required:
@@ -1283,7 +1299,9 @@ components:
           type: integer
         flatcarAction:
           $ref: "#/components/schemas/flatcarActionPackage"
-        
+        extraFiles:
+          $ref: "#/components/schemas/extraFiles"
+
     updateInstanceConfig:
       type: object
       required:
@@ -1443,6 +1461,8 @@ components:
             type: string
           x-oapi-codegen-extra-tags:
             json: channels_blacklist
+        extraFiles:
+          $ref: "#/components/schemas/extraFiles"
         applicationID:
           type: string
           x-oapi-codegen-extra-tags:

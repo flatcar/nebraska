@@ -105,6 +105,14 @@ type Config struct {
 	Title               string `json:"title"`
 }
 
+// ExtraFiles defines model for extraFiles.
+type ExtraFiles []struct {
+	Hash *string `json:"hash,omitempty"`
+	Id   *int    `json:"id,omitempty"`
+	Name *string `json:"name,omitempty"`
+	Size *string `json:"size,omitempty"`
+}
+
 // FlatcarAction defines model for flatcarAction.
 type FlatcarAction struct {
 	ChromeOSVersion       string    `json:"chromeos_version"`
@@ -251,6 +259,7 @@ type Package struct {
 	ChannelsBlacklist []string       `json:"channels_blacklist"`
 	CreatedTs         time.Time      `json:"created_ts"`
 	Description       string         `json:"description"`
+	ExtraFiles        *ExtraFiles    `json:"extra_files"`
 	Filename          string         `json:"filename"`
 	FlatcarAction     *FlatcarAction `json:"flatcar_action"`
 	Hash              string         `json:"hash"`
@@ -267,6 +276,7 @@ type PackageConfig struct {
 	Arch              int                   `json:"arch"`
 	ChannelsBlacklist []string              `json:"channels_blacklist"`
 	Description       string                `json:"description"`
+	ExtraFiles        *ExtraFiles           `json:"extra_files"`
 	Filename          string                `json:"filename"`
 	FlatcarAction     *FlatcarActionPackage `json:"flatcar_action"`
 	Hash              string                `json:"hash"`

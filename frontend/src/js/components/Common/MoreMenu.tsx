@@ -7,7 +7,15 @@ import { useTranslation } from 'react-i18next';
 
 let menuCount = 0;
 
-export default function MoreMenu(props: { options: { label: string; action: () => void }[] }) {
+interface MoreMenuProps {
+  options: {
+    label: string;
+    action: () => void;
+  }[];
+  iconButtonProps?: React.ComponentProps<typeof IconButton>;
+}
+
+export default function MoreMenu(props: MoreMenuProps) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const options = props.options || [];
   const { t } = useTranslation();
@@ -33,6 +41,7 @@ export default function MoreMenu(props: { options: { label: string; action: () =
         aria-label={t('common|Open menu')}
         onClick={handleClick}
         data-testid="more-menu-open-button"
+        {...props.iconButtonProps}
       >
         <MoreVertIcon />
       </IconButton>
