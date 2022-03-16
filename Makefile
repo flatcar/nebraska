@@ -112,7 +112,7 @@ tools:
 .PHONY: image
 image:
 	$(DOCKER_CMD) build \
-		--no-cache \
+		--network=host \
 		--build-arg NEBRASKA_VERSION=$(VERSION) \
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_NEBRASKA):$(VERSION)" \
 		-t "$(DOCKER_REPO)/$(DOCKER_IMAGE_NEBRASKA):latest" \
