@@ -1,5 +1,4 @@
-# Backend build
-FROM golang:1.17 as backend-build
+FROM golang:1.17 as base-build
 
 ARG NEBRASKA_VERSION=""
 
@@ -9,35 +8,30 @@ ENV GOPATH=/go \
 	CGO_ENABLED=0\ 
 	GOOS=linux 
 
+# Backend build
+FROM base-build as backend-build
 # We optionally allow to set the version to display for the image.
 # This is mainly used because when copying the source dir, docker will
 # ignore the files we requested it to, and thus produce a "dirty" build
 # as git status returns changes (when effectively for the built source
 # there's none).
 ENV VERSION=${NEBRASKA_VERSION}
-
 WORKDIR /app/backend
-
-COPY backend/go.mod backend/go.sum ./
-
-RUN go mod download
-
-COPY backend .
-
+# COPY backend/go.mod backend/go.sum ./
+# RUN go mod download
+COPY ./backend ./
 RUN make build
 
 # Frontend build
-FROM docker.io/library/node:15 as frontend-build
-
+FROM docker.io/library/node:15 as frontend-install
 WORKDIR /app/frontend
-
 COPY frontend/package*.json ./
+RUN npm install
 
-RUN npm install 
-
+FROM frontend-install AS frontend-build
+WORKDIR /app/frontend
 COPY frontend ./
-
-RUN make build
+RUN npm run build
 
 # Final Docker image 
 FROM alpine:3.15.0
