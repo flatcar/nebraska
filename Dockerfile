@@ -9,13 +9,25 @@ ENV GOPATH=/go \
 	GOOS=linux 
 
 # Backend build
-FROM base-build as backend-build
+FROM base-build as version-build
+ARG NEBRASKA_VERSION=""
+
+WORKDIR /app/
+COPY ./.git ./.git
+COPY ./backend ./backend
+
 # We optionally allow to set the version to display for the image.
 # This is mainly used because when copying the source dir, docker will
 # ignore the files we requested it to, and thus produce a "dirty" build
 # as git status returns changes (when effectively for the built source
 # there's none).
 ENV VERSION=${NEBRASKA_VERSION}
+
+FROM version-build as backend-build
+
+# make version uses the existing VERSION if set, otherwise gets it from git
+RUN export VERSION=`make -f backend/Makefile version | tail -1` && echo "VERSION:$VERSION"
+
 WORKDIR /app/backend
 # COPY backend/go.mod backend/go.sum ./
 # RUN go mod download

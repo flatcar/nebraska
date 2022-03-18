@@ -51,6 +51,10 @@ run: bin/nebraska
 .PHONY: build
 build: run-generators bin/nebraska
 
+.PHONY: version
+version:
+	echo $(VERSION)
+
 .PHONY: test-clean-work-tree-backend
 test-clean-work-tree-backend:
 	if ! git diff --quiet -- go.mod go.sum pkg cmd tools/tools.go; then \
