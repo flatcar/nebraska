@@ -170,6 +170,7 @@ interface AutoCompletePickerProps {
 export default function AutoCompletePicker(props: AutoCompletePickerProps) {
   const [showPicker, setShowPicker] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState(props.defaultValue);
+  const [currentValue, setCurrentValue] = React.useState(props.defaultValue);
   const suggestions = props.getSuggestions;
   const { onBottomScrolled } = props;
   const { t } = useTranslation();
@@ -188,6 +189,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
 
   function handleSelect() {
     setShowPicker(false);
+    setCurrentValue(selectedValue);
     props.onSelect(selectedValue);
   }
 
@@ -217,7 +219,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
           inputProps={{
             className: classes.pickerButtonInput,
           }}
-          value={selectedValue}
+          value={currentValue}
           placeholder={props.placeholder}
           readOnly
         />
