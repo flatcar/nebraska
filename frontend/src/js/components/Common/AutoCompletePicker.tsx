@@ -13,7 +13,7 @@ import TextField from '@material-ui/core/TextField';
 import Downshift, { GetLabelPropsOptions } from 'downshift';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { FixedSizeList } from 'react-window';
+import { FixedSizeList, ListOnItemsRenderedProps } from 'react-window';
 
 interface RenderInputProps {
   classes: {
@@ -33,10 +33,11 @@ interface RenderInputProps {
   };
   inputProps: object;
   variant: 'outlined';
+  onKeyDown: React.KeyboardEventHandler<HTMLDivElement>;
 }
 
 function renderInput(inputProps: RenderInputProps) {
-  const { InputProps, classes, ref, ...other } = inputProps;
+  const { InputProps, classes, ref, onKeyDown, ...other } = inputProps;
 
   return (
     <TextField
@@ -48,6 +49,7 @@ function renderInput(inputProps: RenderInputProps) {
         },
         ...InputProps,
       }}
+      onKeyDown={onKeyDown}
       {...other}
     />
   );
@@ -121,10 +123,11 @@ interface LazyListProps {
   height: number;
   itemSize: number;
   width: number;
+  onItemsRendered: (args: ListOnItemsRenderedProps) => any;
 }
 
 function LazyList(props: LazyListProps) {
-  const { options, itemData, ...others } = props;
+  const { options, itemData, onItemsRendered, ...others } = props;
 
   itemData['suggestions'] = options;
 
@@ -142,7 +145,12 @@ function LazyList(props: LazyListProps) {
   }
 
   return (
-    <FixedSizeList itemCount={options.length} itemData={itemData} {...others}>
+    <FixedSizeList
+      itemCount={options.length}
+      itemData={itemData}
+      onItemsRendered={onItemsRendered}
+      {...others}
+    >
       {Row}
     </FixedSizeList>
   );
@@ -156,12 +164,14 @@ interface AutoCompletePickerProps {
   dialogTitle: string;
   pickerPlaceholder: string;
   onValueChanged: (value?: string | null) => void;
+  onBottomScrolled?: () => void;
 }
 
 export default function AutoCompletePicker(props: AutoCompletePickerProps) {
   const [showPicker, setShowPicker] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState(props.defaultValue);
   const suggestions = props.getSuggestions;
+  const { onBottomScrolled } = props;
   const { t } = useTranslation();
 
   const classes = useStyles();
@@ -183,6 +193,19 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
 
   function onInputChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     props.onValueChanged(event.target.value);
+  }
+
+  function onItemsRendered(args: ListOnItemsRenderedProps) {
+    const { overscanStopIndex, visibleStopIndex } = args;
+    if (!!onBottomScrolled && overscanStopIndex === visibleStopIndex) {
+      onBottomScrolled();
+    }
+  }
+
+  function handleEscape(event: React.KeyboardEvent<HTMLDivElement>) {
+    if (event.key === 'Escape') {
+      props.onValueChanged('');
+    }
   }
 
   return (
@@ -227,6 +250,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
                     InputProps: { onBlur, onChange: onInputChange, onFocus },
                     inputProps,
                     variant: 'outlined',
+                    onKeyDown: handleEscape,
                   })}
                   <LazyList
                     options={getSuggestions(inputValue, selectedItem, suggestions)}
@@ -238,6 +262,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
                     height={400}
                     width={400}
                     itemSize={50}
+                    onItemsRendered={onItemsRendered}
                   />
                 </div>
               );
