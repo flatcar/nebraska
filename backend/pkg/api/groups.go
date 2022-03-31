@@ -676,29 +676,49 @@ type recentInstance struct {
 	Version    string    `db:"version"`
 }
 
+func updateVersionTimeline(timeline map[time.Time]VersionCountMap, spans []time.Time, from time.Time, to time.Time, version string) map[time.Time]VersionCountMap {
+
+	for _, span := range spans {
+		if span.After(from) && span.Before(to) {
+			timeline[span][version] += 1
+		} else {
+			if _, ok := timeline[span][version]; !ok {
+				timeline[span][version] = 0
+			}
+		}
+	}
+	return timeline
+}
+
 func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (map[time.Time](VersionCountMap), bool, error) {
 
-	// first select active instances
-
-	durationString, interval, err := durationParamToPostgresTimings(durationParam(duration))
+	start := time.Now()
+	durationString, _, err := durationParamToPostgresTimings(durationParam(duration))
 	if err != nil {
 		return nil, false, err
 	}
 
-	instanceQuery, _, err := goqu.From("instance_application").
-		Select(goqu.C("instance_id"),
-			goqu.L("CASE WHEN last_update_granted_ts IS NOT NULL THEN last_update_granted_ts ELSE created_ts END"),
-			goqu.C("version")).
-		Where(goqu.C("group_id").Eq(groupID),
-			goqu.L(fmt.Sprintf("last_check_for_updates >= now() - interval '%s'", durationString)),
-			goqu.L(ignoreFakeInstanceCondition("instance_id"))).ToSQL()
+	// get timespans
+	spans, err := timespansForDuration(durationParam(duration))
 	if err != nil {
 		return nil, false, err
 	}
 
-	fmt.Println(instanceQuery, interval)
-	rInstances := []recentInstance{}
-	rows, err := api.db.Queryx(instanceQuery)
+	// active instance without instance_status_history status as 4
+	instancesWithoutStatusQuery := fmt.Sprintf(`select "instance_id", CASE WHEN last_update_granted_ts IS NOT NULL THEN last_update_granted_ts ELSE created_ts END, "version" from instance_application where instance_id in ( select instance_id from instance_application where ( "group_id" = '%[1]s' ) AND last_check_for_updates >= now() - interval '%[2]s' AND ( instance_id IS NULL OR instance_id NOT LIKE '{________-____-____-____-____________}' ) except all ( select instance_id from instance_status_history where group_id = '%[1]s' and status = 4 ) );`, groupID, durationString)
+
+	fmt.Println(instancesWithoutStatusQuery)
+
+	timelineCount := make(map[time.Time]VersionCountMap)
+	for _, span := range spans {
+		timelineCount[span] = make(VersionCountMap)
+	}
+
+	queryStart := time.Now()
+
+	instanceWithoutStatus := []recentInstance{}
+
+	rows, err := api.db.Queryx(instancesWithoutStatusQuery)
 	if err != nil {
 		fmt.Println("Error here", err)
 		return nil, false, err
@@ -710,170 +730,272 @@ func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (m
 		if err := rows.StructScan(&rI); err != nil {
 			return nil, false, err
 		}
-		rInstances = append(rInstances, rI)
+		instanceWithoutStatus = append(instanceWithoutStatus, rI)
+		timelineCount = updateVersionTimeline(timelineCount, spans, rI.CreatedTs, time.Now(), rI.Version)
 	}
-	fmt.Println("recent instances count:", len(rInstances))
 
-	// get timespans
-	spans, err := timespansForDuration(durationParam(duration))
+	fmt.Println("instances_without_status_history time taken:", time.Since(start), time.Since(queryStart))
+
+	// active instances with instance_status_history in the interval
+
+	instanceWithStatusHistoryInInterval := fmt.Sprintf(`
+	select * from instance_status_history where instance_id in (select instance_id from instance_application where ( "group_id" = '%[1]s' ) AND last_check_for_updates >= now() - interval '%[2]s' AND ( instance_id IS NULL OR instance_id NOT LIKE '{________-____-____-____-____________}' ) intersect ( select instance_id from instance_status_history where group_id = '%[1]s' and status = 4 )) and status=4 and created_ts >= now()-interval '%[2]s' order by instance_id,created_ts desc`, groupID, durationString)
+
+	fmt.Println(instanceWithStatusHistoryInInterval)
+	statusQueryStart := time.Now()
+	statusHistoryRows, err := api.db.Queryx(instanceWithStatusHistoryInInterval)
+	if err != nil {
+		fmt.Println("Error here", err)
+		return nil, false, err
+	}
+	instanceWithStatusInInterval := []InstanceStatusHistoryEntry{}
+	defer statusHistoryRows.Close()
+
+	for statusHistoryRows.Next() {
+		rI := InstanceStatusHistoryEntry{}
+		if err := statusHistoryRows.StructScan(&rI); err != nil {
+			return nil, false, err
+		}
+		instanceWithStatusInInterval = append(instanceWithStatusInInterval, rI)
+	}
+
+	latestHistoryTime := time.Now()
+	prevInstanceID := ""
+	for _, instanceStatusHistory := range instanceWithStatusInInterval {
+		for _, span := range spans {
+			if prevInstanceID == "" {
+				prevInstanceID = instanceStatusHistory.InstanceID
+			}
+			if prevInstanceID != instanceStatusHistory.InstanceID {
+				prevInstanceID = instanceStatusHistory.InstanceID
+				latestHistoryTime = time.Now()
+			}
+			if instanceStatusHistory.CreatedTs.After(span) {
+				timelineCount = updateVersionTimeline(timelineCount, spans, instanceStatusHistory.CreatedTs, latestHistoryTime, instanceStatusHistory.Version)
+				latestHistoryTime = instanceStatusHistory.CreatedTs
+			}
+		}
+	}
+	fmt.Println("instance_status_history in interval time taken:", time.Since(start), time.Since(statusQueryStart))
+
+	// grouped version count for active instances that don't have instance_status_history in the interval
+
+	instancesWithoutStatusInIntervalQuery := fmt.Sprintf(
+		`select version as version, count(*) as count from (select distinct on (instance_id) instance_id,id,status,version,created_ts,application_id,group_id from instance_status_history where instance_id not in (select distinct instance_id from instance_status_history where instance_id in (select instance_id from instance_application where ( "group_id" = '%[1]s' ) AND last_check_for_updates >= now() - interval '%[2]s' AND ( instance_id IS NULL OR instance_id NOT LIKE '{________-____-____-____-____________}' ) intersect ( select instance_id from instance_status_history where group_id = '%[1]s' and status = 4 )) and status=4 and created_ts >= now()-interval '%[2]s') and group_id = '%[1]s' and status = 4 order by instance_id, created_ts desc) temp group by version`, groupID, durationString)
+
+	fmt.Println(instancesWithoutStatusInIntervalQuery)
+	oldStatusStart := time.Now()
+
+	versionAggRows, err := api.db.Queryx(instancesWithoutStatusInIntervalQuery)
 	if err != nil {
 		return nil, false, err
 	}
 
-	noStatusHistoryCount := 0
-	fmt.Println(spans)
-
-	timelineCount := make(map[time.Time]VersionCountMap)
-
-	for _, span := range spans {
-		timelineCount[span] = make(VersionCountMap)
+	type versionCount struct {
+		Version string `db:"version"`
+		Count   int    `db:"count"`
 	}
-	// for each instance get the instance_status_history till the end of timeframe,
-	// If it is not there then find last instance_status_history and set
-	// If instance_status_history doesn't exist use the instance_application data
-	// to set the count
 
-	now := time.Now()
-
-	x := ""
-	for i, instance := range rInstances {
-		fmt.Println("processing instance:", i, "\t", instance.InstanceID)
-
-		// fetch instance_status_history with status 4 and created_ts <= span[last]
-		instanceHistoryQuery, _, err := goqu.From("instance_status_history").Select(
-			goqu.C("instance_id"),
-			goqu.C("created_ts"),
-			goqu.C("version"),
-			goqu.C("status"),
-		).
-			Where(goqu.C("instance_id").Eq(instance.InstanceID)).
-			Where(goqu.C("created_ts").Gte(spans[len(spans)-1])).
-			Where(goqu.C("status").Eq(4)).Order(goqu.C("created_ts").Desc()).ToSQL()
+	for versionAggRows.Next() {
+		vc := versionCount{}
+		err = versionAggRows.StructScan(&vc)
 		if err != nil {
-			fmt.Println("Error instance_s_his query:", err)
+			return nil, false, err
+		}
+		for _, span := range spans {
+			_, ok := timelineCount[span][vc.Version]
+			if ok {
+				timelineCount[span][vc.Version] += uint64(vc.Count)
+			} else {
+				timelineCount[span][vc.Version] = uint64(vc.Count)
+			}
+		}
+	}
+
+	fmt.Println("instance_status_history not in interval time taken:", time.Since(start), time.Since(oldStatusStart))
+
+	return timelineCount, false, nil
+	/*
+		// first select active instances
+		instanceQuery, _, err := goqu.From("instance_application").
+			Select(goqu.C("instance_id"),
+				goqu.L("CASE WHEN last_update_granted_ts IS NOT NULL THEN last_update_granted_ts ELSE created_ts END"),
+				goqu.C("version")).
+			Where(goqu.C("group_id").Eq(groupID),
+				goqu.L(fmt.Sprintf("last_check_for_updates >= now() - interval '%s'", durationString)),
+				goqu.L(ignoreFakeInstanceCondition("instance_id"))).ToSQL()
+		if err != nil {
 			return nil, false, err
 		}
 
-		statusHistoryRows, err := api.db.Queryx(instanceHistoryQuery)
+		fmt.Println(instanceQuery, interval)
+
+		rInstances := []recentInstance{}
+		rows, err := api.db.Queryx(instanceQuery)
 		if err != nil {
-			fmt.Println("error fetching status history:", err)
+			fmt.Println("Error here", err)
 			return nil, false, err
 		}
 
-		instanceStatusHistories := []InstanceStatusHistoryEntry{}
-		for statusHistoryRows.Next() {
-			statusHistory := InstanceStatusHistoryEntry{}
-			err := statusHistoryRows.StructScan(&statusHistory)
-			if err != nil {
-				fmt.Println("error scannning status history", err)
-				fmt.Println(instanceHistoryQuery)
+		defer rows.Close()
+		for rows.Next() {
+			rI := recentInstance{}
+			if err := rows.StructScan(&rI); err != nil {
 				return nil, false, err
 			}
-			instanceStatusHistories = append(instanceStatusHistories, statusHistory)
+			rInstances = append(rInstances, rI)
 		}
-		statusHistoryRows.Close()
+		fmt.Println("recent instances count:", len(rInstances))
 
-		fmt.Println(len(instanceStatusHistories))
-		if len(instanceStatusHistories) > 0 {
-			type update struct {
-				version string
-				from    time.Time
-				till    time.Time
-			}
-			updates := []update{}
+		// get timespans
+		spans, err := timespansForDuration(durationParam(duration))
+		if err != nil {
+			return nil, false, err
+		}
 
-			for _, instanceStatusHistory := range instanceStatusHistories {
-				for _, span := range spans {
-					if instanceStatusHistory.CreatedTs.After(span) {
-						if len(updates) == 0 {
-							updates = append(updates, update{
-								version: instanceStatusHistory.Version,
-								from:    instanceStatusHistory.CreatedTs,
-								till:    time.Now(),
-							})
-						} else {
-							updates = append(updates, update{
-								version: instanceStatusHistory.Version,
-								from:    instanceStatusHistory.CreatedTs,
-								till:    updates[len(updates)-1].from,
-							})
-						}
-					}
-				}
-			}
+		noStatusHistoryCount := 0
+		fmt.Println(spans)
 
-			for _, update := range updates {
-				for _, span := range spans {
-					if span.After(update.from) && span.Before(update.till) {
-						timelineCount[span][update.version]++
-					} else {
-						if _, ok := timelineCount[span][update.version]; !ok {
-							timelineCount[span][update.version] = 0
-						}
-					}
-				}
-			}
-			// lastUpdated := time.Now()
-			// var newlastUpdated time.Time
-			// for _, instanceStatusHistory := range instanceStatusHistories {
-			// 	fmt.Println(instanceStatusHistory.CreatedTs, lastUpdated)
-			// 	for _, span := range spans {
-			// 		if instanceStatusHistory.CreatedTs.After(span) && span.Before(lastUpdated) {
-			// 			fmt.Println("lastUpdated changing", lastUpdated, span)
-			// 			newlastUpdated = span
-			// 			break
-			// 		}
-			// 	}
-			// 	for _, span := range spans {
-			// 		if span.After(lastUpdated) {
-			// 			timelineCount[span][instanceStatusHistory.Version]++
-			// 		}
-			// 	}
-			// 	lastUpdated = newlastUpdated
-			// }
-		} else {
-			noStatusHistory := false
-			oldInstanceStatusHistory := InstanceStatusHistoryEntry{}
-			// find last instance_status_history or use instance_application to set
-			instanceOldHistoryQuery, _, err := goqu.From("instance_status_history").Select(
+		timelineCount := make(map[time.Time]VersionCountMap)
+
+		for _, span := range spans {
+			timelineCount[span] = make(VersionCountMap)
+		}
+		// for each instance get the instance_status_history till the end of timeframe,
+		// If it is not there then find last instance_status_history and set
+		// If instance_status_history doesn't exist use the instance_application data
+		// to set the count
+
+		now := time.Now()
+
+		x := ""
+		for i, instance := range rInstances {
+			fmt.Println("processing instance:", i, "\t", instance.InstanceID)
+
+			// fetch instance_status_history with status 4 and created_ts <= span[last]
+			instanceHistoryQuery, _, err := goqu.From("instance_status_history").Select(
 				goqu.C("instance_id"),
 				goqu.C("created_ts"),
 				goqu.C("version"),
 				goqu.C("status"),
 			).
 				Where(goqu.C("instance_id").Eq(instance.InstanceID)).
-				Where(goqu.C("created_ts").Lte(spans[len(spans)-1])).
-				Where(goqu.C("status").Eq(4)).Order(goqu.C("created_ts").Desc()).Limit(1).ToSQL()
+				Where(goqu.C("created_ts").Gte(spans[len(spans)-1])).
+				Where(goqu.C("status").Eq(4)).Order(goqu.C("created_ts").Desc()).ToSQL()
 			if err != nil {
-				fmt.Println("Error old instance_s_his query:", err)
+				fmt.Println("Error instance_s_his query:", err)
 				return nil, false, err
 			}
-			err = api.db.QueryRowx(instanceOldHistoryQuery).StructScan(&oldInstanceStatusHistory)
+
+			statusHistoryRows, err := api.db.Queryx(instanceHistoryQuery)
 			if err != nil {
-				fmt.Println("old status history query err:", err)
-				if err == sql.ErrNoRows {
-					noStatusHistory = true
-					noStatusHistoryCount++
-				}
+				fmt.Println("error fetching status history:", err)
+				return nil, false, err
 			}
-			if noStatusHistory {
-				// status history doesnt exist for the instance so use instance application
-				for _, span := range spans {
-					if span.After(instance.CreatedTs) {
-						timelineCount[span][instance.Version]++
+
+			instanceStatusHistories := []InstanceStatusHistoryEntry{}
+			for statusHistoryRows.Next() {
+				statusHistory := InstanceStatusHistoryEntry{}
+				err := statusHistoryRows.StructScan(&statusHistory)
+				if err != nil {
+					fmt.Println("error scannning status history", err)
+					fmt.Println(instanceHistoryQuery)
+					return nil, false, err
+				}
+				instanceStatusHistories = append(instanceStatusHistories, statusHistory)
+			}
+			statusHistoryRows.Close()
+
+			fmt.Println(len(instanceStatusHistories))
+			if len(instanceStatusHistories) > 0 {
+				// type update struct {
+				// 	version string
+				// 	from    time.Time
+				// 	till    time.Time
+				// }
+				// updates := []update{}
+
+				// for _, instanceStatusHistory := range instanceStatusHistories {
+				// 	for _, span := range spans {
+				// 		if instanceStatusHistory.CreatedTs.After(span) {
+				// 			if len(updates) == 0 {
+				// 				updates = append(updates, update{
+				// 					version: instanceStatusHistory.Version,
+				// 					from:    instanceStatusHistory.CreatedTs,
+				// 					till:    time.Now(),
+				// 				})
+				// 			} else {
+				// 				updates = append(updates, update{
+				// 					version: instanceStatusHistory.Version,
+				// 					from:    instanceStatusHistory.CreatedTs,
+				// 					till:    updates[len(updates)-1].from,
+				// 				})
+				// 			}
+				// 		}
+				// 	}
+				// }
+
+				// fmt.Printf("%+v\n", updates)
+				// for _, update := range updates {
+				// 	for _, span := range spans {
+				// 		if span.After(update.from) && span.Before(update.till) {
+				// 			timelineCount[span][update.version]++
+				// 		} else {
+				// 			if _, ok := timelineCount[span][update.version]; !ok {
+				// 				timelineCount[span][update.version] = 0
+				// 			}
+				// 		}
+				// 	}
+				// }
+			} else {
+				noStatusHistory := false
+				oldInstanceStatusHistory := InstanceStatusHistoryEntry{}
+				// find last instance_status_history or use instance_application to set
+				instanceOldHistoryQuery, _, err := goqu.From("instance_status_history").Select(
+					goqu.C("instance_id"),
+					goqu.C("created_ts"),
+					goqu.C("version"),
+					goqu.C("status"),
+				).
+					Where(goqu.C("instance_id").Eq(instance.InstanceID)).
+					Where(goqu.C("created_ts").Lte(spans[len(spans)-1])).
+					Where(goqu.C("status").Eq(4)).Order(goqu.C("created_ts").Desc()).Limit(1).ToSQL()
+				if err != nil {
+					fmt.Println("Error old instance_s_his query:", err)
+					return nil, false, err
+				}
+				err = api.db.QueryRowx(instanceOldHistoryQuery).StructScan(&oldInstanceStatusHistory)
+				if err != nil {
+					fmt.Println("old status history query err:", err)
+					if err == sql.ErrNoRows {
+						noStatusHistory = true
+						noStatusHistoryCount++
 					}
 				}
-			} else {
-				x = x + fmt.Sprintf(`"%s",`, oldInstanceStatusHistory.InstanceID)
-				for _, span := range spans {
-					timelineCount[span][oldInstanceStatusHistory.Version]++
+				if noStatusHistory {
+					// status history doesnt exist for the instance so use instance application
+					for _, span := range spans {
+						if span.After(instance.CreatedTs) {
+							timelineCount[span][instance.Version]++
+						} else {
+							if _, ok := timelineCount[span][instance.Version]; !ok {
+								timelineCount[span][instance.Version] = 0
+							}
+						}
+					}
+				} else {
+					x = x + fmt.Sprintf(`"%s",`, oldInstanceStatusHistory.InstanceID)
+					for _, span := range spans {
+						timelineCount[span][oldInstanceStatusHistory.Version]++
+					}
 				}
 			}
 		}
-	}
-	fmt.Println("time taken:", time.Since(now), len(rInstances), noStatusHistoryCount)
-	fmt.Println("instances with status history:\n", x)
-	return timelineCount, false, err
+		fmt.Println("time taken:", time.Since(now), len(rInstances), noStatusHistoryCount)
+		// fmt.Println("instances with status history:\n", x)
+		return timelineCount, false, err
+
+	*/
 	// cacheKey := groupDurationCacheKey{GroupID: groupID, Duration: duration}
 
 	// cachedGroupVersionCountLock.RLock()
