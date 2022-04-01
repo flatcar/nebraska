@@ -705,7 +705,7 @@ func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (m
 	}
 
 	// active instance without instance_status_history status as 4
-	instancesWithoutStatusQuery := fmt.Sprintf(`select "instance_id", CASE WHEN last_update_granted_ts IS NOT NULL THEN last_update_granted_ts ELSE created_ts END, "version" from instance_application where instance_id in ( select instance_id from instance_application where ( "group_id" = '%[1]s' ) AND last_check_for_updates >= now() - interval '%[2]s' AND ( instance_id IS NULL OR instance_id NOT LIKE '{________-____-____-____-____________}' ) except all ( select instance_id from instance_status_history where group_id = '%[1]s' and status = 4 ) );`, groupID, durationString)
+	instancesWithoutStatusQuery := fmt.Sprintf(`select ia.instance_id , CASE WHEN last_update_granted_ts IS NOT NULL THEN last_update_granted_ts ELSE ia.created_ts END, ia."version" from instance_application ia left join (select * from instance_status_history where group_id = '%[1]s' and status = 4 ) ish on ia.instance_id = ish.instance_id  where ( ia."group_id" = '%[1]s' ) AND last_check_for_updates >= now() - interval '%[2]s' AND ( ia.instance_id IS NULL OR ia.instance_id NOT LIKE '{________-____-____-____-____________}') and ish.instance_id is null ;`, groupID, durationString)
 
 	fmt.Println(instancesWithoutStatusQuery)
 
@@ -739,7 +739,8 @@ func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (m
 	// active instances with instance_status_history in the interval
 
 	instanceWithStatusHistoryInInterval := fmt.Sprintf(`
-	select * from instance_status_history where instance_id in (select instance_id from instance_application where ( "group_id" = '%[1]s' ) AND last_check_for_updates >= now() - interval '%[2]s' AND ( instance_id IS NULL OR instance_id NOT LIKE '{________-____-____-____-____________}' ) intersect ( select instance_id from instance_status_history where group_id = '%[1]s' and status = 4 )) and status=4 and created_ts >= now()-interval '%[2]s' order by instance_id,created_ts desc`, groupID, durationString)
+	select * from instance_status_history ish inner join (select instance_id from instance_application where ( "group_id" = '%[1]s' ) AND last_check_for_updates >= now() - interval '%[2]s' AND ( instance_id IS NULL OR instance_id NOT LIKE '{________-____-____-____-____________}')) ia on ish.instance_id = ia.instance_id  where ish.status=4 and ish.created_ts >= now()-interval '%[2]s' order by ish.instance_id,ish.created_ts desc;
+`, groupID, durationString)
 
 	fmt.Println(instanceWithStatusHistoryInInterval)
 	statusQueryStart := time.Now()
@@ -781,7 +782,7 @@ func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (m
 	// grouped version count for active instances that don't have instance_status_history in the interval
 
 	instancesWithoutStatusInIntervalQuery := fmt.Sprintf(
-		`select version as version, count(*) as count from (select distinct on (instance_id) instance_id,id,status,version,created_ts,application_id,group_id from instance_status_history where instance_id not in (select distinct instance_id from instance_status_history where instance_id in (select instance_id from instance_application where ( "group_id" = '%[1]s' ) AND last_check_for_updates >= now() - interval '%[2]s' AND ( instance_id IS NULL OR instance_id NOT LIKE '{________-____-____-____-____________}' ) intersect ( select instance_id from instance_status_history where group_id = '%[1]s' and status = 4 )) and status=4 and created_ts >= now()-interval '%[2]s') and group_id = '%[1]s' and status = 4 order by instance_id, created_ts desc) temp group by version`, groupID, durationString)
+		`select version as version, count(*) as count from (select distinct on (instance_id) instance_id,id,status,version,created_ts,application_id,group_id from instance_status_history ishh where instance_id not in (select distinct ish.instance_id from instance_status_history ish inner join (select instance_id from instance_application where ( "group_id" = '%[1]s' ) AND last_check_for_updates >= now() - interval '%[2]s' AND ( instance_id IS NULL OR instance_id NOT LIKE '{________-____-____-____-____________}')) ia on ish.instance_id = ia.instance_id  where ish.status=4 and ish.created_ts >= now()-interval '%[2]s' ) and ishh.group_id = '%[1]s' and ishh.status = 4 order by instance_id,created_ts desc)tmp group by version`, groupID, durationString)
 
 	fmt.Println(instancesWithoutStatusInIntervalQuery)
 	oldStatusStart := time.Now()
