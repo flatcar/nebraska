@@ -18,7 +18,7 @@ import GroupLayout from './Layouts/GroupLayout';
 import InstanceLayout from './Layouts/InstanceLayout';
 import InstanceListLayout from './Layouts/InstanceListLayout';
 import MainLayout from './Layouts/MainLayout';
-
+import PageNotFoundLayout from './Layouts/PageNotFoundLayout';
 declare module '@material-ui/core/styles/createPalette' {
   interface Palette {
     titleColor: '#000000';
@@ -120,6 +120,7 @@ export default function Main() {
             exact
             component={InstanceLayout}
           />
+          <Route path="*" component={PageNotFoundLayout} />
         </Switch>
         <Footer />
       </Container>
