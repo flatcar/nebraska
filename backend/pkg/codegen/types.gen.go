@@ -95,13 +95,13 @@ type ChannelPage struct {
 
 // Config defines model for config.
 type Config struct {
-	AccessManagementUrl string `json:"accessManagementUrl"`
-	AuthMode            string `json:"authMode"`
-	HeaderStyle         string `json:"headerStyle"`
-	LoginUrl            string `json:"loginUrl"`
+	AccessManagementUrl string `json:"access_management_url"`
+	AuthMode            string `json:"auth_mode"`
+	HeaderStyle         string `json:"header_style"`
+	LoginUrl            string `json:"login_url"`
 	Logo                string `json:"logo"`
-	LogoutUrl           string `json:"logoutUrl"`
-	NebraskaVersion     string `json:"nebraskaVersion"`
+	LogoutUrl           string `json:"logout_url"`
+	NebraskaVersion     string `json:"nebraska_version"`
 	Title               string `json:"title"`
 }
 
@@ -247,6 +247,11 @@ type InstanceStatusHistory struct {
 type LoginInfo struct {
 	Password string `json:"password"`
 	Username string `json:"username"`
+}
+
+// LoginToken defines model for loginToken.
+type LoginToken struct {
+	Token string `json:"token"`
 }
 
 // OmahaRequest defines model for omahaRequest.

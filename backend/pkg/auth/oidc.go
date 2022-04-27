@@ -17,6 +17,7 @@ import (
 	"github.com/tidwall/gjson"
 	"golang.org/x/oauth2"
 
+	"github.com/kinvolk/nebraska/backend/pkg/codegen"
 	"github.com/kinvolk/nebraska/backend/pkg/sessions"
 	echosessions "github.com/kinvolk/nebraska/backend/pkg/sessions/echo"
 )
@@ -326,9 +327,7 @@ func (oa *oidcAuth) LoginToken(c echo.Context) error {
 	session.Set("username", oidcToken.Subject)
 	sessionSave(c, session, "login_token")
 
-	return c.JSON(http.StatusOK, map[string]string{
-		"token": oidcTokenResp.AccessToken,
-	})
+	return c.JSON(http.StatusOK, codegen.LoginToken{Token: oidcTokenResp.AccessToken})
 }
 
 // tokenFromRequest extracts token from request header. If Authorization header is not present returns id_token query param .
