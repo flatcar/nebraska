@@ -43,6 +43,10 @@ paths:
       responses:
         "200":
           description: login token response      
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/loginToken"
         "500":
           description: internal server error
         "501":
@@ -1349,19 +1353,42 @@ components:
       properties:
         accessManagementUrl:
           type: string
+          x-oapi-codegen-extra-tags:
+            json: "access_management_url"
         logoutUrl:
           type: string
+          x-oapi-codegen-extra-tags:
+            json: "logout_url"
         nebraskaVersion:
           type: string
+          x-oapi-codegen-extra-tags:
+            json: "nebraska_version"
         logo:
           type: string
+          x-oapi-codegen-extra-tags:
+            json: "logo"
         title:
           type: string
+          x-oapi-codegen-extra-tags:
+            json: "title"
         headerStyle:
           type: string
+          x-oapi-codegen-extra-tags:
+            json: "header_style"
         loginUrl:
           type: string
+          x-oapi-codegen-extra-tags:
+            json: "login_url"
         authMode:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: "auth_mode"
+    loginToken:
+      type: object
+      required:
+        - "token"
+      properties:
+        token:
           type: string
     flatcarAction:
       type: object

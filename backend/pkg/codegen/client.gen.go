@@ -3770,6 +3770,7 @@ func (r LoginCbResponse) StatusCode() int {
 type LoginTokenResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON200      *LoginToken
 }
 
 // Status returns HTTPResponse.Status
@@ -5090,6 +5091,16 @@ func ParseLoginTokenResponse(rsp *http.Response) (*LoginTokenResponse, error) {
 	response := &LoginTokenResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest LoginToken
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
 	}
 
 	return response, nil
