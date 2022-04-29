@@ -12,6 +12,12 @@ import (
 )
 
 func (h *Handler) PaginateChannels(ctx echo.Context, appID string, params codegen.PaginateChannelsParams) error {
+
+	appID, err := h.db.GetAppID(appID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appID)
+	}
+
 	if params.Page == nil {
 		params.Page = &defaultPage
 	}
@@ -47,6 +53,10 @@ func (h *Handler) CreateChannel(ctx echo.Context, appID string) error {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
+	appID, err = h.db.GetAppID(appID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appID)
+	}
 	channel := newChannel(appID, request.Arch, request.Color, request.Name, request.PackageId)
 	_, err = h.db.AddChannel(channel)
 	if err != nil {
@@ -65,6 +75,10 @@ func (h *Handler) CreateChannel(ctx echo.Context, appID string) error {
 }
 
 func (h *Handler) GetChannel(ctx echo.Context, appID string, channelID string) error {
+	appID, err := h.db.GetAppID(appID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appID)
+	}
 	channel, err := h.db.GetChannel(channelID)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -79,9 +93,14 @@ func (h *Handler) GetChannel(ctx echo.Context, appID string, channelID string) e
 func (h *Handler) UpdateChannel(ctx echo.Context, appID string, channelID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
+	appID, err := h.db.GetAppID(appID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appID)
+	}
+
 	var request codegen.ChannelConfig
 
-	err := ctx.Bind(&request)
+	err = ctx.Bind(&request)
 	if err != nil {
 		logger.Error().Err(err).Msg("updateChannel")
 		return ctx.NoContent(http.StatusBadRequest)
@@ -142,7 +161,9 @@ func newChannel(appID string, arch uint, color string, name string, packageID *s
 		Name:          name,
 		Color:         color,
 		Arch:          api.Arch(arch),
-		PackageID:     null.StringFromPtr(packageID),
+	}
+	if packageID != nil && *packageID != "" {
+		channel.PackageID = null.StringFromPtr(packageID)
 	}
 	return channel
 }

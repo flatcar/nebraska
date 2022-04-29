@@ -140,7 +140,7 @@ func TestLogin(t *testing.T) {
 		require.NoError(t, err)
 
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-		assert.Contains(t, string(bodyBytes), `parameter \"login_redirect_url\" in query has an error: value is required but missing: value is required but missing`)
+		assert.Contains(t, string(bodyBytes), `value is required but missing`)
 	})
 
 	t.Run("invalid_login_redirect_url", func(t *testing.T) {

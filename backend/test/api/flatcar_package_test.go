@@ -31,6 +31,7 @@ func TestHostFlatcarPackage(t *testing.T) {
 	}
 
 	db := newDBForTest(t)
+	defer db.Close()
 
 	t.Run("file_exists", func(t *testing.T) {
 		server, err := server.New(conf, db)

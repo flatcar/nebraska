@@ -10,6 +10,11 @@ import (
 )
 
 func (h *Handler) GetInstance(ctx echo.Context, appID string, groupID string, instanceID string) error {
+	appID, err := h.db.GetAppID(appID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appID)
+	}
+
 	instance, err := h.db.GetInstance(instanceID, appID)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -25,6 +30,10 @@ func (h *Handler) GetInstanceStatusHistory(ctx echo.Context, appID string, group
 	limit := 20
 	if params.Limit != nil {
 		limit = *params.Limit
+	}
+	appID, err := h.db.GetAppID(appID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appID)
 	}
 
 	instanceStatusHistory, err := h.db.GetInstanceStatusHistory(instanceID, appID, groupID, uint64(limit))

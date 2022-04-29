@@ -19,6 +19,10 @@ func (h *Handler) PaginatePackages(ctx echo.Context, appID string, params codege
 	if params.Perpage == nil {
 		params.Perpage = &defaultPerPage
 	}
+	appID, err := h.db.GetAppID(appID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appID)
+	}
 
 	totalCount, err := h.db.GetPackagesCount(appID, params.SearchVersion)
 	if err != nil {
@@ -40,9 +44,14 @@ func (h *Handler) PaginatePackages(ctx echo.Context, appID string, params codege
 func (h *Handler) CreatePackage(ctx echo.Context, appID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
+	appID, err := h.db.GetAppID(appID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appID)
+	}
+
 	var request codegen.PackageConfig
 
-	err := ctx.Bind(&request)
+	err = ctx.Bind(&request)
 	if err != nil {
 		logger.Error().Err(err).Msg("addPackage - decoding payload")
 		return ctx.NoContent(http.StatusBadRequest)
@@ -83,9 +92,14 @@ func (h *Handler) GetPackage(ctx echo.Context, appID string, packageID string) e
 func (h *Handler) UpdatePackage(ctx echo.Context, appID string, packageID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
+	appID, err := h.db.GetAppID(appID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appID)
+	}
+
 	var request codegen.PackageConfig
 
-	err := ctx.Bind(&request)
+	err = ctx.Bind(&request)
 	if err != nil {
 		logger.Error().Err(err).Msg("updatePackage - decoding payload")
 		return ctx.NoContent(http.StatusBadRequest)

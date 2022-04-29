@@ -20,6 +20,11 @@ func (h *Handler) PaginateGroups(ctx echo.Context, appID string, params codegen.
 		params.Perpage = &defaultPerPage
 	}
 
+	appID, err := h.db.GetAppID(appID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appID)
+	}
+
 	totalCount, err := h.db.GetGroupsCount(appID)
 	if err != nil {
 		logger.Error().Err(err).Str("appID", appID).Msg("getGroups count - getting groups")
@@ -42,8 +47,13 @@ func (h *Handler) PaginateGroups(ctx echo.Context, appID string, params codegen.
 func (h *Handler) CreateGroup(ctx echo.Context, appID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
+	appID, err := h.db.GetAppID(appID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appID)
+	}
+
 	var request codegen.GroupConfig
-	err := ctx.Bind(&request)
+	err = ctx.Bind(&request)
 	if err != nil {
 		logger.Error().Err(err).Msg("addGroup - decoding payload")
 		return ctx.NoContent(http.StatusBadRequest)
@@ -83,8 +93,13 @@ func (h *Handler) GetGroup(ctx echo.Context, appID string, groupID string) error
 func (h *Handler) UpdateGroup(ctx echo.Context, appID string, groupID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
+	appID, err := h.db.GetAppID(appID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appID)
+	}
+
 	var request codegen.GroupConfig
-	err := ctx.Bind(&request)
+	err = ctx.Bind(&request)
 	if err != nil {
 		logger.Error().Err(err).Msg("updateGroup - decoding payload")
 		return ctx.NoContent(http.StatusBadRequest)
@@ -241,6 +256,11 @@ func (h *Handler) GetGroupInstances(ctx echo.Context, appID string, groupID stri
 }
 
 func (h *Handler) GetGroupInstancesCount(ctx echo.Context, appID string, groupID string, params codegen.GetGroupInstancesCountParams) error {
+	appID, err := h.db.GetAppID(appID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appID)
+	}
+
 	p := api.InstancesQueryParams{
 		ApplicationID: appID,
 		GroupID:       groupID,
@@ -260,9 +280,13 @@ func groupFromRequest(name string, description *string, policyMaxUpdatesPerPerio
 		Name:                      name,
 		PolicyMaxUpdatesPerPeriod: policyMaxUpdatesPerPeriod,
 		PolicyPeriodInterval:      policyPeriodInterval,
-		PolicyTimezone:            null.StringFrom(policyTimezone),
 		PolicyUpdateTimeout:       policyUpdateTimeout,
-		ChannelID:                 null.StringFromPtr(channelID),
+	}
+	if channelID != nil && *channelID != "" {
+		group.ChannelID = null.StringFromPtr(channelID)
+	}
+	if policyTimezone != "" {
+		group.PolicyTimezone = null.StringFrom(policyTimezone)
 	}
 	if groupID != "" {
 		group.ID = groupID
