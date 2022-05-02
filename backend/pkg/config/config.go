@@ -31,6 +31,7 @@ type Config struct {
 	APIEndpointSuffix   string `koanf:"api-endpoint-suffix"`
 	Debug               bool   `koanf:"debug"`
 	ServerPort          uint   `koanf:"port"`
+	RollbackDBTo        string `koanf:"rollback-db-to"`
 
 	GhClientID        string `koanf:"gh-client-id"`
 	GhClientSecret    string `koanf:"gh-client-secret"`
@@ -103,6 +104,7 @@ func Parse() (*Config, error) {
 	var config Config
 
 	f := flag.NewFlagSet("config", flag.ContinueOnError)
+	f.String("rollback-db-to", "", "Rollback db migration to the provided id, eg:0003")
 	f.Bool("enable-syncer", false, "Enable Flatcar packages syncer")
 	f.Bool("host-flatcar-packages", false, "Host Flatcar packages in Nebraska")
 	f.String("flatcar-packages-path", "", "Path where Flatcar packages files should be stored")
