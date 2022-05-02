@@ -7,5 +7,5 @@ CREATE UNIQUE INDEX application_unique_product_idx on application (LOWER(product
 -- +migrate Down
 
 alter table application drop constraint application_unique_product_id;
-alter table application INDEX application_unique_product_idx;
+drop index if exists application_unique_product_idx;
 alter table application drop column product_id;
