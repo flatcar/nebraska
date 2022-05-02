@@ -17,6 +17,7 @@
 // db/migrations/0013_add_stats_indexes.sql (426B)
 // db/migrations/0014_add_application_product_id.sql (465B)
 // db/migrations/0015_add_package_file.sql (355B)
+// db/migrations/0016_add_version_breakdown_indexes.sql (734B)
 
 package api
 
@@ -425,6 +426,26 @@ func dbMigrations0015_add_package_fileSql() (*asset, error) {
 	return a, nil
 }
 
+var _dbMigrations0016_add_version_breakdown_indexesSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xa4\x91\x41\x4e\x86\x30\x10\x85\xf7\x3d\x45\x97\x1a\xf9\x4f\xc0\xd6\x2b\xb8\x9e\x34\xed\x00\x13\xb1\xd3\x74\x06\xc5\xdb\x1b\x44\x0a\xc4\x18\x62\xff\xdd\xe4\x25\xef\xcb\x97\x79\xb7\x9b\x7d\x7a\xa3\x3e\x3b\x45\xfb\x92\x8c\xf1\x19\x97\x93\x62\xc0\xd9\x52\x67\x23\xab\xc5\x99\x44\xc5\x52\x14\x75\xd1\x23\x88\x3a\x9d\x04\x06\x12\xe5\xfc\x09\x7d\xe6\x29\x01\x85\x2d\x5f\x11\x01\x54\x80\xc2\x6c\x39\xfe\xd5\x7c\xd8\x9a\xcd\x9a\x37\x7b\xf3\xb1\xad\x52\x29\x79\x8d\xcd\xa1\x5c\x2f\xe4\x52\x1a\xc9\x3b\x25\x8e\x27\x9b\x77\xcc\xb2\x64\xe5\x59\xa3\x13\x05\x3f\xa0\xff\xa5\x75\x40\x9c\x9c\x7e\x10\x4d\xf9\x5a\x41\xbc\x42\xc7\x19\xa6\x14\x9c\xe2\xb7\xe9\x71\xd5\x67\xfe\x88\xc6\x84\xcc\x69\x37\xbf\x6b\xd1\xf6\x9f\xb4\xcb\x51\x2e\x81\x75\x4f\x6d\x8d\xf9\x0a\x00\x00\xff\xff\xbc\x67\x0f\x8b\xde\x02\x00\x00")
+
+func dbMigrations0016_add_version_breakdown_indexesSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_dbMigrations0016_add_version_breakdown_indexesSql,
+		"db/migrations/0016_add_version_breakdown_indexes.sql",
+	)
+}
+
+func dbMigrations0016_add_version_breakdown_indexesSql() (*asset, error) {
+	bytes, err := dbMigrations0016_add_version_breakdown_indexesSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "db/migrations/0016_add_version_breakdown_indexes.sql", size: 734, mode: os.FileMode(0644), modTime: time.Unix(1, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xf1, 0x32, 0x58, 0x42, 0xa6, 0x1f, 0xb0, 0x63, 0x2, 0xd7, 0xf4, 0xd, 0x80, 0x48, 0xef, 0x14, 0xff, 0xba, 0x29, 0xfd, 0x21, 0xc7, 0xda, 0x78, 0xc4, 0xc0, 0xf1, 0x51, 0xdc, 0xd3, 0x2c, 0xf5}}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -516,23 +537,24 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"db/drop_all_tables.sql":                            dbDrop_all_tablesSql,
-	"db/sample_data.sql":                                dbSample_dataSql,
-	"db/migrations/0001_initial.sql":                    dbMigrations0001_initialSql,
-	"db/migrations/0002_event_data.sql":                 dbMigrations0002_event_dataSql,
-	"db/migrations/0003_longer_team_names.sql":          dbMigrations0003_longer_team_namesSql,
-	"db/migrations/0004_rename_coreos_action.sql":       dbMigrations0004_rename_coreos_actionSql,
-	"db/migrations/0005_default_team_id.sql":            dbMigrations0005_default_team_idSql,
-	"db/migrations/0006_initial_application.sql":        dbMigrations0006_initial_applicationSql,
-	"db/migrations/0007_add_package_arch.sql":           dbMigrations0007_add_package_archSql,
-	"db/migrations/0008-arm-channels-groups.sql":        dbMigrations0008ArmChannelsGroupsSql,
-	"db/migrations/0009_group_track_names.sql":          dbMigrations0009_group_track_namesSql,
-	"db/migrations/0010_add_instance_alias.sql":         dbMigrations0010_add_instance_aliasSql,
-	"db/migrations/0011_add_composite_indexes.sql":      dbMigrations0011_add_composite_indexesSql,
-	"db/migrations/0012_drop_unused_indexes.sql":        dbMigrations0012_drop_unused_indexesSql,
-	"db/migrations/0013_add_stats_indexes.sql":          dbMigrations0013_add_stats_indexesSql,
-	"db/migrations/0014_add_application_product_id.sql": dbMigrations0014_add_application_product_idSql,
-	"db/migrations/0015_add_package_file.sql":           dbMigrations0015_add_package_fileSql,
+	"db/drop_all_tables.sql":                               dbDrop_all_tablesSql,
+	"db/sample_data.sql":                                   dbSample_dataSql,
+	"db/migrations/0001_initial.sql":                       dbMigrations0001_initialSql,
+	"db/migrations/0002_event_data.sql":                    dbMigrations0002_event_dataSql,
+	"db/migrations/0003_longer_team_names.sql":             dbMigrations0003_longer_team_namesSql,
+	"db/migrations/0004_rename_coreos_action.sql":          dbMigrations0004_rename_coreos_actionSql,
+	"db/migrations/0005_default_team_id.sql":               dbMigrations0005_default_team_idSql,
+	"db/migrations/0006_initial_application.sql":           dbMigrations0006_initial_applicationSql,
+	"db/migrations/0007_add_package_arch.sql":              dbMigrations0007_add_package_archSql,
+	"db/migrations/0008-arm-channels-groups.sql":           dbMigrations0008ArmChannelsGroupsSql,
+	"db/migrations/0009_group_track_names.sql":             dbMigrations0009_group_track_namesSql,
+	"db/migrations/0010_add_instance_alias.sql":            dbMigrations0010_add_instance_aliasSql,
+	"db/migrations/0011_add_composite_indexes.sql":         dbMigrations0011_add_composite_indexesSql,
+	"db/migrations/0012_drop_unused_indexes.sql":           dbMigrations0012_drop_unused_indexesSql,
+	"db/migrations/0013_add_stats_indexes.sql":             dbMigrations0013_add_stats_indexesSql,
+	"db/migrations/0014_add_application_product_id.sql":    dbMigrations0014_add_application_product_idSql,
+	"db/migrations/0015_add_package_file.sql":              dbMigrations0015_add_package_fileSql,
+	"db/migrations/0016_add_version_breakdown_indexes.sql": dbMigrations0016_add_version_breakdown_indexesSql,
 }
 
 // AssetDebug is true if the assets were built with the debug flag enabled.
@@ -597,6 +619,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"0013_add_stats_indexes.sql": {dbMigrations0013_add_stats_indexesSql, map[string]*bintree{}},
 			"0014_add_application_product_id.sql": {dbMigrations0014_add_application_product_idSql, map[string]*bintree{}},
 			"0015_add_package_file.sql": {dbMigrations0015_add_package_fileSql, map[string]*bintree{}},
+			"0016_add_version_breakdown_indexes.sql": {dbMigrations0016_add_version_breakdown_indexesSql, map[string]*bintree{}},
 		}},
 		"sample_data.sql": {dbSample_dataSql, map[string]*bintree{}},
 	}},
