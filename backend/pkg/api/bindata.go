@@ -17,6 +17,7 @@
 // db/migrations/0013_add_stats_indexes.sql (426B)
 // db/migrations/0014_add_application_product_id.sql (465B)
 // db/migrations/0015_add_package_file.sql (355B)
+// db/migrations/0016_increase_pkg_url_length.sql (152B)
 
 package api
 
@@ -425,6 +426,26 @@ func dbMigrations0015_add_package_fileSql() (*asset, error) {
 	return a, nil
 }
 
+var _dbMigrations0016_increase_pkg_url_lengthSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xd2\xd5\x55\xd0\xce\xcd\x4c\x2f\x4a\x2c\x49\x55\x08\x2d\xe0\xe2\x4a\xcc\x29\x49\x2d\x52\x28\x49\x4c\xca\x49\x55\x28\x48\x4c\xce\x4e\x4c\x4f\x55\x80\x88\x25\xe7\xe7\x94\xe6\xe6\x29\x28\x95\x16\xe5\x28\x29\x94\x54\x16\xa4\x2a\x94\x25\x16\x25\x67\x24\x16\x69\x98\x19\x18\x18\x18\x68\x5a\x73\x71\x21\x1b\xe6\x92\x5f\x9e\x47\x9e\x71\x46\xa6\x66\x9a\xd6\x80\x00\x00\x00\xff\xff\x27\x2a\xaa\x82\x98\x00\x00\x00")
+
+func dbMigrations0016_increase_pkg_url_lengthSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_dbMigrations0016_increase_pkg_url_lengthSql,
+		"db/migrations/0016_increase_pkg_url_length.sql",
+	)
+}
+
+func dbMigrations0016_increase_pkg_url_lengthSql() (*asset, error) {
+	bytes, err := dbMigrations0016_increase_pkg_url_lengthSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "db/migrations/0016_increase_pkg_url_length.sql", size: 152, mode: os.FileMode(0644), modTime: time.Unix(1, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0xc7, 0x45, 0xd3, 0xc6, 0xc4, 0xf8, 0x4b, 0x54, 0x96, 0xdb, 0xc2, 0xf8, 0x5b, 0xc4, 0x6e, 0xa9, 0xf9, 0x51, 0x4, 0x6f, 0xf4, 0x45, 0xa1, 0xb6, 0x6a, 0xd, 0xbf, 0x4b, 0x5e, 0xa7, 0x3e, 0x8d}}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -533,6 +554,7 @@ var _bindata = map[string]func() (*asset, error){
 	"db/migrations/0013_add_stats_indexes.sql":          dbMigrations0013_add_stats_indexesSql,
 	"db/migrations/0014_add_application_product_id.sql": dbMigrations0014_add_application_product_idSql,
 	"db/migrations/0015_add_package_file.sql":           dbMigrations0015_add_package_fileSql,
+	"db/migrations/0016_increase_pkg_url_length.sql":    dbMigrations0016_increase_pkg_url_lengthSql,
 }
 
 // AssetDebug is true if the assets were built with the debug flag enabled.
@@ -597,6 +619,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"0013_add_stats_indexes.sql": {dbMigrations0013_add_stats_indexesSql, map[string]*bintree{}},
 			"0014_add_application_product_id.sql": {dbMigrations0014_add_application_product_idSql, map[string]*bintree{}},
 			"0015_add_package_file.sql": {dbMigrations0015_add_package_fileSql, map[string]*bintree{}},
+			"0016_increase_pkg_url_length.sql": {dbMigrations0016_increase_pkg_url_lengthSql, map[string]*bintree{}},
 		}},
 		"sample_data.sql": {dbSample_dataSql, map[string]*bintree{}},
 	}},
