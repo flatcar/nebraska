@@ -21,7 +21,7 @@ build: install
 
 .PHONY: test
 test:
-	npm run test
+	npm run test -- --coverage
 
 .PHONY: lint
 lint:

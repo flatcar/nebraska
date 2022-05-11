@@ -133,5 +133,24 @@
       }
     ]
   },
-  "prettier": "@kinvolk/eslint-config/prettier-config"
+  "prettier": "@kinvolk/eslint-config/prettier-config",
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!<rootDir>/node_modules/",
+      "!<rootDir>/build/",
+      "!src/**/*.stories*.{js,jsx,ts,tsx}"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 34.95,
+        "branches": 26.29,
+        "functions": 30.35,
+        "lines": 35.3
+      }
+    },
+    "coverageReporters": [
+      "text"
+    ]
+  }
 }
