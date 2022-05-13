@@ -313,16 +313,16 @@ type VersionBreakdownEntry struct {
 
 // PaginateActivityParams defines parameters for PaginateActivity.
 type PaginateActivityParams struct {
-	AppID      *string `form:"appID,omitempty" json:"appID,omitempty"`
-	GroupID    *string `form:"groupID,omitempty" json:"groupID,omitempty"`
-	ChannelID  *string `form:"channelID,omitempty" json:"channelID,omitempty"`
-	InstanceID *string `form:"instanceID,omitempty" json:"instanceID,omitempty"`
-	Version    *string `form:"version,omitempty" json:"version,omitempty"`
-	Severity   *int    `form:"severity,omitempty" json:"severity,omitempty"`
-	Start      string  `form:"start" json:"start"`
-	End        string  `form:"end" json:"end"`
-	Page       *int    `form:"page,omitempty" json:"page,omitempty"`
-	Perpage    *int    `form:"perpage,omitempty" json:"perpage,omitempty"`
+	AppIDorProductID *string `form:"appIDorProductID,omitempty" json:"appIDorProductID,omitempty"`
+	GroupID          *string `form:"groupID,omitempty" json:"groupID,omitempty"`
+	ChannelID        *string `form:"channelID,omitempty" json:"channelID,omitempty"`
+	InstanceID       *string `form:"instanceID,omitempty" json:"instanceID,omitempty"`
+	Version          *string `form:"version,omitempty" json:"version,omitempty"`
+	Severity         *int    `form:"severity,omitempty" json:"severity,omitempty"`
+	Start            string  `form:"start" json:"start"`
+	End              string  `form:"end" json:"end"`
+	Page             *int    `form:"page,omitempty" json:"page,omitempty"`
+	Perpage          *int    `form:"perpage,omitempty" json:"perpage,omitempty"`
 }
 
 // PaginateAppsParams defines parameters for PaginateApps.

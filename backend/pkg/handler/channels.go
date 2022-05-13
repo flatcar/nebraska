@@ -11,7 +11,13 @@ import (
 	"github.com/kinvolk/nebraska/backend/pkg/codegen"
 )
 
-func (h *Handler) PaginateChannels(ctx echo.Context, appID string, params codegen.PaginateChannelsParams) error {
+func (h *Handler) PaginateChannels(ctx echo.Context, appIDorProductID string, params codegen.PaginateChannelsParams) error {
+
+	appID, err := h.db.GetAppID(appIDorProductID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appIDorProductID)
+	}
+
 	if params.Page == nil {
 		params.Page = &defaultPage
 	}
@@ -37,7 +43,7 @@ func (h *Handler) PaginateChannels(ctx echo.Context, appID string, params codege
 	return ctx.JSON(http.StatusOK, channelsPage{totalCount, len(channels), channels})
 }
 
-func (h *Handler) CreateChannel(ctx echo.Context, appID string) error {
+func (h *Handler) CreateChannel(ctx echo.Context, appIDorProductID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
 	var request codegen.ChannelConfig
@@ -47,6 +53,10 @@ func (h *Handler) CreateChannel(ctx echo.Context, appID string) error {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
+	appID, err := h.db.GetAppID(appIDorProductID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appIDorProductID)
+	}
 	channel := newChannel(appID, request.Arch, request.Color, request.Name, request.PackageId)
 	_, err = h.db.AddChannel(channel)
 	if err != nil {
@@ -64,7 +74,7 @@ func (h *Handler) CreateChannel(ctx echo.Context, appID string) error {
 	return ctx.JSON(http.StatusOK, channel)
 }
 
-func (h *Handler) GetChannel(ctx echo.Context, appID string, channelID string) error {
+func (h *Handler) GetChannel(ctx echo.Context, appIDorProductID string, channelID string) error {
 	channel, err := h.db.GetChannel(channelID)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -76,12 +86,17 @@ func (h *Handler) GetChannel(ctx echo.Context, appID string, channelID string) e
 	return ctx.JSON(http.StatusOK, channel)
 }
 
-func (h *Handler) UpdateChannel(ctx echo.Context, appID string, channelID string) error {
+func (h *Handler) UpdateChannel(ctx echo.Context, appIDorProductID string, channelID string) error {
 	logger := loggerWithUsername(logger, ctx)
+
+	appID, err := h.db.GetAppID(appIDorProductID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appIDorProductID)
+	}
 
 	var request codegen.ChannelConfig
 
-	err := ctx.Bind(&request)
+	err = ctx.Bind(&request)
 	if err != nil {
 		logger.Error().Err(err).Msg("updateChannel")
 		return ctx.NoContent(http.StatusBadRequest)
@@ -116,7 +131,7 @@ func (h *Handler) UpdateChannel(ctx echo.Context, appID string, channelID string
 	return ctx.JSON(http.StatusOK, channel)
 }
 
-func (h *Handler) DeleteChannel(ctx echo.Context, appID string, channelID string) error {
+func (h *Handler) DeleteChannel(ctx echo.Context, appIDorProductID string, channelID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
 	channel, err := h.db.GetChannel(channelID)
@@ -142,7 +157,9 @@ func newChannel(appID string, arch uint, color string, name string, packageID *s
 		Name:          name,
 		Color:         color,
 		Arch:          api.Arch(arch),
-		PackageID:     null.StringFromPtr(packageID),
+	}
+	if packageID != nil && *packageID != "" {
+		channel.PackageID = null.StringFromPtr(packageID)
 	}
 	return channel
 }

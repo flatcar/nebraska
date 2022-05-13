@@ -23,8 +23,12 @@ func (h *Handler) PaginateActivity(ctx echo.Context, params codegen.PaginateActi
 	}
 
 	var p api.ActivityQueryParams
-	if params.AppID != nil {
-		p.AppID = *params.AppID
+	if params.AppIDorProductID != nil {
+		appID, err := h.db.GetAppID(*params.AppIDorProductID)
+		if err != nil {
+			return appNotFoundResponse(ctx, *params.AppIDorProductID)
+		}
+		p.AppID = appID
 	}
 	if params.GroupID != nil {
 		p.GroupID = *params.GroupID

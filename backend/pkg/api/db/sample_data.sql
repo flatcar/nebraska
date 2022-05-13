@@ -35,7 +35,7 @@ insert into flatcar_action values ('748df5fc-12a5-4dad-a71e-465cc1668048', 'post
 insert into flatcar_action values ('9cd474c5-efa3-4989-9992-58ddb852ed84', 'postinstall', '', '1S9zQCLGjmefYnE/aFcpCjL1NsguHhQGj0UCm5f0M98=', false, false, true, '', '', '', '2019-09-10 23:11:10.913778', '284d295b-518f-4d67-999e-94968d0eed90');
 
 -- Sample application 1
-insert into application (id, name, description, team_id) values ('b6458005-8f40-4627-b33b-be70a718c48e', 'Sample application', 'Just an application to show the capabilities of Nebraska', 'd89342dc-9214-441d-a4af-bdd837a3b239');
+insert into application (id, name, description, team_id, product_id) values ('b6458005-8f40-4627-b33b-be70a718c48e', 'Sample application', 'Just an application to show the capabilities of Nebraska', 'd89342dc-9214-441d-a4af-bdd837a3b239','io.kinvolk.sample');
 insert into package (id, type, url, filename, version, application_id, arch) values ('5195d5a2-5f82-11e5-9d70-feff819cdc9f', 4, 'https://www.kinvolk.io/', 'test_1.0.2', '1.0.2', 'b6458005-8f40-4627-b33b-be70a718c48e', 1);
 insert into package (id, type, url, filename, version, application_id, arch) values ('12697fa4-5f83-11e5-9d70-feff819cdc9f', 4, 'https://www.kinvolk.io/', 'test_1.0.3', '1.0.3', 'b6458005-8f40-4627-b33b-be70a718c48e', 1);
 insert into package (id, type, url, filename, version, application_id, arch) values ('8004bad8-5f97-11e5-9d70-feff819cdc9f', 4, 'https://www.kinvolk.io/', 'test_1.0.4', '1.0.4', 'b6458005-8f40-4627-b33b-be70a718c48e', 1);

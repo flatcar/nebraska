@@ -11,13 +11,17 @@ import (
 	"github.com/kinvolk/nebraska/backend/pkg/codegen"
 )
 
-func (h *Handler) PaginatePackages(ctx echo.Context, appID string, params codegen.PaginatePackagesParams) error {
+func (h *Handler) PaginatePackages(ctx echo.Context, appIDorProductID string, params codegen.PaginatePackagesParams) error {
 	if params.Page == nil {
 		params.Page = &defaultPage
 	}
 
 	if params.Perpage == nil {
 		params.Perpage = &defaultPerPage
+	}
+	appID, err := h.db.GetAppID(appIDorProductID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appIDorProductID)
 	}
 
 	totalCount, err := h.db.GetPackagesCount(appID, params.SearchVersion)
@@ -37,12 +41,17 @@ func (h *Handler) PaginatePackages(ctx echo.Context, appID string, params codege
 	return ctx.JSON(http.StatusOK, packagePage{totalCount, len(pkgs), pkgs})
 }
 
-func (h *Handler) CreatePackage(ctx echo.Context, appID string) error {
+func (h *Handler) CreatePackage(ctx echo.Context, appIDorProductID string) error {
 	logger := loggerWithUsername(logger, ctx)
+
+	appID, err := h.db.GetAppID(appIDorProductID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appIDorProductID)
+	}
 
 	var request codegen.PackageConfig
 
-	err := ctx.Bind(&request)
+	err = ctx.Bind(&request)
 	if err != nil {
 		logger.Error().Err(err).Msg("addPackage - decoding payload")
 		return ctx.NoContent(http.StatusBadRequest)
@@ -67,7 +76,7 @@ func (h *Handler) CreatePackage(ctx echo.Context, appID string) error {
 	return ctx.JSON(http.StatusOK, pkg)
 }
 
-func (h *Handler) GetPackage(ctx echo.Context, appID string, packageID string) error {
+func (h *Handler) GetPackage(ctx echo.Context, appIDorProductID string, packageID string) error {
 	pkg, err := h.db.GetPackage(packageID)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -80,12 +89,17 @@ func (h *Handler) GetPackage(ctx echo.Context, appID string, packageID string) e
 	return ctx.JSON(http.StatusOK, pkg)
 }
 
-func (h *Handler) UpdatePackage(ctx echo.Context, appID string, packageID string) error {
+func (h *Handler) UpdatePackage(ctx echo.Context, appIDorProductID string, packageID string) error {
 	logger := loggerWithUsername(logger, ctx)
+
+	appID, err := h.db.GetAppID(appIDorProductID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appIDorProductID)
+	}
 
 	var request codegen.PackageConfig
 
-	err := ctx.Bind(&request)
+	err = ctx.Bind(&request)
 	if err != nil {
 		logger.Error().Err(err).Msg("updatePackage - decoding payload")
 		return ctx.NoContent(http.StatusBadRequest)
@@ -119,7 +133,7 @@ func (h *Handler) UpdatePackage(ctx echo.Context, appID string, packageID string
 	return ctx.JSON(http.StatusOK, pkg)
 }
 
-func (h *Handler) DeletePackage(ctx echo.Context, appID string, packageID string) error {
+func (h *Handler) DeletePackage(ctx echo.Context, appIDorProductID string, packageID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
 	pkg, err := h.db.GetPackage(packageID)

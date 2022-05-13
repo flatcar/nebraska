@@ -23,6 +23,7 @@ func TestListPackages(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// establish DB connection
 		db := newDBForTest(t)
+		defer db.Close()
 
 		// get random app
 		app := getRandomApp(t, db)
@@ -37,7 +38,6 @@ func TestListPackages(t *testing.T) {
 		method := "GET"
 
 		// response
-		// TODO: will require change as response struct is changed in POC2 branch
 		var packagesResp codegen.PackagePage
 
 		httpDo(t, url, method, nil, http.StatusOK, "json", &packagesResp)
@@ -49,12 +49,43 @@ func TestListPackages(t *testing.T) {
 			assert.Equal(t, packagesDB[i].ID, packagesResp.Packages[i].Id)
 		}
 	})
+	t.Run("success_product_id", func(t *testing.T) {
+		// establish DB connection
+		db := newDBForTest(t)
+		defer db.Close()
+
+		// get app with product id from DB
+		app := getAppWithProductID(t, db)
+
+		// get packages from DB for app
+		packagesDB, err := db.GetPackages(app.ID, 1, 10, nil)
+		require.NoError(t, err)
+		require.NotNil(t, packagesDB)
+
+		// fetch packages from API
+		url := fmt.Sprintf("%s/api/apps/%s/packages", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ProductID.String)
+		method := "GET"
+
+		// response
+		var packagesResp codegen.PackagePage
+
+		httpDo(t, url, method, nil, http.StatusOK, "json", &packagesResp)
+
+		assert.NotEqual(t, 0, len(packagesResp.Packages))
+		assert.Equal(t, len(packagesDB), len(packagesResp.Packages))
+		for i := range packagesDB {
+			assert.Equal(t, packagesDB[i].ApplicationID, packagesResp.Packages[i].ApplicationID)
+			assert.Equal(t, packagesDB[i].ID, packagesResp.Packages[i].Id)
+		}
+	})
+
 }
 
 func TestCreatePackage(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// establish DB connection
 		db := newDBForTest(t)
+		defer db.Close()
 
 		// get random app
 		app := getRandomApp(t, db)
@@ -80,12 +111,43 @@ func TestCreatePackage(t *testing.T) {
 
 		assert.Equal(t, packageName, packageDB.Filename.String)
 	})
+
+	t.Run("success_product_id", func(t *testing.T) {
+		// establish DB connection
+		db := newDBForTest(t)
+		defer db.Close()
+
+		// get app with product id from DB
+		app := getAppWithProductID(t, db)
+
+		// create group using the API
+		url := fmt.Sprintf("%s/api/apps/%s/packages", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ProductID.String)
+		method := "POST"
+
+		packageName := "test_package"
+		payload := strings.NewReader(fmt.Sprintf(`{"arch":1,"filename":"%s","description":"kinvolk package","url":"http://kinvolk.io","version":"20.2.4","type":4,"size":"199","hash":"some random hash","application_id":"%s","channels_blacklist":[]}`, packageName, app.ID))
+
+		// response
+		var packageResp api.Package
+
+		httpDo(t, url, method, payload, http.StatusOK, "json", &packageResp)
+
+		assert.Equal(t, packageName, packageResp.Filename.String)
+
+		// check group exists in DB
+		packageDB, err := db.GetPackage(packageResp.ID)
+		assert.NoError(t, err)
+		assert.NotNil(t, packageDB)
+
+		assert.Equal(t, packageName, packageDB.Filename.String)
+	})
 }
 
 func TestGetPackage(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// establish DB connection
 		db := newDBForTest(t)
+		defer db.Close()
 
 		// get random app
 		app := getRandomApp(t, db)
@@ -96,7 +158,31 @@ func TestGetPackage(t *testing.T) {
 		require.NotNil(t, packagesDB)
 
 		// fetch group by id request
-		url := fmt.Sprintf("%s/api/apps/%s/packages/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), packagesDB[0].ApplicationID, packagesDB[0].ID)
+		url := fmt.Sprintf("%s/api/apps/%s/packages/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID, packagesDB[0].ID)
+		method := "GET"
+
+		var packageResp api.Package
+
+		httpDo(t, url, method, nil, http.StatusOK, "json", &packageResp)
+
+		assert.Equal(t, packagesDB[0].Filename, packageResp.Filename)
+		assert.Equal(t, packagesDB[0].ID, packageResp.ID)
+	})
+	t.Run("success_package_id", func(t *testing.T) {
+		// establish DB connection
+		db := newDBForTest(t)
+		defer db.Close()
+
+		// get app with product id from DB
+		app := getAppWithProductID(t, db)
+
+		// get packages from DB for app[0]
+		packagesDB, err := db.GetPackages(app.ID, 1, 10, nil)
+		require.NoError(t, err)
+		require.NotNil(t, packagesDB)
+
+		// fetch group by id request
+		url := fmt.Sprintf("%s/api/apps/%s/packages/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ProductID.String, packagesDB[0].ID)
 		method := "GET"
 
 		var packageResp api.Package
@@ -112,6 +198,7 @@ func TestUpdatePackage(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// establish DB connection
 		db := newDBForTest(t)
+		defer db.Close()
 
 		// get random app
 		app := getRandomApp(t, db)
@@ -146,7 +233,7 @@ func TestUpdatePackage(t *testing.T) {
 		require.NoError(t, err)
 
 		// fetch group by id request
-		url := fmt.Sprintf("%s/api/apps/%s/packages/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), packageDB.ApplicationID, packageDB.ID)
+		url := fmt.Sprintf("%s/api/apps/%s/packages/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID, packageDB.ID)
 		method := "PUT"
 
 		var packageResp api.Package
@@ -160,12 +247,66 @@ func TestUpdatePackage(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, packageVersion, updatedPackageDB.Version)
 	})
+	t.Run("success_product_id", func(t *testing.T) {
+		// establish DB connection
+		db := newDBForTest(t)
+		defer db.Close()
+
+		// get app with product id from DB
+		app := getAppWithProductID(t, db)
+
+		// get packages from DB for app[0]
+		packagesDB, err := db.GetPackages(app.ID, 1, 10, nil)
+		require.NoError(t, err)
+		require.NotNil(t, packagesDB)
+
+		// update package request
+		var packageDB api.Package
+		err = copier.Copy(&packageDB, packagesDB[0])
+		require.NoError(t, err)
+
+		if packageDB.ChannelsBlacklist == nil {
+			packageDB.ChannelsBlacklist = []string{}
+		}
+		if packageDB.Description.IsZero() {
+			packageDB.Description = null.StringFrom("some desc")
+		}
+		if packageDB.Size.IsZero() {
+			packageDB.Size = null.StringFrom("20")
+		}
+		if packageDB.Hash.IsZero() {
+			packageDB.Hash = null.StringFrom(uuid.New().String())
+		}
+
+		packageVersion := "20.2.2"
+		packageDB.Version = packageVersion
+
+		payload, err := json.Marshal(packageDB)
+		require.NoError(t, err)
+
+		// fetch group by id request
+		url := fmt.Sprintf("%s/api/apps/%s/packages/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ProductID.String, packageDB.ID)
+		method := "PUT"
+
+		var packageResp api.Package
+
+		httpDo(t, url, method, bytes.NewReader(payload), http.StatusOK, "json", &packageResp)
+
+		assert.Equal(t, packageVersion, packageResp.Version)
+
+		// check package version in DB
+		updatedPackageDB, err := db.GetPackage(packageDB.ID)
+		require.NoError(t, err)
+		assert.Equal(t, packageVersion, updatedPackageDB.Version)
+	})
+
 }
 
 func TestDeletePackage(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// establish DB connection
 		db := newDBForTest(t)
+		defer db.Close()
 
 		// get random app
 		app := getRandomApp(t, db)
@@ -176,7 +317,7 @@ func TestDeletePackage(t *testing.T) {
 		require.NotNil(t, packagesDB)
 
 		// delte package by id request
-		url := fmt.Sprintf("%s/api/apps/%s/packages/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), packagesDB[0].ApplicationID, packagesDB[0].ID)
+		url := fmt.Sprintf("%s/api/apps/%s/packages/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID, packagesDB[0].ID)
 		method := "DELETE"
 
 		httpDo(t, url, method, nil, http.StatusNoContent, "", nil)
@@ -185,4 +326,28 @@ func TestDeletePackage(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, packageDB)
 	})
+	t.Run("success_product_id", func(t *testing.T) {
+		// establish DB connection
+		db := newDBForTest(t)
+		defer db.Close()
+
+		// get app with product id from DB
+		app := getAppWithProductID(t, db)
+
+		// get packages from DB for app[0]
+		packagesDB, err := db.GetPackages(app.ID, 1, 10, nil)
+		require.NoError(t, err)
+		require.NotNil(t, packagesDB)
+
+		// delte package by id request
+		url := fmt.Sprintf("%s/api/apps/%s/packages/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ProductID.String, packagesDB[0].ID)
+		method := "DELETE"
+
+		httpDo(t, url, method, nil, http.StatusNoContent, "", nil)
+
+		packageDB, err := db.GetPackage(packagesDB[0].ID)
+		assert.Error(t, err)
+		assert.Nil(t, packageDB)
+	})
+
 }
