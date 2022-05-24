@@ -5,3 +5,5 @@ bin/nebraska
 backend/tools/
 backend/bin
 charts/
+frontend/**/*.stories.*
+frontend/**/*.test.*

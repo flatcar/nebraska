@@ -1,0 +1,359 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots Card Description Label 1`] = `
+<div
+  id="root"
+>
+  <div
+    class="MuiBox-root MuiBox-root"
+  >
+    <span
+      class="MuiTypography-root makeStyles-descriptionLabel MuiTypography-body1"
+    >
+      Description Label
+    </span>
+  </div>
+</div>
+`;
+
+exports[`Storyshots Card Feature Label 1`] = `
+<div
+  id="root"
+>
+  <span
+    class="MuiTypography-root makeStyles-featureLabel MuiTypography-body1"
+  >
+    Feature Label
+  </span>
+</div>
+`;
+
+exports[`Storyshots Card Header 1`] = `
+<div
+  id="root"
+>
+  <div
+    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+  >
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <h2
+          class="MuiTypography-root MuiTypography-h2"
+        >
+          <a
+            class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-mainLink MuiTypography-colorPrimary"
+            href="/apps/123"
+          >
+            Flatcar
+          </a>
+        </h2>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiBox-root MuiBox-root"
+        >
+          <p
+            arial-label="group-id"
+            class="MuiTypography-root makeStyles-idLabel MuiTypography-body1 MuiTypography-noWrap"
+          >
+            a cardTrack
+          </p>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root"
+        >
+          <span
+            class="MuiTypography-root makeStyles-descriptionLabel MuiTypography-body1"
+          >
+            Card Header description
+          </span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="MuiGrid-root MuiGrid-item"
+    >
+      CardHeader children
+    </div>
+  </div>
+  <hr
+    class="MuiDivider-root makeStyles-innerDivider MuiDivider-light"
+  />
+</div>
+`;
+
+exports[`Storyshots Card Header With Card Id 1`] = `
+<div
+  id="root"
+>
+  <div
+    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+  >
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <p
+          class="MuiTypography-root makeStyles-cardTitle MuiTypography-body1"
+        />
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiBox-root MuiBox-root"
+        >
+          <p
+            arial-label="group-id"
+            class="MuiTypography-root makeStyles-idLabel MuiTypography-body1 MuiTypography-noWrap"
+          >
+            a cardId
+          </p>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root"
+        >
+          <span
+            class="MuiTypography-root makeStyles-descriptionLabel MuiTypography-body1"
+          >
+            Card Header With cardId description
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr
+    class="MuiDivider-root makeStyles-innerDivider MuiDivider-light"
+  />
+</div>
+`;
+
+exports[`Storyshots Card Header With Card Track 1`] = `
+<div
+  id="root"
+>
+  <div
+    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+  >
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <p
+          class="MuiTypography-root makeStyles-cardTitle MuiTypography-body1"
+        />
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiBox-root MuiBox-root"
+        >
+          <p
+            arial-label="group-id"
+            class="MuiTypography-root makeStyles-idLabel MuiTypography-body1 MuiTypography-noWrap"
+          >
+            a cardTrack
+          </p>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root"
+        >
+          <span
+            class="MuiTypography-root makeStyles-descriptionLabel MuiTypography-body1"
+          >
+            Card Header With cardTrack description
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr
+    class="MuiDivider-root makeStyles-innerDivider MuiDivider-light"
+  />
+</div>
+`;
+
+exports[`Storyshots Card Header With Children 1`] = `
+<div
+  id="root"
+>
+  <div
+    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+  >
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <p
+          class="MuiTypography-root makeStyles-cardTitle MuiTypography-body1"
+        />
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiBox-root MuiBox-root"
+        >
+          <p
+            arial-label="group-id"
+            class="MuiTypography-root makeStyles-idLabel MuiTypography-body1 MuiTypography-noWrap"
+          />
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root"
+        >
+          <span
+            class="MuiTypography-root makeStyles-descriptionLabel MuiTypography-body1"
+          >
+            Card Header With Children description
+          </span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="MuiGrid-root MuiGrid-item"
+    >
+      CardHeader children
+    </div>
+  </div>
+  <hr
+    class="MuiDivider-root makeStyles-innerDivider MuiDivider-light"
+  />
+</div>
+`;
+
+exports[`Storyshots Card Header With Description 1`] = `
+<div
+  id="root"
+>
+  <div
+    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+  >
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <p
+          class="MuiTypography-root makeStyles-cardTitle MuiTypography-body1"
+        />
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiBox-root MuiBox-root"
+        >
+          <p
+            arial-label="group-id"
+            class="MuiTypography-root makeStyles-idLabel MuiTypography-body1 MuiTypography-noWrap"
+          />
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root"
+        >
+          <span
+            class="MuiTypography-root makeStyles-descriptionLabel MuiTypography-body1"
+          >
+            Card Header description
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr
+    class="MuiDivider-root makeStyles-innerDivider MuiDivider-light"
+  />
+</div>
+`;
+
+exports[`Storyshots Card Header With Link 1`] = `
+<div
+  id="root"
+>
+  <div
+    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+  >
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <h2
+          class="MuiTypography-root MuiTypography-h2"
+        >
+          <a
+            class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-mainLink MuiTypography-colorPrimary"
+            href="/apps/123"
+          >
+            Flatcar
+          </a>
+        </h2>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <div
+          class="MuiBox-root MuiBox-root"
+        >
+          <p
+            arial-label="group-id"
+            class="MuiTypography-root makeStyles-idLabel MuiTypography-body1 MuiTypography-noWrap"
+          />
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root"
+        >
+          <span
+            class="MuiTypography-root makeStyles-descriptionLabel MuiTypography-body1"
+          >
+            Card Header With Link description
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr
+    class="MuiDivider-root makeStyles-innerDivider MuiDivider-light"
+  />
+</div>
+`;
+
+exports[`Storyshots Card Label 1`] = `
+<div
+  id="root"
+>
+  <span
+    class="MuiTypography-root makeStyles-label makeStyles-label MuiTypography-body1"
+  >
+    Label
+  </span>
+</div>
+`;
+
+exports[`Storyshots Card Label With Styles 1`] = `
+<div
+  id="root"
+>
+  <span
+    class="MuiTypography-root makeStyles-label makeStyles-label MuiTypography-body1"
+  >
+    Label
+  </span>
+</div>
+`;

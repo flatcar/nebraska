@@ -25,6 +25,7 @@ const (
 
 // Activity represents a Nebraska activity entry.
 type Activity struct {
+	ID              string      `db:"id" json:"id"`
 	AppID           null.String `db:"application_id" json:"app_id"`
 	GroupID         null.String `db:"group_id" json:"group_id"`
 	CreatedTs       time.Time   `db:"created_ts" json:"created_ts"`
@@ -115,7 +116,7 @@ func (api *API) activityQuery(teamID string, p ActivityQueryParams, countSelect 
 		query = query.Select(goqu.L(`count(a)`))
 	} else {
 		query = query.Select(
-			"a.application_id", "a.group_id", "a.created_ts", "a.class",
+			"a.id", "a.application_id", "a.group_id", "a.created_ts", "a.class",
 			"a.severity", "a.version", "a.instance_id",
 			goqu.I("app.name").As("application_name"), goqu.I("g.name").
 				As("group_name"), goqu.I("c.name").As("channel_name"))
