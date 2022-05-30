@@ -24,7 +24,7 @@ func TestListInstances(t *testing.T) {
 		appWithInstance := getAppWithInstance(t, db)
 
 		// fetch instances from API
-		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/instances?status=0&version=&sort=2&sortOrder=0&page=1&perpage=10&duration=30d", os.Getenv("NEBRASKA_TEST_SERVER_URL"), appWithInstance.ID, appWithInstance.Groups[0].ID)
+		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/instances?status=0&sort=2&sortOrder=0&page=1&perpage=10&duration=30d", os.Getenv("NEBRASKA_TEST_SERVER_URL"), appWithInstance.ID, appWithInstance.Groups[0].ID)
 		method := "GET"
 
 		// response

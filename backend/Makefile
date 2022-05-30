@@ -110,11 +110,11 @@ swagger-init:  tools/swag
 
 .PHONY: tools/codegen
 tools/codegen:
-	go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.9.0
+	go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.11.0
 
 .PHONY: codegen
 codegen: tools/codegen
-	PATH=$$GOPATH/bin:$$PATH oapi-codegen --generate=server --package codegen -o ./pkg/codegen/server.gen.go ./api/spec.yaml;
-	PATH=$$GOPATH/bin:$$PATH oapi-codegen --generate=spec --package codegen -o ./pkg/codegen/spec.gen.go ./api/spec.yaml;
-	PATH=$$GOPATH/bin:$$PATH oapi-codegen --generate=client --package codegen -o ./pkg/codegen/client.gen.go ./api/spec.yaml;
-	PATH=$$GOPATH/bin:$$PATH oapi-codegen --generate=types --package codegen -o ./pkg/codegen/types.gen.go ./api/spec.yaml;
+	PATH=$$GOPATH/bin:$$PATH oapi-codegen --old-config-style --generate=server --package codegen -o ./pkg/codegen/server.gen.go ./api/spec.yaml;
+	PATH=$$GOPATH/bin:$$PATH oapi-codegen --old-config-style --generate=spec --package codegen -o ./pkg/codegen/spec.gen.go ./api/spec.yaml;
+	PATH=$$GOPATH/bin:$$PATH oapi-codegen --old-config-style --generate=client --package codegen -o ./pkg/codegen/client.gen.go ./api/spec.yaml;
+	PATH=$$GOPATH/bin:$$PATH oapi-codegen --old-config-style --generate=types --package codegen -o ./pkg/codegen/types.gen.go ./api/spec.yaml;
