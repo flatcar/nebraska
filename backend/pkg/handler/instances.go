@@ -9,7 +9,12 @@ import (
 	"github.com/kinvolk/nebraska/backend/pkg/codegen"
 )
 
-func (h *Handler) GetInstance(ctx echo.Context, appID string, groupID string, instanceID string) error {
+func (h *Handler) GetInstance(ctx echo.Context, appIDorProductID string, groupID string, instanceID string) error {
+	appID, err := h.db.GetAppID(appIDorProductID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appIDorProductID)
+	}
+
 	instance, err := h.db.GetInstance(instanceID, appID)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -21,10 +26,14 @@ func (h *Handler) GetInstance(ctx echo.Context, appID string, groupID string, in
 	return ctx.JSON(http.StatusOK, instance)
 }
 
-func (h *Handler) GetInstanceStatusHistory(ctx echo.Context, appID string, groupID string, instanceID string, params codegen.GetInstanceStatusHistoryParams) error {
+func (h *Handler) GetInstanceStatusHistory(ctx echo.Context, appIDorProductID string, groupID string, instanceID string, params codegen.GetInstanceStatusHistoryParams) error {
 	limit := 20
 	if params.Limit != nil {
 		limit = *params.Limit
+	}
+	appID, err := h.db.GetAppID(appIDorProductID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appIDorProductID)
 	}
 
 	instanceStatusHistory, err := h.db.GetInstanceStatusHistory(instanceID, appID, groupID, uint64(limit))

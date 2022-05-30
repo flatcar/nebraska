@@ -10,6 +10,7 @@ import (
 
 	"github.com/kinvolk/nebraska/backend/pkg/api"
 	"github.com/kinvolk/nebraska/backend/pkg/auth"
+	"github.com/kinvolk/nebraska/backend/pkg/codegen"
 	"github.com/kinvolk/nebraska/backend/pkg/config"
 	"github.com/kinvolk/nebraska/backend/pkg/omaha"
 	"github.com/kinvolk/nebraska/backend/pkg/util"
@@ -21,22 +22,11 @@ const (
 	GithubAccessManagementURL = "https://github.com/settings/apps/authorizations"
 )
 
-type ClientConfig struct {
-	AccessManagementURL string `json:"access_management_url"`
-	LogoutURL           string `json:"logout_url"`
-	NebraskaVersion     string `json:"nebraska_version"`
-	Logo                string `json:"logo"`
-	Title               string `json:"title"`
-	HeaderStyle         string `json:"header_style"`
-	LoginURL            string `json:"login_url"`
-	AuthMode            string `json:"auth_mode"`
-}
-
 type Handler struct {
 	db           *api.API
 	omahaHandler *omaha.Handler
 	conf         *config.Config
-	clientConf   *ClientConfig
+	clientConf   *codegen.Config
 	auth         auth.Authenticator
 }
 
@@ -46,7 +36,7 @@ var defaultPerPage int = 10
 var logger = util.NewLogger("nebraska")
 
 func New(db *api.API, conf *config.Config, auth auth.Authenticator) (*Handler, error) {
-	clientConfig := &ClientConfig{
+	clientConfig := &codegen.Config{
 		AuthMode:        conf.AuthMode,
 		NebraskaVersion: version.Version,
 		Title:           conf.AppTitle,
@@ -73,9 +63,9 @@ func New(db *api.API, conf *config.Config, auth auth.Authenticator) (*Handler, e
 			return nil, err
 		}
 		url.Path = "/login"
-		clientConfig.LoginURL = url.String()
-		clientConfig.AccessManagementURL = conf.OidcManagementURL
-		clientConfig.LogoutURL = conf.OidcLogutURL
+		clientConfig.LoginUrl = url.String()
+		clientConfig.AccessManagementUrl = conf.OidcManagementURL
+		clientConfig.LogoutUrl = conf.OidcLogutURL
 	}
 
 	return &Handler{db, omaha.NewHandler(db), conf, clientConfig, auth}, nil

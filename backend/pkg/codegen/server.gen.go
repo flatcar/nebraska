@@ -23,83 +23,83 @@ type ServerInterface interface {
 	// (POST /api/apps)
 	CreateApp(ctx echo.Context, params CreateAppParams) error
 
-	// (DELETE /api/apps/{appID})
-	DeleteApp(ctx echo.Context, appID string) error
+	// (DELETE /api/apps/{appIDorProductID})
+	DeleteApp(ctx echo.Context, appIDorProductID string) error
 
-	// (GET /api/apps/{appID})
-	GetApp(ctx echo.Context, appID string) error
+	// (GET /api/apps/{appIDorProductID})
+	GetApp(ctx echo.Context, appIDorProductID string) error
 
-	// (PUT /api/apps/{appID})
-	UpdateApp(ctx echo.Context, appID string) error
+	// (PUT /api/apps/{appIDorProductID})
+	UpdateApp(ctx echo.Context, appIDorProductID string) error
 
-	// (GET /api/apps/{appID}/channels)
-	PaginateChannels(ctx echo.Context, appID string, params PaginateChannelsParams) error
+	// (GET /api/apps/{appIDorProductID}/channels)
+	PaginateChannels(ctx echo.Context, appIDorProductID string, params PaginateChannelsParams) error
 
-	// (POST /api/apps/{appID}/channels)
-	CreateChannel(ctx echo.Context, appID string) error
+	// (POST /api/apps/{appIDorProductID}/channels)
+	CreateChannel(ctx echo.Context, appIDorProductID string) error
 
-	// (DELETE /api/apps/{appID}/channels/{channelID})
-	DeleteChannel(ctx echo.Context, appID string, channelID string) error
+	// (DELETE /api/apps/{appIDorProductID}/channels/{channelID})
+	DeleteChannel(ctx echo.Context, appIDorProductID string, channelID string) error
 
-	// (GET /api/apps/{appID}/channels/{channelID})
-	GetChannel(ctx echo.Context, appID string, channelID string) error
+	// (GET /api/apps/{appIDorProductID}/channels/{channelID})
+	GetChannel(ctx echo.Context, appIDorProductID string, channelID string) error
 
-	// (PUT /api/apps/{appID}/channels/{channelID})
-	UpdateChannel(ctx echo.Context, appID string, channelID string) error
+	// (PUT /api/apps/{appIDorProductID}/channels/{channelID})
+	UpdateChannel(ctx echo.Context, appIDorProductID string, channelID string) error
 
-	// (GET /api/apps/{appID}/groups)
-	PaginateGroups(ctx echo.Context, appID string, params PaginateGroupsParams) error
+	// (GET /api/apps/{appIDorProductID}/groups)
+	PaginateGroups(ctx echo.Context, appIDorProductID string, params PaginateGroupsParams) error
 
-	// (POST /api/apps/{appID}/groups)
-	CreateGroup(ctx echo.Context, appID string) error
+	// (POST /api/apps/{appIDorProductID}/groups)
+	CreateGroup(ctx echo.Context, appIDorProductID string) error
 
-	// (DELETE /api/apps/{appID}/groups/{groupID})
-	DeleteGroup(ctx echo.Context, appID string, groupID string) error
+	// (DELETE /api/apps/{appIDorProductID}/groups/{groupID})
+	DeleteGroup(ctx echo.Context, appIDorProductID string, groupID string) error
 
-	// (GET /api/apps/{appID}/groups/{groupID})
-	GetGroup(ctx echo.Context, appID string, groupID string) error
+	// (GET /api/apps/{appIDorProductID}/groups/{groupID})
+	GetGroup(ctx echo.Context, appIDorProductID string, groupID string) error
 
-	// (PUT /api/apps/{appID}/groups/{groupID})
-	UpdateGroup(ctx echo.Context, appID string, groupID string) error
+	// (PUT /api/apps/{appIDorProductID}/groups/{groupID})
+	UpdateGroup(ctx echo.Context, appIDorProductID string, groupID string) error
 
-	// (GET /api/apps/{appID}/groups/{groupID}/instances)
-	GetGroupInstances(ctx echo.Context, appID string, groupID string, params GetGroupInstancesParams) error
+	// (GET /api/apps/{appIDorProductID}/groups/{groupID}/instances)
+	GetGroupInstances(ctx echo.Context, appIDorProductID string, groupID string, params GetGroupInstancesParams) error
 
-	// (GET /api/apps/{appID}/groups/{groupID}/instances/{instanceID})
-	GetInstance(ctx echo.Context, appID string, groupID string, instanceID string) error
+	// (GET /api/apps/{appIDorProductID}/groups/{groupID}/instances/{instanceID})
+	GetInstance(ctx echo.Context, appIDorProductID string, groupID string, instanceID string) error
 
-	// (GET /api/apps/{appID}/groups/{groupID}/instances/{instanceID}/status_history)
-	GetInstanceStatusHistory(ctx echo.Context, appID string, groupID string, instanceID string, params GetInstanceStatusHistoryParams) error
+	// (GET /api/apps/{appIDorProductID}/groups/{groupID}/instances/{instanceID}/status_history)
+	GetInstanceStatusHistory(ctx echo.Context, appIDorProductID string, groupID string, instanceID string, params GetInstanceStatusHistoryParams) error
 
-	// (GET /api/apps/{appID}/groups/{groupID}/instances_stats)
-	GetGroupInstanceStats(ctx echo.Context, appID string, groupID string, params GetGroupInstanceStatsParams) error
+	// (GET /api/apps/{appIDorProductID}/groups/{groupID}/instances_stats)
+	GetGroupInstanceStats(ctx echo.Context, appIDorProductID string, groupID string, params GetGroupInstanceStatsParams) error
 
-	// (GET /api/apps/{appID}/groups/{groupID}/instancescount)
-	GetGroupInstancesCount(ctx echo.Context, appID string, groupID string, params GetGroupInstancesCountParams) error
+	// (GET /api/apps/{appIDorProductID}/groups/{groupID}/instancescount)
+	GetGroupInstancesCount(ctx echo.Context, appIDorProductID string, groupID string, params GetGroupInstancesCountParams) error
 
-	// (GET /api/apps/{appID}/groups/{groupID}/status_timeline)
-	GetGroupStatusTimeline(ctx echo.Context, appID string, groupID string, params GetGroupStatusTimelineParams) error
+	// (GET /api/apps/{appIDorProductID}/groups/{groupID}/status_timeline)
+	GetGroupStatusTimeline(ctx echo.Context, appIDorProductID string, groupID string, params GetGroupStatusTimelineParams) error
 
-	// (GET /api/apps/{appID}/groups/{groupID}/version_breakdown)
-	GetGroupVersionBreakdown(ctx echo.Context, appID string, groupID string) error
+	// (GET /api/apps/{appIDorProductID}/groups/{groupID}/version_breakdown)
+	GetGroupVersionBreakdown(ctx echo.Context, appIDorProductID string, groupID string) error
 
-	// (GET /api/apps/{appID}/groups/{groupID}/version_timeline)
-	GetGroupVersionTimeline(ctx echo.Context, appID string, groupID string, params GetGroupVersionTimelineParams) error
+	// (GET /api/apps/{appIDorProductID}/groups/{groupID}/version_timeline)
+	GetGroupVersionTimeline(ctx echo.Context, appIDorProductID string, groupID string, params GetGroupVersionTimelineParams) error
 
-	// (GET /api/apps/{appID}/packages)
-	PaginatePackages(ctx echo.Context, appID string, params PaginatePackagesParams) error
+	// (GET /api/apps/{appIDorProductID}/packages)
+	PaginatePackages(ctx echo.Context, appIDorProductID string, params PaginatePackagesParams) error
 
-	// (POST /api/apps/{appID}/packages)
-	CreatePackage(ctx echo.Context, appID string) error
+	// (POST /api/apps/{appIDorProductID}/packages)
+	CreatePackage(ctx echo.Context, appIDorProductID string) error
 
-	// (DELETE /api/apps/{appID}/packages/{packageID})
-	DeletePackage(ctx echo.Context, appID string, packageID string) error
+	// (DELETE /api/apps/{appIDorProductID}/packages/{packageID})
+	DeletePackage(ctx echo.Context, appIDorProductID string, packageID string) error
 
-	// (GET /api/apps/{appID}/packages/{packageID})
-	GetPackage(ctx echo.Context, appID string, packageID string) error
+	// (GET /api/apps/{appIDorProductID}/packages/{packageID})
+	GetPackage(ctx echo.Context, appIDorProductID string, packageID string) error
 
-	// (PUT /api/apps/{appID}/packages/{packageID})
-	UpdatePackage(ctx echo.Context, appID string, packageID string) error
+	// (PUT /api/apps/{appIDorProductID}/packages/{packageID})
+	UpdatePackage(ctx echo.Context, appIDorProductID string, packageID string) error
 
 	// (PUT /api/instances/{instanceID})
 	UpdateInstance(ctx echo.Context, instanceID string) error
@@ -146,11 +146,11 @@ func (w *ServerInterfaceWrapper) PaginateActivity(ctx echo.Context) error {
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params PaginateActivityParams
-	// ------------- Optional query parameter "appID" -------------
+	// ------------- Optional query parameter "appIDorProductID" -------------
 
-	err = runtime.BindQueryParameter("form", true, false, "appID", ctx.QueryParams(), &params.AppID)
+	err = runtime.BindQueryParameter("form", true, false, "appIDorProductID", ctx.QueryParams(), &params.AppIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	// ------------- Optional query parameter "groupID" -------------
@@ -279,12 +279,12 @@ func (w *ServerInterfaceWrapper) CreateApp(ctx echo.Context) error {
 // DeleteApp converts echo context to params.
 func (w *ServerInterfaceWrapper) DeleteApp(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	ctx.Set(OidcBearerAuthScopes, []string{""})
@@ -294,19 +294,19 @@ func (w *ServerInterfaceWrapper) DeleteApp(ctx echo.Context) error {
 	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.DeleteApp(ctx, appID)
+	err = w.Handler.DeleteApp(ctx, appIDorProductID)
 	return err
 }
 
 // GetApp converts echo context to params.
 func (w *ServerInterfaceWrapper) GetApp(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	ctx.Set(OidcBearerAuthScopes, []string{""})
@@ -316,19 +316,19 @@ func (w *ServerInterfaceWrapper) GetApp(ctx echo.Context) error {
 	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetApp(ctx, appID)
+	err = w.Handler.GetApp(ctx, appIDorProductID)
 	return err
 }
 
 // UpdateApp converts echo context to params.
 func (w *ServerInterfaceWrapper) UpdateApp(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	ctx.Set(OidcBearerAuthScopes, []string{""})
@@ -338,19 +338,19 @@ func (w *ServerInterfaceWrapper) UpdateApp(ctx echo.Context) error {
 	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.UpdateApp(ctx, appID)
+	err = w.Handler.UpdateApp(ctx, appIDorProductID)
 	return err
 }
 
 // PaginateChannels converts echo context to params.
 func (w *ServerInterfaceWrapper) PaginateChannels(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	ctx.Set(OidcBearerAuthScopes, []string{""})
@@ -376,19 +376,19 @@ func (w *ServerInterfaceWrapper) PaginateChannels(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PaginateChannels(ctx, appID, params)
+	err = w.Handler.PaginateChannels(ctx, appIDorProductID, params)
 	return err
 }
 
 // CreateChannel converts echo context to params.
 func (w *ServerInterfaceWrapper) CreateChannel(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	ctx.Set(OidcBearerAuthScopes, []string{""})
@@ -398,19 +398,19 @@ func (w *ServerInterfaceWrapper) CreateChannel(ctx echo.Context) error {
 	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.CreateChannel(ctx, appID)
+	err = w.Handler.CreateChannel(ctx, appIDorProductID)
 	return err
 }
 
 // DeleteChannel converts echo context to params.
 func (w *ServerInterfaceWrapper) DeleteChannel(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	// ------------- Path parameter "channelID" -------------
@@ -428,19 +428,19 @@ func (w *ServerInterfaceWrapper) DeleteChannel(ctx echo.Context) error {
 	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.DeleteChannel(ctx, appID, channelID)
+	err = w.Handler.DeleteChannel(ctx, appIDorProductID, channelID)
 	return err
 }
 
 // GetChannel converts echo context to params.
 func (w *ServerInterfaceWrapper) GetChannel(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	// ------------- Path parameter "channelID" -------------
@@ -458,19 +458,19 @@ func (w *ServerInterfaceWrapper) GetChannel(ctx echo.Context) error {
 	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetChannel(ctx, appID, channelID)
+	err = w.Handler.GetChannel(ctx, appIDorProductID, channelID)
 	return err
 }
 
 // UpdateChannel converts echo context to params.
 func (w *ServerInterfaceWrapper) UpdateChannel(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	// ------------- Path parameter "channelID" -------------
@@ -488,19 +488,19 @@ func (w *ServerInterfaceWrapper) UpdateChannel(ctx echo.Context) error {
 	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.UpdateChannel(ctx, appID, channelID)
+	err = w.Handler.UpdateChannel(ctx, appIDorProductID, channelID)
 	return err
 }
 
 // PaginateGroups converts echo context to params.
 func (w *ServerInterfaceWrapper) PaginateGroups(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	ctx.Set(OidcBearerAuthScopes, []string{""})
@@ -526,19 +526,19 @@ func (w *ServerInterfaceWrapper) PaginateGroups(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PaginateGroups(ctx, appID, params)
+	err = w.Handler.PaginateGroups(ctx, appIDorProductID, params)
 	return err
 }
 
 // CreateGroup converts echo context to params.
 func (w *ServerInterfaceWrapper) CreateGroup(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	ctx.Set(OidcBearerAuthScopes, []string{""})
@@ -548,19 +548,19 @@ func (w *ServerInterfaceWrapper) CreateGroup(ctx echo.Context) error {
 	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.CreateGroup(ctx, appID)
+	err = w.Handler.CreateGroup(ctx, appIDorProductID)
 	return err
 }
 
 // DeleteGroup converts echo context to params.
 func (w *ServerInterfaceWrapper) DeleteGroup(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	// ------------- Path parameter "groupID" -------------
@@ -578,19 +578,19 @@ func (w *ServerInterfaceWrapper) DeleteGroup(ctx echo.Context) error {
 	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.DeleteGroup(ctx, appID, groupID)
+	err = w.Handler.DeleteGroup(ctx, appIDorProductID, groupID)
 	return err
 }
 
 // GetGroup converts echo context to params.
 func (w *ServerInterfaceWrapper) GetGroup(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	// ------------- Path parameter "groupID" -------------
@@ -608,19 +608,19 @@ func (w *ServerInterfaceWrapper) GetGroup(ctx echo.Context) error {
 	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetGroup(ctx, appID, groupID)
+	err = w.Handler.GetGroup(ctx, appIDorProductID, groupID)
 	return err
 }
 
 // UpdateGroup converts echo context to params.
 func (w *ServerInterfaceWrapper) UpdateGroup(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	// ------------- Path parameter "groupID" -------------
@@ -638,19 +638,19 @@ func (w *ServerInterfaceWrapper) UpdateGroup(ctx echo.Context) error {
 	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.UpdateGroup(ctx, appID, groupID)
+	err = w.Handler.UpdateGroup(ctx, appIDorProductID, groupID)
 	return err
 }
 
 // GetGroupInstances converts echo context to params.
 func (w *ServerInterfaceWrapper) GetGroupInstances(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	// ------------- Path parameter "groupID" -------------
@@ -733,19 +733,19 @@ func (w *ServerInterfaceWrapper) GetGroupInstances(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetGroupInstances(ctx, appID, groupID, params)
+	err = w.Handler.GetGroupInstances(ctx, appIDorProductID, groupID, params)
 	return err
 }
 
 // GetInstance converts echo context to params.
 func (w *ServerInterfaceWrapper) GetInstance(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	// ------------- Path parameter "groupID" -------------
@@ -771,19 +771,19 @@ func (w *ServerInterfaceWrapper) GetInstance(ctx echo.Context) error {
 	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetInstance(ctx, appID, groupID, instanceID)
+	err = w.Handler.GetInstance(ctx, appIDorProductID, groupID, instanceID)
 	return err
 }
 
 // GetInstanceStatusHistory converts echo context to params.
 func (w *ServerInterfaceWrapper) GetInstanceStatusHistory(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	// ------------- Path parameter "groupID" -------------
@@ -818,19 +818,19 @@ func (w *ServerInterfaceWrapper) GetInstanceStatusHistory(ctx echo.Context) erro
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetInstanceStatusHistory(ctx, appID, groupID, instanceID, params)
+	err = w.Handler.GetInstanceStatusHistory(ctx, appIDorProductID, groupID, instanceID, params)
 	return err
 }
 
 // GetGroupInstanceStats converts echo context to params.
 func (w *ServerInterfaceWrapper) GetGroupInstanceStats(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	// ------------- Path parameter "groupID" -------------
@@ -857,19 +857,19 @@ func (w *ServerInterfaceWrapper) GetGroupInstanceStats(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetGroupInstanceStats(ctx, appID, groupID, params)
+	err = w.Handler.GetGroupInstanceStats(ctx, appIDorProductID, groupID, params)
 	return err
 }
 
 // GetGroupInstancesCount converts echo context to params.
 func (w *ServerInterfaceWrapper) GetGroupInstancesCount(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	// ------------- Path parameter "groupID" -------------
@@ -896,19 +896,19 @@ func (w *ServerInterfaceWrapper) GetGroupInstancesCount(ctx echo.Context) error 
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetGroupInstancesCount(ctx, appID, groupID, params)
+	err = w.Handler.GetGroupInstancesCount(ctx, appIDorProductID, groupID, params)
 	return err
 }
 
 // GetGroupStatusTimeline converts echo context to params.
 func (w *ServerInterfaceWrapper) GetGroupStatusTimeline(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	// ------------- Path parameter "groupID" -------------
@@ -935,19 +935,19 @@ func (w *ServerInterfaceWrapper) GetGroupStatusTimeline(ctx echo.Context) error 
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetGroupStatusTimeline(ctx, appID, groupID, params)
+	err = w.Handler.GetGroupStatusTimeline(ctx, appIDorProductID, groupID, params)
 	return err
 }
 
 // GetGroupVersionBreakdown converts echo context to params.
 func (w *ServerInterfaceWrapper) GetGroupVersionBreakdown(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	// ------------- Path parameter "groupID" -------------
@@ -965,19 +965,19 @@ func (w *ServerInterfaceWrapper) GetGroupVersionBreakdown(ctx echo.Context) erro
 	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetGroupVersionBreakdown(ctx, appID, groupID)
+	err = w.Handler.GetGroupVersionBreakdown(ctx, appIDorProductID, groupID)
 	return err
 }
 
 // GetGroupVersionTimeline converts echo context to params.
 func (w *ServerInterfaceWrapper) GetGroupVersionTimeline(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	// ------------- Path parameter "groupID" -------------
@@ -1004,19 +1004,19 @@ func (w *ServerInterfaceWrapper) GetGroupVersionTimeline(ctx echo.Context) error
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetGroupVersionTimeline(ctx, appID, groupID, params)
+	err = w.Handler.GetGroupVersionTimeline(ctx, appIDorProductID, groupID, params)
 	return err
 }
 
 // PaginatePackages converts echo context to params.
 func (w *ServerInterfaceWrapper) PaginatePackages(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	ctx.Set(OidcBearerAuthScopes, []string{""})
@@ -1049,19 +1049,19 @@ func (w *ServerInterfaceWrapper) PaginatePackages(ctx echo.Context) error {
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PaginatePackages(ctx, appID, params)
+	err = w.Handler.PaginatePackages(ctx, appIDorProductID, params)
 	return err
 }
 
 // CreatePackage converts echo context to params.
 func (w *ServerInterfaceWrapper) CreatePackage(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	ctx.Set(OidcBearerAuthScopes, []string{""})
@@ -1071,19 +1071,19 @@ func (w *ServerInterfaceWrapper) CreatePackage(ctx echo.Context) error {
 	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.CreatePackage(ctx, appID)
+	err = w.Handler.CreatePackage(ctx, appIDorProductID)
 	return err
 }
 
 // DeletePackage converts echo context to params.
 func (w *ServerInterfaceWrapper) DeletePackage(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	// ------------- Path parameter "packageID" -------------
@@ -1101,19 +1101,19 @@ func (w *ServerInterfaceWrapper) DeletePackage(ctx echo.Context) error {
 	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.DeletePackage(ctx, appID, packageID)
+	err = w.Handler.DeletePackage(ctx, appIDorProductID, packageID)
 	return err
 }
 
 // GetPackage converts echo context to params.
 func (w *ServerInterfaceWrapper) GetPackage(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	// ------------- Path parameter "packageID" -------------
@@ -1131,19 +1131,19 @@ func (w *ServerInterfaceWrapper) GetPackage(ctx echo.Context) error {
 	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetPackage(ctx, appID, packageID)
+	err = w.Handler.GetPackage(ctx, appIDorProductID, packageID)
 	return err
 }
 
 // UpdatePackage converts echo context to params.
 func (w *ServerInterfaceWrapper) UpdatePackage(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "appID" -------------
-	var appID string
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "appID", runtime.ParamLocationPath, ctx.Param("appID"), &appID)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, ctx.Param("appIDorProductID"), &appIDorProductID)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appID: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
 	}
 
 	// ------------- Path parameter "packageID" -------------
@@ -1161,7 +1161,7 @@ func (w *ServerInterfaceWrapper) UpdatePackage(ctx echo.Context) error {
 	ctx.Set(GithubCookieAuthScopes, []string{""})
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.UpdatePackage(ctx, appID, packageID)
+	err = w.Handler.UpdatePackage(ctx, appIDorProductID, packageID)
 	return err
 }
 
@@ -1340,32 +1340,32 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/api/activity", wrapper.PaginateActivity)
 	router.GET(baseURL+"/api/apps", wrapper.PaginateApps)
 	router.POST(baseURL+"/api/apps", wrapper.CreateApp)
-	router.DELETE(baseURL+"/api/apps/:appID", wrapper.DeleteApp)
-	router.GET(baseURL+"/api/apps/:appID", wrapper.GetApp)
-	router.PUT(baseURL+"/api/apps/:appID", wrapper.UpdateApp)
-	router.GET(baseURL+"/api/apps/:appID/channels", wrapper.PaginateChannels)
-	router.POST(baseURL+"/api/apps/:appID/channels", wrapper.CreateChannel)
-	router.DELETE(baseURL+"/api/apps/:appID/channels/:channelID", wrapper.DeleteChannel)
-	router.GET(baseURL+"/api/apps/:appID/channels/:channelID", wrapper.GetChannel)
-	router.PUT(baseURL+"/api/apps/:appID/channels/:channelID", wrapper.UpdateChannel)
-	router.GET(baseURL+"/api/apps/:appID/groups", wrapper.PaginateGroups)
-	router.POST(baseURL+"/api/apps/:appID/groups", wrapper.CreateGroup)
-	router.DELETE(baseURL+"/api/apps/:appID/groups/:groupID", wrapper.DeleteGroup)
-	router.GET(baseURL+"/api/apps/:appID/groups/:groupID", wrapper.GetGroup)
-	router.PUT(baseURL+"/api/apps/:appID/groups/:groupID", wrapper.UpdateGroup)
-	router.GET(baseURL+"/api/apps/:appID/groups/:groupID/instances", wrapper.GetGroupInstances)
-	router.GET(baseURL+"/api/apps/:appID/groups/:groupID/instances/:instanceID", wrapper.GetInstance)
-	router.GET(baseURL+"/api/apps/:appID/groups/:groupID/instances/:instanceID/status_history", wrapper.GetInstanceStatusHistory)
-	router.GET(baseURL+"/api/apps/:appID/groups/:groupID/instances_stats", wrapper.GetGroupInstanceStats)
-	router.GET(baseURL+"/api/apps/:appID/groups/:groupID/instancescount", wrapper.GetGroupInstancesCount)
-	router.GET(baseURL+"/api/apps/:appID/groups/:groupID/status_timeline", wrapper.GetGroupStatusTimeline)
-	router.GET(baseURL+"/api/apps/:appID/groups/:groupID/version_breakdown", wrapper.GetGroupVersionBreakdown)
-	router.GET(baseURL+"/api/apps/:appID/groups/:groupID/version_timeline", wrapper.GetGroupVersionTimeline)
-	router.GET(baseURL+"/api/apps/:appID/packages", wrapper.PaginatePackages)
-	router.POST(baseURL+"/api/apps/:appID/packages", wrapper.CreatePackage)
-	router.DELETE(baseURL+"/api/apps/:appID/packages/:packageID", wrapper.DeletePackage)
-	router.GET(baseURL+"/api/apps/:appID/packages/:packageID", wrapper.GetPackage)
-	router.PUT(baseURL+"/api/apps/:appID/packages/:packageID", wrapper.UpdatePackage)
+	router.DELETE(baseURL+"/api/apps/:appIDorProductID", wrapper.DeleteApp)
+	router.GET(baseURL+"/api/apps/:appIDorProductID", wrapper.GetApp)
+	router.PUT(baseURL+"/api/apps/:appIDorProductID", wrapper.UpdateApp)
+	router.GET(baseURL+"/api/apps/:appIDorProductID/channels", wrapper.PaginateChannels)
+	router.POST(baseURL+"/api/apps/:appIDorProductID/channels", wrapper.CreateChannel)
+	router.DELETE(baseURL+"/api/apps/:appIDorProductID/channels/:channelID", wrapper.DeleteChannel)
+	router.GET(baseURL+"/api/apps/:appIDorProductID/channels/:channelID", wrapper.GetChannel)
+	router.PUT(baseURL+"/api/apps/:appIDorProductID/channels/:channelID", wrapper.UpdateChannel)
+	router.GET(baseURL+"/api/apps/:appIDorProductID/groups", wrapper.PaginateGroups)
+	router.POST(baseURL+"/api/apps/:appIDorProductID/groups", wrapper.CreateGroup)
+	router.DELETE(baseURL+"/api/apps/:appIDorProductID/groups/:groupID", wrapper.DeleteGroup)
+	router.GET(baseURL+"/api/apps/:appIDorProductID/groups/:groupID", wrapper.GetGroup)
+	router.PUT(baseURL+"/api/apps/:appIDorProductID/groups/:groupID", wrapper.UpdateGroup)
+	router.GET(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/instances", wrapper.GetGroupInstances)
+	router.GET(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/instances/:instanceID", wrapper.GetInstance)
+	router.GET(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/instances/:instanceID/status_history", wrapper.GetInstanceStatusHistory)
+	router.GET(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/instances_stats", wrapper.GetGroupInstanceStats)
+	router.GET(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/instancescount", wrapper.GetGroupInstancesCount)
+	router.GET(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/status_timeline", wrapper.GetGroupStatusTimeline)
+	router.GET(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/version_breakdown", wrapper.GetGroupVersionBreakdown)
+	router.GET(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/version_timeline", wrapper.GetGroupVersionTimeline)
+	router.GET(baseURL+"/api/apps/:appIDorProductID/packages", wrapper.PaginatePackages)
+	router.POST(baseURL+"/api/apps/:appIDorProductID/packages", wrapper.CreatePackage)
+	router.DELETE(baseURL+"/api/apps/:appIDorProductID/packages/:packageID", wrapper.DeletePackage)
+	router.GET(baseURL+"/api/apps/:appIDorProductID/packages/:packageID", wrapper.GetPackage)
+	router.PUT(baseURL+"/api/apps/:appIDorProductID/packages/:packageID", wrapper.UpdatePackage)
 	router.PUT(baseURL+"/api/instances/:instanceID", wrapper.UpdateInstance)
 	router.GET(baseURL+"/config", wrapper.GetConfig)
 	router.GET(baseURL+"/health", wrapper.Health)

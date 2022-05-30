@@ -17,6 +17,7 @@ import (
 func TestOmaha(t *testing.T) {
 	// establish db connection
 	db := newDBForTest(t)
+	defer db.Close()
 
 	app := getAppWithInstance(t, db)
 

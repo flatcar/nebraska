@@ -178,7 +178,10 @@ func TestGetApp(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, tApp1.Name, app.Name)
 
-	app, err = a.GetApp(*tApp1.ProductID.Ptr())
+	appID, err := a.GetAppID(*tApp1.ProductID.Ptr())
+	assert.NoError(t, err)
+
+	app, err = a.GetApp(appID)
 	assert.NoError(t, err)
 	assert.Equal(t, tApp1.ProductID, app.ProductID)
 

@@ -56,7 +56,11 @@ func (h *Handler) CreateApp(ctx echo.Context, params codegen.CreateAppParams) er
 
 	source := ""
 	if params.CloneFrom != nil {
-		source = *params.CloneFrom
+		cloneAppID, err := h.db.GetAppID(*params.CloneFrom)
+		if err != nil {
+			return appNotFoundResponse(ctx, *params.CloneFrom)
+		}
+		source = cloneAppID
 	}
 
 	app, err = h.db.AddAppCloning(app, source)
@@ -75,7 +79,13 @@ func (h *Handler) CreateApp(ctx echo.Context, params codegen.CreateAppParams) er
 	return ctx.JSON(http.StatusOK, app)
 }
 
-func (h *Handler) GetApp(ctx echo.Context, appID string) error {
+func (h *Handler) GetApp(ctx echo.Context, appIDorProductID string) error {
+
+	appID, err := h.db.GetAppID(appIDorProductID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appIDorProductID)
+	}
+
 	app, err := h.db.GetApp(appID)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -87,7 +97,7 @@ func (h *Handler) GetApp(ctx echo.Context, appID string) error {
 	return ctx.JSON(http.StatusOK, app)
 }
 
-func (h *Handler) UpdateApp(ctx echo.Context, appID string) error {
+func (h *Handler) UpdateApp(ctx echo.Context, appIDorProductID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
 	var request codegen.AppConfig
@@ -95,6 +105,11 @@ func (h *Handler) UpdateApp(ctx echo.Context, appID string) error {
 	if err != nil {
 		logger.Error().Err(err).Msg("updateApp - decoding payload")
 		return ctx.NoContent(http.StatusBadRequest)
+	}
+
+	appID, err := h.db.GetAppID(appIDorProductID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appIDorProductID)
 	}
 
 	oldApp, err := h.db.GetApp(appID)
@@ -122,8 +137,13 @@ func (h *Handler) UpdateApp(ctx echo.Context, appID string) error {
 	return ctx.JSON(http.StatusOK, app)
 }
 
-func (h *Handler) DeleteApp(ctx echo.Context, appID string) error {
+func (h *Handler) DeleteApp(ctx echo.Context, appIDorProductID string) error {
 	logger := loggerWithUsername(logger, ctx)
+
+	appID, err := h.db.GetAppID(appIDorProductID)
+	if err != nil {
+		return appNotFoundResponse(ctx, appIDorProductID)
+	}
 
 	app, err := h.db.GetApp(appID)
 	if err != nil {

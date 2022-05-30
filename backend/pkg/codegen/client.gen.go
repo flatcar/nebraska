@@ -102,96 +102,96 @@ type ClientInterface interface {
 	CreateApp(ctx context.Context, params *CreateAppParams, body CreateAppJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteApp request
-	DeleteApp(ctx context.Context, appID string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	DeleteApp(ctx context.Context, appIDorProductID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetApp request
-	GetApp(ctx context.Context, appID string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetApp(ctx context.Context, appIDorProductID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateApp request with any body
-	UpdateAppWithBody(ctx context.Context, appID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	UpdateAppWithBody(ctx context.Context, appIDorProductID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	UpdateApp(ctx context.Context, appID string, body UpdateAppJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	UpdateApp(ctx context.Context, appIDorProductID string, body UpdateAppJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PaginateChannels request
-	PaginateChannels(ctx context.Context, appID string, params *PaginateChannelsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PaginateChannels(ctx context.Context, appIDorProductID string, params *PaginateChannelsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CreateChannel request with any body
-	CreateChannelWithBody(ctx context.Context, appID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CreateChannelWithBody(ctx context.Context, appIDorProductID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	CreateChannel(ctx context.Context, appID string, body CreateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CreateChannel(ctx context.Context, appIDorProductID string, body CreateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteChannel request
-	DeleteChannel(ctx context.Context, appID string, channelID string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	DeleteChannel(ctx context.Context, appIDorProductID string, channelID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetChannel request
-	GetChannel(ctx context.Context, appID string, channelID string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetChannel(ctx context.Context, appIDorProductID string, channelID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateChannel request with any body
-	UpdateChannelWithBody(ctx context.Context, appID string, channelID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	UpdateChannelWithBody(ctx context.Context, appIDorProductID string, channelID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	UpdateChannel(ctx context.Context, appID string, channelID string, body UpdateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	UpdateChannel(ctx context.Context, appIDorProductID string, channelID string, body UpdateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PaginateGroups request
-	PaginateGroups(ctx context.Context, appID string, params *PaginateGroupsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PaginateGroups(ctx context.Context, appIDorProductID string, params *PaginateGroupsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CreateGroup request with any body
-	CreateGroupWithBody(ctx context.Context, appID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CreateGroupWithBody(ctx context.Context, appIDorProductID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	CreateGroup(ctx context.Context, appID string, body CreateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CreateGroup(ctx context.Context, appIDorProductID string, body CreateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteGroup request
-	DeleteGroup(ctx context.Context, appID string, groupID string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	DeleteGroup(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetGroup request
-	GetGroup(ctx context.Context, appID string, groupID string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetGroup(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateGroup request with any body
-	UpdateGroupWithBody(ctx context.Context, appID string, groupID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	UpdateGroupWithBody(ctx context.Context, appIDorProductID string, groupID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	UpdateGroup(ctx context.Context, appID string, groupID string, body UpdateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	UpdateGroup(ctx context.Context, appIDorProductID string, groupID string, body UpdateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetGroupInstances request
-	GetGroupInstances(ctx context.Context, appID string, groupID string, params *GetGroupInstancesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetGroupInstances(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupInstancesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetInstance request
-	GetInstance(ctx context.Context, appID string, groupID string, instanceID string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetInstance(ctx context.Context, appIDorProductID string, groupID string, instanceID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetInstanceStatusHistory request
-	GetInstanceStatusHistory(ctx context.Context, appID string, groupID string, instanceID string, params *GetInstanceStatusHistoryParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetInstanceStatusHistory(ctx context.Context, appIDorProductID string, groupID string, instanceID string, params *GetInstanceStatusHistoryParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetGroupInstanceStats request
-	GetGroupInstanceStats(ctx context.Context, appID string, groupID string, params *GetGroupInstanceStatsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetGroupInstanceStats(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupInstanceStatsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetGroupInstancesCount request
-	GetGroupInstancesCount(ctx context.Context, appID string, groupID string, params *GetGroupInstancesCountParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetGroupInstancesCount(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupInstancesCountParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetGroupStatusTimeline request
-	GetGroupStatusTimeline(ctx context.Context, appID string, groupID string, params *GetGroupStatusTimelineParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetGroupStatusTimeline(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupStatusTimelineParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetGroupVersionBreakdown request
-	GetGroupVersionBreakdown(ctx context.Context, appID string, groupID string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetGroupVersionBreakdown(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetGroupVersionTimeline request
-	GetGroupVersionTimeline(ctx context.Context, appID string, groupID string, params *GetGroupVersionTimelineParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetGroupVersionTimeline(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupVersionTimelineParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PaginatePackages request
-	PaginatePackages(ctx context.Context, appID string, params *PaginatePackagesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	PaginatePackages(ctx context.Context, appIDorProductID string, params *PaginatePackagesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CreatePackage request with any body
-	CreatePackageWithBody(ctx context.Context, appID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CreatePackageWithBody(ctx context.Context, appIDorProductID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	CreatePackage(ctx context.Context, appID string, body CreatePackageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CreatePackage(ctx context.Context, appIDorProductID string, body CreatePackageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeletePackage request
-	DeletePackage(ctx context.Context, appID string, packageID string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	DeletePackage(ctx context.Context, appIDorProductID string, packageID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetPackage request
-	GetPackage(ctx context.Context, appID string, packageID string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetPackage(ctx context.Context, appIDorProductID string, packageID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdatePackage request with any body
-	UpdatePackageWithBody(ctx context.Context, appID string, packageID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	UpdatePackageWithBody(ctx context.Context, appIDorProductID string, packageID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	UpdatePackage(ctx context.Context, appID string, packageID string, body UpdatePackageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	UpdatePackage(ctx context.Context, appIDorProductID string, packageID string, body UpdatePackageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateInstance request with any body
 	UpdateInstanceWithBody(ctx context.Context, instanceID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -271,8 +271,8 @@ func (c *Client) CreateApp(ctx context.Context, params *CreateAppParams, body Cr
 	return c.Client.Do(req)
 }
 
-func (c *Client) DeleteApp(ctx context.Context, appID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteAppRequest(c.Server, appID)
+func (c *Client) DeleteApp(ctx context.Context, appIDorProductID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteAppRequest(c.Server, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -283,8 +283,8 @@ func (c *Client) DeleteApp(ctx context.Context, appID string, reqEditors ...Requ
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetApp(ctx context.Context, appID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetAppRequest(c.Server, appID)
+func (c *Client) GetApp(ctx context.Context, appIDorProductID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetAppRequest(c.Server, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -295,8 +295,8 @@ func (c *Client) GetApp(ctx context.Context, appID string, reqEditors ...Request
 	return c.Client.Do(req)
 }
 
-func (c *Client) UpdateAppWithBody(ctx context.Context, appID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateAppRequestWithBody(c.Server, appID, contentType, body)
+func (c *Client) UpdateAppWithBody(ctx context.Context, appIDorProductID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateAppRequestWithBody(c.Server, appIDorProductID, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -307,8 +307,8 @@ func (c *Client) UpdateAppWithBody(ctx context.Context, appID string, contentTyp
 	return c.Client.Do(req)
 }
 
-func (c *Client) UpdateApp(ctx context.Context, appID string, body UpdateAppJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateAppRequest(c.Server, appID, body)
+func (c *Client) UpdateApp(ctx context.Context, appIDorProductID string, body UpdateAppJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateAppRequest(c.Server, appIDorProductID, body)
 	if err != nil {
 		return nil, err
 	}
@@ -319,8 +319,8 @@ func (c *Client) UpdateApp(ctx context.Context, appID string, body UpdateAppJSON
 	return c.Client.Do(req)
 }
 
-func (c *Client) PaginateChannels(ctx context.Context, appID string, params *PaginateChannelsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPaginateChannelsRequest(c.Server, appID, params)
+func (c *Client) PaginateChannels(ctx context.Context, appIDorProductID string, params *PaginateChannelsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPaginateChannelsRequest(c.Server, appIDorProductID, params)
 	if err != nil {
 		return nil, err
 	}
@@ -331,8 +331,8 @@ func (c *Client) PaginateChannels(ctx context.Context, appID string, params *Pag
 	return c.Client.Do(req)
 }
 
-func (c *Client) CreateChannelWithBody(ctx context.Context, appID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateChannelRequestWithBody(c.Server, appID, contentType, body)
+func (c *Client) CreateChannelWithBody(ctx context.Context, appIDorProductID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateChannelRequestWithBody(c.Server, appIDorProductID, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -343,8 +343,8 @@ func (c *Client) CreateChannelWithBody(ctx context.Context, appID string, conten
 	return c.Client.Do(req)
 }
 
-func (c *Client) CreateChannel(ctx context.Context, appID string, body CreateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateChannelRequest(c.Server, appID, body)
+func (c *Client) CreateChannel(ctx context.Context, appIDorProductID string, body CreateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateChannelRequest(c.Server, appIDorProductID, body)
 	if err != nil {
 		return nil, err
 	}
@@ -355,8 +355,8 @@ func (c *Client) CreateChannel(ctx context.Context, appID string, body CreateCha
 	return c.Client.Do(req)
 }
 
-func (c *Client) DeleteChannel(ctx context.Context, appID string, channelID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteChannelRequest(c.Server, appID, channelID)
+func (c *Client) DeleteChannel(ctx context.Context, appIDorProductID string, channelID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteChannelRequest(c.Server, appIDorProductID, channelID)
 	if err != nil {
 		return nil, err
 	}
@@ -367,8 +367,8 @@ func (c *Client) DeleteChannel(ctx context.Context, appID string, channelID stri
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetChannel(ctx context.Context, appID string, channelID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetChannelRequest(c.Server, appID, channelID)
+func (c *Client) GetChannel(ctx context.Context, appIDorProductID string, channelID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetChannelRequest(c.Server, appIDorProductID, channelID)
 	if err != nil {
 		return nil, err
 	}
@@ -379,8 +379,8 @@ func (c *Client) GetChannel(ctx context.Context, appID string, channelID string,
 	return c.Client.Do(req)
 }
 
-func (c *Client) UpdateChannelWithBody(ctx context.Context, appID string, channelID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateChannelRequestWithBody(c.Server, appID, channelID, contentType, body)
+func (c *Client) UpdateChannelWithBody(ctx context.Context, appIDorProductID string, channelID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateChannelRequestWithBody(c.Server, appIDorProductID, channelID, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -391,8 +391,8 @@ func (c *Client) UpdateChannelWithBody(ctx context.Context, appID string, channe
 	return c.Client.Do(req)
 }
 
-func (c *Client) UpdateChannel(ctx context.Context, appID string, channelID string, body UpdateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateChannelRequest(c.Server, appID, channelID, body)
+func (c *Client) UpdateChannel(ctx context.Context, appIDorProductID string, channelID string, body UpdateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateChannelRequest(c.Server, appIDorProductID, channelID, body)
 	if err != nil {
 		return nil, err
 	}
@@ -403,8 +403,8 @@ func (c *Client) UpdateChannel(ctx context.Context, appID string, channelID stri
 	return c.Client.Do(req)
 }
 
-func (c *Client) PaginateGroups(ctx context.Context, appID string, params *PaginateGroupsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPaginateGroupsRequest(c.Server, appID, params)
+func (c *Client) PaginateGroups(ctx context.Context, appIDorProductID string, params *PaginateGroupsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPaginateGroupsRequest(c.Server, appIDorProductID, params)
 	if err != nil {
 		return nil, err
 	}
@@ -415,8 +415,8 @@ func (c *Client) PaginateGroups(ctx context.Context, appID string, params *Pagin
 	return c.Client.Do(req)
 }
 
-func (c *Client) CreateGroupWithBody(ctx context.Context, appID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateGroupRequestWithBody(c.Server, appID, contentType, body)
+func (c *Client) CreateGroupWithBody(ctx context.Context, appIDorProductID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateGroupRequestWithBody(c.Server, appIDorProductID, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -427,8 +427,8 @@ func (c *Client) CreateGroupWithBody(ctx context.Context, appID string, contentT
 	return c.Client.Do(req)
 }
 
-func (c *Client) CreateGroup(ctx context.Context, appID string, body CreateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateGroupRequest(c.Server, appID, body)
+func (c *Client) CreateGroup(ctx context.Context, appIDorProductID string, body CreateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateGroupRequest(c.Server, appIDorProductID, body)
 	if err != nil {
 		return nil, err
 	}
@@ -439,8 +439,8 @@ func (c *Client) CreateGroup(ctx context.Context, appID string, body CreateGroup
 	return c.Client.Do(req)
 }
 
-func (c *Client) DeleteGroup(ctx context.Context, appID string, groupID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteGroupRequest(c.Server, appID, groupID)
+func (c *Client) DeleteGroup(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteGroupRequest(c.Server, appIDorProductID, groupID)
 	if err != nil {
 		return nil, err
 	}
@@ -451,8 +451,8 @@ func (c *Client) DeleteGroup(ctx context.Context, appID string, groupID string, 
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetGroup(ctx context.Context, appID string, groupID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetGroupRequest(c.Server, appID, groupID)
+func (c *Client) GetGroup(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetGroupRequest(c.Server, appIDorProductID, groupID)
 	if err != nil {
 		return nil, err
 	}
@@ -463,8 +463,8 @@ func (c *Client) GetGroup(ctx context.Context, appID string, groupID string, req
 	return c.Client.Do(req)
 }
 
-func (c *Client) UpdateGroupWithBody(ctx context.Context, appID string, groupID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateGroupRequestWithBody(c.Server, appID, groupID, contentType, body)
+func (c *Client) UpdateGroupWithBody(ctx context.Context, appIDorProductID string, groupID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateGroupRequestWithBody(c.Server, appIDorProductID, groupID, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -475,8 +475,8 @@ func (c *Client) UpdateGroupWithBody(ctx context.Context, appID string, groupID 
 	return c.Client.Do(req)
 }
 
-func (c *Client) UpdateGroup(ctx context.Context, appID string, groupID string, body UpdateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdateGroupRequest(c.Server, appID, groupID, body)
+func (c *Client) UpdateGroup(ctx context.Context, appIDorProductID string, groupID string, body UpdateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateGroupRequest(c.Server, appIDorProductID, groupID, body)
 	if err != nil {
 		return nil, err
 	}
@@ -487,8 +487,8 @@ func (c *Client) UpdateGroup(ctx context.Context, appID string, groupID string, 
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetGroupInstances(ctx context.Context, appID string, groupID string, params *GetGroupInstancesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetGroupInstancesRequest(c.Server, appID, groupID, params)
+func (c *Client) GetGroupInstances(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupInstancesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetGroupInstancesRequest(c.Server, appIDorProductID, groupID, params)
 	if err != nil {
 		return nil, err
 	}
@@ -499,8 +499,8 @@ func (c *Client) GetGroupInstances(ctx context.Context, appID string, groupID st
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetInstance(ctx context.Context, appID string, groupID string, instanceID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetInstanceRequest(c.Server, appID, groupID, instanceID)
+func (c *Client) GetInstance(ctx context.Context, appIDorProductID string, groupID string, instanceID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetInstanceRequest(c.Server, appIDorProductID, groupID, instanceID)
 	if err != nil {
 		return nil, err
 	}
@@ -511,8 +511,8 @@ func (c *Client) GetInstance(ctx context.Context, appID string, groupID string, 
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetInstanceStatusHistory(ctx context.Context, appID string, groupID string, instanceID string, params *GetInstanceStatusHistoryParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetInstanceStatusHistoryRequest(c.Server, appID, groupID, instanceID, params)
+func (c *Client) GetInstanceStatusHistory(ctx context.Context, appIDorProductID string, groupID string, instanceID string, params *GetInstanceStatusHistoryParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetInstanceStatusHistoryRequest(c.Server, appIDorProductID, groupID, instanceID, params)
 	if err != nil {
 		return nil, err
 	}
@@ -523,8 +523,8 @@ func (c *Client) GetInstanceStatusHistory(ctx context.Context, appID string, gro
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetGroupInstanceStats(ctx context.Context, appID string, groupID string, params *GetGroupInstanceStatsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetGroupInstanceStatsRequest(c.Server, appID, groupID, params)
+func (c *Client) GetGroupInstanceStats(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupInstanceStatsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetGroupInstanceStatsRequest(c.Server, appIDorProductID, groupID, params)
 	if err != nil {
 		return nil, err
 	}
@@ -535,8 +535,8 @@ func (c *Client) GetGroupInstanceStats(ctx context.Context, appID string, groupI
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetGroupInstancesCount(ctx context.Context, appID string, groupID string, params *GetGroupInstancesCountParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetGroupInstancesCountRequest(c.Server, appID, groupID, params)
+func (c *Client) GetGroupInstancesCount(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupInstancesCountParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetGroupInstancesCountRequest(c.Server, appIDorProductID, groupID, params)
 	if err != nil {
 		return nil, err
 	}
@@ -547,8 +547,8 @@ func (c *Client) GetGroupInstancesCount(ctx context.Context, appID string, group
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetGroupStatusTimeline(ctx context.Context, appID string, groupID string, params *GetGroupStatusTimelineParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetGroupStatusTimelineRequest(c.Server, appID, groupID, params)
+func (c *Client) GetGroupStatusTimeline(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupStatusTimelineParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetGroupStatusTimelineRequest(c.Server, appIDorProductID, groupID, params)
 	if err != nil {
 		return nil, err
 	}
@@ -559,8 +559,8 @@ func (c *Client) GetGroupStatusTimeline(ctx context.Context, appID string, group
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetGroupVersionBreakdown(ctx context.Context, appID string, groupID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetGroupVersionBreakdownRequest(c.Server, appID, groupID)
+func (c *Client) GetGroupVersionBreakdown(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetGroupVersionBreakdownRequest(c.Server, appIDorProductID, groupID)
 	if err != nil {
 		return nil, err
 	}
@@ -571,8 +571,8 @@ func (c *Client) GetGroupVersionBreakdown(ctx context.Context, appID string, gro
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetGroupVersionTimeline(ctx context.Context, appID string, groupID string, params *GetGroupVersionTimelineParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetGroupVersionTimelineRequest(c.Server, appID, groupID, params)
+func (c *Client) GetGroupVersionTimeline(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupVersionTimelineParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetGroupVersionTimelineRequest(c.Server, appIDorProductID, groupID, params)
 	if err != nil {
 		return nil, err
 	}
@@ -583,8 +583,8 @@ func (c *Client) GetGroupVersionTimeline(ctx context.Context, appID string, grou
 	return c.Client.Do(req)
 }
 
-func (c *Client) PaginatePackages(ctx context.Context, appID string, params *PaginatePackagesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPaginatePackagesRequest(c.Server, appID, params)
+func (c *Client) PaginatePackages(ctx context.Context, appIDorProductID string, params *PaginatePackagesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPaginatePackagesRequest(c.Server, appIDorProductID, params)
 	if err != nil {
 		return nil, err
 	}
@@ -595,8 +595,8 @@ func (c *Client) PaginatePackages(ctx context.Context, appID string, params *Pag
 	return c.Client.Do(req)
 }
 
-func (c *Client) CreatePackageWithBody(ctx context.Context, appID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreatePackageRequestWithBody(c.Server, appID, contentType, body)
+func (c *Client) CreatePackageWithBody(ctx context.Context, appIDorProductID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreatePackageRequestWithBody(c.Server, appIDorProductID, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -607,8 +607,8 @@ func (c *Client) CreatePackageWithBody(ctx context.Context, appID string, conten
 	return c.Client.Do(req)
 }
 
-func (c *Client) CreatePackage(ctx context.Context, appID string, body CreatePackageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreatePackageRequest(c.Server, appID, body)
+func (c *Client) CreatePackage(ctx context.Context, appIDorProductID string, body CreatePackageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreatePackageRequest(c.Server, appIDorProductID, body)
 	if err != nil {
 		return nil, err
 	}
@@ -619,8 +619,8 @@ func (c *Client) CreatePackage(ctx context.Context, appID string, body CreatePac
 	return c.Client.Do(req)
 }
 
-func (c *Client) DeletePackage(ctx context.Context, appID string, packageID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeletePackageRequest(c.Server, appID, packageID)
+func (c *Client) DeletePackage(ctx context.Context, appIDorProductID string, packageID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeletePackageRequest(c.Server, appIDorProductID, packageID)
 	if err != nil {
 		return nil, err
 	}
@@ -631,8 +631,8 @@ func (c *Client) DeletePackage(ctx context.Context, appID string, packageID stri
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetPackage(ctx context.Context, appID string, packageID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetPackageRequest(c.Server, appID, packageID)
+func (c *Client) GetPackage(ctx context.Context, appIDorProductID string, packageID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetPackageRequest(c.Server, appIDorProductID, packageID)
 	if err != nil {
 		return nil, err
 	}
@@ -643,8 +643,8 @@ func (c *Client) GetPackage(ctx context.Context, appID string, packageID string,
 	return c.Client.Do(req)
 }
 
-func (c *Client) UpdatePackageWithBody(ctx context.Context, appID string, packageID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdatePackageRequestWithBody(c.Server, appID, packageID, contentType, body)
+func (c *Client) UpdatePackageWithBody(ctx context.Context, appIDorProductID string, packageID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdatePackageRequestWithBody(c.Server, appIDorProductID, packageID, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -655,8 +655,8 @@ func (c *Client) UpdatePackageWithBody(ctx context.Context, appID string, packag
 	return c.Client.Do(req)
 }
 
-func (c *Client) UpdatePackage(ctx context.Context, appID string, packageID string, body UpdatePackageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewUpdatePackageRequest(c.Server, appID, packageID, body)
+func (c *Client) UpdatePackage(ctx context.Context, appIDorProductID string, packageID string, body UpdatePackageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdatePackageRequest(c.Server, appIDorProductID, packageID, body)
 	if err != nil {
 		return nil, err
 	}
@@ -808,9 +808,9 @@ func NewPaginateActivityRequest(server string, params *PaginateActivityParams) (
 
 	queryValues := queryURL.Query()
 
-	if params.AppID != nil {
+	if params.AppIDorProductID != nil {
 
-		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "appID", runtime.ParamLocationQuery, *params.AppID); err != nil {
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "appIDorProductID", runtime.ParamLocationQuery, *params.AppIDorProductID); err != nil {
 			return nil, err
 		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
 			return nil, err
@@ -1094,12 +1094,12 @@ func NewCreateAppRequestWithBody(server string, params *CreateAppParams, content
 }
 
 // NewDeleteAppRequest generates requests for DeleteApp
-func NewDeleteAppRequest(server string, appID string) (*http.Request, error) {
+func NewDeleteAppRequest(server string, appIDorProductID string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -1128,12 +1128,12 @@ func NewDeleteAppRequest(server string, appID string) (*http.Request, error) {
 }
 
 // NewGetAppRequest generates requests for GetApp
-func NewGetAppRequest(server string, appID string) (*http.Request, error) {
+func NewGetAppRequest(server string, appIDorProductID string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -1162,23 +1162,23 @@ func NewGetAppRequest(server string, appID string) (*http.Request, error) {
 }
 
 // NewUpdateAppRequest calls the generic UpdateApp builder with application/json body
-func NewUpdateAppRequest(server string, appID string, body UpdateAppJSONRequestBody) (*http.Request, error) {
+func NewUpdateAppRequest(server string, appIDorProductID string, body UpdateAppJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdateAppRequestWithBody(server, appID, "application/json", bodyReader)
+	return NewUpdateAppRequestWithBody(server, appIDorProductID, "application/json", bodyReader)
 }
 
 // NewUpdateAppRequestWithBody generates requests for UpdateApp with any type of body
-func NewUpdateAppRequestWithBody(server string, appID string, contentType string, body io.Reader) (*http.Request, error) {
+func NewUpdateAppRequestWithBody(server string, appIDorProductID string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -1209,12 +1209,12 @@ func NewUpdateAppRequestWithBody(server string, appID string, contentType string
 }
 
 // NewPaginateChannelsRequest generates requests for PaginateChannels
-func NewPaginateChannelsRequest(server string, appID string, params *PaginateChannelsParams) (*http.Request, error) {
+func NewPaginateChannelsRequest(server string, appIDorProductID string, params *PaginateChannelsParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -1279,23 +1279,23 @@ func NewPaginateChannelsRequest(server string, appID string, params *PaginateCha
 }
 
 // NewCreateChannelRequest calls the generic CreateChannel builder with application/json body
-func NewCreateChannelRequest(server string, appID string, body CreateChannelJSONRequestBody) (*http.Request, error) {
+func NewCreateChannelRequest(server string, appIDorProductID string, body CreateChannelJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCreateChannelRequestWithBody(server, appID, "application/json", bodyReader)
+	return NewCreateChannelRequestWithBody(server, appIDorProductID, "application/json", bodyReader)
 }
 
 // NewCreateChannelRequestWithBody generates requests for CreateChannel with any type of body
-func NewCreateChannelRequestWithBody(server string, appID string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCreateChannelRequestWithBody(server string, appIDorProductID string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -1326,12 +1326,12 @@ func NewCreateChannelRequestWithBody(server string, appID string, contentType st
 }
 
 // NewDeleteChannelRequest generates requests for DeleteChannel
-func NewDeleteChannelRequest(server string, appID string, channelID string) (*http.Request, error) {
+func NewDeleteChannelRequest(server string, appIDorProductID string, channelID string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -1367,12 +1367,12 @@ func NewDeleteChannelRequest(server string, appID string, channelID string) (*ht
 }
 
 // NewGetChannelRequest generates requests for GetChannel
-func NewGetChannelRequest(server string, appID string, channelID string) (*http.Request, error) {
+func NewGetChannelRequest(server string, appIDorProductID string, channelID string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -1408,23 +1408,23 @@ func NewGetChannelRequest(server string, appID string, channelID string) (*http.
 }
 
 // NewUpdateChannelRequest calls the generic UpdateChannel builder with application/json body
-func NewUpdateChannelRequest(server string, appID string, channelID string, body UpdateChannelJSONRequestBody) (*http.Request, error) {
+func NewUpdateChannelRequest(server string, appIDorProductID string, channelID string, body UpdateChannelJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdateChannelRequestWithBody(server, appID, channelID, "application/json", bodyReader)
+	return NewUpdateChannelRequestWithBody(server, appIDorProductID, channelID, "application/json", bodyReader)
 }
 
 // NewUpdateChannelRequestWithBody generates requests for UpdateChannel with any type of body
-func NewUpdateChannelRequestWithBody(server string, appID string, channelID string, contentType string, body io.Reader) (*http.Request, error) {
+func NewUpdateChannelRequestWithBody(server string, appIDorProductID string, channelID string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -1462,12 +1462,12 @@ func NewUpdateChannelRequestWithBody(server string, appID string, channelID stri
 }
 
 // NewPaginateGroupsRequest generates requests for PaginateGroups
-func NewPaginateGroupsRequest(server string, appID string, params *PaginateGroupsParams) (*http.Request, error) {
+func NewPaginateGroupsRequest(server string, appIDorProductID string, params *PaginateGroupsParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -1532,23 +1532,23 @@ func NewPaginateGroupsRequest(server string, appID string, params *PaginateGroup
 }
 
 // NewCreateGroupRequest calls the generic CreateGroup builder with application/json body
-func NewCreateGroupRequest(server string, appID string, body CreateGroupJSONRequestBody) (*http.Request, error) {
+func NewCreateGroupRequest(server string, appIDorProductID string, body CreateGroupJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCreateGroupRequestWithBody(server, appID, "application/json", bodyReader)
+	return NewCreateGroupRequestWithBody(server, appIDorProductID, "application/json", bodyReader)
 }
 
 // NewCreateGroupRequestWithBody generates requests for CreateGroup with any type of body
-func NewCreateGroupRequestWithBody(server string, appID string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCreateGroupRequestWithBody(server string, appIDorProductID string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -1579,12 +1579,12 @@ func NewCreateGroupRequestWithBody(server string, appID string, contentType stri
 }
 
 // NewDeleteGroupRequest generates requests for DeleteGroup
-func NewDeleteGroupRequest(server string, appID string, groupID string) (*http.Request, error) {
+func NewDeleteGroupRequest(server string, appIDorProductID string, groupID string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -1620,12 +1620,12 @@ func NewDeleteGroupRequest(server string, appID string, groupID string) (*http.R
 }
 
 // NewGetGroupRequest generates requests for GetGroup
-func NewGetGroupRequest(server string, appID string, groupID string) (*http.Request, error) {
+func NewGetGroupRequest(server string, appIDorProductID string, groupID string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -1661,23 +1661,23 @@ func NewGetGroupRequest(server string, appID string, groupID string) (*http.Requ
 }
 
 // NewUpdateGroupRequest calls the generic UpdateGroup builder with application/json body
-func NewUpdateGroupRequest(server string, appID string, groupID string, body UpdateGroupJSONRequestBody) (*http.Request, error) {
+func NewUpdateGroupRequest(server string, appIDorProductID string, groupID string, body UpdateGroupJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdateGroupRequestWithBody(server, appID, groupID, "application/json", bodyReader)
+	return NewUpdateGroupRequestWithBody(server, appIDorProductID, groupID, "application/json", bodyReader)
 }
 
 // NewUpdateGroupRequestWithBody generates requests for UpdateGroup with any type of body
-func NewUpdateGroupRequestWithBody(server string, appID string, groupID string, contentType string, body io.Reader) (*http.Request, error) {
+func NewUpdateGroupRequestWithBody(server string, appIDorProductID string, groupID string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -1715,12 +1715,12 @@ func NewUpdateGroupRequestWithBody(server string, appID string, groupID string, 
 }
 
 // NewGetGroupInstancesRequest generates requests for GetGroupInstances
-func NewGetGroupInstancesRequest(server string, appID string, groupID string, params *GetGroupInstancesParams) (*http.Request, error) {
+func NewGetGroupInstancesRequest(server string, appIDorProductID string, groupID string, params *GetGroupInstancesParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -1896,12 +1896,12 @@ func NewGetGroupInstancesRequest(server string, appID string, groupID string, pa
 }
 
 // NewGetInstanceRequest generates requests for GetInstance
-func NewGetInstanceRequest(server string, appID string, groupID string, instanceID string) (*http.Request, error) {
+func NewGetInstanceRequest(server string, appIDorProductID string, groupID string, instanceID string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -1944,12 +1944,12 @@ func NewGetInstanceRequest(server string, appID string, groupID string, instance
 }
 
 // NewGetInstanceStatusHistoryRequest generates requests for GetInstanceStatusHistory
-func NewGetInstanceStatusHistoryRequest(server string, appID string, groupID string, instanceID string, params *GetInstanceStatusHistoryParams) (*http.Request, error) {
+func NewGetInstanceStatusHistoryRequest(server string, appIDorProductID string, groupID string, instanceID string, params *GetInstanceStatusHistoryParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -2012,12 +2012,12 @@ func NewGetInstanceStatusHistoryRequest(server string, appID string, groupID str
 }
 
 // NewGetGroupInstanceStatsRequest generates requests for GetGroupInstanceStats
-func NewGetGroupInstanceStatsRequest(server string, appID string, groupID string, params *GetGroupInstanceStatsParams) (*http.Request, error) {
+func NewGetGroupInstanceStatsRequest(server string, appIDorProductID string, groupID string, params *GetGroupInstanceStatsParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -2069,12 +2069,12 @@ func NewGetGroupInstanceStatsRequest(server string, appID string, groupID string
 }
 
 // NewGetGroupInstancesCountRequest generates requests for GetGroupInstancesCount
-func NewGetGroupInstancesCountRequest(server string, appID string, groupID string, params *GetGroupInstancesCountParams) (*http.Request, error) {
+func NewGetGroupInstancesCountRequest(server string, appIDorProductID string, groupID string, params *GetGroupInstancesCountParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -2126,12 +2126,12 @@ func NewGetGroupInstancesCountRequest(server string, appID string, groupID strin
 }
 
 // NewGetGroupStatusTimelineRequest generates requests for GetGroupStatusTimeline
-func NewGetGroupStatusTimelineRequest(server string, appID string, groupID string, params *GetGroupStatusTimelineParams) (*http.Request, error) {
+func NewGetGroupStatusTimelineRequest(server string, appIDorProductID string, groupID string, params *GetGroupStatusTimelineParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -2183,12 +2183,12 @@ func NewGetGroupStatusTimelineRequest(server string, appID string, groupID strin
 }
 
 // NewGetGroupVersionBreakdownRequest generates requests for GetGroupVersionBreakdown
-func NewGetGroupVersionBreakdownRequest(server string, appID string, groupID string) (*http.Request, error) {
+func NewGetGroupVersionBreakdownRequest(server string, appIDorProductID string, groupID string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -2224,12 +2224,12 @@ func NewGetGroupVersionBreakdownRequest(server string, appID string, groupID str
 }
 
 // NewGetGroupVersionTimelineRequest generates requests for GetGroupVersionTimeline
-func NewGetGroupVersionTimelineRequest(server string, appID string, groupID string, params *GetGroupVersionTimelineParams) (*http.Request, error) {
+func NewGetGroupVersionTimelineRequest(server string, appIDorProductID string, groupID string, params *GetGroupVersionTimelineParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -2281,12 +2281,12 @@ func NewGetGroupVersionTimelineRequest(server string, appID string, groupID stri
 }
 
 // NewPaginatePackagesRequest generates requests for PaginatePackages
-func NewPaginatePackagesRequest(server string, appID string, params *PaginatePackagesParams) (*http.Request, error) {
+func NewPaginatePackagesRequest(server string, appIDorProductID string, params *PaginatePackagesParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -2367,23 +2367,23 @@ func NewPaginatePackagesRequest(server string, appID string, params *PaginatePac
 }
 
 // NewCreatePackageRequest calls the generic CreatePackage builder with application/json body
-func NewCreatePackageRequest(server string, appID string, body CreatePackageJSONRequestBody) (*http.Request, error) {
+func NewCreatePackageRequest(server string, appIDorProductID string, body CreatePackageJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCreatePackageRequestWithBody(server, appID, "application/json", bodyReader)
+	return NewCreatePackageRequestWithBody(server, appIDorProductID, "application/json", bodyReader)
 }
 
 // NewCreatePackageRequestWithBody generates requests for CreatePackage with any type of body
-func NewCreatePackageRequestWithBody(server string, appID string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCreatePackageRequestWithBody(server string, appIDorProductID string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -2414,12 +2414,12 @@ func NewCreatePackageRequestWithBody(server string, appID string, contentType st
 }
 
 // NewDeletePackageRequest generates requests for DeletePackage
-func NewDeletePackageRequest(server string, appID string, packageID string) (*http.Request, error) {
+func NewDeletePackageRequest(server string, appIDorProductID string, packageID string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -2455,12 +2455,12 @@ func NewDeletePackageRequest(server string, appID string, packageID string) (*ht
 }
 
 // NewGetPackageRequest generates requests for GetPackage
-func NewGetPackageRequest(server string, appID string, packageID string) (*http.Request, error) {
+func NewGetPackageRequest(server string, appIDorProductID string, packageID string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -2496,23 +2496,23 @@ func NewGetPackageRequest(server string, appID string, packageID string) (*http.
 }
 
 // NewUpdatePackageRequest calls the generic UpdatePackage builder with application/json body
-func NewUpdatePackageRequest(server string, appID string, packageID string, body UpdatePackageJSONRequestBody) (*http.Request, error) {
+func NewUpdatePackageRequest(server string, appIDorProductID string, packageID string, body UpdatePackageJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewUpdatePackageRequestWithBody(server, appID, packageID, "application/json", bodyReader)
+	return NewUpdatePackageRequestWithBody(server, appIDorProductID, packageID, "application/json", bodyReader)
 }
 
 // NewUpdatePackageRequestWithBody generates requests for UpdatePackage with any type of body
-func NewUpdatePackageRequestWithBody(server string, appID string, packageID string, contentType string, body io.Reader) (*http.Request, error) {
+func NewUpdatePackageRequestWithBody(server string, appIDorProductID string, packageID string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appID", runtime.ParamLocationPath, appID)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
 	if err != nil {
 		return nil, err
 	}
@@ -2905,96 +2905,96 @@ type ClientWithResponsesInterface interface {
 	CreateAppWithResponse(ctx context.Context, params *CreateAppParams, body CreateAppJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateAppResponse, error)
 
 	// DeleteApp request
-	DeleteAppWithResponse(ctx context.Context, appID string, reqEditors ...RequestEditorFn) (*DeleteAppResponse, error)
+	DeleteAppWithResponse(ctx context.Context, appIDorProductID string, reqEditors ...RequestEditorFn) (*DeleteAppResponse, error)
 
 	// GetApp request
-	GetAppWithResponse(ctx context.Context, appID string, reqEditors ...RequestEditorFn) (*GetAppResponse, error)
+	GetAppWithResponse(ctx context.Context, appIDorProductID string, reqEditors ...RequestEditorFn) (*GetAppResponse, error)
 
 	// UpdateApp request with any body
-	UpdateAppWithBodyWithResponse(ctx context.Context, appID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAppResponse, error)
+	UpdateAppWithBodyWithResponse(ctx context.Context, appIDorProductID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAppResponse, error)
 
-	UpdateAppWithResponse(ctx context.Context, appID string, body UpdateAppJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAppResponse, error)
+	UpdateAppWithResponse(ctx context.Context, appIDorProductID string, body UpdateAppJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAppResponse, error)
 
 	// PaginateChannels request
-	PaginateChannelsWithResponse(ctx context.Context, appID string, params *PaginateChannelsParams, reqEditors ...RequestEditorFn) (*PaginateChannelsResponse, error)
+	PaginateChannelsWithResponse(ctx context.Context, appIDorProductID string, params *PaginateChannelsParams, reqEditors ...RequestEditorFn) (*PaginateChannelsResponse, error)
 
 	// CreateChannel request with any body
-	CreateChannelWithBodyWithResponse(ctx context.Context, appID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateChannelResponse, error)
+	CreateChannelWithBodyWithResponse(ctx context.Context, appIDorProductID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateChannelResponse, error)
 
-	CreateChannelWithResponse(ctx context.Context, appID string, body CreateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateChannelResponse, error)
+	CreateChannelWithResponse(ctx context.Context, appIDorProductID string, body CreateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateChannelResponse, error)
 
 	// DeleteChannel request
-	DeleteChannelWithResponse(ctx context.Context, appID string, channelID string, reqEditors ...RequestEditorFn) (*DeleteChannelResponse, error)
+	DeleteChannelWithResponse(ctx context.Context, appIDorProductID string, channelID string, reqEditors ...RequestEditorFn) (*DeleteChannelResponse, error)
 
 	// GetChannel request
-	GetChannelWithResponse(ctx context.Context, appID string, channelID string, reqEditors ...RequestEditorFn) (*GetChannelResponse, error)
+	GetChannelWithResponse(ctx context.Context, appIDorProductID string, channelID string, reqEditors ...RequestEditorFn) (*GetChannelResponse, error)
 
 	// UpdateChannel request with any body
-	UpdateChannelWithBodyWithResponse(ctx context.Context, appID string, channelID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateChannelResponse, error)
+	UpdateChannelWithBodyWithResponse(ctx context.Context, appIDorProductID string, channelID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateChannelResponse, error)
 
-	UpdateChannelWithResponse(ctx context.Context, appID string, channelID string, body UpdateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateChannelResponse, error)
+	UpdateChannelWithResponse(ctx context.Context, appIDorProductID string, channelID string, body UpdateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateChannelResponse, error)
 
 	// PaginateGroups request
-	PaginateGroupsWithResponse(ctx context.Context, appID string, params *PaginateGroupsParams, reqEditors ...RequestEditorFn) (*PaginateGroupsResponse, error)
+	PaginateGroupsWithResponse(ctx context.Context, appIDorProductID string, params *PaginateGroupsParams, reqEditors ...RequestEditorFn) (*PaginateGroupsResponse, error)
 
 	// CreateGroup request with any body
-	CreateGroupWithBodyWithResponse(ctx context.Context, appID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateGroupResponse, error)
+	CreateGroupWithBodyWithResponse(ctx context.Context, appIDorProductID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateGroupResponse, error)
 
-	CreateGroupWithResponse(ctx context.Context, appID string, body CreateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateGroupResponse, error)
+	CreateGroupWithResponse(ctx context.Context, appIDorProductID string, body CreateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateGroupResponse, error)
 
 	// DeleteGroup request
-	DeleteGroupWithResponse(ctx context.Context, appID string, groupID string, reqEditors ...RequestEditorFn) (*DeleteGroupResponse, error)
+	DeleteGroupWithResponse(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*DeleteGroupResponse, error)
 
 	// GetGroup request
-	GetGroupWithResponse(ctx context.Context, appID string, groupID string, reqEditors ...RequestEditorFn) (*GetGroupResponse, error)
+	GetGroupWithResponse(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*GetGroupResponse, error)
 
 	// UpdateGroup request with any body
-	UpdateGroupWithBodyWithResponse(ctx context.Context, appID string, groupID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateGroupResponse, error)
+	UpdateGroupWithBodyWithResponse(ctx context.Context, appIDorProductID string, groupID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateGroupResponse, error)
 
-	UpdateGroupWithResponse(ctx context.Context, appID string, groupID string, body UpdateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateGroupResponse, error)
+	UpdateGroupWithResponse(ctx context.Context, appIDorProductID string, groupID string, body UpdateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateGroupResponse, error)
 
 	// GetGroupInstances request
-	GetGroupInstancesWithResponse(ctx context.Context, appID string, groupID string, params *GetGroupInstancesParams, reqEditors ...RequestEditorFn) (*GetGroupInstancesResponse, error)
+	GetGroupInstancesWithResponse(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupInstancesParams, reqEditors ...RequestEditorFn) (*GetGroupInstancesResponse, error)
 
 	// GetInstance request
-	GetInstanceWithResponse(ctx context.Context, appID string, groupID string, instanceID string, reqEditors ...RequestEditorFn) (*GetInstanceResponse, error)
+	GetInstanceWithResponse(ctx context.Context, appIDorProductID string, groupID string, instanceID string, reqEditors ...RequestEditorFn) (*GetInstanceResponse, error)
 
 	// GetInstanceStatusHistory request
-	GetInstanceStatusHistoryWithResponse(ctx context.Context, appID string, groupID string, instanceID string, params *GetInstanceStatusHistoryParams, reqEditors ...RequestEditorFn) (*GetInstanceStatusHistoryResponse, error)
+	GetInstanceStatusHistoryWithResponse(ctx context.Context, appIDorProductID string, groupID string, instanceID string, params *GetInstanceStatusHistoryParams, reqEditors ...RequestEditorFn) (*GetInstanceStatusHistoryResponse, error)
 
 	// GetGroupInstanceStats request
-	GetGroupInstanceStatsWithResponse(ctx context.Context, appID string, groupID string, params *GetGroupInstanceStatsParams, reqEditors ...RequestEditorFn) (*GetGroupInstanceStatsResponse, error)
+	GetGroupInstanceStatsWithResponse(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupInstanceStatsParams, reqEditors ...RequestEditorFn) (*GetGroupInstanceStatsResponse, error)
 
 	// GetGroupInstancesCount request
-	GetGroupInstancesCountWithResponse(ctx context.Context, appID string, groupID string, params *GetGroupInstancesCountParams, reqEditors ...RequestEditorFn) (*GetGroupInstancesCountResponse, error)
+	GetGroupInstancesCountWithResponse(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupInstancesCountParams, reqEditors ...RequestEditorFn) (*GetGroupInstancesCountResponse, error)
 
 	// GetGroupStatusTimeline request
-	GetGroupStatusTimelineWithResponse(ctx context.Context, appID string, groupID string, params *GetGroupStatusTimelineParams, reqEditors ...RequestEditorFn) (*GetGroupStatusTimelineResponse, error)
+	GetGroupStatusTimelineWithResponse(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupStatusTimelineParams, reqEditors ...RequestEditorFn) (*GetGroupStatusTimelineResponse, error)
 
 	// GetGroupVersionBreakdown request
-	GetGroupVersionBreakdownWithResponse(ctx context.Context, appID string, groupID string, reqEditors ...RequestEditorFn) (*GetGroupVersionBreakdownResponse, error)
+	GetGroupVersionBreakdownWithResponse(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*GetGroupVersionBreakdownResponse, error)
 
 	// GetGroupVersionTimeline request
-	GetGroupVersionTimelineWithResponse(ctx context.Context, appID string, groupID string, params *GetGroupVersionTimelineParams, reqEditors ...RequestEditorFn) (*GetGroupVersionTimelineResponse, error)
+	GetGroupVersionTimelineWithResponse(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupVersionTimelineParams, reqEditors ...RequestEditorFn) (*GetGroupVersionTimelineResponse, error)
 
 	// PaginatePackages request
-	PaginatePackagesWithResponse(ctx context.Context, appID string, params *PaginatePackagesParams, reqEditors ...RequestEditorFn) (*PaginatePackagesResponse, error)
+	PaginatePackagesWithResponse(ctx context.Context, appIDorProductID string, params *PaginatePackagesParams, reqEditors ...RequestEditorFn) (*PaginatePackagesResponse, error)
 
 	// CreatePackage request with any body
-	CreatePackageWithBodyWithResponse(ctx context.Context, appID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreatePackageResponse, error)
+	CreatePackageWithBodyWithResponse(ctx context.Context, appIDorProductID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreatePackageResponse, error)
 
-	CreatePackageWithResponse(ctx context.Context, appID string, body CreatePackageJSONRequestBody, reqEditors ...RequestEditorFn) (*CreatePackageResponse, error)
+	CreatePackageWithResponse(ctx context.Context, appIDorProductID string, body CreatePackageJSONRequestBody, reqEditors ...RequestEditorFn) (*CreatePackageResponse, error)
 
 	// DeletePackage request
-	DeletePackageWithResponse(ctx context.Context, appID string, packageID string, reqEditors ...RequestEditorFn) (*DeletePackageResponse, error)
+	DeletePackageWithResponse(ctx context.Context, appIDorProductID string, packageID string, reqEditors ...RequestEditorFn) (*DeletePackageResponse, error)
 
 	// GetPackage request
-	GetPackageWithResponse(ctx context.Context, appID string, packageID string, reqEditors ...RequestEditorFn) (*GetPackageResponse, error)
+	GetPackageWithResponse(ctx context.Context, appIDorProductID string, packageID string, reqEditors ...RequestEditorFn) (*GetPackageResponse, error)
 
 	// UpdatePackage request with any body
-	UpdatePackageWithBodyWithResponse(ctx context.Context, appID string, packageID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdatePackageResponse, error)
+	UpdatePackageWithBodyWithResponse(ctx context.Context, appIDorProductID string, packageID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdatePackageResponse, error)
 
-	UpdatePackageWithResponse(ctx context.Context, appID string, packageID string, body UpdatePackageJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdatePackageResponse, error)
+	UpdatePackageWithResponse(ctx context.Context, appIDorProductID string, packageID string, body UpdatePackageJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdatePackageResponse, error)
 
 	// UpdateInstance request with any body
 	UpdateInstanceWithBodyWithResponse(ctx context.Context, instanceID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateInstanceResponse, error)
@@ -3770,6 +3770,7 @@ func (r LoginCbResponse) StatusCode() int {
 type LoginTokenResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON200      *LoginToken
 }
 
 // Status returns HTTPResponse.Status
@@ -3887,8 +3888,8 @@ func (c *ClientWithResponses) CreateAppWithResponse(ctx context.Context, params 
 }
 
 // DeleteAppWithResponse request returning *DeleteAppResponse
-func (c *ClientWithResponses) DeleteAppWithResponse(ctx context.Context, appID string, reqEditors ...RequestEditorFn) (*DeleteAppResponse, error) {
-	rsp, err := c.DeleteApp(ctx, appID, reqEditors...)
+func (c *ClientWithResponses) DeleteAppWithResponse(ctx context.Context, appIDorProductID string, reqEditors ...RequestEditorFn) (*DeleteAppResponse, error) {
+	rsp, err := c.DeleteApp(ctx, appIDorProductID, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -3896,8 +3897,8 @@ func (c *ClientWithResponses) DeleteAppWithResponse(ctx context.Context, appID s
 }
 
 // GetAppWithResponse request returning *GetAppResponse
-func (c *ClientWithResponses) GetAppWithResponse(ctx context.Context, appID string, reqEditors ...RequestEditorFn) (*GetAppResponse, error) {
-	rsp, err := c.GetApp(ctx, appID, reqEditors...)
+func (c *ClientWithResponses) GetAppWithResponse(ctx context.Context, appIDorProductID string, reqEditors ...RequestEditorFn) (*GetAppResponse, error) {
+	rsp, err := c.GetApp(ctx, appIDorProductID, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -3905,16 +3906,16 @@ func (c *ClientWithResponses) GetAppWithResponse(ctx context.Context, appID stri
 }
 
 // UpdateAppWithBodyWithResponse request with arbitrary body returning *UpdateAppResponse
-func (c *ClientWithResponses) UpdateAppWithBodyWithResponse(ctx context.Context, appID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAppResponse, error) {
-	rsp, err := c.UpdateAppWithBody(ctx, appID, contentType, body, reqEditors...)
+func (c *ClientWithResponses) UpdateAppWithBodyWithResponse(ctx context.Context, appIDorProductID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAppResponse, error) {
+	rsp, err := c.UpdateAppWithBody(ctx, appIDorProductID, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseUpdateAppResponse(rsp)
 }
 
-func (c *ClientWithResponses) UpdateAppWithResponse(ctx context.Context, appID string, body UpdateAppJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAppResponse, error) {
-	rsp, err := c.UpdateApp(ctx, appID, body, reqEditors...)
+func (c *ClientWithResponses) UpdateAppWithResponse(ctx context.Context, appIDorProductID string, body UpdateAppJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateAppResponse, error) {
+	rsp, err := c.UpdateApp(ctx, appIDorProductID, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -3922,8 +3923,8 @@ func (c *ClientWithResponses) UpdateAppWithResponse(ctx context.Context, appID s
 }
 
 // PaginateChannelsWithResponse request returning *PaginateChannelsResponse
-func (c *ClientWithResponses) PaginateChannelsWithResponse(ctx context.Context, appID string, params *PaginateChannelsParams, reqEditors ...RequestEditorFn) (*PaginateChannelsResponse, error) {
-	rsp, err := c.PaginateChannels(ctx, appID, params, reqEditors...)
+func (c *ClientWithResponses) PaginateChannelsWithResponse(ctx context.Context, appIDorProductID string, params *PaginateChannelsParams, reqEditors ...RequestEditorFn) (*PaginateChannelsResponse, error) {
+	rsp, err := c.PaginateChannels(ctx, appIDorProductID, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -3931,16 +3932,16 @@ func (c *ClientWithResponses) PaginateChannelsWithResponse(ctx context.Context, 
 }
 
 // CreateChannelWithBodyWithResponse request with arbitrary body returning *CreateChannelResponse
-func (c *ClientWithResponses) CreateChannelWithBodyWithResponse(ctx context.Context, appID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateChannelResponse, error) {
-	rsp, err := c.CreateChannelWithBody(ctx, appID, contentType, body, reqEditors...)
+func (c *ClientWithResponses) CreateChannelWithBodyWithResponse(ctx context.Context, appIDorProductID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateChannelResponse, error) {
+	rsp, err := c.CreateChannelWithBody(ctx, appIDorProductID, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseCreateChannelResponse(rsp)
 }
 
-func (c *ClientWithResponses) CreateChannelWithResponse(ctx context.Context, appID string, body CreateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateChannelResponse, error) {
-	rsp, err := c.CreateChannel(ctx, appID, body, reqEditors...)
+func (c *ClientWithResponses) CreateChannelWithResponse(ctx context.Context, appIDorProductID string, body CreateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateChannelResponse, error) {
+	rsp, err := c.CreateChannel(ctx, appIDorProductID, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -3948,8 +3949,8 @@ func (c *ClientWithResponses) CreateChannelWithResponse(ctx context.Context, app
 }
 
 // DeleteChannelWithResponse request returning *DeleteChannelResponse
-func (c *ClientWithResponses) DeleteChannelWithResponse(ctx context.Context, appID string, channelID string, reqEditors ...RequestEditorFn) (*DeleteChannelResponse, error) {
-	rsp, err := c.DeleteChannel(ctx, appID, channelID, reqEditors...)
+func (c *ClientWithResponses) DeleteChannelWithResponse(ctx context.Context, appIDorProductID string, channelID string, reqEditors ...RequestEditorFn) (*DeleteChannelResponse, error) {
+	rsp, err := c.DeleteChannel(ctx, appIDorProductID, channelID, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -3957,8 +3958,8 @@ func (c *ClientWithResponses) DeleteChannelWithResponse(ctx context.Context, app
 }
 
 // GetChannelWithResponse request returning *GetChannelResponse
-func (c *ClientWithResponses) GetChannelWithResponse(ctx context.Context, appID string, channelID string, reqEditors ...RequestEditorFn) (*GetChannelResponse, error) {
-	rsp, err := c.GetChannel(ctx, appID, channelID, reqEditors...)
+func (c *ClientWithResponses) GetChannelWithResponse(ctx context.Context, appIDorProductID string, channelID string, reqEditors ...RequestEditorFn) (*GetChannelResponse, error) {
+	rsp, err := c.GetChannel(ctx, appIDorProductID, channelID, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -3966,16 +3967,16 @@ func (c *ClientWithResponses) GetChannelWithResponse(ctx context.Context, appID 
 }
 
 // UpdateChannelWithBodyWithResponse request with arbitrary body returning *UpdateChannelResponse
-func (c *ClientWithResponses) UpdateChannelWithBodyWithResponse(ctx context.Context, appID string, channelID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateChannelResponse, error) {
-	rsp, err := c.UpdateChannelWithBody(ctx, appID, channelID, contentType, body, reqEditors...)
+func (c *ClientWithResponses) UpdateChannelWithBodyWithResponse(ctx context.Context, appIDorProductID string, channelID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateChannelResponse, error) {
+	rsp, err := c.UpdateChannelWithBody(ctx, appIDorProductID, channelID, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseUpdateChannelResponse(rsp)
 }
 
-func (c *ClientWithResponses) UpdateChannelWithResponse(ctx context.Context, appID string, channelID string, body UpdateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateChannelResponse, error) {
-	rsp, err := c.UpdateChannel(ctx, appID, channelID, body, reqEditors...)
+func (c *ClientWithResponses) UpdateChannelWithResponse(ctx context.Context, appIDorProductID string, channelID string, body UpdateChannelJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateChannelResponse, error) {
+	rsp, err := c.UpdateChannel(ctx, appIDorProductID, channelID, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -3983,8 +3984,8 @@ func (c *ClientWithResponses) UpdateChannelWithResponse(ctx context.Context, app
 }
 
 // PaginateGroupsWithResponse request returning *PaginateGroupsResponse
-func (c *ClientWithResponses) PaginateGroupsWithResponse(ctx context.Context, appID string, params *PaginateGroupsParams, reqEditors ...RequestEditorFn) (*PaginateGroupsResponse, error) {
-	rsp, err := c.PaginateGroups(ctx, appID, params, reqEditors...)
+func (c *ClientWithResponses) PaginateGroupsWithResponse(ctx context.Context, appIDorProductID string, params *PaginateGroupsParams, reqEditors ...RequestEditorFn) (*PaginateGroupsResponse, error) {
+	rsp, err := c.PaginateGroups(ctx, appIDorProductID, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -3992,16 +3993,16 @@ func (c *ClientWithResponses) PaginateGroupsWithResponse(ctx context.Context, ap
 }
 
 // CreateGroupWithBodyWithResponse request with arbitrary body returning *CreateGroupResponse
-func (c *ClientWithResponses) CreateGroupWithBodyWithResponse(ctx context.Context, appID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateGroupResponse, error) {
-	rsp, err := c.CreateGroupWithBody(ctx, appID, contentType, body, reqEditors...)
+func (c *ClientWithResponses) CreateGroupWithBodyWithResponse(ctx context.Context, appIDorProductID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateGroupResponse, error) {
+	rsp, err := c.CreateGroupWithBody(ctx, appIDorProductID, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseCreateGroupResponse(rsp)
 }
 
-func (c *ClientWithResponses) CreateGroupWithResponse(ctx context.Context, appID string, body CreateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateGroupResponse, error) {
-	rsp, err := c.CreateGroup(ctx, appID, body, reqEditors...)
+func (c *ClientWithResponses) CreateGroupWithResponse(ctx context.Context, appIDorProductID string, body CreateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateGroupResponse, error) {
+	rsp, err := c.CreateGroup(ctx, appIDorProductID, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -4009,8 +4010,8 @@ func (c *ClientWithResponses) CreateGroupWithResponse(ctx context.Context, appID
 }
 
 // DeleteGroupWithResponse request returning *DeleteGroupResponse
-func (c *ClientWithResponses) DeleteGroupWithResponse(ctx context.Context, appID string, groupID string, reqEditors ...RequestEditorFn) (*DeleteGroupResponse, error) {
-	rsp, err := c.DeleteGroup(ctx, appID, groupID, reqEditors...)
+func (c *ClientWithResponses) DeleteGroupWithResponse(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*DeleteGroupResponse, error) {
+	rsp, err := c.DeleteGroup(ctx, appIDorProductID, groupID, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -4018,8 +4019,8 @@ func (c *ClientWithResponses) DeleteGroupWithResponse(ctx context.Context, appID
 }
 
 // GetGroupWithResponse request returning *GetGroupResponse
-func (c *ClientWithResponses) GetGroupWithResponse(ctx context.Context, appID string, groupID string, reqEditors ...RequestEditorFn) (*GetGroupResponse, error) {
-	rsp, err := c.GetGroup(ctx, appID, groupID, reqEditors...)
+func (c *ClientWithResponses) GetGroupWithResponse(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*GetGroupResponse, error) {
+	rsp, err := c.GetGroup(ctx, appIDorProductID, groupID, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -4027,16 +4028,16 @@ func (c *ClientWithResponses) GetGroupWithResponse(ctx context.Context, appID st
 }
 
 // UpdateGroupWithBodyWithResponse request with arbitrary body returning *UpdateGroupResponse
-func (c *ClientWithResponses) UpdateGroupWithBodyWithResponse(ctx context.Context, appID string, groupID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateGroupResponse, error) {
-	rsp, err := c.UpdateGroupWithBody(ctx, appID, groupID, contentType, body, reqEditors...)
+func (c *ClientWithResponses) UpdateGroupWithBodyWithResponse(ctx context.Context, appIDorProductID string, groupID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateGroupResponse, error) {
+	rsp, err := c.UpdateGroupWithBody(ctx, appIDorProductID, groupID, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseUpdateGroupResponse(rsp)
 }
 
-func (c *ClientWithResponses) UpdateGroupWithResponse(ctx context.Context, appID string, groupID string, body UpdateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateGroupResponse, error) {
-	rsp, err := c.UpdateGroup(ctx, appID, groupID, body, reqEditors...)
+func (c *ClientWithResponses) UpdateGroupWithResponse(ctx context.Context, appIDorProductID string, groupID string, body UpdateGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateGroupResponse, error) {
+	rsp, err := c.UpdateGroup(ctx, appIDorProductID, groupID, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -4044,8 +4045,8 @@ func (c *ClientWithResponses) UpdateGroupWithResponse(ctx context.Context, appID
 }
 
 // GetGroupInstancesWithResponse request returning *GetGroupInstancesResponse
-func (c *ClientWithResponses) GetGroupInstancesWithResponse(ctx context.Context, appID string, groupID string, params *GetGroupInstancesParams, reqEditors ...RequestEditorFn) (*GetGroupInstancesResponse, error) {
-	rsp, err := c.GetGroupInstances(ctx, appID, groupID, params, reqEditors...)
+func (c *ClientWithResponses) GetGroupInstancesWithResponse(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupInstancesParams, reqEditors ...RequestEditorFn) (*GetGroupInstancesResponse, error) {
+	rsp, err := c.GetGroupInstances(ctx, appIDorProductID, groupID, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -4053,8 +4054,8 @@ func (c *ClientWithResponses) GetGroupInstancesWithResponse(ctx context.Context,
 }
 
 // GetInstanceWithResponse request returning *GetInstanceResponse
-func (c *ClientWithResponses) GetInstanceWithResponse(ctx context.Context, appID string, groupID string, instanceID string, reqEditors ...RequestEditorFn) (*GetInstanceResponse, error) {
-	rsp, err := c.GetInstance(ctx, appID, groupID, instanceID, reqEditors...)
+func (c *ClientWithResponses) GetInstanceWithResponse(ctx context.Context, appIDorProductID string, groupID string, instanceID string, reqEditors ...RequestEditorFn) (*GetInstanceResponse, error) {
+	rsp, err := c.GetInstance(ctx, appIDorProductID, groupID, instanceID, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -4062,8 +4063,8 @@ func (c *ClientWithResponses) GetInstanceWithResponse(ctx context.Context, appID
 }
 
 // GetInstanceStatusHistoryWithResponse request returning *GetInstanceStatusHistoryResponse
-func (c *ClientWithResponses) GetInstanceStatusHistoryWithResponse(ctx context.Context, appID string, groupID string, instanceID string, params *GetInstanceStatusHistoryParams, reqEditors ...RequestEditorFn) (*GetInstanceStatusHistoryResponse, error) {
-	rsp, err := c.GetInstanceStatusHistory(ctx, appID, groupID, instanceID, params, reqEditors...)
+func (c *ClientWithResponses) GetInstanceStatusHistoryWithResponse(ctx context.Context, appIDorProductID string, groupID string, instanceID string, params *GetInstanceStatusHistoryParams, reqEditors ...RequestEditorFn) (*GetInstanceStatusHistoryResponse, error) {
+	rsp, err := c.GetInstanceStatusHistory(ctx, appIDorProductID, groupID, instanceID, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -4071,8 +4072,8 @@ func (c *ClientWithResponses) GetInstanceStatusHistoryWithResponse(ctx context.C
 }
 
 // GetGroupInstanceStatsWithResponse request returning *GetGroupInstanceStatsResponse
-func (c *ClientWithResponses) GetGroupInstanceStatsWithResponse(ctx context.Context, appID string, groupID string, params *GetGroupInstanceStatsParams, reqEditors ...RequestEditorFn) (*GetGroupInstanceStatsResponse, error) {
-	rsp, err := c.GetGroupInstanceStats(ctx, appID, groupID, params, reqEditors...)
+func (c *ClientWithResponses) GetGroupInstanceStatsWithResponse(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupInstanceStatsParams, reqEditors ...RequestEditorFn) (*GetGroupInstanceStatsResponse, error) {
+	rsp, err := c.GetGroupInstanceStats(ctx, appIDorProductID, groupID, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -4080,8 +4081,8 @@ func (c *ClientWithResponses) GetGroupInstanceStatsWithResponse(ctx context.Cont
 }
 
 // GetGroupInstancesCountWithResponse request returning *GetGroupInstancesCountResponse
-func (c *ClientWithResponses) GetGroupInstancesCountWithResponse(ctx context.Context, appID string, groupID string, params *GetGroupInstancesCountParams, reqEditors ...RequestEditorFn) (*GetGroupInstancesCountResponse, error) {
-	rsp, err := c.GetGroupInstancesCount(ctx, appID, groupID, params, reqEditors...)
+func (c *ClientWithResponses) GetGroupInstancesCountWithResponse(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupInstancesCountParams, reqEditors ...RequestEditorFn) (*GetGroupInstancesCountResponse, error) {
+	rsp, err := c.GetGroupInstancesCount(ctx, appIDorProductID, groupID, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -4089,8 +4090,8 @@ func (c *ClientWithResponses) GetGroupInstancesCountWithResponse(ctx context.Con
 }
 
 // GetGroupStatusTimelineWithResponse request returning *GetGroupStatusTimelineResponse
-func (c *ClientWithResponses) GetGroupStatusTimelineWithResponse(ctx context.Context, appID string, groupID string, params *GetGroupStatusTimelineParams, reqEditors ...RequestEditorFn) (*GetGroupStatusTimelineResponse, error) {
-	rsp, err := c.GetGroupStatusTimeline(ctx, appID, groupID, params, reqEditors...)
+func (c *ClientWithResponses) GetGroupStatusTimelineWithResponse(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupStatusTimelineParams, reqEditors ...RequestEditorFn) (*GetGroupStatusTimelineResponse, error) {
+	rsp, err := c.GetGroupStatusTimeline(ctx, appIDorProductID, groupID, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -4098,8 +4099,8 @@ func (c *ClientWithResponses) GetGroupStatusTimelineWithResponse(ctx context.Con
 }
 
 // GetGroupVersionBreakdownWithResponse request returning *GetGroupVersionBreakdownResponse
-func (c *ClientWithResponses) GetGroupVersionBreakdownWithResponse(ctx context.Context, appID string, groupID string, reqEditors ...RequestEditorFn) (*GetGroupVersionBreakdownResponse, error) {
-	rsp, err := c.GetGroupVersionBreakdown(ctx, appID, groupID, reqEditors...)
+func (c *ClientWithResponses) GetGroupVersionBreakdownWithResponse(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*GetGroupVersionBreakdownResponse, error) {
+	rsp, err := c.GetGroupVersionBreakdown(ctx, appIDorProductID, groupID, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -4107,8 +4108,8 @@ func (c *ClientWithResponses) GetGroupVersionBreakdownWithResponse(ctx context.C
 }
 
 // GetGroupVersionTimelineWithResponse request returning *GetGroupVersionTimelineResponse
-func (c *ClientWithResponses) GetGroupVersionTimelineWithResponse(ctx context.Context, appID string, groupID string, params *GetGroupVersionTimelineParams, reqEditors ...RequestEditorFn) (*GetGroupVersionTimelineResponse, error) {
-	rsp, err := c.GetGroupVersionTimeline(ctx, appID, groupID, params, reqEditors...)
+func (c *ClientWithResponses) GetGroupVersionTimelineWithResponse(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupVersionTimelineParams, reqEditors ...RequestEditorFn) (*GetGroupVersionTimelineResponse, error) {
+	rsp, err := c.GetGroupVersionTimeline(ctx, appIDorProductID, groupID, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -4116,8 +4117,8 @@ func (c *ClientWithResponses) GetGroupVersionTimelineWithResponse(ctx context.Co
 }
 
 // PaginatePackagesWithResponse request returning *PaginatePackagesResponse
-func (c *ClientWithResponses) PaginatePackagesWithResponse(ctx context.Context, appID string, params *PaginatePackagesParams, reqEditors ...RequestEditorFn) (*PaginatePackagesResponse, error) {
-	rsp, err := c.PaginatePackages(ctx, appID, params, reqEditors...)
+func (c *ClientWithResponses) PaginatePackagesWithResponse(ctx context.Context, appIDorProductID string, params *PaginatePackagesParams, reqEditors ...RequestEditorFn) (*PaginatePackagesResponse, error) {
+	rsp, err := c.PaginatePackages(ctx, appIDorProductID, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -4125,16 +4126,16 @@ func (c *ClientWithResponses) PaginatePackagesWithResponse(ctx context.Context, 
 }
 
 // CreatePackageWithBodyWithResponse request with arbitrary body returning *CreatePackageResponse
-func (c *ClientWithResponses) CreatePackageWithBodyWithResponse(ctx context.Context, appID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreatePackageResponse, error) {
-	rsp, err := c.CreatePackageWithBody(ctx, appID, contentType, body, reqEditors...)
+func (c *ClientWithResponses) CreatePackageWithBodyWithResponse(ctx context.Context, appIDorProductID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreatePackageResponse, error) {
+	rsp, err := c.CreatePackageWithBody(ctx, appIDorProductID, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseCreatePackageResponse(rsp)
 }
 
-func (c *ClientWithResponses) CreatePackageWithResponse(ctx context.Context, appID string, body CreatePackageJSONRequestBody, reqEditors ...RequestEditorFn) (*CreatePackageResponse, error) {
-	rsp, err := c.CreatePackage(ctx, appID, body, reqEditors...)
+func (c *ClientWithResponses) CreatePackageWithResponse(ctx context.Context, appIDorProductID string, body CreatePackageJSONRequestBody, reqEditors ...RequestEditorFn) (*CreatePackageResponse, error) {
+	rsp, err := c.CreatePackage(ctx, appIDorProductID, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -4142,8 +4143,8 @@ func (c *ClientWithResponses) CreatePackageWithResponse(ctx context.Context, app
 }
 
 // DeletePackageWithResponse request returning *DeletePackageResponse
-func (c *ClientWithResponses) DeletePackageWithResponse(ctx context.Context, appID string, packageID string, reqEditors ...RequestEditorFn) (*DeletePackageResponse, error) {
-	rsp, err := c.DeletePackage(ctx, appID, packageID, reqEditors...)
+func (c *ClientWithResponses) DeletePackageWithResponse(ctx context.Context, appIDorProductID string, packageID string, reqEditors ...RequestEditorFn) (*DeletePackageResponse, error) {
+	rsp, err := c.DeletePackage(ctx, appIDorProductID, packageID, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -4151,8 +4152,8 @@ func (c *ClientWithResponses) DeletePackageWithResponse(ctx context.Context, app
 }
 
 // GetPackageWithResponse request returning *GetPackageResponse
-func (c *ClientWithResponses) GetPackageWithResponse(ctx context.Context, appID string, packageID string, reqEditors ...RequestEditorFn) (*GetPackageResponse, error) {
-	rsp, err := c.GetPackage(ctx, appID, packageID, reqEditors...)
+func (c *ClientWithResponses) GetPackageWithResponse(ctx context.Context, appIDorProductID string, packageID string, reqEditors ...RequestEditorFn) (*GetPackageResponse, error) {
+	rsp, err := c.GetPackage(ctx, appIDorProductID, packageID, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -4160,16 +4161,16 @@ func (c *ClientWithResponses) GetPackageWithResponse(ctx context.Context, appID 
 }
 
 // UpdatePackageWithBodyWithResponse request with arbitrary body returning *UpdatePackageResponse
-func (c *ClientWithResponses) UpdatePackageWithBodyWithResponse(ctx context.Context, appID string, packageID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdatePackageResponse, error) {
-	rsp, err := c.UpdatePackageWithBody(ctx, appID, packageID, contentType, body, reqEditors...)
+func (c *ClientWithResponses) UpdatePackageWithBodyWithResponse(ctx context.Context, appIDorProductID string, packageID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdatePackageResponse, error) {
+	rsp, err := c.UpdatePackageWithBody(ctx, appIDorProductID, packageID, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseUpdatePackageResponse(rsp)
 }
 
-func (c *ClientWithResponses) UpdatePackageWithResponse(ctx context.Context, appID string, packageID string, body UpdatePackageJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdatePackageResponse, error) {
-	rsp, err := c.UpdatePackage(ctx, appID, packageID, body, reqEditors...)
+func (c *ClientWithResponses) UpdatePackageWithResponse(ctx context.Context, appIDorProductID string, packageID string, body UpdatePackageJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdatePackageResponse, error) {
+	rsp, err := c.UpdatePackage(ctx, appIDorProductID, packageID, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -5090,6 +5091,16 @@ func ParseLoginTokenResponse(rsp *http.Response) (*LoginTokenResponse, error) {
 	response := &LoginTokenResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest LoginToken
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
 	}
 
 	return response, nil

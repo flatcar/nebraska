@@ -43,6 +43,10 @@ paths:
       responses:
         "200":
           description: login token response      
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/loginToken"
         "500":
           description: internal server error
         "501":
@@ -190,7 +194,7 @@ paths:
         "500":
           description: Create App error response
 
-  /api/apps/{appID}:
+  /api/apps/{appIDorProductID}:
     get:
       description: get app
       operationId: getApp
@@ -200,7 +204,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -224,7 +228,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -255,7 +259,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -265,7 +269,7 @@ paths:
         "500":
           description: Delete App error response
 
-  /api/apps/{appID}/groups:
+  /api/apps/{appIDorProductID}/groups:
     get:
       description: paginate groups of an app
       operationId: paginateGroups
@@ -275,7 +279,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -311,7 +315,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -334,7 +338,7 @@ paths:
         "500":
           description: Create Group error response
 
-  /api/apps/{appID}/groups/{groupID}:
+  /api/apps/{appIDorProductID}/groups/{groupID}:
     get:
       description: get group given its groupID and appID
       operationId: getGroup
@@ -344,7 +348,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -373,7 +377,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -411,7 +415,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -428,7 +432,7 @@ paths:
         "500":
           description: Delete Group error response
 
-  /api/apps/{appID}/groups/{groupID}/version_timeline:
+  /api/apps/{appIDorProductID}/groups/{groupID}/version_timeline:
     get:
       description: get version timeline of a group given its groupID and appID
       operationId: getGroupVersionTimeline
@@ -438,7 +442,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -463,7 +467,7 @@ paths:
           description: Group not found response
         "500":
           description: Version Timeline of group error response
-  /api/apps/{appID}/groups/{groupID}/status_timeline:
+  /api/apps/{appIDorProductID}/groups/{groupID}/status_timeline:
     get:
       description: get status timeline of a group given its groupID and appID
       operationId: getGroupStatusTimeline
@@ -473,7 +477,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -499,7 +503,7 @@ paths:
         "500":
           description: Status Timeline of group error response
 
-  /api/apps/{appID}/groups/{groupID}/instances_stats:
+  /api/apps/{appIDorProductID}/groups/{groupID}/instances_stats:
     get:
       description: get instance stats of a group given its groupID and appID
       operationId: getGroupInstanceStats
@@ -509,7 +513,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -534,7 +538,7 @@ paths:
           description: Group not found response
         "500":
            description: Instance Stats of group error response
-  /api/apps/{appID}/groups/{groupID}/version_breakdown:
+  /api/apps/{appIDorProductID}/groups/{groupID}/version_breakdown:
     get:
       description: get version breakdown of a group given its groupID and appID
       operationId: getGroupVersionBreakdown
@@ -544,7 +548,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -564,7 +568,7 @@ paths:
           description: Group not found response
         "500":
           description:  Version Breakdown of group error response
-  /api/apps/{appID}/channels:
+  /api/apps/{appIDorProductID}/channels:
     get:
       description: paginate channels of an app
       operationId: paginateChannels
@@ -574,7 +578,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in : path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -610,7 +614,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in : path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -632,7 +636,7 @@ paths:
           description: Bad request response
         "500":
           description: Create channel error response
-  /api/apps/{appID}/channels/{channelID}:
+  /api/apps/{appIDorProductID}/channels/{channelID}:
     get:
       description: get channel by id
       operationId: getChannel
@@ -642,7 +646,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -671,7 +675,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -709,7 +713,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -723,7 +727,7 @@ paths:
           description: Delete channel success response
         "500":
           description: Delete channel error response
-  /api/apps/{appID}/packages:
+  /api/apps/{appIDorProductID}/packages:
     get:
       description: paginate packages of an app
       operationId: paginatePackages
@@ -733,7 +737,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -771,7 +775,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -793,7 +797,7 @@ paths:
           description: Create Package bad request response
         "500":
           description: Create package error response
-  /api/apps/{appID}/packages/{packageID}:
+  /api/apps/{appIDorProductID}/packages/{packageID}:
     get:
       description: get package given its packageID and appID
       operationId: getPackage
@@ -803,7 +807,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -832,7 +836,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -868,7 +872,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -884,7 +888,7 @@ paths:
           description: Package not found response
         "500":
           description: Delete package error response
-  /api/apps/{appID}/groups/{groupID}/instances:
+  /api/apps/{appIDorProductID}/groups/{groupID}/instances:
     get:
       description: get instances of a group given its groupID and appID
       operationId: getGroupInstances
@@ -894,7 +898,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -959,7 +963,7 @@ paths:
                 $ref: "#/components/schemas/instancePage"
         "500":
           description: Get Instances of a Group error response
-  /api/apps/{appID}/groups/{groupID}/instancescount:
+  /api/apps/{appIDorProductID}/groups/{groupID}/instancescount:
     get:
       description: get instance count of a group given its groupID and appID
       operationId: getGroupInstancesCount
@@ -969,7 +973,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -992,7 +996,7 @@ paths:
                 $ref: "#/components/schemas/instanceCount"
         "500":
           description: Get Instance count of a Group error response
-  /api/apps/{appID}/groups/{groupID}/instances/{instanceID}:
+  /api/apps/{appIDorProductID}/groups/{groupID}/instances/{instanceID}:
     get:
       description: get instance of a group given its groupID and appID
       operationId: getInstance
@@ -1002,7 +1006,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -1027,7 +1031,7 @@ paths:
           description: Instance not found response
         "500":
           description: Get instance error response
-  /api/apps/{appID}/groups/{groupID}/instances/{instanceID}/status_history:
+  /api/apps/{appIDorProductID}/groups/{groupID}/instances/{instanceID}/status_history:
     get:
       description: get instance status_history.
       operationId: getInstanceStatusHistory
@@ -1037,7 +1041,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: path
-          name: appID
+          name: appIDorProductID
           required: true
           schema:
             type: string
@@ -1109,7 +1113,7 @@ paths:
         - githubCookieAuth: []
       parameters:
         - in: query
-          name: appID
+          name: appIDorProductID
           required: false
           schema:
             type: string
@@ -1349,19 +1353,42 @@ components:
       properties:
         accessManagementUrl:
           type: string
+          x-oapi-codegen-extra-tags:
+            json: "access_management_url"
         logoutUrl:
           type: string
+          x-oapi-codegen-extra-tags:
+            json: "logout_url"
         nebraskaVersion:
           type: string
+          x-oapi-codegen-extra-tags:
+            json: "nebraska_version"
         logo:
           type: string
+          x-oapi-codegen-extra-tags:
+            json: "logo"
         title:
           type: string
+          x-oapi-codegen-extra-tags:
+            json: "title"
         headerStyle:
           type: string
+          x-oapi-codegen-extra-tags:
+            json: "header_style"
         loginUrl:
           type: string
+          x-oapi-codegen-extra-tags:
+            json: "login_url"
         authMode:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: "auth_mode"
+    loginToken:
+      type: object
+      required:
+        - "token"
+      properties:
+        token:
           type: string
     flatcarAction:
       type: object

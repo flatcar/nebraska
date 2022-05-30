@@ -96,13 +96,13 @@ type ChannelPage struct {
 
 // Config defines model for config.
 type Config struct {
-	AccessManagementUrl string `json:"accessManagementUrl"`
-	AuthMode            string `json:"authMode"`
-	HeaderStyle         string `json:"headerStyle"`
-	LoginUrl            string `json:"loginUrl"`
+	AccessManagementUrl string `json:"access_management_url"`
+	AuthMode            string `json:"auth_mode"`
+	HeaderStyle         string `json:"header_style"`
+	LoginUrl            string `json:"login_url"`
 	Logo                string `json:"logo"`
-	LogoutUrl           string `json:"logoutUrl"`
-	NebraskaVersion     string `json:"nebraskaVersion"`
+	LogoutUrl           string `json:"logout_url"`
+	NebraskaVersion     string `json:"nebraska_version"`
 	Title               string `json:"title"`
 }
 
@@ -250,6 +250,11 @@ type LoginInfo struct {
 	Username string `json:"username"`
 }
 
+// LoginToken defines model for loginToken.
+type LoginToken struct {
+	Token string `json:"token"`
+}
+
 // OmahaRequest defines model for omahaRequest.
 type OmahaRequest = map[string]interface{}
 
@@ -308,16 +313,16 @@ type VersionBreakdownEntry struct {
 
 // PaginateActivityParams defines parameters for PaginateActivity.
 type PaginateActivityParams struct {
-	AppID      *string `form:"appID,omitempty" json:"appID,omitempty"`
-	GroupID    *string `form:"groupID,omitempty" json:"groupID,omitempty"`
-	ChannelID  *string `form:"channelID,omitempty" json:"channelID,omitempty"`
-	InstanceID *string `form:"instanceID,omitempty" json:"instanceID,omitempty"`
-	Version    *string `form:"version,omitempty" json:"version,omitempty"`
-	Severity   *int    `form:"severity,omitempty" json:"severity,omitempty"`
-	Start      string  `form:"start" json:"start"`
-	End        string  `form:"end" json:"end"`
-	Page       *int    `form:"page,omitempty" json:"page,omitempty"`
-	Perpage    *int    `form:"perpage,omitempty" json:"perpage,omitempty"`
+	AppIDorProductID *string `form:"appIDorProductID,omitempty" json:"appIDorProductID,omitempty"`
+	GroupID          *string `form:"groupID,omitempty" json:"groupID,omitempty"`
+	ChannelID        *string `form:"channelID,omitempty" json:"channelID,omitempty"`
+	InstanceID       *string `form:"instanceID,omitempty" json:"instanceID,omitempty"`
+	Version          *string `form:"version,omitempty" json:"version,omitempty"`
+	Severity         *int    `form:"severity,omitempty" json:"severity,omitempty"`
+	Start            string  `form:"start" json:"start"`
+	End              string  `form:"end" json:"end"`
+	Page             *int    `form:"page,omitempty" json:"page,omitempty"`
+	Perpage          *int    `form:"perpage,omitempty" json:"perpage,omitempty"`
 }
 
 // PaginateAppsParams defines parameters for PaginateApps.

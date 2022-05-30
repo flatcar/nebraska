@@ -75,6 +75,19 @@ func getAppWithInstance(t *testing.T, db *api.API) *api.Application {
 	return nil
 }
 
+func getAppWithProductID(t *testing.T, db *api.API) *api.Application {
+	t.Helper()
+
+	apps := getApps(t, db)
+
+	for _, app := range apps {
+		if app.ProductID.Valid {
+			return app
+		}
+	}
+	return nil
+}
+
 // httpDo is a helper function that takes all request related info and
 // makes the http request and returns the unmarshalled response body based
 // on the responseType.
