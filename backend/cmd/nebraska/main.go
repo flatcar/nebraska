@@ -26,8 +26,22 @@ func main() {
 		log.Fatalf("Config is invaliad, err: %w\n", err)
 	}
 
+	if conf.RollbackDBTo != "" {
+		db, err := db.New()
+		if err != nil {
+			log.Fatal("DB connection err:", err)
+		}
+
+		count, err := db.MigrateDown(conf.RollbackDBTo)
+		if err != nil {
+			log.Fatal("DB migration down err:", err)
+		}
+		log.Infof("DB migration down successful, migrated %d levels down", count)
+		return
+	}
+
 	// create new DB
-	db, err := db.New()
+	db, err := db.NewWithMigrations()
 	if err != nil {
 		log.Fatal("DB connection err:", err)
 	}

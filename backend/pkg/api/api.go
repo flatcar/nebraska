@@ -1,10 +1,14 @@
 package api
 
 import (
+	"database/sql"
 	"errors"
+	"fmt"
 	"os"
+	"strconv"
 
 	//register "pgx" sql driver
+	"github.com/doug-martin/goqu/v9"
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/jmoiron/sqlx"
 	migrate "github.com/rubenv/sql-migrate"
@@ -14,7 +18,6 @@ import (
 	// Postgresql driver
 	_ "github.com/lib/pq"
 
-	"strconv"
 	"time"
 )
 
@@ -55,6 +58,8 @@ var (
 	ErrArchMismatch = errors.New("nebraska: mismatched arches")
 )
 
+const migrationsTable = "database_migrations"
+
 // API represents an api instance used to interact with Nebraska entities.
 type API struct {
 	db       *sqlx.DB
@@ -66,8 +71,7 @@ type API struct {
 	disableUpdatesOnFailedRollout bool
 }
 
-// New creates a new API instance, creating the underlying db connection and
-// applying db migrations available.
+// New creates a new API instance, creates the underlying db connection.
 func New(options ...func(*API) error) (*API, error) {
 	api := &API{
 		dbDriver: "pgx",
@@ -117,13 +121,20 @@ func New(options ...func(*API) error) (*API, error) {
 			return nil, err
 		}
 	}
+	return api, nil
+}
 
-	migrate.SetTable("database_migrations")
-	migrations := &migrate.AssetMigrationSource{
-		Asset:    Asset,
-		AssetDir: AssetDir,
-		Dir:      "db/migrations",
+// NewWithMigrations creates a new API instance, creates the underlying db connection and
+// applies all available db migrations.
+func NewWithMigrations(options ...func(*API) error) (*API, error) {
+	api, err := New(options...)
+	if err != nil {
+		return nil, err
 	}
+
+	migrate.SetTable(migrationsTable)
+	migrations := migrationAssets()
+
 	if _, err := migrate.Exec(api.db.DB, "postgres", migrations, migrate.Up); err != nil {
 		return nil, err
 	}
@@ -131,6 +142,62 @@ func New(options ...func(*API) error) (*API, error) {
 	api.clearCachedAppIDs()
 
 	return api, nil
+}
+
+type migration struct {
+	ID        string    `db:"id"`
+	AppliedAt time.Time `db:"applied_at"`
+}
+
+func (api *API) MigrateDown(version string) (int, error) {
+
+	migrate.SetTable(migrationsTable)
+	migrations := migrationAssets()
+
+	// find version based on input string
+	query, _, err := goqu.Select("*").From(migrationsTable).Where(goqu.C("id").Like(fmt.Sprintf("%s%%", version))).ToSQL()
+	if err != nil {
+		return 0, err
+	}
+
+	var mig migration
+	err = api.db.QueryRowx(query).StructScan(&mig)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return 0, fmt.Errorf("no migrations found for: %s, err: %v", version, err)
+		}
+		return 0, err
+	}
+
+	// find  count of migrations that have been applied after the version
+	query, _, err = goqu.Select(goqu.COUNT("*")).From(migrationsTable).Where(goqu.C("applied_at").Gt(mig.AppliedAt)).ToSQL()
+	if err != nil {
+		return 0, err
+	}
+
+	countMap := make(map[string]interface{})
+
+	err = api.db.QueryRowx(query).MapScan(countMap)
+	if err != nil {
+		return 0, err
+	}
+
+	levels := countMap["count"].(int64)
+	logger.Info().Msgf("migrating down %d levels", levels)
+	count, err := migrate.ExecMax(api.db.DB, "postgres", migrations, migrate.Down, int(levels))
+	if err != nil {
+		return 0, err
+	}
+	logger.Info().Msg("successfully migrated down")
+	return count, nil
+}
+
+func migrationAssets() *migrate.AssetMigrationSource {
+	return &migrate.AssetMigrationSource{
+		Asset:    Asset,
+		AssetDir: AssetDir,
+		Dir:      "db/migrations",
+	}
 }
 
 // OptionInitDB will initialize the database during the API instance creation,
@@ -166,7 +233,7 @@ func (api *API) Close() {
 // NewForTest creates a new API instance with given options and fills
 // the database with sample data for testing purposes.
 func NewForTest(options ...func(*API) error) (*API, error) {
-	a, err := New(options...)
+	a, err := NewWithMigrations(options...)
 	if err != nil {
 		return nil, err
 	}

@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	if _, err := api.New(api.OptionInitDB); err != nil {
+	if _, err := api.NewWithMigrations(api.OptionInitDB); err != nil {
 		log.Fatal(err)
 	}
 }

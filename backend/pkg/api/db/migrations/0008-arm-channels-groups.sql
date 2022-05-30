@@ -41,3 +41,13 @@ $$;
 -- +migrate StatementEnd
 
 -- +migrate Down
+
+delete from channel where id = '5dfe7b12-c94a-470d-a2b6-2eae78c5c9f5';
+delete from channel where id = 'cf20698b-1f19-43d6-b6f6-d15c796cb217';
+delete from channel where id = 'def12ce0-3ba4-4649-b290-8843f3b455eb';
+delete from channel where id = '30b6ffa6-e6dc-4a01-bea6-9ce7f1a5bb34';
+
+delete from groups where id = '11a585f6-9418-4df0-8863-78b2fd3240f8';
+delete from groups where id = 'd112ec01-ba34-4a9e-9d4b-9814a685f266';
+delete from groups where id = 'e641708d-fb48-4260-8bdf-ba2074a1147a';
+delete from groups where id = 'b4b2fa22-c1ea-498c-a8ac-c1dc0b1d7c17';
