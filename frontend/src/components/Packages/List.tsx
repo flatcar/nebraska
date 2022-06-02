@@ -33,7 +33,8 @@ function List(props: { appID: string }) {
   React.useEffect(() => {
     applicationsStore().addChangeListener(onChange);
     if (!packages) {
-      API.getPackages(props.appID)
+      // @todo: Request the pagination according to the page configuration in the table below.
+      API.getPackages(props.appID, '', { perpage: 1000 })
         .then(result => {
           if (_.isNull(result.packages)) {
             setPackages([]);
