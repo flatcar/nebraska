@@ -195,12 +195,19 @@ export default class API {
   static getInstances(
     applicationID: string,
     groupID: string,
-    queryOptions = {}
+    queryOptions: {
+      [key: string]: any;
+    } = {}
   ): Promise<Instances> {
     let url = BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/instances';
 
     if (!_.isEmpty(queryOptions)) {
-      url += '?' + queryString.stringify(queryOptions);
+      let sanitizedOptions = queryOptions;
+      const { version, ...otherOptions } = queryOptions;
+      if (!version) {
+        sanitizedOptions = otherOptions;
+      }
+      url += '?' + queryString.stringify(sanitizedOptions);
     }
 
     return API.getJSON(url);
