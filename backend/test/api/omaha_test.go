@@ -53,6 +53,37 @@ func TestOmaha(t *testing.T) {
 		assert.NotNil(t, instance)
 	})
 
+	t.Run("success_with_trailing_slash", func(t *testing.T) {
+		track := app.Groups[0].Track
+
+		url := fmt.Sprintf("%s/v1/update/", os.Getenv("NEBRASKA_TEST_SERVER_URL"))
+
+		method := "POST"
+
+		instanceID := uuid.New().String()
+		payload := strings.NewReader(fmt.Sprintf(`
+		<request protocol="3.0" installsource="scheduler">
+		<os platform="CoreOS" version="lsb"></os>
+		<app appid="%s" version="0.0.0" track="%s" bootid="3c9c0e11-6c37-4e47-9f60-6d06b421286d" machineid="%s" oem="fakeclient">
+		 <ping r="1" status="1"></ping>
+		 <updatecheck></updatecheck>
+		 <event eventtype="3" eventresult="1"></event>
+		</app>
+	   	</request>`, app.ID, track, instanceID))
+
+		// response
+		var omahaResp omaha.Response
+
+		httpDo(t, url, method, payload, 200, "xml", &omahaResp)
+
+		assert.Equal(t, "ok", omahaResp.Apps[0].Ping.Status)
+
+		// check if instance exists in the DB
+		instance, err := db.GetInstance(instanceID, app.ID)
+		assert.NoError(t, err)
+		assert.NotNil(t, instance)
+	})
+
 	t.Run("large_request_body", func(t *testing.T) {
 		url := fmt.Sprintf("%s/v1/update", os.Getenv("NEBRASKA_TEST_SERVER_URL"))
 
