@@ -82,10 +82,17 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 	}
 
 	// setup middlewares
-	if conf.APIEndpointSuffix != "" {
-		e.Pre(custommiddleware.OmahaSecret(conf.APIEndpointSuffix))
-	}
 	e.Pre(middleware.RemoveTrailingSlash())
+
+	// remove trailing slash from the endpoint secret
+	endpointSuffix := strings.TrimSuffix(conf.APIEndpointSuffix, "/")
+	if endpointSuffix != "" {
+		// if endpoint secret doesn't start with slash prepend it
+		if !strings.HasPrefix(endpointSuffix, "/") {
+			endpointSuffix = fmt.Sprintf("/%s", endpointSuffix)
+		}
+		e.Pre(custommiddleware.OmahaSecret(endpointSuffix))
+	}
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestID())
 	e.Use(middleware.CORS())
