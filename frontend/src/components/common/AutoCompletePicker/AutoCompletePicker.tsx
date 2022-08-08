@@ -189,7 +189,6 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
   const classes = useStyles();
 
   function onInputChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    setSelectedValue(event.target.value);
     props.onValueChanged(event.target.value);
   }
 
@@ -234,6 +233,8 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
               inputValue,
               selectedItem,
             }) => {
+              setSelectedValue(selectedItem);
+
               const { onBlur, onFocus, ...inputProps } = getInputProps();
 
               return (
