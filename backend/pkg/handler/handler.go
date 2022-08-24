@@ -56,6 +56,10 @@ func New(db *api.API, conf *config.Config, auth auth.Authenticator) (*Handler, e
 		clientConfig.Logo = string(svg)
 	}
 
+	if conf.AuthMode == "github" {
+		clientConfig.AccessManagementUrl = "https://github.com/settings/connections/applications/" + conf.GhClientID
+	}
+
 	if conf.AuthMode == "oidc" {
 		url, err := url.Parse(conf.NebraskaURL)
 		if err != nil {
