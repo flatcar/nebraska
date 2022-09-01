@@ -10,6 +10,7 @@ import Tabs from '@material-ui/core/Tabs';
 import { Form, Formik } from 'formik';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 import * as Yup from 'yup';
 import { Group } from '../../../api/apiDataTypes';
 import { applicationsStore } from '../../../stores/Stores';
@@ -42,6 +43,7 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
   const [groupEditActiveTab, setGroupEditActiveTab] = React.useState(0);
   const { t } = useTranslation();
   const theme = useTheme();
+  const { appID } = useParams<{ appID: string }>();
 
   function handleSubmit(values: { [key: string]: any }, actions: { [key: string]: any }) {
     const updatesPeriodPolicy =
@@ -67,7 +69,7 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
     if (values.timezone) data['policy_timezone'] = values.timezone;
 
     let packageFunctionCall;
-    data['application_id'] = props.data.appID;
+    data['application_id'] = appID;
     if (isCreation) {
       packageFunctionCall = applicationsStore().createGroup(data as Group);
     } else {
@@ -184,10 +186,15 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
     updatesTimeout: positiveNum(),
   });
 
-  let initialValues = {};
+  let initialValues: {
+    [key: string]: any;
+  } = {
+    appID,
+  };
 
   if (isCreation) {
     initialValues = {
+      appID: appID,
       maxUpdates: 1,
       updatesPeriodRange: 1,
       updatesPeriodUnit: 'hours',
