@@ -3,7 +3,6 @@ package config
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"net/url"
 	"os"
 
@@ -75,7 +74,7 @@ func (c *Config) Validate() error {
 			return errors.New("Invalid Flatcar packages path. Please ensure you provide a valid path using -flatcar-packages-path")
 		}
 
-		tmpFile, err := ioutil.TempFile(c.FlatcarPackagesPath, "")
+		tmpFile, err := os.CreateTemp(c.FlatcarPackagesPath, "")
 		if err != nil {
 			return errors.New("Invalid Flatcar packages path: " + err.Error())
 		}

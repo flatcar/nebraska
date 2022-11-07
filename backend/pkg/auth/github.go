@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"strings"
 	"sync"
@@ -267,7 +266,7 @@ func (gha *githubAuth) LoginWebhook(ctx echo.Context) error {
 		return nil
 	}
 	eventType := ctx.Request().Header.Get("X-Github-Event")
-	rawPayload, err := ioutil.ReadAll(ctx.Request().Body)
+	rawPayload, err := io.ReadAll(ctx.Request().Body)
 	if err != nil {
 		logger.Debug().Str("failed to read the contents of the message", eventType).Msg("webhook")
 		httpError(ctx, http.StatusBadRequest)

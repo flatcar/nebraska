@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/cookiejar"
 	"strings"
@@ -92,7 +92,7 @@ func waitServerReady() (bool, error) {
 			continue
 		}
 
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		bodyBytes, err := io.ReadAll(resp.Body)
 		if err != nil {
 			continue
 		}
@@ -136,7 +136,7 @@ func TestLogin(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		bodyBytes, err := io.ReadAll(resp.Body)
 		require.NoError(t, err)
 
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
@@ -177,7 +177,7 @@ func TestLogin(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		bodyBytes, err := io.ReadAll(resp.Body)
 		require.NoError(t, err)
 
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
@@ -217,7 +217,7 @@ func TestLogin(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		bodyBytes, err := io.ReadAll(resp.Body)
 		require.NoError(t, err)
 
 		assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
@@ -273,7 +273,7 @@ func TestLogin(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		bodyBytes, err := io.ReadAll(resp.Body)
 		require.NoError(t, err)
 
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
@@ -330,7 +330,7 @@ func TestLogin(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		bodyBytes, err := io.ReadAll(resp.Body)
 		require.NoError(t, err)
 
 		t.Log(resp.StatusCode)
@@ -491,7 +491,7 @@ func TestLogin(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		bodyBytes, err := io.ReadAll(resp.Body)
 		require.NoError(t, err)
 
 		t.Log(resp.StatusCode)
@@ -562,7 +562,7 @@ func TestLogin(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		bodyBytes, err := io.ReadAll(resp.Body)
 		require.NoError(t, err)
 
 		t.Log(resp.StatusCode)
@@ -688,7 +688,7 @@ func TestLogin(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		bodyBytes, err := io.ReadAll(resp.Body)
 		require.NoError(t, err)
 
 		t.Log(resp.StatusCode)
@@ -708,7 +708,7 @@ func TestLogin(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
-		bodyBytes, err = ioutil.ReadAll(resp.Body)
+		bodyBytes, err = io.ReadAll(resp.Body)
 		require.NoError(t, err)
 
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
@@ -766,7 +766,7 @@ func TestValidateToken(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		bodyBytes, err := io.ReadAll(resp.Body)
 		require.NoError(t, err)
 
 		t.Log(resp.StatusCode)
@@ -786,7 +786,7 @@ func TestValidateToken(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
-		bodyBytes, err = ioutil.ReadAll(resp.Body)
+		bodyBytes, err = io.ReadAll(resp.Body)
 		require.NoError(t, err)
 
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
