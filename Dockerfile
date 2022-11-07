@@ -1,4 +1,4 @@
-FROM golang:1.17 as base-build
+FROM golang:1.19 as base-build
 
 ARG NEBRASKA_VERSION=""
 
