@@ -4,13 +4,13 @@ import { Group } from '../../api/apiDataTypes';
 import ApplicationItemGroupItem from './ApplicationItemGroupItem';
 
 export default function ApplicationItemGroupsList(props: {
-  groups: Group[];
+  groups: Group[] | null;
   appID: string;
   appName: string;
 }) {
   return (
     <>
-      {props.groups.map((group, i) => (
+      {props.groups?.map((group, i) => (
         <Fragment key={group.id}>
           {i > 0 && <Divider variant="fullWidth" />}
           <Box mt={1}>

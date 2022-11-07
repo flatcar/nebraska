@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -257,7 +256,7 @@ func (s *Syncer) doOmahaRequest(descriptor channelDescriptor, currentVersion str
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		logger.Error().Err(err).Msg("checkForUpdates, reading omaha response")
 		return nil, err
@@ -385,7 +384,7 @@ func getArchString(arch api.Arch) string {
 // update provided. The downloaded package payload is stored in packagesPath
 // using the filename provided.
 func (s *Syncer) downloadPackage(update *omaha.UpdateResponse, pkgName, sha256Checksum, filename string) error {
-	tmpFile, err := ioutil.TempFile(s.packagesPath, "tmp_flatcar_pkg_")
+	tmpFile, err := os.CreateTemp(s.packagesPath, "tmp_flatcar_pkg_")
 	if err != nil {
 		return err
 	}

@@ -110,7 +110,7 @@ swagger-init:  tools/swag
 
 .PHONY: tools/codegen
 tools/codegen:
-	go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.11.0
+	go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.12.2
 
 .PHONY: codegen
 codegen: tools/codegen

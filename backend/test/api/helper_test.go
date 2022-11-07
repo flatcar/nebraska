@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"testing"
@@ -109,7 +108,7 @@ func httpDo(t *testing.T, url string, method string, payload io.Reader, statusco
 		require.Equal(t, statuscode, resp.StatusCode)
 	}
 
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	bodyBytes, err := io.ReadAll(resp.Body)
 	require.NoError(t, err)
 
 	switch responseType {
@@ -140,7 +139,7 @@ func waitServerReady(serverURL string) (bool, error) {
 			continue
 		}
 
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		bodyBytes, err := io.ReadAll(resp.Body)
 		if err != nil {
 			continue
 		}

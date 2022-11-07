@@ -3,7 +3,6 @@ package api_test
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
@@ -89,7 +88,7 @@ func TestOmaha(t *testing.T) {
 
 		method := "POST"
 
-		payload, err := ioutil.ReadFile("./big_omaha_request.xml")
+		payload, err := os.ReadFile("./big_omaha_request.xml")
 		require.NoError(t, err)
 
 		httpDo(t, url, method, bytes.NewReader(payload), 400, "", nil)

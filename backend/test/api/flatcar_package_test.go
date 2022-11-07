@@ -3,7 +3,7 @@ package api_test
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"path"
@@ -63,7 +63,7 @@ func TestHostFlatcarPackage(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, resp)
 
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		bodyBytes, err := io.ReadAll(resp.Body)
 		require.NoError(t, err)
 
 		assert.Equal(t, fileString, string(bodyBytes))

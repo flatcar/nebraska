@@ -2,9 +2,9 @@ package handler
 
 import (
 	"encoding/xml"
-	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 
 	"github.com/labstack/echo/v4"
 
@@ -44,7 +44,7 @@ func New(db *api.API, conf *config.Config, auth auth.Authenticator) (*Handler, e
 	}
 
 	if conf.AppLogoPath != "" {
-		svg, err := ioutil.ReadFile(conf.AppLogoPath)
+		svg, err := os.ReadFile(conf.AppLogoPath)
 		if err != nil {
 			logger.Error().Err(err).Msg("Reading svg from path in config")
 			return nil, err
