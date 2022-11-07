@@ -22,7 +22,7 @@ const useStyles = makeStyles({
 export interface ApplicationItemProps {
   onUpdate: (appID: string) => void;
   description?: string;
-  groups: Group[];
+  groups: Group[] | null;
   numberOfInstances: number;
   id: string;
   productId: string;
@@ -91,7 +91,7 @@ export default function ApplicationItem(props: ApplicationItemProps) {
                 <CardFeatureLabel>{t('frequent|Groups')}</CardFeatureLabel>
                 <Box display="inline-block" pl={2}>
                   <CardLabel>
-                    {groups.length === 0 ? t('applications|None') : groups.length}
+                    {groups?.length === 0 ? t('applications|None') : groups?.length}
                   </CardLabel>
                 </Box>
                 <ApplicationItemGroupsList groups={groups} appID={id} appName={name} />
