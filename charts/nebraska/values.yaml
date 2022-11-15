@@ -70,13 +70,13 @@ config:
   database:
     host: ""
     port: 5432
-    dbname: '{{ .Values.postgresql.postgresqlDatabase }}'
-    username: '{{ .Values.postgresql.postgresqlUsername }}'
+    dbname: '{{ .Values.postgresql.auth.database }}'
+    username: '{{ .Values.postgresql.auth.username }}'
     password: ""
     passwordExistingSecret:
       enabled: true
       name: '{{ .Release.Name }}-postgresql'
-      key: postgresql-password
+      key: postgres-password
 
 extraArgs: []
   # - "-http-log"
@@ -191,14 +191,19 @@ readinessProbe:
 # ... for more options see https://github.com/bitnami/charts/tree/master/bitnami/postgresql
 postgresql:
   enabled: true
-  postgresqlDatabase: nebraska
-  postgresqlUsername: postgres
-  postgresqlPassword: changeIt
+  auth:
+    username: postgres
+    database: nebraska
+    postgresPassword: changeIt
   image:
-    tag: 12.9.0-debian-10-r72
-  persistence:
-    enabled: false
-    storageClass:
-    accessModes:
-      - ReadWriteOnce
-    size: 1Gi
+    tag: 13.8.0-debian-11-r18
+  primary:
+    persistence:
+      enabled: false
+      storageClass:
+      accessModes:
+        - ReadWriteOnce
+      size: 1Gi
+  serviceAccount:
+    create: true
+    automountServiceAccountToken: false

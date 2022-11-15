@@ -98,29 +98,29 @@ $ helm install my-nebraska nebraska/nebraska
 | `config.auth.oidc.sessionCryptKey`                    | Session key used for encrypting sessions in cookies to store OIDC info, will be generated if none is passed | `nil`                                    |
 | `config.database.host`                                | The host name of the database server                                                                                                 | `""` (use postgresql from Bitnami subchart)                             |
 | `config.database.port`                                | The port number the database server is listening on                                                                                  | `5432`                                                                  |
-| `config.database.dbname`                              | The database name                                                                                                                    | `{{ .Values.postgresql.postgresqlDatabase }}` (evaluated as a template) |
-| `config.database.username`                            | PostgreSQL user                                                                                                                      | `{{ .Values.postgresql.postgresqlUsername }}` (evaluated as a template) |
+| `config.database.dbname`                              | The database name                                                                                                                    | `{{ .Values.postgresql.auth.database }}` (evaluated as a template)      |
+| `config.database.username`                            | PostgreSQL user                                                                                                                      | `{{ .Values.postgresql.postgresqlUsername }}` (evaluated as a template)                                    |
 | `config.database.password`                            | PostgreSQL user password                                                                                                             | `""` (evaluated as a template)                                          |
 | `config.database.passwordExistingSecret.enabled`      | Enables setting PostgreSQL user password via an existing secret                                                                      | `true`                                                                  |
 | `config.database.passwordExistingSecret.name`         | Name of the existing secret                                                                                                          | `{{ .Release.Name }}-postgresql` (evaluated as a template)              |
-| `config.database.passwordExistingSecret.key`          | Key inside the existing secret containing the PostgreSQL user password                                                               | `postgresql-password`                                                   |
+| `config.database.passwordExistingSecret.key`          | Key inside the existing secret containing the PostgreSQL user password                                                               | `postgres-password`                                                     |
 | `extraArgs`                                           | Extra arguments to pass to Nebraska binary                                                                                           | `[]`                                                                    |
 | `extraEnvVars`                                        | Any extra environment variables you would like to pass on to the pod                                                                 | `{ "TZ": "UTC" }`                                                       |
 | `extraEnv`                                        | Any extra environment variables in the form of env spec to pass into the deployment pod                                                                 | `[]`                                                       |
 
 ### Postgresql dependency
 
-| Parameter                               | Description                                                                                     | Default                |
-|-----------------------------------------|-------------------------------------------------------------------------------------------------|------------------------|
-| `postgresql.enabled`                    | Enable Bitnami postgresql subchart and deploy database within this helm release                 | `true`                 |
-| `postgresql.postgresqlDatabase`         | PostgreSQL database                                                                             | `nebraska`             |
-| `postgresql.postgresqlUsername`         | PostgreSQL user (creates a non-admin user when `postgresqlUsername` is not `postgres`)          | `postgres`             |
-| `postgresql.postgresqlPassword`         | PostgreSQL user password **Recommended to change it to something secure for security reasons.** | `changeIt`             |
-| `postgresql.postgresqlPostgresPassword` | PostgreSQL admin password (used when `postgresqlUsername` is not `postgres`)                    | `-`                    |
-| `postgresql.image.tag`                  | PostgreSQL Image tag                                                                            | `12.9.0-debian-10-r72` |
-| `postgresql.persistence.enabled`        | Enable persistence using PVC                                                                    | `false`                |
-| `postgresql.persistence.storageClass`   | PVC Storage Class for PostgreSQL volume                                                         | `nil`                  |
-| `postgresql.persistence.accessModes`    | PVC Access Mode for PostgreSQL volume                                                           | `["ReadWriteOnce"]`    |
-| `postgresql.persistence.size`           | PVC Storage Request for PostgreSQL volume                                                       | `1Gi`                  |
+| Parameter                                                | Description                                                                                                   | Default                |
+|----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|------------------------|
+| `postgresql.enabled`                                     | Enable Bitnami postgresql subchart and deploy database within this helm release                               | `true`                 |
+| `postgresql.auth.database`                               | PostgreSQL database                                                                                           | `nebraska`             |
+| `postgresql.auth.postgresPassword`                       | PostgreSQL password of user "postgres" **Recommended to change it to something secure for security reasons.** | `changeIt`             |
+| `postgresql.image.tag`                                   | PostgreSQL Image tag                                                                                          | `13.8.0-debian-11-r18` |
+| `postgresql.primary.persistence.enabled`                 | Enable persistence using PVC                                                                                  | `false`                |
+| `postgresql.primary.persistence.storageClass`            | PVC Storage Class for PostgreSQL volume                                                                       | `nil`                  |
+| `postgresql.primary.persistence.accessModes`             | PVC Access Mode for PostgreSQL volume                                                                         | `["ReadWriteOnce"]`    |
+| `postgresql.primary.persistence.size`                    | PVC Storage Request for PostgreSQL volume                                                                     | `1Gi`                  |
+| `postgresql.serviceAccount.create`                       | Enable creation of ServiceAccount for PostgreSQL pod                                                          | `true`                 |
+| `postgresql.serviceAccount.automountServiceAccountToken` | Can be set to false if pods using this serviceAccount do not need to use K8s API                              | `false`                |
 
 ... for more options see https://github.com/bitnami/charts/tree/master/bitnami/postgresql

@@ -19,11 +19,11 @@ sources:
 maintainers:
   - name: kinvolk
     url: https://kinvolk.io/
-version: 0.5.0
+version: 1.0.0
 appVersion: "2.8.0"
 
 dependencies:
   - name: postgresql
-    version: 10.16.2
+    version: 11.9.1
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
