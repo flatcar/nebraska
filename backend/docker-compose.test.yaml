@@ -1,3 +1,15 @@
+# Docker-compose file for interactive and for automated testing.
+#
+# Build docker image from local sources:
+#   docker-compose --file docker-compose.test.yaml build
+#
+# Run:
+#   docker-compose --file docker-compose.test.yaml run
+# Run with persistent storage:
+#   docker-compose --file docker-compose.test.yaml --file docker-compose.test-db-persist.yaml up
+#
+# See docker-compose.pg-persist.yaml for more informatino on persistent storage.
+
 version: "3.9"
 
 services:
@@ -23,6 +35,10 @@ services:
       network: host
     ports:
       - "8002:8000"
+    # The "long form" depends_on silently fails in some scenarios (we've seen this with podman)
+    #  so the short form is added for compatibility.
+    depends_on:
+      - postgres
     depends_on:
       postgres:
         condition: service_healthy
