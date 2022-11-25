@@ -55,16 +55,16 @@ opened browser page should automatically refresh.
 
 ## Docker compose V2
 
-You may be missing the `docker compose` plugin, which is required to run some tests.
+You may be missing `docker-compose`, which is required to run some tests.
 
 ```bash
-docker compose version
+docker-compose version
 
 cd backend
 make check-backend-with-container
 ```
 
-If so, see https://docs.docker.com/compose/cli-command/#install-on-linux
+If so, see https://docs.docker.com/compose/install/other/ or https://github.com/containers/podman-compose (with setting up a `docker-compose` symlink)
 
 # Development Concepts
 
