@@ -35,10 +35,8 @@ services:
       network: host
     ports:
       - "8002:8000"
-    # The "long form" depends_on silently fails in some scenarios (we've seen this with podman)
-    #  so the short form is added for compatibility.
-    depends_on:
-      - postgres
+    # Workaround for missing support for depends_on conditions in podman-compose:
+    restart: always
     depends_on:
       postgres:
         condition: service_healthy
