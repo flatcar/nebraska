@@ -243,9 +243,9 @@ function EditDialog(props: EditDialogProps) {
                         label={t('packages|Hash')}
                         type="text"
                         required
-                        helperText={t(
-                          'packages|Tip: cat update.gz | openssl dgst -sha1 -binary | base64'
-                        )}
+                        helperText={t('packages|Tip: {{command}}', {
+                          command: 'cat update.gz | openssl dgst -sha1 -binary | base64',
+                        })}
                         fullWidth
                       />
                       {isFlatcarType(packageType) && (
@@ -256,9 +256,9 @@ function EditDialog(props: EditDialogProps) {
                           label={t('packages|Flatcar Action SHA256')}
                           type="text"
                           required
-                          helperText={t(
-                            'packages|Tip: cat update.gz | openssl dgst -sha256 -binary | base64'
-                          )}
+                          helperText={t('packages|Tip: {{command}}', {
+                            command: 'cat update.gz | openssl dgst -sha256 -binary | base64',
+                          })}
                           fullWidth
                         />
                       )}
