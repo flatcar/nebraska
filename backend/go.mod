@@ -61,7 +61,6 @@ require (
 	github.com/fatih/structtag v1.2.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/fzipp/gocyclo v0.3.1 // indirect
-	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-critic/go-critic v0.5.6 // indirect
 	github.com/go-gorp/gorp/v3 v3.1.0 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
@@ -187,7 +186,6 @@ require (
 	golang.org/x/text v0.4.0 // indirect
 	golang.org/x/time v0.1.0 // indirect
 	golang.org/x/tools v0.2.0 // indirect
-	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect

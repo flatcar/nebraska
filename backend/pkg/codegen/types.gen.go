@@ -108,10 +108,11 @@ type Config struct {
 
 // ExtraFiles defines model for extraFiles.
 type ExtraFiles = []struct {
-	Hash *string `json:"hash,omitempty"`
-	Id   *int    `json:"id,omitempty"`
-	Name *string `json:"name,omitempty"`
-	Size *string `json:"size,omitempty"`
+	Hash    *string `json:"hash,omitempty"`
+	Hash256 *string `json:"hash256,omitempty"`
+	Id      *int    `json:"id,omitempty"`
+	Name    *string `json:"name,omitempty"`
+	Size    *string `json:"size,omitempty"`
 }
 
 // FlatcarAction defines model for flatcarAction.

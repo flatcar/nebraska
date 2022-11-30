@@ -184,6 +184,7 @@ func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, desc
 			f := api.File{
 				Name: null.StringFrom(*file.Name),
 				Hash: null.StringFrom(*file.Hash),
+				Hash256: null.StringFrom(*file.Hash256),
 				Size: null.StringFrom(*file.Size),
 			}
 			if file.Id != nil {

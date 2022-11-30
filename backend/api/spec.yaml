@@ -1260,6 +1260,8 @@ components:
             type: string
           hash:
             type: string
+          hash256:
+            type: string
           size:
             type: string
       x-oapi-codegen-extra-tags:

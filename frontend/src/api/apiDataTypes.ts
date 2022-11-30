@@ -36,6 +36,7 @@ export interface File {
   id?: number;
   name: string;
   hash: string;
+  hash256: string;
   size: string;
   created_ts?: string;
 }

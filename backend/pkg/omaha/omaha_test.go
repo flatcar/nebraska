@@ -283,6 +283,7 @@ func TestMultiPackageResponse(t *testing.T) {
 			Name: null.StringFrom("myfile1.txt"),
 			Size: null.StringFrom("1234"),
 			Hash: null.StringFrom("abcd"),
+			Hash256: null.StringFrom("xyz"),
 		},
 		{
 			Name: null.StringFrom("myfile2.txt"),
@@ -330,6 +331,7 @@ func TestMultiPackageResponse(t *testing.T) {
 	assert.Equal(t, extraFile1Size, shippedExtraFile1.Size)
 
 	assert.Equal(t, extraFile1.Hash.String, shippedExtraFile1.SHA1)
+	assert.Equal(t, extraFile1.Hash256.String, shippedExtraFile1.SHA256)
 
 	extraFile2 := extraFiles[1]
 	shippedExtraFile2 := packages[2]

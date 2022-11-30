@@ -2,8 +2,10 @@ package syncer
 
 import (
 	"bytes"
+	"crypto/sha1"
 	"crypto/sha256"
 	"encoding/base64"
+	"encoding/hex"
 	"encoding/xml"
 	"errors"
 	"fmt"
@@ -295,32 +297,35 @@ func (s *Syncer) processUpdate(descriptor channelDescriptor, update *omaha.Updat
 			extraFiles = make([]api.File, len(update.Manifest.Packages)-1)
 			for i := 1; i < len(update.Manifest.Packages); i++ {
 				omahaPkg := update.Manifest.Packages[i]
-				hash := ""
-				if omahaPkg.SHA256 != "" {
-					hash = omahaPkg.SHA256
-				} else {
-					hash = omahaPkg.SHA1
-				}
-
 				size := strconv.FormatUint(omahaPkg.Size, 10)
 				extraFiles[i-1] = api.File{
-					Name: null.StringFrom(omahaPkg.Name),
-					Size: null.StringFrom(size),
-					Hash: null.StringFrom(hash),
+					Name:    null.StringFrom(omahaPkg.Name),
+					Size:    null.StringFrom(size),
+					Hash:    null.StringFrom(omahaPkg.SHA1),
+					Hash256: null.StringFrom(omahaPkg.SHA256),
 				}
 			}
 		}
 
 		if s.hostPackages {
 			filename = fmt.Sprintf("flatcar-%s-%s.gz", getArchString(descriptor.arch), update.Manifest.Version)
-			if err := s.downloadPackage(update, update.Manifest.Packages[0].Name, update.Manifest.Actions[0].SHA256, filename); err != nil {
+			base16sha256 := ""
+			if update.Manifest.Actions[0].SHA256 != "" {
+				binsha256, err := base64.StdEncoding.DecodeString(update.Manifest.Actions[0].SHA256)
+				if err != nil {
+					logger.Error().Err(err).Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Msg("processUpdate, converting sha256")
+					return err
+				}
+				base16sha256 = hex.EncodeToString(binsha256)
+			}
+			if err := s.downloadPackage(update, update.Manifest.Packages[0].Name, update.Manifest.Packages[0].SHA1, base16sha256, filename); err != nil {
 				logger.Error().Err(err).Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Msg("processUpdate, downloading package")
 				return err
 			}
 
 			for _, fileInfo := range extraFiles {
 				downloadName := fmt.Sprintf("extrafile-%s-%s-%s", getArchString(descriptor.arch), update.Manifest.Version, fileInfo.Name.String)
-				if err := s.downloadPackage(update, fileInfo.Name.String, fileInfo.Hash.String, downloadName); err != nil {
+				if err := s.downloadPackage(update, fileInfo.Name.String, fileInfo.Hash.String, fileInfo.Hash256.String, downloadName); err != nil {
 					logger.Error().Err(err).Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Msgf("processUpdate, downloading package %s", fileInfo.Name.String)
 					return err
 				}
@@ -383,7 +388,7 @@ func getArchString(arch api.Arch) string {
 // downloadPackage downloads and verifies the package payload referenced in the
 // update provided. The downloaded package payload is stored in packagesPath
 // using the filename provided.
-func (s *Syncer) downloadPackage(update *omaha.UpdateResponse, pkgName, sha256Checksum, filename string) error {
+func (s *Syncer) downloadPackage(update *omaha.UpdateResponse, pkgName, sha1Base64Checksum, sha256Base16Checksum, filename string) error {
 	tmpFile, err := os.CreateTemp(s.packagesPath, "tmp_flatcar_pkg_")
 	if err != nil {
 		return err
@@ -407,14 +412,18 @@ func (s *Syncer) downloadPackage(update *omaha.UpdateResponse, pkgName, sha256Ch
 	}
 	defer resp.Body.Close()
 
+	hashSha1 := sha1.New()
 	hashSha256 := sha256.New()
 	logger.Debug().Msgf("downloadPackage, downloading.. url %s", pkgURL)
-	if _, err := io.Copy(io.MultiWriter(tmpFile, hashSha256), resp.Body); err != nil {
+	if _, err := io.Copy(io.MultiWriter(tmpFile, hashSha256, hashSha1), resp.Body); err != nil {
 		return err
 	}
-	// Only check the checksums if it's provided
-	if sha256Checksum != "" && base64.StdEncoding.EncodeToString(hashSha256.Sum(nil)) != sha256Checksum {
-		return errors.New("downloaded file hash mismatch")
+	// Only check the checksums if provided
+	if sha1Base64Checksum != "" && base64.StdEncoding.EncodeToString(hashSha1.Sum(nil)) != sha1Base64Checksum {
+		return errors.New("downloaded file sha1 hash mismatch")
+	}
+	if sha256Base16Checksum != "" && hex.EncodeToString(hashSha256.Sum(nil)) != sha256Base16Checksum {
+		return errors.New("downloaded file sha256 hash mismatch")
 	}
 
 	if err := tmpFile.Close(); err != nil {

@@ -39,11 +39,12 @@ type File struct {
 	Name      null.String `db:"name" json:"name"`
 	Size      null.String `db:"size" json:"size"`
 	Hash      null.String `db:"hash" json:"hash"`
+	Hash256   null.String `db:"hash256" json:"hash256"`
 	CreatedTs time.Time   `db:"created_ts" json:"created_ts"`
 }
 
 func (f File) Equals(otherFile File) bool {
-	return f.Name.String == otherFile.Name.String && f.Size.String == otherFile.Size.String && f.Hash.String == otherFile.Hash.String
+	return f.Name.String == otherFile.Name.String && f.Size.String == otherFile.Size.String && f.Hash.String == otherFile.Hash.String && f.Hash256.String == otherFile.Hash256.String
 }
 
 // Package represents a Nebraska application's package.
@@ -589,6 +590,7 @@ func (api *API) updatePackageFiles(tx *sqlx.Tx, pkg *Package, oldPkg *Package) e
 					"name": newFile.Name.String,
 					"size": newFile.Size.String,
 					"hash": newFile.Hash.String,
+					"hash256": newFile.Hash256.String,
 				}).
 				Where(goqu.C("id").Eq(newFile.ID)).
 				ToSQL()
@@ -605,8 +607,8 @@ func (api *API) updatePackageFiles(tx *sqlx.Tx, pkg *Package, oldPkg *Package) e
 		}
 
 		query, _, err := goqu.Insert("package_file").
-			Cols("package_id", "name", "size", "hash").
-			Vals(goqu.Vals{pkg.ID, newFile.Name.String, newFile.Size.String, newFile.Hash.String}).
+			Cols("package_id", "name", "size", "hash", "hash256").
+			Vals(goqu.Vals{pkg.ID, newFile.Name.String, newFile.Size.String, newFile.Hash.String, newFile.Hash256.String}).
 			ToSQL()
 		if err != nil {
 			return err
