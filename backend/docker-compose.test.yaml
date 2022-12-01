@@ -1,3 +1,15 @@
+# Docker-compose file for interactive and for automated testing.
+#
+# Build docker image from local sources:
+#   docker-compose --file docker-compose.test.yaml build
+#
+# Run:
+#   docker-compose --file docker-compose.test.yaml run
+# Run with persistent storage:
+#   docker-compose --file docker-compose.test.yaml --file docker-compose.test-db-persist.yaml up
+#
+# See docker-compose.pg-persist.yaml for more informatino on persistent storage.
+
 version: "3.9"
 
 services:
@@ -23,6 +35,8 @@ services:
       network: host
     ports:
       - "8002:8000"
+    # Workaround for missing support for depends_on conditions in podman-compose:
+    restart: always
     depends_on:
       postgres:
         condition: service_healthy

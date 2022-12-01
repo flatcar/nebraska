@@ -1,0 +1,8 @@
+# Persistent postgres storage drop-in for interactive testing.
+# This drop-in will persist postgres data in $(pwd)/__postgres_testing_volume
+#  across restarts of docker-compose.
+
+services:
+  postgres:
+    volumes:
+      - ./__postgres_testing_volume:/var/lib/postgresql/data
