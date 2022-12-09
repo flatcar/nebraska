@@ -323,12 +323,14 @@ func (s *Syncer) processUpdate(descriptor channelDescriptor, update *omaha.Updat
 				return err
 			}
 
-			for _, fileInfo := range extraFiles {
+			for i, _ := range extraFiles {
+			        fileInfo := &extraFiles[i]
 				downloadName := fmt.Sprintf("extrafile-%s-%s-%s", getArchString(descriptor.arch), update.Manifest.Version, fileInfo.Name.String)
 				if err := s.downloadPackage(update, fileInfo.Name.String, fileInfo.Hash.String, fileInfo.Hash256.String, downloadName); err != nil {
 					logger.Error().Err(err).Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Msgf("processUpdate, downloading package %s", fileInfo.Name.String)
 					return err
 				}
+				fileInfo.Name = null.StringFrom(downloadName)
 			}
 		}
 
