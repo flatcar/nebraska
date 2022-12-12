@@ -16,7 +16,7 @@ require (
 	github.com/jinzhu/copier v0.3.4
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/kevinburke/go-bindata v3.22.0+incompatible
-	github.com/kinvolk/go-omaha v0.0.1
+	github.com/kinvolk/go-omaha v0.0.2-0.20221206142015-1518a03b832b
 	github.com/knadh/koanf v1.4.4
 	github.com/labstack/echo-contrib v0.13.0
 	github.com/labstack/echo/v4 v4.9.1
@@ -47,7 +47,6 @@ require (
 	github.com/ashanbrown/makezero v0.0.0-20210520155254-b6261585ddde // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bkielbasa/cyclop v1.2.0 // indirect
-	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/bombsimon/wsl/v3 v3.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/charithe/durationcheck v0.0.8 // indirect
