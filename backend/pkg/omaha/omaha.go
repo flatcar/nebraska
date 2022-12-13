@@ -221,7 +221,7 @@ func (h *Handler) prepareUpdateCheck(appResp *omahaSpec.AppResponse, pkg *api.Pa
 		fpkg.Name = pkgFile.Name.String
 		if pkgFile.Hash.Valid {
 			fpkg.SHA1 = pkgFile.Hash.String
-			fpkg.SHA256 = pkgFile.Hash.String
+			fpkg.SHA256 = pkgFile.Hash256.String
 		}
 		if pkgFile.Size.Valid && pkgFile.Size.String != "" {
 			size, err := strconv.ParseUint(pkgFile.Size.String, 10, 64)

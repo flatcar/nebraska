@@ -3,7 +3,7 @@ FROM golang:1.19 as base-build
 ARG NEBRASKA_VERSION=""
 
 ENV GOPATH=/go \
-    GOPROXY=https://proxy.golang.org \
+    GOPROXY=direct \
 	GO111MODULE=on\
 	CGO_ENABLED=0\ 
 	GOOS=linux 

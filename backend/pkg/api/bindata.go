@@ -19,6 +19,7 @@
 // db/migrations/0015_add_package_file.sql (355B)
 // db/migrations/0016_add_version_breakdown_indexes.sql (734B)
 // db/migrations/0017_drop_unused_indexes.sql (297B)
+// db/migrations/0018_add_sha256_file_field.sql (173B)
 
 package api
 
@@ -467,6 +468,26 @@ func dbMigrations0017_drop_unused_indexesSql() (*asset, error) {
 	return a, nil
 }
 
+var _dbMigrations0018_add_sha256_file_fieldSql = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\x7c\xcd\x31\xb2\xc2\x20\x14\x05\xd0\x9e\x55\xdc\x2e\xff\x8f\x93\xc6\xd1\x34\x69\xdd\x82\xb5\x73\x85\x47\x60\x24\xc0\xc0\x8b\xba\x7c\xdb\xd8\xb8\x82\x33\x8e\x38\xac\x71\x69\x54\xc1\xb5\x1a\xc3\xa4\xd2\xa0\xbc\x27\x41\xa5\x7d\x70\x91\x9b\x8f\x49\x40\xe7\x60\x4b\xda\xd6\x8c\xe8\x91\x8b\x42\xde\xb1\x6b\x47\x60\x0f\xc7\xf3\x84\x27\x9b\x0d\x6c\x7f\xd3\xe9\x1f\x4e\x3c\xb7\xa4\x18\x86\xd9\x98\x3d\x71\x29\xaf\xfc\x03\x71\xad\xd4\x9d\xf2\x2d\xcc\xe6\x13\x00\x00\xff\xff\x7b\x75\x44\x88\xad\x00\x00\x00")
+
+func dbMigrations0018_add_sha256_file_fieldSqlBytes() ([]byte, error) {
+	return bindataRead(
+		_dbMigrations0018_add_sha256_file_fieldSql,
+		"db/migrations/0018_add_sha256_file_field.sql",
+	)
+}
+
+func dbMigrations0018_add_sha256_file_fieldSql() (*asset, error) {
+	bytes, err := dbMigrations0018_add_sha256_file_fieldSqlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "db/migrations/0018_add_sha256_file_field.sql", size: 173, mode: os.FileMode(0644), modTime: time.Unix(1, 0)}
+	a := &asset{bytes: bytes, info: info, digest: [32]uint8{0x8c, 0x3f, 0x79, 0xf, 0xc3, 0x40, 0xf5, 0xbb, 0x28, 0xde, 0x59, 0x1, 0x57, 0xd3, 0xae, 0xd7, 0xb0, 0x49, 0xdf, 0x5b, 0x9c, 0xed, 0x5c, 0x2a, 0xc5, 0xde, 0xe3, 0x9c, 0xa1, 0x54, 0x61, 0xe2}}
+	return a, nil
+}
+
 // Asset loads and returns the asset for the given name.
 // It returns an error if the asset could not be found or
 // could not be loaded.
@@ -577,6 +598,7 @@ var _bindata = map[string]func() (*asset, error){
 	"db/migrations/0015_add_package_file.sql":              dbMigrations0015_add_package_fileSql,
 	"db/migrations/0016_add_version_breakdown_indexes.sql": dbMigrations0016_add_version_breakdown_indexesSql,
 	"db/migrations/0017_drop_unused_indexes.sql":           dbMigrations0017_drop_unused_indexesSql,
+	"db/migrations/0018_add_sha256_file_field.sql":         dbMigrations0018_add_sha256_file_fieldSql,
 }
 
 // AssetDebug is true if the assets were built with the debug flag enabled.
@@ -643,6 +665,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"0015_add_package_file.sql": {dbMigrations0015_add_package_fileSql, map[string]*bintree{}},
 			"0016_add_version_breakdown_indexes.sql": {dbMigrations0016_add_version_breakdown_indexesSql, map[string]*bintree{}},
 			"0017_drop_unused_indexes.sql": {dbMigrations0017_drop_unused_indexesSql, map[string]*bintree{}},
+			"0018_add_sha256_file_field.sql": {dbMigrations0018_add_sha256_file_fieldSql, map[string]*bintree{}},
 		}},
 		"sample_data.sql": {dbSample_dataSql, map[string]*bintree{}},
 	}},

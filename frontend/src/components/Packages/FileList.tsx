@@ -60,7 +60,16 @@ function FileListItem(props: FileListItemProps) {
             </Grid>
             <Grid item>
               <Typography component="span" variant="body2" color="textSecondary">
-                {t('frequent|Hash: {{hash}}', { hash: fileToEdit.hash || '-' })}
+                {t('frequent|SHA1 Hash (base64): {{hash}}', {
+                  hash: fileToEdit.hash || '-',
+                })}
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Typography component="span" variant="body2" color="textSecondary">
+                {t('frequent|SHA256 Hash (hex): {{hash256}}', {
+                  hash256: fileToEdit.hash256 || '-',
+                })}
               </Typography>
             </Grid>
           </Grid>
@@ -129,12 +138,31 @@ function FileListItem(props: FileListItemProps) {
             <TextField
               name="hash"
               margin="dense"
-              label={t('packages|Hash')}
+              label={t('packages|SHA1 Hash (base64)')}
               type="text"
+              helperText={t('packages|Tip: {{command}}', {
+                command: 'cat FILE | openssl dgst -sha1 -binary | base64',
+              })}
               fullWidth
               value={fileToEdit.hash}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) =>
                 onFileInfoChanged('hash', e.target.value)
+              }
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              name="hash256"
+              margin="dense"
+              label={t('packages|SHA256 Hash (hex)')}
+              type="text"
+              helperText={t('packages|Tip: {{command}}', {
+                command: 'sha256sum FILE',
+              })}
+              fullWidth
+              value={fileToEdit.hash256}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) =>
+                onFileInfoChanged('hash256', e.target.value)
               }
             />
           </Grid>
@@ -220,7 +248,7 @@ export default function FileList(props: FileListProps) {
       ))}
       {showFileAdd ? (
         <FileListItem
-          file={{ name: '', size: '', hash: '' }}
+          file={{ name: '', size: '', hash: '', hash256: '' }}
           onEditFinished={(file?: File) => addFile(file)}
           edit
         />
