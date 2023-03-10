@@ -220,7 +220,6 @@ func (h *Handler) GetGroupVersionBreakdown(ctx echo.Context, appIDorProductID st
 }
 
 func (h *Handler) GetGroupInstances(ctx echo.Context, appIDorProductID string, groupID string, params codegen.GetGroupInstancesParams) error {
-
 	appID, err := h.db.GetAppID(appIDorProductID)
 	if err != nil {
 		return appNotFoundResponse(ctx, appIDorProductID)

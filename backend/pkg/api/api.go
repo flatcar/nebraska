@@ -150,7 +150,6 @@ type migration struct {
 }
 
 func (api *API) MigrateDown(version string) (int, error) {
-
 	migrate.SetTable(migrationsTable)
 	migrations := migrationAssets()
 

@@ -131,7 +131,6 @@ func TestCreateChannel(t *testing.T) {
 		assert.NotNil(t, channelsDB)
 		assert.Equal(t, channelName, channelsDB.Name)
 	})
-
 }
 
 func TestGetChannel(t *testing.T) {
@@ -175,7 +174,6 @@ func TestGetChannel(t *testing.T) {
 		assert.Equal(t, app.Channels[0].Name, channel.Name)
 		assert.Equal(t, app.Channels[0].ID, channel.ID)
 	})
-
 }
 
 func TestUpdateChannel(t *testing.T) {
@@ -288,5 +286,4 @@ func TestDeleteChannel(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, channel)
 	})
-
 }

@@ -587,9 +587,9 @@ func (api *API) updatePackageFiles(tx *sqlx.Tx, pkg *Package, oldPkg *Package) e
 		if isUpdate {
 			query, _, err := goqu.Update("package_file").
 				Set(goqu.Record{
-					"name": newFile.Name.String,
-					"size": newFile.Size.String,
-					"hash": newFile.Hash.String,
+					"name":    newFile.Name.String,
+					"size":    newFile.Size.String,
+					"hash":    newFile.Hash.String,
 					"hash256": newFile.Hash256.String,
 				}).
 				Where(goqu.C("id").Eq(newFile.ID)).

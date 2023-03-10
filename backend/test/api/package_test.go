@@ -78,7 +78,6 @@ func TestListPackages(t *testing.T) {
 			assert.Equal(t, packagesDB[i].ID, packagesResp.Packages[i].Id)
 		}
 	})
-
 }
 
 func TestCreatePackage(t *testing.T) {
@@ -299,7 +298,6 @@ func TestUpdatePackage(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, packageVersion, updatedPackageDB.Version)
 	})
-
 }
 
 func TestDeletePackage(t *testing.T) {
@@ -349,5 +347,4 @@ func TestDeletePackage(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, packageDB)
 	})
-
 }

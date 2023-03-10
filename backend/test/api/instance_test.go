@@ -130,7 +130,6 @@ func TestGetInstance(t *testing.T) {
 		assert.Equal(t, instanceDB.ID, instance.ID)
 		assert.Equal(t, instanceDB.IP, instance.IP)
 	})
-
 }
 
 func TestGetInstanceStatusHistory(t *testing.T) {
@@ -202,7 +201,6 @@ func TestGetInstanceStatusHistory(t *testing.T) {
 		assert.Equal(t, api.InstanceStatusComplete, instanceEvents[0].Status)
 		assert.Equal(t, api.InstanceStatusUpdateGranted, instanceEvents[1].Status)
 	})
-
 }
 
 func TestUpdateInstance(t *testing.T) {

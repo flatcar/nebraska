@@ -280,9 +280,9 @@ func TestMultiPackageResponse(t *testing.T) {
 
 	extraFiles := []api.File{
 		{
-			Name: null.StringFrom("myfile1.txt"),
-			Size: null.StringFrom("1234"),
-			Hash: null.StringFrom("abcd"),
+			Name:    null.StringFrom("myfile1.txt"),
+			Size:    null.StringFrom("1234"),
+			Hash:    null.StringFrom("abcd"),
 			Hash256: null.StringFrom("xyz"),
 		},
 		{

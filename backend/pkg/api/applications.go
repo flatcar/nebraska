@@ -186,7 +186,6 @@ func (api *API) UpdateApp(app *Application) error {
 
 // DeleteApp removes the application identified by the id provided.
 func (api *API) DeleteApp(appID string) error {
-
 	query, _, err := goqu.Delete("application").Where(goqu.C("id").Eq(appID)).ToSQL()
 	if err != nil {
 		return err
@@ -209,7 +208,6 @@ func (api *API) DeleteApp(appID string) error {
 
 // GetApp returns the application identified by the id provided.
 func (api *API) GetApp(appID string) (*Application, error) {
-
 	var app Application
 	query, _, err := goqu.From("application").
 		Where(goqu.C("id").Eq(appID)).ToSQL()

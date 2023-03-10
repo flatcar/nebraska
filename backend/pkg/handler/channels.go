@@ -12,7 +12,6 @@ import (
 )
 
 func (h *Handler) PaginateChannels(ctx echo.Context, appIDorProductID string, params codegen.PaginateChannelsParams) error {
-
 	appID, err := h.db.GetAppID(appIDorProductID)
 	if err != nil {
 		return appNotFoundResponse(ctx, appIDorProductID)
