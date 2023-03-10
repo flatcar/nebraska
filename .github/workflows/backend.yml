@@ -31,5 +31,5 @@ jobs:
 
     - name: Build, Lint & Check
       run: |
-        make ci
+        make all ci
       working-directory: backend
