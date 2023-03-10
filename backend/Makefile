@@ -75,13 +75,13 @@ bin/userctl:
 	go build -o bin/userctl ./cmd/userctl
 
 tools/go-bindata: go.mod go.sum
-	env GOBIN=$(CURDIR)/tools/ go install github.com/kevinburke/go-bindata/go-bindata@v3.22.0
+	env GOBIN=$(CURDIR)/tools/ go install github.com/kevinburke/go-bindata/go-bindata@v3.24.0
 
 tools/golangci-lint: go.mod go.sum
-	env GOBIN=$(CURDIR)/tools/ go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.42.1
+	env GOBIN=$(CURDIR)/tools/ go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.2
 
 tools/swag:
-	env GOBIN=$(CURDIR)/tools/ go install github.com/swaggo/swag/cmd/swag@v1.7.4
+	env GOBIN=$(CURDIR)/tools/ go install github.com/swaggo/swag/cmd/swag@v1.8.10
 
 .PHONY: ci
 ci: build test-clean-work-tree-backend check-backend-with-container
