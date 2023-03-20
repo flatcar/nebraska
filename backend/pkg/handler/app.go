@@ -80,7 +80,6 @@ func (h *Handler) CreateApp(ctx echo.Context, params codegen.CreateAppParams) er
 }
 
 func (h *Handler) GetApp(ctx echo.Context, appIDorProductID string) error {
-
 	appID, err := h.db.GetAppID(appIDorProductID)
 	if err != nil {
 		return appNotFoundResponse(ctx, appIDorProductID)

@@ -9,11 +9,13 @@ import (
 
 	//register "pgx" sql driver
 	"github.com/doug-martin/goqu/v9"
-	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/jmoiron/sqlx"
 	migrate "github.com/rubenv/sql-migrate"
 
 	"github.com/kinvolk/nebraska/backend/pkg/util"
+
+	// PostgreSQL Driver and Toolkit
+	_ "github.com/jackc/pgx/v4/stdlib"
 
 	// Postgresql driver
 	_ "github.com/lib/pq"
@@ -150,7 +152,6 @@ type migration struct {
 }
 
 func (api *API) MigrateDown(version string) (int, error) {
-
 	migrate.SetTable(migrationsTable)
 	migrations := migrationAssets()
 

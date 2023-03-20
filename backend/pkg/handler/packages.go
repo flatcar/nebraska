@@ -182,10 +182,10 @@ func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, desc
 	if extraFiles != nil {
 		for _, file := range *extraFiles {
 			f := api.File{
-				Name: null.StringFrom(*file.Name),
-				Hash: null.StringFrom(*file.Hash),
+				Name:    null.StringFrom(*file.Name),
+				Hash:    null.StringFrom(*file.Hash),
 				Hash256: null.StringFrom(*file.Hash256),
-				Size: null.StringFrom(*file.Size),
+				Size:    null.StringFrom(*file.Size),
 			}
 			if file.Id != nil {
 				f.ID = int64(*file.Id)

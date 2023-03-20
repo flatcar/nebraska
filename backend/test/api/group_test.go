@@ -76,7 +76,6 @@ func TestListGroups(t *testing.T) {
 			assert.Equal(t, groupsDB[i].Name, groupResp.Groups[i].Name)
 		}
 	})
-
 }
 
 func TestCreateGroup(t *testing.T) {
@@ -246,7 +245,6 @@ func TestUpdateGroup(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, groupName, updatedGroupDB.Name)
 	})
-
 }
 
 func TestDeleteGroup(t *testing.T) {
@@ -288,5 +286,4 @@ func TestDeleteGroup(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, group)
 	})
-
 }

@@ -673,7 +673,6 @@ func updateVersionTimeline(timeline map[time.Time]VersionCountMap, spans []time.
 //
 // Query 3 filters all instance without any instance_status_history in the duration and takes the latest version for each instance and groups
 // them to give a base count for all the versions. These version count values are directly added to all spans.
-//
 func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (map[time.Time](VersionCountMap), bool, error) {
 	cacheKey := groupDurationCacheKey{GroupID: groupID, Duration: duration}
 

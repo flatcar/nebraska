@@ -45,7 +45,6 @@ func TestMain(m *testing.M) {
 }
 
 func TestMigrateDown(t *testing.T) {
-
 	// Create New DB
 	db, err := NewWithMigrations(OptionInitDB)
 	require.NoError(t, err)
