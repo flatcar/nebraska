@@ -63,7 +63,7 @@ exports[`Storyshots applications/ApplicationItem Application 1`] = `
           >
             <div>
               <button
-                aria-controls="simple-menu-2"
+                aria-controls="simple-menu-1"
                 aria-haspopup="true"
                 aria-label="Open menu"
                 class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd"
@@ -363,7 +363,7 @@ exports[`Storyshots applications/ApplicationItem No Groups 1`] = `
           >
             <div>
               <button
-                aria-controls="simple-menu-1"
+                aria-controls="simple-menu-2"
                 aria-haspopup="true"
                 aria-label="Open menu"
                 class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd"
