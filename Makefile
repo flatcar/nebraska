@@ -140,7 +140,3 @@ backend-code-checks:
 .PHONY: swagger-install
 swagger-install:
 	$(MAKE) -C backend tools/swag
-
-.PHONY: swagger-init
-swagger-init:
-	$(MAKE) -C backend $@
