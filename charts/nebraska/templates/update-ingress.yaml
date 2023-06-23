@@ -7,10 +7,17 @@ metadata:
   name: {{ $fullName | trunc 56 | trimSuffix "-" }}-update
   labels:
     {{- include "nebraska.labels" . | nindent 4 }}
+  {{- with .Values.extraLabels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   {{- with .Values.ingress.update.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+  {{- with.Values.extraAnnotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+    {{ toYaml .Values.extraAnnotations | nindent 4 }}
 spec:
   {{- if eq (include "nebraska.ingress.apiVersion" $) "networking.k8s.io/v1" }}
   {{- with .Values.ingress.update.ingressClassName }}

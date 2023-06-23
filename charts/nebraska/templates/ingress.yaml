@@ -7,8 +7,14 @@ metadata:
   name: {{ $fullName }}
   labels:
     {{- include "nebraska.labels" . | nindent 4 }}
+  {{- with .Values.extraLabels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   {{- with .Values.ingress.annotations }}
   annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with.Values.extraAnnotations }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:

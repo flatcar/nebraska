@@ -19,7 +19,7 @@ sources:
 maintainers:
   - name: kinvolk
     url: https://kinvolk.io/
-version: 1.0.0
+version: 1.0.1
 appVersion: "2.8.0"
 
 dependencies:
