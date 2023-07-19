@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/doug-martin/goqu/v9"
@@ -48,6 +49,7 @@ const (
 
 const (
 	validityInterval postgresDuration = "1 days"
+	defaultInterval  time.Duration    = 2 * time.Hour
 )
 
 // Instance represents an instance running one or more applications for which
@@ -106,6 +108,14 @@ type InstancesQueryParams struct {
 	SortOrder     string `json:"sort_order"`
 	SearchFilter  string `json:"search_filter"`
 	SearchValue   string `json:"search_value"`
+}
+
+type InstanceStats struct {
+	Timestamp   time.Time `db:"timestamp" json:"timestamp"`
+	ChannelName string    `db:"channel_name" json:"channel_name"`
+	Arch        string    `db:"arch" json:"arch"`
+	Version     string    `db:"version" json:"version"`
+	Instances   int       `db:"instances" json:"instances"`
 }
 
 type instanceFilterItem int
@@ -630,4 +640,157 @@ func (api *API) instanceStatusHistoryQuery(instanceID, appID, groupID string, li
 		Where(goqu.C("group_id").Eq(groupID)).
 		Order(goqu.C("created_ts").Desc()).
 		Limit(uint(limit))
+}
+
+// instanceStatsQuery returns a SelectDataset prepared to return all instances
+// that have been checked in during a given duration from a given time.
+func (api *API) instanceStatsQuery(t *time.Time, duration *time.Duration) *goqu.SelectDataset {
+	if t == nil {
+		now := time.Now()
+		t = &now
+	}
+
+	if duration == nil {
+		d := defaultInterval
+		duration = &d
+	}
+
+	// Helper function to convert duration to PostgreSQL interval string
+	durationToInterval := func(d time.Duration) string {
+		if d <= 0 {
+			d = time.Microsecond
+		}
+
+		parts := []string{}
+
+		hours := int(d.Hours())
+		if hours != 0 {
+			parts = append(parts, fmt.Sprintf("%d hours", hours))
+		}
+
+		remainder := d - time.Duration(hours)*time.Hour
+		minutes := int(remainder.Minutes())
+		if minutes != 0 {
+			parts = append(parts, fmt.Sprintf("%d minutes", minutes))
+		}
+
+		remainder -= time.Duration(minutes) * time.Minute
+		seconds := int(remainder.Seconds())
+		if seconds != 0 {
+			parts = append(parts, fmt.Sprintf("%d seconds", seconds))
+		}
+
+		remainder -= time.Duration(seconds) * time.Second
+		microseconds := remainder.Microseconds()
+		if microseconds != 0 {
+			parts = append(parts, fmt.Sprintf("%d microseconds", microseconds))
+		}
+
+		return strings.Join(parts, " ")
+	}
+
+	interval := durationToInterval(*duration)
+	timestamp := goqu.L("timestamp ?", goqu.V(t.Format("2006-01-02T15:04:05.999999Z07:00")))
+	timestampMinusDuration := goqu.L("timestamp ? - interval ?", goqu.V(t.Format("2006-01-02T15:04:05.999999Z07:00")), interval)
+
+	query := goqu.From(goqu.T("instance_application")).
+		Select(
+			timestamp,
+			goqu.T("channel").Col("name").As("channel_name"),
+			goqu.Case().
+				When(goqu.T("channel").Col("arch").Eq(1), "AMD64").
+				When(goqu.T("channel").Col("arch").Eq(2), "ARM").
+				Else("").
+				As("arch"),
+			goqu.C("version").As("version"),
+			goqu.COUNT("*").As("instances")).
+		Join(goqu.T("groups"), goqu.On(goqu.C("group_id").Eq(goqu.T("groups").Col("id")))).
+		Join(goqu.T("channel"), goqu.On(goqu.T("groups").Col("channel_id").Eq(goqu.T("channel").Col("id")))).
+		Where(
+			goqu.C("last_check_for_updates").Gt(timestampMinusDuration),
+			goqu.C("last_check_for_updates").Lte(timestamp)).
+		GroupBy(timestamp,
+			goqu.T("channel").Col("name"),
+			goqu.T("channel").Col("arch"),
+			goqu.C("version")).
+		Order(timestamp.Asc())
+
+	return query
+}
+
+// GetInstanceStats returns an InstanceStats table with all instances that have
+// been previously been checked in.
+func (api *API) GetInstanceStats() ([]InstanceStats, error) {
+	query, _, err := goqu.From("instance_stats").
+		Order(goqu.C("timestamp").Asc()).ToSQL()
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := api.db.Queryx(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var instances []InstanceStats
+	for rows.Next() {
+		var instance InstanceStats
+		err = rows.StructScan(&instance)
+		if err != nil {
+			return nil, err
+		}
+		instances = append(instances, instance)
+	}
+
+	return instances, nil
+}
+
+// GetInstanceStatsByTimestamp returns an InstanceStats array of instances matching a
+// given timestamp value, ordered by version.
+func (api *API) GetInstanceStatsByTimestamp(t time.Time) ([]InstanceStats, error) {
+	timestamp := goqu.L("timestamp ?", goqu.V(t.Format("2006-01-02T15:04:05.999999Z07:00")))
+
+	query, _, err := goqu.From("instance_stats").
+		Where(goqu.C("timestamp").Eq(timestamp)).
+		Order(goqu.C("version").Asc()).ToSQL()
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := api.db.Queryx(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var instances []InstanceStats
+	for rows.Next() {
+		var instance InstanceStats
+		err = rows.StructScan(&instance)
+		if err != nil {
+			return nil, err
+		}
+		instances = append(instances, instance)
+	}
+
+	return instances, nil
+}
+
+// updateInstanceStats updates the instance_stats table with instances checked
+// in during a given duration from a given time.
+func (api *API) updateInstanceStats(t *time.Time, duration *time.Duration) error {
+	insertQuery, _, err := goqu.Insert(goqu.T("instance_stats")).
+		Cols("timestamp", "channel_name", "arch", "version", "instances").
+		FromQuery(api.instanceStatsQuery(t, duration)).
+		ToSQL()
+	if err != nil {
+		return err
+	}
+
+	_, err = api.db.Exec(insertQuery)
+	if err != nil {
+		return err
+	}
+	return nil
 }
