@@ -49,7 +49,7 @@ const (
 
 const (
 	validityInterval postgresDuration = "1 days"
-	defaultInterval  time.Duration    = 2 * time.Hour
+	defaultInterval  time.Duration    = time.Hour
 )
 
 // Instance represents an instance running one or more applications for which
@@ -642,6 +642,11 @@ func (api *API) instanceStatusHistoryQuery(instanceID, appID, groupID string, li
 		Limit(uint(limit))
 }
 
+// GetDefaultInterval returns the default interval used for instance stats queries.
+func (api *API) GetDefaultInterval() time.Duration {
+	return defaultInterval
+}
+
 // instanceStatsQuery returns a SelectDataset prepared to return all instances
 // that have been checked in during a given duration from a given time.
 func (api *API) instanceStatsQuery(t *time.Time, duration *time.Duration) *goqu.SelectDataset {
@@ -777,9 +782,9 @@ func (api *API) GetInstanceStatsByTimestamp(t time.Time) ([]InstanceStats, error
 	return instances, nil
 }
 
-// updateInstanceStats updates the instance_stats table with instances checked
+// UpdateInstanceStats updates the instance_stats table with instances checked
 // in during a given duration from a given time.
-func (api *API) updateInstanceStats(t *time.Time, duration *time.Duration) error {
+func (api *API) UpdateInstanceStats(t *time.Time, duration *time.Duration) error {
 	insertQuery, _, err := goqu.Insert(goqu.T("instance_stats")).
 		Cols("timestamp", "channel_name", "arch", "version", "instances").
 		FromQuery(api.instanceStatsQuery(t, duration)).

@@ -325,7 +325,7 @@ func TestUpdateInstanceStats(t *testing.T) {
 	ts := time.Now().UTC()
 	elapsed := ts.Sub(start)
 
-	err = a.updateInstanceStats(&ts, &elapsed)
+	err = a.UpdateInstanceStats(&ts, &elapsed)
 	assert.NoError(t, err)
 
 	instances, err = a.GetInstanceStats()
@@ -354,7 +354,7 @@ func TestUpdateInstanceStats(t *testing.T) {
 	ts3 := time.Now().UTC()
 	elapsed = ts3.Sub(ts2)
 
-	err = a.updateInstanceStats(&ts3, &elapsed)
+	err = a.UpdateInstanceStats(&ts3, &elapsed)
 	assert.NoError(t, err)
 
 	instances, err = a.GetInstanceStats()
@@ -387,7 +387,7 @@ func TestUpdateInstanceStatsNoArch(t *testing.T) {
 	// Use large duration to have some test coverage for durationToInterval
 	elapsed := 3*time.Hour + 45*time.Minute + 30*time.Second + 1000*time.Microsecond
 
-	err := a.updateInstanceStats(&ts, &elapsed)
+	err := a.UpdateInstanceStats(&ts, &elapsed)
 	assert.NoError(t, err)
 
 	instanceStats, err := a.GetInstanceStatsByTimestamp(ts)
