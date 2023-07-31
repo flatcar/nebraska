@@ -94,7 +94,7 @@ because the defaults are set at half.
 Now the member and admin roles are created, the admin role is a composite role which comprises of member role.
 
 <p align="center">
-  <img width="100%"  src="./images/keycloak-roles.gif">
+  <img width="100%"  src="../images/keycloak-roles.gif">
 </p>
 
 ## Creating a client
@@ -105,7 +105,7 @@ Now the member and admin roles are created, the admin role is a composite role w
 4. Set `Valid Redirect URIs` to `http://localhost:8000/login/cb`.
 
 <p align="center">
-  <img width="100%" src="./images/keycloak-client.gif">
+  <img width="100%" src="../images/keycloak-client.gif">
 </p>
 
 ## Adding roles scope to token
@@ -115,7 +115,7 @@ Now the member and admin roles are created, the admin role is a composite role w
 3. Click `Save`
 
 <p align="center">
-  <img width="100%" src="./images/keycloak-token.gif">
+  <img width="100%" src="../images/keycloak-token.gif">
 </p>
 
 ## Attaching Roles to User
@@ -125,7 +125,7 @@ Now the member and admin roles are created, the admin role is a composite role w
 3. Go to `Role Mapping` tab and select `nebraska_admin` role and click on add selected to attach role to user. If you want to provide only member access access select the member role.
 
 <p align="center">
-  <img width="100%" src="./images/keycloak-user.gif">
+  <img width="100%" src="../images/keycloak-user.gif">
 </p>
 
 # Preparing Auth0 as an OIDC provider for Nebraska
@@ -139,7 +139,7 @@ Now the member and admin roles are created, the admin role is a composite role w
 6. Click on `Save Changes`
 
 <p align="center">
-  <img width="100%" src="./images/auth0-application.gif">
+  <img width="100%" src="../images/auth0-application.gif">
 </p>
 
 
@@ -170,7 +170,7 @@ Now the rule to add the roles to the token is setup, the roles will be available
 Note: The `oidc-roles-path` argument accepts a JSONPath to fetch roles from the token, in this case set the value to `http://kinvolk\.io/roles`.
 
 <p align="center">
-  <img width="100%" src="./images/auth0-token.gif">
+  <img width="100%" src="../images/auth0-token.gif">
 </p>
 
 # Preparing Dex with github connector as an OIDC provider for Nebraska

@@ -13,9 +13,10 @@ $ helm install my-nebraska nebraska/nebraska
 
 ### Global parameters
 
-| Parameter                 | Description                  | Default |
-|---------------------------|------------------------------|---------|
-| `global.imageRegistry`    | Global Container image registry | `nil`   |
+| Parameter                 | Description                                                                           | Default |
+|---------------------------|---------------------------------------------------------------------------------------|---------|
+| `global.imageRegistry`    | Global Container image registry                                                       | `nil`   |
+| `extraObjects`            | List of extra manifests to deploy. Will be passed through `tpl` to support templating | `[]`    |
 
 ### Nebraska parameters
 

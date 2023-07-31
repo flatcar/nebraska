@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -293,4 +294,105 @@ func TestGetInstanceStatusHistory(t *testing.T) {
 	assert.Equal(t, history[2].Version, "1.0.1")
 	assert.Equal(t, history[3].Status, InstanceStatusUpdateGranted)
 	assert.Equal(t, history[3].Version, "1.0.1")
+}
+
+func TestUpdateInstanceStats(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	instances, err := a.GetInstanceStats()
+	assert.NoError(t, err)
+	assert.Equal(t, 0, len(instances))
+
+	// First test case: Create tInstance1, tInstance2, and tInstance3; check tInstance1 twice; switch tInstance2 version
+	start := time.Now().UTC()
+
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: ArchAMD64})
+	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID), Arch: ArchAMD64})
+	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tInstance1, _ := a.RegisterInstance(uuid.New().String(), "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
+	tInstance2, _ := a.RegisterInstance(uuid.New().String(), "", "10.0.0.2", "1.0.0", tApp.ID, tGroup.ID)
+	_, _ = a.RegisterInstance(uuid.New().String(), "", "10.0.0.3", "1.0.1", tApp.ID, tGroup.ID)
+
+	_, err = a.GetUpdatePackage(tInstance1.ID, "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
+	assert.NoError(t, err)
+
+	_, err = a.GetUpdatePackage(tInstance2.ID, "", "10.0.0.2", "1.0.1", tApp.ID, tGroup.ID)
+	assert.NoError(t, err)
+
+	ts := time.Now().UTC()
+	elapsed := ts.Sub(start)
+
+	err = a.updateInstanceStats(&ts, &elapsed)
+	assert.NoError(t, err)
+
+	instances, err = a.GetInstanceStats()
+	assert.NoError(t, err)
+	assert.Equal(t, 2, len(instances))
+
+	instanceStats, err := a.GetInstanceStatsByTimestamp(ts)
+	assert.NoError(t, err)
+	assert.Equal(t, 2, len(instanceStats))
+	assert.Equal(t, "1.0.0", instanceStats[0].Version)
+	assert.Equal(t, 1, instanceStats[0].Instances)
+	assert.Equal(t, "1.0.1", instanceStats[1].Version)
+	assert.Equal(t, 2, instanceStats[1].Instances)
+
+	// Next test case: Switch tInstance1 and tInstance2 versions to workaround the 5-minutes-rate-limiting of the check-in time and add new instance
+	ts2 := time.Now().UTC()
+
+	_, err = a.GetUpdatePackage(tInstance1.ID, "", "10.0.0.1", "1.0.3", tApp.ID, tGroup.ID)
+	assert.NoError(t, err)
+
+	_, err = a.GetUpdatePackage(tInstance2.ID, "", "10.0.0.2", "1.0.4", tApp.ID, tGroup.ID)
+	assert.NoError(t, err)
+
+	_, _ = a.RegisterInstance(uuid.New().String(), "", "10.0.0.4", "1.0.5", tApp.ID, tGroup.ID)
+
+	ts3 := time.Now().UTC()
+	elapsed = ts3.Sub(ts2)
+
+	err = a.updateInstanceStats(&ts3, &elapsed)
+	assert.NoError(t, err)
+
+	instances, err = a.GetInstanceStats()
+	assert.NoError(t, err)
+	assert.Equal(t, 5, len(instances))
+
+	instanceStats, err = a.GetInstanceStatsByTimestamp(ts3)
+	assert.NoError(t, err)
+	assert.Equal(t, 3, len(instanceStats))
+	assert.Equal(t, "1.0.3", instanceStats[0].Version)
+	assert.Equal(t, 1, instanceStats[0].Instances)
+	assert.Equal(t, "1.0.4", instanceStats[1].Version)
+	assert.Equal(t, 1, instanceStats[1].Instances)
+	assert.Equal(t, "1.0.5", instanceStats[2].Version)
+	assert.Equal(t, 1, instanceStats[2].Instances)
+}
+
+func TestUpdateInstanceStatsNoArch(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	_, _ = a.RegisterInstance(uuid.New().String(), "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
+
+	ts := time.Now().UTC()
+	// Use large duration to have some test coverage for durationToInterval
+	elapsed := 3*time.Hour + 45*time.Minute + 30*time.Second + 1000*time.Microsecond
+
+	err := a.updateInstanceStats(&ts, &elapsed)
+	assert.NoError(t, err)
+
+	instanceStats, err := a.GetInstanceStatsByTimestamp(ts)
+	assert.NoError(t, err)
+	assert.Equal(t, "", instanceStats[0].Arch)
+	assert.Equal(t, "1.0.0", instanceStats[0].Version)
+	assert.Equal(t, 1, instanceStats[0].Instances)
 }

@@ -216,3 +216,20 @@ postgresql:
   serviceAccount:
     create: true
     automountServiceAccountToken: false
+
+extraObjects: []
+  # - apiVersion: external-secrets.io/v1beta1
+  #   kind: ExternalSecret
+  #   metadata:
+  #     name: my-external-secret
+  #     namespace: '{{ .Release.Namespace }}'
+  #   spec:
+  #     secretStoreRef:
+  #       kind: ClusterSecretStore
+  #       name: my-secret-store
+  #     target:
+  #       name: my-kubernetes-secret
+  #     data:
+  #       - secretKey: secretKey
+  #         remoteRef:
+  #           key: /path/to/my-secret

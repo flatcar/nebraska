@@ -66,13 +66,10 @@ test-clean-work-tree-backend:
 	fi
 
 .PHONY: tools
-tools: bin/initdb bin/userctl
+tools: bin/initdb
 
 bin/initdb:
 	go build -o bin/initdb ./cmd/initdb
-
-bin/userctl:
-	go build -o bin/userctl ./cmd/userctl
 
 tools/go-bindata: go.mod go.sum
 	env GOBIN=$(CURDIR)/tools/ go install github.com/kevinburke/go-bindata/go-bindata@v3.24.0
@@ -103,10 +100,6 @@ code-checks: tools/golangci-lint
 	NEBRASKA_SKIP_TESTS=1 go test ./... >/dev/null
 	./tools/golangci-lint run --fix
 	go mod tidy
-
-.PHONY: swagger-init
-swagger-init:  tools/swag
-	./tools/swag init -g cmd/userctl/main.go -o api
 
 .PHONY: tools/oapi-codegen
 tools/oapi-codegen:
