@@ -646,7 +646,7 @@ func (api *API) instanceStatusHistoryQuery(instanceID, appID, groupID string, li
 // that have been checked in during a given duration from a given time.
 func (api *API) instanceStatsQuery(t *time.Time, duration *time.Duration) *goqu.SelectDataset {
 	if t == nil {
-		now := time.Now()
+		now := time.Now().UTC()
 		t = &now
 	}
 
