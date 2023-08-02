@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"path"
 	"strings"
+	"time"
 
 	oapimiddleware "github.com/deepmap/oapi-codegen/pkg/middleware"
 	"github.com/getkin/kin-openapi/openapi3filter"
@@ -47,6 +48,7 @@ var (
 )
 
 // New takes the config and db connection to create the server and returns it.
+// It also starts a background job to update instance stats periodically.
 func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 	// Setup Echo Server
 	e := echo.New()
@@ -132,6 +134,24 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 		e.DefaultHTTPErrorHandler(err, c)
 	}
 	codegen.RegisterHandlers(e, handlers)
+
+	// setup background job for updating instance stats
+	go func() {
+		err := db.UpdateInstanceStats(nil, nil)
+		if err != nil {
+			logger.Err(err).Msg("Error updating instance stats")
+		}
+		ticker := time.NewTicker(db.GetDefaultInterval())
+		defer ticker.Stop()
+
+		for range ticker.C {
+			err := db.UpdateInstanceStats(nil, nil)
+			if err != nil {
+				logger.Err(err).Msg("Error updating instance stats")
+			}
+		}
+	}()
+
 	return e, nil
 }
 
