@@ -49,7 +49,7 @@ const (
 
 const (
 	validityInterval postgresDuration = "1 days"
-	defaultInterval  time.Duration    = time.Hour
+	defaultInterval  time.Duration    = 2 * time.Hour
 )
 
 // Instance represents an instance running one or more applications for which
