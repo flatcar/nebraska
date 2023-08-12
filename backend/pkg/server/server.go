@@ -135,13 +135,17 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 	}
 	codegen.RegisterHandlers(e, handlers)
 
+	e.GET("/instance-metrics/prometheus", handlers.GetLatestInstanceStats)
+	e.GET("/instance-metrics/json", handlers.GetInstanceStats)
+
 	// setup background job for updating instance stats
 	go func() {
-		err := db.UpdateInstanceStats(nil, nil)
+		// update once at startup
+		err = db.UpdateInstanceStats(nil, nil)
 		if err != nil {
 			logger.Err(err).Msg("Error updating instance stats")
 		}
-		ticker := time.NewTicker(db.GetDefaultInterval())
+		ticker := time.NewTicker(time.Hour)
 		defer ticker.Stop()
 
 		for range ticker.C {

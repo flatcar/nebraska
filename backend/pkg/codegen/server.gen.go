@@ -110,6 +110,12 @@ type ServerInterface interface {
 	// (GET /health)
 	Health(ctx echo.Context) error
 
+	// (GET /instance-metrics/json)
+	GetInstanceStats(ctx echo.Context) error
+
+	// (GET /instance-metrics/prometheus)
+	GetLatestInstanceStats(ctx echo.Context) error
+
 	// (GET /login)
 	Login(ctx echo.Context, params LoginParams) error
 
@@ -1207,6 +1213,36 @@ func (w *ServerInterfaceWrapper) Health(ctx echo.Context) error {
 	return err
 }
 
+// GetInstanceStats converts echo context to params.
+func (w *ServerInterfaceWrapper) GetInstanceStats(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetInstanceStats(ctx)
+	return err
+}
+
+// GetLatestInstanceStats converts echo context to params.
+func (w *ServerInterfaceWrapper) GetLatestInstanceStats(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(OidcBearerAuthScopes, []string{""})
+
+	ctx.Set(OidcCookieAuthScopes, []string{""})
+
+	ctx.Set(GithubCookieAuthScopes, []string{""})
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetLatestInstanceStats(ctx)
+	return err
+}
+
 // Login converts echo context to params.
 func (w *ServerInterfaceWrapper) Login(ctx echo.Context) error {
 	var err error
@@ -1369,6 +1405,8 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.PUT(baseURL+"/api/instances/:instanceID", wrapper.UpdateInstance)
 	router.GET(baseURL+"/config", wrapper.GetConfig)
 	router.GET(baseURL+"/health", wrapper.Health)
+	router.GET(baseURL+"/instance-metrics/json", wrapper.GetInstanceStats)
+	router.GET(baseURL+"/instance-metrics/prometheus", wrapper.GetLatestInstanceStats)
 	router.GET(baseURL+"/login", wrapper.Login)
 	router.GET(baseURL+"/login/cb", wrapper.LoginCb)
 	router.POST(baseURL+"/login/token", wrapper.LoginToken)

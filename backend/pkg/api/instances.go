@@ -49,7 +49,7 @@ const (
 
 const (
 	validityInterval postgresDuration = "1 days"
-	defaultInterval  time.Duration    = time.Hour
+	defaultInterval  time.Duration    = 2 * time.Hour
 )
 
 // Instance represents an instance running one or more applications for which
@@ -651,7 +651,7 @@ func (api *API) GetDefaultInterval() time.Duration {
 // that have been checked in during a given duration from a given time.
 func (api *API) instanceStatsQuery(t *time.Time, duration *time.Duration) *goqu.SelectDataset {
 	if t == nil {
-		now := time.Now()
+		now := time.Now().UTC()
 		t = &now
 	}
 
