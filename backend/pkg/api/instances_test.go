@@ -276,7 +276,7 @@ func TestUpdateInstanceStats(t *testing.T) {
 	as := adminSvc(a)
 	rs := runtimeSvc(a)
 
-	instances, err := a.GetInstanceStats()
+	instances, err := a.GetInstanceStats(1, 100)
 	assert.NoError(t, err)
 	assert.Equal(t, 0, len(instances))
 
@@ -304,7 +304,7 @@ func TestUpdateInstanceStats(t *testing.T) {
 	err = rs.UpdateInstanceStats(&ts, &elapsed)
 	assert.NoError(t, err)
 
-	instances, err = a.GetInstanceStats()
+	instances, err = a.GetInstanceStats(1, 100)
 	assert.NoError(t, err)
 	assert.Equal(t, 2, len(instances))
 
@@ -333,7 +333,7 @@ func TestUpdateInstanceStats(t *testing.T) {
 	err = rs.UpdateInstanceStats(&ts3, &elapsed)
 	assert.NoError(t, err)
 
-	instances, err = a.GetInstanceStats()
+	instances, err = a.GetInstanceStats(1, 100)
 	assert.NoError(t, err)
 	assert.Equal(t, 5, len(instances))
 

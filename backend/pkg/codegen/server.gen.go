@@ -122,6 +122,12 @@ type ServerInterface interface {
 	// (GET /health)
 	Health(ctx echo.Context) error
 
+	// (GET /instance-metrics/json)
+	GetInstanceStats(ctx echo.Context, params GetInstanceStatsParams) error
+
+	// (GET /instance-metrics/prometheus)
+	GetLatestInstanceStats(ctx echo.Context) error
+
 	// (GET /login/cb)
 	LoginCb(ctx echo.Context) error
 
@@ -1339,6 +1345,52 @@ func (w *ServerInterfaceWrapper) Health(ctx echo.Context) error {
 	return err
 }
 
+// GetInstanceStats converts echo context to params.
+func (w *ServerInterfaceWrapper) GetInstanceStats(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(OidcBearerAuthScopes, []string{})
+
+	ctx.Set(OidcCookieAuthScopes, []string{})
+
+	ctx.Set(GithubCookieAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetInstanceStatsParams
+	// ------------- Optional query parameter "page" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "page", ctx.QueryParams(), &params.Page)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter page: %s", err))
+	}
+
+	// ------------- Optional query parameter "perpage" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "perpage", ctx.QueryParams(), &params.Perpage)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter perpage: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetInstanceStats(ctx, params)
+	return err
+}
+
+// GetLatestInstanceStats converts echo context to params.
+func (w *ServerInterfaceWrapper) GetLatestInstanceStats(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(OidcBearerAuthScopes, []string{})
+
+	ctx.Set(OidcCookieAuthScopes, []string{})
+
+	ctx.Set(GithubCookieAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetLatestInstanceStats(ctx)
+	return err
+}
+
 // LoginCb converts echo context to params.
 func (w *ServerInterfaceWrapper) LoginCb(ctx echo.Context) error {
 	var err error
@@ -1478,6 +1530,8 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.PUT(baseURL+"/api/instances/:instanceID", wrapper.UpdateInstance)
 	router.GET(baseURL+"/config", wrapper.GetConfig)
 	router.GET(baseURL+"/health", wrapper.Health)
+	router.GET(baseURL+"/instance-metrics/json", wrapper.GetInstanceStats)
+	router.GET(baseURL+"/instance-metrics/prometheus", wrapper.GetLatestInstanceStats)
 	router.GET(baseURL+"/login/cb", wrapper.LoginCb)
 	router.GET(baseURL+"/login/validate_token", wrapper.ValidateToken)
 	router.POST(baseURL+"/login/webhook", wrapper.LoginWebhook)
