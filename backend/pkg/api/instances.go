@@ -723,11 +723,24 @@ func (api *API) instanceStatsQuery(t *time.Time, duration *time.Duration) *goqu.
 	return query
 }
 
+// GetInstanceStatsCount returns the total number of InstanceStats.
+func (api *API) GetInstanceStatsCount() (int, error) {
+	query := goqu.From("instance_stats").Select(goqu.L("count(*)"))
+	return api.GetCountQuery(query)
+}
+
 // GetInstanceStats returns an InstanceStats table with all instances that have
 // been previously been checked in.
-func (api *API) GetInstanceStats() ([]InstanceStats, error) {
-	query, _, err := goqu.From("instance_stats").
-		Order(goqu.C("timestamp").Asc()).ToSQL()
+func (api *API) GetInstanceStats(page, perPage uint64) ([]InstanceStats, error) {
+	page, perPage = validatePaginationParams(page, perPage)
+	limit, offset := sqlPaginate(page, perPage)
+
+	query, _, err := goqu.
+		From("instance_stats").
+		Limit(limit).
+		Offset(offset).
+		Order(goqu.C("timestamp").Asc()).
+		ToSQL()
 	if err != nil {
 		return nil, err
 	}

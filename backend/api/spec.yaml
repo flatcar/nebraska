@@ -1177,6 +1177,53 @@ paths:
           description: Activity not found response
         "500":
           description: List activity error response
+  /instance-metrics/prometheus:
+    get:
+      description: Get latest instance stats
+      operationId: getLatestInstanceStats
+      security:
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
+      responses:
+        "200":
+          description: Get latest instance stats success response
+          content:
+            text/plain:
+              schema:
+                type: string
+        "500":
+          description: Get latest instance stats error response
+  /instance-metrics/json:
+    get:
+      description: Get instance stats
+      operationId: getInstanceStats
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+        - in: query
+          name: perpage
+          required: false
+          schema:
+            type: integer
+            minimum: 10
+      security:
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
+      responses:
+        "200":
+          description: List instance stats response
+          content:
+            application/x-ndjson:
+              schema:
+                $ref: "#/components/schemas/instanceStats"
+        "500":
+          description: Get instance stats error response
 components:
   schemas:
     ## request Body
@@ -1338,6 +1385,46 @@ components:
           type: string
         package_id:
           type: string
+
+    instanceStatsPage:
+      type: object
+      required:
+        - totalCount
+        - count
+        - applications
+      properties:
+        totalCount:
+          type: integer
+        count:
+          type: integer
+        applications:
+          type: array
+          items:
+            $ref: "#/components/schemas/instanceStats"
+
+    instanceStats:
+      type: object
+      required:
+        - type
+        - channel
+        - version
+        - arch
+        - timestamp
+        - instances
+      properties:
+        type:
+          type: string
+          enum: ["instance_count"]
+        channel:
+          type: string
+        version:
+          type: string
+        arch:
+          type: string
+        timestamp:
+          type: string
+        count:
+          type: integer
 
 
     ## response     
