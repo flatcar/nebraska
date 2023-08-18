@@ -204,7 +204,7 @@ type ClientInterface interface {
 	Health(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetInstanceStats request
-	GetInstanceStats(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetInstanceStats(ctx context.Context, params *GetInstanceStatsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetLatestInstanceStats request
 	GetLatestInstanceStats(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -722,8 +722,8 @@ func (c *Client) Health(ctx context.Context, reqEditors ...RequestEditorFn) (*ht
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetInstanceStats(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetInstanceStatsRequest(c.Server)
+func (c *Client) GetInstanceStats(ctx context.Context, params *GetInstanceStatsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetInstanceStatsRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -2694,7 +2694,7 @@ func NewHealthRequest(server string) (*http.Request, error) {
 }
 
 // NewGetInstanceStatsRequest generates requests for GetInstanceStats
-func NewGetInstanceStatsRequest(server string) (*http.Request, error) {
+func NewGetInstanceStatsRequest(server string, params *GetInstanceStatsParams) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -2711,6 +2711,42 @@ func NewGetInstanceStatsRequest(server string) (*http.Request, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	queryValues := queryURL.Query()
+
+	if params.Start != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "start", runtime.ParamLocationQuery, *params.Start); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	if params.End != nil {
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "end", runtime.ParamLocationQuery, *params.End); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+	}
+
+	queryURL.RawQuery = queryValues.Encode()
 
 	req, err := http.NewRequest("GET", queryURL.String(), nil)
 	if err != nil {
@@ -3116,7 +3152,7 @@ type ClientWithResponsesInterface interface {
 	HealthWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*HealthResponse, error)
 
 	// GetInstanceStats request
-	GetInstanceStatsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetInstanceStatsResponse, error)
+	GetInstanceStatsWithResponse(ctx context.Context, params *GetInstanceStatsParams, reqEditors ...RequestEditorFn) (*GetInstanceStatsResponse, error)
 
 	// GetLatestInstanceStats request
 	GetLatestInstanceStatsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetLatestInstanceStatsResponse, error)
@@ -4371,8 +4407,8 @@ func (c *ClientWithResponses) HealthWithResponse(ctx context.Context, reqEditors
 }
 
 // GetInstanceStatsWithResponse request returning *GetInstanceStatsResponse
-func (c *ClientWithResponses) GetInstanceStatsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetInstanceStatsResponse, error) {
-	rsp, err := c.GetInstanceStats(ctx, reqEditors...)
+func (c *ClientWithResponses) GetInstanceStatsWithResponse(ctx context.Context, params *GetInstanceStatsParams, reqEditors ...RequestEditorFn) (*GetInstanceStatsResponse, error) {
+	rsp, err := c.GetInstanceStats(ctx, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}

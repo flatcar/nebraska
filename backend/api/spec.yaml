@@ -1202,6 +1202,19 @@ paths:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
         - githubCookieAuth: []
+      parameters:
+      - in: query
+        name: start
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: end
+        required: false
+        schema:
+          type: string
+          format: date-time
       responses:
         "200":
           description: Get instance stats success response

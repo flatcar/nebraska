@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 
@@ -76,8 +77,20 @@ func (h *Handler) GetLatestInstanceStats(ctx echo.Context) error {
 	return nil
 }
 
-func (h *Handler) GetInstanceStats(ctx echo.Context) error {
-	metrics, err := h.db.GetInstanceStats()
+func (h *Handler) GetInstanceStats(ctx echo.Context, params codegen.GetInstanceStatsParams) error {
+	var s *time.Time
+	var t *time.Time
+	s = nil
+	if params.Start != nil {
+		s = params.Start
+	}
+
+	t = nil
+	if params.End != nil {
+		t = params.End
+	}
+
+	metrics, err := h.db.GetInstanceStats(s, t)
 	if err != nil {
 		logger.Error().Err(err).Msg("getInstanceStats - getting instance stats")
 		return ctx.NoContent(http.StatusInternalServerError)

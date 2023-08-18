@@ -111,7 +111,7 @@ type ServerInterface interface {
 	Health(ctx echo.Context) error
 
 	// (GET /instance-metrics/json)
-	GetInstanceStats(ctx echo.Context) error
+	GetInstanceStats(ctx echo.Context, params GetInstanceStatsParams) error
 
 	// (GET /instance-metrics/prometheus)
 	GetLatestInstanceStats(ctx echo.Context) error
@@ -1223,8 +1223,24 @@ func (w *ServerInterfaceWrapper) GetInstanceStats(ctx echo.Context) error {
 
 	ctx.Set(GithubCookieAuthScopes, []string{""})
 
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetInstanceStatsParams
+	// ------------- Optional query parameter "start" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "start", ctx.QueryParams(), &params.Start)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter start: %s", err))
+	}
+
+	// ------------- Optional query parameter "end" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "end", ctx.QueryParams(), &params.End)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter end: %s", err))
+	}
+
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetInstanceStats(ctx)
+	err = w.Handler.GetInstanceStats(ctx, params)
 	return err
 }
 

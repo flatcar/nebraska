@@ -136,7 +136,14 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 	codegen.RegisterHandlers(e, handlers)
 
 	e.GET("/instance-metrics/prometheus", handlers.GetLatestInstanceStats)
-	e.GET("/instance-metrics/json", handlers.GetInstanceStats)
+	e.GET("/instance-metrics/json", func(ctx echo.Context) error {
+		var params codegen.GetInstanceStatsParams
+		err := ctx.Bind(&params)
+		if err != nil {
+			return err
+		}
+		return handlers.GetInstanceStats(ctx, params)
+	})
 
 	// setup background job for updating instance stats
 	go func() {

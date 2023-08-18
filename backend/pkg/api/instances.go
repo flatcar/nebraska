@@ -118,6 +118,11 @@ type InstanceStats struct {
 	Instances   int       `db:"instances" json:"instances"`
 }
 
+type GetInstanceStatsParams struct {
+	Start *time.Time `db:"start" json:"start"`
+	End   *time.Time `db:"end" json:"end"`
+}
+
 type instanceFilterItem int
 
 const (
@@ -726,18 +731,19 @@ func (api *API) instanceStatsQuery(t *time.Time, duration *time.Duration) *goqu.
 // GetInstanceStats returns an InstanceStats table with all instances that have
 // been previously been checked in.
 func (api *API) GetInstanceStats(s *time.Time, t *time.Time) ([]InstanceStats, error) {
-	queryBuilder := goqu.From("instance_stats").
-		Order(goqu.C("timestamp").Asc())
+	queryBuilder := goqu.From("instance_stats")
+
+	if s != nil {
+		start := goqu.L("timestamp ?", goqu.V(s.Format("2006-01-02T15:04:05.999999Z07:00")))
+		queryBuilder = queryBuilder.Where(goqu.C("timestamp").Gt(start))
+	}
 
 	if t != nil {
 		end := goqu.L("timestamp ?", goqu.V(t.Format("2006-01-02T15:04:05.999999Z07:00")))
 		queryBuilder = queryBuilder.Where(goqu.C("timestamp").Lte(end))
 	}
 
-	if s != nil {
-		start := goqu.L("timestamp ?", goqu.V(s.Format("2006-01-02T15:04:05.999999Z07:00")))
-		queryBuilder = queryBuilder.Where(goqu.C("timestamp").Gt(start))
-	}
+	queryBuilder = queryBuilder.Order(goqu.C("timestamp").Asc())
 
 	query, _, err := queryBuilder.ToSQL()
 	if err != nil {

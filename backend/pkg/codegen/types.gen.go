@@ -412,6 +412,12 @@ type PaginatePackagesParams struct {
 	SearchVersion *string `form:"searchVersion,omitempty" json:"searchVersion,omitempty"`
 }
 
+// GetInstanceStatsParams defines parameters for GetInstanceStats.
+type GetInstanceStatsParams struct {
+	Start *time.Time `form:"start,omitempty" json:"start,omitempty"`
+	End   *time.Time `form:"end,omitempty" json:"end,omitempty"`
+}
+
 // LoginParams defines parameters for Login.
 type LoginParams struct {
 	LoginRedirectUrl string `form:"login_redirect_url" json:"login_redirect_url"`
