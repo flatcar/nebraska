@@ -5,7 +5,7 @@ Nebraska is an update manager for Flatcar Container Linux.
 ## TL;DR
 
 ```console
-$ helm repo add nebraska https://kinvolk.github.io/nebraska/
+$ helm repo add nebraska https://flatcar.github.io/nebraska
 $ helm install my-nebraska nebraska/nebraska
 ```
 
