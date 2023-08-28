@@ -39,7 +39,9 @@ Please report any issues in [here](https://github.com/kinvolk/nebraska/issues).
 
 ## Code of Conduct
 
-Please refer to the Kinvolk [Code of Conduct](https://github.com/kinvolk/contribution/blob/master/CODE_OF_CONDUCT.md).
+We follow the [CNCF Code of Conduct](https://github.com/cncf/foundation/blob/main/code-of-conduct.md).
+
+Please contact [private Maintainer mailing list](maintainers@flatcar-linux.org) or the Cloud Native Foundation mediator, conduct@cncf.io, to report an issue.
 
 ## Contributing
 
