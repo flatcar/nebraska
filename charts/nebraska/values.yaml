@@ -73,6 +73,7 @@ config:
     dbname: '{{ .Values.postgresql.auth.database }}'
     username: '{{ .Values.postgresql.auth.username }}'
     password: ""
+    sslMode: ""
     passwordExistingSecret:
       enabled: true
       name: '{{ .Release.Name }}-postgresql'
