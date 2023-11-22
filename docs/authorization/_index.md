@@ -290,7 +290,7 @@ To install the Helm Chart using the default configuration (noop authentication),
 you can execute:
 
 ```console
-$ helm repo add nebraska https://kinvolk.github.io/nebraska
+$ helm repo add nebraska https://flatcar.github.io/nebraska
 $ helm install my-nebraska nebraska/nebraska
 ```
 
