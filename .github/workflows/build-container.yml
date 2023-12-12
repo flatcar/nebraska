@@ -19,7 +19,7 @@ jobs:
       uses: docker/setup-buildx-action@v1
 
     - name: Check out code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     - name: Build image
       env:
         DOCKER_BUILDKIT: 1
