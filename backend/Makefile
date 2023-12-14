@@ -1,7 +1,7 @@
 GO111MODULE=on
 export GO111MODULE
 
-TAG := `git describe --tags --always`
+TAG := `git describe --tags --always --exclude 'nebraska-helm*'`
 SHELL = /bin/bash
 DOCKER_CMD ?= "docker"
 DOCKER_REPO ?= "ghcr.io/kinvolk"
