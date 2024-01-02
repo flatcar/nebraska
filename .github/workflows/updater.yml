@@ -1,0 +1,33 @@
+name: updater
+on:
+  pull_request:
+    paths:
+    - 'updater/**'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Test updater library
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Check out code
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+    - name: Set up Go 1.19
+      uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+      with:
+        go-version: 1.19.x
+      id: go
+
+    - name: Start postgres dependency
+      run: |
+        docker-compose -f backend/docker-compose.test.yaml up -d postgres
+
+    - name: Test library
+      env:
+        NEBRASKA_DB_URL: "postgres://postgres:nebraska@127.0.0.1:8001/nebraska_tests?sslmode=disable&connect_timeout=10"
+      run: |
+        cd updater
+        go test -v ./...
