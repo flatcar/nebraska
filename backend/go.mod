@@ -6,7 +6,7 @@ require (
 	github.com/blang/semver/v4 v4.0.0
 	github.com/coreos/go-oidc/v3 v3.5.0
 	github.com/deepmap/oapi-codegen v1.12.4
-	github.com/doug-martin/goqu/v9 v9.18.0
+	github.com/doug-martin/goqu/v9 v9.19.0
 	github.com/getkin/kin-openapi v0.114.0
 	github.com/golangci/golangci-lint v1.41.1
 	github.com/google/go-github/v28 v28.1.1
