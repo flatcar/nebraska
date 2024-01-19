@@ -23,11 +23,14 @@ func NewLogger(logContext string) zerolog.Logger {
 	case "", logFormatPretty:
 		fallthrough
 	default:
-		writer = zerolog.ConsoleWriter{Out: os.Stderr}
+		writer = zerolog.ConsoleWriter{
+			Out:        os.Stderr,
+			TimeFormat: zerolog.TimeFieldFormat,
+		}
 		unknownFormat = true
 	}
 
-	logger := zerolog.New(writer).Hook(
+	logger := zerolog.New(writer).With().Timestamp().Logger().Hook(
 		zerolog.HookFunc(func(e *zerolog.Event, level zerolog.Level, message string) {
 			e.Str("context", logContext)
 		}))
