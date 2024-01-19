@@ -242,7 +242,7 @@ func (gha *githubAuth) LoginCb(ctx echo.Context) error {
 		httpError(ctx, http.StatusInternalServerError)
 		return nil
 	}
-	logger.Debug().Msgf("login cb received token %s", token)
+	logger.Debug().Msgf("login cb received token %v", token)
 	if !token.Valid() {
 		logger.Error().Err(fmt.Errorf("login cb got invalid token")).Send()
 		httpError(ctx, http.StatusInternalServerError)
