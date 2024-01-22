@@ -29,7 +29,7 @@ require (
 	github.com/rubenv/sql-migrate v1.5.2
 	github.com/ryanuber/go-glob v1.0.0
 	github.com/stretchr/testify v1.8.2
-	github.com/tidwall/gjson v1.14.4
+	github.com/tidwall/gjson v1.17.0
 	golang.org/x/oauth2 v0.16.0
 	golang.org/x/sync v0.5.0
 	gopkg.in/guregu/null.v4 v4.0.0
