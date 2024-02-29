@@ -3,7 +3,7 @@ module github.com/kinvolk/nebraska/updater
 go 1.17
 
 require (
-	github.com/google/uuid v1.5.0
+	github.com/google/uuid v1.6.0
 	github.com/kinvolk/go-omaha v0.0.2-0.20221206142015-1518a03b832b
 	github.com/kinvolk/nebraska/backend v0.0.0-20210826093658-9a22e1e98f4b
 	github.com/stretchr/testify v1.8.4
