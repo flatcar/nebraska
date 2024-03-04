@@ -26,7 +26,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.18.0
 	github.com/rs/zerolog v1.31.0
-	github.com/rubenv/sql-migrate v1.5.2
+	github.com/rubenv/sql-migrate v1.6.1
 	github.com/ryanuber/go-glob v1.0.0
 	github.com/stretchr/testify v1.8.4
 	github.com/tidwall/gjson v1.14.4
