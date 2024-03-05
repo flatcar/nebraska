@@ -2,12 +2,20 @@
 {{- $host := .Values.config.database.host | default (include "nebraska.postgresql.fullname" .) }}
 {{- $port := .Values.config.database.port | toString }}
 {{- $user := ( tpl .Values.config.database.username . ) }}
+{{- $sslMode := ( tpl .Values.config.database.sslMode . ) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "nebraska.fullname" . }}
   labels:
     {{- include "nebraska.labels" . | nindent 4 }}
+  {{- with .Values.extraLabels }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with.Values.extraAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
@@ -24,6 +32,7 @@ spec:
       {{- end }}
       labels:
         {{- include "nebraska.selectorLabels" . | nindent 8 }}
+        {{ toYaml .Values.podLabels | nindent 8 }}
     spec:
       {{- with .Values.image.pullSecrets }}
       imagePullSecrets:
@@ -137,7 +146,7 @@ spec:
                   key: dbPassword
                   {{- end }}
             - name: NEBRASKA_DB_URL
-              value: {{ printf "postgres://%s:$(DB_PASSWORD)@%s:%s/%s?sslmode=disable&connect_timeout=10" $user $host $port $db | quote }}
+              value: {{ printf "postgres://%s:$(DB_PASSWORD)@%s:%s/%s?sslmode=%s&connect_timeout=10" $user $host $port $db $sslMode | quote }}
             {{- if eq .Values.config.auth.mode "github" }}
             - name: "NEBRASKA_GITHUB_OAUTH_CLIENT_ID"
               value: "{{ .Values.config.auth.github.clientID }}"

@@ -34,6 +34,8 @@ config:
     packagesPath: /mnt/packages
     # nebraskaURL: http://flatcar.example.com
     persistence:
+      annotations: {}
+      labels: {}
       enabled: false
       storageClass:
       accessModes:
@@ -73,6 +75,7 @@ config:
     dbname: '{{ .Values.postgresql.auth.database }}'
     username: '{{ .Values.postgresql.auth.username }}'
     password: ""
+    sslMode: disable
     passwordExistingSecret:
       enabled: true
       name: '{{ .Release.Name }}-postgresql'
@@ -119,7 +122,13 @@ strategy:
   #   maxSurge: 25%
   #   maxUnavailable: 25%
 
+# Extra labels and annotations to be set to pods
 podAnnotations: {}
+podLabels: {}
+
+# Extra labels and annotations to be added to ALL resources
+extraLabels: {}
+extraAnnotations: {}
 
 podSecurityContext:
   runAsUser: 65534
