@@ -18,7 +18,7 @@ require (
 	github.com/kevinburke/go-bindata v3.22.0+incompatible
 	github.com/kinvolk/go-omaha v0.0.2-0.20221206142015-1518a03b832b
 	github.com/knadh/koanf v1.5.0
-	github.com/labstack/echo-contrib v0.14.1
+	github.com/labstack/echo-contrib v0.15.0
 	github.com/labstack/echo/v4 v4.10.2
 	github.com/labstack/gommon v0.4.2
 	github.com/lib/pq v1.10.7
