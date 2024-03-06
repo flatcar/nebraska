@@ -1,8 +1,8 @@
 package random
 
 import (
+	"crypto/rand"
 	"encoding/base32"
-	"math/rand"
 )
 
 // This is so we can replace it for testing with something
