@@ -53,7 +53,7 @@ func getApps(t *testing.T, db *api.API) []*api.Application {
 func getRandomApp(t *testing.T, db *api.API) *api.Application {
 	t.Helper()
 	apps := getApps(t, db)
-	rand.Seed(time.Now().Unix())
+	rand.New(rand.NewSource(time.Now().Unix()))
 	return apps[rand.Intn(len(apps))]
 }
 
