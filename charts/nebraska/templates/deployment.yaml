@@ -1,6 +1,7 @@
 {{- $db := ( tpl .Values.config.database.dbname . ) }}
 {{- $host := .Values.config.database.host | default (include "nebraska.postgresql.fullname" .) }}
 {{- $port := .Values.config.database.port | toString }}
+{{- $sslMode := .Values.config.database.sslMode | default "disable" }}
 {{- $user := ( tpl .Values.config.database.username . ) }}
 apiVersion: apps/v1
 kind: Deployment
@@ -137,7 +138,7 @@ spec:
                   key: dbPassword
                   {{- end }}
             - name: NEBRASKA_DB_URL
-              value: {{ printf "postgres://%s:$(DB_PASSWORD)@%s:%s/%s?sslmode=disable&connect_timeout=10" $user $host $port $db | quote }}
+              value: {{ printf "postgres://%s:$(DB_PASSWORD)@%s:%s/%s?sslmode=%s&connect_timeout=10" $user $host $port $db $sslMode | quote }}
             {{- if eq .Values.config.auth.mode "github" }}
             - name: "NEBRASKA_GITHUB_OAUTH_CLIENT_ID"
               value: "{{ .Values.config.auth.github.clientID }}"
