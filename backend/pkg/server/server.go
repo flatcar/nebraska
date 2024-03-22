@@ -9,12 +9,12 @@ import (
 	"strings"
 	"time"
 
-	oapimiddleware "github.com/deepmap/oapi-codegen/pkg/middleware"
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/labstack/echo-contrib/prometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
+	oapimiddleware "github.com/oapi-codegen/echo-middleware"
 	"github.com/pkg/errors"
 
 	db "github.com/kinvolk/nebraska/backend/pkg/api"
