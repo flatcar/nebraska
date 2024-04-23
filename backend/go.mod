@@ -12,7 +12,7 @@ require (
 	github.com/google/go-github/v28 v28.1.1
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/securecookie v1.1.2
-	github.com/jackc/pgx/v4 v4.18.2
+	github.com/jackc/pgx/v4 v4.18.3
 	github.com/jinzhu/copier v0.4.0
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/kevinburke/go-bindata v3.24.0+incompatible
