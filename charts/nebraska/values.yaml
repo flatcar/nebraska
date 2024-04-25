@@ -7,7 +7,7 @@ revisionHistoryLimit: 5
 
 image:
   registry: ghcr.io
-  repository: kinvolk/nebraska
+  repository: flatcar/nebraska
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
   pullPolicy: IfNotPresent
@@ -19,9 +19,9 @@ fullnameOverride: ""
 
 config:
   app:
-    logoPath: /nebraska/assets/kinvolk-logo.svg
-    title: Kinvolk Update Service
-    headerStyle: dark
+    logoPath: ""
+    title: ""
+    headerStyle: ""
     httpStaticDir: /nebraska/static
 
   syncer:
