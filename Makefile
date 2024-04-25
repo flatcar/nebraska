@@ -4,7 +4,7 @@ export GO111MODULE
 TAG := `git describe --tags --always --exclude 'nebraska-helm*'`
 SHELL = /bin/bash
 DOCKER_CMD ?= "docker"
-DOCKER_REPO ?= "ghcr.io/kinvolk"
+DOCKER_REPO ?= "ghcr.io/flatcar"
 DOCKER_IMAGE_NEBRASKA ?= "nebraska"
 ifndef $(GOPATH)
 	GOPATH=$(shell go env GOPATH)

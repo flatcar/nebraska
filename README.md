@@ -20,6 +20,10 @@ the [Omaha](https://code.google.com/p/omaha/) protocol, with special functionali
 - Statistics about the versions installed for instances, status history, and updates progress, etc.;
 - Activity timeline to quickly see important events or errors;
 
+## Published Container Images
+
+**UPDATE:** New container images are now only published under `ghcr.io/flatcar/nebraska`.
+
 ## Screenshots
 
 <table>

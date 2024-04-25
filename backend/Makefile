@@ -4,7 +4,7 @@ export GO111MODULE
 TAG := `git describe --tags --always --exclude 'nebraska-helm*'`
 SHELL = /bin/bash
 DOCKER_CMD ?= "docker"
-DOCKER_REPO ?= "ghcr.io/kinvolk"
+DOCKER_REPO ?= "ghcr.io/flatcar"
 DOCKER_IMAGE_NEBRASKA ?= "nebraska"
 VERSION ?=
 CONTAINER_NEBRASKA_DB_URL ?= "postgres://postgres:nebraska@127.0.0.1:8001/nebraska_tests?sslmode=disable&connect_timeout=10"
