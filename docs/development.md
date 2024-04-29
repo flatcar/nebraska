@@ -133,3 +133,20 @@ It starts it's own test server and test database.
 
 Like make check, but it outputs test coverage information.
 
+# Releasing
+
+To release a new version of Nebraska, first create a new `staging` git tag and push it:
+
+```
+git tag -d staging
+git tag -as staging
+git push origin --force staging
+```
+
+This will publish a new `ghcr.io/flatcar/nebraska:staging` image that can be tested on the [Flatcar staging instance](https://staging.updateservice.flatcar-linux.net) by redeploying (or pulling the new image and restarting the service).
+When things look good, create the release tag in the format `MAJOR.MINOR.PATCH`.
+This will publish a new `ghcr.io/flatcar/nebraska:MAJOR.MINOR.PATCH` and `:latest` image.
+When done, continue by creating a GitHub Release for the git tag.
+
+Afterwards, bump the Nebraska version (`appVersion`) and the Helm chart version itself (`version`) in `charts/nebraska/Chart.yaml` in one commit.
+When merged this will automatically create a new GitHub release for the Helm charts.
