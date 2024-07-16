@@ -1,3 +1,6 @@
+# To be dropped once Webpack is upgraded to v5
+export NODE_OPTIONS=--openssl-legacy-provider
+
 .PHONY: frontend
 frontend: build
 
