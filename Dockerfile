@@ -35,7 +35,7 @@ COPY ./backend ./
 RUN make build
 
 # Frontend build
-FROM docker.io/library/node:15 as frontend-install
+FROM docker.io/library/node:18 as frontend-install
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
 RUN npm install
