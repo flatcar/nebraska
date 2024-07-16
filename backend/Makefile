@@ -103,7 +103,7 @@ code-checks: tools/golangci-lint
 
 .PHONY: tools/oapi-codegen
 tools/oapi-codegen:
-	env GOBIN=$(CURDIR)/tools/ go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.12.4
+	env GOBIN=$(CURDIR)/tools/ go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.3.0
 
 .PHONY: codegen
 codegen: tools/oapi-codegen

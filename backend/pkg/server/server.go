@@ -9,12 +9,12 @@ import (
 	"strings"
 	"time"
 
-	oapimiddleware "github.com/deepmap/oapi-codegen/pkg/middleware"
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/labstack/echo-contrib/prometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
+	echomiddleware "github.com/oapi-codegen/echo-middleware"
 	"github.com/pkg/errors"
 
 	db "github.com/kinvolk/nebraska/backend/pkg/api"
@@ -105,7 +105,7 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 	if sessionStore != nil {
 		e.Use(echosessions.SessionsMiddleware(sessionStore, conf.AuthMode))
 	}
-	e.Use(oapimiddleware.OapiRequestValidatorWithOptions(swagger, &oapimiddleware.Options{Options: openapi3filter.Options{AuthenticationFunc: nebraskaAuthenticationFunc(conf.AuthMode)}, Skipper: middlewareSkipper}))
+	e.Use(echomiddleware.OapiRequestValidatorWithOptions(swagger, &echomiddleware.Options{Options: openapi3filter.Options{AuthenticationFunc: nebraskaAuthenticationFunc(conf.AuthMode)}, Skipper: middlewareSkipper}))
 	e.Use(custommiddleware.Auth(authenticator, custommiddleware.AuthConfig{Skipper: custommiddleware.NewAuthSkipper(conf.AuthMode)}))
 
 	// setup handler
