@@ -1,6 +1,6 @@
 # Nebraska  <img align="right" width=384 src="docs/nebraska-logo.svg">
 
-Nebraska is an update manager for [Flatcar Container Linux](https://www.flatcar-linux.org/).
+Nebraska is an update manager for [Flatcar Container Linux](https://www.flatcar.org/).
 
 ## Overview
 
@@ -39,7 +39,7 @@ the [Omaha](https://code.google.com/p/omaha/) protocol, with special functionali
 
 ## Issues
 
-Please report any issues in [here](https://github.com/kinvolk/nebraska/issues).
+Please report any issues in [here](https://github.com/flatcar/nebraska/issues).
 
 ## Code of Conduct
 
@@ -49,15 +49,15 @@ Please contact [private Maintainer mailing list](maintainers@flatcar-linux.org) 
 
 ## Contributing
 
-If you want to start contributing to Nebraska, please check out the [contributing](https://kinvolk.io/docs/nebraska/latest/contributing/) documentation.
+If you want to start contributing to Nebraska, please check out the [contributing](https://www.flatcar.org/docs/latest/contribute/) documentation.
 
 ### Development
 
-For a quickstart on setting up a development environment, please check the [development documentation](https://kinvolk.io/docs/nebraska/latest/development/).
+For a quickstart on setting up a development environment, please check the [development documentation](https://www.flatcar.org/docs/latest/nebraska/development/).
 
 ### User Access
 
-For instructions on how to set up user access, please check the [authorization documentation](https://kinvolk.io/docs/nebraska/latest/authorization/).
+For instructions on how to set up user access, please check the [authorization documentation](https://www.flatcar.org/docs/latest/nebraska/authorization/).
 
 ## License
 
