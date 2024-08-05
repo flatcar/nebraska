@@ -13,7 +13,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
 import { Channel, Package } from '../../api/apiDataTypes';
-import { toLocaleString } from '../../i18n/dateTime';
+import { makeLocaleTime } from '../../i18n/dateTime';
 import flatcarIcon from '../../icons/flatcar-logo.json';
 import { applicationsStore } from '../../stores/Stores';
 import { ARCHES, cleanSemverVersion } from '../../utils/helpers';
@@ -57,13 +57,6 @@ function Item(props: {
   const classes = useStyles();
   const { t } = useTranslation();
 
-  const date = toLocaleString(props.packageItem.created_ts, undefined, {
-    year: 'numeric',
-    month: 'numeric',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
   const type = props.packageItem.type || 1;
   const processedChannels = _.where(props.channels, { package_id: props.packageItem.id });
   let blacklistInfo: string | null = null;
@@ -122,7 +115,10 @@ function Item(props: {
             {t('packages|Released:')}
           </Typography>
           &nbsp;
-          {date}
+          {makeLocaleTime(props.packageItem.created_ts, {
+            showTime: false,
+            dateFormat: { year: 'numeric', month: 'numeric', day: 'numeric' },
+          })}
         </Grid>
         {props.packageItem.channels_blacklist && (
           <Grid item>

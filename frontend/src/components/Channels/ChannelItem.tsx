@@ -5,6 +5,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ScheduleIcon from '@material-ui/icons/Schedule';
 import { useTranslation } from 'react-i18next';
 import { Channel } from '../../api/apiDataTypes';
+import { makeLocaleTime } from '../../i18n/dateTime';
 import { applicationsStore } from '../../stores/Stores';
 import { ARCHES, cleanSemverVersion } from '../../utils/helpers';
 import MoreMenu from '../common/MoreMenu';
@@ -75,7 +76,12 @@ export default function ChannelItem(props: ChannelItemProps) {
                   <ScheduleIcon fontSize="small" />
                 </Tooltip>
               </Box>
-              <Box pl={1}>{t('{{date, date}}', { date: date })}</Box>
+              <Box pl={1}>
+                {makeLocaleTime(date, {
+                  showTime: false,
+                  dateFormat: { year: 'numeric', month: '2-digit', day: '2-digit' },
+                })}
+              </Box>
             </Box>
           </Box>
         )}
