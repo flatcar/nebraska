@@ -23,7 +23,7 @@ jobs:
 
     - name: Start postgres dependency
       run: |
-        docker-compose -f backend/docker-compose.test.yaml up -d postgres
+        docker compose -f backend/docker-compose.test.yaml up -d postgres
 
     - name: Test library
       env:
