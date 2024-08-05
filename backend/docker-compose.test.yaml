@@ -1,14 +1,14 @@
 # Docker-compose file for interactive and for automated testing.
 #
 # Build docker image from local sources:
-#   docker-compose --file docker-compose.test.yaml build
+#   docker compose --file docker-compose.test.yaml build
 #
 # Run:
-#   docker-compose --file docker-compose.test.yaml run
+#   docker compose --file docker-compose.test.yaml run
 # Run with persistent storage:
-#   docker-compose --file docker-compose.test.yaml --file docker-compose.test-db-persist.yaml up
+#   docker compose --file docker-compose.test.yaml --file docker-compose.test-db-persist.yaml up
 #
-# See docker-compose.pg-persist.yaml for more informatino on persistent storage.
+# See docker-compose.pg-persist.yaml for more information on persistent storage.
 
 version: "3.9"
 
