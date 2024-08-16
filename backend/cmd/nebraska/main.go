@@ -17,24 +17,24 @@ func main() {
 	// config parse
 	conf, err := config.Parse()
 	if err != nil {
-		log.Fatalf("Error parsing config, err: %w", err)
+		log.Fatal("Error parsing config, err: ", err)
 	}
 
 	// validate config
 	err = conf.Validate()
 	if err != nil {
-		log.Fatalf("Config is invaliad, err: %w\n", err)
+		log.Fatal("Config is invalid, err: ", err)
 	}
 
 	if conf.RollbackDBTo != "" {
 		db, err := db.New()
 		if err != nil {
-			log.Fatal("DB connection err:", err)
+			log.Fatal("DB connection err: ", err)
 		}
 
 		count, err := db.MigrateDown(conf.RollbackDBTo)
 		if err != nil {
-			log.Fatal("DB migration down err:", err)
+			log.Fatal("DB migration down err: ", err)
 		}
 		log.Infof("DB migration down successful, migrated %d levels down", count)
 		return
@@ -43,7 +43,7 @@ func main() {
 	// create new DB
 	db, err := db.NewWithMigrations()
 	if err != nil {
-		log.Fatal("DB connection err:", err)
+		log.Fatal("DB connection err: ", err)
 	}
 
 	// setup logger
@@ -57,7 +57,7 @@ func main() {
 	if conf.EnableSyncer {
 		syncer, err := syncer.Setup(conf, db)
 		if err != nil {
-			log.Fatalf("Syncer setup error: %w\n", err)
+			log.Fatal("Syncer setup error:", err)
 		}
 		go syncer.Start()
 		defer syncer.Stop()
@@ -66,12 +66,12 @@ func main() {
 	// setup and instrument metrics
 	err = metrics.RegisterAndInstrument(db)
 	if err != nil {
-		log.Fatalf("Metrics register error: %w\n", err)
+		log.Fatal("Metrics register error:", err)
 	}
 
 	server, err := server.New(conf, db)
 	if err != nil {
-		log.Fatalf("Server setup error: %w\n", err)
+		log.Fatal("Server setup error:", err)
 	}
 
 	// run server
