@@ -15,10 +15,10 @@ exports[`Storyshots ColorPickerButton Closed 1`] = `
         class="MuiIconButton-label"
       >
         <div
-          class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+          class="MuiAvatar-root MuiAvatar-circular makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
         >
           <div
-            class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+            class="MuiAvatar-root MuiAvatar-circular makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
           >
             Beta
           </div>
@@ -47,10 +47,10 @@ exports[`Storyshots ColorPickerButton Open 1`] = `
         class="MuiIconButton-label"
       >
         <div
-          class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+          class="MuiAvatar-root MuiAvatar-circular makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
         >
           <div
-            class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+            class="MuiAvatar-root MuiAvatar-circular makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
           >
             Beta
           </div>

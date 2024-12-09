@@ -15,10 +15,10 @@ exports[`Storyshots applications/ApplicationItem Application 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
-          class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+          class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-content-xs-space-between"
         >
           <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-content-xs-space-between"
           >
             <div
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
@@ -228,7 +228,7 @@ exports[`Storyshots applications/ApplicationItem Application 1`] = `
                       class="MuiGrid-root MuiGrid-item"
                     >
                       <div
-                        class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+                        class="MuiAvatar-root MuiAvatar-circular makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
                       />
                     </div>
                     <div
@@ -315,10 +315,10 @@ exports[`Storyshots applications/ApplicationItem No Groups 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
-          class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+          class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-content-xs-space-between"
         >
           <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-content-xs-space-between"
           >
             <div
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"

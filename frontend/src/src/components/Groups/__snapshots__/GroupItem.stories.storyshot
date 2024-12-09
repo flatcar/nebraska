@@ -15,10 +15,10 @@ exports[`Storyshots groups/GroupItem Group 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
-          class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+          class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-content-xs-space-between"
         >
           <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-content-xs-space-between"
           >
             <div
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
@@ -97,7 +97,7 @@ exports[`Storyshots groups/GroupItem Group 1`] = `
         />
       </div>
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-justify-content-xs-space-between MuiGrid-grid-xs-12"
       >
         <div
           class="MuiGrid-root makeStyles-itemSection MuiGrid-container MuiGrid-item MuiGrid-direction-xs-column MuiGrid-grid-xs-4"
@@ -176,7 +176,7 @@ exports[`Storyshots groups/GroupItem Group 1`] = `
                   class="MuiGrid-root MuiGrid-item"
                 >
                   <div
-                    class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+                    class="MuiAvatar-root MuiAvatar-circular makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
                   >
                     s
                   </div>
@@ -317,10 +317,10 @@ exports[`Storyshots groups/GroupItem Loading 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
-          class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+          class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-content-xs-space-between"
         >
           <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-content-xs-space-between"
           >
             <div
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
@@ -399,7 +399,7 @@ exports[`Storyshots groups/GroupItem Loading 1`] = `
         />
       </div>
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-justify-xs-space-between MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-justify-content-xs-space-between MuiGrid-grid-xs-12"
       >
         <div
           class="MuiGrid-root makeStyles-itemSection MuiGrid-container MuiGrid-item MuiGrid-direction-xs-column MuiGrid-grid-xs-4"
@@ -487,7 +487,7 @@ exports[`Storyshots groups/GroupItem Loading 1`] = `
                   class="MuiGrid-root MuiGrid-item"
                 >
                   <div
-                    class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+                    class="MuiAvatar-root MuiAvatar-circular makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
                   >
                     s
                   </div>

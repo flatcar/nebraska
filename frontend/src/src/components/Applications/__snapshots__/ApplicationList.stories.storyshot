@@ -5,7 +5,7 @@ exports[`Storyshots applications/ApplicationList Applications 1`] = `
   id="root"
 >
   <div
-    class="MuiGrid-root makeStyles-sectionHeader MuiGrid-container MuiGrid-align-items-xs-flex-start MuiGrid-justify-xs-space-between"
+    class="MuiGrid-root makeStyles-sectionHeader MuiGrid-container MuiGrid-align-items-xs-flex-start MuiGrid-justify-content-xs-space-between"
   >
     <div
       class="MuiGrid-root MuiGrid-item"
@@ -69,10 +69,10 @@ exports[`Storyshots applications/ApplicationList Applications 1`] = `
             class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
           >
             <div
-              class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+              class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-content-xs-space-between"
             >
               <div
-                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-content-xs-space-between"
               >
                 <div
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
@@ -282,7 +282,7 @@ exports[`Storyshots applications/ApplicationList Applications 1`] = `
                           class="MuiGrid-root MuiGrid-item"
                         >
                           <div
-                            class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+                            class="MuiAvatar-root MuiAvatar-circular makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
                           />
                         </div>
                         <div
@@ -362,10 +362,10 @@ exports[`Storyshots applications/ApplicationList Applications 1`] = `
             class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
           >
             <div
-              class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+              class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-content-xs-space-between"
             >
               <div
-                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-content-xs-space-between"
               >
                 <div
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
@@ -575,7 +575,7 @@ exports[`Storyshots applications/ApplicationList Applications 1`] = `
                           class="MuiGrid-root MuiGrid-item"
                         >
                           <div
-                            class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+                            class="MuiAvatar-root MuiAvatar-circular makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
                           />
                         </div>
                         <div
@@ -654,7 +654,7 @@ exports[`Storyshots applications/ApplicationList Edit Open 1`] = `
   id="root"
 >
   <div
-    class="MuiGrid-root makeStyles-sectionHeader MuiGrid-container MuiGrid-align-items-xs-flex-start MuiGrid-justify-xs-space-between"
+    class="MuiGrid-root makeStyles-sectionHeader MuiGrid-container MuiGrid-align-items-xs-flex-start MuiGrid-justify-content-xs-space-between"
   >
     <div
       class="MuiGrid-root MuiGrid-item"
@@ -718,10 +718,10 @@ exports[`Storyshots applications/ApplicationList Edit Open 1`] = `
             class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
           >
             <div
-              class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+              class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-content-xs-space-between"
             >
               <div
-                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-content-xs-space-between"
               >
                 <div
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
@@ -931,7 +931,7 @@ exports[`Storyshots applications/ApplicationList Edit Open 1`] = `
                           class="MuiGrid-root MuiGrid-item"
                         >
                           <div
-                            class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+                            class="MuiAvatar-root MuiAvatar-circular makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
                           />
                         </div>
                         <div
@@ -1011,10 +1011,10 @@ exports[`Storyshots applications/ApplicationList Edit Open 1`] = `
             class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
           >
             <div
-              class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+              class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-content-xs-space-between"
             >
               <div
-                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-content-xs-space-between"
               >
                 <div
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
@@ -1224,7 +1224,7 @@ exports[`Storyshots applications/ApplicationList Edit Open 1`] = `
                           class="MuiGrid-root MuiGrid-item"
                         >
                           <div
-                            class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+                            class="MuiAvatar-root MuiAvatar-circular makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
                           />
                         </div>
                         <div
@@ -1303,7 +1303,7 @@ exports[`Storyshots applications/ApplicationList Loading 1`] = `
   id="root"
 >
   <div
-    class="MuiGrid-root makeStyles-sectionHeader MuiGrid-container MuiGrid-align-items-xs-flex-start MuiGrid-justify-xs-space-between"
+    class="MuiGrid-root makeStyles-sectionHeader MuiGrid-container MuiGrid-align-items-xs-flex-start MuiGrid-justify-content-xs-space-between"
   >
     <div
       class="MuiGrid-root MuiGrid-item"
@@ -1390,7 +1390,7 @@ exports[`Storyshots applications/ApplicationList Search Term 1`] = `
   id="root"
 >
   <div
-    class="MuiGrid-root makeStyles-sectionHeader MuiGrid-container MuiGrid-align-items-xs-flex-start MuiGrid-justify-xs-space-between"
+    class="MuiGrid-root makeStyles-sectionHeader MuiGrid-container MuiGrid-align-items-xs-flex-start MuiGrid-justify-content-xs-space-between"
   >
     <div
       class="MuiGrid-root MuiGrid-item"
@@ -1454,10 +1454,10 @@ exports[`Storyshots applications/ApplicationList Search Term 1`] = `
             class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
           >
             <div
-              class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+              class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-content-xs-space-between"
             >
               <div
-                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-content-xs-space-between"
               >
                 <div
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
@@ -1667,7 +1667,7 @@ exports[`Storyshots applications/ApplicationList Search Term 1`] = `
                           class="MuiGrid-root MuiGrid-item"
                         >
                           <div
-                            class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+                            class="MuiAvatar-root MuiAvatar-circular makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
                           />
                         </div>
                         <div

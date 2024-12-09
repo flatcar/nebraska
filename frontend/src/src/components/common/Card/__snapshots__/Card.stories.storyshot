@@ -33,10 +33,10 @@ exports[`Storyshots Card Header 1`] = `
   id="root"
 >
   <div
-    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-content-xs-space-between"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-content-xs-space-between"
     >
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
@@ -93,10 +93,10 @@ exports[`Storyshots Card Header With Card Id 1`] = `
   id="root"
 >
   <div
-    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-content-xs-space-between"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-content-xs-space-between"
     >
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
@@ -141,10 +141,10 @@ exports[`Storyshots Card Header With Card Track 1`] = `
   id="root"
 >
   <div
-    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-content-xs-space-between"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-content-xs-space-between"
     >
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
@@ -189,10 +189,10 @@ exports[`Storyshots Card Header With Children 1`] = `
   id="root"
 >
   <div
-    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-content-xs-space-between"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-content-xs-space-between"
     >
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
@@ -240,10 +240,10 @@ exports[`Storyshots Card Header With Description 1`] = `
   id="root"
 >
   <div
-    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-content-xs-space-between"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-content-xs-space-between"
     >
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
@@ -286,10 +286,10 @@ exports[`Storyshots Card Header With Link 1`] = `
   id="root"
 >
   <div
-    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-content-xs-space-between"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-content-xs-space-between"
     >
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
