@@ -45,7 +45,7 @@ function ApplicationLayout() {
           },
         ]}
       />
-      <Grid container spacing={1} justify="space-between">
+      <Grid container spacing={1} justifyContent="space-between">
         <Grid item xs={12} sm={8}>
           <GroupList appID={appID} />
         </Grid>

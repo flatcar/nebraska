@@ -101,8 +101,8 @@ export function CardHeader(props: CardHeaderProps) {
   const theme = useTheme();
   return (
     <React.Fragment>
-      <Grid container className={classes.gridHeader} justify="space-between">
-        <Grid item container spacing={1} alignItems="center" justify="space-between">
+      <Grid container className={classes.gridHeader} justifyContent="space-between">
+        <Grid item container spacing={1} alignItems="center" justifyContent="space-between">
           <Grid item xs={12}>
             {props.cardMainLinkPath ? (
               <Typography variant="h2">

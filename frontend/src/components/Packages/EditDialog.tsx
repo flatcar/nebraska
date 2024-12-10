@@ -139,7 +139,7 @@ function EditDialog(props: EditDialogProps) {
           {status && status.statusMessage && (
             <DialogContentText color="error">{status.statusMessage}</DialogContentText>
           )}
-          <Grid container justify="space-between">
+          <Grid container justifyContent="space-between">
             <Grid item>
               <FormControl margin="dense" className={classes.topSelect}>
                 <InputLabel>Type</InputLabel>
@@ -210,7 +210,7 @@ function EditDialog(props: EditDialogProps) {
                         required
                         fullWidth
                       />
-                      <Grid container justify="space-between" spacing={4}>
+                      <Grid container justifyContent="space-between" spacing={4}>
                         <Grid item xs={6}>
                           <Field
                             name="version"

@@ -1,5 +1,5 @@
 import green from '@material-ui/core/colors/green';
-import { createMuiTheme, Theme } from '@material-ui/core/styles';
+import { createTheme, Theme } from '@material-ui/core/styles';
 import React from 'react';
 
 const DISABLE_BROWSER_THEME_PREF = true;
@@ -13,7 +13,7 @@ declare module '@material-ui/core/styles/createPalette' {
   }
 }
 
-const lightTheme = createMuiTheme({
+const lightTheme = createTheme({
   palette: {
     primary: {
       contrastText: '#fff',
@@ -52,7 +52,7 @@ const lightTheme = createMuiTheme({
   },
 });
 
-const darkTheme = createMuiTheme({
+const darkTheme = createTheme({
   ...lightTheme,
   palette: {
     type: 'dark',

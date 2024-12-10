@@ -17,7 +17,7 @@ export default function ListHeader(props: { title: string; actions?: React.React
     <Grid
       container
       alignItems="flex-start"
-      justify="space-between"
+      justifyContent="space-between"
       className={classes.sectionHeader}
     >
       {props.title && (

@@ -41,7 +41,12 @@ export default function SectionHeader(props: SectionHeaderProps) {
   return (
     <>
       <PageTitle title={title} />
-      <Grid container alignItems="center" justify="flex-start" className={classes.sectionContainer}>
+      <Grid
+        container
+        alignItems="center"
+        justifyContent="flex-start"
+        className={classes.sectionContainer}
+      >
         <Grid item>
           <Breadcrumbs
             aria-label={t('common|breadcrumbs')}

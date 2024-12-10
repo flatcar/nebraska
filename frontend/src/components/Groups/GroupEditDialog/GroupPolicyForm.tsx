@@ -27,7 +27,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
 
   return (
     <div style={{ padding: '1rem' }}>
-      <Grid container justify="space-between" spacing={4}>
+      <Grid container justifyContent="space-between" spacing={4}>
         <Grid item xs={12}>
           <Box mt={1}>
             <FormLabel component="legend">{t('groups|Update')}</FormLabel>
@@ -119,7 +119,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
         </Grid>
       </Box>
       <Box my={2}>
-        <Grid item xs={12} container spacing={2} justify="space-between" alignItems="center">
+        <Grid item xs={12} container spacing={2} justifyContent="space-between" alignItems="center">
           <Grid item xs={5}>
             <Box pl={2}>
               <Field

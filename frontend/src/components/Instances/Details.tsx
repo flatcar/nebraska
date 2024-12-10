@@ -326,7 +326,7 @@ function DetailsView(props: DetailsViewProps) {
         <Box p={2}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
-              <Grid container justify="space-between">
+              <Grid container justifyContent="space-between">
                 <Grid item>
                   <Box fontWeight={700} fontSize={30} color={theme.palette.greyShadeColor}>
                     {instance.alias || instance.id}

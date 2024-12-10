@@ -12,7 +12,7 @@ export default function PageNotFoundLayout() {
       spacing={0}
       direction="column"
       alignItems="center"
-      justify="center"
+      justifyContent="center"
       style={{ minHeight: '100vh', textAlign: 'center' }}
     >
       <Grid item xs={6}>

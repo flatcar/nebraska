@@ -143,7 +143,7 @@ function ItemExtended(props: {
 
   return (
     <Paper>
-      <Grid container alignItems="stretch" justify="space-between">
+      <Grid container alignItems="stretch" justifyContent="space-between">
         <Grid item xs={12}>
           <CardHeader
             cardMainLinkLabel={group ? group.name : '…'}
@@ -166,7 +166,7 @@ function ItemExtended(props: {
             {group && (
               <Grid item xs={12}>
                 <Box p={2}>
-                  <Grid container direction="column" justify="space-between">
+                  <Grid container direction="column" justifyContent="space-between">
                     <Grid item>
                       <CardFeatureLabel>{t('groups|Channel')}</CardFeatureLabel>
                       {_.isEmpty(group.channel) ? (
@@ -242,7 +242,7 @@ function ItemExtended(props: {
           <Box mt={1} ml={-3}>
             {group && (
               <>
-                <Grid container alignItems="center" justify="space-between" spacing={2}>
+                <Grid container alignItems="center" justifyContent="space-between" spacing={2}>
                   <Grid item>
                     <Box color={theme.palette.greyShadeColor} fontSize={18} fontWeight={700}>
                       {t('groups|Update Progress')}
@@ -281,7 +281,7 @@ function ItemExtended(props: {
         {instancesStats && instancesStats.total > 0 && (
           <Grid item xs={12} container>
             <Grid item md xs={12} container direction="column">
-              <Grid container alignItems="center" justify="space-between">
+              <Grid container alignItems="center" justifyContent="space-between">
                 <Grid item>
                   <Box pl={4} pt={4}>
                     <Box fontSize={18} fontWeight={700} color={theme.palette.greyShadeColor}>
@@ -310,7 +310,7 @@ function ItemExtended(props: {
               <Divider orientation="vertical" />
             </Box>
             <Grid item md xs={12} container direction="column">
-              <Grid container alignItems="center" justify="space-between">
+              <Grid container alignItems="center" justifyContent="space-between">
                 <Grid item>
                   <Box
                     pl={2}

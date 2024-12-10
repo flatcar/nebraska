@@ -169,7 +169,13 @@ export default function ChannelEdit(props: ChannelEditProps) {
           {status && status.statusMessage && (
             <DialogContentText color="error">{status.statusMessage}</DialogContentText>
           )}
-          <Grid container spacing={2} justify="space-between" alignItems="center" wrap="nowrap">
+          <Grid
+            container
+            spacing={2}
+            justifyContent="space-between"
+            alignItems="center"
+            wrap="nowrap"
+          >
             <Grid item>
               <ColorPicker color={channelColor} onColorPicked={color => setChannelColor(color.hex)}>
                 {values.name ? values.name[0] : ''}

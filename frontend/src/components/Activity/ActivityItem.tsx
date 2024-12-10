@@ -85,7 +85,7 @@ export function ActivityItemPure(props: ActivityItemPureProps) {
 
   return (
     <ListItem alignItems="flex-start" disableGutters className={classes.list}>
-      <Grid container alignItems="center" justify="space-between">
+      <Grid container alignItems="center" justifyContent="space-between">
         <Grid item xs={10}>
           <Box display="flex" alignItems="center" justifyContent="flex-start">
             <Box mr={1}>

@@ -17,7 +17,7 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
 
   return (
     <div style={{ padding: '1rem' }}>
-      <Grid container spacing={2} justify="center">
+      <Grid container spacing={2} justifyContent="center">
         <Grid item xs={8}>
           <Field
             name="name"

@@ -161,7 +161,7 @@ export function ChannelListPure(props: ChannelListPureProps) {
   return (
     <Box mt={2}>
       <Box mb={2}>
-        <Grid container alignItems="center" justify="space-between">
+        <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
             <Typography variant="h1">{t('channels|Channels')}</Typography>
           </Grid>

@@ -14,7 +14,7 @@ function ApplicationItemChannelsList(props: { channels?: Channel[] }) {
   }
 
   return (
-    <Grid container justify="space-between">
+    <Grid container justifyContent="space-between">
       {entries.map((entry: React.ReactNode, i: number) => (
         <Grid item xs={4} key={i}>
           {entry}

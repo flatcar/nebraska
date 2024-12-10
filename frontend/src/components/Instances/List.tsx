@@ -75,7 +75,7 @@ function InstanceFilter(props: InstanceFilterProps) {
 
   return (
     <Box pr={2}>
-      <Grid container spacing={2} justify="flex-end">
+      <Grid container spacing={2} justifyContent="flex-end">
         <Grid item xs={5}>
           <FormControl fullWidth disabled={props.disabled}>
             <InputLabel htmlFor="select-status" shrink>
@@ -404,7 +404,7 @@ function ListView(props: { application: Application; group: Group }) {
       <Paper>
         <Box padding="1em">
           <Grid container spacing={1}>
-            <Grid item container justify="space-between" alignItems="stretch">
+            <Grid item container justifyContent="space-between" alignItems="stretch">
               <Grid item>
                 <Box
                   mb={2}
@@ -456,7 +456,7 @@ function ListView(props: { application: Application; group: Group }) {
               </Grid>
             </Grid>
             <Box width="100%" borderTop={1} borderColor={'#E0E0E0'} className={classes.root}>
-              <Grid item container md={12} alignItems="stretch" justify="space-between">
+              <Grid item container md={12} alignItems="stretch" justifyContent="space-between">
                 <Grid item md>
                   <Box display="flex" alignItems="center">
                     <Box ml={2}>
@@ -476,7 +476,7 @@ function ListView(props: { application: Application; group: Group }) {
               </Grid>
             </Box>
             {isFiltered() && (
-              <Grid item md={12} container justify="center">
+              <Grid item md={12} container justifyContent="center">
                 <Grid item>
                   <Button variant="outlined" color="secondary" onClick={resetFilters}>
                     {t('instances|Reset filters')}

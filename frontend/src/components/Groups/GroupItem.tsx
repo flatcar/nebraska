@@ -138,7 +138,7 @@ export function PureGroupItem({
             />
           </CardHeader>
         </Grid>
-        <Grid item xs={12} container justify="space-between">
+        <Grid item xs={12} container justifyContent="space-between">
           <Grid item xs={4} container direction="column" className={classes.itemSection}>
             <Grid item>
               <CardFeatureLabel>{t('groups|Instances')}</CardFeatureLabel>
