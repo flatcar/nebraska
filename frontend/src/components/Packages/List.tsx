@@ -134,7 +134,7 @@ function List(props: { appID: string }) {
                   nextIconButtonProps={{
                     'aria-label': t('frequent|next page'),
                   }}
-                  onChangePage={handleChangePage}
+                  onPageChange={handleChangePage}
                 />
               </React.Fragment>
             )

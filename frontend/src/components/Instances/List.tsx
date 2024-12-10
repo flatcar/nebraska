@@ -507,8 +507,8 @@ function ListView(props: { application: Application; group: Group }) {
                       nextIconButtonProps={{
                         'aria-label': t('frequent|next page'),
                       }}
-                      onChangePage={handleChangePage}
-                      onChangeRowsPerPage={handleChangeRowsPerPage}
+                      onPageChange={handleChangePage}
+                      onRowsPerPageChange={handleChangeRowsPerPage}
                     />
                   </React.Fragment>
                 ) : (

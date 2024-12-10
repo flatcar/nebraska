@@ -142,8 +142,8 @@ function Container() {
                   nextIconButtonProps={{
                     'aria-label': t('activity|next page'),
                   }}
-                  onChangePage={handleChangePage}
-                  onChangeRowsPerPage={handleChangeRowsPerPage}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
                 />
               </Grid>
             </Grid>

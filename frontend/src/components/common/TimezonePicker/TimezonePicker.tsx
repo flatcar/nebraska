@@ -5,12 +5,12 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
+import InputLabel, { InputLabelProps } from '@material-ui/core/InputLabel';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import Downshift, { GetLabelPropsOptions } from 'downshift';
+import Downshift from 'downshift';
 import moment from 'moment-timezone';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -30,15 +30,15 @@ interface RenderInputProps {
   };
   ref?: React.Ref<any>;
   InputProps: {
-    onBlur: () => void;
-    onChange: () => void;
-    onFocus: () => void;
+    onBlur?: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+    onChange?: React.FormEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+    onFocus?: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   };
   fullWidth: boolean;
   autoFocus: boolean;
   label: string;
   placeholder: string;
-  InputLabelProps: (options?: GetLabelPropsOptions | undefined) => void;
+  InputLabelProps: InputLabelProps;
   variant: 'outlined';
   inputProps: object;
 }
