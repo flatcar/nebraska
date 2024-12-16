@@ -55,13 +55,14 @@
     "@iconify/react": "^1.1.3",
     "@iconify/tools": "^1.3.9",
     "@kinvolk/eslint-config": "^0.5.0",
-    "@storybook/addon-actions": "6.5.13",
-    "@storybook/addon-essentials": "^6.5.13",
-    "@storybook/addon-links": "6.5.13",
-    "@storybook/addon-storyshots": "^6.5.13",
-    "@storybook/node-logger": "6.5.13",
-    "@storybook/preset-create-react-app": "^3.2.0",
-    "@storybook/react": "^6.5.13",
+    "@storybook/addon-actions": "7.6.20",
+    "@storybook/addon-essentials": "7.6.20",
+    "@storybook/addon-links": "7.6.20",
+    "@storybook/addon-storyshots": "7.6.20",
+    "@storybook/node-logger": "7.6.20",
+    "@storybook/preset-create-react-app": "7.6.20",
+    "@storybook/react": "7.6.20",
+    "@storybook/react-webpack5": "^7.6.20",
     "@types/react-router-dom": "^5.1.7",
     "@types/underscore": "^1.11.3",
     "eslint-config-prettier": "^8.3.0",
@@ -75,6 +76,7 @@
     "i18next-parser": "^4.2.0",
     "lint-staged": "^10.5.4",
     "prettier": "^2.3.2",
+    "storybook": "^7.6.20",
     "typescript": "4.4.x"
   },
   "scripts": {
@@ -89,8 +91,8 @@
     "lint:fix": "eslint -c package.json --fix 'src/**/*.{js,jsx,ts,tsx}'",
     "i18n": "npx --no-install i18next ./src/**/ts* ./src/**/**/*.ts* ./src/**/**/**/*.ts* -c ./src/i18n/i18next-parser.config.js",
     "tsc": "tsc",
-    "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public"
+    "storybook": "storybook dev -p 6006 -s public",
+    "build-storybook": "storybook build -s public"
   },
   "browserslist": {
     "production": [

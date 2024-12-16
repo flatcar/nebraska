@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/react/types-6-0';
+import { Meta, Story } from '@storybook/react';
 import { MemoryRouter } from 'react-router-dom';
 import API, { APIContext } from '../../api/API';
 import { ApplicationListPure, ApplicationListPureProps } from './ApplicationList';
