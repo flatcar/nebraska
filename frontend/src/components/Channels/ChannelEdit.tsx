@@ -104,7 +104,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
   }
 
   function fetchPackages(term: string, page: number) {
-    API.getPackages(props.data.applicationID, term || '', {
+    API.getPackages(props.data.applicationID, term.trim() || '', {
       page: (page || 0) + 1,
       perpage: PackagesPerPage,
     })

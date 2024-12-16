@@ -1,5 +1,4 @@
 import PubSub from 'pubsub-js';
-import queryString from 'querystring';
 import { createContext } from 'react';
 import _ from 'underscore';
 import { CONFIG_STORAGE_KEY, NebraskaConfig } from '../stores/redux/features/config';
@@ -151,22 +150,23 @@ export default class API {
       [key: string]: any;
     }
   ): Promise<WithCount<{ packages: Package[]; totalCount: number }>> {
-    const query: string[] = [];
+    const params = new URLSearchParams();
 
-    if (!!searchTerm) {
-      query.push(queryString.stringify({ searchVersion: searchTerm }));
-    }
-    if (!_.isEmpty(queryOptions)) {
-      query.push(queryString.stringify(queryOptions));
+    if (searchTerm) {
+      params.append('searchVersion', searchTerm);
     }
 
-    let queryStr = '';
-    if (query.length > 0) {
-      queryStr = '?' + query.join('&');
+    if (queryOptions) {
+      Object.keys(queryOptions).forEach(key => {
+        if (queryOptions[key] !== undefined && queryOptions[key] !== null) {
+          params.append(key, queryOptions[key]);
+        }
+      });
     }
 
-    const url = BASE_URL + '/apps/' + applicationID + '/packages' + queryStr;
+    const queryStr = params.toString();
 
+    const url = `${BASE_URL}/apps/${applicationID}/packages${queryStr ? '?' + queryStr : ''}`;
     return API.doRequest('GET', url);
   }
 
@@ -201,14 +201,16 @@ export default class API {
   ): Promise<Instances> {
     let url = BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/instances';
 
-    if (!_.isEmpty(queryOptions)) {
-      let sanitizedOptions = queryOptions;
-      const { version, ...otherOptions } = queryOptions;
-      if (!version) {
-        sanitizedOptions = otherOptions;
+    const params = new URLSearchParams();
+
+    Object.keys(queryOptions).forEach(key => {
+      if (queryOptions[key] !== undefined && queryOptions[key] !== null) {
+        params.append(key, queryOptions[key]);
       }
-      url += '?' + queryString.stringify(sanitizedOptions);
-    }
+    });
+
+    const queryStr = params.toString();
+    url += queryStr ? '?' + queryStr : '';
 
     return API.getJSON(url);
   }
