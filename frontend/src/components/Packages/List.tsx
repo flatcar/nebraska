@@ -1,7 +1,7 @@
-import Box from '@material-ui/core/Box';
-import MuiList from '@material-ui/core/List';
-import Paper from '@material-ui/core/Paper';
-import TablePagination from '@material-ui/core/TablePagination';
+import Box from '@mui/material/Box';
+import MuiList from '@mui/material/List';
+import Paper from '@mui/material/Paper';
+import TablePagination from '@mui/material/TablePagination';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';

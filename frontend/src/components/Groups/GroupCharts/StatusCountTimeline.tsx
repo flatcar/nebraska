@@ -1,10 +1,10 @@
 import { IconifyIcon } from '@iconify/react';
-import { Theme } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Chip from '@material-ui/core/Chip';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { useTheme } from '@material-ui/styles';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { useTheme } from '@mui/styles';
 import React from 'react';
 import _ from 'underscore';
 import { Group } from '../../../api/apiDataTypes';

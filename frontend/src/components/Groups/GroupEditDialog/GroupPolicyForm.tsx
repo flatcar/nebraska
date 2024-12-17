@@ -1,3 +1,4 @@
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import {
   Box,
   Divider,
@@ -9,8 +10,7 @@ import {
   Switch,
   Tooltip,
   Typography,
-} from '@material-ui/core';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+} from '@mui/material';
 import { Field } from 'formik';
 import { TextField } from 'formik-material-ui';
 import { useTranslation } from 'react-i18next';

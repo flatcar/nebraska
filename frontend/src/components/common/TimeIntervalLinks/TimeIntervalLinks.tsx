@@ -1,4 +1,5 @@
-import { Box, Grid, Link, makeStyles, Typography } from '@material-ui/core';
+import { Box, Grid, Link, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import API from '../../../api/API';
 import { timeIntervalsDefault } from '../../../utils/helpers';

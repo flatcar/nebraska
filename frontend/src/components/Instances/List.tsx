@@ -1,20 +1,21 @@
 import infoIcon from '@iconify/icons-mdi/information-circle-outline';
 import searchIcon from '@iconify/icons-mdi/search';
 import Icon from '@iconify/react';
-import { makeStyles, Theme } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import Input from '@material-ui/core/Input';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
-import Select from '@material-ui/core/Select';
-import TablePagination from '@material-ui/core/TablePagination';
-import { useTheme } from '@material-ui/styles';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import Input from '@mui/material/Input';
+import InputAdornment from '@mui/material/InputAdornment';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import Select from '@mui/material/Select';
+import TablePagination from '@mui/material/TablePagination';
+import { useTheme } from '@mui/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React, { ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -426,6 +427,7 @@ function ListView(props: { application: Application; group: Group }) {
                       <IconButton
                         onClick={() => searchInputRef.current?.focus()}
                         title="Search Icon"
+                        size="large"
                       >
                         <Icon icon={searchIcon} width="15" height="15" />
                       </IconButton>
@@ -434,7 +436,7 @@ function ListView(props: { application: Application; group: Group }) {
                   endAdornment={
                     <InputAdornment position="end">
                       <LightTooltip title={getSearchTooltipText()}>
-                        <IconButton>
+                        <IconButton size="large">
                           <Icon icon={infoIcon} width="20" height="20" />
                         </IconButton>
                       </LightTooltip>

@@ -1,6 +1,6 @@
-import { Theme } from '@material-ui/core';
-import Avatar from '@material-ui/core/Avatar';
-import makeStyles from '@material-ui/styles/makeStyles';
+import { Theme } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import makeStyles from '@mui/styles/makeStyles';
 
 export interface ChannelAvatarProps {
   backgroundColor?: string;

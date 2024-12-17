@@ -1,10 +1,10 @@
-import green from '@material-ui/core/colors/green';
-import { createTheme, Theme } from '@material-ui/core/styles';
+import green from '@mui/material/colors/green';
+import { createTheme, Theme } from '@mui/material/styles';
 import React from 'react';
 
 const DISABLE_BROWSER_THEME_PREF = true;
 
-declare module '@material-ui/core/styles/createPalette' {
+declare module '@mui/material/styles/createPalette' {
   interface Palette {
     titleColor: '#000000';
     lightSilverShade: '#F0F0F0';
@@ -55,7 +55,7 @@ const lightTheme = createTheme({
 const darkTheme = createTheme({
   ...lightTheme,
   palette: {
-    type: 'dark',
+    mode: 'dark',
     primary: {
       contrastText: '#fff',
       main: '#000',

@@ -1,5 +1,5 @@
-import Input from '@material-ui/core/Input';
-import { makeStyles } from '@material-ui/core/styles';
+import Input from '@mui/material/Input';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 

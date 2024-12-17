@@ -1,7 +1,18 @@
-import { deDE, enUS, esES, hiIN, ptPT } from '@material-ui/core/locale';
-import { createTheme, Theme, ThemeProvider } from '@material-ui/core/styles';
+import { deDE, enUS, esES, hiIN, ptPT } from '@mui/material/locale';
+import {
+  adaptV4Theme,
+  createTheme,
+  StyledEngineProvider,
+  Theme,
+  ThemeProvider,
+} from '@mui/material/styles';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
 
 function getLocale(locale: string): typeof enUS {
   const LOCALES = {
@@ -39,9 +50,13 @@ const ThemeProviderNexti18n: React.FunctionComponent<{ theme: Theme }> = props =
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const theme = createTheme(props.theme, getLocale(lang));
+  const theme = createTheme(adaptV4Theme(props.theme, getLocale(lang)));
 
-  return <ThemeProvider theme={theme}>{props.children}</ThemeProvider>;
+  return (
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>{props.children}</ThemeProvider>
+    </StyledEngineProvider>
+  );
 };
 
 export default ThemeProviderNexti18n;

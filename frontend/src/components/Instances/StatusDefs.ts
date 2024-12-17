@@ -6,7 +6,7 @@ import packageVariantClosed from '@iconify/icons-mdi/package-variant-closed';
 import pauseCircle from '@iconify/icons-mdi/pause-circle';
 import playCircle from '@iconify/icons-mdi/play-circle';
 import progressDownload from '@iconify/icons-mdi/progress-download';
-import { Theme } from '@material-ui/core';
+import { Theme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 function makeStatusDefs(theme: Theme): {

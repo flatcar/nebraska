@@ -1,13 +1,13 @@
 import addIcon from '@iconify/icons-mdi/plus';
 import Icon from '@iconify/react';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { File, Package } from '../../api/apiDataTypes';
@@ -259,6 +259,7 @@ export default function FileList(props: FileListProps) {
             disabled={isEditing()}
             aria-label={t('packages|Add File')}
             onClick={() => addFile()}
+            size="large"
           >
             <Icon icon={addIcon} width="15" height="15" />
           </IconButton>

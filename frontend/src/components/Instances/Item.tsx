@@ -1,12 +1,13 @@
 import chevronDown from '@iconify/icons-mdi/chevron-down';
 import chevronUp from '@iconify/icons-mdi/chevron-up';
 import { InlineIcon } from '@iconify/react';
-import { Box, makeStyles } from '@material-ui/core';
-import Collapse from '@material-ui/core/Collapse';
-import IconButton from '@material-ui/core/IconButton';
-import Link from '@material-ui/core/Link';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
+import { Box } from '@mui/material';
+import Collapse from '@mui/material/Collapse';
+import IconButton from '@mui/material/IconButton';
+import Link from '@mui/material/Link';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import makeStyles from '@mui/styles/makeStyles';
 import React, { PropsWithChildren } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import semver from 'semver';
@@ -117,7 +118,7 @@ function Item(props: ItemProps) {
           <Box display="flex" justifyContent="space-between">
             <Box>{makeLocaleTime(date)}</Box>
             <Box>
-              <IconButton onClick={onToggle}>
+              <IconButton onClick={onToggle} size="large">
                 <InlineIcon
                   icon={props.selected ? chevronUp : chevronDown}
                   height="25"

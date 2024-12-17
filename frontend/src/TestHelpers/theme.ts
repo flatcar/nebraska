@@ -1,5 +1,5 @@
-import green from '@material-ui/core/colors/green';
-import { createTheme } from '@material-ui/core/styles';
+import green from '@mui/material/colors/green';
+import { createTheme } from '@mui/material/styles';
 
 export const theme = createTheme({
   palette: {

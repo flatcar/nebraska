@@ -1,4 +1,4 @@
-import { MuiThemeProvider } from '@material-ui/core/styles';
+import { StyledEngineProvider,ThemeProvider } from '@mui/material/styles';
 import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
@@ -26,11 +26,15 @@ describe('Modal Button', () => {
   });
   it('should render AddChannelModal on Add Icon click', () => {
     const tree = (
-      <MuiThemeProvider theme={theme}>
-        <MemoryRouter initialEntries={['/app/123']}>
-          <ModalButton data={{}} modalToOpen="AddChannelModal" />
-        </MemoryRouter>
-      </MuiThemeProvider>
+      <StyledEngineProvider injectFirst>
+        (
+        <ThemeProvider theme={theme}>
+          <MemoryRouter initialEntries={['/app/123']}>
+            <ModalButton data={{}} modalToOpen="AddChannelModal" />
+          </MemoryRouter>
+        </ThemeProvider>
+        )
+      </StyledEngineProvider>
     );
     const { getByTestId } = render(tree);
     fireEvent.click(getByTestId('modal-button'));

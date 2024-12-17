@@ -1,8 +1,9 @@
-import { Box, Grid, makeStyles, Tooltip, useTheme } from '@material-ui/core';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import ScheduleIcon from '@material-ui/icons/Schedule';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import { Box, Grid, Tooltip, useTheme } from '@mui/material';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import makeStyles from '@mui/styles/makeStyles';
 import { useTranslation } from 'react-i18next';
 import { Channel } from '../../api/apiDataTypes';
 import { makeLocaleTime } from '../../i18n/dateTime';

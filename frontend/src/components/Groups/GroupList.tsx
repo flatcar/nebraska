@@ -1,6 +1,6 @@
-import MuiList from '@material-ui/core/List';
-import Paper from '@material-ui/core/Paper';
-import { makeStyles } from '@material-ui/core/styles';
+import MuiList from '@mui/material/List';
+import Paper from '@mui/material/Paper';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { Trans } from 'react-i18next';
 import _ from 'underscore';

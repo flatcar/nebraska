@@ -1,7 +1,7 @@
-import { Box } from '@material-ui/core';
-import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
-import LayersOutlinedIcon from '@material-ui/icons/LayersOutlined';
+import LayersOutlinedIcon from '@mui/icons-material/LayersOutlined';
+import { Box } from '@mui/material';
+import Link from '@mui/material/Link';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
