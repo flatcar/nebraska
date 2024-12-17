@@ -1,4 +1,4 @@
-import { StyledEngineProvider,ThemeProvider } from '@mui/material/styles';
+import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';

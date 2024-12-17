@@ -37,9 +37,10 @@ export default function LocaleSelect(props: LocaleSelectProps) {
   };
 
   return (
-    <FormControl className={classes.formControl}>
+    <FormControl variant="standard" className={classes.formControl}>
       {props.showTitle && <FormLabel component="legend">{t('Select locale')}</FormLabel>}
       <Select
+        variant="standard"
         value={i18n.language ? i18n.language : 'en'}
         onChange={changeLng}
         inputProps={{ 'aria-label': t('Select locale') }}

@@ -78,11 +78,12 @@ function InstanceFilter(props: InstanceFilterProps) {
     <Box pr={2}>
       <Grid container spacing={2} justifyContent="flex-end">
         <Grid item xs={5}>
-          <FormControl fullWidth disabled={props.disabled}>
+          <FormControl variant="standard" fullWidth disabled={props.disabled}>
             <InputLabel htmlFor="select-status" shrink>
               {t('instances|Filter Status')}
             </InputLabel>
             <Select
+              variant="standard"
               onChange={(event: any) => changeFilter('status', event.target.value)}
               input={<Input id="select-status" />}
               renderValue={(selected: any) =>
@@ -106,11 +107,12 @@ function InstanceFilter(props: InstanceFilterProps) {
           </FormControl>
         </Grid>
         <Grid item xs={5}>
-          <FormControl fullWidth disabled={props.disabled}>
+          <FormControl variant="standard" fullWidth disabled={props.disabled}>
             <InputLabel htmlFor="select-versions" shrink>
               {t('instances|Filter Version')}
             </InputLabel>
             <Select
+              variant="standard"
               onChange={(event: ChangeEvent<{ name?: string | undefined; value: any }>) =>
                 changeFilter('version', event.target.value)
               }

@@ -199,9 +199,10 @@ export default function ChannelEdit(props: ChannelEditProps) {
               </Grid>
             </Grid>
           </Grid>
-          <FormControl margin="dense" disabled={!isCreation} fullWidth>
+          <FormControl variant="standard" margin="dense" disabled={!isCreation} fullWidth>
             <InputLabel>Architecture</InputLabel>
             <MuiSelect
+              variant="standard"
               value={arch}
               onChange={(event: React.ChangeEvent<{ value: any }>) => setArch(event.target.value)}
             >

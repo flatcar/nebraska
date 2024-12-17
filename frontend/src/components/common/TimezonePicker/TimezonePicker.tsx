@@ -48,6 +48,7 @@ function renderInput(inputProps: RenderInputProps) {
 
   return (
     <TextField
+      variant="standard"
       InputProps={{
         inputRef: ref,
         classes: {
@@ -188,7 +189,7 @@ export default function TimzonePicker(props: {
 
   return (
     <div>
-      <FormControl fullWidth>
+      <FormControl variant="standard" fullWidth>
         <InputLabel shrink>Timezone</InputLabel>
         <Input
           onClick={onInputActivate}

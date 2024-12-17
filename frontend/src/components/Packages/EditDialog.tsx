@@ -141,9 +141,13 @@ function EditDialog(props: EditDialogProps) {
           )}
           <Grid container justifyContent="space-between">
             <Grid item>
-              <FormControl margin="dense" className={classes.topSelect}>
+              <FormControl variant="standard" margin="dense" className={classes.topSelect}>
                 <InputLabel>Type</InputLabel>
-                <MuiSelect value={packageType} onChange={handlePackageTypeChange}>
+                <MuiSelect
+                  variant="standard"
+                  value={packageType}
+                  onChange={handlePackageTypeChange}
+                >
                   <MenuItem value={otherType} key="other">
                     {t('packages|Other')}
                   </MenuItem>
@@ -155,13 +159,14 @@ function EditDialog(props: EditDialogProps) {
             </Grid>
             <Grid item>
               <FormControl
+                variant="standard"
                 margin="dense"
                 fullWidth
                 className={classes.topSelect}
                 disabled={!isCreation}
               >
                 <InputLabel>{t('packages|Architecture')}</InputLabel>
-                <MuiSelect value={arch} onChange={handleArchChange}>
+                <MuiSelect variant="standard" value={arch} onChange={handleArchChange}>
                   {Object.keys(ARCHES).map((key: string) => {
                     const archName = ARCHES[parseInt(key)];
                     return (
@@ -262,7 +267,7 @@ function EditDialog(props: EditDialogProps) {
                           fullWidth
                         />
                       )}
-                      <FormControl margin="dense" fullWidth>
+                      <FormControl variant="standard" margin="dense" fullWidth>
                         <InputLabel>Channels Blacklist</InputLabel>
                         <Field
                           name="channelsBlacklist"

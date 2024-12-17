@@ -41,6 +41,7 @@ function renderInput(inputProps: RenderInputProps) {
 
   return (
     <TextField
+      variant="standard"
       InputProps={{
         inputRef: ref,
         classes: {
@@ -207,7 +208,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
 
   return (
     <div>
-      <FormControl fullWidth>
+      <FormControl variant="standard" fullWidth>
         <InputLabel shrink>{props.label}</InputLabel>
         <Input
           onClick={() => {

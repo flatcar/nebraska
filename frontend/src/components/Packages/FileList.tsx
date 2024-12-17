@@ -107,6 +107,7 @@ function FileListItem(props: FileListItemProps) {
         </Grid>
         <Grid item xs={12}>
           <TextField
+            variant="standard"
             name="name"
             margin="dense"
             label={t('packages|Name')}
@@ -122,6 +123,7 @@ function FileListItem(props: FileListItemProps) {
         <Grid item container spacing={1}>
           <Grid item xs={6}>
             <TextField
+              variant="standard"
               name="size"
               margin="dense"
               label={t('packages|Size')}
@@ -136,6 +138,7 @@ function FileListItem(props: FileListItemProps) {
           </Grid>
           <Grid item xs={6}>
             <TextField
+              variant="standard"
               name="hash"
               margin="dense"
               label={t('packages|SHA1 Hash (base64)')}
@@ -152,6 +155,7 @@ function FileListItem(props: FileListItemProps) {
           </Grid>
           <Grid item xs={6}>
             <TextField
+              variant="standard"
               name="hash256"
               margin="dense"
               label={t('packages|SHA256 Hash (hex)')}

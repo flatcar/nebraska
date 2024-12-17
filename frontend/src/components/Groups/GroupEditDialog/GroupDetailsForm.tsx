@@ -30,7 +30,7 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
           />
         </Grid>
         <Grid item xs={4}>
-          <FormControl margin="dense" fullWidth>
+          <FormControl variant="standard" margin="dense" fullWidth>
             <InputLabel shrink>{t('groups|Channel')}</InputLabel>
             <Field
               name="channel"
