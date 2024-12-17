@@ -30,7 +30,7 @@ function getLocale(locale: string): typeof enUS {
 /** Like a ThemeProvider but uses reacti18next for the language selection
  *  Because Material UI is localized as well.
  */
-const ThemeProviderNexti18n: React.FunctionComponent<{ theme: Theme }> = props => {
+const ThemeProviderNexti18n: React.FC<React.PropsWithChildren<{ theme: Theme }>> = props => {
   const { i18n } = useTranslation();
   const [lang, setLang] = useState(i18n.language);
 

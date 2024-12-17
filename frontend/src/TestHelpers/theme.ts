@@ -8,7 +8,7 @@ export const theme = createTheme({
       main: process.env.REACT_APP_PRIMARY_COLOR || '#000',
     },
     success: {
-      main: green['500'],
+      main: green['800'],
       ...green,
     },
   },

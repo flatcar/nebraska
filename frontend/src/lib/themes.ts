@@ -20,7 +20,7 @@ const lightTheme = createTheme({
       main: process.env.REACT_APP_PRIMARY_COLOR ? process.env.REACT_APP_PRIMARY_COLOR : '#2C98F0',
     },
     success: {
-      main: green['500'],
+      main: green['800'],
       ...green,
     },
   },

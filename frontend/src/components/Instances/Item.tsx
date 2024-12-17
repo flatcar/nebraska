@@ -105,7 +105,7 @@ function Item(props: ItemProps) {
     <React.Fragment>
       <TableRow>
         <TableCell>
-          <Link to={instancePath} component={RouterLink} className={classes.link}>
+          <Link to={instancePath} component={RouterLink} className={classes.link} underline="hover">
             {instanceName}
           </Link>
         </TableCell>

@@ -46,7 +46,7 @@ export function InstanceCountLabel(props: {
         {!instanceListView && countText > 0 ? (
           <Box>
             {!props.loading && (
-              <Link to={{ ...href }} component={RouterLink}>
+              <Link to={{ ...href }} component={RouterLink} underline="hover">
                 <Typography className={classes.instanceLink}>
                   {t('instances|See all instances')}
                 </Typography>

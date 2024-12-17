@@ -38,7 +38,7 @@ const useStyle = makeStyles(() => ({
 function SkipLink() {
   const classes = useStyle();
   return (
-    <Link href="#main" className={classes.visuallyHidden}>
+    <Link href="#main" className={classes.visuallyHidden} underline="hover">
       Skip to main content
     </Link>
   );

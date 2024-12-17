@@ -61,7 +61,7 @@ export default function SectionHeader(props: SectionHeaderProps) {
                       className={classes.breadCrumbsItem}
                       key={'breadcrumb_' + index}
                     >
-                      <Link to={path} component={RouterLink}>
+                      <Link to={path} component={RouterLink} underline="hover">
                         {label}
                       </Link>
                     </Box>

@@ -41,7 +41,6 @@ function renderInput(inputProps: RenderInputProps) {
 
   return (
     <TextField
-      variant="standard"
       InputProps={{
         inputRef: ref,
         classes: {

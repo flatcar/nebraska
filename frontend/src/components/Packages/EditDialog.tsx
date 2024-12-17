@@ -12,7 +12,7 @@ import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
 import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
-import MuiSelect from '@mui/material/Select';
+import MuiSelect, { SelectChangeEvent } from '@mui/material/Select';
 import makeStyles from '@mui/styles/makeStyles';
 import { Field, Form, Formik } from 'formik';
 import { Select, TextField } from 'formik-material-ui';
@@ -74,11 +74,11 @@ function EditDialog(props: EditDialogProps) {
     });
   }
 
-  function handlePackageTypeChange(event: React.ChangeEvent<{ name?: string; value: unknown }>) {
+  function handlePackageTypeChange(event: SelectChangeEvent<number>) {
     setPackageType(event.target.value as number);
   }
 
-  function handleArchChange(event: React.ChangeEvent<{ name?: string; value: unknown }>) {
+  function handleArchChange(event: SelectChangeEvent<number>) {
     setArch(event.target.value as number);
   }
   //@todo add better types

@@ -403,6 +403,7 @@ function DetailsView(props: DetailsViewProps) {
                               className={classes.link}
                               to={`/apps/${application.id}`}
                               component={RouterLink}
+                              underline="hover"
                             >
                               {application.name}
                             </Link>
@@ -415,6 +416,7 @@ function DetailsView(props: DetailsViewProps) {
                               className={classes.link}
                               to={`/apps/${application.id}/groups/${group.id}`}
                               component={RouterLink}
+                              underline="hover"
                             >
                               {group.name}
                             </Link>

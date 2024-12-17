@@ -111,6 +111,7 @@ export function CardHeader(props: CardHeaderProps) {
                   component={RouterLink}
                   to={props.cardMainLinkPath}
                   className={classes.mainLink}
+                  underline="hover"
                 >
                   {props.cardMainLinkLabel}
                 </Link>
