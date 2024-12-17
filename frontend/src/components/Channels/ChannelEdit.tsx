@@ -9,10 +9,10 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import MuiSelect from '@mui/material/Select';
+import MuiSelect, { SelectChangeEvent } from '@mui/material/Select';
 import makeStyles from '@mui/styles/makeStyles';
 import { Field, Form, Formik } from 'formik';
-import { TextField } from 'formik-material-ui';
+import { TextField } from 'formik-mui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
@@ -204,7 +204,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
             <MuiSelect
               variant="standard"
               value={arch}
-              onChange={(event: React.ChangeEvent<{ value: any }>) => setArch(event.target.value)}
+              onChange={(event: SelectChangeEvent<number>) => setArch(event.target.value as number)}
             >
               {Object.keys(ARCHES).map((key: string) => {
                 const archName = ARCHES[parseInt(key)];

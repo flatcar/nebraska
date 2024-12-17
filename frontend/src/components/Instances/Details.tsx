@@ -22,7 +22,7 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import { makeStyles, useTheme } from '@mui/styles';
 import { Field, Form, Formik, FormikHelpers, FormikProps } from 'formik';
-import { TextField } from 'formik-material-ui';
+import { TextField } from 'formik-mui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
@@ -96,6 +96,13 @@ function StatusLabel(props: StatusLabelProps) {
 
   const { status, activated } = props;
   const { label = t('frequent|Unknown') } = (status && statusDefs[status.type]) || {};
+  let safeLabel: React.ReactNode;
+
+  if (label !== null && typeof label === 'object') {
+    safeLabel = label.toString();
+  } else {
+    safeLabel = label;
+  }
 
   return (
     <span>
@@ -109,7 +116,7 @@ function StatusLabel(props: StatusLabelProps) {
             display="inline-block"
             mr={1}
           >
-            {label}
+            {safeLabel}
           </Box>
           <InlineIcon
             icon={activated ? chevronUp : chevronDown}
@@ -119,7 +126,7 @@ function StatusLabel(props: StatusLabelProps) {
           />
         </Button>
       ) : (
-        <Typography className={classes.statusText}>{label}</Typography>
+        <Typography className={classes.statusText}>{safeLabel}</Typography>
       )}
     </span>
   );

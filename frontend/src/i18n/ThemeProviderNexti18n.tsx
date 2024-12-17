@@ -50,7 +50,7 @@ const ThemeProviderNexti18n: React.FC<React.PropsWithChildren<{ theme: Theme }>>
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const theme = createTheme(adaptV4Theme(props.theme, getLocale(lang)));
+  const theme = createTheme(adaptV4Theme(props.theme), getLocale(lang));
 
   return (
     <StyledEngineProvider injectFirst>

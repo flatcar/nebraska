@@ -1,6 +1,6 @@
 import { FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
 import { Field } from 'formik';
-import { TextField } from 'formik-material-ui';
+import { TextField } from 'formik-mui';
 import { useTranslation } from 'react-i18next';
 import { Channel } from '../../../api/apiDataTypes';
 import { ARCHES } from '../../../utils/helpers';
