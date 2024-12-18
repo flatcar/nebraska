@@ -7,18 +7,28 @@ import { theme } from '../../TestHelpers/theme';
 describe('Modal Button', () => {
   it('should render Application Edit Dialog on Add Icon click', () => {
     const { getByTestId } = render(
-      <MemoryRouter initialEntries={['/app/123']}>
-        <ModalButton data={{}} modalToOpen="AddApplicationModal" />
-      </MemoryRouter>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <MemoryRouter initialEntries={['/app/123']}>
+            <ModalButton data={{}} modalToOpen="AddApplicationModal" />
+          </MemoryRouter>
+        </ThemeProvider>
+      </StyledEngineProvider>
     );
     fireEvent.click(getByTestId('modal-button'));
     expect(getByTestId('app-edit-form')).toBeInTheDocument();
   });
   it('should render AddGroupModal on Add Icon click', () => {
     const { getByTestId } = render(
-      <MemoryRouter initialEntries={['/app/123/groups/321']}>
-        <ModalButton data={{}} modalToOpen="AddGroupModal" />
-      </MemoryRouter>
+      <StyledEngineProvider injectFirst>
+        (
+        <ThemeProvider theme={theme}>
+          <MemoryRouter initialEntries={['/app/123/groups/321']}>
+            <ModalButton data={{}} modalToOpen="AddGroupModal" />
+          </MemoryRouter>
+        </ThemeProvider>
+        )
+      </StyledEngineProvider>
     );
     fireEvent.click(getByTestId('modal-button'));
     expect(getByTestId('group-edit-form')).toBeInTheDocument();
@@ -41,9 +51,15 @@ describe('Modal Button', () => {
   });
   it('should render AddPackageModal on Add Icon click', () => {
     const { getByTestId } = render(
-      <MemoryRouter initialEntries={['/app/123']}>
-        <ModalButton data={{}} modalToOpen="AddPackageModal" />
-      </MemoryRouter>
+      <StyledEngineProvider injectFirst>
+        (
+        <ThemeProvider theme={theme}>
+          <MemoryRouter initialEntries={['/app/123']}>
+            <ModalButton data={{}} modalToOpen="AddPackageModal" />
+          </MemoryRouter>
+        </ThemeProvider>
+        )
+      </StyledEngineProvider>
     );
     fireEvent.click(getByTestId('modal-button'));
     expect(getByTestId('package-edit-form')).toBeInTheDocument();

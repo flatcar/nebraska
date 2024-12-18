@@ -7,7 +7,4 @@ import '@testing-library/jest-dom/extend-expect';
 // Material UI doesn't have a stable ID generator.
 // Every render a different ID is made and snapshot tests are broken.
 // mui v5
-// jest.mock('@mui/utils/useId', () => jest.fn().mockReturnValue('mui-test-id'))
-
-// mui v4
-jest.mock('@mui/material/utils/unstable_useId', () => jest.fn().mockReturnValue('mui-test-id'));
+jest.mock('@mui/utils/useId', () => jest.fn().mockReturnValue('mui-test-id'));

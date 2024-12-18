@@ -1,4 +1,4 @@
-import green from '@mui/material/colors/green';
+import { green } from '@mui/material/colors';
 import { createTheme, Theme } from '@mui/material/styles';
 import React from 'react';
 
