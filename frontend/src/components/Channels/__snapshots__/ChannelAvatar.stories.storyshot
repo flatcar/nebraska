@@ -5,7 +5,7 @@ exports[`Storyshots channels/ChannelAvatar White 1`] = `
   id="root"
 >
   <div
-    class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+    class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
   >
     ABC
   </div>

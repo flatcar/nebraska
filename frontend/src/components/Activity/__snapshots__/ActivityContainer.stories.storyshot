@@ -5,16 +5,16 @@ exports[`Storyshots activity/ActivityContainer Empty 1`] = `
   id="root"
 >
   <div
-    class="MuiGrid-root makeStyles-sectionHeader MuiGrid-container MuiGrid-align-items-xs-flex-start MuiGrid-justify-xs-space-between"
+    class="MuiGrid-root MuiGrid-container makeStyles-sectionHeader css-eei0dj-MuiGrid-root"
   >
     <div
-      class="MuiGrid-root MuiGrid-item"
+      class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
     >
       <div
-        class="MuiBox-root MuiBox-root"
+        class="MuiBox-root css-2rlxtj"
       >
         <h1
-          class="MuiTypography-root MuiTypography-h1"
+          class="MuiTypography-root MuiTypography-h1 css-17cy2p8-MuiTypography-root"
         >
           Activity
         </h1>
@@ -22,16 +22,16 @@ exports[`Storyshots activity/ActivityContainer Empty 1`] = `
     </div>
   </div>
   <div
-    class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+    class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-5jb75g-MuiPaper-root"
   >
     <div
-      class="MuiBox-root MuiBox-root"
+      class="MuiBox-root css-1kbmarl"
     >
       <div
-        class="MuiBox-root MuiBox-root"
+        class="MuiBox-root css-19midj6"
       >
         <p
-          class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary MuiTypography-alignCenter"
+          class="MuiTypography-root MuiTypography-body1 MuiTypography-alignCenter css-18lkse1-MuiTypography-root"
           data-testid="empty"
         >
           No activity found for the last week.
@@ -50,16 +50,16 @@ exports[`Storyshots activity/ActivityContainer List 1`] = `
   id="root"
 >
   <div
-    class="MuiGrid-root makeStyles-sectionHeader MuiGrid-container MuiGrid-align-items-xs-flex-start MuiGrid-justify-xs-space-between"
+    class="MuiGrid-root MuiGrid-container makeStyles-sectionHeader css-eei0dj-MuiGrid-root"
   >
     <div
-      class="MuiGrid-root MuiGrid-item"
+      class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
     >
       <div
-        class="MuiBox-root MuiBox-root"
+        class="MuiBox-root css-2rlxtj"
       >
         <h1
-          class="MuiTypography-root MuiTypography-h1"
+          class="MuiTypography-root MuiTypography-h1 css-17cy2p8-MuiTypography-root"
         >
           Activity
         </h1>
@@ -67,39 +67,39 @@ exports[`Storyshots activity/ActivityContainer List 1`] = `
     </div>
   </div>
   <div
-    class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+    class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-5jb75g-MuiPaper-root"
   >
     <div
-      class="MuiBox-root MuiBox-root"
+      class="MuiBox-root css-1kbmarl"
     >
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-column"
+        class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-column css-1vpwcmr-MuiGrid-root"
       >
         <div
-          class="MuiGrid-root MuiGrid-item"
+          class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
         >
           <p
-            class="MuiTypography-root makeStyles-listTitle MuiTypography-body1"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-listTitle css-1ezega9-MuiTypography-root"
           >
             Wednesday, May 13, 2020
           </p>
           <ul
-            class="MuiList-root MuiList-padding"
+            class="MuiList-root MuiList-padding css-h4y409-MuiList-root"
           >
             <li
-              class="MuiListItem-root makeStyles-list MuiListItem-alignItemsFlexStart"
+              class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart makeStyles-list css-15u9cok-MuiListItem-root"
             >
               <div
-                class="MuiGrid-root MuiGrid-container MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+                class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root"
               >
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-geek62"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-12z0wuy"
                     >
                       <svg
                         focusable="false"
@@ -111,16 +111,16 @@ exports[`Storyshots activity/ActivityContainer List 1`] = `
                         xmlns="http://www.w3.org/2000/svg"
                       >
                         <path
-                          d="M11 15h2v2h-2v-2m0-8h2v6h-2V7m1-5C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 18a8 8 0 0 1-8-8a8 8 0 0 1 8-8a8 8 0 0 1 8 8a8 8 0 0 1-8 8z"
+                          d="M11 15h2v2h-2v-2m0-8h2v6h-2V7m1-5C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 18a8 8 0 0 1-8-8a8 8 0 0 1 8-8a8 8 0 0 1 8 8a8 8 0 0 1-8 8Z"
                           fill="#00d3ff"
                         />
                       </svg>
                     </div>
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-0"
                     >
                       <p
-                        class="MuiTypography-root makeStyles-appName MuiTypography-body1"
+                        class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1ezega9-MuiTypography-root"
                       >
                         ABC
                       </p>
@@ -128,36 +128,35 @@ exports[`Storyshots activity/ActivityContainer List 1`] = `
                   </div>
                 </div>
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root"
                 >
                   <p
-                    class="MuiTypography-root makeStyles-time MuiTypography-body1 MuiTypography-colorTextSecondary"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-time css-3mzles-MuiTypography-root"
                   >
                     02:56 PM
                   </p>
                 </div>
-                
                 <div
-                  class="MuiGrid-root MuiGrid-item"
+                  class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
                 >
                   Channel beta is now pointing to version 0.0.0
                 </div>
               </div>
             </li>
             <li
-              class="MuiListItem-root makeStyles-list MuiListItem-alignItemsFlexStart"
+              class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart makeStyles-list css-15u9cok-MuiListItem-root"
             >
               <div
-                class="MuiGrid-root MuiGrid-container MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+                class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root"
               >
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-geek62"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-12z0wuy"
                     >
                       <svg
                         focusable="false"
@@ -169,16 +168,16 @@ exports[`Storyshots activity/ActivityContainer List 1`] = `
                         xmlns="http://www.w3.org/2000/svg"
                       >
                         <path
-                          d="M11 15h2v2h-2v-2m0-8h2v6h-2V7m1-5C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 18a8 8 0 0 1-8-8a8 8 0 0 1 8-8a8 8 0 0 1 8 8a8 8 0 0 1-8 8z"
+                          d="M11 15h2v2h-2v-2m0-8h2v6h-2V7m1-5C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 18a8 8 0 0 1-8-8a8 8 0 0 1 8-8a8 8 0 0 1 8 8a8 8 0 0 1-8 8Z"
                           fill="#00d3ff"
                         />
                       </svg>
                     </div>
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-0"
                     >
                       <p
-                        class="MuiTypography-root makeStyles-appName MuiTypography-body1"
+                        class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1ezega9-MuiTypography-root"
                       >
                         DEF
                       </p>
@@ -186,17 +185,16 @@ exports[`Storyshots activity/ActivityContainer List 1`] = `
                   </div>
                 </div>
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root"
                 >
                   <p
-                    class="MuiTypography-root makeStyles-time MuiTypography-body1 MuiTypography-colorTextSecondary"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-time css-3mzles-MuiTypography-root"
                   >
                     02:55 PM
                   </p>
                 </div>
-                
                 <div
-                  class="MuiGrid-root MuiGrid-item"
+                  class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
                 >
                   Channel beta is now pointing to version 0.0.0
                 </div>
@@ -205,42 +203,45 @@ exports[`Storyshots activity/ActivityContainer List 1`] = `
           </ul>
         </div>
         <div
-          class="MuiGrid-root MuiGrid-item"
+          class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
         >
           <div
-            class="MuiTablePagination-root"
+            class="MuiTablePagination-root css-jtlhu6-MuiTablePagination-root"
           >
             <div
-              class="MuiToolbar-root MuiToolbar-regular MuiTablePagination-toolbar makeStyles-toolbar MuiToolbar-gutters"
+              class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular MuiTablePagination-toolbar makeStyles-toolbar css-78c6dr-MuiToolbar-root-MuiTablePagination-toolbar"
             >
               <div
-                class="MuiTablePagination-spacer"
+                class="MuiTablePagination-spacer css-1psng7p-MuiTablePagination-spacer"
               />
               <p
-                class="MuiTypography-root MuiTablePagination-caption makeStyles-caption MuiTypography-body2 MuiTypography-colorInherit"
+                class="MuiTablePagination-selectLabel css-tjonbb-MuiTablePagination-selectLabel"
               >
                 Rows per page:
               </p>
               <div
-                class="MuiInputBase-root MuiTablePagination-input MuiTablePagination-selectRoot"
+                class="MuiInputBase-root MuiInputBase-colorPrimary MuiTablePagination-input css-nofh0z-MuiInputBase-root-MuiTablePagination-select"
               >
                 <div
+                  aria-expanded="false"
                   aria-haspopup="listbox"
-                  class="MuiSelect-root MuiSelect-select MuiTablePagination-select makeStyles-select MuiSelect-selectMenu MuiInputBase-input"
-                  role="button"
+                  class="MuiSelect-select MuiTablePagination-select makeStyles-select MuiSelect-standard MuiInputBase-input css-194a1fa-MuiSelect-select-MuiInputBase-input"
+                  role="combobox"
                   tabindex="0"
                 >
                   5
                 </div>
                 <input
                   aria-hidden="true"
-                  class="MuiSelect-nativeInput"
+                  aria-invalid="false"
+                  class="MuiSelect-nativeInput css-yf8vq0-MuiSelect-nativeInput"
                   tabindex="-1"
                   value="5"
                 />
                 <svg
                   aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSelect-icon MuiTablePagination-selectIcon"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiTablePagination-selectIcon MuiSelect-iconStandard css-pqjvzy-MuiSvgIcon-root-MuiSelect-icon"
+                  data-testid="ArrowDropDownIcon"
                   focusable="false"
                   viewBox="0 0 24 24"
                 >
@@ -250,58 +251,52 @@ exports[`Storyshots activity/ActivityContainer List 1`] = `
                 </svg>
               </div>
               <p
-                class="MuiTypography-root MuiTablePagination-caption makeStyles-caption MuiTypography-body2 MuiTypography-colorInherit"
+                class="MuiTablePagination-displayedRows css-m2d60k-MuiTablePagination-displayedRows"
               >
-                1-2 of 2
+                1–2 of 2
               </p>
               <div
                 class="MuiTablePagination-actions"
               >
                 <button
                   aria-label="previous page"
-                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorInherit MuiIconButton-disabled MuiButtonBase-disabled"
+                  class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-colorInherit MuiIconButton-sizeMedium css-zylse7-MuiButtonBase-root-MuiIconButton-root"
                   disabled=""
                   tabindex="-1"
-                  title="Previous page"
+                  title="Go to previous page"
                   type="button"
                 >
-                  <span
-                    class="MuiIconButton-label"
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                    data-testid="KeyboardArrowLeftIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
                   >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"
-                      />
-                    </svg>
-                  </span>
+                    <path
+                      d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"
+                    />
+                  </svg>
                 </button>
                 <button
                   aria-label="next page"
-                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorInherit MuiIconButton-disabled MuiButtonBase-disabled"
+                  class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-colorInherit MuiIconButton-sizeMedium css-zylse7-MuiButtonBase-root-MuiIconButton-root"
                   disabled=""
                   tabindex="-1"
-                  title="Next page"
+                  title="Go to next page"
                   type="button"
                 >
-                  <span
-                    class="MuiIconButton-label"
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                    data-testid="KeyboardArrowRightIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
                   >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"
-                      />
-                    </svg>
-                  </span>
+                    <path
+                      d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"
+                    />
+                  </svg>
                 </button>
               </div>
             </div>
@@ -318,16 +313,16 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
   id="root"
 >
   <div
-    class="MuiGrid-root makeStyles-sectionHeader MuiGrid-container MuiGrid-align-items-xs-flex-start MuiGrid-justify-xs-space-between"
+    class="MuiGrid-root MuiGrid-container makeStyles-sectionHeader css-eei0dj-MuiGrid-root"
   >
     <div
-      class="MuiGrid-root MuiGrid-item"
+      class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
     >
       <div
-        class="MuiBox-root MuiBox-root"
+        class="MuiBox-root css-2rlxtj"
       >
         <h1
-          class="MuiTypography-root MuiTypography-h1"
+          class="MuiTypography-root MuiTypography-h1 css-17cy2p8-MuiTypography-root"
         >
           Activity
         </h1>
@@ -335,39 +330,39 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
     </div>
   </div>
   <div
-    class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+    class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-5jb75g-MuiPaper-root"
   >
     <div
-      class="MuiBox-root MuiBox-root"
+      class="MuiBox-root css-1kbmarl"
     >
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-column"
+        class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-column css-1vpwcmr-MuiGrid-root"
       >
         <div
-          class="MuiGrid-root MuiGrid-item"
+          class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
         >
           <p
-            class="MuiTypography-root makeStyles-listTitle MuiTypography-body1"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-listTitle css-1ezega9-MuiTypography-root"
           >
             Wednesday, May 13, 2020
           </p>
           <ul
-            class="MuiList-root MuiList-padding"
+            class="MuiList-root MuiList-padding css-h4y409-MuiList-root"
           >
             <li
-              class="MuiListItem-root makeStyles-list MuiListItem-alignItemsFlexStart"
+              class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart makeStyles-list css-15u9cok-MuiListItem-root"
             >
               <div
-                class="MuiGrid-root MuiGrid-container MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+                class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root"
               >
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-geek62"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-12z0wuy"
                     >
                       <svg
                         focusable="false"
@@ -379,16 +374,16 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
                         xmlns="http://www.w3.org/2000/svg"
                       >
                         <path
-                          d="M11 15h2v2h-2v-2m0-8h2v6h-2V7m1-5C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 18a8 8 0 0 1-8-8a8 8 0 0 1 8-8a8 8 0 0 1 8 8a8 8 0 0 1-8 8z"
+                          d="M11 15h2v2h-2v-2m0-8h2v6h-2V7m1-5C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 18a8 8 0 0 1-8-8a8 8 0 0 1 8-8a8 8 0 0 1 8 8a8 8 0 0 1-8 8Z"
                           fill="#00d3ff"
                         />
                       </svg>
                     </div>
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-0"
                     >
                       <p
-                        class="MuiTypography-root makeStyles-appName MuiTypography-body1"
+                        class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1ezega9-MuiTypography-root"
                       >
                         ABC
                       </p>
@@ -396,36 +391,35 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
                   </div>
                 </div>
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root"
                 >
                   <p
-                    class="MuiTypography-root makeStyles-time MuiTypography-body1 MuiTypography-colorTextSecondary"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-time css-3mzles-MuiTypography-root"
                   >
                     02:56 PM
                   </p>
                 </div>
-                
                 <div
-                  class="MuiGrid-root MuiGrid-item"
+                  class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
                 >
                   Channel beta is now pointing to version 0.0.0
                 </div>
               </div>
             </li>
             <li
-              class="MuiListItem-root makeStyles-list MuiListItem-alignItemsFlexStart"
+              class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart makeStyles-list css-15u9cok-MuiListItem-root"
             >
               <div
-                class="MuiGrid-root MuiGrid-container MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+                class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root"
               >
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-geek62"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-12z0wuy"
                     >
                       <svg
                         focusable="false"
@@ -437,16 +431,16 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
                         xmlns="http://www.w3.org/2000/svg"
                       >
                         <path
-                          d="M11 15h2v2h-2v-2m0-8h2v6h-2V7m1-5C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 18a8 8 0 0 1-8-8a8 8 0 0 1 8-8a8 8 0 0 1 8 8a8 8 0 0 1-8 8z"
+                          d="M11 15h2v2h-2v-2m0-8h2v6h-2V7m1-5C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 18a8 8 0 0 1-8-8a8 8 0 0 1 8-8a8 8 0 0 1 8 8a8 8 0 0 1-8 8Z"
                           fill="#00d3ff"
                         />
                       </svg>
                     </div>
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-0"
                     >
                       <p
-                        class="MuiTypography-root makeStyles-appName MuiTypography-body1"
+                        class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1ezega9-MuiTypography-root"
                       >
                         DEF
                       </p>
@@ -454,17 +448,16 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
                   </div>
                 </div>
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root"
                 >
                   <p
-                    class="MuiTypography-root makeStyles-time MuiTypography-body1 MuiTypography-colorTextSecondary"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-time css-3mzles-MuiTypography-root"
                   >
                     02:55 PM
                   </p>
                 </div>
-                
                 <div
-                  class="MuiGrid-root MuiGrid-item"
+                  class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
                 >
                   Channel beta is now pointing to version 0.0.0
                 </div>
@@ -472,27 +465,27 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
             </li>
           </ul>
           <p
-            class="MuiTypography-root makeStyles-listTitle MuiTypography-body1"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-listTitle css-1ezega9-MuiTypography-root"
           >
             Thursday, May 14, 2020
           </p>
           <ul
-            class="MuiList-root MuiList-padding"
+            class="MuiList-root MuiList-padding css-h4y409-MuiList-root"
           >
             <li
-              class="MuiListItem-root makeStyles-list MuiListItem-alignItemsFlexStart"
+              class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart makeStyles-list css-15u9cok-MuiListItem-root"
             >
               <div
-                class="MuiGrid-root MuiGrid-container MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+                class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root"
               >
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-geek62"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-12z0wuy"
                     >
                       <svg
                         focusable="false"
@@ -504,16 +497,16 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
                         xmlns="http://www.w3.org/2000/svg"
                       >
                         <path
-                          d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10s10-4.5 10-10S17.5 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4l8-8l-1.41-1.42z"
+                          d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10s10-4.5 10-10S17.5 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4l8-8l-1.41-1.42Z"
                           fill="#22bb00"
                         />
                       </svg>
                     </div>
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-0"
                     >
                       <p
-                        class="MuiTypography-root makeStyles-appName MuiTypography-body1"
+                        class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1ezega9-MuiTypography-root"
                       >
                         DEB
                       </p>
@@ -521,36 +514,35 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
                   </div>
                 </div>
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root"
                 >
                   <p
-                    class="MuiTypography-root makeStyles-time MuiTypography-body1 MuiTypography-colorTextSecondary"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-time css-3mzles-MuiTypography-root"
                   >
                     02:56 PM
                   </p>
                 </div>
-                
                 <div
-                  class="MuiGrid-root MuiGrid-item"
+                  class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
                 >
                   Channel beta is now pointing to version 0.0.1
                 </div>
               </div>
             </li>
             <li
-              class="MuiListItem-root makeStyles-list MuiListItem-alignItemsFlexStart"
+              class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart makeStyles-list css-15u9cok-MuiListItem-root"
             >
               <div
-                class="MuiGrid-root MuiGrid-container MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+                class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root"
               >
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-geek62"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-12z0wuy"
                     >
                       <svg
                         focusable="false"
@@ -568,10 +560,10 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
                       </svg>
                     </div>
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-0"
                     >
                       <p
-                        class="MuiTypography-root makeStyles-appName MuiTypography-body1"
+                        class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1ezega9-MuiTypography-root"
                       >
                         DOF
                       </p>
@@ -579,36 +571,35 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
                   </div>
                 </div>
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root"
                 >
                   <p
-                    class="MuiTypography-root makeStyles-time MuiTypography-body1 MuiTypography-colorTextSecondary"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-time css-3mzles-MuiTypography-root"
                   >
                     02:55 PM
                   </p>
                 </div>
-                
                 <div
-                  class="MuiGrid-root MuiGrid-item"
+                  class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
                 >
                   Channel beta is now pointing to version 0.0.1
                 </div>
               </div>
             </li>
             <li
-              class="MuiListItem-root makeStyles-list MuiListItem-alignItemsFlexStart"
+              class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart makeStyles-list css-15u9cok-MuiListItem-root"
             >
               <div
-                class="MuiGrid-root MuiGrid-container MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+                class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root"
               >
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-geek62"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-12z0wuy"
                     >
                       <svg
                         focusable="false"
@@ -620,16 +611,16 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
                         xmlns="http://www.w3.org/2000/svg"
                       >
                         <path
-                          d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10s10-4.5 10-10S17.5 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4l8-8l-1.41-1.42z"
+                          d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10s10-4.5 10-10S17.5 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4l8-8l-1.41-1.42Z"
                           fill="#22bb00"
                         />
                       </svg>
                     </div>
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-0"
                     >
                       <p
-                        class="MuiTypography-root makeStyles-appName MuiTypography-body1"
+                        class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1ezega9-MuiTypography-root"
                       >
                         DAL
                       </p>
@@ -637,17 +628,16 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
                   </div>
                 </div>
                 <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root"
                 >
                   <p
-                    class="MuiTypography-root makeStyles-time MuiTypography-body1 MuiTypography-colorTextSecondary"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-time css-3mzles-MuiTypography-root"
                   >
                     02:56 PM
                   </p>
                 </div>
-                
                 <div
-                  class="MuiGrid-root MuiGrid-item"
+                  class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
                 >
                   Channel alpha is now pointing to version 0.0.1
                 </div>
@@ -656,42 +646,45 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
           </ul>
         </div>
         <div
-          class="MuiGrid-root MuiGrid-item"
+          class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
         >
           <div
-            class="MuiTablePagination-root"
+            class="MuiTablePagination-root css-jtlhu6-MuiTablePagination-root"
           >
             <div
-              class="MuiToolbar-root MuiToolbar-regular MuiTablePagination-toolbar makeStyles-toolbar MuiToolbar-gutters"
+              class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular MuiTablePagination-toolbar makeStyles-toolbar css-78c6dr-MuiToolbar-root-MuiTablePagination-toolbar"
             >
               <div
-                class="MuiTablePagination-spacer"
+                class="MuiTablePagination-spacer css-1psng7p-MuiTablePagination-spacer"
               />
               <p
-                class="MuiTypography-root MuiTablePagination-caption makeStyles-caption MuiTypography-body2 MuiTypography-colorInherit"
+                class="MuiTablePagination-selectLabel css-tjonbb-MuiTablePagination-selectLabel"
               >
                 Rows per page:
               </p>
               <div
-                class="MuiInputBase-root MuiTablePagination-input MuiTablePagination-selectRoot"
+                class="MuiInputBase-root MuiInputBase-colorPrimary MuiTablePagination-input css-nofh0z-MuiInputBase-root-MuiTablePagination-select"
               >
                 <div
+                  aria-expanded="false"
                   aria-haspopup="listbox"
-                  class="MuiSelect-root MuiSelect-select MuiTablePagination-select makeStyles-select MuiSelect-selectMenu MuiInputBase-input"
-                  role="button"
+                  class="MuiSelect-select MuiTablePagination-select makeStyles-select MuiSelect-standard MuiInputBase-input css-194a1fa-MuiSelect-select-MuiInputBase-input"
+                  role="combobox"
                   tabindex="0"
                 >
                   5
                 </div>
                 <input
                   aria-hidden="true"
-                  class="MuiSelect-nativeInput"
+                  aria-invalid="false"
+                  class="MuiSelect-nativeInput css-yf8vq0-MuiSelect-nativeInput"
                   tabindex="-1"
                   value="5"
                 />
                 <svg
                   aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSelect-icon MuiTablePagination-selectIcon"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiTablePagination-selectIcon MuiSelect-iconStandard css-pqjvzy-MuiSvgIcon-root-MuiSelect-icon"
+                  data-testid="ArrowDropDownIcon"
                   focusable="false"
                   viewBox="0 0 24 24"
                 >
@@ -701,59 +694,53 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
                 </svg>
               </div>
               <p
-                class="MuiTypography-root MuiTablePagination-caption makeStyles-caption MuiTypography-body2 MuiTypography-colorInherit"
+                class="MuiTablePagination-displayedRows css-m2d60k-MuiTablePagination-displayedRows"
               >
-                1-5 of 6
+                1–5 of 6
               </p>
               <div
                 class="MuiTablePagination-actions"
               >
                 <button
                   aria-label="previous page"
-                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorInherit MuiIconButton-disabled MuiButtonBase-disabled"
+                  class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-colorInherit MuiIconButton-sizeMedium css-zylse7-MuiButtonBase-root-MuiIconButton-root"
                   disabled=""
                   tabindex="-1"
-                  title="Previous page"
+                  title="Go to previous page"
                   type="button"
                 >
-                  <span
-                    class="MuiIconButton-label"
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                    data-testid="KeyboardArrowLeftIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
                   >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"
-                      />
-                    </svg>
-                  </span>
+                    <path
+                      d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z"
+                    />
+                  </svg>
                 </button>
                 <button
                   aria-label="next page"
-                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorInherit"
+                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorInherit MuiIconButton-sizeMedium css-zylse7-MuiButtonBase-root-MuiIconButton-root"
                   tabindex="0"
-                  title="Next page"
+                  title="Go to next page"
                   type="button"
                 >
-                  <span
-                    class="MuiIconButton-label"
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                    data-testid="KeyboardArrowRightIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
                   >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"
-                      />
-                    </svg>
-                  </span>
+                    <path
+                      d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z"
+                    />
+                  </svg>
                   <span
-                    class="MuiTouchRipple-root"
+                    class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
                   />
                 </button>
               </div>

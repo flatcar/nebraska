@@ -3,35 +3,32 @@
 exports[`List Header should render correct List Header actions 1`] = `
 <DocumentFragment>
   <div
-    class="MuiGrid-root makeStyles-sectionHeader-3 MuiGrid-container MuiGrid-align-items-xs-flex-start MuiGrid-justify-content-xs-space-between"
+    class="MuiGrid-root MuiGrid-container makeStyles-sectionHeader-2 css-eei0dj-MuiGrid-root"
   >
     <div
-      class="MuiGrid-root MuiGrid-item"
+      class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
     >
       <div>
         <button
           aria-label="add"
-          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall"
+          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
           data-testid="modal-button"
           tabindex="0"
           type="button"
         >
-          <span
-            class="MuiIconButton-label"
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge makeStyles-root-3 css-tzssek-MuiSvgIcon-root"
+            data-testid="AddIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
           >
-            <svg
-              aria-hidden="true"
-              class="MuiSvgIcon-root makeStyles-root-4 MuiSvgIcon-fontSizeLarge"
-              focusable="false"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"
-              />
-            </svg>
-          </span>
+            <path
+              d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"
+            />
+          </svg>
           <span
-            class="MuiTouchRipple-root"
+            class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
           />
         </button>
       </div>

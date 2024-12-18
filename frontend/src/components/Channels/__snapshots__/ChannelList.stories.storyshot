@@ -5,50 +5,47 @@ exports[`Storyshots channels/ChannelList Full List 1`] = `
   id="root"
 >
   <div
-    class="MuiBox-root MuiBox-root"
+    class="MuiBox-root css-1yuhvjn"
   >
     <div
-      class="MuiBox-root MuiBox-root"
+      class="MuiBox-root css-1qm1lh"
     >
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+        class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root"
       >
         <div
-          class="MuiGrid-root MuiGrid-item"
+          class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
         >
           <h1
-            class="MuiTypography-root MuiTypography-h1"
+            class="MuiTypography-root MuiTypography-h1 css-17cy2p8-MuiTypography-root"
           >
             Channels
           </h1>
         </div>
         <div
-          class="MuiGrid-root MuiGrid-item"
+          class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
         >
           <div>
             <button
               aria-label="add"
-              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall"
+              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
               data-testid="modal-button"
               tabindex="0"
               type="button"
             >
-              <span
-                class="MuiIconButton-label"
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge makeStyles-root css-tzssek-MuiSvgIcon-root"
+                data-testid="AddIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
               >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root makeStyles-root MuiSvgIcon-fontSizeLarge"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"
-                  />
-                </svg>
-              </span>
+                <path
+                  d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"
+                />
+              </svg>
               <span
-                class="MuiTouchRipple-root"
+                class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
               />
             </button>
           </div>
@@ -56,75 +53,77 @@ exports[`Storyshots channels/ChannelList Full List 1`] = `
       </div>
     </div>
     <div
-      class="MuiPaper-root WithStyles(ForwardRef(Paper))-root MuiPaper-elevation1 MuiPaper-rounded"
+      class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 ForwardRef(Paper)-root css-5jb75g-MuiPaper-root"
     >
       <ul
-        class="MuiList-root makeStyles-root MuiList-dense MuiList-padding MuiList-subheader"
+        class="MuiList-root MuiList-padding MuiList-dense MuiList-subheader makeStyles-root css-p64g7a-MuiList-root"
       >
         <li
-          class="MuiListSubheader-root MuiListSubheader-gutters"
+          class="MuiListSubheader-root MuiListSubheader-gutters css-13lm96v-MuiListSubheader-root"
         >
           AMD64
         </li>
         <li
-          class="MuiListItem-container"
+          class="MuiListItem-container css-oyakqy-MuiListItem-container"
         >
           <div
-            class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-secondaryAction"
+            class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-1n3if1z-MuiListItem-root"
           >
             <div
-              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
             >
               <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
               >
                 <div
-                  class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+                  class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
                 >
                   a
                 </div>
               </div>
               <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
               >
                 <div
-                  class="MuiListItemText-root makeStyles-root MuiListItemText-dense MuiListItemText-multiline"
+                  class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline makeStyles-root css-konndc-MuiListItemText-root"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-70qvj9"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-1xsd608"
                     >
                       alpha
                     </div>
                   </div>
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-15aqakd"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-0"
                     >
                       2261.0.0
                     </div>
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-n085mf"
                     >
                       <div
-                        class="MuiBox-root MuiBox-root"
+                        class="MuiBox-root css-k008qs"
                       >
                         <div
-                          class="MuiBox-root MuiBox-root"
+                          class="MuiBox-root css-0"
                         >
                           <svg
                             aria-hidden="true"
-                            class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                            aria-label="Release date"
+                            class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-ptiqhd-MuiSvgIcon-root"
+                            data-mui-internal-clone-element="true"
+                            data-testid="ScheduleIcon"
                             focusable="false"
-                            title="Release date"
                             viewBox="0 0 24 24"
                           >
                             <path
-                              d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                              d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8"
                             />
                             <path
                               d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
@@ -132,7 +131,7 @@ exports[`Storyshots channels/ChannelList Full List 1`] = `
                           </svg>
                         </div>
                         <div
-                          class="MuiBox-root MuiBox-root"
+                          class="MuiBox-root css-1iuj5ih"
                         >
                           09/13/2019
                         </div>
@@ -144,98 +143,97 @@ exports[`Storyshots channels/ChannelList Full List 1`] = `
             </div>
           </div>
           <div
-            class="MuiListItemSecondaryAction-root"
+            class="MuiListItemSecondaryAction-root css-518kzi-MuiListItemSecondaryAction-root"
           >
             <div>
               <button
                 aria-controls="simple-menu-8"
                 aria-haspopup="true"
                 aria-label="Open menu"
-                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd"
+                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-1pux6rn-MuiButtonBase-root-MuiIconButton-root"
                 data-testid="more-menu-open-button"
                 tabindex="0"
                 type="button"
               >
-                <span
-                  class="MuiIconButton-label"
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                  data-testid="MoreVertIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
-                    />
-                  </svg>
-                </span>
+                  <path
+                    d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2"
+                  />
+                </svg>
                 <span
-                  class="MuiTouchRipple-root"
+                  class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
                 />
               </button>
             </div>
           </div>
         </li>
         <li
-          class="MuiListItem-container"
+          class="MuiListItem-container css-oyakqy-MuiListItem-container"
         >
           <div
-            class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-secondaryAction"
+            class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-1n3if1z-MuiListItem-root"
           >
             <div
-              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
             >
               <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
               >
                 <div
-                  class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+                  class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
                 >
                   b
                 </div>
               </div>
               <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
               >
                 <div
-                  class="MuiListItemText-root makeStyles-root MuiListItemText-dense MuiListItemText-multiline"
+                  class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline makeStyles-root css-konndc-MuiListItemText-root"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-70qvj9"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-1xsd608"
                     >
                       beta
                     </div>
                   </div>
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-15aqakd"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-0"
                     >
                       2247.2.0
                     </div>
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-n085mf"
                     >
                       <div
-                        class="MuiBox-root MuiBox-root"
+                        class="MuiBox-root css-k008qs"
                       >
                         <div
-                          class="MuiBox-root MuiBox-root"
+                          class="MuiBox-root css-0"
                         >
                           <svg
                             aria-hidden="true"
-                            class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                            aria-label="Release date"
+                            class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-ptiqhd-MuiSvgIcon-root"
+                            data-mui-internal-clone-element="true"
+                            data-testid="ScheduleIcon"
                             focusable="false"
-                            title="Release date"
                             viewBox="0 0 24 24"
                           >
                             <path
-                              d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                              d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8"
                             />
                             <path
                               d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
@@ -243,7 +241,7 @@ exports[`Storyshots channels/ChannelList Full List 1`] = `
                           </svg>
                         </div>
                         <div
-                          class="MuiBox-root MuiBox-root"
+                          class="MuiBox-root css-1iuj5ih"
                         >
                           09/13/2019
                         </div>
@@ -255,98 +253,97 @@ exports[`Storyshots channels/ChannelList Full List 1`] = `
             </div>
           </div>
           <div
-            class="MuiListItemSecondaryAction-root"
+            class="MuiListItemSecondaryAction-root css-518kzi-MuiListItemSecondaryAction-root"
           >
             <div>
               <button
                 aria-controls="simple-menu-9"
                 aria-haspopup="true"
                 aria-label="Open menu"
-                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd"
+                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-1pux6rn-MuiButtonBase-root-MuiIconButton-root"
                 data-testid="more-menu-open-button"
                 tabindex="0"
                 type="button"
               >
-                <span
-                  class="MuiIconButton-label"
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                  data-testid="MoreVertIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
-                    />
-                  </svg>
-                </span>
+                  <path
+                    d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2"
+                  />
+                </svg>
                 <span
-                  class="MuiTouchRipple-root"
+                  class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
                 />
               </button>
             </div>
           </div>
         </li>
         <li
-          class="MuiListItem-container"
+          class="MuiListItem-container css-oyakqy-MuiListItem-container"
         >
           <div
-            class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-secondaryAction"
+            class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-1n3if1z-MuiListItem-root"
           >
             <div
-              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
             >
               <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
               >
                 <div
-                  class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+                  class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
                 >
                   e
                 </div>
               </div>
               <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
               >
                 <div
-                  class="MuiListItemText-root makeStyles-root MuiListItemText-dense MuiListItemText-multiline"
+                  class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline makeStyles-root css-konndc-MuiListItemText-root"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-70qvj9"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-1xsd608"
                     >
                       edge
                     </div>
                   </div>
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-15aqakd"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-0"
                     >
                       2247.99.0
                     </div>
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-n085mf"
                     >
                       <div
-                        class="MuiBox-root MuiBox-root"
+                        class="MuiBox-root css-k008qs"
                       >
                         <div
-                          class="MuiBox-root MuiBox-root"
+                          class="MuiBox-root css-0"
                         >
                           <svg
                             aria-hidden="true"
-                            class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                            aria-label="Release date"
+                            class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-ptiqhd-MuiSvgIcon-root"
+                            data-mui-internal-clone-element="true"
+                            data-testid="ScheduleIcon"
                             focusable="false"
-                            title="Release date"
                             viewBox="0 0 24 24"
                           >
                             <path
-                              d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                              d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8"
                             />
                             <path
                               d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
@@ -354,7 +351,7 @@ exports[`Storyshots channels/ChannelList Full List 1`] = `
                           </svg>
                         </div>
                         <div
-                          class="MuiBox-root MuiBox-root"
+                          class="MuiBox-root css-1iuj5ih"
                         >
                           09/05/2019
                         </div>
@@ -366,98 +363,97 @@ exports[`Storyshots channels/ChannelList Full List 1`] = `
             </div>
           </div>
           <div
-            class="MuiListItemSecondaryAction-root"
+            class="MuiListItemSecondaryAction-root css-518kzi-MuiListItemSecondaryAction-root"
           >
             <div>
               <button
                 aria-controls="simple-menu-10"
                 aria-haspopup="true"
                 aria-label="Open menu"
-                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd"
+                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-1pux6rn-MuiButtonBase-root-MuiIconButton-root"
                 data-testid="more-menu-open-button"
                 tabindex="0"
                 type="button"
               >
-                <span
-                  class="MuiIconButton-label"
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                  data-testid="MoreVertIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
-                    />
-                  </svg>
-                </span>
+                  <path
+                    d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2"
+                  />
+                </svg>
                 <span
-                  class="MuiTouchRipple-root"
+                  class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
                 />
               </button>
             </div>
           </div>
         </li>
         <li
-          class="MuiListItem-container"
+          class="MuiListItem-container css-oyakqy-MuiListItem-container"
         >
           <div
-            class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-secondaryAction"
+            class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-1n3if1z-MuiListItem-root"
           >
             <div
-              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
             >
               <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
               >
                 <div
-                  class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+                  class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
                 >
                   s
                 </div>
               </div>
               <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
               >
                 <div
-                  class="MuiListItemText-root makeStyles-root MuiListItemText-dense MuiListItemText-multiline"
+                  class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline makeStyles-root css-konndc-MuiListItemText-root"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-70qvj9"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-1xsd608"
                     >
                       stable
                     </div>
                   </div>
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-15aqakd"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-0"
                     >
                       2191.5.0
                     </div>
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-n085mf"
                     >
                       <div
-                        class="MuiBox-root MuiBox-root"
+                        class="MuiBox-root css-k008qs"
                       >
                         <div
-                          class="MuiBox-root MuiBox-root"
+                          class="MuiBox-root css-0"
                         >
                           <svg
                             aria-hidden="true"
-                            class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                            aria-label="Release date"
+                            class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-ptiqhd-MuiSvgIcon-root"
+                            data-mui-internal-clone-element="true"
+                            data-testid="ScheduleIcon"
                             focusable="false"
-                            title="Release date"
                             viewBox="0 0 24 24"
                           >
                             <path
-                              d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                              d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8"
                             />
                             <path
                               d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
@@ -465,7 +461,7 @@ exports[`Storyshots channels/ChannelList Full List 1`] = `
                           </svg>
                         </div>
                         <div
-                          class="MuiBox-root MuiBox-root"
+                          class="MuiBox-root css-1iuj5ih"
                         >
                           09/05/2019
                         </div>
@@ -477,34 +473,31 @@ exports[`Storyshots channels/ChannelList Full List 1`] = `
             </div>
           </div>
           <div
-            class="MuiListItemSecondaryAction-root"
+            class="MuiListItemSecondaryAction-root css-518kzi-MuiListItemSecondaryAction-root"
           >
             <div>
               <button
                 aria-controls="simple-menu-11"
                 aria-haspopup="true"
                 aria-label="Open menu"
-                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd"
+                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-1pux6rn-MuiButtonBase-root-MuiIconButton-root"
                 data-testid="more-menu-open-button"
                 tabindex="0"
                 type="button"
               >
-                <span
-                  class="MuiIconButton-label"
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                  data-testid="MoreVertIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
-                    />
-                  </svg>
-                </span>
+                  <path
+                    d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2"
+                  />
+                </svg>
                 <span
-                  class="MuiTouchRipple-root"
+                  class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
                 />
               </button>
             </div>
@@ -512,51 +505,51 @@ exports[`Storyshots channels/ChannelList Full List 1`] = `
         </li>
       </ul>
       <ul
-        class="MuiList-root makeStyles-root MuiList-dense MuiList-padding MuiList-subheader"
+        class="MuiList-root MuiList-padding MuiList-dense MuiList-subheader makeStyles-root css-p64g7a-MuiList-root"
       >
         <li
-          class="MuiListSubheader-root MuiListSubheader-gutters"
+          class="MuiListSubheader-root MuiListSubheader-gutters css-13lm96v-MuiListSubheader-root"
         >
           ARM64
         </li>
         <li
-          class="MuiListItem-container"
+          class="MuiListItem-container css-oyakqy-MuiListItem-container"
         >
           <div
-            class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-secondaryAction"
+            class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-1n3if1z-MuiListItem-root"
           >
             <div
-              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
             >
               <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
               >
                 <div
-                  class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+                  class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
                 >
                   a
                 </div>
               </div>
               <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
               >
                 <div
-                  class="MuiListItemText-root makeStyles-root MuiListItemText-dense MuiListItemText-multiline"
+                  class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline makeStyles-root css-konndc-MuiListItemText-root"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-70qvj9"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-1xsd608"
                     >
                       alpha
                     </div>
                   </div>
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-15aqakd"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-0"
                     >
                       No package
                     </div>
@@ -566,77 +559,74 @@ exports[`Storyshots channels/ChannelList Full List 1`] = `
             </div>
           </div>
           <div
-            class="MuiListItemSecondaryAction-root"
+            class="MuiListItemSecondaryAction-root css-518kzi-MuiListItemSecondaryAction-root"
           >
             <div>
               <button
                 aria-controls="simple-menu-12"
                 aria-haspopup="true"
                 aria-label="Open menu"
-                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd"
+                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-1pux6rn-MuiButtonBase-root-MuiIconButton-root"
                 data-testid="more-menu-open-button"
                 tabindex="0"
                 type="button"
               >
-                <span
-                  class="MuiIconButton-label"
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                  data-testid="MoreVertIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
-                    />
-                  </svg>
-                </span>
+                  <path
+                    d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2"
+                  />
+                </svg>
                 <span
-                  class="MuiTouchRipple-root"
+                  class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
                 />
               </button>
             </div>
           </div>
         </li>
         <li
-          class="MuiListItem-container"
+          class="MuiListItem-container css-oyakqy-MuiListItem-container"
         >
           <div
-            class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-secondaryAction"
+            class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-1n3if1z-MuiListItem-root"
           >
             <div
-              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
             >
               <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
               >
                 <div
-                  class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+                  class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
                 >
                   b
                 </div>
               </div>
               <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
               >
                 <div
-                  class="MuiListItemText-root makeStyles-root MuiListItemText-dense MuiListItemText-multiline"
+                  class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline makeStyles-root css-konndc-MuiListItemText-root"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-70qvj9"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-1xsd608"
                     >
                       beta
                     </div>
                   </div>
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-15aqakd"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-0"
                     >
                       No package
                     </div>
@@ -646,77 +636,74 @@ exports[`Storyshots channels/ChannelList Full List 1`] = `
             </div>
           </div>
           <div
-            class="MuiListItemSecondaryAction-root"
+            class="MuiListItemSecondaryAction-root css-518kzi-MuiListItemSecondaryAction-root"
           >
             <div>
               <button
                 aria-controls="simple-menu-13"
                 aria-haspopup="true"
                 aria-label="Open menu"
-                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd"
+                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-1pux6rn-MuiButtonBase-root-MuiIconButton-root"
                 data-testid="more-menu-open-button"
                 tabindex="0"
                 type="button"
               >
-                <span
-                  class="MuiIconButton-label"
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                  data-testid="MoreVertIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
-                    />
-                  </svg>
-                </span>
+                  <path
+                    d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2"
+                  />
+                </svg>
                 <span
-                  class="MuiTouchRipple-root"
+                  class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
                 />
               </button>
             </div>
           </div>
         </li>
         <li
-          class="MuiListItem-container"
+          class="MuiListItem-container css-oyakqy-MuiListItem-container"
         >
           <div
-            class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-secondaryAction"
+            class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-1n3if1z-MuiListItem-root"
           >
             <div
-              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
             >
               <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
               >
                 <div
-                  class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+                  class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
                 >
                   e
                 </div>
               </div>
               <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
               >
                 <div
-                  class="MuiListItemText-root makeStyles-root MuiListItemText-dense MuiListItemText-multiline"
+                  class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline makeStyles-root css-konndc-MuiListItemText-root"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-70qvj9"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-1xsd608"
                     >
                       edge
                     </div>
                   </div>
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-15aqakd"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-0"
                     >
                       No package
                     </div>
@@ -726,77 +713,74 @@ exports[`Storyshots channels/ChannelList Full List 1`] = `
             </div>
           </div>
           <div
-            class="MuiListItemSecondaryAction-root"
+            class="MuiListItemSecondaryAction-root css-518kzi-MuiListItemSecondaryAction-root"
           >
             <div>
               <button
                 aria-controls="simple-menu-14"
                 aria-haspopup="true"
                 aria-label="Open menu"
-                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd"
+                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-1pux6rn-MuiButtonBase-root-MuiIconButton-root"
                 data-testid="more-menu-open-button"
                 tabindex="0"
                 type="button"
               >
-                <span
-                  class="MuiIconButton-label"
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                  data-testid="MoreVertIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
-                    />
-                  </svg>
-                </span>
+                  <path
+                    d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2"
+                  />
+                </svg>
                 <span
-                  class="MuiTouchRipple-root"
+                  class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
                 />
               </button>
             </div>
           </div>
         </li>
         <li
-          class="MuiListItem-container"
+          class="MuiListItem-container css-oyakqy-MuiListItem-container"
         >
           <div
-            class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-secondaryAction"
+            class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-1n3if1z-MuiListItem-root"
           >
             <div
-              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
             >
               <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
               >
                 <div
-                  class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+                  class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
                 >
                   s
                 </div>
               </div>
               <div
-                class="MuiGrid-root MuiGrid-item"
+                class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
               >
                 <div
-                  class="MuiListItemText-root makeStyles-root MuiListItemText-dense MuiListItemText-multiline"
+                  class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline makeStyles-root css-konndc-MuiListItemText-root"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-70qvj9"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-1xsd608"
                     >
                       stable
                     </div>
                   </div>
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-15aqakd"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-0"
                     >
                       No package
                     </div>
@@ -806,34 +790,31 @@ exports[`Storyshots channels/ChannelList Full List 1`] = `
             </div>
           </div>
           <div
-            class="MuiListItemSecondaryAction-root"
+            class="MuiListItemSecondaryAction-root css-518kzi-MuiListItemSecondaryAction-root"
           >
             <div>
               <button
                 aria-controls="simple-menu-15"
                 aria-haspopup="true"
                 aria-label="Open menu"
-                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd"
+                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-1pux6rn-MuiButtonBase-root-MuiIconButton-root"
                 data-testid="more-menu-open-button"
                 tabindex="0"
                 type="button"
               >
-                <span
-                  class="MuiIconButton-label"
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                  data-testid="MoreVertIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
-                    />
-                  </svg>
-                </span>
+                  <path
+                    d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2"
+                  />
+                </svg>
                 <span
-                  class="MuiTouchRipple-root"
+                  class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
                 />
               </button>
             </div>
@@ -850,50 +831,47 @@ exports[`Storyshots channels/ChannelList Loading 1`] = `
   id="root"
 >
   <div
-    class="MuiBox-root MuiBox-root"
+    class="MuiBox-root css-1yuhvjn"
   >
     <div
-      class="MuiBox-root MuiBox-root"
+      class="MuiBox-root css-1qm1lh"
     >
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+        class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root"
       >
         <div
-          class="MuiGrid-root MuiGrid-item"
+          class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
         >
           <h1
-            class="MuiTypography-root MuiTypography-h1"
+            class="MuiTypography-root MuiTypography-h1 css-17cy2p8-MuiTypography-root"
           >
             Channels
           </h1>
         </div>
         <div
-          class="MuiGrid-root MuiGrid-item"
+          class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
         >
           <div>
             <button
               aria-label="add"
-              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall"
+              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
               data-testid="modal-button"
               tabindex="0"
               type="button"
             >
-              <span
-                class="MuiIconButton-label"
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge makeStyles-root css-tzssek-MuiSvgIcon-root"
+                data-testid="AddIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
               >
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root makeStyles-root MuiSvgIcon-fontSizeLarge"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"
-                  />
-                </svg>
-              </span>
+                <path
+                  d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"
+                />
+              </svg>
               <span
-                class="MuiTouchRipple-root"
+                class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
               />
             </button>
           </div>
@@ -901,23 +879,23 @@ exports[`Storyshots channels/ChannelList Loading 1`] = `
       </div>
     </div>
     <div
-      class="MuiPaper-root WithStyles(ForwardRef(Paper))-root MuiPaper-elevation1 MuiPaper-rounded"
+      class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 ForwardRef(Paper)-root css-5jb75g-MuiPaper-root"
     >
       <div
-        class="MuiBox-root MuiBox-root makeStyles-loaderContainer"
+        class="makeStyles-loaderContainer MuiBox-root css-0"
         data-testid="loader-container"
       >
-        <div
-          class="MuiCircularProgress-root MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
+        <span
+          class="MuiCircularProgress-root MuiCircularProgress-indeterminate MuiCircularProgress-colorPrimary css-13d3z5s-MuiCircularProgress-root"
           role="progressbar"
           style="width: 40px; height: 40px;"
         >
           <svg
-            class="MuiCircularProgress-svg"
+            class="MuiCircularProgress-svg css-1idz92c-MuiCircularProgress-svg"
             viewBox="22 22 44 44"
           >
             <circle
-              class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
+              class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate css-176wh8e-MuiCircularProgress-circle"
               cx="44"
               cy="44"
               fill="none"
@@ -925,7 +903,7 @@ exports[`Storyshots channels/ChannelList Loading 1`] = `
               stroke-width="3.6"
             />
           </svg>
-        </div>
+        </span>
       </div>
     </div>
   </div>

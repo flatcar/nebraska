@@ -1,6 +1,5 @@
 import initStoryshots, { Stories2SnapsConverter } from '@storybook/addon-storyshots';
 import * as rtl from '@testing-library/react';
-import React from 'react';
 
 initStoryshots({
   test: ({ story: { storyFn: Story }, context }) => {

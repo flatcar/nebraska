@@ -5,7 +5,7 @@ exports[`Storyshots Footer Footer No Override 1`] = `
   id="root"
 >
   <div
-    class="MuiBox-root MuiBox-root"
+    class="MuiBox-root css-sw8jpj"
   >
     Nebraska 
   </div>
@@ -17,7 +17,7 @@ exports[`Storyshots Footer Footer Override 1`] = `
   id="root"
 >
   <div
-    class="MuiBox-root MuiBox-root"
+    class="MuiBox-root css-sw8jpj"
   >
     Some Pro Update Service 1.2.3
   </div>

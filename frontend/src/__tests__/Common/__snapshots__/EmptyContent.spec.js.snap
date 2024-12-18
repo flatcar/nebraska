@@ -3,10 +3,10 @@
 exports[`Empty renders correct content 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-1"
+    class="MuiBox-root css-19midj6"
   >
     <p
-      class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary MuiTypography-alignCenter"
+      class="MuiTypography-root MuiTypography-body1 MuiTypography-alignCenter css-12wjmzy-MuiTypography-root"
       data-testid="empty"
     >
       Some Dummy Content

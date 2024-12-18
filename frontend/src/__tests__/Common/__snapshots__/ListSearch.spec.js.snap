@@ -6,11 +6,11 @@ exports[`List Search should render correct ListSearch 1`] = `
     class="makeStyles-container-1"
   >
     <div
-      class="MuiInputBase-root MuiInput-root MuiInput-underline makeStyles-input-2"
+      class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-colorPrimary makeStyles-input-2 css-z41pft-MuiInputBase-root-MuiInput-root"
     >
       <input
         aria-label="undefined"
-        class="MuiInputBase-input MuiInput-input"
+        class="MuiInputBase-input MuiInput-input css-1x51dt5-MuiInputBase-input-MuiInput-input"
         type="text"
         value=""
       />

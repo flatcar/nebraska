@@ -3,26 +3,26 @@
 exports[`Section Header renders section header correctly 1`] = `
 <DocumentFragment>
   <div
-    class="MuiGrid-root makeStyles-sectionContainer-1 MuiGrid-container MuiGrid-align-items-xs-center"
+    class="MuiGrid-root MuiGrid-container makeStyles-sectionContainer-1 css-a8y23a-MuiGrid-root"
   >
     <div
-      class="MuiGrid-root MuiGrid-item"
+      class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
     >
       <nav
         aria-label="breadcrumbs"
-        class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+        class="MuiTypography-root MuiTypography-body1 MuiBreadcrumbs-root css-ojlt14-MuiTypography-root-MuiBreadcrumbs-root"
       >
         <ol
-          class="MuiBreadcrumbs-ol"
+          class="MuiBreadcrumbs-ol css-4pdmu4-MuiBreadcrumbs-ol"
         >
           <li
             class="MuiBreadcrumbs-li"
           >
             <span
-              class="MuiBox-root MuiBox-root-3 makeStyles-breadCrumbsItem-2"
+              class="makeStyles-breadCrumbsItem-2 MuiBox-root css-0"
             >
               <a
-                class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiTypography-colorPrimary"
+                class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-1emptwe-MuiTypography-root-MuiLink-root"
                 href="/apps"
               >
                 Applications
@@ -31,16 +31,17 @@ exports[`Section Header renders section header correctly 1`] = `
           </li>
           <li
             aria-hidden="true"
-            class="MuiBreadcrumbs-separator"
+            class="MuiBreadcrumbs-separator css-1wuw8dw-MuiBreadcrumbs-separator"
           >
             <svg
               aria-hidden="true"
-              class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+              class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-ptiqhd-MuiSvgIcon-root"
+              data-testid="NavigateNextIcon"
               focusable="false"
               viewBox="0 0 24 24"
             >
               <path
-                d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"
+                d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"
               />
             </svg>
           </li>
@@ -48,7 +49,7 @@ exports[`Section Header renders section header correctly 1`] = `
             class="MuiBreadcrumbs-li"
           >
             <p
-              class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextPrimary"
+              class="MuiTypography-root MuiTypography-body1 css-1uzamrc-MuiTypography-root"
             >
               Flatcar
             </p>

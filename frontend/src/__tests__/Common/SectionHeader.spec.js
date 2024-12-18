@@ -1,8 +1,9 @@
 import '../../i18n/config.ts';
+import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
-import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import SectionHeader from '../../components/common/SectionHeader';
+import themes from '../../lib/themes';
 
 describe('Section Header', () => {
   const minProps = {
@@ -16,9 +17,13 @@ describe('Section Header', () => {
   };
   it('renders section header correctly', () => {
     const { asFragment } = render(
-      <BrowserRouter>
-        <SectionHeader {...minProps} />
-      </BrowserRouter>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={themes['light']}>
+          <BrowserRouter>
+            <SectionHeader {...minProps} />
+          </BrowserRouter>
+        </ThemeProvider>
+      </StyledEngineProvider>
     );
     expect(asFragment()).toMatchSnapshot();
   });

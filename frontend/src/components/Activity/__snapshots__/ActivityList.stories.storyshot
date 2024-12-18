@@ -5,27 +5,27 @@ exports[`Storyshots activity/ActivityList Beta List 1`] = `
   id="root"
 >
   <p
-    class="MuiTypography-root makeStyles-listTitle MuiTypography-body1"
+    class="MuiTypography-root MuiTypography-body1 makeStyles-listTitle css-1ezega9-MuiTypography-root"
   >
     Wednesday, May 13, 2020
   </p>
   <ul
-    class="MuiList-root MuiList-padding"
+    class="MuiList-root MuiList-padding css-h4y409-MuiList-root"
   >
     <li
-      class="MuiListItem-root makeStyles-list MuiListItem-alignItemsFlexStart"
+      class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart makeStyles-list css-15u9cok-MuiListItem-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+        class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root"
       >
         <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10"
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root"
         >
           <div
-            class="MuiBox-root MuiBox-root"
+            class="MuiBox-root css-geek62"
           >
             <div
-              class="MuiBox-root MuiBox-root"
+              class="MuiBox-root css-12z0wuy"
             >
               <svg
                 focusable="false"
@@ -37,16 +37,16 @@ exports[`Storyshots activity/ActivityList Beta List 1`] = `
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  d="M11 15h2v2h-2v-2m0-8h2v6h-2V7m1-5C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 18a8 8 0 0 1-8-8a8 8 0 0 1 8-8a8 8 0 0 1 8 8a8 8 0 0 1-8 8z"
+                  d="M11 15h2v2h-2v-2m0-8h2v6h-2V7m1-5C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 18a8 8 0 0 1-8-8a8 8 0 0 1 8-8a8 8 0 0 1 8 8a8 8 0 0 1-8 8Z"
                   fill="#00d3ff"
                 />
               </svg>
             </div>
             <div
-              class="MuiBox-root MuiBox-root"
+              class="MuiBox-root css-0"
             >
               <p
-                class="MuiTypography-root makeStyles-appName MuiTypography-body1"
+                class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1ezega9-MuiTypography-root"
               >
                 ABC
               </p>
@@ -54,36 +54,35 @@ exports[`Storyshots activity/ActivityList Beta List 1`] = `
           </div>
         </div>
         <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2"
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root"
         >
           <p
-            class="MuiTypography-root makeStyles-time MuiTypography-body1 MuiTypography-colorTextSecondary"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-time css-3mzles-MuiTypography-root"
           >
             02:56 PM
           </p>
         </div>
-        
         <div
-          class="MuiGrid-root MuiGrid-item"
+          class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
         >
           Channel beta is now pointing to version 0.0.0
         </div>
       </div>
     </li>
     <li
-      class="MuiListItem-root makeStyles-list MuiListItem-alignItemsFlexStart"
+      class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart makeStyles-list css-15u9cok-MuiListItem-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+        class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root"
       >
         <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10"
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root"
         >
           <div
-            class="MuiBox-root MuiBox-root"
+            class="MuiBox-root css-geek62"
           >
             <div
-              class="MuiBox-root MuiBox-root"
+              class="MuiBox-root css-12z0wuy"
             >
               <svg
                 focusable="false"
@@ -95,16 +94,16 @@ exports[`Storyshots activity/ActivityList Beta List 1`] = `
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  d="M11 15h2v2h-2v-2m0-8h2v6h-2V7m1-5C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 18a8 8 0 0 1-8-8a8 8 0 0 1 8-8a8 8 0 0 1 8 8a8 8 0 0 1-8 8z"
+                  d="M11 15h2v2h-2v-2m0-8h2v6h-2V7m1-5C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 18a8 8 0 0 1-8-8a8 8 0 0 1 8-8a8 8 0 0 1 8 8a8 8 0 0 1-8 8Z"
                   fill="#00d3ff"
                 />
               </svg>
             </div>
             <div
-              class="MuiBox-root MuiBox-root"
+              class="MuiBox-root css-0"
             >
               <p
-                class="MuiTypography-root makeStyles-appName MuiTypography-body1"
+                class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1ezega9-MuiTypography-root"
               >
                 DEF
               </p>
@@ -112,17 +111,16 @@ exports[`Storyshots activity/ActivityList Beta List 1`] = `
           </div>
         </div>
         <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2"
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root"
         >
           <p
-            class="MuiTypography-root makeStyles-time MuiTypography-body1 MuiTypography-colorTextSecondary"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-time css-3mzles-MuiTypography-root"
           >
             02:55 PM
           </p>
         </div>
-        
         <div
-          class="MuiGrid-root MuiGrid-item"
+          class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
         >
           Channel beta is now pointing to version 0.0.0
         </div>
@@ -137,12 +135,12 @@ exports[`Storyshots activity/ActivityList Empty 1`] = `
   id="root"
 >
   <p
-    class="MuiTypography-root makeStyles-listTitle MuiTypography-body1"
+    class="MuiTypography-root MuiTypography-body1 makeStyles-listTitle css-1ezega9-MuiTypography-root"
   >
     Wednesday, May 13, 2020
   </p>
   <ul
-    class="MuiList-root MuiList-padding"
+    class="MuiList-root MuiList-padding css-h4y409-MuiList-root"
   />
 </div>
 `;
