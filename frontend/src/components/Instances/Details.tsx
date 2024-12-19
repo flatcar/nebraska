@@ -250,6 +250,7 @@ function EditDialog(props: EditDialogProps) {
           <Field
             name="name"
             component={TextField}
+            variant="standard"
             margin="dense"
             label={t('instances|Name')}
             type="text"

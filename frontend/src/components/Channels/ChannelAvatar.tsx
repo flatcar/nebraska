@@ -22,5 +22,5 @@ const useStyles = makeStyles((theme: Theme) => ({
 export default function ChannelAvatar(props: ChannelAvatarProps) {
   const classes = useStyles(props);
 
-  return <Avatar className={classes.colorAvatar}>{props.children || ''}</Avatar>;
+  return <Avatar className={classes.colorAvatar}>{props.children || ' '}</Avatar>;
 }

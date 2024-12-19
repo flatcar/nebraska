@@ -186,6 +186,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
                 <Field
                   name="name"
                   component={TextField}
+                  variant="standard"
                   margin="dense"
                   label={t('frequent|Name')}
                   InputLabelProps={{ shrink: true }}
@@ -199,8 +200,8 @@ export default function ChannelEdit(props: ChannelEditProps) {
               </Grid>
             </Grid>
           </Grid>
-          <FormControl variant="standard" margin="dense" disabled={!isCreation} fullWidth>
-            <InputLabel>Architecture</InputLabel>
+          <FormControl margin="dense" disabled={!isCreation} fullWidth>
+            <InputLabel variant="standard">Architecture</InputLabel>
             <MuiSelect
               variant="standard"
               value={arch}

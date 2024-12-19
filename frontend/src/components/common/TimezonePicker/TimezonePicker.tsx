@@ -27,6 +27,7 @@ interface RenderInputProps {
   classes: {
     inputRoot: string;
     inputInput: string;
+    textFieldRoot: string;
   };
   ref?: React.Ref<any>;
   InputProps: {
@@ -48,6 +49,9 @@ function renderInput(inputProps: RenderInputProps) {
 
   return (
     <TextField
+      classes={{
+        root: classes.textFieldRoot,
+      }}
       InputProps={{
         inputRef: ref,
         classes: {
@@ -108,6 +112,9 @@ const useStyles = makeStyles({
   container: {
     flexGrow: 1,
     position: 'relative',
+  },
+  textFieldRoot: {
+    marginTop: '0.6em',
   },
   inputRoot: {
     flexWrap: 'wrap',
@@ -188,8 +195,10 @@ export default function TimzonePicker(props: {
 
   return (
     <div>
-      <FormControl variant="standard" fullWidth>
-        <InputLabel shrink>Timezone</InputLabel>
+      <FormControl fullWidth>
+        <InputLabel variant="standard" shrink>
+          Timezone
+        </InputLabel>
         <Input
           onClick={onInputActivate}
           value={selectedTimezone}

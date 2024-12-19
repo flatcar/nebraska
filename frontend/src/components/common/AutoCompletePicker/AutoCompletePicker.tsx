@@ -19,6 +19,7 @@ interface RenderInputProps {
   classes: {
     inputRoot: string;
     inputInput: string;
+    textFieldRoot: string;
   };
   ref?: React.Ref<any>;
   fullWidth: boolean;
@@ -41,6 +42,9 @@ function renderInput(inputProps: RenderInputProps) {
 
   return (
     <TextField
+      classes={{
+        root: classes.textFieldRoot,
+      }}
       InputProps={{
         inputRef: ref,
         classes: {
@@ -106,6 +110,9 @@ const useStyles = makeStyles({
   container: {
     flexGrow: 1,
     position: 'relative',
+  },
+  textFieldRoot: {
+    marginTop: '0.6em',
   },
   inputRoot: {
     flexWrap: 'wrap',
@@ -207,8 +214,10 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
 
   return (
     <div>
-      <FormControl variant="standard" fullWidth>
-        <InputLabel shrink>{props.label}</InputLabel>
+      <FormControl fullWidth>
+        <InputLabel variant="standard" shrink>
+          {props.label}
+        </InputLabel>
         <Input
           onClick={() => {
             setShowPicker(true);

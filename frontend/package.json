@@ -97,8 +97,8 @@
     "lint:fix": "eslint -c package.json --fix 'src/**/*.{js,jsx,ts,tsx}'",
     "i18n": "npx --no-install i18next ./src/**/ts* ./src/**/**/*.ts* ./src/**/**/**/*.ts* -c ./src/i18n/i18next-parser.config.js",
     "tsc": "tsc",
-    "storybook": "storybook dev -p 6006 -s public",
-    "build-storybook": "storybook build -s public"
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "browserslist": {
     "production": [

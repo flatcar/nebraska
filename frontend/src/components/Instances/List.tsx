@@ -78,12 +78,11 @@ function InstanceFilter(props: InstanceFilterProps) {
     <Box pr={2}>
       <Grid container spacing={2} justifyContent="flex-end">
         <Grid item xs={5}>
-          <FormControl variant="standard" fullWidth disabled={props.disabled}>
-            <InputLabel htmlFor="select-status" shrink>
+          <FormControl fullWidth disabled={props.disabled}>
+            <InputLabel variant="standard" htmlFor="select-status" shrink>
               {t('instances|Filter Status')}
             </InputLabel>
             <Select
-              variant="standard"
               onChange={(event: any) => changeFilter('status', event.target.value)}
               input={<Input id="select-status" />}
               renderValue={(selected: any) =>
@@ -107,12 +106,11 @@ function InstanceFilter(props: InstanceFilterProps) {
           </FormControl>
         </Grid>
         <Grid item xs={5}>
-          <FormControl variant="standard" fullWidth disabled={props.disabled}>
-            <InputLabel htmlFor="select-versions" shrink>
+          <FormControl fullWidth disabled={props.disabled}>
+            <InputLabel variant="standard" htmlFor="select-versions" shrink>
               {t('instances|Filter Version')}
             </InputLabel>
             <Select
-              variant="standard"
               onChange={(event: SelectChangeEvent<string>) =>
                 changeFilter('version', event.target.value)
               }
@@ -419,7 +417,7 @@ function ListView(props: { application: Application; group: Group }) {
                 </Box>
               </Grid>
               <Grid item>
-                <InputLabel htmlFor="instance-search-filter" shrink>
+                <InputLabel variant="standard" htmlFor="instance-search-filter" shrink>
                   {t('frequent|Search')}
                 </InputLabel>
                 <SearchInput

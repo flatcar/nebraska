@@ -22,6 +22,7 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
           <Field
             name="name"
             component={TextField}
+            variant="standard"
             margin="dense"
             label="Name"
             required
@@ -30,11 +31,14 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
           />
         </Grid>
         <Grid item xs={4}>
-          <FormControl variant="standard" margin="dense" fullWidth>
-            <InputLabel shrink>{t('groups|Channel')}</InputLabel>
+          <FormControl margin="dense" fullWidth>
+            <InputLabel variant="standard" shrink>
+              {t('groups|Channel')}
+            </InputLabel>
             <Field
               name="channel"
               component={Select}
+              variant="standard"
               displayEmpty
               defaultValue={values.channel}
               onChange={(e: any) => {
@@ -56,6 +60,7 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
           <Field
             name="track"
             component={TextField}
+            variant="standard"
             margin="dense"
             label={t('groups|Track (identifier for clients, filled with the group ID if omitted)')}
             fullWidth
@@ -66,6 +71,7 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
           <Field
             name="description"
             component={TextField}
+            variant="standard"
             margin="dense"
             label={t('groups|Description')}
             fullWidth

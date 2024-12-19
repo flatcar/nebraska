@@ -75,6 +75,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
           <Field
             name="name"
             component={TextField}
+            variant="standard"
             margin="dense"
             label={t('frequent|Name')}
             type="text"
@@ -84,6 +85,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
           <Field
             name="product_id"
             component={TextField}
+            variant="standard"
             margin="dense"
             label={t('frequent|Product ID')}
             type="text"
@@ -93,6 +95,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
           <Field
             name="description"
             component={TextField}
+            variant="standard"
             margin="dense"
             label={t('frequent|Description')}
             type="text"
@@ -102,6 +105,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
             <Field
               type="text"
               name="appToClone"
+              variant="standard"
               label={t('applications|Groups/Channels')}
               select
               helperText={t(

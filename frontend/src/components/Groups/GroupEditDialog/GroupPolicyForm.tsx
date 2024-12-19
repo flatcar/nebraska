@@ -125,6 +125,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
               <Field
                 name="maxUpdates"
                 component={TextField}
+                variant="standard"
                 label={t('groups|Max number of updates')}
                 margin="dense"
                 type="number"
@@ -143,6 +144,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
               <Field
                 name="updatesPeriodRange"
                 component={TextField}
+                variant="standard"
                 margin="dense"
                 type="number"
                 fullWidth
@@ -156,6 +158,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
               <Field
                 name="updatesPeriodUnit"
                 component={TextField}
+                variant="standard"
                 margin="dense"
                 select
                 fullWidth
@@ -182,6 +185,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
                 <Field
                   name="updatesTimeout"
                   component={TextField}
+                  variant="standard"
                   margin="dense"
                   type="number"
                   defaultValue={values.updatesTimeout}
@@ -193,6 +197,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
                   <Field
                     name="updatesTimeoutUnit"
                     component={TextField}
+                    variant="standard"
                     margin="dense"
                     select
                     fullWidth

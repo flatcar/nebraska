@@ -141,8 +141,8 @@ function EditDialog(props: EditDialogProps) {
           )}
           <Grid container justifyContent="space-between">
             <Grid item>
-              <FormControl variant="standard" margin="dense" className={classes.topSelect}>
-                <InputLabel>Type</InputLabel>
+              <FormControl margin="dense" className={classes.topSelect}>
+                <InputLabel variant="standard">Type</InputLabel>
                 <MuiSelect
                   variant="standard"
                   value={packageType}
@@ -159,13 +159,12 @@ function EditDialog(props: EditDialogProps) {
             </Grid>
             <Grid item>
               <FormControl
-                variant="standard"
                 margin="dense"
                 fullWidth
                 className={classes.topSelect}
                 disabled={!isCreation}
               >
-                <InputLabel>{t('packages|Architecture')}</InputLabel>
+                <InputLabel variant="standard">{t('packages|Architecture')}</InputLabel>
                 <MuiSelect variant="standard" value={arch} onChange={handleArchChange}>
                   {Object.keys(ARCHES).map((key: string) => {
                     const archName = ARCHES[parseInt(key)];
@@ -191,6 +190,7 @@ function EditDialog(props: EditDialogProps) {
                       <Field
                         name="url"
                         component={TextField}
+                        variant="standard"
                         margin="dense"
                         label={t('packages|URL')}
                         type="url"
@@ -200,6 +200,7 @@ function EditDialog(props: EditDialogProps) {
                       <Field
                         name="filename"
                         component={TextField}
+                        variant="standard"
                         margin="dense"
                         label={t('packages|Filename')}
                         type="text"
@@ -209,6 +210,7 @@ function EditDialog(props: EditDialogProps) {
                       <Field
                         name="description"
                         component={TextField}
+                        variant="standard"
                         margin="dense"
                         label={t('packages|Description')}
                         type="text"
@@ -220,6 +222,7 @@ function EditDialog(props: EditDialogProps) {
                           <Field
                             name="version"
                             component={TextField}
+                            variant="standard"
                             margin="dense"
                             label={t('packages|Version')}
                             type="text"
@@ -232,6 +235,7 @@ function EditDialog(props: EditDialogProps) {
                           <Field
                             name="size"
                             component={TextField}
+                            variant="standard"
                             margin="dense"
                             label={t('packages|Size')}
                             type="number"
@@ -244,6 +248,7 @@ function EditDialog(props: EditDialogProps) {
                       <Field
                         name="hash"
                         component={TextField}
+                        variant="standard"
                         margin="dense"
                         label={t('packages|Hash')}
                         type="text"
@@ -257,6 +262,7 @@ function EditDialog(props: EditDialogProps) {
                         <Field
                           name="flatcarHash"
                           component={TextField}
+                          variant="standard"
                           margin="dense"
                           label={t('packages|Flatcar Action SHA256')}
                           type="text"
@@ -267,11 +273,12 @@ function EditDialog(props: EditDialogProps) {
                           fullWidth
                         />
                       )}
-                      <FormControl variant="standard" margin="dense" fullWidth>
-                        <InputLabel>Channels Blacklist</InputLabel>
+                      <FormControl margin="dense" fullWidth>
+                        <InputLabel variant="standard">Channels Blacklist</InputLabel>
                         <Field
                           name="channelsBlacklist"
                           component={Select}
+                          variant="standard"
                           multiple
                           renderValue={(selected: string[]) =>
                             getChannelsNames(selected).join(' / ')

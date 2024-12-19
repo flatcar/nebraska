@@ -14,6 +14,23 @@ declare module '@mui/material/styles/createPalette' {
 }
 
 const lightTheme = createTheme({
+  components: {
+    MuiSelect: {
+      defaultProps: {
+        variant: 'standard',
+      },
+    },
+    MuiFormControl: {
+      defaultProps: {
+        variant: 'standard',
+      },
+    },
+    MuiTextField: {
+      defaultProps: {
+        variant: 'standard',
+      },
+    },
+  },
   palette: {
     primary: {
       contrastText: '#fff',
@@ -26,6 +43,9 @@ const lightTheme = createTheme({
   },
   typography: {
     fontFamily: 'Overpass, sans-serif',
+    body1: {
+      fontSize: '0.875rem',
+    },
     h1: {
       fontSize: '1.875rem',
       fontWeight: 900,

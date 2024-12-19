@@ -17,10 +17,13 @@ const useStyles = makeStyles({
   toolbar: {
     padding: 0,
   },
-  caption: {
+  select: {
     fontSize: '.85em',
   },
-  select: {
+  selectLabel: {
+    fontSize: '.85em',
+  },
+  displayedRows: {
     fontSize: '.85em',
   },
 });
@@ -101,6 +104,8 @@ function Container() {
 
     return entries;
   }
+
+  console.log(classes);
 
   return (
     <>
