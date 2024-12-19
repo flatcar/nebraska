@@ -10,7 +10,7 @@ exports[`Section Header renders section header correctly 1`] = `
     >
       <nav
         aria-label="breadcrumbs"
-        class="MuiTypography-root MuiTypography-body1 MuiBreadcrumbs-root css-ojlt14-MuiTypography-root-MuiBreadcrumbs-root"
+        class="MuiTypography-root MuiTypography-body1 MuiBreadcrumbs-root css-jgnk98-MuiTypography-root-MuiBreadcrumbs-root"
       >
         <ol
           class="MuiBreadcrumbs-ol css-4pdmu4-MuiBreadcrumbs-ol"
@@ -49,7 +49,7 @@ exports[`Section Header renders section header correctly 1`] = `
             class="MuiBreadcrumbs-li"
           >
             <p
-              class="MuiTypography-root MuiTypography-body1 css-1uzamrc-MuiTypography-root"
+              class="MuiTypography-root MuiTypography-body1 css-1uifdn6-MuiTypography-root"
             >
               Flatcar
             </p>

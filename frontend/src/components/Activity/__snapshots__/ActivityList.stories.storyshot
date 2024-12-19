@@ -5,7 +5,7 @@ exports[`Storyshots activity/ActivityList Beta List 1`] = `
   id="root"
 >
   <p
-    class="MuiTypography-root MuiTypography-body1 makeStyles-listTitle css-1ezega9-MuiTypography-root"
+    class="MuiTypography-root MuiTypography-body1 makeStyles-listTitle css-1s23nr9-MuiTypography-root"
   >
     Wednesday, May 13, 2020
   </p>
@@ -46,7 +46,7 @@ exports[`Storyshots activity/ActivityList Beta List 1`] = `
               class="MuiBox-root css-0"
             >
               <p
-                class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1ezega9-MuiTypography-root"
+                class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1s23nr9-MuiTypography-root"
               >
                 ABC
               </p>
@@ -57,7 +57,7 @@ exports[`Storyshots activity/ActivityList Beta List 1`] = `
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root"
         >
           <p
-            class="MuiTypography-root MuiTypography-body1 makeStyles-time css-3mzles-MuiTypography-root"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-time css-b4h4sf-MuiTypography-root"
           >
             02:56 PM
           </p>
@@ -103,7 +103,7 @@ exports[`Storyshots activity/ActivityList Beta List 1`] = `
               class="MuiBox-root css-0"
             >
               <p
-                class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1ezega9-MuiTypography-root"
+                class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1s23nr9-MuiTypography-root"
               >
                 DEF
               </p>
@@ -114,7 +114,7 @@ exports[`Storyshots activity/ActivityList Beta List 1`] = `
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root"
         >
           <p
-            class="MuiTypography-root MuiTypography-body1 makeStyles-time css-3mzles-MuiTypography-root"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-time css-b4h4sf-MuiTypography-root"
           >
             02:55 PM
           </p>
@@ -135,7 +135,7 @@ exports[`Storyshots activity/ActivityList Empty 1`] = `
   id="root"
 >
   <p
-    class="MuiTypography-root MuiTypography-body1 makeStyles-listTitle css-1ezega9-MuiTypography-root"
+    class="MuiTypography-root MuiTypography-body1 makeStyles-listTitle css-1s23nr9-MuiTypography-root"
   >
     Wednesday, May 13, 2020
   </p>

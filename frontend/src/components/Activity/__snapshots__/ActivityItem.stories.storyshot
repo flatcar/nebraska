@@ -38,7 +38,7 @@ exports[`Storyshots activity/ActivityItem Activity Channel Package Updated 1`] =
             class="MuiBox-root css-0"
           >
             <p
-              class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1ezega9-MuiTypography-root"
+              class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1s23nr9-MuiTypography-root"
             >
               some app
             </p>
@@ -49,7 +49,7 @@ exports[`Storyshots activity/ActivityItem Activity Channel Package Updated 1`] =
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root"
       >
         <p
-          class="MuiTypography-root MuiTypography-body1 makeStyles-time css-3mzles-MuiTypography-root"
+          class="MuiTypography-root MuiTypography-body1 makeStyles-time css-b4h4sf-MuiTypography-root"
         >
           02:56 PM
         </p>
@@ -102,7 +102,7 @@ exports[`Storyshots activity/ActivityItem Warning 1`] = `
             class="MuiBox-root css-0"
           >
             <p
-              class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1ezega9-MuiTypography-root"
+              class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1s23nr9-MuiTypography-root"
             >
               some app
             </p>
@@ -113,7 +113,7 @@ exports[`Storyshots activity/ActivityItem Warning 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root"
       >
         <p
-          class="MuiTypography-root MuiTypography-body1 makeStyles-time css-3mzles-MuiTypography-root"
+          class="MuiTypography-root MuiTypography-body1 makeStyles-time css-b4h4sf-MuiTypography-root"
         >
           02:56 PM
         </p>
@@ -125,7 +125,7 @@ exports[`Storyshots activity/ActivityItem Warning 1`] = `
           class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
         >
           <p
-            class="MuiTypography-root MuiTypography-body1 css-1mbqoep-MuiTypography-root"
+            class="MuiTypography-root MuiTypography-body1 css-cb7ys4-MuiTypography-root"
           >
             GROUP
           </p>

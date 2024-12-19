@@ -42,7 +42,7 @@ exports[`Storyshots groups/GroupItem Group 1`] = `
               >
                 <p
                   arial-label="group-id"
-                  class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-14wn2h6-MuiTypography-root"
+                  class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-1s94icn-MuiTypography-root"
                 >
                   stable
                 </p>
@@ -51,7 +51,7 @@ exports[`Storyshots groups/GroupItem Group 1`] = `
                 class="MuiBox-root css-1yuhvjn"
               >
                 <span
-                  class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1ezega9-MuiTypography-root"
+                  class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1s23nr9-MuiTypography-root"
                 >
                   For production clusters (ARM)
                 </span>
@@ -103,7 +103,7 @@ exports[`Storyshots groups/GroupItem Group 1`] = `
             class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
           >
             <span
-              class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1ezega9-MuiTypography-root"
+              class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
             >
               Instances
             </span>
@@ -111,7 +111,7 @@ exports[`Storyshots groups/GroupItem Group 1`] = `
               class="MuiBox-root css-0"
             >
               <span
-                class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1ezega9-MuiTypography-root"
+                class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
               >
                 2
               </span>
@@ -136,7 +136,7 @@ exports[`Storyshots groups/GroupItem Group 1`] = `
                   class="MuiBox-root css-1hsc5oo"
                 >
                   <p
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-last24hours css-1ezega9-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-last24hours css-1s23nr9-MuiTypography-root"
                   >
                     last 24 hours
                   </p>
@@ -159,7 +159,7 @@ exports[`Storyshots groups/GroupItem Group 1`] = `
             class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
           >
             <span
-              class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1ezega9-MuiTypography-root"
+              class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
             >
               Channel
             </span>
@@ -212,7 +212,7 @@ exports[`Storyshots groups/GroupItem Group 1`] = `
             class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
           >
             <span
-              class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1ezega9-MuiTypography-root"
+              class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
             >
               Updates
             </span>
@@ -220,7 +220,7 @@ exports[`Storyshots groups/GroupItem Group 1`] = `
               class="MuiBox-root css-1hply4a"
             >
               <span
-                class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1ezega9-MuiTypography-root"
+                class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
               >
                 <div
                   class="MuiBox-root css-k008qs"
@@ -253,7 +253,7 @@ exports[`Storyshots groups/GroupItem Group 1`] = `
             class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
           >
             <span
-              class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1ezega9-MuiTypography-root"
+              class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
             >
               Rollout Policy
             </span>
@@ -261,7 +261,7 @@ exports[`Storyshots groups/GroupItem Group 1`] = `
               class="MuiBox-root css-1hply4a"
             >
               <span
-                class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1ezega9-MuiTypography-root"
+                class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
               >
                 Unlimited number of parallel updates
               </span>
@@ -274,7 +274,7 @@ exports[`Storyshots groups/GroupItem Group 1`] = `
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
             >
               <span
-                class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1ezega9-MuiTypography-root"
+                class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
               >
                 Version breakdown
               </span>
@@ -286,7 +286,7 @@ exports[`Storyshots groups/GroupItem Group 1`] = `
                 class="MuiBox-root css-19midj6"
               >
                 <p
-                  class="MuiTypography-root MuiTypography-body1 MuiTypography-alignCenter css-18lkse1-MuiTypography-root"
+                  class="MuiTypography-root MuiTypography-body1 MuiTypography-alignCenter css-ii1goy-MuiTypography-root"
                   data-testid="empty"
                 >
                   No instances available.
@@ -343,7 +343,7 @@ exports[`Storyshots groups/GroupItem Loading 1`] = `
               >
                 <p
                   arial-label="group-id"
-                  class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-14wn2h6-MuiTypography-root"
+                  class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-1s94icn-MuiTypography-root"
                 >
                   stable
                 </p>
@@ -352,7 +352,7 @@ exports[`Storyshots groups/GroupItem Loading 1`] = `
                 class="MuiBox-root css-1yuhvjn"
               >
                 <span
-                  class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1ezega9-MuiTypography-root"
+                  class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1s23nr9-MuiTypography-root"
                 >
                   For production clusters (ARM)
                 </span>
@@ -404,7 +404,7 @@ exports[`Storyshots groups/GroupItem Loading 1`] = `
             class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
           >
             <span
-              class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1ezega9-MuiTypography-root"
+              class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
             >
               Instances
             </span>
@@ -412,13 +412,13 @@ exports[`Storyshots groups/GroupItem Loading 1`] = `
               class="MuiBox-root css-0"
             >
               <span
-                class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1ezega9-MuiTypography-root"
+                class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
               >
                 <div
                   class="MuiBox-root css-19midj6"
                 >
                   <p
-                    class="MuiTypography-root MuiTypography-body1 MuiTypography-alignCenter css-18lkse1-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 MuiTypography-alignCenter css-ii1goy-MuiTypography-root"
                     data-testid="empty"
                   >
                     Loading...
@@ -446,7 +446,7 @@ exports[`Storyshots groups/GroupItem Loading 1`] = `
                   class="MuiBox-root css-1hsc5oo"
                 >
                   <p
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-last24hours css-1ezega9-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-last24hours css-1s23nr9-MuiTypography-root"
                   >
                     last 24 hours
                   </p>
@@ -469,7 +469,7 @@ exports[`Storyshots groups/GroupItem Loading 1`] = `
             class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
           >
             <span
-              class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1ezega9-MuiTypography-root"
+              class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
             >
               Channel
             </span>
@@ -522,7 +522,7 @@ exports[`Storyshots groups/GroupItem Loading 1`] = `
             class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
           >
             <span
-              class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1ezega9-MuiTypography-root"
+              class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
             >
               Updates
             </span>
@@ -530,7 +530,7 @@ exports[`Storyshots groups/GroupItem Loading 1`] = `
               class="MuiBox-root css-1hply4a"
             >
               <span
-                class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1ezega9-MuiTypography-root"
+                class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
               >
                 <div
                   class="MuiBox-root css-k008qs"
@@ -563,7 +563,7 @@ exports[`Storyshots groups/GroupItem Loading 1`] = `
             class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
           >
             <span
-              class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1ezega9-MuiTypography-root"
+              class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
             >
               Rollout Policy
             </span>
@@ -571,7 +571,7 @@ exports[`Storyshots groups/GroupItem Loading 1`] = `
               class="MuiBox-root css-1hply4a"
             >
               <span
-                class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1ezega9-MuiTypography-root"
+                class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
               >
                 Unlimited number of parallel updates
               </span>
@@ -584,7 +584,7 @@ exports[`Storyshots groups/GroupItem Loading 1`] = `
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
             >
               <span
-                class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1ezega9-MuiTypography-root"
+                class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
               >
                 Version breakdown
               </span>
@@ -596,7 +596,7 @@ exports[`Storyshots groups/GroupItem Loading 1`] = `
                 class="MuiBox-root css-19midj6"
               >
                 <p
-                  class="MuiTypography-root MuiTypography-body1 MuiTypography-alignCenter css-18lkse1-MuiTypography-root"
+                  class="MuiTypography-root MuiTypography-body1 MuiTypography-alignCenter css-ii1goy-MuiTypography-root"
                   data-testid="empty"
                 >
                   Loading...

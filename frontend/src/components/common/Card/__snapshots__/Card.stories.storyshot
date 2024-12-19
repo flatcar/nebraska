@@ -8,7 +8,7 @@ exports[`Storyshots Card Description Label 1`] = `
     class="MuiBox-root css-1yuhvjn"
   >
     <span
-      class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1ezega9-MuiTypography-root"
+      class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1s23nr9-MuiTypography-root"
     >
       Description Label
     </span>
@@ -21,7 +21,7 @@ exports[`Storyshots Card Feature Label 1`] = `
   id="root"
 >
   <span
-    class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1ezega9-MuiTypography-root"
+    class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
   >
     Feature Label
   </span>
@@ -60,7 +60,7 @@ exports[`Storyshots Card Header 1`] = `
         >
           <p
             arial-label="group-id"
-            class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-14wn2h6-MuiTypography-root"
+            class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-1s94icn-MuiTypography-root"
           >
             a cardTrack
           </p>
@@ -69,7 +69,7 @@ exports[`Storyshots Card Header 1`] = `
           class="MuiBox-root css-1yuhvjn"
         >
           <span
-            class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1ezega9-MuiTypography-root"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1s23nr9-MuiTypography-root"
           >
             Card Header description
           </span>
@@ -102,7 +102,7 @@ exports[`Storyshots Card Header With Card Id 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
       >
         <p
-          class="MuiTypography-root MuiTypography-body1 makeStyles-cardTitle css-1ezega9-MuiTypography-root"
+          class="MuiTypography-root MuiTypography-body1 makeStyles-cardTitle css-1s23nr9-MuiTypography-root"
         />
       </div>
       <div
@@ -113,7 +113,7 @@ exports[`Storyshots Card Header With Card Id 1`] = `
         >
           <p
             arial-label="group-id"
-            class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-14wn2h6-MuiTypography-root"
+            class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-1s94icn-MuiTypography-root"
           >
             a cardId
           </p>
@@ -122,7 +122,7 @@ exports[`Storyshots Card Header With Card Id 1`] = `
           class="MuiBox-root css-1yuhvjn"
         >
           <span
-            class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1ezega9-MuiTypography-root"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1s23nr9-MuiTypography-root"
           >
             Card Header With cardId description
           </span>
@@ -150,7 +150,7 @@ exports[`Storyshots Card Header With Card Track 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
       >
         <p
-          class="MuiTypography-root MuiTypography-body1 makeStyles-cardTitle css-1ezega9-MuiTypography-root"
+          class="MuiTypography-root MuiTypography-body1 makeStyles-cardTitle css-1s23nr9-MuiTypography-root"
         />
       </div>
       <div
@@ -161,7 +161,7 @@ exports[`Storyshots Card Header With Card Track 1`] = `
         >
           <p
             arial-label="group-id"
-            class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-14wn2h6-MuiTypography-root"
+            class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-1s94icn-MuiTypography-root"
           >
             a cardTrack
           </p>
@@ -170,7 +170,7 @@ exports[`Storyshots Card Header With Card Track 1`] = `
           class="MuiBox-root css-1yuhvjn"
         >
           <span
-            class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1ezega9-MuiTypography-root"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1s23nr9-MuiTypography-root"
           >
             Card Header With cardTrack description
           </span>
@@ -198,7 +198,7 @@ exports[`Storyshots Card Header With Children 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
       >
         <p
-          class="MuiTypography-root MuiTypography-body1 makeStyles-cardTitle css-1ezega9-MuiTypography-root"
+          class="MuiTypography-root MuiTypography-body1 makeStyles-cardTitle css-1s23nr9-MuiTypography-root"
         />
       </div>
       <div
@@ -209,14 +209,14 @@ exports[`Storyshots Card Header With Children 1`] = `
         >
           <p
             arial-label="group-id"
-            class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-14wn2h6-MuiTypography-root"
+            class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-1s94icn-MuiTypography-root"
           />
         </div>
         <div
           class="MuiBox-root css-1yuhvjn"
         >
           <span
-            class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1ezega9-MuiTypography-root"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1s23nr9-MuiTypography-root"
           >
             Card Header With Children description
           </span>
@@ -249,7 +249,7 @@ exports[`Storyshots Card Header With Description 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
       >
         <p
-          class="MuiTypography-root MuiTypography-body1 makeStyles-cardTitle css-1ezega9-MuiTypography-root"
+          class="MuiTypography-root MuiTypography-body1 makeStyles-cardTitle css-1s23nr9-MuiTypography-root"
         />
       </div>
       <div
@@ -260,14 +260,14 @@ exports[`Storyshots Card Header With Description 1`] = `
         >
           <p
             arial-label="group-id"
-            class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-14wn2h6-MuiTypography-root"
+            class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-1s94icn-MuiTypography-root"
           />
         </div>
         <div
           class="MuiBox-root css-1yuhvjn"
         >
           <span
-            class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1ezega9-MuiTypography-root"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1s23nr9-MuiTypography-root"
           >
             Card Header description
           </span>
@@ -313,14 +313,14 @@ exports[`Storyshots Card Header With Link 1`] = `
         >
           <p
             arial-label="group-id"
-            class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-14wn2h6-MuiTypography-root"
+            class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-1s94icn-MuiTypography-root"
           />
         </div>
         <div
           class="MuiBox-root css-1yuhvjn"
         >
           <span
-            class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1ezega9-MuiTypography-root"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1s23nr9-MuiTypography-root"
           >
             Card Header With Link description
           </span>
@@ -339,7 +339,7 @@ exports[`Storyshots Card Label 1`] = `
   id="root"
 >
   <span
-    class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1ezega9-MuiTypography-root"
+    class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
   >
     Label
   </span>
@@ -351,7 +351,7 @@ exports[`Storyshots Card Label With Styles 1`] = `
   id="root"
 >
   <span
-    class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1ezega9-MuiTypography-root"
+    class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
   >
     Label
   </span>

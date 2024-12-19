@@ -31,7 +31,7 @@ exports[`Storyshots activity/ActivityContainer Empty 1`] = `
         class="MuiBox-root css-19midj6"
       >
         <p
-          class="MuiTypography-root MuiTypography-body1 MuiTypography-alignCenter css-18lkse1-MuiTypography-root"
+          class="MuiTypography-root MuiTypography-body1 MuiTypography-alignCenter css-ii1goy-MuiTypography-root"
           data-testid="empty"
         >
           No activity found for the last week.
@@ -79,7 +79,7 @@ exports[`Storyshots activity/ActivityContainer List 1`] = `
           class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
         >
           <p
-            class="MuiTypography-root MuiTypography-body1 makeStyles-listTitle css-1ezega9-MuiTypography-root"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-listTitle css-1s23nr9-MuiTypography-root"
           >
             Wednesday, May 13, 2020
           </p>
@@ -120,7 +120,7 @@ exports[`Storyshots activity/ActivityContainer List 1`] = `
                       class="MuiBox-root css-0"
                     >
                       <p
-                        class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1ezega9-MuiTypography-root"
+                        class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1s23nr9-MuiTypography-root"
                       >
                         ABC
                       </p>
@@ -131,7 +131,7 @@ exports[`Storyshots activity/ActivityContainer List 1`] = `
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root"
                 >
                   <p
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-time css-3mzles-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-time css-b4h4sf-MuiTypography-root"
                   >
                     02:56 PM
                   </p>
@@ -177,7 +177,7 @@ exports[`Storyshots activity/ActivityContainer List 1`] = `
                       class="MuiBox-root css-0"
                     >
                       <p
-                        class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1ezega9-MuiTypography-root"
+                        class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1s23nr9-MuiTypography-root"
                       >
                         DEF
                       </p>
@@ -188,7 +188,7 @@ exports[`Storyshots activity/ActivityContainer List 1`] = `
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root"
                 >
                   <p
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-time css-3mzles-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-time css-b4h4sf-MuiTypography-root"
                   >
                     02:55 PM
                   </p>
@@ -215,12 +215,12 @@ exports[`Storyshots activity/ActivityContainer List 1`] = `
                 class="MuiTablePagination-spacer css-1psng7p-MuiTablePagination-spacer"
               />
               <p
-                class="MuiTablePagination-selectLabel css-tjonbb-MuiTablePagination-selectLabel"
+                class="MuiTablePagination-selectLabel makeStyles-selectLabel css-tjonbb-MuiTablePagination-selectLabel"
               >
                 Rows per page:
               </p>
               <div
-                class="MuiInputBase-root MuiInputBase-colorPrimary MuiTablePagination-input css-nofh0z-MuiInputBase-root-MuiTablePagination-select"
+                class="MuiInputBase-root MuiInputBase-colorPrimary MuiTablePagination-input css-1iqud9t-MuiInputBase-root-MuiTablePagination-select"
               >
                 <div
                   aria-expanded="false"
@@ -251,7 +251,7 @@ exports[`Storyshots activity/ActivityContainer List 1`] = `
                 </svg>
               </div>
               <p
-                class="MuiTablePagination-displayedRows css-m2d60k-MuiTablePagination-displayedRows"
+                class="MuiTablePagination-displayedRows makeStyles-displayedRows css-m2d60k-MuiTablePagination-displayedRows"
               >
                 1–2 of 2
               </p>
@@ -342,7 +342,7 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
           class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
         >
           <p
-            class="MuiTypography-root MuiTypography-body1 makeStyles-listTitle css-1ezega9-MuiTypography-root"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-listTitle css-1s23nr9-MuiTypography-root"
           >
             Wednesday, May 13, 2020
           </p>
@@ -383,7 +383,7 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
                       class="MuiBox-root css-0"
                     >
                       <p
-                        class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1ezega9-MuiTypography-root"
+                        class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1s23nr9-MuiTypography-root"
                       >
                         ABC
                       </p>
@@ -394,7 +394,7 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root"
                 >
                   <p
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-time css-3mzles-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-time css-b4h4sf-MuiTypography-root"
                   >
                     02:56 PM
                   </p>
@@ -440,7 +440,7 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
                       class="MuiBox-root css-0"
                     >
                       <p
-                        class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1ezega9-MuiTypography-root"
+                        class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1s23nr9-MuiTypography-root"
                       >
                         DEF
                       </p>
@@ -451,7 +451,7 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root"
                 >
                   <p
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-time css-3mzles-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-time css-b4h4sf-MuiTypography-root"
                   >
                     02:55 PM
                   </p>
@@ -465,7 +465,7 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
             </li>
           </ul>
           <p
-            class="MuiTypography-root MuiTypography-body1 makeStyles-listTitle css-1ezega9-MuiTypography-root"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-listTitle css-1s23nr9-MuiTypography-root"
           >
             Thursday, May 14, 2020
           </p>
@@ -506,7 +506,7 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
                       class="MuiBox-root css-0"
                     >
                       <p
-                        class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1ezega9-MuiTypography-root"
+                        class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1s23nr9-MuiTypography-root"
                       >
                         DEB
                       </p>
@@ -517,7 +517,7 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root"
                 >
                   <p
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-time css-3mzles-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-time css-b4h4sf-MuiTypography-root"
                   >
                     02:56 PM
                   </p>
@@ -563,7 +563,7 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
                       class="MuiBox-root css-0"
                     >
                       <p
-                        class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1ezega9-MuiTypography-root"
+                        class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1s23nr9-MuiTypography-root"
                       >
                         DOF
                       </p>
@@ -574,7 +574,7 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root"
                 >
                   <p
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-time css-3mzles-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-time css-b4h4sf-MuiTypography-root"
                   >
                     02:55 PM
                   </p>
@@ -620,7 +620,7 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
                       class="MuiBox-root css-0"
                     >
                       <p
-                        class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1ezega9-MuiTypography-root"
+                        class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1s23nr9-MuiTypography-root"
                       >
                         DAL
                       </p>
@@ -631,7 +631,7 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root"
                 >
                   <p
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-time css-3mzles-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-time css-b4h4sf-MuiTypography-root"
                   >
                     02:56 PM
                   </p>
@@ -658,12 +658,12 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
                 class="MuiTablePagination-spacer css-1psng7p-MuiTablePagination-spacer"
               />
               <p
-                class="MuiTablePagination-selectLabel css-tjonbb-MuiTablePagination-selectLabel"
+                class="MuiTablePagination-selectLabel makeStyles-selectLabel css-tjonbb-MuiTablePagination-selectLabel"
               >
                 Rows per page:
               </p>
               <div
-                class="MuiInputBase-root MuiInputBase-colorPrimary MuiTablePagination-input css-nofh0z-MuiInputBase-root-MuiTablePagination-select"
+                class="MuiInputBase-root MuiInputBase-colorPrimary MuiTablePagination-input css-1iqud9t-MuiInputBase-root-MuiTablePagination-select"
               >
                 <div
                   aria-expanded="false"
@@ -694,7 +694,7 @@ exports[`Storyshots activity/ActivityContainer Multiple Days 1`] = `
                 </svg>
               </div>
               <p
-                class="MuiTablePagination-displayedRows css-m2d60k-MuiTablePagination-displayedRows"
+                class="MuiTablePagination-displayedRows makeStyles-displayedRows css-m2d60k-MuiTablePagination-displayedRows"
               >
                 1–5 of 6
               </p>

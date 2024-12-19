@@ -93,7 +93,7 @@ exports[`Storyshots applications/ApplicationList Applications 1`] = `
                   >
                     <p
                       arial-label="group-id"
-                      class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-14wn2h6-MuiTypography-root"
+                      class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-1s94icn-MuiTypography-root"
                     >
                       xxx-xxx-yyy
                     </p>
@@ -102,7 +102,7 @@ exports[`Storyshots applications/ApplicationList Applications 1`] = `
                     class="MuiBox-root css-1yuhvjn"
                   >
                     <span
-                      class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1ezega9-MuiTypography-root"
+                      class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1s23nr9-MuiTypography-root"
                     >
                       App Item Description
                     </span>
@@ -157,12 +157,12 @@ exports[`Storyshots applications/ApplicationList Applications 1`] = `
                   class="MuiBox-root css-1yuhvjn"
                 >
                   <span
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1ezega9-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
                   >
                     INSTANCES
                   </span>
                   <span
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1ezega9-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
                   >
                     <h5
                       class="MuiTypography-root MuiTypography-h5 css-xqgeko-MuiTypography-root"
@@ -213,7 +213,7 @@ exports[`Storyshots applications/ApplicationList Applications 1`] = `
                   class="MuiBox-root css-10wfmn8"
                 >
                   <span
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1ezega9-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
                   >
                     Groups
                   </span>
@@ -221,7 +221,7 @@ exports[`Storyshots applications/ApplicationList Applications 1`] = `
                     class="MuiBox-root css-1t04ftt"
                   >
                     <span
-                      class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1ezega9-MuiTypography-root"
+                      class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
                     >
                       1
                     </span>
@@ -280,17 +280,7 @@ exports[`Storyshots applications/ApplicationList Applications 1`] = `
                           <div
                             class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
                           >
-                            <svg
-                              aria-hidden="true"
-                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiAvatar-fallback css-10mi8st-MuiSvgIcon-root-MuiAvatar-fallback"
-                              data-testid="PersonIcon"
-                              focusable="false"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-                              />
-                            </svg>
+                             
                           </div>
                         </div>
                         <div
@@ -399,7 +389,7 @@ exports[`Storyshots applications/ApplicationList Applications 1`] = `
                   >
                     <p
                       arial-label="group-id"
-                      class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-14wn2h6-MuiTypography-root"
+                      class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-1s94icn-MuiTypography-root"
                     >
                       xxx-xxx-yyy
                     </p>
@@ -408,7 +398,7 @@ exports[`Storyshots applications/ApplicationList Applications 1`] = `
                     class="MuiBox-root css-1yuhvjn"
                   >
                     <span
-                      class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1ezega9-MuiTypography-root"
+                      class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1s23nr9-MuiTypography-root"
                     >
                       App Item Description
                     </span>
@@ -463,12 +453,12 @@ exports[`Storyshots applications/ApplicationList Applications 1`] = `
                   class="MuiBox-root css-1yuhvjn"
                 >
                   <span
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1ezega9-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
                   >
                     INSTANCES
                   </span>
                   <span
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1ezega9-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
                   >
                     <h5
                       class="MuiTypography-root MuiTypography-h5 css-xqgeko-MuiTypography-root"
@@ -519,7 +509,7 @@ exports[`Storyshots applications/ApplicationList Applications 1`] = `
                   class="MuiBox-root css-10wfmn8"
                 >
                   <span
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1ezega9-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
                   >
                     Groups
                   </span>
@@ -527,7 +517,7 @@ exports[`Storyshots applications/ApplicationList Applications 1`] = `
                     class="MuiBox-root css-1t04ftt"
                   >
                     <span
-                      class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1ezega9-MuiTypography-root"
+                      class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
                     >
                       1
                     </span>
@@ -586,17 +576,7 @@ exports[`Storyshots applications/ApplicationList Applications 1`] = `
                           <div
                             class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
                           >
-                            <svg
-                              aria-hidden="true"
-                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiAvatar-fallback css-10mi8st-MuiSvgIcon-root-MuiAvatar-fallback"
-                              data-testid="PersonIcon"
-                              focusable="false"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-                              />
-                            </svg>
+                             
                           </div>
                         </div>
                         <div
@@ -765,7 +745,7 @@ exports[`Storyshots applications/ApplicationList Edit Open 1`] = `
                   >
                     <p
                       arial-label="group-id"
-                      class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-14wn2h6-MuiTypography-root"
+                      class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-1s94icn-MuiTypography-root"
                     >
                       xxx-xxx-yyy
                     </p>
@@ -774,7 +754,7 @@ exports[`Storyshots applications/ApplicationList Edit Open 1`] = `
                     class="MuiBox-root css-1yuhvjn"
                   >
                     <span
-                      class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1ezega9-MuiTypography-root"
+                      class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1s23nr9-MuiTypography-root"
                     >
                       App Item Description
                     </span>
@@ -829,12 +809,12 @@ exports[`Storyshots applications/ApplicationList Edit Open 1`] = `
                   class="MuiBox-root css-1yuhvjn"
                 >
                   <span
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1ezega9-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
                   >
                     INSTANCES
                   </span>
                   <span
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1ezega9-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
                   >
                     <h5
                       class="MuiTypography-root MuiTypography-h5 css-xqgeko-MuiTypography-root"
@@ -885,7 +865,7 @@ exports[`Storyshots applications/ApplicationList Edit Open 1`] = `
                   class="MuiBox-root css-10wfmn8"
                 >
                   <span
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1ezega9-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
                   >
                     Groups
                   </span>
@@ -893,7 +873,7 @@ exports[`Storyshots applications/ApplicationList Edit Open 1`] = `
                     class="MuiBox-root css-1t04ftt"
                   >
                     <span
-                      class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1ezega9-MuiTypography-root"
+                      class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
                     >
                       1
                     </span>
@@ -952,17 +932,7 @@ exports[`Storyshots applications/ApplicationList Edit Open 1`] = `
                           <div
                             class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
                           >
-                            <svg
-                              aria-hidden="true"
-                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiAvatar-fallback css-10mi8st-MuiSvgIcon-root-MuiAvatar-fallback"
-                              data-testid="PersonIcon"
-                              focusable="false"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-                              />
-                            </svg>
+                             
                           </div>
                         </div>
                         <div
@@ -1071,7 +1041,7 @@ exports[`Storyshots applications/ApplicationList Edit Open 1`] = `
                   >
                     <p
                       arial-label="group-id"
-                      class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-14wn2h6-MuiTypography-root"
+                      class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-1s94icn-MuiTypography-root"
                     >
                       xxx-xxx-yyy
                     </p>
@@ -1080,7 +1050,7 @@ exports[`Storyshots applications/ApplicationList Edit Open 1`] = `
                     class="MuiBox-root css-1yuhvjn"
                   >
                     <span
-                      class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1ezega9-MuiTypography-root"
+                      class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1s23nr9-MuiTypography-root"
                     >
                       App Item Description
                     </span>
@@ -1135,12 +1105,12 @@ exports[`Storyshots applications/ApplicationList Edit Open 1`] = `
                   class="MuiBox-root css-1yuhvjn"
                 >
                   <span
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1ezega9-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
                   >
                     INSTANCES
                   </span>
                   <span
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1ezega9-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
                   >
                     <h5
                       class="MuiTypography-root MuiTypography-h5 css-xqgeko-MuiTypography-root"
@@ -1191,7 +1161,7 @@ exports[`Storyshots applications/ApplicationList Edit Open 1`] = `
                   class="MuiBox-root css-10wfmn8"
                 >
                   <span
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1ezega9-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
                   >
                     Groups
                   </span>
@@ -1199,7 +1169,7 @@ exports[`Storyshots applications/ApplicationList Edit Open 1`] = `
                     class="MuiBox-root css-1t04ftt"
                   >
                     <span
-                      class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1ezega9-MuiTypography-root"
+                      class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
                     >
                       1
                     </span>
@@ -1258,17 +1228,7 @@ exports[`Storyshots applications/ApplicationList Edit Open 1`] = `
                           <div
                             class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
                           >
-                            <svg
-                              aria-hidden="true"
-                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiAvatar-fallback css-10mi8st-MuiSvgIcon-root-MuiAvatar-fallback"
-                              data-testid="PersonIcon"
-                              focusable="false"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-                              />
-                            </svg>
+                             
                           </div>
                         </div>
                         <div
@@ -1521,7 +1481,7 @@ exports[`Storyshots applications/ApplicationList Search Term 1`] = `
                   >
                     <p
                       arial-label="group-id"
-                      class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-14wn2h6-MuiTypography-root"
+                      class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-1s94icn-MuiTypography-root"
                     >
                       xxx-xxx-yyy
                     </p>
@@ -1530,7 +1490,7 @@ exports[`Storyshots applications/ApplicationList Search Term 1`] = `
                     class="MuiBox-root css-1yuhvjn"
                   >
                     <span
-                      class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1ezega9-MuiTypography-root"
+                      class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1s23nr9-MuiTypography-root"
                     >
                       App Item Description
                     </span>
@@ -1585,12 +1545,12 @@ exports[`Storyshots applications/ApplicationList Search Term 1`] = `
                   class="MuiBox-root css-1yuhvjn"
                 >
                   <span
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1ezega9-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
                   >
                     INSTANCES
                   </span>
                   <span
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1ezega9-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
                   >
                     <h5
                       class="MuiTypography-root MuiTypography-h5 css-xqgeko-MuiTypography-root"
@@ -1641,7 +1601,7 @@ exports[`Storyshots applications/ApplicationList Search Term 1`] = `
                   class="MuiBox-root css-10wfmn8"
                 >
                   <span
-                    class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1ezega9-MuiTypography-root"
+                    class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
                   >
                     Groups
                   </span>
@@ -1649,7 +1609,7 @@ exports[`Storyshots applications/ApplicationList Search Term 1`] = `
                     class="MuiBox-root css-1t04ftt"
                   >
                     <span
-                      class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1ezega9-MuiTypography-root"
+                      class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
                     >
                       1
                     </span>
@@ -1708,17 +1668,7 @@ exports[`Storyshots applications/ApplicationList Search Term 1`] = `
                           <div
                             class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
                           >
-                            <svg
-                              aria-hidden="true"
-                              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiAvatar-fallback css-10mi8st-MuiSvgIcon-root-MuiAvatar-fallback"
-                              data-testid="PersonIcon"
-                              focusable="false"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-                              />
-                            </svg>
+                             
                           </div>
                         </div>
                         <div
