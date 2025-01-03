@@ -105,8 +105,6 @@ function Container() {
     return entries;
   }
 
-  console.log(classes);
-
   return (
     <>
       <ListHeader title={t('activity|Activity')} />

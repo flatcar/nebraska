@@ -1,7 +1,7 @@
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import Link from '@mui/material/Link';
-import makeStyles from '@mui/styles/makeStyles';
+import { visuallyHidden } from '@mui/utils';
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import API from '../api/API';
@@ -19,26 +19,9 @@ import InstanceListLayout from './layouts/InstanceListLayout';
 import MainLayout from './layouts/MainLayout';
 import PageNotFoundLayout from './layouts/PageNotFoundLayout';
 
-const useStyle = makeStyles(() => ({
-  // importing visuallyHidden has typing issues at time of writing.
-  // import { visuallyHidden } from '@mui/utils';
-  visuallyHidden: {
-    border: 0,
-    clip: 'rect(0 0 0 0)',
-    height: '1px',
-    margin: -1,
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    whiteSpace: 'nowrap',
-    width: '1px',
-  },
-}));
-
 function SkipLink() {
-  const classes = useStyle();
   return (
-    <Link href="#main" className={classes.visuallyHidden} underline="hover">
+    <Link href="#main" sx={visuallyHidden} underline="hover">
       Skip to main content
     </Link>
   );
