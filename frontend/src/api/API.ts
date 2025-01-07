@@ -34,6 +34,10 @@ type REQUEST_DATA_TYPE =
   | null
   | undefined;
 
+function isNotNullUndefinedOrEmptyString(val: any) {
+  return val !== undefined && val !== null && val !== '';
+}
+
 export default class API {
   // Applications
 
@@ -158,7 +162,7 @@ export default class API {
 
     if (queryOptions) {
       Object.keys(queryOptions).forEach(key => {
-        if (queryOptions[key] !== undefined && queryOptions[key] !== null) {
+        if (isNotNullUndefinedOrEmptyString(queryOptions[key])) {
           params.append(key, queryOptions[key]);
         }
       });
@@ -204,7 +208,7 @@ export default class API {
     const params = new URLSearchParams();
 
     Object.keys(queryOptions).forEach(key => {
-      if (queryOptions[key] !== undefined && queryOptions[key] !== null) {
+      if (isNotNullUndefinedOrEmptyString(queryOptions[key])) {
         params.append(key, queryOptions[key]);
       }
     });
