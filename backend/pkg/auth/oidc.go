@@ -162,8 +162,12 @@ func (oa *oidcAuth) ValidateToken(c echo.Context) error {
 	refreshToken := session.Get("refresh_token")
 	if refreshToken == nil {
 		logger.Debug().Str("request_id", requestID).Msg("ValidateToken, Refresh token not found in session")
-		httpError(c, http.StatusUnauthorized)
-		return nil
+		refreshToken = refreshTokenFromRequest(c)
+		if refreshToken == "" {
+			logger.Debug().Str("request_id", requestID).Msg("ValidateToken, Refresh token not found in request")
+			httpError(c, http.StatusUnauthorized)
+			return nil
+		}
 	}
 
 	_, err := oa.verifier.Verify(ctx, token)
@@ -340,6 +344,11 @@ func tokenFromRequest(c echo.Context) string {
 	return c.Request().URL.Query().Get("id_token")
 }
 
+// refreshTokenFromRequest extracts refresh token from custom request header. If Refresh-Token header is not present will fail.
+func refreshTokenFromRequest(c echo.Context) string {
+	return c.Request().Header.Get("Refresh-Token")
+}
+
 // rolesFromToken extracts roles from a token. Returns empty array if not present.
 func rolesFromToken(token *oidc.IDToken, rolesPath string) ([]string, error) {
 	roles := []string{}
@@ -382,8 +391,12 @@ func (oa *oidcAuth) Authenticate(c echo.Context) (teamID string, replied bool) {
 	refreshToken := session.Get("refresh_token")
 	if refreshToken == nil {
 		logger.Debug().Str("request_id", requestID).Msg("Refresh token not found in session")
-		httpError(c, http.StatusUnauthorized)
-		return "", true
+		refreshToken = refreshTokenFromRequest(c)
+		if refreshToken == "" {
+			logger.Debug().Str("request_id", requestID).Msg("Refresh token not found in request")
+			httpError(c, http.StatusUnauthorized)
+			return "", true
+		}
 	}
 
 	// Verify Token
