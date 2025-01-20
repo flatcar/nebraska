@@ -1,8 +1,9 @@
-import { Box, makeStyles } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import MuiList from '@material-ui/core/List';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import Typography from '@material-ui/core/Typography';
+import { Box } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import MuiList from '@mui/material/List';
+import ListSubheader from '@mui/material/ListSubheader';
+import Typography from '@mui/material/Typography';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
@@ -161,7 +162,7 @@ export function ChannelListPure(props: ChannelListPureProps) {
   return (
     <Box mt={2}>
       <Box mb={2}>
-        <Grid container alignItems="center" justify="space-between">
+        <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
             <Typography variant="h1">{t('channels|Channels')}</Typography>
           </Grid>

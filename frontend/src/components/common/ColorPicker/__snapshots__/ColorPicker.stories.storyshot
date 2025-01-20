@@ -6,26 +6,22 @@ exports[`Storyshots ColorPickerButton Closed 1`] = `
 >
   <div>
     <button
-      class="MuiButtonBase-root MuiIconButton-root makeStyles-iconButton"
+      class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeLarge makeStyles-iconButton css-mf1cb5-MuiButtonBase-root-MuiIconButton-root"
       data-testid="icon-button"
       tabindex="0"
       type="button"
     >
-      <span
-        class="MuiIconButton-label"
+      <div
+        class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-1onlcy6-MuiAvatar-root"
       >
         <div
-          class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+          class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-1onlcy6-MuiAvatar-root"
         >
-          <div
-            class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
-          >
-            Beta
-          </div>
+          Beta
         </div>
-      </span>
+      </div>
       <span
-        class="MuiTouchRipple-root"
+        class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
       />
     </button>
   </div>
@@ -38,26 +34,22 @@ exports[`Storyshots ColorPickerButton Open 1`] = `
 >
   <div>
     <button
-      class="MuiButtonBase-root MuiIconButton-root makeStyles-iconButton"
+      class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeLarge makeStyles-iconButton css-mf1cb5-MuiButtonBase-root-MuiIconButton-root"
       data-testid="icon-button"
       tabindex="0"
       type="button"
     >
-      <span
-        class="MuiIconButton-label"
+      <div
+        class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-1onlcy6-MuiAvatar-root"
       >
         <div
-          class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
+          class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-1onlcy6-MuiAvatar-root"
         >
-          <div
-            class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
-          >
-            Beta
-          </div>
+          Beta
         </div>
-      </span>
+      </div>
       <span
-        class="MuiTouchRipple-root"
+        class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
       />
     </button>
   </div>

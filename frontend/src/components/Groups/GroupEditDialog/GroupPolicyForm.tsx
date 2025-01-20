@@ -1,3 +1,4 @@
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import {
   Box,
   Divider,
@@ -9,10 +10,9 @@ import {
   Switch,
   Tooltip,
   Typography,
-} from '@material-ui/core';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+} from '@mui/material';
 import { Field } from 'formik';
-import { TextField } from 'formik-material-ui';
+import { TextField } from 'formik-mui';
 import { useTranslation } from 'react-i18next';
 import TimezonePicker from '../../common/TimezonePicker';
 
@@ -27,7 +27,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
 
   return (
     <div style={{ padding: '1rem' }}>
-      <Grid container justify="space-between" spacing={4}>
+      <Grid container justifyContent="space-between" spacing={4}>
         <Grid item xs={12}>
           <Box mt={1}>
             <FormLabel component="legend">{t('groups|Update')}</FormLabel>
@@ -119,12 +119,13 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
         </Grid>
       </Box>
       <Box my={2}>
-        <Grid item xs={12} container spacing={2} justify="space-between" alignItems="center">
+        <Grid item xs={12} container spacing={2} justifyContent="space-between" alignItems="center">
           <Grid item xs={5}>
             <Box pl={2}>
               <Field
                 name="maxUpdates"
                 component={TextField}
+                variant="standard"
                 label={t('groups|Max number of updates')}
                 margin="dense"
                 type="number"
@@ -143,6 +144,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
               <Field
                 name="updatesPeriodRange"
                 component={TextField}
+                variant="standard"
                 margin="dense"
                 type="number"
                 fullWidth
@@ -156,6 +158,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
               <Field
                 name="updatesPeriodUnit"
                 component={TextField}
+                variant="standard"
                 margin="dense"
                 select
                 fullWidth
@@ -182,6 +185,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
                 <Field
                   name="updatesTimeout"
                   component={TextField}
+                  variant="standard"
                   margin="dense"
                   type="number"
                   defaultValue={values.updatesTimeout}
@@ -193,6 +197,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
                   <Field
                     name="updatesTimeoutUnit"
                     component={TextField}
+                    variant="standard"
                     margin="dense"
                     select
                     fullWidth

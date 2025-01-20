@@ -1,11 +1,11 @@
 import squareIcon from '@iconify/icons-mdi/square';
 import { InlineIcon } from '@iconify/react';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
-import TableRow from '@material-ui/core/TableRow';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Empty from '../EmptyContent/EmptyContent';
@@ -87,8 +87,8 @@ export default function SimpleTable(props: SimpleTableProps) {
           nextIconButtonProps={{
             'aria-label': t('frequent|next page'),
           }}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
         />
       )}
     </React.Fragment>

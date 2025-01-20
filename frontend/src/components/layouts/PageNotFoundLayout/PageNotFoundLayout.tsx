@@ -1,4 +1,4 @@
-import { Grid, Typography } from '@material-ui/core';
+import { Grid, Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import pageNotFoundGraphic from './404.svg';
@@ -12,7 +12,7 @@ export default function PageNotFoundLayout() {
       spacing={0}
       direction="column"
       alignItems="center"
-      justify="center"
+      justifyContent="center"
       style={{ minHeight: '100vh', textAlign: 'center' }}
     >
       <Grid item xs={6}>

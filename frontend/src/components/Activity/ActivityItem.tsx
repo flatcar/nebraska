@@ -1,8 +1,9 @@
-import { Box, makeStyles } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
-import ListItem from '@material-ui/core/ListItem';
-import Typography from '@material-ui/core/Typography';
+import { Box } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import Link from '@mui/material/Link';
+import ListItem from '@mui/material/ListItem';
+import Typography from '@mui/material/Typography';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
@@ -77,7 +78,7 @@ export function ActivityItemPure(props: ActivityItemPureProps) {
     const groupPath = `apps/${props.appId}/groups/${props.groupId}`;
     subtitle = t('activity|GROUP');
     name = (
-      <Link component={RouterLink} to={groupPath} className={classes.groupLink}>
+      <Link component={RouterLink} to={groupPath} className={classes.groupLink} underline="hover">
         {props.groupName}
       </Link>
     );
@@ -85,7 +86,7 @@ export function ActivityItemPure(props: ActivityItemPureProps) {
 
   return (
     <ListItem alignItems="flex-start" disableGutters className={classes.list}>
-      <Grid container alignItems="center" justify="space-between">
+      <Grid container alignItems="center" justifyContent="space-between">
         <Grid item xs={10}>
           <Box display="flex" alignItems="center" justifyContent="flex-start">
             <Box mr={1}>

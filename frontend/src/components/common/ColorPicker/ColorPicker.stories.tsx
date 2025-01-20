@@ -1,24 +1,30 @@
-import { Meta, Story } from '@storybook/react/types-6-0';
+import { Meta, StoryObj } from '@storybook/react';
 import ChannelAvatar from '../../Channels/ChannelAvatar';
-import ColorPicker, { ColorPickerProps } from './ColorPicker';
+import ColorPicker from './ColorPicker';
 
-export default {
+const meta: Meta<typeof ColorPicker> = {
   title: 'ColorPickerButton',
+  component: ColorPicker,
   argTypes: {
     onColorPicked: { action: 'onColorPicked' },
   },
-} as Meta;
+};
+export default meta;
 
-const ColorPickerButtonTemplate: Story<ColorPickerProps> = args => <ColorPicker {...args} />;
-export const Closed = ColorPickerButtonTemplate.bind({});
-Closed.args = {
-  color: '#EB144C',
-  children: <ChannelAvatar>Beta</ChannelAvatar>,
-  initialOpen: false,
+type Story = StoryObj<typeof ColorPicker>;
+
+export const Closed: Story = {
+  args: {
+    color: '#EB144C',
+    children: <ChannelAvatar>Beta</ChannelAvatar>,
+    initialOpen: false,
+  },
 };
 
-export const Open = ColorPickerButtonTemplate.bind({});
-Open.args = {
-  ...Closed.args,
-  initialOpen: true,
+export const Open: Story = {
+  args: {
+    color: '#EB144C',
+    children: <ChannelAvatar>Beta</ChannelAvatar>,
+    initialOpen: true,
+  },
 };

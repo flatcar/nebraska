@@ -1,6 +1,6 @@
-import { FormControl, Grid, InputLabel, MenuItem, Select } from '@material-ui/core';
+import { FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
 import { Field } from 'formik';
-import { TextField } from 'formik-material-ui';
+import { TextField } from 'formik-mui';
 import { useTranslation } from 'react-i18next';
 import { Channel } from '../../../api/apiDataTypes';
 import { ARCHES } from '../../../utils/helpers';
@@ -17,11 +17,12 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
 
   return (
     <div style={{ padding: '1rem' }}>
-      <Grid container spacing={2} justify="center">
+      <Grid container spacing={2} justifyContent="center">
         <Grid item xs={8}>
           <Field
             name="name"
             component={TextField}
+            variant="standard"
             margin="dense"
             label="Name"
             required
@@ -31,10 +32,13 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
         </Grid>
         <Grid item xs={4}>
           <FormControl margin="dense" fullWidth>
-            <InputLabel shrink>{t('groups|Channel')}</InputLabel>
+            <InputLabel variant="standard" shrink>
+              {t('groups|Channel')}
+            </InputLabel>
             <Field
               name="channel"
               component={Select}
+              variant="standard"
               displayEmpty
               defaultValue={values.channel}
               onChange={(e: any) => {
@@ -56,6 +60,7 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
           <Field
             name="track"
             component={TextField}
+            variant="standard"
             margin="dense"
             label={t('groups|Track (identifier for clients, filled with the group ID if omitted)')}
             fullWidth
@@ -66,6 +71,7 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
           <Field
             name="description"
             component={TextField}
+            variant="standard"
             margin="dense"
             label={t('groups|Description')}
             fullWidth

@@ -1,7 +1,7 @@
-import Container from '@material-ui/core/Container';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
+import Container from '@mui/material/Container';
+import CssBaseline from '@mui/material/CssBaseline';
+import Link from '@mui/material/Link';
+import { visuallyHidden } from '@mui/utils';
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import API from '../api/API';
@@ -19,25 +19,16 @@ import InstanceListLayout from './layouts/InstanceListLayout';
 import MainLayout from './layouts/MainLayout';
 import PageNotFoundLayout from './layouts/PageNotFoundLayout';
 
-const useStyle = makeStyles(() => ({
-  // importing visuallyHidden has typing issues at time of writing.
-  // import { visuallyHidden } from '@material-ui/utils';
-  visuallyHidden: {
-    border: 0,
-    clip: 'rect(0 0 0 0)',
-    height: '1px',
-    margin: -1,
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    whiteSpace: 'nowrap',
-    width: '1px',
-  },
-}));
+function SkipLink() {
+  return (
+    <Link href="#main" sx={visuallyHidden} underline="hover">
+      Skip to main content
+    </Link>
+  );
+}
 
 export default function Main() {
   const dispatch = useDispatch();
-  const classes = useStyle();
   // let themeName = useTypedSelector(state => state.ui.theme.name);
   let themeName = 'light';
   usePrefersColorScheme();
@@ -58,10 +49,7 @@ export default function Main() {
   return (
     <ThemeProviderNexti18n theme={themes[themeName]}>
       <CssBaseline />
-      <Link href="#main" className={classes.visuallyHidden}>
-        Skip to main content
-      </Link>
-
+      <SkipLink />
       <Header />
       <Container component="main" id="main">
         <Switch>

@@ -6,20 +6,20 @@ exports[`Storyshots AutoCompletePicker Closed 1`] = `
 >
   <div>
     <div
-      class="MuiFormControl-root MuiFormControl-fullWidth"
+      class="MuiFormControl-root MuiFormControl-fullWidth css-q8hpuo-MuiFormControl-root"
     >
       <label
-        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiFormLabel-filled"
+        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-standard MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-standard css-dyxksa-MuiFormLabel-root-MuiInputLabel-root"
         data-shrink="true"
       >
         Package
       </label>
       <div
-        class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-formControl MuiInput-formControl"
+        class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-colorPrimary MuiInputBase-formControl Mui-readOnly MuiInputBase-readOnly css-t6baui-MuiInputBase-root-MuiInput-root"
       >
         <input
           aria-invalid="false"
-          class="MuiInputBase-input MuiInput-input makeStyles-pickerButtonInput"
+          class="MuiInputBase-input MuiInput-input Mui-readOnly makeStyles-pickerButtonInput MuiInputBase-readOnly css-1x51dt5-MuiInputBase-input-MuiInput-input"
           placeholder="Pick a package"
           readonly=""
           type="text"
@@ -37,20 +37,20 @@ exports[`Storyshots AutoCompletePicker Open 1`] = `
 >
   <div>
     <div
-      class="MuiFormControl-root MuiFormControl-fullWidth"
+      class="MuiFormControl-root MuiFormControl-fullWidth css-q8hpuo-MuiFormControl-root"
     >
       <label
-        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiFormLabel-filled"
+        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-standard MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-standard css-dyxksa-MuiFormLabel-root-MuiInputLabel-root"
         data-shrink="true"
       >
         Package
       </label>
       <div
-        class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-formControl MuiInput-formControl"
+        class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-colorPrimary MuiInputBase-formControl Mui-readOnly MuiInputBase-readOnly css-t6baui-MuiInputBase-root-MuiInput-root"
       >
         <input
           aria-invalid="false"
-          class="MuiInputBase-input MuiInput-input makeStyles-pickerButtonInput"
+          class="MuiInputBase-input MuiInput-input Mui-readOnly makeStyles-pickerButtonInput MuiInputBase-readOnly css-1x51dt5-MuiInputBase-input-MuiInput-input"
           placeholder="Pick a package"
           readonly=""
           type="text"

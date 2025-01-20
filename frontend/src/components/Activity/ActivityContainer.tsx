@@ -1,8 +1,8 @@
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import { makeStyles } from '@material-ui/core/styles';
-import TablePagination from '@material-ui/core/TablePagination';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import TablePagination from '@mui/material/TablePagination';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import _ from 'underscore';
@@ -17,10 +17,13 @@ const useStyles = makeStyles({
   toolbar: {
     padding: 0,
   },
-  caption: {
+  select: {
     fontSize: '.85em',
   },
-  select: {
+  selectLabel: {
+    fontSize: '.85em',
+  },
+  displayedRows: {
     fontSize: '.85em',
   },
 });
@@ -142,8 +145,8 @@ function Container() {
                   nextIconButtonProps={{
                     'aria-label': t('activity|next page'),
                   }}
-                  onChangePage={handleChangePage}
-                  onChangeRowsPerPage={handleChangeRowsPerPage}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
                 />
               </Grid>
             </Grid>

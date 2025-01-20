@@ -1,8 +1,8 @@
 import { IconifyIcon, InlineIcon } from '@iconify/react';
-import { Theme } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles, useTheme } from '@material-ui/styles';
+import { Theme } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { makeStyles, useTheme } from '@mui/styles';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Cell, Label, Pie, PieChart } from 'recharts';
@@ -96,7 +96,7 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
   });
 
   return (
-    <Grid container direction="column" justify="center" alignItems="center">
+    <Grid container direction="column" justifyContent="center" alignItems="center">
       <Grid item>
         <PieChart width={width} height={height}>
           <Pie
@@ -142,7 +142,7 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
           </Pie>
         </PieChart>
       </Grid>
-      <Grid item container alignItems="center" justify="center" spacing={1}>
+      <Grid item container alignItems="center" justifyContent="center" spacing={1}>
         {icon && (
           <Grid item>
             <InlineIcon icon={icon} color={color} width={iconSize} height={iconSize} />
@@ -236,11 +236,11 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
   }
 
   return totalInstances > 0 ? (
-    <Grid container justify="space-between" alignItems="center">
+    <Grid container justifyContent="space-between" alignItems="center">
       <Grid item xs={4}>
         <InstanceCountLabel countText={totalInstances} href={href} />
       </Grid>
-      <Grid item container justify="space-between" xs={8}>
+      <Grid item container justifyContent="space-between" xs={8}>
         {instanceStateCount.map(({ status, count }, i) => {
           // Sort the data entries so the smaller amounts are shown first.
           count.sort((obj1, obj2) => {

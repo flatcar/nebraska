@@ -5,29 +5,29 @@ exports[`Storyshots applications/ApplicationItem Application 1`] = `
   id="root"
 >
   <li
-    class="MuiListItem-root makeStyles-root MuiListItem-divider makeStyles-divider"
+    class="MuiListItem-root MuiListItem-padding MuiListItem-divider makeStyles-divider makeStyles-root css-1oz7m58-MuiListItem-root"
     data-testid="list-item"
   >
     <div
-      class="MuiGrid-root MuiGrid-container"
+      class="MuiGrid-root MuiGrid-container css-11lq3yg-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
       >
         <div
-          class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+          class="MuiGrid-root MuiGrid-container makeStyles-gridHeader css-1xzqqmo-MuiGrid-root"
         >
           <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+            class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-1 css-j1w48a-MuiGrid-root"
           >
             <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
             >
               <h2
-                class="MuiTypography-root MuiTypography-h2"
+                class="MuiTypography-root MuiTypography-h2 css-150084s-MuiTypography-root"
               >
                 <a
-                  class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-mainLink MuiTypography-colorPrimary"
+                  class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-mainLink css-1emptwe-MuiTypography-root-MuiLink-root"
                   href="/apps/123"
                 >
                   ABC
@@ -35,23 +35,23 @@ exports[`Storyshots applications/ApplicationItem Application 1`] = `
               </h2>
             </div>
             <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
             >
               <div
-                class="MuiBox-root MuiBox-root"
+                class="MuiBox-root css-1yq8yj7"
               >
                 <p
                   arial-label="group-id"
-                  class="MuiTypography-root makeStyles-idLabel MuiTypography-body1 MuiTypography-noWrap"
+                  class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-1s94icn-MuiTypography-root"
                 >
                   xxx-xxx-yyy
                 </p>
               </div>
               <div
-                class="MuiBox-root MuiBox-root"
+                class="MuiBox-root css-1yuhvjn"
               >
                 <span
-                  class="MuiTypography-root makeStyles-descriptionLabel MuiTypography-body1"
+                  class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1s23nr9-MuiTypography-root"
                 >
                   App Item Description
                 </span>
@@ -59,89 +59,87 @@ exports[`Storyshots applications/ApplicationItem Application 1`] = `
             </div>
           </div>
           <div
-            class="MuiGrid-root MuiGrid-item"
+            class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
           >
             <div>
               <button
-                aria-controls="simple-menu-2"
+                aria-controls="simple-menu-1"
                 aria-haspopup="true"
                 aria-label="Open menu"
-                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd"
+                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-1pux6rn-MuiButtonBase-root-MuiIconButton-root"
                 data-testid="more-menu-open-button"
                 tabindex="0"
                 type="button"
               >
-                <span
-                  class="MuiIconButton-label"
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                  data-testid="MoreVertIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
-                    />
-                  </svg>
-                </span>
+                  <path
+                    d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2"
+                  />
+                </svg>
                 <span
-                  class="MuiTouchRipple-root"
+                  class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
                 />
               </button>
             </div>
           </div>
         </div>
         <hr
-          class="MuiDivider-root makeStyles-innerDivider MuiDivider-light"
+          class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light makeStyles-innerDivider css-xetjfm-MuiDivider-root"
         />
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
       >
         <div
-          class="MuiGrid-root makeStyles-itemSection MuiGrid-container"
+          class="MuiGrid-root MuiGrid-container makeStyles-itemSection css-11lq3yg-MuiGrid-root"
         >
           <div
-            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4 css-gj1fbr-MuiGrid-root"
           >
             <div
-              class="MuiBox-root MuiBox-root"
+              class="MuiBox-root css-1yuhvjn"
             >
               <span
-                class="MuiTypography-root makeStyles-featureLabel MuiTypography-body1"
+                class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
               >
                 INSTANCES
               </span>
               <span
-                class="MuiTypography-root makeStyles-label makeStyles-label MuiTypography-body1"
+                class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
               >
                 <h5
-                  class="MuiTypography-root MuiTypography-h5"
+                  class="MuiTypography-root MuiTypography-h5 css-xqgeko-MuiTypography-root"
                 >
                   1
                 </h5>
                 <div
-                  class="MuiBox-root MuiBox-root"
+                  class="MuiBox-root css-1jzjbfr"
                 >
                   <svg
                     aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSvgIcon-colorDisabled"
+                    class="MuiSvgIcon-root MuiSvgIcon-colorDisabled MuiSvgIcon-fontSizeMedium css-1db085k-MuiSvgIcon-root"
+                    data-testid="ScheduleIcon"
                     focusable="false"
                     viewBox="0 0 24 24"
                   >
                     <path
-                      d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                      d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8"
                     />
                     <path
                       d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
                     />
                   </svg>
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-1hsc5oo"
                   >
                     <h6
-                      class="MuiTypography-root MuiTypography-subtitle1"
+                      class="MuiTypography-root MuiTypography-subtitle1 css-15qi99c-MuiTypography-root"
                     >
                       last 24 hours
                     </h6>
@@ -151,66 +149,67 @@ exports[`Storyshots applications/ApplicationItem Application 1`] = `
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root"
+            class="MuiBox-root css-1pelcm7"
           >
             <hr
-              class="MuiDivider-root MuiDivider-vertical"
+              class="MuiDivider-root MuiDivider-fullWidth MuiDivider-vertical css-ftc7wc-MuiDivider-root"
             />
           </div>
           <div
-            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-7"
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-7 css-uqwprf-MuiGrid-root"
           >
             <div
-              class="MuiBox-root MuiBox-root"
+              class="MuiBox-root css-10wfmn8"
             >
               <span
-                class="MuiTypography-root makeStyles-featureLabel MuiTypography-body1"
+                class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
               >
                 Groups
               </span>
               <div
-                class="MuiBox-root MuiBox-root"
+                class="MuiBox-root css-1t04ftt"
               >
                 <span
-                  class="MuiTypography-root makeStyles-label makeStyles-label MuiTypography-body1"
+                  class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
                 >
                   1
                 </span>
               </div>
               <div
-                class="MuiBox-root MuiBox-root"
+                class="MuiBox-root css-164r41r"
               >
                 <div
-                  class="MuiBox-root MuiBox-root"
+                  class="MuiBox-root css-1ckupud"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-126n10b"
                   >
                     <a
-                      class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-groupLink MuiTypography-colorPrimary"
+                      class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-groupLink css-1emptwe-MuiTypography-root-MuiLink-root"
                       href="/apps//groups/xxx-xxx-1"
                     >
                       First group
                     </a>
                   </div>
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-qiye2o"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root"
+                      class="MuiBox-root css-k008qs"
                     >
                       <svg
                         aria-hidden="true"
-                        class="MuiSvgIcon-root"
+                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                        data-testid="LayersOutlinedIcon"
                         focusable="false"
                         viewBox="0 0 24 24"
                       >
                         <path
-                          d="M11.99 18.54l-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27L12 16zm0-11.47L17.74 9 12 13.47 6.26 9 12 4.53z"
+                          d="m11.99 18.54-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27zm0-11.47L17.74 9 12 13.47 6.26 9z"
                         />
                       </svg>
                       <div
-                        class="MuiBox-root MuiBox-root"
+                        class="MuiBox-root css-7ieh0i"
                       >
                         -1
                       </div>
@@ -219,59 +218,63 @@ exports[`Storyshots applications/ApplicationItem Application 1`] = `
                   </div>
                 </div>
                 <div
-                  class="MuiListItem-root MuiListItem-gutters"
+                  class="MuiListItem-root MuiListItem-gutters MuiListItem-padding css-1i06p90-MuiListItem-root"
                 >
                   <div
-                    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+                    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root"
                   >
                     <div
-                      class="MuiGrid-root MuiGrid-item"
+                      class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
                     >
                       <div
-                        class="MuiAvatar-root MuiAvatar-circle makeStyles-colorAvatar makeStyles-colorAvatar MuiAvatar-colorDefault"
-                      />
+                        class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-1onlcy6-MuiAvatar-root"
+                      >
+                         
+                      </div>
                     </div>
                     <div
-                      class="MuiGrid-root MuiGrid-item"
+                      class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
                     >
                       <div
-                        class="MuiListItemText-root makeStyles-root MuiListItemText-multiline"
+                        class="MuiListItemText-root MuiListItemText-multiline makeStyles-root css-konndc-MuiListItemText-root"
                       >
                         <div
-                          class="MuiBox-root MuiBox-root"
+                          class="MuiBox-root css-70qvj9"
                         >
                           <div
-                            class="MuiBox-root MuiBox-root"
+                            class="MuiBox-root css-1xsd608"
                           >
                             main
                           </div>
                         </div>
                         <div
-                          class="MuiBox-root MuiBox-root"
+                          class="MuiBox-root css-15aqakd"
                         >
                           <div
-                            class="MuiBox-root MuiBox-root"
+                            class="MuiBox-root css-0"
                           >
                             1.11.3 (ALL)
                           </div>
                           <div
-                            class="MuiBox-root MuiBox-root"
+                            class="MuiBox-root css-n085mf"
                           >
                             <div
-                              class="MuiBox-root MuiBox-root"
+                              class="MuiBox-root css-k008qs"
                             >
                               <div
-                                class="MuiBox-root MuiBox-root"
+                                class="MuiBox-root css-0"
                               >
                                 <svg
                                   aria-hidden="true"
-                                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                                  aria-label="Release date"
+                                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-ptiqhd-MuiSvgIcon-root"
+                                  data-mui-internal-clone-element="true"
+                                  data-testid="ScheduleIcon"
                                   focusable="false"
-                                  title="Release date"
                                   viewBox="0 0 24 24"
                                 >
                                   <path
-                                    d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                                    d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8"
                                   />
                                   <path
                                     d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
@@ -279,7 +282,7 @@ exports[`Storyshots applications/ApplicationItem Application 1`] = `
                                 </svg>
                               </div>
                               <div
-                                class="MuiBox-root MuiBox-root"
+                                class="MuiBox-root css-1iuj5ih"
                               >
                                 07/18/2019
                               </div>
@@ -305,29 +308,29 @@ exports[`Storyshots applications/ApplicationItem No Groups 1`] = `
   id="root"
 >
   <li
-    class="MuiListItem-root makeStyles-root MuiListItem-divider makeStyles-divider"
+    class="MuiListItem-root MuiListItem-padding MuiListItem-divider makeStyles-divider makeStyles-root css-1oz7m58-MuiListItem-root"
     data-testid="list-item"
   >
     <div
-      class="MuiGrid-root MuiGrid-container"
+      class="MuiGrid-root MuiGrid-container css-11lq3yg-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
       >
         <div
-          class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+          class="MuiGrid-root MuiGrid-container makeStyles-gridHeader css-1xzqqmo-MuiGrid-root"
         >
           <div
-            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+            class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-1 css-j1w48a-MuiGrid-root"
           >
             <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
             >
               <h2
-                class="MuiTypography-root MuiTypography-h2"
+                class="MuiTypography-root MuiTypography-h2 css-150084s-MuiTypography-root"
               >
                 <a
-                  class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-mainLink MuiTypography-colorPrimary"
+                  class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-mainLink css-1emptwe-MuiTypography-root-MuiLink-root"
                   href="/apps/123"
                 >
                   ABC
@@ -335,23 +338,23 @@ exports[`Storyshots applications/ApplicationItem No Groups 1`] = `
               </h2>
             </div>
             <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
             >
               <div
-                class="MuiBox-root MuiBox-root"
+                class="MuiBox-root css-1yq8yj7"
               >
                 <p
                   arial-label="group-id"
-                  class="MuiTypography-root makeStyles-idLabel MuiTypography-body1 MuiTypography-noWrap"
+                  class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-1s94icn-MuiTypography-root"
                 >
                   xxx-xxx-yyy
                 </p>
               </div>
               <div
-                class="MuiBox-root MuiBox-root"
+                class="MuiBox-root css-1yuhvjn"
               >
                 <span
-                  class="MuiTypography-root makeStyles-descriptionLabel MuiTypography-body1"
+                  class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1s23nr9-MuiTypography-root"
                 >
                   App Item Description
                 </span>
@@ -359,89 +362,87 @@ exports[`Storyshots applications/ApplicationItem No Groups 1`] = `
             </div>
           </div>
           <div
-            class="MuiGrid-root MuiGrid-item"
+            class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
           >
             <div>
               <button
-                aria-controls="simple-menu-1"
+                aria-controls="simple-menu-2"
                 aria-haspopup="true"
                 aria-label="Open menu"
-                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd"
+                class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-1pux6rn-MuiButtonBase-root-MuiIconButton-root"
                 data-testid="more-menu-open-button"
                 tabindex="0"
                 type="button"
               >
-                <span
-                  class="MuiIconButton-label"
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                  data-testid="MoreVertIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
-                    />
-                  </svg>
-                </span>
+                  <path
+                    d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2"
+                  />
+                </svg>
                 <span
-                  class="MuiTouchRipple-root"
+                  class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
                 />
               </button>
             </div>
           </div>
         </div>
         <hr
-          class="MuiDivider-root makeStyles-innerDivider MuiDivider-light"
+          class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light makeStyles-innerDivider css-xetjfm-MuiDivider-root"
         />
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
       >
         <div
-          class="MuiGrid-root makeStyles-itemSection MuiGrid-container"
+          class="MuiGrid-root MuiGrid-container makeStyles-itemSection css-11lq3yg-MuiGrid-root"
         >
           <div
-            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4"
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4 css-gj1fbr-MuiGrid-root"
           >
             <div
-              class="MuiBox-root MuiBox-root"
+              class="MuiBox-root css-1yuhvjn"
             >
               <span
-                class="MuiTypography-root makeStyles-featureLabel MuiTypography-body1"
+                class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
               >
                 INSTANCES
               </span>
               <span
-                class="MuiTypography-root makeStyles-label makeStyles-label MuiTypography-body1"
+                class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
               >
                 <h5
-                  class="MuiTypography-root MuiTypography-h5"
+                  class="MuiTypography-root MuiTypography-h5 css-xqgeko-MuiTypography-root"
                 >
                   1
                 </h5>
                 <div
-                  class="MuiBox-root MuiBox-root"
+                  class="MuiBox-root css-1jzjbfr"
                 >
                   <svg
                     aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSvgIcon-colorDisabled"
+                    class="MuiSvgIcon-root MuiSvgIcon-colorDisabled MuiSvgIcon-fontSizeMedium css-1db085k-MuiSvgIcon-root"
+                    data-testid="ScheduleIcon"
                     focusable="false"
                     viewBox="0 0 24 24"
                   >
                     <path
-                      d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                      d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8"
                     />
                     <path
                       d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"
                     />
                   </svg>
                   <div
-                    class="MuiBox-root MuiBox-root"
+                    class="MuiBox-root css-1hsc5oo"
                   >
                     <h6
-                      class="MuiTypography-root MuiTypography-subtitle1"
+                      class="MuiTypography-root MuiTypography-subtitle1 css-15qi99c-MuiTypography-root"
                     >
                       last 24 hours
                     </h6>
@@ -451,28 +452,28 @@ exports[`Storyshots applications/ApplicationItem No Groups 1`] = `
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root"
+            class="MuiBox-root css-1pelcm7"
           >
             <hr
-              class="MuiDivider-root MuiDivider-vertical"
+              class="MuiDivider-root MuiDivider-fullWidth MuiDivider-vertical css-ftc7wc-MuiDivider-root"
             />
           </div>
           <div
-            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-7"
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-7 css-uqwprf-MuiGrid-root"
           >
             <div
-              class="MuiBox-root MuiBox-root"
+              class="MuiBox-root css-10wfmn8"
             >
               <span
-                class="MuiTypography-root makeStyles-featureLabel MuiTypography-body1"
+                class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
               >
                 Groups
               </span>
               <div
-                class="MuiBox-root MuiBox-root"
+                class="MuiBox-root css-1t04ftt"
               >
                 <span
-                  class="MuiTypography-root makeStyles-label makeStyles-label MuiTypography-body1"
+                  class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
                 >
                   None
                 </span>

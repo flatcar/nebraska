@@ -1,14 +1,14 @@
-import green from '@material-ui/core/colors/green';
-import { createMuiTheme } from '@material-ui/core/styles';
+import { green } from '@mui/material/colors';
+import { createTheme } from '@mui/material/styles';
 
-export const theme = createMuiTheme({
+export const theme = createTheme({
   palette: {
     primary: {
       contrastText: '#fff',
       main: process.env.REACT_APP_PRIMARY_COLOR || '#000',
     },
     success: {
-      main: green['500'],
+      main: green['800'],
       ...green,
     },
   },

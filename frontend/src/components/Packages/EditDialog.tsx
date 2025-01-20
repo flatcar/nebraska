@@ -1,21 +1,21 @@
-import { Box } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
-import MuiSelect from '@material-ui/core/Select';
-import { makeStyles } from '@material-ui/core/styles';
+import { Box } from '@mui/material';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import ListItemText from '@mui/material/ListItemText';
+import MenuItem from '@mui/material/MenuItem';
+import MuiSelect, { SelectChangeEvent } from '@mui/material/Select';
+import makeStyles from '@mui/styles/makeStyles';
 import { Field, Form, Formik } from 'formik';
-import { Select, TextField } from 'formik-material-ui';
+import { Select, TextField } from 'formik-mui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
@@ -74,11 +74,11 @@ function EditDialog(props: EditDialogProps) {
     });
   }
 
-  function handlePackageTypeChange(event: React.ChangeEvent<{ name?: string; value: unknown }>) {
+  function handlePackageTypeChange(event: SelectChangeEvent<number>) {
     setPackageType(event.target.value as number);
   }
 
-  function handleArchChange(event: React.ChangeEvent<{ name?: string; value: unknown }>) {
+  function handleArchChange(event: SelectChangeEvent<number>) {
     setArch(event.target.value as number);
   }
   //@todo add better types
@@ -139,11 +139,15 @@ function EditDialog(props: EditDialogProps) {
           {status && status.statusMessage && (
             <DialogContentText color="error">{status.statusMessage}</DialogContentText>
           )}
-          <Grid container justify="space-between">
+          <Grid container justifyContent="space-between">
             <Grid item>
               <FormControl margin="dense" className={classes.topSelect}>
-                <InputLabel>Type</InputLabel>
-                <MuiSelect value={packageType} onChange={handlePackageTypeChange}>
+                <InputLabel variant="standard">Type</InputLabel>
+                <MuiSelect
+                  variant="standard"
+                  value={packageType}
+                  onChange={handlePackageTypeChange}
+                >
                   <MenuItem value={otherType} key="other">
                     {t('packages|Other')}
                   </MenuItem>
@@ -160,8 +164,8 @@ function EditDialog(props: EditDialogProps) {
                 className={classes.topSelect}
                 disabled={!isCreation}
               >
-                <InputLabel>{t('packages|Architecture')}</InputLabel>
-                <MuiSelect value={arch} onChange={handleArchChange}>
+                <InputLabel variant="standard">{t('packages|Architecture')}</InputLabel>
+                <MuiSelect variant="standard" value={arch} onChange={handleArchChange}>
                   {Object.keys(ARCHES).map((key: string) => {
                     const archName = ARCHES[parseInt(key)];
                     return (
@@ -186,6 +190,7 @@ function EditDialog(props: EditDialogProps) {
                       <Field
                         name="url"
                         component={TextField}
+                        variant="standard"
                         margin="dense"
                         label={t('packages|URL')}
                         type="url"
@@ -195,6 +200,7 @@ function EditDialog(props: EditDialogProps) {
                       <Field
                         name="filename"
                         component={TextField}
+                        variant="standard"
                         margin="dense"
                         label={t('packages|Filename')}
                         type="text"
@@ -204,17 +210,19 @@ function EditDialog(props: EditDialogProps) {
                       <Field
                         name="description"
                         component={TextField}
+                        variant="standard"
                         margin="dense"
                         label={t('packages|Description')}
                         type="text"
                         required
                         fullWidth
                       />
-                      <Grid container justify="space-between" spacing={4}>
+                      <Grid container justifyContent="space-between" spacing={4}>
                         <Grid item xs={6}>
                           <Field
                             name="version"
                             component={TextField}
+                            variant="standard"
                             margin="dense"
                             label={t('packages|Version')}
                             type="text"
@@ -227,6 +235,7 @@ function EditDialog(props: EditDialogProps) {
                           <Field
                             name="size"
                             component={TextField}
+                            variant="standard"
                             margin="dense"
                             label={t('packages|Size')}
                             type="number"
@@ -239,6 +248,7 @@ function EditDialog(props: EditDialogProps) {
                       <Field
                         name="hash"
                         component={TextField}
+                        variant="standard"
                         margin="dense"
                         label={t('packages|Hash')}
                         type="text"
@@ -252,6 +262,7 @@ function EditDialog(props: EditDialogProps) {
                         <Field
                           name="flatcarHash"
                           component={TextField}
+                          variant="standard"
                           margin="dense"
                           label={t('packages|Flatcar Action SHA256')}
                           type="text"
@@ -263,10 +274,11 @@ function EditDialog(props: EditDialogProps) {
                         />
                       )}
                       <FormControl margin="dense" fullWidth>
-                        <InputLabel>Channels Blacklist</InputLabel>
+                        <InputLabel variant="standard">Channels Blacklist</InputLabel>
                         <Field
                           name="channelsBlacklist"
                           component={Select}
+                          variant="standard"
                           multiple
                           renderValue={(selected: string[]) =>
                             getChannelsNames(selected).join(' / ')

@@ -5,19 +5,19 @@ exports[`Storyshots activity/ActivityItem Activity Channel Package Updated 1`] =
   id="root"
 >
   <li
-    class="MuiListItem-root makeStyles-list MuiListItem-alignItemsFlexStart"
+    class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart makeStyles-list css-15u9cok-MuiListItem-root"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+      class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root"
       >
         <div
-          class="MuiBox-root MuiBox-root"
+          class="MuiBox-root css-geek62"
         >
           <div
-            class="MuiBox-root MuiBox-root"
+            class="MuiBox-root css-12z0wuy"
           >
             <svg
               focusable="false"
@@ -29,16 +29,16 @@ exports[`Storyshots activity/ActivityItem Activity Channel Package Updated 1`] =
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                d="M11 15h2v2h-2v-2m0-8h2v6h-2V7m1-5C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 18a8 8 0 0 1-8-8a8 8 0 0 1 8-8a8 8 0 0 1 8 8a8 8 0 0 1-8 8z"
+                d="M11 15h2v2h-2v-2m0-8h2v6h-2V7m1-5C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 18a8 8 0 0 1-8-8a8 8 0 0 1 8-8a8 8 0 0 1 8 8a8 8 0 0 1-8 8Z"
                 fill="#00d3ff"
               />
             </svg>
           </div>
           <div
-            class="MuiBox-root MuiBox-root"
+            class="MuiBox-root css-0"
           >
             <p
-              class="MuiTypography-root makeStyles-appName MuiTypography-body1"
+              class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1s23nr9-MuiTypography-root"
             >
               some app
             </p>
@@ -46,17 +46,16 @@ exports[`Storyshots activity/ActivityItem Activity Channel Package Updated 1`] =
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root"
       >
         <p
-          class="MuiTypography-root makeStyles-time MuiTypography-body1 MuiTypography-colorTextSecondary"
+          class="MuiTypography-root MuiTypography-body1 makeStyles-time css-b4h4sf-MuiTypography-root"
         >
           02:56 PM
         </p>
       </div>
-      
       <div
-        class="MuiGrid-root MuiGrid-item"
+        class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
       >
         A description
       </div>
@@ -70,19 +69,19 @@ exports[`Storyshots activity/ActivityItem Warning 1`] = `
   id="root"
 >
   <li
-    class="MuiListItem-root makeStyles-list MuiListItem-alignItemsFlexStart"
+    class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart makeStyles-list css-15u9cok-MuiListItem-root"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+      class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root"
       >
         <div
-          class="MuiBox-root MuiBox-root"
+          class="MuiBox-root css-geek62"
         >
           <div
-            class="MuiBox-root MuiBox-root"
+            class="MuiBox-root css-12z0wuy"
           >
             <svg
               focusable="false"
@@ -100,10 +99,10 @@ exports[`Storyshots activity/ActivityItem Warning 1`] = `
             </svg>
           </div>
           <div
-            class="MuiBox-root MuiBox-root"
+            class="MuiBox-root css-0"
           >
             <p
-              class="MuiTypography-root makeStyles-appName MuiTypography-body1"
+              class="MuiTypography-root MuiTypography-body1 makeStyles-appName css-1s23nr9-MuiTypography-root"
             >
               some app
             </p>
@@ -111,31 +110,31 @@ exports[`Storyshots activity/ActivityItem Warning 1`] = `
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root"
       >
         <p
-          class="MuiTypography-root makeStyles-time MuiTypography-body1 MuiTypography-colorTextSecondary"
+          class="MuiTypography-root MuiTypography-body1 makeStyles-time css-b4h4sf-MuiTypography-root"
         >
           02:56 PM
         </p>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-2 MuiGrid-grid-xs-12 css-sa6qj6-MuiGrid-root"
       >
         <div
-          class="MuiGrid-root MuiGrid-item"
+          class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
         >
           <p
-            class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary MuiTypography-displayInline"
+            class="MuiTypography-root MuiTypography-body1 css-cb7ys4-MuiTypography-root"
           >
             GROUP
           </p>
         </div>
         <div
-          class="MuiGrid-root MuiGrid-item"
+          class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
         >
           <a
-            class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-groupLink MuiTypography-colorPrimary"
+            class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-groupLink css-1emptwe-MuiTypography-root-MuiLink-root"
             href="/apps/XXXX-XXX/groups/YYYY-YYYY"
           >
             some group
@@ -143,7 +142,7 @@ exports[`Storyshots activity/ActivityItem Warning 1`] = `
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item"
+        class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
       >
         A description
       </div>

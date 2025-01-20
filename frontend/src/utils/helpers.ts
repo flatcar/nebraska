@@ -1,9 +1,9 @@
-import { Color, Theme } from '@material-ui/core';
-import amber from '@material-ui/core/colors/amber';
-import deepOrange from '@material-ui/core/colors/deepOrange';
-import lime from '@material-ui/core/colors/lime';
-import orange from '@material-ui/core/colors/orange';
-import red from '@material-ui/core/colors/red';
+import { Color, Theme } from '@mui/material';
+import { amber } from '@mui/material/colors';
+import { deepOrange } from '@mui/material/colors';
+import { lime } from '@mui/material/colors';
+import { orange } from '@mui/material/colors';
+import { red } from '@mui/material/colors';
 import React from 'react';
 import API from '../api/API';
 import { Channel, Group, VersionBreakdownEntry } from '../api/apiDataTypes';

@@ -1,18 +1,18 @@
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import MuiSelect from '@material-ui/core/Select';
-import { makeStyles } from '@material-ui/core/styles';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import MuiSelect, { SelectChangeEvent } from '@mui/material/Select';
+import makeStyles from '@mui/styles/makeStyles';
 import { Field, Form, Formik } from 'formik';
-import { TextField } from 'formik-material-ui';
+import { TextField } from 'formik-mui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
@@ -104,7 +104,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
   }
 
   function fetchPackages(term: string, page: number) {
-    API.getPackages(props.data.applicationID, term || '', {
+    API.getPackages(props.data.applicationID, term.trim() || '', {
       page: (page || 0) + 1,
       perpage: PackagesPerPage,
     })
@@ -169,7 +169,13 @@ export default function ChannelEdit(props: ChannelEditProps) {
           {status && status.statusMessage && (
             <DialogContentText color="error">{status.statusMessage}</DialogContentText>
           )}
-          <Grid container spacing={2} justify="space-between" alignItems="center" wrap="nowrap">
+          <Grid
+            container
+            spacing={2}
+            justifyContent="space-between"
+            alignItems="center"
+            wrap="nowrap"
+          >
             <Grid item>
               <ColorPicker color={channelColor} onColorPicked={color => setChannelColor(color.hex)}>
                 {values.name ? values.name[0] : ''}
@@ -180,6 +186,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
                 <Field
                   name="name"
                   component={TextField}
+                  variant="standard"
                   margin="dense"
                   label={t('frequent|Name')}
                   InputLabelProps={{ shrink: true }}
@@ -194,10 +201,11 @@ export default function ChannelEdit(props: ChannelEditProps) {
             </Grid>
           </Grid>
           <FormControl margin="dense" disabled={!isCreation} fullWidth>
-            <InputLabel>Architecture</InputLabel>
+            <InputLabel variant="standard">Architecture</InputLabel>
             <MuiSelect
+              variant="standard"
               value={arch}
-              onChange={(event: React.ChangeEvent<{ value: any }>) => setArch(event.target.value)}
+              onChange={(event: SelectChangeEvent<number>) => setArch(event.target.value as number)}
             >
               {Object.keys(ARCHES).map((key: string) => {
                 const archName = ARCHES[parseInt(key)];

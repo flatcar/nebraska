@@ -1,16 +1,16 @@
-import { ListItemText } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import ListItem from '@material-ui/core/ListItem';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Downshift, { GetLabelPropsOptions } from 'downshift';
+import { ListItemText } from '@mui/material';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import FormControl from '@mui/material/FormControl';
+import Input from '@mui/material/Input';
+import InputLabel, { InputLabelProps } from '@mui/material/InputLabel';
+import ListItem from '@mui/material/ListItem';
+import TextField from '@mui/material/TextField';
+import makeStyles from '@mui/styles/makeStyles';
+import Downshift from 'downshift';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FixedSizeList, ListOnItemsRenderedProps } from 'react-window';
@@ -19,17 +19,18 @@ interface RenderInputProps {
   classes: {
     inputRoot: string;
     inputInput: string;
+    textFieldRoot: string;
   };
   ref?: React.Ref<any>;
   fullWidth: boolean;
   autoFocus: boolean;
   label: string;
   placeholder: string;
-  InputLabelProps: (options?: GetLabelPropsOptions | undefined) => void;
+  InputLabelProps: InputLabelProps;
   InputProps: {
-    onBlur: () => void;
-    onChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
-    onFocus: () => void;
+    onBlur?: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+    onChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
+    onFocus?: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   };
   inputProps: object;
   variant: 'outlined';
@@ -41,6 +42,9 @@ function renderInput(inputProps: RenderInputProps) {
 
   return (
     <TextField
+      classes={{
+        root: classes.textFieldRoot,
+      }}
       InputProps={{
         inputRef: ref,
         classes: {
@@ -106,6 +110,9 @@ const useStyles = makeStyles({
   container: {
     flexGrow: 1,
     position: 'relative',
+  },
+  textFieldRoot: {
+    marginTop: '0.6em',
   },
   inputRoot: {
     flexWrap: 'wrap',
@@ -208,7 +215,9 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
   return (
     <div>
       <FormControl fullWidth>
-        <InputLabel shrink>{props.label}</InputLabel>
+        <InputLabel variant="standard" shrink>
+          {props.label}
+        </InputLabel>
         <Input
           onClick={() => {
             setShowPicker(true);

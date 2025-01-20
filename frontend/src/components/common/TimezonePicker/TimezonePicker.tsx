@@ -1,16 +1,16 @@
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Downshift, { GetLabelPropsOptions } from 'downshift';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import FormControl from '@mui/material/FormControl';
+import Input from '@mui/material/Input';
+import InputLabel, { InputLabelProps } from '@mui/material/InputLabel';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import TextField from '@mui/material/TextField';
+import makeStyles from '@mui/styles/makeStyles';
+import Downshift from 'downshift';
 import moment from 'moment-timezone';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -27,18 +27,19 @@ interface RenderInputProps {
   classes: {
     inputRoot: string;
     inputInput: string;
+    textFieldRoot: string;
   };
   ref?: React.Ref<any>;
   InputProps: {
-    onBlur: () => void;
-    onChange: () => void;
-    onFocus: () => void;
+    onBlur?: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+    onChange?: React.FormEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+    onFocus?: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   };
   fullWidth: boolean;
   autoFocus: boolean;
   label: string;
   placeholder: string;
-  InputLabelProps: (options?: GetLabelPropsOptions | undefined) => void;
+  InputLabelProps: InputLabelProps;
   variant: 'outlined';
   inputProps: object;
 }
@@ -48,6 +49,9 @@ function renderInput(inputProps: RenderInputProps) {
 
   return (
     <TextField
+      classes={{
+        root: classes.textFieldRoot,
+      }}
       InputProps={{
         inputRef: ref,
         classes: {
@@ -108,6 +112,9 @@ const useStyles = makeStyles({
   container: {
     flexGrow: 1,
     position: 'relative',
+  },
+  textFieldRoot: {
+    marginTop: '0.6em',
   },
   inputRoot: {
     flexWrap: 'wrap',
@@ -189,7 +196,9 @@ export default function TimzonePicker(props: {
   return (
     <div>
       <FormControl fullWidth>
-        <InputLabel shrink>Timezone</InputLabel>
+        <InputLabel variant="standard" shrink>
+          Timezone
+        </InputLabel>
         <Input
           onClick={onInputActivate}
           value={selectedTimezone}

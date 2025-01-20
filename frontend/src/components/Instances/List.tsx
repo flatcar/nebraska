@@ -1,22 +1,23 @@
 import infoIcon from '@iconify/icons-mdi/information-circle-outline';
 import searchIcon from '@iconify/icons-mdi/search';
 import Icon from '@iconify/react';
-import { makeStyles, Theme } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import Input from '@material-ui/core/Input';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
-import Select from '@material-ui/core/Select';
-import TablePagination from '@material-ui/core/TablePagination';
-import { useTheme } from '@material-ui/styles';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import Input from '@mui/material/Input';
+import InputAdornment from '@mui/material/InputAdornment';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import TablePagination from '@mui/material/TablePagination';
+import { useTheme } from '@mui/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
-import React, { ChangeEvent } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import _ from 'underscore';
@@ -75,10 +76,10 @@ function InstanceFilter(props: InstanceFilterProps) {
 
   return (
     <Box pr={2}>
-      <Grid container spacing={2} justify="flex-end">
+      <Grid container spacing={2} justifyContent="flex-end">
         <Grid item xs={5}>
           <FormControl fullWidth disabled={props.disabled}>
-            <InputLabel htmlFor="select-status" shrink>
+            <InputLabel variant="standard" htmlFor="select-status" shrink>
               {t('instances|Filter Status')}
             </InputLabel>
             <Select
@@ -106,11 +107,11 @@ function InstanceFilter(props: InstanceFilterProps) {
         </Grid>
         <Grid item xs={5}>
           <FormControl fullWidth disabled={props.disabled}>
-            <InputLabel htmlFor="select-versions" shrink>
+            <InputLabel variant="standard" htmlFor="select-versions" shrink>
               {t('instances|Filter Version')}
             </InputLabel>
             <Select
-              onChange={(event: ChangeEvent<{ name?: string | undefined; value: any }>) =>
+              onChange={(event: SelectChangeEvent<string>) =>
                 changeFilter('version', event.target.value)
               }
               input={<Input id="select-versions" />}
@@ -404,7 +405,7 @@ function ListView(props: { application: Application; group: Group }) {
       <Paper>
         <Box padding="1em">
           <Grid container spacing={1}>
-            <Grid item container justify="space-between" alignItems="stretch">
+            <Grid item container justifyContent="space-between" alignItems="stretch">
               <Grid item>
                 <Box
                   mb={2}
@@ -416,7 +417,7 @@ function ListView(props: { application: Application; group: Group }) {
                 </Box>
               </Grid>
               <Grid item>
-                <InputLabel htmlFor="instance-search-filter" shrink>
+                <InputLabel variant="standard" htmlFor="instance-search-filter" shrink>
                   {t('frequent|Search')}
                 </InputLabel>
                 <SearchInput
@@ -426,6 +427,7 @@ function ListView(props: { application: Application; group: Group }) {
                       <IconButton
                         onClick={() => searchInputRef.current?.focus()}
                         title="Search Icon"
+                        size="large"
                       >
                         <Icon icon={searchIcon} width="15" height="15" />
                       </IconButton>
@@ -434,7 +436,7 @@ function ListView(props: { application: Application; group: Group }) {
                   endAdornment={
                     <InputAdornment position="end">
                       <LightTooltip title={getSearchTooltipText()}>
-                        <IconButton>
+                        <IconButton size="large">
                           <Icon icon={infoIcon} width="20" height="20" />
                         </IconButton>
                       </LightTooltip>
@@ -456,7 +458,7 @@ function ListView(props: { application: Application; group: Group }) {
               </Grid>
             </Grid>
             <Box width="100%" borderTop={1} borderColor={'#E0E0E0'} className={classes.root}>
-              <Grid item container md={12} alignItems="stretch" justify="space-between">
+              <Grid item container md={12} alignItems="stretch" justifyContent="space-between">
                 <Grid item md>
                   <Box display="flex" alignItems="center">
                     <Box ml={2}>
@@ -476,7 +478,7 @@ function ListView(props: { application: Application; group: Group }) {
               </Grid>
             </Box>
             {isFiltered() && (
-              <Grid item md={12} container justify="center">
+              <Grid item md={12} container justifyContent="center">
                 <Grid item>
                   <Button variant="outlined" color="secondary" onClick={resetFilters}>
                     {t('instances|Reset filters')}
@@ -507,8 +509,8 @@ function ListView(props: { application: Application; group: Group }) {
                       nextIconButtonProps={{
                         'aria-label': t('frequent|next page'),
                       }}
-                      onChangePage={handleChangePage}
-                      onChangeRowsPerPage={handleChangeRowsPerPage}
+                      onPageChange={handleChangePage}
+                      onRowsPerPageChange={handleChangeRowsPerPage}
                     />
                   </React.Fragment>
                 ) : (

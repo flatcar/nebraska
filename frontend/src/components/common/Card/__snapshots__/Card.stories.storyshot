@@ -5,10 +5,10 @@ exports[`Storyshots Card Description Label 1`] = `
   id="root"
 >
   <div
-    class="MuiBox-root MuiBox-root"
+    class="MuiBox-root css-1yuhvjn"
   >
     <span
-      class="MuiTypography-root makeStyles-descriptionLabel MuiTypography-body1"
+      class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1s23nr9-MuiTypography-root"
     >
       Description Label
     </span>
@@ -21,7 +21,7 @@ exports[`Storyshots Card Feature Label 1`] = `
   id="root"
 >
   <span
-    class="MuiTypography-root makeStyles-featureLabel MuiTypography-body1"
+    class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel css-1s23nr9-MuiTypography-root"
   >
     Feature Label
   </span>
@@ -33,19 +33,19 @@ exports[`Storyshots Card Header 1`] = `
   id="root"
 >
   <div
-    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+    class="MuiGrid-root MuiGrid-container makeStyles-gridHeader css-1xzqqmo-MuiGrid-root"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+      class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-1 css-j1w48a-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
       >
         <h2
-          class="MuiTypography-root MuiTypography-h2"
+          class="MuiTypography-root MuiTypography-h2 css-150084s-MuiTypography-root"
         >
           <a
-            class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-mainLink MuiTypography-colorPrimary"
+            class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-mainLink css-1emptwe-MuiTypography-root-MuiLink-root"
             href="/apps/123"
           >
             Flatcar
@@ -53,23 +53,23 @@ exports[`Storyshots Card Header 1`] = `
         </h2>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
       >
         <div
-          class="MuiBox-root MuiBox-root"
+          class="MuiBox-root css-1yq8yj7"
         >
           <p
             arial-label="group-id"
-            class="MuiTypography-root makeStyles-idLabel MuiTypography-body1 MuiTypography-noWrap"
+            class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-1s94icn-MuiTypography-root"
           >
             a cardTrack
           </p>
         </div>
         <div
-          class="MuiBox-root MuiBox-root"
+          class="MuiBox-root css-1yuhvjn"
         >
           <span
-            class="MuiTypography-root makeStyles-descriptionLabel MuiTypography-body1"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1s23nr9-MuiTypography-root"
           >
             Card Header description
           </span>
@@ -77,13 +77,13 @@ exports[`Storyshots Card Header 1`] = `
       </div>
     </div>
     <div
-      class="MuiGrid-root MuiGrid-item"
+      class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
     >
       CardHeader children
     </div>
   </div>
   <hr
-    class="MuiDivider-root makeStyles-innerDivider MuiDivider-light"
+    class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light makeStyles-innerDivider css-xetjfm-MuiDivider-root"
   />
 </div>
 `;
@@ -93,36 +93,36 @@ exports[`Storyshots Card Header With Card Id 1`] = `
   id="root"
 >
   <div
-    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+    class="MuiGrid-root MuiGrid-container makeStyles-gridHeader css-1xzqqmo-MuiGrid-root"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+      class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-1 css-j1w48a-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
       >
         <p
-          class="MuiTypography-root makeStyles-cardTitle MuiTypography-body1"
+          class="MuiTypography-root MuiTypography-body1 makeStyles-cardTitle css-1s23nr9-MuiTypography-root"
         />
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
       >
         <div
-          class="MuiBox-root MuiBox-root"
+          class="MuiBox-root css-1yq8yj7"
         >
           <p
             arial-label="group-id"
-            class="MuiTypography-root makeStyles-idLabel MuiTypography-body1 MuiTypography-noWrap"
+            class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-1s94icn-MuiTypography-root"
           >
             a cardId
           </p>
         </div>
         <div
-          class="MuiBox-root MuiBox-root"
+          class="MuiBox-root css-1yuhvjn"
         >
           <span
-            class="MuiTypography-root makeStyles-descriptionLabel MuiTypography-body1"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1s23nr9-MuiTypography-root"
           >
             Card Header With cardId description
           </span>
@@ -131,7 +131,7 @@ exports[`Storyshots Card Header With Card Id 1`] = `
     </div>
   </div>
   <hr
-    class="MuiDivider-root makeStyles-innerDivider MuiDivider-light"
+    class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light makeStyles-innerDivider css-xetjfm-MuiDivider-root"
   />
 </div>
 `;
@@ -141,36 +141,36 @@ exports[`Storyshots Card Header With Card Track 1`] = `
   id="root"
 >
   <div
-    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+    class="MuiGrid-root MuiGrid-container makeStyles-gridHeader css-1xzqqmo-MuiGrid-root"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+      class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-1 css-j1w48a-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
       >
         <p
-          class="MuiTypography-root makeStyles-cardTitle MuiTypography-body1"
+          class="MuiTypography-root MuiTypography-body1 makeStyles-cardTitle css-1s23nr9-MuiTypography-root"
         />
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
       >
         <div
-          class="MuiBox-root MuiBox-root"
+          class="MuiBox-root css-1yq8yj7"
         >
           <p
             arial-label="group-id"
-            class="MuiTypography-root makeStyles-idLabel MuiTypography-body1 MuiTypography-noWrap"
+            class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-1s94icn-MuiTypography-root"
           >
             a cardTrack
           </p>
         </div>
         <div
-          class="MuiBox-root MuiBox-root"
+          class="MuiBox-root css-1yuhvjn"
         >
           <span
-            class="MuiTypography-root makeStyles-descriptionLabel MuiTypography-body1"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1s23nr9-MuiTypography-root"
           >
             Card Header With cardTrack description
           </span>
@@ -179,7 +179,7 @@ exports[`Storyshots Card Header With Card Track 1`] = `
     </div>
   </div>
   <hr
-    class="MuiDivider-root makeStyles-innerDivider MuiDivider-light"
+    class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light makeStyles-innerDivider css-xetjfm-MuiDivider-root"
   />
 </div>
 `;
@@ -189,34 +189,34 @@ exports[`Storyshots Card Header With Children 1`] = `
   id="root"
 >
   <div
-    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+    class="MuiGrid-root MuiGrid-container makeStyles-gridHeader css-1xzqqmo-MuiGrid-root"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+      class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-1 css-j1w48a-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
       >
         <p
-          class="MuiTypography-root makeStyles-cardTitle MuiTypography-body1"
+          class="MuiTypography-root MuiTypography-body1 makeStyles-cardTitle css-1s23nr9-MuiTypography-root"
         />
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
       >
         <div
-          class="MuiBox-root MuiBox-root"
+          class="MuiBox-root css-1yq8yj7"
         >
           <p
             arial-label="group-id"
-            class="MuiTypography-root makeStyles-idLabel MuiTypography-body1 MuiTypography-noWrap"
+            class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-1s94icn-MuiTypography-root"
           />
         </div>
         <div
-          class="MuiBox-root MuiBox-root"
+          class="MuiBox-root css-1yuhvjn"
         >
           <span
-            class="MuiTypography-root makeStyles-descriptionLabel MuiTypography-body1"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1s23nr9-MuiTypography-root"
           >
             Card Header With Children description
           </span>
@@ -224,13 +224,13 @@ exports[`Storyshots Card Header With Children 1`] = `
       </div>
     </div>
     <div
-      class="MuiGrid-root MuiGrid-item"
+      class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
     >
       CardHeader children
     </div>
   </div>
   <hr
-    class="MuiDivider-root makeStyles-innerDivider MuiDivider-light"
+    class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light makeStyles-innerDivider css-xetjfm-MuiDivider-root"
   />
 </div>
 `;
@@ -240,34 +240,34 @@ exports[`Storyshots Card Header With Description 1`] = `
   id="root"
 >
   <div
-    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+    class="MuiGrid-root MuiGrid-container makeStyles-gridHeader css-1xzqqmo-MuiGrid-root"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+      class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-1 css-j1w48a-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
       >
         <p
-          class="MuiTypography-root makeStyles-cardTitle MuiTypography-body1"
+          class="MuiTypography-root MuiTypography-body1 makeStyles-cardTitle css-1s23nr9-MuiTypography-root"
         />
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
       >
         <div
-          class="MuiBox-root MuiBox-root"
+          class="MuiBox-root css-1yq8yj7"
         >
           <p
             arial-label="group-id"
-            class="MuiTypography-root makeStyles-idLabel MuiTypography-body1 MuiTypography-noWrap"
+            class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-1s94icn-MuiTypography-root"
           />
         </div>
         <div
-          class="MuiBox-root MuiBox-root"
+          class="MuiBox-root css-1yuhvjn"
         >
           <span
-            class="MuiTypography-root makeStyles-descriptionLabel MuiTypography-body1"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1s23nr9-MuiTypography-root"
           >
             Card Header description
           </span>
@@ -276,7 +276,7 @@ exports[`Storyshots Card Header With Description 1`] = `
     </div>
   </div>
   <hr
-    class="MuiDivider-root makeStyles-innerDivider MuiDivider-light"
+    class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light makeStyles-innerDivider css-xetjfm-MuiDivider-root"
   />
 </div>
 `;
@@ -286,19 +286,19 @@ exports[`Storyshots Card Header With Link 1`] = `
   id="root"
 >
   <div
-    class="MuiGrid-root makeStyles-gridHeader MuiGrid-container MuiGrid-justify-xs-space-between"
+    class="MuiGrid-root MuiGrid-container makeStyles-gridHeader css-1xzqqmo-MuiGrid-root"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 MuiGrid-item MuiGrid-align-items-xs-center MuiGrid-justify-xs-space-between"
+      class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-1 css-j1w48a-MuiGrid-root"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
       >
         <h2
-          class="MuiTypography-root MuiTypography-h2"
+          class="MuiTypography-root MuiTypography-h2 css-150084s-MuiTypography-root"
         >
           <a
-            class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-mainLink MuiTypography-colorPrimary"
+            class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-mainLink css-1emptwe-MuiTypography-root-MuiLink-root"
             href="/apps/123"
           >
             Flatcar
@@ -306,21 +306,21 @@ exports[`Storyshots Card Header With Link 1`] = `
         </h2>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root"
       >
         <div
-          class="MuiBox-root MuiBox-root"
+          class="MuiBox-root css-1yq8yj7"
         >
           <p
             arial-label="group-id"
-            class="MuiTypography-root makeStyles-idLabel MuiTypography-body1 MuiTypography-noWrap"
+            class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel css-1s94icn-MuiTypography-root"
           />
         </div>
         <div
-          class="MuiBox-root MuiBox-root"
+          class="MuiBox-root css-1yuhvjn"
         >
           <span
-            class="MuiTypography-root makeStyles-descriptionLabel MuiTypography-body1"
+            class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel css-1s23nr9-MuiTypography-root"
           >
             Card Header With Link description
           </span>
@@ -329,7 +329,7 @@ exports[`Storyshots Card Header With Link 1`] = `
     </div>
   </div>
   <hr
-    class="MuiDivider-root makeStyles-innerDivider MuiDivider-light"
+    class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light makeStyles-innerDivider css-xetjfm-MuiDivider-root"
   />
 </div>
 `;
@@ -339,7 +339,7 @@ exports[`Storyshots Card Label 1`] = `
   id="root"
 >
   <span
-    class="MuiTypography-root makeStyles-label makeStyles-label MuiTypography-body1"
+    class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
   >
     Label
   </span>
@@ -351,7 +351,7 @@ exports[`Storyshots Card Label With Styles 1`] = `
   id="root"
 >
   <span
-    class="MuiTypography-root makeStyles-label makeStyles-label MuiTypography-body1"
+    class="MuiTypography-root MuiTypography-body1 makeStyles-label makeStyles-label css-1s23nr9-MuiTypography-root"
   >
     Label
   </span>

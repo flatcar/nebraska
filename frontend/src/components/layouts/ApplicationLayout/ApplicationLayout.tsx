@@ -1,4 +1,4 @@
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -45,7 +45,7 @@ function ApplicationLayout() {
           },
         ]}
       />
-      <Grid container spacing={1} justify="space-between">
+      <Grid container spacing={1} justifyContent="space-between">
         <Grid item xs={12} sm={8}>
           <GroupList appID={appID} />
         </Grid>

@@ -1,6 +1,6 @@
-import Box from '@material-ui/core/Box';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 import { Area, AreaChart, AreaProps, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 import { getMinuteDifference, makeLocaleTime } from '../../../i18n/dateTime';
 

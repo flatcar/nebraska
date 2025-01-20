@@ -1,9 +1,9 @@
-import { Box, Divider, Typography } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import CheckIcon from '@material-ui/icons/Check';
-import CloseIcon from '@material-ui/icons/Close';
-import ScheduleIcon from '@material-ui/icons/Schedule';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import { Box, Divider, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import makeStyles from '@mui/styles/makeStyles';
 import { TFunction } from 'i18next';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -58,7 +58,6 @@ function GroupItem({ group, handleUpdateGroup }: GroupItemProps) {
   const { t } = useTranslation();
   const [totalInstances, setTotalInstances] = React.useState<null | number>(null);
   const versionBreakdown = useGroupVersionBreakdown(group);
-  console.log('versionBreakdown', JSON.stringify(versionBreakdown));
 
   function deleteGroup(appID: string, groupID: string) {
     const confirmationText = t('groups|Are you sure you want to delete this group?');
@@ -138,7 +137,7 @@ export function PureGroupItem({
             />
           </CardHeader>
         </Grid>
-        <Grid item xs={12} container justify="space-between">
+        <Grid item xs={12} container justifyContent="space-between">
           <Grid item xs={4} container direction="column" className={classes.itemSection}>
             <Grid item>
               <CardFeatureLabel>{t('groups|Instances')}</CardFeatureLabel>

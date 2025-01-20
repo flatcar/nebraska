@@ -1,28 +1,28 @@
 import chevronDown from '@iconify/icons-mdi/chevron-down';
 import chevronUp from '@iconify/icons-mdi/chevron-up';
 import { InlineIcon } from '@iconify/react';
-import { Theme } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Button, { ButtonProps } from '@material-ui/core/Button';
-import Collapse from '@material-ui/core/Collapse';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles, useTheme } from '@material-ui/styles';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button, { ButtonProps } from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import Link from '@mui/material/Link';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
+import { makeStyles, useTheme } from '@mui/styles';
 import { Field, Form, Formik, FormikHelpers, FormikProps } from 'formik';
-import { TextField } from 'formik-material-ui';
+import { TextField } from 'formik-mui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
@@ -96,6 +96,13 @@ function StatusLabel(props: StatusLabelProps) {
 
   const { status, activated } = props;
   const { label = t('frequent|Unknown') } = (status && statusDefs[status.type]) || {};
+  let safeLabel: React.ReactNode;
+
+  if (label !== null && typeof label === 'object') {
+    safeLabel = label.toString();
+  } else {
+    safeLabel = label;
+  }
 
   return (
     <span>
@@ -109,7 +116,7 @@ function StatusLabel(props: StatusLabelProps) {
             display="inline-block"
             mr={1}
           >
-            {label}
+            {safeLabel}
           </Box>
           <InlineIcon
             icon={activated ? chevronUp : chevronDown}
@@ -119,7 +126,7 @@ function StatusLabel(props: StatusLabelProps) {
           />
         </Button>
       ) : (
-        <Typography className={classes.statusText}>{label}</Typography>
+        <Typography className={classes.statusText}>{safeLabel}</Typography>
       )}
     </span>
   );
@@ -243,6 +250,7 @@ function EditDialog(props: EditDialogProps) {
           <Field
             name="name"
             component={TextField}
+            variant="standard"
             margin="dense"
             label={t('instances|Name')}
             type="text"
@@ -326,7 +334,7 @@ function DetailsView(props: DetailsViewProps) {
         <Box p={2}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
-              <Grid container justify="space-between">
+              <Grid container justifyContent="space-between">
                 <Grid item>
                   <Box fontWeight={700} fontSize={30} color={theme.palette.greyShadeColor}>
                     {instance.alias || instance.id}
@@ -403,6 +411,7 @@ function DetailsView(props: DetailsViewProps) {
                               className={classes.link}
                               to={`/apps/${application.id}`}
                               component={RouterLink}
+                              underline="hover"
                             >
                               {application.name}
                             </Link>
@@ -415,6 +424,7 @@ function DetailsView(props: DetailsViewProps) {
                               className={classes.link}
                               to={`/apps/${application.id}/groups/${group.id}`}
                               component={RouterLink}
+                              underline="hover"
                             >
                               {group.name}
                             </Link>
