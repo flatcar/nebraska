@@ -37,7 +37,7 @@ var conf = &config.Config{
 	OidcAdminRoles:      "nebraska-admin",
 	OidcViewerRoles:     "nebraska-member",
 	OidcRolesPath:       "groups",
-	OidcScopes:          "openid,profile,email,groups",
+	OidcScopes:          "openid,offline_access,profile,email,groups",
 }
 
 func TestMain(m *testing.M) {
