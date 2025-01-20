@@ -32,6 +32,9 @@ const lightTheme = createTheme({
     },
   },
   palette: {
+    background: {
+      default: '#FAFAFA',
+    },
     primary: {
       contrastText: '#fff',
       main: process.env.REACT_APP_PRIMARY_COLOR ? process.env.REACT_APP_PRIMARY_COLOR : '#2C98F0',

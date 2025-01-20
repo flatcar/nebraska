@@ -58,7 +58,6 @@ function GroupItem({ group, handleUpdateGroup }: GroupItemProps) {
   const { t } = useTranslation();
   const [totalInstances, setTotalInstances] = React.useState<null | number>(null);
   const versionBreakdown = useGroupVersionBreakdown(group);
-  console.log('versionBreakdown', JSON.stringify(versionBreakdown));
 
   function deleteGroup(appID: string, groupID: string) {
     const confirmationText = t('groups|Are you sure you want to delete this group?');
