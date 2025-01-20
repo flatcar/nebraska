@@ -278,7 +278,7 @@ exports[`Storyshots applications/ApplicationList Applications 1`] = `
                           class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
                         >
                           <div
-                            class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
+                            class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-1onlcy6-MuiAvatar-root"
                           >
                              
                           </div>
@@ -574,7 +574,7 @@ exports[`Storyshots applications/ApplicationList Applications 1`] = `
                           class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
                         >
                           <div
-                            class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
+                            class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-1onlcy6-MuiAvatar-root"
                           >
                              
                           </div>
@@ -930,7 +930,7 @@ exports[`Storyshots applications/ApplicationList Edit Open 1`] = `
                           class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
                         >
                           <div
-                            class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
+                            class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-1onlcy6-MuiAvatar-root"
                           >
                              
                           </div>
@@ -1226,7 +1226,7 @@ exports[`Storyshots applications/ApplicationList Edit Open 1`] = `
                           class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
                         >
                           <div
-                            class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
+                            class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-1onlcy6-MuiAvatar-root"
                           >
                              
                           </div>
@@ -1666,7 +1666,7 @@ exports[`Storyshots applications/ApplicationList Search Term 1`] = `
                           class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
                         >
                           <div
-                            class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
+                            class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-1onlcy6-MuiAvatar-root"
                           >
                              
                           </div>

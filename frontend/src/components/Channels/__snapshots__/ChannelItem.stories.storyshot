@@ -14,7 +14,7 @@ exports[`Storyshots channels/ChannelItem App View 1`] = `
         class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
       >
         <div
-          class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
+          class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-1onlcy6-MuiAvatar-root"
         >
            
         </div>
@@ -97,7 +97,7 @@ exports[`Storyshots channels/ChannelItem No Arch 1`] = `
         class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
       >
         <div
-          class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
+          class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-1onlcy6-MuiAvatar-root"
         >
           e
         </div>
@@ -180,7 +180,7 @@ exports[`Storyshots channels/ChannelItem No Package 1`] = `
         class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
       >
         <div
-          class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
+          class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-1onlcy6-MuiAvatar-root"
         >
           e
         </div>
@@ -230,7 +230,7 @@ exports[`Storyshots channels/ChannelItem Show Arch 1`] = `
         class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
       >
         <div
-          class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
+          class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-1onlcy6-MuiAvatar-root"
         >
           e
         </div>

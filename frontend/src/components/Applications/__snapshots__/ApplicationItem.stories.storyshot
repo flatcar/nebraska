@@ -227,7 +227,7 @@ exports[`Storyshots applications/ApplicationItem Application 1`] = `
                       class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
                     >
                       <div
-                        class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
+                        class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-1onlcy6-MuiAvatar-root"
                       >
                          
                       </div>

@@ -12,10 +12,10 @@ exports[`Storyshots ColorPickerButton Closed 1`] = `
       type="button"
     >
       <div
-        class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
+        class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-1onlcy6-MuiAvatar-root"
       >
         <div
-          class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
+          class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-1onlcy6-MuiAvatar-root"
         >
           Beta
         </div>
@@ -40,10 +40,10 @@ exports[`Storyshots ColorPickerButton Open 1`] = `
       type="button"
     >
       <div
-        class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
+        class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-1onlcy6-MuiAvatar-root"
       >
         <div
-          class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-kz5aim-MuiAvatar-root"
+          class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar makeStyles-colorAvatar css-1onlcy6-MuiAvatar-root"
         >
           Beta
         </div>
