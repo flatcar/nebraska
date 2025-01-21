@@ -2,6 +2,8 @@
 
 Nebraska is an update manager for [Flatcar Container Linux](https://www.flatcar.org/).
 
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/flatcar/nebraska/badge)](https://scorecard.dev/viewer/?uri=github.com/flatcar/nebraska)
+
 ## Overview
 
 Nebraska offers an easy way to monitor and manage the rollout of updates to applications that use
