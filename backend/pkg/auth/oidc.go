@@ -375,7 +375,7 @@ func (oa *oidcAuth) Authenticate(c echo.Context) (teamID string, replied bool) {
 			// can be recreated with refresh_token
 			session := echosessions.GetSession(c)
 			refreshToken := session.Get("refresh_token")
-			if refreshToken == nil {
+			if refreshToken == nil || refreshToken == "" {
 				logger.Debug().Str("request_id", requestID).Msg("Refresh token not found in session")
 				httpError(c, http.StatusUnauthorized)
 				return "", true
