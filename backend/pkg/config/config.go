@@ -129,7 +129,7 @@ func Parse() (*Config, error) {
 	f.String("oidc-admin-roles", "", "comma-separated list of accepted roles with admin access")
 	f.String("oidc-viewer-roles", "", "comma-separated list of accepted roles with viewer access")
 	f.String("oidc-roles-path", "roles", "json path in which the roles array is present in the id token")
-	f.String("oidc-scopes", "openid", "comma-separated list of scopes to be used in OIDC")
+	f.String("oidc-scopes", "openid,offline_access", "comma-separated list of scopes to be used in OIDC")
 	f.String("oidc-session-secret", "", fmt.Sprintf("Session secret used for authenticating sessions in cookies used for storing OIDC info , will be generated if none is passed; can be taken from %s env var too", oidcSessionAuthKeyEnvName))
 	f.String("oidc-session-crypt-key", "", fmt.Sprintf("Session key used for encrypting sessions in cookies used for storing OIDC info, will be generated if none is passed; can be taken from %s env var too", oidcSessionCryptKeyEnvName))
 	f.String("oidc-management-url", "", "OIDC management url for managing the account")
