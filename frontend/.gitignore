@@ -25,3 +25,9 @@ yarn-error.log*
 node_modules
 yarn-error.log
 src/js/icons/*.json
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
