@@ -1,9 +1,9 @@
 name: Playwright Tests
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
 jobs:
   test:
     timeout-minutes: 60
@@ -27,13 +27,33 @@ jobs:
       with:
         name: playwright-report
         path: frontend/playwright-report/
-        retention-days: 5
-    - name: Deploy Playwright Report to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      if: ${{ !cancelled() }}
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: playwright-report
-        user_name: 'github-actions'
-        user_email: 'github-actions@github.com'
-        publish_branch: gh-pages
+        retention-days: 3
+
+  deploy-reports:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: test
+    permissions:
+      pages: write
+      id-token: write
+    # permissions:
+    #   contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Playwright Report Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: playwright-report
+          path: frontend/playwright-report
+
+      - name: Unzip Playwright Report
+        run: unzip frontend/playwright-report.zip -d playwright-report
+
+      - name: Deploy Playwright Report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: ${{ !cancelled() }}
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: playwright-report
+          publish_branch: gh-pages
+          destination_dir: playwright-report
