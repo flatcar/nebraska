@@ -55,7 +55,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'cd ../backend && docker compose -f docker-compose.test.yaml up && docker ps -a && docker logs $(docker ps -q)',
+    command: 'cd ../backend && docker compose -f docker-compose.test.yaml up && docker ps -a',
     url: 'http://127.0.0.1:8002', // Replace with the URL of your service
     reuseExistingServer: !process.env.CI,
     timeout: 220_000,
