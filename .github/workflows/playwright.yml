@@ -20,8 +20,6 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
-    - name: Debug Logs
-      run: docker ps -a && docker logs $(docker ps -q)
     - name: Run Playwright tests
       run: npx playwright test
     - uses: actions/upload-artifact@v4
