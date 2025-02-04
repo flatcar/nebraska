@@ -30,7 +30,7 @@ jobs:
         retention-days: 3
 
   deploy-reports:
-    if: github.ref == 'refs/heads/main'
+    if: always()
     runs-on: ubuntu-latest
     needs: test
     permissions:
