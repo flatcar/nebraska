@@ -34,10 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     permissions:
-      pages: write
-      id-token: write
-    # permissions:
-    #   contents: write
+      contents: write
     steps:
       - name: Download Playwright Report Artifact
         uses: actions/download-artifact@v4
