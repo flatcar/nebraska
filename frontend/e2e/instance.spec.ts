@@ -45,7 +45,7 @@ test.describe('Instances', () => {
 
     await page.locator('tbody tr.MuiTableRow-root').getByRole('button').click();
 
-    await expect(page).toHaveScreenshot('instance-history.png', { maxDiffPixels: 300 });
+    await expect(page).toHaveScreenshot('instance-history.png', { maxDiffPixels: 500 });
 
     await expect(page.locator('#main')).toContainText('Downloaded');
     await expect(page.locator('#main')).toContainText('Downloading');

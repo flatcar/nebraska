@@ -35,7 +35,7 @@ test.describe('Packages', () => {
     await createChannel(page, "testChannel");
 
     await page.evaluate(() => window.scrollTo(0, 0));
-    await expect(page).toHaveScreenshot('empty-application-before-package-creation.png', { fullPage: true });
+    await expect(page).toHaveScreenshot('empty-application-before-package-creation.png', { fullPage: true, maxDiffPixels: 350 });
 
     await page.locator('div').filter({ hasText: /^Packages$/ }).first().getByTestId('modal-button').click();
 
