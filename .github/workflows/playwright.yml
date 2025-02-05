@@ -28,3 +28,22 @@ jobs:
         name: playwright-report
         path: frontend/playwright-report/
         retention-days: 3
+    - name: Group of log lines
+      run: |
+        echo "::group::Playwright Test Report Summary"
+        echo "🔍 To check test errors in GitHub Actions:"
+        echo ""
+        echo "1️⃣ **Download the HTML Report:**"
+        echo "   - Go to the **Artifacts** section in GitHub Actions."
+        echo "   - Click on **playwright-report** to download the ZIP file."
+        echo ""
+        echo "2️⃣ **View the Report:**"
+        echo "   - Extract the ZIP file in a folder with Playwright installed."
+        echo "   - Run: **npx playwright show-report <extracted-folder-name>**"
+        echo ""
+        echo "3️⃣ **Analyze Failures with Trace Viewer:**"
+        echo "   - Open the report and click the **trace** icon next to a failed test."
+        echo "   - Inspect each test action to diagnose the issue."
+        echo ""
+        echo "📖 More details: https://playwright.dev/docs/test-reporters#html-reporter"
+        echo "::endgroup::"
