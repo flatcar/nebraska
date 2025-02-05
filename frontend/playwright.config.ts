@@ -62,7 +62,7 @@ export default defineConfig({
   },
   expect: {
     toHaveScreenshot: {
-      stylePath: './e2e/mui-modal-backdrop-override.css',
+      stylePath: './e2e/mask-and-fix-dynamic-parts.css',
     }
   }
 });

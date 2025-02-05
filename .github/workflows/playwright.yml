@@ -28,24 +28,3 @@ jobs:
         name: playwright-report
         path: frontend/playwright-report/
         retention-days: 3
-
-  deploy-report:
-    if: always()
-    runs-on: ubuntu-latest
-    needs: test
-    permissions:
-      contents: write
-    steps:
-      - name: Download Playwright Report Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: playwright-report
-          path: playwright-report
-
-      - name: Deploy Playwright Report to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: playwright-report
-          publish_branch: gh-pages
-          destination_dir: playwright-report

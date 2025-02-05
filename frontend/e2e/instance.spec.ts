@@ -26,7 +26,17 @@ test.describe('Instances', () => {
     await expect(page.locator('tbody')).toContainText('4081.2.0');
 
     await page.getByRole('link', { name: 'See all instances' }).click();
-    await expect(page).toHaveScreenshot('instances-list.png', { mask: [page.locator('tbody tr:first-child td:last-child')], maxDiffPixels: 2200 });
+
+    // Fix the width of columns withd date values, because date values can change in this test from execution to execution, threfore the witdth of columns can also stretch more or less based on these values.
+    await page.addStyleTag({
+      content: `
+      table tr td:first-child,
+        table tr td:last-child {
+        min-width: 300px !important;
+      }
+    `});
+
+    await expect(page).toHaveScreenshot('instances-list.png', { mask: [page.locator('tbody tr:first-child td:last-child')], maxDiffPixels: 300 });
 
 
     await expect(page.locator('tbody')).toContainText('2c517ad881474ec6b5ab928df2a7b5f4');
@@ -35,7 +45,7 @@ test.describe('Instances', () => {
 
     await page.locator('tbody tr.MuiTableRow-root').getByRole('button').click();
 
-    await expect(page).toHaveScreenshot('instance-history.png', { maxDiffPixels: 2200 });
+    await expect(page).toHaveScreenshot('instance-history.png', { maxDiffPixels: 300 });
 
     await expect(page.locator('#main')).toContainText('Downloaded');
     await expect(page.locator('#main')).toContainText('Downloading');

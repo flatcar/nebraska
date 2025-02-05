@@ -38,9 +38,6 @@ setup('create new node instances in database', async ({ page }) => {
 
   await client.query('COMMIT');
   await client.end();
-
-
-  await expect(page).toHaveScreenshot('applications-view.png');
 });
 
 setup('should open application creation dialog', async ({ page }) => {
