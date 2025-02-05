@@ -28,9 +28,8 @@ jobs:
         name: playwright-report
         path: frontend/playwright-report/
         retention-days: 3
-    - name: Group of log lines
+    - name: Playwright Inspect Test Summary
       run: |
-        echo "::group::Playwright Test Report Summary"
         echo "🔍 To check test errors in GitHub Actions:"
         echo ""
         echo "1️⃣ **Download the HTML Report:**"
@@ -46,4 +45,3 @@ jobs:
         echo "   - Inspect each test action to diagnose the issue."
         echo ""
         echo "📖 More details: https://playwright.dev/docs/test-reporters#html-reporter"
-        echo "::endgroup::"
