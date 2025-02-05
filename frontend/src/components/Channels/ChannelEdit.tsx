@@ -233,7 +233,9 @@ export default function ChannelEdit(props: ChannelEditProps) {
               const selectedPackage = packages.packages
                 .filter((packageItem: Package) => packageItem.arch === arch)
                 .filter((packageItem: Package) => packageItem.version === packageVersion);
-              setFieldValue('package', selectedPackage[0].id);
+              if (selectedPackage.length) {
+                setFieldValue('package', selectedPackage[0].id);
+              }
             }}
             suggestions={packages.packages
               .filter((packageItem: Package) => packageItem.arch === arch)
