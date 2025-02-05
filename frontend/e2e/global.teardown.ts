@@ -32,6 +32,5 @@ teardown('delete instance entries from db', async ({ }) => {
   );
 
 
-  await client.query('COMMIT');
   await client.end();
 });
