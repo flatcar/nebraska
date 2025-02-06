@@ -114,6 +114,7 @@ func (s *Session) Save(writer http.ResponseWriter) error {
 		Value:  value,
 		Path:   "/",
 		MaxAge: maxAge,
+		HttpOnly: true,
 	}
 	http.SetCookie(writer, cookie)
 	return nil
