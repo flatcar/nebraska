@@ -21,7 +21,7 @@ export default function PageNotFoundLayout() {
           {t(`Whoops! This page doesn't exist`)}
         </Typography>
         <Typography variant="h2">
-          <Trans t={t}>
+          <Trans t={t} i18nKey="headback">
             Head back <Link to="/">home</Link>.
           </Trans>
         </Typography>

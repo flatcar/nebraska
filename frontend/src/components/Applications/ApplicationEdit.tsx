@@ -145,7 +145,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
 
   const validation = Yup.object().shape({
     name: Yup.string()
-      .max(50, t('applications|Must be less than 50 characters'))
+      .max(50, t('common|Must be less than x characters', { number: 50 }))
       .required('Required'),
     product_id: Yup.string()
       // This regex matches an ID that matches
@@ -155,10 +155,10 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
       // Each segment must not end with a dash.
       .matches(
         /^[a-zA-Z]+([a-zA-Z0-9\-]*[a-zA-Z0-9])*(\.[a-zA-Z]+([a-zA-Z0-9\-]*[a-zA-Z0-9])*)+$/,
-        t('applications|Must be a reverse domain ID like io.example.MyApp')
+        t('common|Must be a reverse domain ID like io.example.MyApp')
       )
       .nullable(),
-    description: Yup.string().max(155, t('applications|Must be less than 155 characters')),
+    description: Yup.string().max(155, t('common|Must be less than x characters', { number: 155 })),
   });
 
   return (

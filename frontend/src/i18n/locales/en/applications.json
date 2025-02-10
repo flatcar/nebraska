@@ -1,0 +1,16 @@
+{
+  "Add Application": "Add Application",
+  "Applications": "Applications",
+  "Are you sure you want to delete this application?": "Are you sure you want to delete this application?",
+  "Do not copy": "Do not copy",
+  "Example: io.example.MyApp": "Example: io.example.MyApp",
+  "Groups/Channels": "Groups/Channels",
+  "INSTANCES": "INSTANCES",
+  "No description provided": "No description provided",
+  "No results found.": "No results found.",
+  "None": "None",
+  "Update Application": "Update Application",
+  "instances": "instances",
+  "last 24 hours": "last 24 hours",
+  "noappyet": "Oops, it looks like you have not created any application yet.. <1/><2/> Now is a great time to create your first one, just click on the plus symbol above."
+}

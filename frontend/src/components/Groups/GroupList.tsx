@@ -37,7 +37,7 @@ function GroupList({ appID }: GroupListProps) {
     setUpdateGroupModalVisible(false);
   }
 
-  function openUpdateGroupModal(appID: string, groupID: string) {
+  function openUpdateGroupModal(_: string, groupID: string) {
     setUpdateGroupModalVisible(true);
     setUpdateGroupIDModal(groupID);
   }
@@ -64,7 +64,7 @@ function GroupList({ appID }: GroupListProps) {
     if (_.isEmpty(groups)) {
       entries = (
         <Empty>
-          <Trans ns="Groups">
+          <Trans ns="groups" i18nKey="nogroupsyet">
             There are no groups for this application yet.
             <br />
             <br />

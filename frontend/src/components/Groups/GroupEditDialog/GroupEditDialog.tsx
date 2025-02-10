@@ -163,14 +163,14 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
   function positiveNum() {
     return Yup.number()
       .positive()
-      .min(1, t('groups|Must be greather than or equal to 1'))
+      .min(1, t('common|Must be greather than or equal to x', { number: 1 }))
       .required('Required');
   }
 
   function maxCharacters(maxChars: number, required = false) {
     let validation = Yup.string().max(
       maxChars,
-      t(`groups|Must be less than ${maxChars} characters`)
+      t('common|Must be less than x characters', { number: maxChars })
     );
 
     if (required) validation = validation.required('Required');
