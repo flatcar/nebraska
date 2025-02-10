@@ -176,8 +176,9 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
         validationSchema={validation}
         //@todo add better types for renderForm
         //@ts-ignore
-        render={renderForm}
-      />
+      >
+        {renderForm}
+      </Formik>
     </Dialog>
   );
 }

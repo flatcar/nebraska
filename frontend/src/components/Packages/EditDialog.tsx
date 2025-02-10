@@ -407,8 +407,9 @@ function EditDialog(props: EditDialogProps) {
         validationSchema={validation}
         //@todo add better types
         //@ts-ignore
-        render={renderForm}
-      />
+      >
+        {renderForm}
+      </Formik>
     </Dialog>
   );
 }

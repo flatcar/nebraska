@@ -295,8 +295,9 @@ export default function ChannelEdit(props: ChannelEditProps) {
         validationSchema={validation}
         //@todo add better types
         //@ts-ignore
-        render={renderForm}
-      />
+      >
+        {renderForm}
+      </Formik>
     </Dialog>
   );
 }

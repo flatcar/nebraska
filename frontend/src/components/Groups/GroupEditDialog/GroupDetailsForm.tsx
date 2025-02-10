@@ -27,7 +27,10 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
             label="Name"
             required
             fullWidth
-            defaultValue={values.name}
+            value={values.name}
+            onChange={(e: any) => {
+              setFieldValue('name', e.target.value);
+            }}
           />
         </Grid>
         <Grid item xs={4}>
@@ -64,7 +67,10 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
             margin="dense"
             label={t('groups|Track (identifier for clients, filled with the group ID if omitted)')}
             fullWidth
-            defaultValue={values.track}
+            value={values.track}
+            onChange={(e: any) => {
+              setFieldValue('track', e.target.value);
+            }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -75,7 +81,10 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
             margin="dense"
             label={t('groups|Description')}
             fullWidth
-            defaultValue={values.description}
+            value={values.description}
+            onChange={(e: any) => {
+              setFieldValue('description', e.target.value);
+            }}
           />
         </Grid>
       </Grid>

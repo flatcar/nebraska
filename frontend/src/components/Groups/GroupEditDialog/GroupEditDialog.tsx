@@ -195,6 +195,8 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
 
   if (isCreation) {
     initialValues = {
+      name: '',
+      track: '',
       appID: appID,
       maxUpdates: 1,
       updatesPeriodRange: 1,
@@ -215,8 +217,8 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
     const [currentupdatesTimeout, currentUpdatesTimeoutUnit] =
       group.policy_update_timeout.split(' ');
     initialValues = {
-      name: group.name,
-      track: group.track,
+      name: group.name || '',
+      track: group.track || '',
       description: group.description,
       timezone: group.policy_timezone || DEFAULT_TIMEZONE,
       updatesEnabled: group.policy_updates_enabled,
@@ -240,8 +242,9 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
         validationSchema={validation}
         //@todo add better types
         //@ts-ignore
-        render={renderForm}
-      />
+      >
+        {renderForm}
+      </Formik>
     </Dialog>
   );
 }
