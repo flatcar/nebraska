@@ -14,5 +14,6 @@
   "Must be an integer number": "Must be an integer number",
   "Must enter a valid filename (less than x characters)": "Must enter a valid filename (less than {{number}} characters)",
   "Must be a reverse domain ID like io.example.MyApp": "Must be a reverse domain ID like io.example.MyApp",
-  "Must be less than x characters": "Must be less than {{number}} characters"
+  "Must be less than x characters": "Must be less than {{number}} characters",
+  "something_wrong": "Something went wrong. Check the form or try again later..."
 }

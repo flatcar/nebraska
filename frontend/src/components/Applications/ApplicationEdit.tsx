@@ -53,9 +53,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
       .catch(() => {
         actions.setSubmitting(false);
         actions.setStatus({
-          statusMessage: t(
-            'applications|Something went wrong. Check the form or try again later...'
-          ),
+          statusMessage: t('common|something_wrong'),
         });
       });
   }
@@ -108,9 +106,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
               variant="standard"
               label={t('applications|Groups/Channels')}
               select
-              helperText={t(
-                'applications|Clone channels and groups from another other application'
-              )}
+              helperText={t('applications|clone_channels_groups_from_another_app')}
               margin="normal"
               component={TextField}
               InputLabelProps={{
@@ -168,9 +164,10 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
       </DialogTitle>
       <Formik
         initialValues={{
-          name: props.data.name,
-          description: props.data.description,
-          product_id: props.data.product_id,
+          name: props.data.name || '',
+          description: props.data.description || '',
+          product_id: props.data.product_id || '',
+          appToClone: 'none',
         }}
         onSubmit={handleSubmit}
         validationSchema={validation}

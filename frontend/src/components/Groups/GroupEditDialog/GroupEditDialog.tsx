@@ -86,7 +86,7 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
       .catch(() => {
         actions.setSubmitting(false);
         actions.setStatus({
-          statusMessage: t('groups|Something went wrong. Check the form or try again later...'),
+          statusMessage: t('common|something_wrong'),
         });
       });
   }
