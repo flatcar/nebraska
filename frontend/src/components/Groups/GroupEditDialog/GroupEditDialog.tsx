@@ -236,13 +236,9 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
   return (
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
       <DialogTitle>{isCreation ? t('groups|Add Group') : t('groups|Edit Group')}</DialogTitle>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={handleSubmit}
-        validationSchema={validation}
-        //@todo add better types
-        //@ts-ignore
-      >
+      <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={validation}>
+        {/* @todo add better types for renderForm */}
+        {/* @ts-ignore */}
         {renderForm}
       </Formik>
     </Dialog>

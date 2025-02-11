@@ -401,13 +401,9 @@ function EditDialog(props: EditDialogProps) {
       <DialogTitle>
         {isCreation ? t('packages|Add Package') : t('packages|Edit Package')}
       </DialogTitle>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={handleSubmit}
-        validationSchema={validation}
-        //@todo add better types
-        //@ts-ignore
-      >
+      <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={validation}>
+        {/* @todo add better types for renderForm */}
+        {/* @ts-ignore */}
         {renderForm}
       </Formik>
     </Dialog>

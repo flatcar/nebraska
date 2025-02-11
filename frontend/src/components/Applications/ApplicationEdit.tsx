@@ -174,9 +174,9 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
         }}
         onSubmit={handleSubmit}
         validationSchema={validation}
-        //@todo add better types for renderForm
-        //@ts-ignore
       >
+        {/* @todo add better types for renderForm */}
+        {/* @ts-ignore */}
         {renderForm}
       </Formik>
     </Dialog>
