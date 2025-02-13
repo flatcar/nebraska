@@ -45,7 +45,8 @@ test.describe('Instances', () => {
 
     await page.locator('tbody tr.MuiTableRow-root').getByRole('button').click();
 
-    await expect(page).toHaveScreenshot('instance-history.png', { maxDiffPixels: 500 });
+    // mask elements that are: cells where we can find timedate values, and nebraska version at the bottom
+    await expect(page).toHaveScreenshot('instance-history.png', { mask: [page.locator('//*[contains(text(), "/")]'), page.locator('#main > div:last-child')], maxDiffPixels: 500 });
 
     await expect(page.locator('#main')).toContainText('Downloaded');
     await expect(page.locator('#main')).toContainText('Downloading');
@@ -67,8 +68,10 @@ test.describe('Instances', () => {
 
     await page.getByRole('link', { name: '2c517ad881474ec6b5ab928df2a7b5f4' }).click();
 
-    // maxDiffPixels set due to displaying date times that can change
-    await expect(page).toHaveScreenshot('instance-info.png', { mask: [page.locator('//*[contains(text(), "/")]')], maxDiffPixels: 500 });
+    // mask elements that are: cells where we can find timedate values, and nebraska version at the bottom
+    await expect(page).toHaveScreenshot('instance-info.png', {
+      mask: [page.locator('//*[contains(text(), "/")]'), page.locator('#main > div:last-child')], maxDiffPixels: 200
+    });
 
     await expect(page.getByRole('heading')).toContainText('Instance Information');
     await expect(page.locator('#main')).toContainText('2c517ad881474ec6b5ab928df2a7b5f4');

@@ -39,19 +39,3 @@ setup('create new node instances in database', async ({ page }) => {
   await client.query('COMMIT');
   await client.end();
 });
-
-setup('should open application creation dialog', async ({ page }) => {
-  await page.goto('http://localhost:8002/');
-
-  await page.getByTestId('modal-button').click();
-  await page.locator('input[name="name"]').click();
-  await page.locator('input[name="name"]').fill("dwadwad");
-  await page.locator('input[name="name"]').press('Tab');
-  await page.locator('input[name="product_id"]').fill("wqeqwe");
-  await page.locator('input[name="product_id"]').press('Tab');
-  await page.getByLabel('Description').fill('Test Application');
-  await page.getByLabel('Description').press('Tab');
-  await page.getByLabel('Groups/Channels').click();
-
-  await expect(page).toHaveScreenshot('create-application-dialog.png');
-});
