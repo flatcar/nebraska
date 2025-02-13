@@ -64,7 +64,7 @@
     "@playwright/test": "^1.49.1",
     "@storybook/addon-actions": "7.6.20",
     "@storybook/addon-essentials": "7.6.20",
-    "@storybook/addon-links": "7.6.20",
+    "@storybook/addon-links": "8.5.5",
     "@storybook/addon-storyshots": "7.6.20",
     "@storybook/node-logger": "7.6.20",
     "@storybook/preset-create-react-app": "7.6.20",
