@@ -130,8 +130,6 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
                 margin="dense"
                 type="number"
                 fullWidth
-                minValue={0}
-                defaultValue={values.maxUpdates}
                 inputProps={{ min: 0 }}
               />
             </Box>
@@ -148,7 +146,6 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
                 margin="dense"
                 type="number"
                 fullWidth
-                defaultValue={values.updatesPeriodRange}
                 inputProps={{ min: 0 }}
               />
             </Box>
@@ -162,7 +159,6 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
                 margin="dense"
                 select
                 fullWidth
-                defaultValue={values.updatesPeriodUnit}
               >
                 <MenuItem value={'hours'} key={'hours'}>
                   {t('groups|hours')}
@@ -188,7 +184,6 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
                   variant="standard"
                   margin="dense"
                   type="number"
-                  defaultValue={values.updatesTimeout}
                   inputProps={{ min: 0 }}
                 />
               </Grid>
@@ -201,7 +196,6 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
                     margin="dense"
                     select
                     fullWidth
-                    defaultValue={values.updatesTimeoutUnit}
                   >
                     <MenuItem value={'hours'} key={'hours'}>
                       {t('groups|hours')}

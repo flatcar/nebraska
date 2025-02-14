@@ -161,9 +161,10 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
   }
 
   function positiveNum() {
+    const minNr = 1;
     return Yup.number()
       .positive()
-      .min(1, t('common|Must be greather than or equal to x', { number: 1 }))
+      .min(minNr, t('common|Must be greather than or equal to x', { number: minNr }))
       .required('Required');
   }
 
