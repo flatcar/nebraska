@@ -89,7 +89,7 @@
     "lint-staged": "^10.5.4",
     "pg": "^8.13.1",
     "prettier": "^2.3.2",
-    "storybook": "^7.6.20",
+    "storybook": "^8.5.6",
     "typescript": "^4.4.x"
   },
   "scripts": {
