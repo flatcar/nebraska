@@ -1,4 +1,4 @@
-import { FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
+import { FormControl, Grid, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { Field } from 'formik';
 import { TextField } from 'formik-mui';
 import { useTranslation } from 'react-i18next';
@@ -44,7 +44,7 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
               variant="standard"
               displayEmpty
               defaultValue={values.channel}
-              onChange={(e: any) => {
+              onChange={(e: SelectChangeEvent) => {
                 setFieldValue('channel', e.target.value);
               }}
             >
