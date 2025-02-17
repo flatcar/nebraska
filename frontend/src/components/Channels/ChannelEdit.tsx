@@ -271,7 +271,9 @@ export default function ChannelEdit(props: ChannelEditProps) {
   }
 
   const validation = Yup.object().shape({
-    name: Yup.string().max(50, t('channels|Must be less than 50 characters')).required('Required'),
+    name: Yup.string()
+      .max(50, t('common|Must be less than x characters', { number: 50 }))
+      .required('Required'),
   });
 
   let initialValues = {};
@@ -287,14 +289,11 @@ export default function ChannelEdit(props: ChannelEditProps) {
       <DialogTitle>
         {isCreation ? t('channels|Add New Channel') : t('channels|Edit Channel')}
       </DialogTitle>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={handleSubmit}
-        validationSchema={validation}
-        //@todo add better types
-        //@ts-ignore
-        render={renderForm}
-      />
+      <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={validation}>
+        {/* @todo add better types */}
+        {/* @ts-ignore */}
+        {renderForm}
+      </Formik>
     </Dialog>
   );
 }

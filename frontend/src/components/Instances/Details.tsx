@@ -283,8 +283,9 @@ function EditDialog(props: EditDialogProps) {
         }}
         onSubmit={handleSubmit}
         validationSchema={validation}
-        render={renderForm}
-      />
+      >
+        {renderForm}
+      </Formik>
     </Dialog>
   );
 }

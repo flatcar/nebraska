@@ -155,7 +155,8 @@
       "src/**/*.{js,jsx,ts,tsx}",
       "!<rootDir>/node_modules/",
       "!<rootDir>/build/",
-      "!src/**/*.stories*.{js,jsx,ts,tsx}"
+      "!src/**/*.stories*.{js,jsx,ts,tsx}",
+      "!src/components/**/index.tsx"
     ],
     "coverageThreshold": {
       "global": {

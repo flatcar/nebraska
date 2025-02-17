@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import makeStyles from '@mui/styles/makeStyles';
-import React from 'react';
 
 const useStyles = makeStyles({
   loaderContainer: {
@@ -13,7 +12,7 @@ const useStyles = makeStyles({
 export default function Loader(props: { noContainer?: boolean }) {
   const classes = useStyles();
   const { noContainer = false, ...other } = props;
-  const progress = <CircularProgress {...other} />;
+  const progress = <CircularProgress aria-label="Loading" {...other} />;
 
   if (noContainer) return progress;
 

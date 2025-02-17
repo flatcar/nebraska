@@ -114,7 +114,7 @@ function Container() {
             <Loader />
           ) : _.isEmpty(activity) ? (
             <Empty>
-              <Trans ns="activity">
+              <Trans ns="activity" i18nKey="noactivity">
                 No activity found for the last week.
                 <br />
                 <br />

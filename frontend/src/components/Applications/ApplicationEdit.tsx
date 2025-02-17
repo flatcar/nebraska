@@ -53,9 +53,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
       .catch(() => {
         actions.setSubmitting(false);
         actions.setStatus({
-          statusMessage: t(
-            'applications|Something went wrong. Check the form or try again later...'
-          ),
+          statusMessage: t('common|something_wrong'),
         });
       });
   }
@@ -108,9 +106,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
               variant="standard"
               label={t('applications|Groups/Channels')}
               select
-              helperText={t(
-                'applications|Clone channels and groups from another other application'
-              )}
+              helperText={t('applications|clone_channels_groups_from_another_app')}
               margin="normal"
               component={TextField}
               InputLabelProps={{
@@ -145,7 +141,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
 
   const validation = Yup.object().shape({
     name: Yup.string()
-      .max(50, t('applications|Must be less than 50 characters'))
+      .max(50, t('common|Must be less than x characters', { number: 50 }))
       .required('Required'),
     product_id: Yup.string()
       // This regex matches an ID that matches
@@ -155,10 +151,10 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
       // Each segment must not end with a dash.
       .matches(
         /^[a-zA-Z]+([a-zA-Z0-9\-]*[a-zA-Z0-9])*(\.[a-zA-Z]+([a-zA-Z0-9\-]*[a-zA-Z0-9])*)+$/,
-        t('applications|Must be a reverse domain ID like io.example.MyApp')
+        t('common|Must be a reverse domain ID like io.example.MyApp')
       )
       .nullable(),
-    description: Yup.string().max(155, t('applications|Must be less than 155 characters')),
+    description: Yup.string().max(155, t('common|Must be less than x characters', { number: 155 })),
   });
 
   return (
@@ -168,16 +164,18 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
       </DialogTitle>
       <Formik
         initialValues={{
-          name: props.data.name,
-          description: props.data.description,
-          product_id: props.data.product_id,
+          name: props.data.name || '',
+          description: props.data.description || '',
+          product_id: props.data.product_id || '',
+          appToClone: 'none',
         }}
         onSubmit={handleSubmit}
         validationSchema={validation}
-        //@todo add better types for renderForm
-        //@ts-ignore
-        render={renderForm}
-      />
+      >
+        {/* @todo add better types for renderForm */}
+        {/* @ts-ignore */}
+        {renderForm}
+      </Formik>
     </Dialog>
   );
 }
