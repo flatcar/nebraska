@@ -13,7 +13,7 @@ const Template: StoryFn<ApplicationListPureProps> = args => {
     static getInstancesCount(
       applicationID: string,
       groupID: string,
-      duration: string,
+      duration: string
     ): Promise<number> {
       return new Promise(resolve => resolve(20));
     }

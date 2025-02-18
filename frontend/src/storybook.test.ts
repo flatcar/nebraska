@@ -1,4 +1,4 @@
-import { describe, expect,test } from '@jest/globals';
+import { describe, expect, test } from '@jest/globals';
 import type { Meta, StoryFn } from '@storybook/react';
 // Replace your-renderer with the renderer you are using (e.g., react, vue3, svelte, etc.)
 import { composeStories } from '@storybook/react';
@@ -15,7 +15,7 @@ const compose = (entry: StoryFile): ReturnType<typeof composeStories<StoryFile>>
     return composeStories(entry);
   } catch (e) {
     throw new Error(
-      `There was an issue composing stories for the module: ${JSON.stringify(entry)}, ${e}`,
+      `There was an issue composing stories for the module: ${JSON.stringify(entry)}, ${e}`
     );
   }
 };
@@ -23,10 +23,10 @@ const compose = (entry: StoryFile): ReturnType<typeof composeStories<StoryFile>>
 function getAllStoryFiles() {
   // Place the glob you want to match your stories files
   const storyFiles = glob.sync(
-    path.join(__dirname, 'stories/**/*.{stories,story}.{js,jsx,mjs,ts,tsx}'),
+    path.join(__dirname, 'stories/**/*.{stories,story}.{js,jsx,mjs,ts,tsx}')
   );
 
-  return storyFiles.map((filePath) => {
+  return storyFiles.map(filePath => {
     const storyFile = require(filePath);
     const storyDir = path.dirname(filePath);
     const componentName = path.basename(filePath).replace(/\.(stories|story)\.[^/.]+$/, '');
@@ -45,7 +45,7 @@ describe('Stories Snapshots', () => {
 
       if (stories.length <= 0) {
         throw new Error(
-          `No stories found for this module: ${title}. Make sure there is at least one valid story for this module.`,
+          `No stories found for this module: ${title}. Make sure there is at least one valid story for this module.`
         );
       }
 
@@ -53,7 +53,7 @@ describe('Stories Snapshots', () => {
         test(name, async () => {
           await story.run();
           // Ensures a consistent snapshot by waiting for the component to render by adding a delay of 1 ms before taking the snapshot.
-          await new Promise((resolve) => setTimeout(resolve, 1));
+          await new Promise(resolve => setTimeout(resolve, 1));
           expect(document.body.firstChild).toMatchSnapshot();
         });
       });
