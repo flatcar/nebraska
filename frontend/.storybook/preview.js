@@ -51,5 +51,5 @@ export const parameters = {
       { name: 'dark', value: 'dark' },
     ],
   },
-  actions: { argTypesRegex: '^on[A-Z].*' },
 };
+export const tags = ['autodocs'];

@@ -4,7 +4,7 @@
 ```sh
 cd frontend
 npm install
-npx playwright install
+npx playwright install --with-deps
 ```
 
 ### 🚀 Run Tests  
