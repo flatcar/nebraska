@@ -1,7 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`channels/ChannelAvatar White smoke-test 1`] = `
-<div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar-1 makeStyles-colorAvatar-2 css-1onlcy6-MuiAvatar-root">
-  ABC
-</div>
-`;
