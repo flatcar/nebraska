@@ -1,4 +1,3 @@
-import React from 'react';
 import themesConf from '../src/lib/themes';
 import { StylesProvider } from '@mui/styles';
 import '../src/i18n/config';
@@ -19,16 +18,7 @@ const withThemeProvider = (Story, context) => {
       </ThemeProviderNexti18n>
     </StyledEngineProvider>
   );
-  if (process.env.NODE_ENV !== 'test') {
-    return ourThemeProvider;
-  } else {
-    const generateClassName = (rule, styleSheet) =>
-      `${styleSheet?.options.classNamePrefix}-${rule.key}`;
-
-    return (
-      <StylesProvider generateClassName={generateClassName}>{ourThemeProvider}</StylesProvider>
-    );
-  }
+  return ourThemeProvider;
 };
 export const decorators = [withThemeProvider];
 

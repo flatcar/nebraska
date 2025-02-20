@@ -31,6 +31,7 @@ export interface TimelineChartProps {
   onSelect: (activeLabel: any) => void;
   colors: any;
   keys: string[];
+  isAnimationActive?: boolean;
 }
 
 export default function TimelineChart(props: TimelineChartProps) {
@@ -145,6 +146,7 @@ export default function TimelineChart(props: TimelineChartProps) {
       <YAxis stroke="#000" />
       {props.keys.map((key: string, i: number) => (
         <Area
+          isAnimationActive={props.isAnimationActive}
           type={interpolation}
           key={i}
           dataKey={key}

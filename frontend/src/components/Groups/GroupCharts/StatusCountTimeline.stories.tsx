@@ -65,6 +65,7 @@ export const Timeline = {
   render: Template,
 
   args: {
+    isAnimationActive: false,
     group: {
       id: '9a2deb70-37be-4026-853f-bfdd6b347bbe',
       name: 'Stable (AMD64)',

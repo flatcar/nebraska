@@ -6,7 +6,6 @@ const config: StorybookConfig = {
     '@storybook/addon-links',
     '@storybook/addon-essentials',
     '@storybook/preset-create-react-app',
-    '@chromatic-com/storybook'
   ],
   framework: '@storybook/react-webpack5',
   staticDirs: ['../public'],

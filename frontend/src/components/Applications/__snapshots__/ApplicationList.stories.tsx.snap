@@ -1,0 +1,1099 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`applications/ApplicationList Applications smoke-test 1`] = `
+<div class="MuiGrid-root MuiGrid-container makeStyles-sectionHeader-6 css-eei0dj-MuiGrid-root">
+  <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+    <div class="MuiBox-root css-2rlxtj">
+      <h1 class="MuiTypography-root MuiTypography-h1 css-17cy2p8-MuiTypography-root">
+        Applications
+      </h1>
+    </div>
+  </div>
+  <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+    <div>
+      <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
+              tabindex="0"
+              type="button"
+              aria-label="add"
+              data-testid="modal-button"
+      >
+        <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge makeStyles-root-7 css-tzssek-MuiSvgIcon-root"
+             focusable="false"
+             aria-hidden="true"
+             viewbox="0 0 24 24"
+             data-testid="AddIcon"
+        >
+          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z">
+          </path>
+        </svg>
+        <span class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root">
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-5jb75g-MuiPaper-root">
+  <ul class="MuiList-root MuiList-padding makeStyles-root-5 css-h4y409-MuiList-root">
+    <li class="MuiListItem-root MuiListItem-padding MuiListItem-divider makeStyles-divider-10 makeStyles-root-8 css-1oz7m58-MuiListItem-root"
+        data-testid="list-item"
+    >
+      <div class="MuiGrid-root MuiGrid-container css-11lq3yg-MuiGrid-root">
+        <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+          <div class="MuiGrid-root MuiGrid-container makeStyles-gridHeader-11 css-1xzqqmo-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-1 css-j1w48a-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+                <h2 class="MuiTypography-root MuiTypography-h2 css-150084s-MuiTypography-root">
+                  <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-mainLink-13 css-1emptwe-MuiTypography-root-MuiLink-root"
+                     href="/apps/FFFF-AAAA-CCCC-EEEE"
+                  >
+                    ABC
+                  </a>
+                </h2>
+              </div>
+              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+                <div class="MuiBox-root css-1yq8yj7">
+                  <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel-16 css-1s94icn-MuiTypography-root"
+                     arial-label="group-id"
+                  >
+                    xxx-xxx-yyy
+                  </p>
+                </div>
+                <div class="MuiBox-root css-1yuhvjn">
+                  <span class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel-15 css-1s23nr9-MuiTypography-root">
+                    App Item Description
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+              <div>
+                <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-1pux6rn-MuiButtonBase-root-MuiIconButton-root"
+                        tabindex="0"
+                        type="button"
+                        aria-controls="simple-menu-1"
+                        aria-haspopup="true"
+                        aria-label="Open menu"
+                        data-testid="more-menu-open-button"
+                >
+                  <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                       focusable="false"
+                       aria-hidden="true"
+                       viewbox="0 0 24 24"
+                       data-testid="MoreVertIcon"
+                  >
+                    <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2">
+                    </path>
+                  </svg>
+                  <span class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root">
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light makeStyles-innerDivider-17 css-xetjfm-MuiDivider-root">
+        </div>
+        <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+          <div class="MuiGrid-root MuiGrid-container makeStyles-itemSection-9 css-11lq3yg-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4 css-gj1fbr-MuiGrid-root">
+              <div class="MuiBox-root css-1yuhvjn">
+                <span class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel-14 css-1s23nr9-MuiTypography-root">
+                  INSTANCES
+                </span>
+                <span class="MuiTypography-root MuiTypography-body1 makeStyles-label-18 makeStyles-label-22 css-1s23nr9-MuiTypography-root">
+                  <h5 class="MuiTypography-root MuiTypography-h5 css-xqgeko-MuiTypography-root">
+                    20
+                  </h5>
+                  <div class="MuiBox-root css-1jzjbfr">
+                    <svg class="MuiSvgIcon-root MuiSvgIcon-colorDisabled MuiSvgIcon-fontSizeMedium css-1db085k-MuiSvgIcon-root"
+                         focusable="false"
+                         aria-hidden="true"
+                         viewbox="0 0 24 24"
+                         data-testid="ScheduleIcon"
+                    >
+                      <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8">
+                      </path>
+                      <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z">
+                      </path>
+                    </svg>
+                    <div class="MuiBox-root css-1hsc5oo">
+                      <h6 class="MuiTypography-root MuiTypography-subtitle1 css-15qi99c-MuiTypography-root">
+                        last 24 hours
+                      </h6>
+                    </div>
+                  </div>
+                </span>
+              </div>
+            </div>
+            <div class="MuiBox-root css-1pelcm7">
+              <hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-vertical css-ftc7wc-MuiDivider-root">
+            </div>
+            <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-7 css-uqwprf-MuiGrid-root">
+              <div class="MuiBox-root css-10wfmn8">
+                <span class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel-14 css-1s23nr9-MuiTypography-root">
+                  Groups
+                </span>
+                <div class="MuiBox-root css-1t04ftt">
+                  <span class="MuiTypography-root MuiTypography-body1 makeStyles-label-18 makeStyles-label-24 css-1s23nr9-MuiTypography-root">
+                    1
+                  </span>
+                </div>
+                <div class="MuiBox-root css-164r41r">
+                  <div class="MuiBox-root css-1ckupud">
+                    <div class="MuiBox-root css-126n10b">
+                      <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-groupLink-25 css-1emptwe-MuiTypography-root-MuiLink-root"
+                         href="/apps//groups/xxx-xxx-1"
+                      >
+                        First group
+                      </a>
+                    </div>
+                    <div class="MuiBox-root css-qiye2o">
+                      <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-instanceLink-26 css-1emptwe-MuiTypography-root-MuiLink-root"
+                         href="/apps//groups/xxx-xxx-1/instances?period=1d"
+                      >
+                        <div class="MuiBox-root css-k008qs">
+                          <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                               focusable="false"
+                               aria-hidden="true"
+                               viewbox="0 0 24 24"
+                               data-testid="LayersOutlinedIcon"
+                          >
+                            <path d="m11.99 18.54-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27zm0-11.47L17.74 9 12 13.47 6.26 9z">
+                            </path>
+                          </svg>
+                          <div class="MuiBox-root css-7ieh0i">
+                            20
+                          </div>
+                          instances
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                  <div class="MuiListItem-root MuiListItem-gutters MuiListItem-padding css-1i06p90-MuiListItem-root">
+                    <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root">
+                      <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+                        <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar-28 makeStyles-colorAvatar-29 css-1onlcy6-MuiAvatar-root">
+                        </div>
+                      </div>
+                      <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+                        <div class="MuiListItemText-root MuiListItemText-multiline makeStyles-root-27 css-konndc-MuiListItemText-root">
+                          <div class="MuiBox-root css-70qvj9">
+                            <div class="MuiBox-root css-1xsd608">
+                              main
+                            </div>
+                          </div>
+                          <div class="MuiBox-root css-15aqakd">
+                            <div class="MuiBox-root css-0">
+                              1.11.3 (ALL)
+                            </div>
+                            <div class="MuiBox-root css-n085mf">
+                              <div class="MuiBox-root css-k008qs">
+                                <div class="MuiBox-root css-0">
+                                  <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-ptiqhd-MuiSvgIcon-root"
+                                       focusable="false"
+                                       aria-hidden="true"
+                                       viewbox="0 0 24 24"
+                                       data-testid="ScheduleIcon"
+                                       aria-label="Release date"
+                                       data-mui-internal-clone-element="true"
+                                  >
+                                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8">
+                                    </path>
+                                    <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z">
+                                    </path>
+                                  </svg>
+                                </div>
+                                <div class="MuiBox-root css-1iuj5ih">
+                                  07/18/2019
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+    <li class="MuiListItem-root MuiListItem-padding MuiListItem-divider makeStyles-divider-10 makeStyles-root-8 css-1oz7m58-MuiListItem-root"
+        data-testid="list-item"
+    >
+      <div class="MuiGrid-root MuiGrid-container css-11lq3yg-MuiGrid-root">
+        <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+          <div class="MuiGrid-root MuiGrid-container makeStyles-gridHeader-11 css-1xzqqmo-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-1 css-j1w48a-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+                <h2 class="MuiTypography-root MuiTypography-h2 css-150084s-MuiTypography-root">
+                  <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-mainLink-13 css-1emptwe-MuiTypography-root-MuiLink-root"
+                     href="/apps/BBBB-AAAA-CCCC-EEEE"
+                  >
+                    ABC 2 the return
+                  </a>
+                </h2>
+              </div>
+              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+                <div class="MuiBox-root css-1yq8yj7">
+                  <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel-16 css-1s94icn-MuiTypography-root"
+                     arial-label="group-id"
+                  >
+                    xxx-xxx-yyy
+                  </p>
+                </div>
+                <div class="MuiBox-root css-1yuhvjn">
+                  <span class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel-15 css-1s23nr9-MuiTypography-root">
+                    App Item Description
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+              <div>
+                <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-1pux6rn-MuiButtonBase-root-MuiIconButton-root"
+                        tabindex="0"
+                        type="button"
+                        aria-controls="simple-menu-2"
+                        aria-haspopup="true"
+                        aria-label="Open menu"
+                        data-testid="more-menu-open-button"
+                >
+                  <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                       focusable="false"
+                       aria-hidden="true"
+                       viewbox="0 0 24 24"
+                       data-testid="MoreVertIcon"
+                  >
+                    <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2">
+                    </path>
+                  </svg>
+                  <span class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root">
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light makeStyles-innerDivider-17 css-xetjfm-MuiDivider-root">
+        </div>
+        <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+          <div class="MuiGrid-root MuiGrid-container makeStyles-itemSection-9 css-11lq3yg-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4 css-gj1fbr-MuiGrid-root">
+              <div class="MuiBox-root css-1yuhvjn">
+                <span class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel-14 css-1s23nr9-MuiTypography-root">
+                  INSTANCES
+                </span>
+                <span class="MuiTypography-root MuiTypography-body1 makeStyles-label-18 makeStyles-label-33 css-1s23nr9-MuiTypography-root">
+                  <h5 class="MuiTypography-root MuiTypography-h5 css-xqgeko-MuiTypography-root">
+                    20
+                  </h5>
+                  <div class="MuiBox-root css-1jzjbfr">
+                    <svg class="MuiSvgIcon-root MuiSvgIcon-colorDisabled MuiSvgIcon-fontSizeMedium css-1db085k-MuiSvgIcon-root"
+                         focusable="false"
+                         aria-hidden="true"
+                         viewbox="0 0 24 24"
+                         data-testid="ScheduleIcon"
+                    >
+                      <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8">
+                      </path>
+                      <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z">
+                      </path>
+                    </svg>
+                    <div class="MuiBox-root css-1hsc5oo">
+                      <h6 class="MuiTypography-root MuiTypography-subtitle1 css-15qi99c-MuiTypography-root">
+                        last 24 hours
+                      </h6>
+                    </div>
+                  </div>
+                </span>
+              </div>
+            </div>
+            <div class="MuiBox-root css-1pelcm7">
+              <hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-vertical css-ftc7wc-MuiDivider-root">
+            </div>
+            <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-7 css-uqwprf-MuiGrid-root">
+              <div class="MuiBox-root css-10wfmn8">
+                <span class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel-14 css-1s23nr9-MuiTypography-root">
+                  Groups
+                </span>
+                <div class="MuiBox-root css-1t04ftt">
+                  <span class="MuiTypography-root MuiTypography-body1 makeStyles-label-18 makeStyles-label-35 css-1s23nr9-MuiTypography-root">
+                    1
+                  </span>
+                </div>
+                <div class="MuiBox-root css-164r41r">
+                  <div class="MuiBox-root css-1ckupud">
+                    <div class="MuiBox-root css-126n10b">
+                      <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-groupLink-25 css-1emptwe-MuiTypography-root-MuiLink-root"
+                         href="/apps//groups/xxx-xxx-1"
+                      >
+                        First group
+                      </a>
+                    </div>
+                    <div class="MuiBox-root css-qiye2o">
+                      <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-instanceLink-26 css-1emptwe-MuiTypography-root-MuiLink-root"
+                         href="/apps//groups/xxx-xxx-1/instances?period=1d"
+                      >
+                        <div class="MuiBox-root css-k008qs">
+                          <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                               focusable="false"
+                               aria-hidden="true"
+                               viewbox="0 0 24 24"
+                               data-testid="LayersOutlinedIcon"
+                          >
+                            <path d="m11.99 18.54-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27zm0-11.47L17.74 9 12 13.47 6.26 9z">
+                            </path>
+                          </svg>
+                          <div class="MuiBox-root css-7ieh0i">
+                            20
+                          </div>
+                          instances
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                  <div class="MuiListItem-root MuiListItem-gutters MuiListItem-padding css-1i06p90-MuiListItem-root">
+                    <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root">
+                      <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+                        <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar-28 makeStyles-colorAvatar-36 css-1onlcy6-MuiAvatar-root">
+                        </div>
+                      </div>
+                      <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+                        <div class="MuiListItemText-root MuiListItemText-multiline makeStyles-root-27 css-konndc-MuiListItemText-root">
+                          <div class="MuiBox-root css-70qvj9">
+                            <div class="MuiBox-root css-1xsd608">
+                              main
+                            </div>
+                          </div>
+                          <div class="MuiBox-root css-15aqakd">
+                            <div class="MuiBox-root css-0">
+                              1.11.3 (ALL)
+                            </div>
+                            <div class="MuiBox-root css-n085mf">
+                              <div class="MuiBox-root css-k008qs">
+                                <div class="MuiBox-root css-0">
+                                  <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-ptiqhd-MuiSvgIcon-root"
+                                       focusable="false"
+                                       aria-hidden="true"
+                                       viewbox="0 0 24 24"
+                                       data-testid="ScheduleIcon"
+                                       aria-label="Release date"
+                                       data-mui-internal-clone-element="true"
+                                  >
+                                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8">
+                                    </path>
+                                    <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z">
+                                    </path>
+                                  </svg>
+                                </div>
+                                <div class="MuiBox-root css-1iuj5ih">
+                                  07/18/2019
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>
+`;
+
+exports[`applications/ApplicationList EditOpen smoke-test 1`] = `
+<div class="MuiGrid-root MuiGrid-container makeStyles-sectionHeader-38 css-eei0dj-MuiGrid-root">
+  <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+    <div class="MuiBox-root css-2rlxtj">
+      <h1 class="MuiTypography-root MuiTypography-h1 css-17cy2p8-MuiTypography-root">
+        Applications
+      </h1>
+    </div>
+  </div>
+  <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+    <div>
+      <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
+              tabindex="0"
+              type="button"
+              aria-label="add"
+              data-testid="modal-button"
+      >
+        <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge makeStyles-root-39 css-tzssek-MuiSvgIcon-root"
+             focusable="false"
+             aria-hidden="true"
+             viewbox="0 0 24 24"
+             data-testid="AddIcon"
+        >
+          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z">
+          </path>
+        </svg>
+        <span class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root">
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-5jb75g-MuiPaper-root">
+  <ul class="MuiList-root MuiList-padding makeStyles-root-37 css-h4y409-MuiList-root">
+    <li class="MuiListItem-root MuiListItem-padding MuiListItem-divider makeStyles-divider-42 makeStyles-root-40 css-1oz7m58-MuiListItem-root"
+        data-testid="list-item"
+    >
+      <div class="MuiGrid-root MuiGrid-container css-11lq3yg-MuiGrid-root">
+        <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+          <div class="MuiGrid-root MuiGrid-container makeStyles-gridHeader-43 css-1xzqqmo-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-1 css-j1w48a-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+                <h2 class="MuiTypography-root MuiTypography-h2 css-150084s-MuiTypography-root">
+                  <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-mainLink-45 css-1emptwe-MuiTypography-root-MuiLink-root"
+                     href="/apps/FFFF-AAAA-CCCC-EEEE"
+                  >
+                    ABC
+                  </a>
+                </h2>
+              </div>
+              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+                <div class="MuiBox-root css-1yq8yj7">
+                  <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel-48 css-1s94icn-MuiTypography-root"
+                     arial-label="group-id"
+                  >
+                    xxx-xxx-yyy
+                  </p>
+                </div>
+                <div class="MuiBox-root css-1yuhvjn">
+                  <span class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel-47 css-1s23nr9-MuiTypography-root">
+                    App Item Description
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+              <div>
+                <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-1pux6rn-MuiButtonBase-root-MuiIconButton-root"
+                        tabindex="0"
+                        type="button"
+                        aria-controls="simple-menu-3"
+                        aria-haspopup="true"
+                        aria-label="Open menu"
+                        data-testid="more-menu-open-button"
+                >
+                  <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                       focusable="false"
+                       aria-hidden="true"
+                       viewbox="0 0 24 24"
+                       data-testid="MoreVertIcon"
+                  >
+                    <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2">
+                    </path>
+                  </svg>
+                  <span class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root">
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light makeStyles-innerDivider-49 css-xetjfm-MuiDivider-root">
+        </div>
+        <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+          <div class="MuiGrid-root MuiGrid-container makeStyles-itemSection-41 css-11lq3yg-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4 css-gj1fbr-MuiGrid-root">
+              <div class="MuiBox-root css-1yuhvjn">
+                <span class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel-46 css-1s23nr9-MuiTypography-root">
+                  INSTANCES
+                </span>
+                <span class="MuiTypography-root MuiTypography-body1 makeStyles-label-50 makeStyles-label-54 css-1s23nr9-MuiTypography-root">
+                  <h5 class="MuiTypography-root MuiTypography-h5 css-xqgeko-MuiTypography-root">
+                    20
+                  </h5>
+                  <div class="MuiBox-root css-1jzjbfr">
+                    <svg class="MuiSvgIcon-root MuiSvgIcon-colorDisabled MuiSvgIcon-fontSizeMedium css-1db085k-MuiSvgIcon-root"
+                         focusable="false"
+                         aria-hidden="true"
+                         viewbox="0 0 24 24"
+                         data-testid="ScheduleIcon"
+                    >
+                      <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8">
+                      </path>
+                      <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z">
+                      </path>
+                    </svg>
+                    <div class="MuiBox-root css-1hsc5oo">
+                      <h6 class="MuiTypography-root MuiTypography-subtitle1 css-15qi99c-MuiTypography-root">
+                        last 24 hours
+                      </h6>
+                    </div>
+                  </div>
+                </span>
+              </div>
+            </div>
+            <div class="MuiBox-root css-1pelcm7">
+              <hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-vertical css-ftc7wc-MuiDivider-root">
+            </div>
+            <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-7 css-uqwprf-MuiGrid-root">
+              <div class="MuiBox-root css-10wfmn8">
+                <span class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel-46 css-1s23nr9-MuiTypography-root">
+                  Groups
+                </span>
+                <div class="MuiBox-root css-1t04ftt">
+                  <span class="MuiTypography-root MuiTypography-body1 makeStyles-label-50 makeStyles-label-56 css-1s23nr9-MuiTypography-root">
+                    1
+                  </span>
+                </div>
+                <div class="MuiBox-root css-164r41r">
+                  <div class="MuiBox-root css-1ckupud">
+                    <div class="MuiBox-root css-126n10b">
+                      <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-groupLink-57 css-1emptwe-MuiTypography-root-MuiLink-root"
+                         href="/apps//groups/xxx-xxx-1"
+                      >
+                        First group
+                      </a>
+                    </div>
+                    <div class="MuiBox-root css-qiye2o">
+                      <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-instanceLink-58 css-1emptwe-MuiTypography-root-MuiLink-root"
+                         href="/apps//groups/xxx-xxx-1/instances?period=1d"
+                      >
+                        <div class="MuiBox-root css-k008qs">
+                          <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                               focusable="false"
+                               aria-hidden="true"
+                               viewbox="0 0 24 24"
+                               data-testid="LayersOutlinedIcon"
+                          >
+                            <path d="m11.99 18.54-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27zm0-11.47L17.74 9 12 13.47 6.26 9z">
+                            </path>
+                          </svg>
+                          <div class="MuiBox-root css-7ieh0i">
+                            20
+                          </div>
+                          instances
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                  <div class="MuiListItem-root MuiListItem-gutters MuiListItem-padding css-1i06p90-MuiListItem-root">
+                    <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root">
+                      <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+                        <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar-60 makeStyles-colorAvatar-61 css-1onlcy6-MuiAvatar-root">
+                        </div>
+                      </div>
+                      <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+                        <div class="MuiListItemText-root MuiListItemText-multiline makeStyles-root-59 css-konndc-MuiListItemText-root">
+                          <div class="MuiBox-root css-70qvj9">
+                            <div class="MuiBox-root css-1xsd608">
+                              main
+                            </div>
+                          </div>
+                          <div class="MuiBox-root css-15aqakd">
+                            <div class="MuiBox-root css-0">
+                              1.11.3 (ALL)
+                            </div>
+                            <div class="MuiBox-root css-n085mf">
+                              <div class="MuiBox-root css-k008qs">
+                                <div class="MuiBox-root css-0">
+                                  <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-ptiqhd-MuiSvgIcon-root"
+                                       focusable="false"
+                                       aria-hidden="true"
+                                       viewbox="0 0 24 24"
+                                       data-testid="ScheduleIcon"
+                                       aria-label="Release date"
+                                       data-mui-internal-clone-element="true"
+                                  >
+                                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8">
+                                    </path>
+                                    <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z">
+                                    </path>
+                                  </svg>
+                                </div>
+                                <div class="MuiBox-root css-1iuj5ih">
+                                  07/18/2019
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+    <li class="MuiListItem-root MuiListItem-padding MuiListItem-divider makeStyles-divider-42 makeStyles-root-40 css-1oz7m58-MuiListItem-root"
+        data-testid="list-item"
+    >
+      <div class="MuiGrid-root MuiGrid-container css-11lq3yg-MuiGrid-root">
+        <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+          <div class="MuiGrid-root MuiGrid-container makeStyles-gridHeader-43 css-1xzqqmo-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-1 css-j1w48a-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+                <h2 class="MuiTypography-root MuiTypography-h2 css-150084s-MuiTypography-root">
+                  <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-mainLink-45 css-1emptwe-MuiTypography-root-MuiLink-root"
+                     href="/apps/BBBB-AAAA-CCCC-EEEE"
+                  >
+                    ABC 2 the return
+                  </a>
+                </h2>
+              </div>
+              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+                <div class="MuiBox-root css-1yq8yj7">
+                  <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel-48 css-1s94icn-MuiTypography-root"
+                     arial-label="group-id"
+                  >
+                    xxx-xxx-yyy
+                  </p>
+                </div>
+                <div class="MuiBox-root css-1yuhvjn">
+                  <span class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel-47 css-1s23nr9-MuiTypography-root">
+                    App Item Description
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+              <div>
+                <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-1pux6rn-MuiButtonBase-root-MuiIconButton-root"
+                        tabindex="0"
+                        type="button"
+                        aria-controls="simple-menu-4"
+                        aria-haspopup="true"
+                        aria-label="Open menu"
+                        data-testid="more-menu-open-button"
+                >
+                  <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                       focusable="false"
+                       aria-hidden="true"
+                       viewbox="0 0 24 24"
+                       data-testid="MoreVertIcon"
+                  >
+                    <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2">
+                    </path>
+                  </svg>
+                  <span class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root">
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light makeStyles-innerDivider-49 css-xetjfm-MuiDivider-root">
+        </div>
+        <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+          <div class="MuiGrid-root MuiGrid-container makeStyles-itemSection-41 css-11lq3yg-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4 css-gj1fbr-MuiGrid-root">
+              <div class="MuiBox-root css-1yuhvjn">
+                <span class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel-46 css-1s23nr9-MuiTypography-root">
+                  INSTANCES
+                </span>
+                <span class="MuiTypography-root MuiTypography-body1 makeStyles-label-50 makeStyles-label-65 css-1s23nr9-MuiTypography-root">
+                  <h5 class="MuiTypography-root MuiTypography-h5 css-xqgeko-MuiTypography-root">
+                    20
+                  </h5>
+                  <div class="MuiBox-root css-1jzjbfr">
+                    <svg class="MuiSvgIcon-root MuiSvgIcon-colorDisabled MuiSvgIcon-fontSizeMedium css-1db085k-MuiSvgIcon-root"
+                         focusable="false"
+                         aria-hidden="true"
+                         viewbox="0 0 24 24"
+                         data-testid="ScheduleIcon"
+                    >
+                      <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8">
+                      </path>
+                      <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z">
+                      </path>
+                    </svg>
+                    <div class="MuiBox-root css-1hsc5oo">
+                      <h6 class="MuiTypography-root MuiTypography-subtitle1 css-15qi99c-MuiTypography-root">
+                        last 24 hours
+                      </h6>
+                    </div>
+                  </div>
+                </span>
+              </div>
+            </div>
+            <div class="MuiBox-root css-1pelcm7">
+              <hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-vertical css-ftc7wc-MuiDivider-root">
+            </div>
+            <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-7 css-uqwprf-MuiGrid-root">
+              <div class="MuiBox-root css-10wfmn8">
+                <span class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel-46 css-1s23nr9-MuiTypography-root">
+                  Groups
+                </span>
+                <div class="MuiBox-root css-1t04ftt">
+                  <span class="MuiTypography-root MuiTypography-body1 makeStyles-label-50 makeStyles-label-67 css-1s23nr9-MuiTypography-root">
+                    1
+                  </span>
+                </div>
+                <div class="MuiBox-root css-164r41r">
+                  <div class="MuiBox-root css-1ckupud">
+                    <div class="MuiBox-root css-126n10b">
+                      <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-groupLink-57 css-1emptwe-MuiTypography-root-MuiLink-root"
+                         href="/apps//groups/xxx-xxx-1"
+                      >
+                        First group
+                      </a>
+                    </div>
+                    <div class="MuiBox-root css-qiye2o">
+                      <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-instanceLink-58 css-1emptwe-MuiTypography-root-MuiLink-root"
+                         href="/apps//groups/xxx-xxx-1/instances?period=1d"
+                      >
+                        <div class="MuiBox-root css-k008qs">
+                          <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                               focusable="false"
+                               aria-hidden="true"
+                               viewbox="0 0 24 24"
+                               data-testid="LayersOutlinedIcon"
+                          >
+                            <path d="m11.99 18.54-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27zm0-11.47L17.74 9 12 13.47 6.26 9z">
+                            </path>
+                          </svg>
+                          <div class="MuiBox-root css-7ieh0i">
+                            20
+                          </div>
+                          instances
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                  <div class="MuiListItem-root MuiListItem-gutters MuiListItem-padding css-1i06p90-MuiListItem-root">
+                    <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root">
+                      <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+                        <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar-60 makeStyles-colorAvatar-68 css-1onlcy6-MuiAvatar-root">
+                        </div>
+                      </div>
+                      <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+                        <div class="MuiListItemText-root MuiListItemText-multiline makeStyles-root-59 css-konndc-MuiListItemText-root">
+                          <div class="MuiBox-root css-70qvj9">
+                            <div class="MuiBox-root css-1xsd608">
+                              main
+                            </div>
+                          </div>
+                          <div class="MuiBox-root css-15aqakd">
+                            <div class="MuiBox-root css-0">
+                              1.11.3 (ALL)
+                            </div>
+                            <div class="MuiBox-root css-n085mf">
+                              <div class="MuiBox-root css-k008qs">
+                                <div class="MuiBox-root css-0">
+                                  <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-ptiqhd-MuiSvgIcon-root"
+                                       focusable="false"
+                                       aria-hidden="true"
+                                       viewbox="0 0 24 24"
+                                       data-testid="ScheduleIcon"
+                                       aria-label="Release date"
+                                       data-mui-internal-clone-element="true"
+                                  >
+                                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8">
+                                    </path>
+                                    <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z">
+                                    </path>
+                                  </svg>
+                                </div>
+                                <div class="MuiBox-root css-1iuj5ih">
+                                  07/18/2019
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>
+`;
+
+exports[`applications/ApplicationList Loading smoke-test 1`] = `
+<div class="MuiGrid-root MuiGrid-container makeStyles-sectionHeader-2 css-eei0dj-MuiGrid-root">
+  <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+    <div class="MuiBox-root css-2rlxtj">
+      <h1 class="MuiTypography-root MuiTypography-h1 css-17cy2p8-MuiTypography-root">
+        Applications
+      </h1>
+    </div>
+  </div>
+  <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+    <div>
+      <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
+              tabindex="0"
+              type="button"
+              aria-label="add"
+              data-testid="modal-button"
+      >
+        <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge makeStyles-root-3 css-tzssek-MuiSvgIcon-root"
+             focusable="false"
+             aria-hidden="true"
+             viewbox="0 0 24 24"
+             data-testid="AddIcon"
+        >
+          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z">
+          </path>
+        </svg>
+        <span class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root">
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-5jb75g-MuiPaper-root">
+  <ul class="MuiList-root MuiList-padding makeStyles-root-1 css-h4y409-MuiList-root">
+    <div class="makeStyles-loaderContainer-4 MuiBox-root css-0"
+         data-testid="loader-container"
+    >
+      <span class="MuiCircularProgress-root MuiCircularProgress-indeterminate MuiCircularProgress-colorPrimary css-13d3z5s-MuiCircularProgress-root"
+            role="progressbar"
+            style="width: 40px; height: 40px;"
+      >
+        <svg class="MuiCircularProgress-svg css-1idz92c-MuiCircularProgress-svg"
+             viewbox="22 22 44 44"
+        >
+          <circle class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate css-176wh8e-MuiCircularProgress-circle"
+                  cx="44"
+                  cy="44"
+                  r="20.2"
+                  fill="none"
+                  stroke-width="3.6"
+          >
+          </circle>
+        </svg>
+      </span>
+    </div>
+  </ul>
+</div>
+`;
+
+exports[`applications/ApplicationList SearchTerm smoke-test 1`] = `
+<div class="MuiGrid-root MuiGrid-container makeStyles-sectionHeader-70 css-eei0dj-MuiGrid-root">
+  <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+    <div class="MuiBox-root css-2rlxtj">
+      <h1 class="MuiTypography-root MuiTypography-h1 css-17cy2p8-MuiTypography-root">
+        Applications
+      </h1>
+    </div>
+  </div>
+  <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+    <div>
+      <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
+              tabindex="0"
+              type="button"
+              aria-label="add"
+              data-testid="modal-button"
+      >
+        <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge makeStyles-root-71 css-tzssek-MuiSvgIcon-root"
+             focusable="false"
+             aria-hidden="true"
+             viewbox="0 0 24 24"
+             data-testid="AddIcon"
+        >
+          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z">
+          </path>
+        </svg>
+        <span class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root">
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-5jb75g-MuiPaper-root">
+  <ul class="MuiList-root MuiList-padding makeStyles-root-69 css-h4y409-MuiList-root">
+    <li class="MuiListItem-root MuiListItem-padding MuiListItem-divider makeStyles-divider-74 makeStyles-root-72 css-1oz7m58-MuiListItem-root"
+        data-testid="list-item"
+    >
+      <div class="MuiGrid-root MuiGrid-container css-11lq3yg-MuiGrid-root">
+        <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+          <div class="MuiGrid-root MuiGrid-container makeStyles-gridHeader-75 css-1xzqqmo-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-1 css-j1w48a-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+                <h2 class="MuiTypography-root MuiTypography-h2 css-150084s-MuiTypography-root">
+                  <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-mainLink-77 css-1emptwe-MuiTypography-root-MuiLink-root"
+                     href="/apps/BBBB-AAAA-CCCC-EEEE"
+                  >
+                    ABC 2 the return
+                  </a>
+                </h2>
+              </div>
+              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+                <div class="MuiBox-root css-1yq8yj7">
+                  <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel-80 css-1s94icn-MuiTypography-root"
+                     arial-label="group-id"
+                  >
+                    xxx-xxx-yyy
+                  </p>
+                </div>
+                <div class="MuiBox-root css-1yuhvjn">
+                  <span class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel-79 css-1s23nr9-MuiTypography-root">
+                    App Item Description
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+              <div>
+                <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-1pux6rn-MuiButtonBase-root-MuiIconButton-root"
+                        tabindex="0"
+                        type="button"
+                        aria-controls="simple-menu-5"
+                        aria-haspopup="true"
+                        aria-label="Open menu"
+                        data-testid="more-menu-open-button"
+                >
+                  <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                       focusable="false"
+                       aria-hidden="true"
+                       viewbox="0 0 24 24"
+                       data-testid="MoreVertIcon"
+                  >
+                    <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2">
+                    </path>
+                  </svg>
+                  <span class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root">
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light makeStyles-innerDivider-81 css-xetjfm-MuiDivider-root">
+        </div>
+        <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+          <div class="MuiGrid-root MuiGrid-container makeStyles-itemSection-73 css-11lq3yg-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4 css-gj1fbr-MuiGrid-root">
+              <div class="MuiBox-root css-1yuhvjn">
+                <span class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel-78 css-1s23nr9-MuiTypography-root">
+                  INSTANCES
+                </span>
+                <span class="MuiTypography-root MuiTypography-body1 makeStyles-label-82 makeStyles-label-86 css-1s23nr9-MuiTypography-root">
+                  <h5 class="MuiTypography-root MuiTypography-h5 css-xqgeko-MuiTypography-root">
+                    20
+                  </h5>
+                  <div class="MuiBox-root css-1jzjbfr">
+                    <svg class="MuiSvgIcon-root MuiSvgIcon-colorDisabled MuiSvgIcon-fontSizeMedium css-1db085k-MuiSvgIcon-root"
+                         focusable="false"
+                         aria-hidden="true"
+                         viewbox="0 0 24 24"
+                         data-testid="ScheduleIcon"
+                    >
+                      <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8">
+                      </path>
+                      <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z">
+                      </path>
+                    </svg>
+                    <div class="MuiBox-root css-1hsc5oo">
+                      <h6 class="MuiTypography-root MuiTypography-subtitle1 css-15qi99c-MuiTypography-root">
+                        last 24 hours
+                      </h6>
+                    </div>
+                  </div>
+                </span>
+              </div>
+            </div>
+            <div class="MuiBox-root css-1pelcm7">
+              <hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-vertical css-ftc7wc-MuiDivider-root">
+            </div>
+            <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-7 css-uqwprf-MuiGrid-root">
+              <div class="MuiBox-root css-10wfmn8">
+                <span class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel-78 css-1s23nr9-MuiTypography-root">
+                  Groups
+                </span>
+                <div class="MuiBox-root css-1t04ftt">
+                  <span class="MuiTypography-root MuiTypography-body1 makeStyles-label-82 makeStyles-label-88 css-1s23nr9-MuiTypography-root">
+                    1
+                  </span>
+                </div>
+                <div class="MuiBox-root css-164r41r">
+                  <div class="MuiBox-root css-1ckupud">
+                    <div class="MuiBox-root css-126n10b">
+                      <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-groupLink-89 css-1emptwe-MuiTypography-root-MuiLink-root"
+                         href="/apps//groups/xxx-xxx-1"
+                      >
+                        First group
+                      </a>
+                    </div>
+                    <div class="MuiBox-root css-qiye2o">
+                      <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-instanceLink-90 css-1emptwe-MuiTypography-root-MuiLink-root"
+                         href="/apps//groups/xxx-xxx-1/instances?period=1d"
+                      >
+                        <div class="MuiBox-root css-k008qs">
+                          <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                               focusable="false"
+                               aria-hidden="true"
+                               viewbox="0 0 24 24"
+                               data-testid="LayersOutlinedIcon"
+                          >
+                            <path d="m11.99 18.54-7.37-5.73L3 14.07l9 7 9-7-1.63-1.27zM12 16l7.36-5.73L21 9l-9-7-9 7 1.63 1.27zm0-11.47L17.74 9 12 13.47 6.26 9z">
+                            </path>
+                          </svg>
+                          <div class="MuiBox-root css-7ieh0i">
+                            20
+                          </div>
+                          instances
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                  <div class="MuiListItem-root MuiListItem-gutters MuiListItem-padding css-1i06p90-MuiListItem-root">
+                    <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root">
+                      <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+                        <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar-92 makeStyles-colorAvatar-93 css-1onlcy6-MuiAvatar-root">
+                        </div>
+                      </div>
+                      <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+                        <div class="MuiListItemText-root MuiListItemText-multiline makeStyles-root-91 css-konndc-MuiListItemText-root">
+                          <div class="MuiBox-root css-70qvj9">
+                            <div class="MuiBox-root css-1xsd608">
+                              main
+                            </div>
+                          </div>
+                          <div class="MuiBox-root css-15aqakd">
+                            <div class="MuiBox-root css-0">
+                              1.11.3 (ALL)
+                            </div>
+                            <div class="MuiBox-root css-n085mf">
+                              <div class="MuiBox-root css-k008qs">
+                                <div class="MuiBox-root css-0">
+                                  <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-ptiqhd-MuiSvgIcon-root"
+                                       focusable="false"
+                                       aria-hidden="true"
+                                       viewbox="0 0 24 24"
+                                       data-testid="ScheduleIcon"
+                                       aria-label="Release date"
+                                       data-mui-internal-clone-element="true"
+                                  >
+                                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8">
+                                    </path>
+                                    <path d="M12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z">
+                                    </path>
+                                  </svg>
+                                </div>
+                                <div class="MuiBox-root css-1iuj5ih">
+                                  07/18/2019
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>
+`;

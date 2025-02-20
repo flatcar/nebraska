@@ -26,6 +26,8 @@ node_modules
 yarn-error.log
 src/js/icons/*.json
 
+/storybook-static/
+
 # Playwright
 /test-results/
 /playwright-report/

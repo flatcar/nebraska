@@ -57,7 +57,6 @@
   "devDependencies": {
     "@axe-core/react": "^4.2.2",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@chromatic-com/storybook": "^3.2.4",
     "@headlamp-k8s/eslint-config": "^0.7.0",
     "@iconify/icons-mdi": "^1.0.112",
     "@iconify/react": "^1.1.3",
@@ -71,6 +70,7 @@
     "@storybook/preview-api": "^8.5.6",
     "@storybook/react": "^8.5.6",
     "@storybook/react-webpack5": "^8.5.6",
+    "@storybook/test-runner": "^0.21.2",
     "@storybook/theming": "^8.5.6",
     "@types/glob": "^8.1.0",
     "@types/pg": "^8.11.11",
@@ -101,6 +101,7 @@
     "build": "react-scripts build",
     "test": "cross-env TEST_TZ=true react-scripts test --silent",
     "test:coverage": "cross-env TEST_TZ=true react-scripts test --silent --watchAll=false --env=jsdom --coverage  --reporters=default --coverageDirectory=coverage/report",
+    "test-storybook": "test-storybook",
     "eject": "react-scripts eject",
     "lint": "eslint -c package.json 'src/**/*.{js,jsx,ts,tsx}' && prettier --config package.json --check src/",
     "format": "prettier --config package.json --write src/",
@@ -163,10 +164,10 @@
     ],
     "coverageThreshold": {
       "global": {
-        "statements": 34.95,
-        "branches": 26.19,
-        "functions": 30.35,
-        "lines": 35.26
+        "statements": 23.57,
+        "branches": 17,
+        "functions": 21.09,
+        "lines": 23.60
       }
     },
     "coverageReporters": [

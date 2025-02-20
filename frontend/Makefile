@@ -35,8 +35,24 @@ tsc:
 i18n:
 	npm run i18n
 
+.PHONY: test-storybook-ci
+test-storybook-ci:
+	# Install dependencies
+	npm ci
+
+	# Install Playwright
+	npx playwright install --with-deps
+
+	# Build Storybook
+	npm run build-storybook --quiet
+
+	# Serve Storybook and run tests in parallel
+	npx concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \
+		"npx http-server storybook-static --port 6006 --silent" \
+		"npx wait-on tcp:127.0.0.1:6006 && npm run test-storybook"
+
 .PHONY: ci
-ci: install-ci lint test build tsc
+ci: install-ci lint test test-storybook-ci build tsc
 
 node_modules:
 	npm install
