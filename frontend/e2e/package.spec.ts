@@ -12,6 +12,7 @@ test.describe('Packages', () => {
     await page.goto('http://localhost:8002/');
     await createApplication(page, appName, appId);
 
+    await page.reload();
     await expect(page.getByRole('list')).toContainText(appName);
     await expect(page.getByRole('list')).toContainText(appId);
   });

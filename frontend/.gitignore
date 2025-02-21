@@ -27,6 +27,7 @@ yarn-error.log
 src/js/icons/*.json
 
 /storybook-static/
+playwright-failed
 
 # Playwright
 /test-results/

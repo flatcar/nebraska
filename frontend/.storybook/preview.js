@@ -1,5 +1,5 @@
+import React from 'react';
 import themesConf from '../src/lib/themes';
-import { StylesProvider } from '@mui/styles';
 import '../src/i18n/config';
 import ThemeProviderNexti18n from '../src/i18n/ThemeProviderNexti18n';
 import { StyledEngineProvider } from '@mui/material/styles';
