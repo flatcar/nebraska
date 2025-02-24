@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`activity/ActivityItem ActivityChannelPackageUpdated smoke-test 1`] = `
-<li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart makeStyles-list-8 css-15u9cok-MuiListItem-root">
+<li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-8 css-15u9cok-MuiListItem-root">
   <div class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root">
     <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root">
       <div class="MuiBox-root css-geek62">
@@ -21,15 +21,15 @@ exports[`activity/ActivityItem ActivityChannelPackageUpdated smoke-test 1`] = `
           </svg>
         </div>
         <div class="MuiBox-root css-0">
-          <p class="MuiTypography-root MuiTypography-body1 makeStyles-appName-6 css-1s23nr9-MuiTypography-root">
+          <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-appName-6 css-1s23nr9-MuiTypography-root">
             some app
           </p>
         </div>
       </div>
     </div>
     <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root">
-      <p class="MuiTypography-root MuiTypography-body1 makeStyles-time-7 css-b4h4sf-MuiTypography-root">
-        05:56 PM
+      <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-7 css-b4h4sf-MuiTypography-root">
+        02:56 PM
       </p>
     </div>
     <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
@@ -40,7 +40,7 @@ exports[`activity/ActivityItem ActivityChannelPackageUpdated smoke-test 1`] = `
 `;
 
 exports[`activity/ActivityItem Warning smoke-test 1`] = `
-<li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart makeStyles-list-4 css-15u9cok-MuiListItem-root">
+<li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-4 css-15u9cok-MuiListItem-root">
   <div class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root">
     <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root">
       <div class="MuiBox-root css-geek62">
@@ -60,15 +60,15 @@ exports[`activity/ActivityItem Warning smoke-test 1`] = `
           </svg>
         </div>
         <div class="MuiBox-root css-0">
-          <p class="MuiTypography-root MuiTypography-body1 makeStyles-appName-2 css-1s23nr9-MuiTypography-root">
+          <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-appName-2 css-1s23nr9-MuiTypography-root">
             some app
           </p>
         </div>
       </div>
     </div>
     <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root">
-      <p class="MuiTypography-root MuiTypography-body1 makeStyles-time-3 css-b4h4sf-MuiTypography-root">
-        05:56 PM
+      <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-3 css-b4h4sf-MuiTypography-root">
+        02:56 PM
       </p>
     </div>
     <div class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-2 MuiGrid-grid-xs-12 css-sa6qj6-MuiGrid-root">
@@ -78,7 +78,7 @@ exports[`activity/ActivityItem Warning smoke-test 1`] = `
         </p>
       </div>
       <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-        <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-groupLink-1 css-1emptwe-MuiTypography-root-MuiLink-root"
+        <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover stable-makeStyles-groupLink-1 css-1emptwe-MuiTypography-root-MuiLink-root"
            href="/apps/XXXX-XXX/groups/YYYY-YYYY"
         >
           some group

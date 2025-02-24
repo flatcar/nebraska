@@ -5,11 +5,11 @@ exports[`channels/ChannelItem AppView smoke-test 1`] = `
   <div class="MuiListItem-root MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-aimc6m-MuiListItem-root">
     <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root">
       <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-        <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar-11 makeStyles-colorAvatar-12 css-1onlcy6-MuiAvatar-root">
+        <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-11 stable-makeStyles-colorAvatar-12 css-1onlcy6-MuiAvatar-root">
         </div>
       </div>
       <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-        <div class="MuiListItemText-root MuiListItemText-multiline makeStyles-root-10 css-konndc-MuiListItemText-root">
+        <div class="MuiListItemText-root MuiListItemText-multiline stable-makeStyles-root-10 css-konndc-MuiListItemText-root">
           <div class="MuiBox-root css-70qvj9">
             <div class="MuiBox-root css-1xsd608">
               edge
@@ -78,12 +78,12 @@ exports[`channels/ChannelItem NoArch smoke-test 1`] = `
   <div class="MuiListItem-root MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-aimc6m-MuiListItem-root">
     <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root">
       <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-        <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar-8 makeStyles-colorAvatar-9 css-1onlcy6-MuiAvatar-root">
+        <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-8 stable-makeStyles-colorAvatar-9 css-1onlcy6-MuiAvatar-root">
           e
         </div>
       </div>
       <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-        <div class="MuiListItemText-root MuiListItemText-multiline makeStyles-root-7 css-konndc-MuiListItemText-root">
+        <div class="MuiListItemText-root MuiListItemText-multiline stable-makeStyles-root-7 css-konndc-MuiListItemText-root">
           <div class="MuiBox-root css-70qvj9">
             <div class="MuiBox-root css-1xsd608">
               edge
@@ -152,12 +152,12 @@ exports[`channels/ChannelItem NoPackage smoke-test 1`] = `
   <div class="MuiListItem-root MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-aimc6m-MuiListItem-root">
     <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root">
       <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-        <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar-5 makeStyles-colorAvatar-6 css-1onlcy6-MuiAvatar-root">
+        <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-5 stable-makeStyles-colorAvatar-6 css-1onlcy6-MuiAvatar-root">
           e
         </div>
       </div>
       <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-        <div class="MuiListItemText-root MuiListItemText-multiline makeStyles-root-4 css-konndc-MuiListItemText-root">
+        <div class="MuiListItemText-root MuiListItemText-multiline stable-makeStyles-root-4 css-konndc-MuiListItemText-root">
           <div class="MuiBox-root css-70qvj9">
             <div class="MuiBox-root css-1xsd608">
               edge
@@ -204,12 +204,12 @@ exports[`channels/ChannelItem ShowArch smoke-test 1`] = `
   <div class="MuiListItem-root MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-aimc6m-MuiListItem-root">
     <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root">
       <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-        <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault makeStyles-colorAvatar-2 makeStyles-colorAvatar-3 css-1onlcy6-MuiAvatar-root">
+        <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-2 stable-makeStyles-colorAvatar-3 css-1onlcy6-MuiAvatar-root">
           e
         </div>
       </div>
       <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-        <div class="MuiListItemText-root MuiListItemText-multiline makeStyles-root-1 css-konndc-MuiListItemText-root">
+        <div class="MuiListItemText-root MuiListItemText-multiline stable-makeStyles-root-1 css-konndc-MuiListItemText-root">
           <div class="MuiBox-root css-70qvj9">
             <div class="MuiBox-root css-1xsd608">
               edge

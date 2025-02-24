@@ -2,24 +2,24 @@
 
 exports[`Card DescriptionLabel smoke-test 1`] = `
 <div class="MuiBox-root css-1yuhvjn">
-  <span class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel-14 css-1s23nr9-MuiTypography-root">
+  <span class="MuiTypography-root MuiTypography-body1 stable-makeStyles-descriptionLabel-14 css-1s23nr9-MuiTypography-root">
     Description Label
   </span>
 </div>
 `;
 
 exports[`Card FeatureLabel smoke-test 1`] = `
-<span class="MuiTypography-root MuiTypography-body1 makeStyles-featureLabel-4 css-1s23nr9-MuiTypography-root">
+<span class="MuiTypography-root MuiTypography-body1 stable-makeStyles-featureLabel-4 css-1s23nr9-MuiTypography-root">
   Feature Label
 </span>
 `;
 
 exports[`Card Header smoke-test 1`] = `
-<div class="MuiGrid-root MuiGrid-container makeStyles-gridHeader-37 css-1xzqqmo-MuiGrid-root">
+<div class="MuiGrid-root MuiGrid-container stable-makeStyles-gridHeader-37 css-1xzqqmo-MuiGrid-root">
   <div class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-1 css-j1w48a-MuiGrid-root">
     <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
       <h2 class="MuiTypography-root MuiTypography-h2 css-150084s-MuiTypography-root">
-        <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-mainLink-39 css-1emptwe-MuiTypography-root-MuiLink-root"
+        <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover stable-makeStyles-mainLink-39 css-1emptwe-MuiTypography-root-MuiLink-root"
            href="/apps/123"
         >
           Flatcar
@@ -28,14 +28,14 @@ exports[`Card Header smoke-test 1`] = `
     </div>
     <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
       <div class="MuiBox-root css-1yq8yj7">
-        <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel-42 css-1s94icn-MuiTypography-root"
+        <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap stable-makeStyles-idLabel-42 css-1s94icn-MuiTypography-root"
            arial-label="group-id"
         >
           a cardTrack
         </p>
       </div>
       <div class="MuiBox-root css-1yuhvjn">
-        <span class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel-41 css-1s23nr9-MuiTypography-root">
+        <span class="MuiTypography-root MuiTypography-body1 stable-makeStyles-descriptionLabel-41 css-1s23nr9-MuiTypography-root">
           Card Header description
         </span>
       </div>
@@ -45,77 +45,77 @@ exports[`Card Header smoke-test 1`] = `
     CardHeader children
   </div>
 </div>
-<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light makeStyles-innerDivider-43 css-xetjfm-MuiDivider-root">
+<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light stable-makeStyles-innerDivider-43 css-xetjfm-MuiDivider-root">
 `;
 
 exports[`Card HeaderWithCardId smoke-test 1`] = `
-<div class="MuiGrid-root MuiGrid-container makeStyles-gridHeader-87 css-1xzqqmo-MuiGrid-root">
+<div class="MuiGrid-root MuiGrid-container stable-makeStyles-gridHeader-87 css-1xzqqmo-MuiGrid-root">
   <div class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-1 css-j1w48a-MuiGrid-root">
     <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
-      <p class="MuiTypography-root MuiTypography-body1 makeStyles-cardTitle-88 css-1s23nr9-MuiTypography-root">
+      <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-cardTitle-88 css-1s23nr9-MuiTypography-root">
       </p>
     </div>
     <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
       <div class="MuiBox-root css-1yq8yj7">
-        <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel-92 css-1s94icn-MuiTypography-root"
+        <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap stable-makeStyles-idLabel-92 css-1s94icn-MuiTypography-root"
            arial-label="group-id"
         >
           a cardId
         </p>
       </div>
       <div class="MuiBox-root css-1yuhvjn">
-        <span class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel-91 css-1s23nr9-MuiTypography-root">
+        <span class="MuiTypography-root MuiTypography-body1 stable-makeStyles-descriptionLabel-91 css-1s23nr9-MuiTypography-root">
           Card Header With cardId description
         </span>
       </div>
     </div>
   </div>
 </div>
-<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light makeStyles-innerDivider-93 css-xetjfm-MuiDivider-root">
+<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light stable-makeStyles-innerDivider-93 css-xetjfm-MuiDivider-root">
 `;
 
 exports[`Card HeaderWithCardTrack smoke-test 1`] = `
-<div class="MuiGrid-root MuiGrid-container makeStyles-gridHeader-77 css-1xzqqmo-MuiGrid-root">
+<div class="MuiGrid-root MuiGrid-container stable-makeStyles-gridHeader-77 css-1xzqqmo-MuiGrid-root">
   <div class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-1 css-j1w48a-MuiGrid-root">
     <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
-      <p class="MuiTypography-root MuiTypography-body1 makeStyles-cardTitle-78 css-1s23nr9-MuiTypography-root">
+      <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-cardTitle-78 css-1s23nr9-MuiTypography-root">
       </p>
     </div>
     <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
       <div class="MuiBox-root css-1yq8yj7">
-        <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel-82 css-1s94icn-MuiTypography-root"
+        <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap stable-makeStyles-idLabel-82 css-1s94icn-MuiTypography-root"
            arial-label="group-id"
         >
           a cardTrack
         </p>
       </div>
       <div class="MuiBox-root css-1yuhvjn">
-        <span class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel-81 css-1s23nr9-MuiTypography-root">
+        <span class="MuiTypography-root MuiTypography-body1 stable-makeStyles-descriptionLabel-81 css-1s23nr9-MuiTypography-root">
           Card Header With cardTrack description
         </span>
       </div>
     </div>
   </div>
 </div>
-<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light makeStyles-innerDivider-83 css-xetjfm-MuiDivider-root">
+<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light stable-makeStyles-innerDivider-83 css-xetjfm-MuiDivider-root">
 `;
 
 exports[`Card HeaderWithChildren smoke-test 1`] = `
-<div class="MuiGrid-root MuiGrid-container makeStyles-gridHeader-67 css-1xzqqmo-MuiGrid-root">
+<div class="MuiGrid-root MuiGrid-container stable-makeStyles-gridHeader-67 css-1xzqqmo-MuiGrid-root">
   <div class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-1 css-j1w48a-MuiGrid-root">
     <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
-      <p class="MuiTypography-root MuiTypography-body1 makeStyles-cardTitle-68 css-1s23nr9-MuiTypography-root">
+      <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-cardTitle-68 css-1s23nr9-MuiTypography-root">
       </p>
     </div>
     <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
       <div class="MuiBox-root css-1yq8yj7">
-        <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel-72 css-1s94icn-MuiTypography-root"
+        <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap stable-makeStyles-idLabel-72 css-1s94icn-MuiTypography-root"
            arial-label="group-id"
         >
         </p>
       </div>
       <div class="MuiBox-root css-1yuhvjn">
-        <span class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel-71 css-1s23nr9-MuiTypography-root">
+        <span class="MuiTypography-root MuiTypography-body1 stable-makeStyles-descriptionLabel-71 css-1s23nr9-MuiTypography-root">
           Card Header With Children description
         </span>
       </div>
@@ -125,40 +125,40 @@ exports[`Card HeaderWithChildren smoke-test 1`] = `
     CardHeader children
   </div>
 </div>
-<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light makeStyles-innerDivider-73 css-xetjfm-MuiDivider-root">
+<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light stable-makeStyles-innerDivider-73 css-xetjfm-MuiDivider-root">
 `;
 
 exports[`Card HeaderWithDescription smoke-test 1`] = `
-<div class="MuiGrid-root MuiGrid-container makeStyles-gridHeader-47 css-1xzqqmo-MuiGrid-root">
+<div class="MuiGrid-root MuiGrid-container stable-makeStyles-gridHeader-47 css-1xzqqmo-MuiGrid-root">
   <div class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-1 css-j1w48a-MuiGrid-root">
     <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
-      <p class="MuiTypography-root MuiTypography-body1 makeStyles-cardTitle-48 css-1s23nr9-MuiTypography-root">
+      <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-cardTitle-48 css-1s23nr9-MuiTypography-root">
       </p>
     </div>
     <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
       <div class="MuiBox-root css-1yq8yj7">
-        <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel-52 css-1s94icn-MuiTypography-root"
+        <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap stable-makeStyles-idLabel-52 css-1s94icn-MuiTypography-root"
            arial-label="group-id"
         >
         </p>
       </div>
       <div class="MuiBox-root css-1yuhvjn">
-        <span class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel-51 css-1s23nr9-MuiTypography-root">
+        <span class="MuiTypography-root MuiTypography-body1 stable-makeStyles-descriptionLabel-51 css-1s23nr9-MuiTypography-root">
           Card Header description
         </span>
       </div>
     </div>
   </div>
 </div>
-<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light makeStyles-innerDivider-53 css-xetjfm-MuiDivider-root">
+<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light stable-makeStyles-innerDivider-53 css-xetjfm-MuiDivider-root">
 `;
 
 exports[`Card HeaderWithLink smoke-test 1`] = `
-<div class="MuiGrid-root MuiGrid-container makeStyles-gridHeader-57 css-1xzqqmo-MuiGrid-root">
+<div class="MuiGrid-root MuiGrid-container stable-makeStyles-gridHeader-57 css-1xzqqmo-MuiGrid-root">
   <div class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-1 css-j1w48a-MuiGrid-root">
     <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
       <h2 class="MuiTypography-root MuiTypography-h2 css-150084s-MuiTypography-root">
-        <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover makeStyles-mainLink-59 css-1emptwe-MuiTypography-root-MuiLink-root"
+        <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover stable-makeStyles-mainLink-59 css-1emptwe-MuiTypography-root-MuiLink-root"
            href="/apps/123"
         >
           Flatcar
@@ -167,30 +167,30 @@ exports[`Card HeaderWithLink smoke-test 1`] = `
     </div>
     <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
       <div class="MuiBox-root css-1yq8yj7">
-        <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap makeStyles-idLabel-62 css-1s94icn-MuiTypography-root"
+        <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap stable-makeStyles-idLabel-62 css-1s94icn-MuiTypography-root"
            arial-label="group-id"
         >
         </p>
       </div>
       <div class="MuiBox-root css-1yuhvjn">
-        <span class="MuiTypography-root MuiTypography-body1 makeStyles-descriptionLabel-61 css-1s23nr9-MuiTypography-root">
+        <span class="MuiTypography-root MuiTypography-body1 stable-makeStyles-descriptionLabel-61 css-1s23nr9-MuiTypography-root">
           Card Header With Link description
         </span>
       </div>
     </div>
   </div>
 </div>
-<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light makeStyles-innerDivider-63 css-xetjfm-MuiDivider-root">
+<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light stable-makeStyles-innerDivider-63 css-xetjfm-MuiDivider-root">
 `;
 
 exports[`Card Label smoke-test 1`] = `
-<span class="MuiTypography-root MuiTypography-body1 makeStyles-label-26 makeStyles-label-27 css-1s23nr9-MuiTypography-root">
+<span class="MuiTypography-root MuiTypography-body1 stable-makeStyles-label-26 stable-makeStyles-label-27 css-1s23nr9-MuiTypography-root">
   Label
 </span>
 `;
 
 exports[`Card LabelWithStyles smoke-test 1`] = `
-<span class="MuiTypography-root MuiTypography-body1 makeStyles-label-35 makeStyles-label-36 css-1s23nr9-MuiTypography-root">
+<span class="MuiTypography-root MuiTypography-body1 stable-makeStyles-label-35 stable-makeStyles-label-36 css-1s23nr9-MuiTypography-root">
   Label
 </span>
 `;

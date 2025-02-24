@@ -21,7 +21,7 @@ install-playwright:
 
 .PHONY: build
 build: install
-	npm run build
+	NODE_ENV=production npm run build
 
 .PHONY: test
 test:
@@ -42,7 +42,7 @@ i18n:
 .PHONY: test-storybook-ci
 test-storybook-ci:
 	# Build Storybook
-	npm run build-storybook --quiet
+	NODE_ENV=test npm run build-storybook --quiet
 
 	# Serve Storybook and run tests in parallel
 	npx concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \
@@ -52,32 +52,10 @@ test-storybook-ci:
 .PHONY: test-playwright-ci
 test-playwright-ci:
 	# Run Playwright tests and capture failure
-	npx playwright test || touch playwright-failed
-
-	# Check if tests failed and create a report
-	@if [ -f "playwright-failed" ]; then \
-		echo "Playwright tests failed."; \
-		printf "%s\n" \
-		"🔍 To check failed test in GitHub Actions:" \
-		"" \
-		"1️⃣ **Download the HTML Report:**" \
-		"   - Go to the **Artifacts** section in GitHub Actions." \
-		"   - Click on **playwright-report** to download the ZIP file." \
-		"" \
-		"2️⃣ **View the Report:**" \
-		"   - Extract the ZIP file in a folder with Playwright installed." \
-		"   - Run: **npx playwright show-report <extracted-folder-name>**" \
-		"" \
-		"3️⃣ **Analyze Failures with Trace Viewer:**" \
-		"   - Open the report and click the **trace** icon next to a failed test." \
-		"   - Inspect each test action to diagnose the issue." \
-		"" \
-		"📖 More details: https://playwright.dev/docs/test-reporters#html-reporter"; \
-		exit 1; \
-	fi
+	npx playwright test 
 
 .PHONY: ci
-ci: install-ci lint test install-playwright test-storybook-ci test-playwright-ci build tsc
+ci: install-ci lint test install-playwright test-storybook-ci test-playwright-ci tsc build 
 
 node_modules:
 	npm install

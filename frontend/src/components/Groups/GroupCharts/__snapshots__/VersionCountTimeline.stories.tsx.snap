@@ -102,9 +102,9 @@ exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
                   y="10"
                   width="410"
                   height="360"
-                  x1="169.48126076388888"
+                  x1="203.64792743055554"
                   y1="10"
-                  x2="169.48126076388888"
+                  x2="203.64792743055554"
                   y2="370"
             >
             </line>
@@ -115,9 +115,9 @@ exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
                   y="10"
                   width="410"
                   height="360"
-                  x1="66.98126076388888"
+                  x1="101.14792743055557"
                   y1="10"
-                  x2="66.98126076388888"
+                  x2="101.14792743055557"
                   y2="370"
             >
             </line>
@@ -128,9 +128,9 @@ exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
                   y="10"
                   width="410"
                   height="360"
-                  x1="374.4812607638889"
+                  x1="408.64792743055557"
                   y1="10"
-                  x2="374.4812607638889"
+                  x2="408.64792743055557"
                   y2="370"
             >
             </line>
@@ -141,9 +141,9 @@ exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
                   y="10"
                   width="410"
                   height="360"
-                  x1="271.98126076388894"
+                  x1="306.14792743055557"
                   y1="10"
-                  x2="271.98126076388894"
+                  x2="306.14792743055557"
                   y2="370"
             >
             </line>
@@ -200,9 +200,9 @@ exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
                     y="370"
                     class="recharts-cartesian-axis-tick-line"
                     fill="none"
-                    x1="169.48126076388888"
+                    x1="203.64792743055554"
                     y1="376"
-                    x2="169.48126076388888"
+                    x2="203.64792743055554"
                     y2="370"
               >
               </line>
@@ -210,13 +210,13 @@ exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
                     width="410"
                     height="30"
                     stroke="none"
-                    x="169.48126076388888"
+                    x="203.64792743055554"
                     y="378"
                     class="recharts-text recharts-cartesian-axis-tick-value"
                     text-anchor="middle"
                     fill="#000"
               >
-                <tspan x="169.48126076388888"
+                <tspan x="203.64792743055554"
                        dy="0.71em"
                 >
                   06:00 PM
@@ -232,9 +232,9 @@ exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
                     y="370"
                     class="recharts-cartesian-axis-tick-line"
                     fill="none"
-                    x1="66.98126076388888"
+                    x1="101.14792743055557"
                     y1="376"
-                    x2="66.98126076388888"
+                    x2="101.14792743055557"
                     y2="370"
               >
               </line>
@@ -242,13 +242,13 @@ exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
                     width="410"
                     height="30"
                     stroke="none"
-                    x="66.98126076388888"
+                    x="101.14792743055557"
                     y="378"
                     class="recharts-text recharts-cartesian-axis-tick-value"
                     text-anchor="middle"
                     fill="#000"
               >
-                <tspan x="66.98126076388888"
+                <tspan x="101.14792743055557"
                        dy="0.71em"
                 >
                   12:00 PM
@@ -264,9 +264,9 @@ exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
                     y="370"
                     class="recharts-cartesian-axis-tick-line"
                     fill="none"
-                    x1="374.4812607638889"
+                    x1="408.64792743055557"
                     y1="376"
-                    x2="374.4812607638889"
+                    x2="408.64792743055557"
                     y2="370"
               >
               </line>
@@ -274,13 +274,13 @@ exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
                     width="410"
                     height="30"
                     stroke="none"
-                    x="374.4812607638889"
+                    x="408.64792743055557"
                     y="378"
                     class="recharts-text recharts-cartesian-axis-tick-value"
                     text-anchor="middle"
                     fill="#000"
               >
-                <tspan x="374.4812607638889"
+                <tspan x="408.64792743055557"
                        dy="0.71em"
                 >
                   06:00 AM
@@ -296,9 +296,9 @@ exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
                     y="370"
                     class="recharts-cartesian-axis-tick-line"
                     fill="none"
-                    x1="271.98126076388894"
+                    x1="306.14792743055557"
                     y1="376"
-                    x2="271.98126076388894"
+                    x2="306.14792743055557"
                     y2="370"
               >
               </line>
@@ -306,13 +306,13 @@ exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
                     width="410"
                     height="30"
                     stroke="none"
-                    x="271.98126076388894"
+                    x="306.14792743055557"
                     y="378"
                     class="recharts-text recharts-cartesian-axis-tick-value"
                     text-anchor="middle"
                     fill="#000"
               >
-                <tspan x="271.98126076388894"
+                <tspan x="306.14792743055557"
                        dy="0.71em"
                 >
                   Nov 8

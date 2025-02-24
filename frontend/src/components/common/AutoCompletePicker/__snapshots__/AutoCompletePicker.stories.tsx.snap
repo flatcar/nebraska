@@ -13,7 +13,7 @@ exports[`AutoCompletePicker Closed smoke-test 1`] = `
              placeholder="Pick a package"
              readonly
              type="text"
-             class="MuiInputBase-input MuiInput-input Mui-readOnly makeStyles-pickerButtonInput-5 MuiInputBase-readOnly css-1x51dt5-MuiInputBase-input-MuiInput-input"
+             class="MuiInputBase-input MuiInput-input Mui-readOnly stable-makeStyles-pickerButtonInput-5 MuiInputBase-readOnly css-1x51dt5-MuiInputBase-input-MuiInput-input"
              value="2261.0.0"
       >
     </div>
@@ -34,7 +34,7 @@ exports[`AutoCompletePicker Open smoke-test 1`] = `
              placeholder="Pick a package"
              readonly
              type="text"
-             class="MuiInputBase-input MuiInput-input Mui-readOnly makeStyles-pickerButtonInput-10 MuiInputBase-readOnly css-1x51dt5-MuiInputBase-input-MuiInput-input"
+             class="MuiInputBase-input MuiInput-input Mui-readOnly stable-makeStyles-pickerButtonInput-10 MuiInputBase-readOnly css-1x51dt5-MuiInputBase-input-MuiInput-input"
              value="2261.0.0"
       >
     </div>

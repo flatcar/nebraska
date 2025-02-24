@@ -33,12 +33,10 @@ check-code-coverage:
 
 .PHONY: test-service-up
 test-service-up:
-	docker compose version; \
 	docker compose -f ./docker-compose.test.yaml up -d --build
 
 .PHONY: test-service-down
 test-service-down:
-	docker compose version; \
 	docker compose -f ./docker-compose.test.yaml down
 
 .PHONY: check-backend-with-container
