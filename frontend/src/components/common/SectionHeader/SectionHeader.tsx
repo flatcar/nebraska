@@ -5,7 +5,6 @@ import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import makeStyles from '@mui/styles/makeStyles';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 import PageTitle from '../PageTitle/PageTitle';
@@ -49,7 +48,7 @@ export default function SectionHeader(props: SectionHeaderProps) {
       >
         <Grid item>
           <Breadcrumbs
-            aria-label={t('common|breadcrumbs')}
+            aria-label={t('common|breadcrumbs').toString()}
             separator={<NavigateNextIcon fontSize="small" />}
           >
             {breadcrumbs &&

@@ -52,7 +52,8 @@
     "yup": "^0.32.9"
   },
   "overrides": {
-    "react-refresh": "^0.14.2"
+    "react-refresh": "^0.14.2",
+    "typescript": "5.7.2"
   },
   "devDependencies": {
     "@axe-core/react": "^4.2.2",
@@ -94,7 +95,7 @@
     "pg": "^8.13.1",
     "prettier": "^2.3.2",
     "storybook": "^8.5.8",
-    "typescript": "^4.4.x"
+    "typescript": "5.7.2"
   },
   "scripts": {
     "build-icons": "node tools/build-icons.js ./src/img ./src/icons && npm run format",

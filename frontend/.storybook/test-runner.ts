@@ -21,7 +21,7 @@ const config: TestRunnerConfig = {
       const innerHTML = await elementHandler.innerHTML();
       expect(innerHTML).toMatchSnapshot();
     } else {
-      throw new Error("elementHandler is null!");
+      throw new Error("The '#storybook-root' element was not found. elementHandler is null!");
     }
   },
 };
