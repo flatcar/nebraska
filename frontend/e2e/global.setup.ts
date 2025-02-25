@@ -1,7 +1,7 @@
-import { expect, test as setup } from '@playwright/test';
+import { test as setup } from '@playwright/test';
 import { Client } from 'pg';
 
-setup('create new node instances in database', async ({ page }) => {
+setup('create new node instances in database', async () => {
   const client = new Client({
     user: 'postgres',
     host: 'localhost',
