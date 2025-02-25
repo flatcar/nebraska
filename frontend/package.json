@@ -73,7 +73,7 @@
     "@types/pg": "^8.11.11",
     "@types/react-router-dom": "^5.1.7",
     "@types/underscore": "^1.11.3",
-    "@typescript-eslint/eslint-plugin": "^8.18.1",
+    "@typescript-eslint/eslint-plugin": "^8.25.0",
     "@typescript-eslint/parser": "^8.18.1",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
