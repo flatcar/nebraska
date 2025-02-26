@@ -33,7 +33,7 @@
     "formik": "^2.2.9",
     "formik-mui": "^4.0.0",
     "i18next": "^20.3.2",
-    "i18next-browser-languagedetector": "^6.1.2",
+    "i18next-browser-languagedetector": "^8.0.4",
     "jwt-decode": "^3.1.2",
     "moment-timezone": "^0.5.38",
     "prop-types": "^15.7.2",
