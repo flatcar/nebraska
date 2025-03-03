@@ -11,7 +11,7 @@ linters:
 
 linters-settings:
   errcheck:
-    ignore: github.com/rs/zerolog:Error|Warn|Debug
+    exclude-functions: github.com/rs/zerolog:Error|Warn|Debug
 
   gofmt:
     simplify: true
