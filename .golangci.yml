@@ -7,7 +7,7 @@ linters:
     - gofmt
     - whitespace
     - goimports
-    - golint
+    - revive
 
 linters-settings:
   errcheck:
