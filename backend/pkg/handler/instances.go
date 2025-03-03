@@ -9,7 +9,7 @@ import (
 	"github.com/kinvolk/nebraska/backend/pkg/codegen"
 )
 
-func (h *Handler) GetInstance(ctx echo.Context, appIDorProductID string, groupID string, instanceID string) error {
+func (h *Handler) GetInstance(ctx echo.Context, appIDorProductID string, _ string, instanceID string) error {
 	appID, err := h.db.GetAppID(appIDorProductID)
 	if err != nil {
 		return appNotFoundResponse(ctx, appIDorProductID)

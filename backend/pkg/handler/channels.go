@@ -73,7 +73,7 @@ func (h *Handler) CreateChannel(ctx echo.Context, appIDorProductID string) error
 	return ctx.JSON(http.StatusOK, channel)
 }
 
-func (h *Handler) GetChannel(ctx echo.Context, appIDorProductID string, channelID string) error {
+func (h *Handler) GetChannel(ctx echo.Context, _ string, channelID string) error {
 	channel, err := h.db.GetChannel(channelID)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -130,7 +130,7 @@ func (h *Handler) UpdateChannel(ctx echo.Context, appIDorProductID string, chann
 	return ctx.JSON(http.StatusOK, channel)
 }
 
-func (h *Handler) DeleteChannel(ctx echo.Context, appIDorProductID string, channelID string) error {
+func (h *Handler) DeleteChannel(ctx echo.Context, _ string, channelID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
 	channel, err := h.db.GetChannel(channelID)

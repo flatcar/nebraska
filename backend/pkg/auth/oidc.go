@@ -343,7 +343,7 @@ func rolesFromToken(token *oidc.IDToken, rolesPath string) ([]string, error) {
 	}
 
 	result := gjson.Get(string(out), rolesPath)
-	result.ForEach(func(key, value gjson.Result) bool {
+	result.ForEach(func(_, value gjson.Result) bool {
 		roles = append(roles, value.String())
 		return true
 	})

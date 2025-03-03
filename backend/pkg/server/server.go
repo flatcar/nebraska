@@ -229,7 +229,7 @@ func setupSessionStore(conf config.Config) *sessions.Store {
 }
 
 func nebraskaAuthenticationFunc(authMode string) func(context.Context, *openapi3filter.AuthenticationInput) error {
-	return func(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
+	return func(_ context.Context, input *openapi3filter.AuthenticationInput) error {
 		switch authMode {
 		case "noop":
 			return nil
