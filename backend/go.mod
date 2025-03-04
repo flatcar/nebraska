@@ -1,6 +1,6 @@
 module github.com/kinvolk/nebraska/backend
 
-go 1.23
+go 1.23.0
 
 require (
 	github.com/blang/semver/v4 v4.0.0
@@ -31,7 +31,7 @@ require (
 	github.com/ryanuber/go-glob v1.0.0
 	github.com/stretchr/testify v1.10.0
 	github.com/tidwall/gjson v1.18.0
-	golang.org/x/oauth2 v0.25.0
+	golang.org/x/oauth2 v0.27.0
 	golang.org/x/sync v0.11.0
 	gopkg.in/guregu/null.v4 v4.0.0
 )
