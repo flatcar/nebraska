@@ -35,12 +35,12 @@ func NewNoopAuthenticator(config *NoopAuthConfig) Authenticator {
 
 // SetupRouter is a part of the Authenticator interface
 // implementation.
-func (noa *noopAuth) SetupRouter(router *echo.Echo) {
+func (noa *noopAuth) SetupRouter(_ *echo.Echo) {
 }
 
 // Authenticate is a part of the Authenticator interface
 // implementation.
-func (noa *noopAuth) Authenticate(c echo.Context) (teamID string, replied bool) {
+func (noa *noopAuth) Authenticate(_ echo.Context) (teamID string, replied bool) {
 	teamID = noa.defaultTeamID
 	replied = false
 	return

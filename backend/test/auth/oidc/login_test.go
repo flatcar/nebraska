@@ -263,7 +263,7 @@ func TestLogin(t *testing.T) {
 		require.NotNil(t, req)
 
 		client := &http.Client{
-			CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
 				// uncomment to debug redirect flow
 				// t.Log("req:", req.URL.String())
 				return nil
@@ -312,7 +312,7 @@ func TestLogin(t *testing.T) {
 		require.NotNil(t, req)
 
 		client := &http.Client{
-			CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			CheckRedirect: func(req *http.Request, _ []*http.Request) error {
 				// uncomment to debug redirect flow
 				// t.Log("req:", req.URL.String())
 
@@ -371,7 +371,7 @@ func TestLogin(t *testing.T) {
 		require.NotNil(t, req)
 
 		client := &http.Client{
-			CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
 				// uncomment to debug redirect flow
 				// t.Log("req:", req.URL.String())
 				return nil
@@ -416,7 +416,7 @@ func TestLogin(t *testing.T) {
 		require.NotNil(t, req)
 
 		client := &http.Client{
-			CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			CheckRedirect: func(req *http.Request, _ []*http.Request) error {
 				// uncomment to debug redirect flow
 				// t.Log("req:", req.URL.String())
 
@@ -481,7 +481,7 @@ func TestLogin(t *testing.T) {
 		require.NoError(t, err)
 		client := &http.Client{
 			Jar: jar,
-			CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
 				// uncomment to debug redirect flow
 				// t.Log("req:", req.URL.String())
 				return nil
@@ -552,7 +552,7 @@ func TestLogin(t *testing.T) {
 		require.NoError(t, err)
 		client := &http.Client{
 			Jar: jar,
-			CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
 				// uncomment to debug redirect flow
 				// t.Log("req:", req.URL.String())
 				return nil
@@ -627,7 +627,7 @@ func TestLogin(t *testing.T) {
 		require.NoError(t, err)
 		client := &http.Client{
 			Jar: jar,
-			CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
 				// uncomment to debug redirect flow
 				// t.Log("req:", req.URL.String())
 				return nil
@@ -678,7 +678,7 @@ func TestLogin(t *testing.T) {
 		require.NoError(t, err)
 		client := &http.Client{
 			Jar: jar,
-			CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
 				// uncomment to debug redirect flow
 				// t.Log("req:", req.URL.String())
 				return nil
@@ -756,7 +756,7 @@ func TestValidateToken(t *testing.T) {
 		require.NoError(t, err)
 		client := &http.Client{
 			Jar: jar,
-			CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
 				// uncomment to debug redirect flow
 				// t.Log("req:", req.URL.String())
 				return nil

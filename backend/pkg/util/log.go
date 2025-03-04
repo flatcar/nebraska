@@ -31,7 +31,7 @@ func NewLogger(logContext string) zerolog.Logger {
 	}
 
 	logger := zerolog.New(writer).With().Timestamp().Logger().Hook(
-		zerolog.HookFunc(func(e *zerolog.Event, level zerolog.Level, message string) {
+		zerolog.HookFunc(func(e *zerolog.Event, _ zerolog.Level, _ string) {
 			e.Str("context", logContext)
 		}))
 

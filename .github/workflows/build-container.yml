@@ -11,7 +11,7 @@ on:
 jobs:
   build:
     name: Build Container Image
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
     - name: Set up QEMU
       uses: docker/setup-qemu-action@4574d27a4764455b42196d70a065bc6853246a25 # v3.4.0

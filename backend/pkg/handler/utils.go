@@ -17,7 +17,7 @@ func getTeamID(c echo.Context) string {
 	return ""
 }
 
-func loggerWithUsername(l zerolog.Logger, ctx echo.Context) zerolog.Logger {
+func loggerWithUsername(_ zerolog.Logger, ctx echo.Context) zerolog.Logger {
 	session := echosessions.GetSession(ctx)
 	if session == nil {
 		return logger

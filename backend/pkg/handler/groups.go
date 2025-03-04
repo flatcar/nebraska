@@ -77,7 +77,7 @@ func (h *Handler) CreateGroup(ctx echo.Context, appIDorProductID string) error {
 	return ctx.JSON(http.StatusOK, group)
 }
 
-func (h *Handler) GetGroup(ctx echo.Context, appIDorProductID string, groupID string) error {
+func (h *Handler) GetGroup(ctx echo.Context, _ string, groupID string) error {
 	group, err := h.db.GetGroup(groupID)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -133,7 +133,7 @@ func (h *Handler) UpdateGroup(ctx echo.Context, appIDorProductID string, groupID
 	return ctx.JSON(http.StatusOK, group)
 }
 
-func (h *Handler) DeleteGroup(ctx echo.Context, appIDorProductID string, groupID string) error {
+func (h *Handler) DeleteGroup(ctx echo.Context, _ string, groupID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
 	group, err := h.db.GetGroup(groupID)
@@ -156,7 +156,7 @@ func (h *Handler) DeleteGroup(ctx echo.Context, appIDorProductID string, groupID
 	return ctx.NoContent(http.StatusNoContent)
 }
 
-func (h *Handler) GetGroupVersionTimeline(ctx echo.Context, appIDorProductID string, groupID string, params codegen.GetGroupVersionTimelineParams) error {
+func (h *Handler) GetGroupVersionTimeline(ctx echo.Context, _ string, groupID string, params codegen.GetGroupVersionTimelineParams) error {
 	versionCountTimeline, isCache, err := h.db.GetGroupVersionCountTimeline(groupID, params.Duration)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -175,7 +175,7 @@ func (h *Handler) GetGroupVersionTimeline(ctx echo.Context, appIDorProductID str
 	return ctx.JSON(http.StatusOK, versionCountTimeline)
 }
 
-func (h *Handler) GetGroupStatusTimeline(ctx echo.Context, appIDorProductID string, groupID string, params codegen.GetGroupStatusTimelineParams) error {
+func (h *Handler) GetGroupStatusTimeline(ctx echo.Context, _ string, groupID string, params codegen.GetGroupStatusTimelineParams) error {
 	statusCountTimeline, err := h.db.GetGroupStatusCountTimeline(groupID, params.Duration)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -188,7 +188,7 @@ func (h *Handler) GetGroupStatusTimeline(ctx echo.Context, appIDorProductID stri
 	return ctx.JSON(http.StatusOK, statusCountTimeline)
 }
 
-func (h *Handler) GetGroupInstanceStats(ctx echo.Context, appIDorProductID string, groupID string, params codegen.GetGroupInstanceStatsParams) error {
+func (h *Handler) GetGroupInstanceStats(ctx echo.Context, _ string, groupID string, params codegen.GetGroupInstanceStatsParams) error {
 	instancesStats, err := h.db.GetGroupInstancesStats(groupID, params.Duration)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -201,7 +201,7 @@ func (h *Handler) GetGroupInstanceStats(ctx echo.Context, appIDorProductID strin
 	return ctx.JSON(http.StatusOK, instancesStats)
 }
 
-func (h *Handler) GetGroupVersionBreakdown(ctx echo.Context, appIDorProductID string, groupID string) error {
+func (h *Handler) GetGroupVersionBreakdown(ctx echo.Context, _ string, groupID string) error {
 	versionBreakdown, err := h.db.GetGroupVersionBreakdown(groupID)
 
 	if err != nil {

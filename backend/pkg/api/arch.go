@@ -24,7 +24,7 @@ func sprintfBogusArch(raw uint) string {
 	return fmt.Sprintf("Arch(%d)", raw)
 }
 
-func emptyBogusArch(raw uint) string {
+func emptyBogusArch(_ uint) string {
 	return ""
 }
 

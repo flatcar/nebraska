@@ -69,7 +69,7 @@ type testRandomStringer struct {
 	idx int
 }
 
-func (s *testRandomStringer) randomString(n int) string {
+func (s *testRandomStringer) randomString(_ int) string {
 	s.idx++
 	return "id" + strconv.Itoa(s.idx)
 }
