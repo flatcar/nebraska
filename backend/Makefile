@@ -62,6 +62,7 @@ test-clean-work-tree-backend:
 	  echo 'Working tree of backend code is not clean'; \
 	  echo; \
 	  git status; \
+	  git diff; \
 	  exit 1; \
 	fi
 
