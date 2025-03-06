@@ -358,7 +358,12 @@ function EditDialog(props: EditDialogProps) {
   } = Yup.object().shape({
     url: Yup.string().url(),
     filename: Yup.string()
-      .max(maxFilenameChars, t('common|Must enter a valid filename (less than x characters)', { number: maxFilenameChars }))
+      .max(
+        maxFilenameChars,
+        t('common|Must enter a valid filename (less than x characters)', {
+          number: maxFilenameChars,
+        })
+      )
       .required(t('frequent|Required')),
     // @todo: Validate whether the version already exists so we can provide
     // better feedback.
@@ -370,7 +375,10 @@ function EditDialog(props: EditDialogProps) {
       .positive(t('common|Must be a positive number'))
       .required(t('frequent|Required')),
     hash: Yup.string()
-      .max(maxHashChars, t('common|Must be a valid hash (less than x characters)', { number: maxHashChars }))
+      .max(
+        maxHashChars,
+        t('common|Must be a valid hash (less than x characters)', { number: maxHashChars })
+      )
       .required(t('frequent|Required')),
   });
 
@@ -378,7 +386,10 @@ function EditDialog(props: EditDialogProps) {
   if (!isCreation) {
     const maxFlatcarHashCars = 64;
     validation['flatcarHash'] = Yup.string()
-      .max(maxFlatcarHashCars, t('common|Must be a valid hash (less than x characters)', { number: maxFlatcarHashCars }))
+      .max(
+        maxFlatcarHashCars,
+        t('common|Must be a valid hash (less than x characters)', { number: maxFlatcarHashCars })
+      )
       .required(t('frequent|Required'));
 
     initialValues = {

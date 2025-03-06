@@ -156,7 +156,10 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
         t('common|Must be a reverse domain ID like io.example.MyApp')
       )
       .nullable(),
-    description: Yup.string().max(maxDescChars, t('common|Must be less than x characters', { number: maxDescChars })),
+    description: Yup.string().max(
+      maxDescChars,
+      t('common|Must be less than x characters', { number: maxDescChars })
+    ),
   });
 
   return (
