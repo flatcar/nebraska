@@ -387,8 +387,8 @@ function EditDialog(props: EditDialogProps) {
     const maxFlatcarHashChars = 64;
     validation['flatcarHash'] = Yup.string()
       .max(
-        maxFlatcarHashCars,
-        t('common|Must be a valid hash (less than x characters)', { number: maxFlatcarHashCars })
+        maxFlatcarHashChars,
+        t('common|Must be a valid hash (less than x characters)', { number: maxFlatcarHashChars })
       )
       .required(t('frequent|Required'));
 
