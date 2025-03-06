@@ -384,7 +384,7 @@ function EditDialog(props: EditDialogProps) {
 
   let initialValues: { [key: string]: any } = { channelsBlacklist: [] };
   if (!isCreation) {
-    const maxFlatcarHashCars = 64;
+    const maxFlatcarHashChars = 64;
     validation['flatcarHash'] = Yup.string()
       .max(
         maxFlatcarHashCars,
