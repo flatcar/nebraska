@@ -270,9 +270,10 @@ export default function ChannelEdit(props: ChannelEditProps) {
     );
   }
 
+  const maxChars = 50;
   const validation = Yup.object().shape({
     name: Yup.string()
-      .max(50, t('common|Must be less than x characters', { number: 50 }))
+      .max(maxChars, t('common|Must be less than x characters', { number: maxChars }))
       .required('Required'),
   });
 

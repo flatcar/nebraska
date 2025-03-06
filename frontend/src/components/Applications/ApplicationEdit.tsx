@@ -139,9 +139,11 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
     );
   }
 
+  const maxNameChars = 50;
+  const maxDescChars = 155;
   const validation = Yup.object().shape({
     name: Yup.string()
-      .max(50, t('common|Must be less than x characters', { number: 50 }))
+      .max(maxNameChars, t('common|Must be less than x characters', { number: maxNameChars }))
       .required('Required'),
     product_id: Yup.string()
       // This regex matches an ID that matches
@@ -154,7 +156,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
         t('common|Must be a reverse domain ID like io.example.MyApp')
       )
       .nullable(),
-    description: Yup.string().max(155, t('common|Must be less than x characters', { number: 155 })),
+    description: Yup.string().max(maxDescChars, t('common|Must be less than x characters', { number: maxDescChars })),
   });
 
   return (
