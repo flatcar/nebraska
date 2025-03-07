@@ -567,6 +567,7 @@ exports[`channels/ChannelList Loading smoke-test 1`] = `
     >
       <span class="MuiCircularProgress-root MuiCircularProgress-indeterminate MuiCircularProgress-colorPrimary css-13d3z5s-MuiCircularProgress-root"
             role="progressbar"
+            aria-label="Loading"
             style="width: 40px; height: 40px;"
       >
         <svg class="MuiCircularProgress-svg css-1idz92c-MuiCircularProgress-svg"
