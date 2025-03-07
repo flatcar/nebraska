@@ -37,7 +37,10 @@ test.describe('Instances', () => {
     `});
 
     // maxDiffPixels set due to displaying date times that can change
-    await expect(page).toHaveScreenshot('instances-list.png', { mask: [page.locator('tbody tr:first-child td:last-child')], maxDiffPixels: 500 });
+    await expect(page).toHaveScreenshot('instances-list.png', {
+      mask: [page.locator('tbody tr:first-child td:last-child')
+      ], maxDiffPixels: 500
+    });
 
     await expect(page.locator('tbody')).toContainText('2c517ad881474ec6b5ab928df2a7b5f4');
     await expect(page.locator('tbody')).toContainText('Updating: downloaded');
@@ -49,7 +52,8 @@ test.describe('Instances', () => {
     await expect(page).toHaveScreenshot('instance-history.png', {
       mask: [page.locator('//*[contains(text(), "/")]'),
       page.locator('td:has(button):last-of-type'),
-      page.locator('#main > div:last-child')], maxDiffPixels: 500
+      page.locator('#main > div:last-child')],
+      maxDiffPixels: 200
     });
 
     await expect(page.locator('#main')).toContainText('Downloaded');
@@ -74,7 +78,9 @@ test.describe('Instances', () => {
 
     // mask elements that are: cells where we can find timedate values, and nebraska version at the bottom
     await expect(page).toHaveScreenshot('instance-info.png', {
-      mask: [page.locator('//*[contains(text(), "/")]'), page.locator('#main > div:last-child')], maxDiffPixels: 200
+      mask: [page.locator('//*[contains(text(), "/")]'), page.locator('#main > div:last-child'),
+      page.locator('text=Last Update Check').locator('xpath=following-sibling::div'),
+      ], maxDiffPixels: 200
     });
 
     await expect(page.getByRole('heading')).toContainText('Instance Information');
