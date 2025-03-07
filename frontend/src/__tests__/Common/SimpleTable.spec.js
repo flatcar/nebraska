@@ -1,5 +1,4 @@
 import { render } from '@testing-library/react';
-import React from 'react';
 import SimpleTable from '../../components/common/SimpleTable';
 
 describe('Simple Table', () => {

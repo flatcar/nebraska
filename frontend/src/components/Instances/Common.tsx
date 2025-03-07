@@ -42,7 +42,7 @@ export function InstanceCountLabel(props: {
         <Typography className={classes.instancesCount}>{countText}</Typography>
       </Grid>
       <Grid item>
-        {!instanceListView && countText > 0 ? (
+        {!instanceListView && Number(countText) > 0 ? (
           <Box>
             {!props.loading && (
               <Link to={{ ...href }} component={RouterLink} underline="hover">

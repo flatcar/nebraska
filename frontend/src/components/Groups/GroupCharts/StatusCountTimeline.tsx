@@ -20,6 +20,7 @@ import { Duration } from './TimelineChart';
 export interface StatusCountTimelineProps {
   duration: Duration;
   group: Group | null;
+  isAnimationActive?: boolean;
 }
 
 export default function StatusCountTimeline(props: StatusCountTimelineProps) {
@@ -206,7 +207,12 @@ export default function StatusCountTimeline(props: StatusCountTimelineProps) {
     <Grid container alignItems="center" spacing={2}>
       <Grid item xs={12}>
         {timelineChartData.data.length > 0 ? (
-          <TimelineChart {...timelineChartData} interpolation="step" onSelect={setSelectedEntry} />
+          <TimelineChart
+            {...timelineChartData}
+            interpolation="step"
+            onSelect={setSelectedEntry}
+            isAnimationActive={props.isAnimationActive}
+          />
         ) : (
           <Loader />
         )}

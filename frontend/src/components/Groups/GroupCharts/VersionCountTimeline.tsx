@@ -18,6 +18,7 @@ import { Duration } from './TimelineChart';
 export interface VersionCountTimelineProps {
   group: Group | null;
   duration: Duration;
+  isAnimationActive?: boolean;
 }
 
 export default function VersionCountTimeline(props: VersionCountTimelineProps) {
@@ -184,7 +185,11 @@ export default function VersionCountTimeline(props: VersionCountTimelineProps) {
     <Grid container alignItems="center" spacing={2}>
       <Grid item xs={12}>
         {timelineChartData.data.length > 0 ? (
-          <TimelineChart {...timelineChartData} onSelect={setSelectedEntry} />
+          <TimelineChart
+            {...timelineChartData}
+            onSelect={setSelectedEntry}
+            isAnimationActive={props.isAnimationActive}
+          />
         ) : (
           <Loader />
         )}
