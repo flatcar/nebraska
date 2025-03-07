@@ -86,7 +86,7 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
       .catch(() => {
         actions.setSubmitting(false);
         actions.setStatus({
-          statusMessage: t('groups|Something went wrong. Check the form or try again later...'),
+          statusMessage: t('common|something_wrong'),
         });
       });
   }
@@ -161,16 +161,17 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
   }
 
   function positiveNum() {
+    const minNr = 1;
     return Yup.number()
       .positive()
-      .min(1, t('groups|Must be greather than or equal to 1'))
+      .min(minNr, t('common|Must be greather than or equal to x', { number: minNr }))
       .required('Required');
   }
 
   function maxCharacters(maxChars: number, required = false) {
     let validation = Yup.string().max(
       maxChars,
-      t(`groups|Must be less than ${maxChars} characters`)
+      t('common|Must be less than x characters', { number: maxChars })
     );
 
     if (required) validation = validation.required('Required');
@@ -195,6 +196,8 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
 
   if (isCreation) {
     initialValues = {
+      name: '',
+      track: '',
       appID: appID,
       maxUpdates: 1,
       updatesPeriodRange: 1,
@@ -215,8 +218,8 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
     const [currentupdatesTimeout, currentUpdatesTimeoutUnit] =
       group.policy_update_timeout.split(' ');
     initialValues = {
-      name: group.name,
-      track: group.track,
+      name: group.name || '',
+      track: group.track || '',
       description: group.description,
       timezone: group.policy_timezone || DEFAULT_TIMEZONE,
       updatesEnabled: group.policy_updates_enabled,
@@ -234,14 +237,11 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
   return (
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
       <DialogTitle>{isCreation ? t('groups|Add Group') : t('groups|Edit Group')}</DialogTitle>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={handleSubmit}
-        validationSchema={validation}
-        //@todo add better types
-        //@ts-ignore
-        render={renderForm}
-      />
+      <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={validation}>
+        {/* @todo add better types for renderForm */}
+        {/* @ts-ignore */}
+        {renderForm}
+      </Formik>
     </Dialog>
   );
 }

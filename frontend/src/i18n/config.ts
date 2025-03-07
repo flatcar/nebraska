@@ -1,34 +1,39 @@
 import i18next from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
-
-const en = {}; // To keep TS happy.
+import missing from './locales/en/404.json';
+import activity from './locales/en/activity.json';
+import applications from './locales/en/applications.json';
+import channels from './locales/en/channels.json';
+import common from './locales/en/common.json';
+import frequent from './locales/en/frequent.json';
+import groups from './locales/en/groups.json';
+import header from './locales/en/header.json';
+import instances from './locales/en/instances.json';
+import layouts from './locales/en/layouts.json';
+import packages from './locales/en/packages.json';
 
 i18next
   // detect user language https://github.com/i18next/i18next-browser-languageDetector
   .use(LanguageDetector)
   .use(initReactI18next)
-  // Use dynamic imports (webpack code splitting) to load javascript bundles.
-  // @see https://www.i18next.com/misc/creating-own-plugins#backend
-  // @see https://webpack.js.org/guides/code-splitting/
-  .use({
-    type: 'backend',
-    read<Namespace extends keyof typeof en>(
-      language: string | any,
-      namespace: Namespace,
-      callback: (errorValue: unknown, translations: null | (typeof en)[Namespace]) => void
-    ) {
-      import(`./locales/${language}/${namespace}.json`)
-        .then(resources => {
-          callback(null, resources);
-        })
-        .catch(error => {
-          callback(error, null);
-        });
-    },
-  })
   // i18next options: https://www.i18next.com/overview/configuration-options
   .init({
+    resources: {
+      en: {
+        missing,
+        activity,
+        applications,
+        channels,
+        common,
+        frequent,
+        groups,
+        header,
+        instances,
+        layouts,
+        packages,
+      },
+    },
     debug: process.env.NODE_ENV === 'development',
     fallbackLng: 'en',
     supportedLngs: ['en'],

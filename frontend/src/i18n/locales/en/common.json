@@ -1,0 +1,19 @@
+{
+  "Are you sure ... ?": "Are you sure ... ?",
+  "No data to be shown.": "No data to be shown.",
+  "Open menu": "Open menu",
+  "Other": "Other",
+  "Pick a timezone": "Pick a timezone",
+  "Start typing to search a timezone": "Start typing to search a timezone",
+  "Timezone": "Timezone",
+  "breadcrumbs": "breadcrumbs",
+  "Must be greather than or equal to x": "Must be greather than or equal to {{number}}",
+  "Must be less than x characters": "Must be less than {{number}} characters",
+  "Must be a positive number": "Must be a positive number",
+  "Must be a valid hash (less than x characters)": "Must be a valid hash (less than {{number}} characters)",
+  "Must be an integer number": "Must be an integer number",
+  "Must enter a valid filename (less than x characters)": "Must enter a valid filename (less than {{number}} characters)",
+  "Must be a reverse domain ID like io.example.MyApp": "Must be a reverse domain ID like io.example.MyApp",
+  "Must be less than x characters": "Must be less than {{number}} characters",
+  "something_wrong": "Something went wrong. Check the form or try again later..."
+}

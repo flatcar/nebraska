@@ -351,12 +351,19 @@ function EditDialog(props: EditDialogProps) {
     );
   }
 
+  const maxFilenameChars = 100;
+  const maxHashChars = 64;
   const validation: {
     [key: string]: any;
   } = Yup.object().shape({
     url: Yup.string().url(),
     filename: Yup.string()
-      .max(100, t('packages|Must enter a valid filename (less than 100 characters)'))
+      .max(
+        maxFilenameChars,
+        t('common|Must enter a valid filename (less than x characters)', {
+          number: maxFilenameChars,
+        })
+      )
       .required(t('frequent|Required')),
     // @todo: Validate whether the version already exists so we can provide
     // better feedback.
@@ -364,18 +371,25 @@ function EditDialog(props: EditDialogProps) {
       .matches(REGEX_SEMVER, t('packages|Enter a valid semver (1.0.1)'))
       .required(t('frequent|Required')),
     size: Yup.number()
-      .integer(t('packages|Must be an integer number'))
-      .positive(t('packages|Must be a positive number'))
+      .integer(t('common|Must be an integer number'))
+      .positive(t('common|Must be a positive number'))
       .required(t('frequent|Required')),
     hash: Yup.string()
-      .max(64, t('packages|Must be a valid hash (less than 64 characters)'))
+      .max(
+        maxHashChars,
+        t('common|Must be a valid hash (less than x characters)', { number: maxHashChars })
+      )
       .required(t('frequent|Required')),
   });
 
   let initialValues: { [key: string]: any } = { channelsBlacklist: [] };
   if (!isCreation) {
+    const maxFlatcarHashChars = 64;
     validation['flatcarHash'] = Yup.string()
-      .max(64, t('packages|Must be a valid hash (less than 64 characters)'))
+      .max(
+        maxFlatcarHashChars,
+        t('common|Must be a valid hash (less than x characters)', { number: maxFlatcarHashChars })
+      )
       .required(t('frequent|Required'));
 
     initialValues = {
@@ -401,14 +415,11 @@ function EditDialog(props: EditDialogProps) {
       <DialogTitle>
         {isCreation ? t('packages|Add Package') : t('packages|Edit Package')}
       </DialogTitle>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={handleSubmit}
-        validationSchema={validation}
-        //@todo add better types
-        //@ts-ignore
-        render={renderForm}
-      />
+      <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={validation}>
+        {/* @todo add better types for renderForm */}
+        {/* @ts-ignore */}
+        {renderForm}
+      </Formik>
     </Dialog>
   );
 }
