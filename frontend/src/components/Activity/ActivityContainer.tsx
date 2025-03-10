@@ -107,14 +107,14 @@ function Container() {
 
   return (
     <>
-      <ListHeader title={t('activity|Activity')} />
+      <ListHeader title={t('activity|activity')} />
       <Paper>
         <Box padding="1em">
           {_.isNull(activity) ? (
             <Loader />
           ) : _.isEmpty(activity) ? (
             <Empty>
-              <Trans ns="activity" i18nKey="noactivity">
+              <Trans ns="activity" i18nKey="no_activity">
                 No activity found for the last week.
                 <br />
                 <br />
@@ -140,10 +140,10 @@ function Container() {
                   rowsPerPage={rowsPerPage}
                   page={page}
                   backIconButtonProps={{
-                    'aria-label': t('activity|previous page'),
+                    'aria-label': t('activity|previous_page'),
                   }}
                   nextIconButtonProps={{
-                    'aria-label': t('activity|next page'),
+                    'aria-label': t('activity|next_page'),
                   }}
                   onPageChange={handleChangePage}
                   onRowsPerPageChange={handleChangeRowsPerPage}
