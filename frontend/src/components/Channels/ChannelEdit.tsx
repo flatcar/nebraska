@@ -216,7 +216,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
                 );
               })}
             </MuiSelect>
-            <FormHelperText>{t('channels|Cannot be changed once created.')}</FormHelperText>
+            <FormHelperText>{t('channels|cannot_be_changed')}</FormHelperText>
           </FormControl>
           <Field
             type="text"
@@ -246,10 +246,10 @@ export default function ChannelEdit(props: ChannelEditProps) {
                   secondary: t('channels|created: {{date, date}}', { date: date }),
                 };
               })}
-            placeholder={t('channels|Pick a package')}
-            pickerPlaceholder={t('channels|Start typing to search a package')}
+            placeholder={t('channels|pick_package')}
+            pickerPlaceholder={t('channels|search_package_prompt')}
             data={packages.packages.filter((packageItem: Package) => packageItem.arch === arch)}
-            dialogTitle={t('channels|Choose a package')}
+            dialogTitle={t('channels|choose_package')}
             defaultValue={channel && channel.package ? channel.package.version : ''}
             onValueChanged={(term: string | null) => {
               setPackageSearchTerm(term || '');
@@ -288,7 +288,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
   return (
     <Dialog open={props.show} onClose={() => props.onHide()} aria-labelledby="form-dialog-title">
       <DialogTitle>
-        {isCreation ? t('channels|Add New Channel') : t('channels|Edit Channel')}
+        {isCreation ? t('channels|add_new_channel') : t('channels|edit_channel')}
       </DialogTitle>
       <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={validation}>
         {/* @todo add better types */}

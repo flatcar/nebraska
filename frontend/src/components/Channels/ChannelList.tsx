@@ -51,7 +51,7 @@ function Channels(props: { channels: null | Channel[]; onEdit: (channelId: strin
   );
 
   if (noChannels) {
-    return <Empty>{t('channels|No channels created for this application yet')}</Empty>;
+    return <Empty>{t('channels|no_channels_created')}</Empty>;
   }
 
   return (
@@ -164,7 +164,7 @@ export function ChannelListPure(props: ChannelListPureProps) {
       <Box mb={2}>
         <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
-            <Typography variant="h1">{t('channels|Channels')}</Typography>
+            <Typography variant="h1">{t('channels|channels')}</Typography>
           </Grid>
           <Grid item>
             <ModalButton
