@@ -64,7 +64,7 @@ function GroupList({ appID }: GroupListProps) {
     if (_.isEmpty(groups)) {
       entries = (
         <Empty>
-          <Trans ns="groups" i18nKey="nogroupsyet">
+          <Trans ns="groups" i18nKey="no_groups_yet">
             There are no groups for this application yet.
             <br />
             <br />

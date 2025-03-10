@@ -30,12 +30,12 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
       <Grid container justifyContent="space-between" spacing={4}>
         <Grid item xs={12}>
           <Box mt={1}>
-            <FormLabel component="legend">{t('groups|Update')}</FormLabel>
+            <FormLabel component="legend">{t('groups|update')}</FormLabel>
           </Box>
           <Grid container>
             <Grid item xs={6}>
               <FormControlLabel
-                label={t('groups|Updates enabled')}
+                label={t('groups|updates_enabled')}
                 control={
                   <Field
                     name="updatesEnabled"
@@ -51,7 +51,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
             </Grid>
             <Grid item xs={6}>
               <FormControlLabel
-                label={t('groups|Safe mode')}
+                label={t('groups|safe_mode_lower')}
                 control={
                   <Field
                     name="safeMode"
@@ -65,7 +65,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
                 }
               />
               <FormHelperText>
-                {t('groups|Only update 1 instance at a time, and stop if an update fails.')}
+                {t('groups|update_policy_single_instance')}
               </FormHelperText>
             </Grid>
           </Grid>
@@ -75,7 +75,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
         <Divider />
       </Box>
       <Box mt={2}>
-        <FormLabel component="legend">{t('groups|Update Limits')}</FormLabel>
+        <FormLabel component="legend">{t('groups|update_limits')}</FormLabel>
       </Box>
       <Box>
         <Grid container>
@@ -83,9 +83,9 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
             <FormControlLabel
               label={
                 <Box display="flex" alignItems="center">
-                  <Box pr={0.5}>{t('groups|Only office hours')}</Box>
+                  <Box pr={0.5}>{t('groups|office_hours_only_lower')}</Box>
                   <Box pt={0.1} color="#808080">
-                    <Tooltip title={t('groups|Only update from 9am to 5pm.') || ''}>
+                    <Tooltip title={t('groups|update_policy_office_hours') || ''}>
                       <HelpOutlineIcon fontSize="small" />
                     </Tooltip>
                   </Box>
@@ -126,7 +126,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
                 name="maxUpdates"
                 component={TextField}
                 variant="standard"
-                label={t('groups|Max number of updates')}
+                label={t('groups|max_updates')}
                 margin="dense"
                 type="number"
                 fullWidth
@@ -135,7 +135,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
             </Box>
           </Grid>
           <Grid item>
-            <Typography color="textSecondary">{t('groups|per')}</Typography>
+            <Typography color="textSecondary">{t('groups|time_per')}</Typography>
           </Grid>
           <Grid item xs={3}>
             <Box mt={2}>
@@ -161,13 +161,13 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
                 fullWidth
               >
                 <MenuItem value={'hours'} key={'hours'}>
-                  {t('groups|hours')}
+                  {t('groups|time_hours')}
                 </MenuItem>
                 <MenuItem value={'minutes'} key={'minutes'}>
-                  {t('groups|minutes')}
+                  {t('groups|time_minutes')}
                 </MenuItem>
                 <MenuItem value={'days'} key={'days'}>
-                  {t('groups|days')}
+                  {t('groups|time_days')}
                 </MenuItem>
               </Field>
             </Box>
@@ -175,7 +175,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
         </Grid>
         <Grid item xs={12}>
           <Box mt={2} pl={2}>
-            <FormLabel>{t('groups|Updates timeout')}</FormLabel>
+            <FormLabel>{t('groups|updates_timeout_lower')}</FormLabel>
             <Grid container spacing={2}>
               <Grid item xs={4}>
                 <Field
@@ -198,13 +198,13 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
                     fullWidth
                   >
                     <MenuItem value={'hours'} key={'hours'}>
-                      {t('groups|hours')}
+                      {t('groups|time_hours')}
                     </MenuItem>
                     <MenuItem value={'minutes'} key={'minutes'}>
-                      {t('groups|minutes')}
+                      {t('groups|time_minutes')}
                     </MenuItem>
                     <MenuItem value={'days'} key={'days'}>
-                      {t('groups|days')}
+                      {t('groups|time_days')}
                     </MenuItem>
                   </Field>
                 </Box>
