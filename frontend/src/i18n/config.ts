@@ -1,7 +1,7 @@
 import i18next from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
-import missing from './locales/en/404.json';
+import missing from './locales/en/missing.json';
 import activity from './locales/en/activity.json';
 import applications from './locales/en/applications.json';
 import channels from './locales/en/channels.json';
