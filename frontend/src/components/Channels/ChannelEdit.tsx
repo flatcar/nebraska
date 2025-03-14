@@ -188,7 +188,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
                   component={TextField}
                   variant="standard"
                   margin="dense"
-                  label={t('frequent|Name')}
+                  label={t('frequent|name')}
                   InputLabelProps={{ shrink: true }}
                   type="text"
                   required
@@ -221,7 +221,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
           <Field
             type="text"
             name="package"
-            label={t('frequent|Package')}
+            label={t('frequent|package')}
             select
             margin="dense"
             component={AutoCompletePicker}
@@ -260,10 +260,10 @@ export default function ChannelEdit(props: ChannelEditProps) {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => props.onHide()} color="primary">
-            {t('frequent|Cancel')}
+            {t('frequent|cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting} color="primary">
-            {isCreation ? t('frequent|Add') : t('frequent|Save')}
+            {isCreation ? t('frequent|add_lower') : t('frequent|save')}
           </Button>
         </DialogActions>
       </Form>
@@ -273,7 +273,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
   const maxChars = 50;
   const validation = Yup.object().shape({
     name: Yup.string()
-      .max(maxChars, t('common|Must be less than x characters', { number: maxChars }))
+      .max(maxChars, t('common|max_length_error', { number: maxChars }))
       .required('Required'),
   });
 

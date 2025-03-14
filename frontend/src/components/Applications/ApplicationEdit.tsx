@@ -53,7 +53,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
       .catch(() => {
         actions.setSubmitting(false);
         actions.setStatus({
-          statusMessage: t('common|something_wrong'),
+          statusMessage: t('common|generic_error'),
         });
       });
   }
@@ -75,7 +75,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
             component={TextField}
             variant="standard"
             margin="dense"
-            label={t('frequent|Name')}
+            label={t('frequent|name')}
             type="text"
             fullWidth
             required
@@ -85,7 +85,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
             component={TextField}
             variant="standard"
             margin="dense"
-            label={t('frequent|Product ID')}
+            label={t('frequent|product_id')}
             type="text"
             fullWidth
             helperText={t('applications|example_app_id')}
@@ -95,7 +95,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
             component={TextField}
             variant="standard"
             margin="dense"
-            label={t('frequent|Description')}
+            label={t('frequent|description')}
             type="text"
             fullWidth
           />
@@ -129,10 +129,10 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            {t('frequent|Cancel')}
+            {t('frequent|cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting} color="primary">
-            {isCreation ? t('frequent|Add') : t('frequent|Update')}
+            {isCreation ? t('frequent|add_lower') : t('frequent|update')}
           </Button>
         </DialogActions>
       </Form>
@@ -143,7 +143,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
   const maxDescChars = 155;
   const validation = Yup.object().shape({
     name: Yup.string()
-      .max(maxNameChars, t('common|Must be less than x characters', { number: maxNameChars }))
+      .max(maxNameChars, t('common|max_length_error', { number: maxNameChars }))
       .required('Required'),
     product_id: Yup.string()
       // This regex matches an ID that matches
@@ -153,12 +153,12 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
       // Each segment must not end with a dash.
       .matches(
         /^[a-zA-Z]+([a-zA-Z0-9\-]*[a-zA-Z0-9])*(\.[a-zA-Z]+([a-zA-Z0-9\-]*[a-zA-Z0-9])*)+$/,
-        t('common|Must be a reverse domain ID like io.example.MyApp')
+        t('common|reverse_domain_id_error')
       )
       .nullable(),
     description: Yup.string().max(
       maxDescChars,
-      t('common|Must be less than x characters', { number: maxDescChars })
+      t('common|max_length_error', { number: maxDescChars })
     ),
   });
 

@@ -184,7 +184,7 @@ function EditDialog(props: EditDialogProps) {
               tabProps={{ centered: true, variant: 'standard' }}
               tabs={[
                 {
-                  label: t('frequent|Main'),
+                  label: t('frequent|main'),
                   component: (
                     <>
                       <Field
@@ -324,7 +324,7 @@ function EditDialog(props: EditDialogProps) {
                   ),
                 },
                 {
-                  label: t('frequent|Extra Files'),
+                  label: t('frequent|extra_files'),
                   component: (
                     <FileList
                       files={values.filesList}
@@ -341,10 +341,10 @@ function EditDialog(props: EditDialogProps) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            {t('frequent|Cancel')}
+            {t('frequent|cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting || isAddingFiles} color="primary">
-            {isCreation ? t('frequent|Add') : t('frequent|Save')}
+            {isCreation ? t('frequent|add_lower') : t('frequent|save')}
           </Button>
         </DialogActions>
       </Form>
@@ -360,26 +360,26 @@ function EditDialog(props: EditDialogProps) {
     filename: Yup.string()
       .max(
         maxFilenameChars,
-        t('common|Must enter a valid filename (less than x characters)', {
+        t('common|valid_filename_error', {
           number: maxFilenameChars,
         })
       )
-      .required(t('frequent|Required')),
+      .required(t('frequent|required')),
     // @todo: Validate whether the version already exists so we can provide
     // better feedback.
     version: Yup.string()
       .matches(REGEX_SEMVER, t('packages|Enter a valid semver (1.0.1)'))
-      .required(t('frequent|Required')),
+      .required(t('frequent|required')),
     size: Yup.number()
-      .integer(t('common|Must be an integer number'))
-      .positive(t('common|Must be a positive number'))
-      .required(t('frequent|Required')),
+      .integer(t('common|integer_number_error'))
+      .positive(t('common|positive_number_error'))
+      .required(t('frequent|required')),
     hash: Yup.string()
       .max(
         maxHashChars,
-        t('common|Must be a valid hash (less than x characters)', { number: maxHashChars })
+        t('common|valid_hash_error', { number: maxHashChars })
       )
-      .required(t('frequent|Required')),
+      .required(t('frequent|required')),
   });
 
   let initialValues: { [key: string]: any } = { channelsBlacklist: [] };
@@ -388,9 +388,9 @@ function EditDialog(props: EditDialogProps) {
     validation['flatcarHash'] = Yup.string()
       .max(
         maxFlatcarHashChars,
-        t('common|Must be a valid hash (less than x characters)', { number: maxFlatcarHashChars })
+        t('common|valid_hash_error', { number: maxFlatcarHashChars })
       )
-      .required(t('frequent|Required'));
+      .required(t('frequent|required'));
 
     initialValues = {
       url: props.data.package.url,

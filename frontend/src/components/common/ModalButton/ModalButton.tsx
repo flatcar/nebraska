@@ -59,7 +59,7 @@ function ModalButton(props: { data: object; modalToOpen: string; icon?: string }
     <div>
       <IconButton
         size="small"
-        aria-label={t('frequent|add')}
+        aria-label={t('frequent|add_lower')}
         onClick={open}
         data-testid="modal-button"
       >

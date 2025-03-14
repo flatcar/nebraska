@@ -79,13 +79,13 @@ function FileListItem(props: FileListItemProps) {
             iconButtonProps={{ disabled: showEditOptions }}
             options={[
               {
-                label: t('frequent|Edit'),
+                label: t('frequent|edit'),
                 action: () => {
                   onEditClicked && onEditClicked();
                 },
               },
               {
-                label: t('frequent|Delete'),
+                label: t('frequent|delete'),
                 action: () => {
                   onDeleteClicked && onDeleteClicked();
                 },
@@ -175,11 +175,11 @@ function FileListItem(props: FileListItemProps) {
                 onEditFinished();
               }}
             >
-              {t('frequent|Cancel')}
+              {t('frequent|cancel')}
             </Button>
           </Grid>
           <Grid item>
-            <Button onClick={() => onEditFinished(fileToEdit)}>{t('frequent|Done')}</Button>
+            <Button onClick={() => onEditFinished(fileToEdit)}>{t('frequent|done')}</Button>
           </Grid>
         </Grid>
       </Grid>

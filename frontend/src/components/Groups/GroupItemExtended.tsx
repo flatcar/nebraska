@@ -155,7 +155,7 @@ function ItemExtended(props: {
             <MoreMenu
               options={[
                 {
-                  label: t('frequent|Edit'),
+                  label: t('frequent|edit'),
                   action: updateGroup,
                 },
               ]}
@@ -179,20 +179,20 @@ function ItemExtended(props: {
                       )}
                     </Grid>
                     <Grid item>
-                      <CardFeatureLabel>{t('frequent|Updates')}</CardFeatureLabel>
+                      <CardFeatureLabel>{t('frequent|updates')}</CardFeatureLabel>
                       <Box my={1}>
                         <CardLabel>
                           <Box display="flex">
                             {group.policy_updates_enabled ? (
                               <>
-                                <Box>{t('frequent|Enabled')}</Box>
+                                <Box>{t('frequent|enabled')}</Box>
                                 <Box pl={1}>
                                   <CheckIcon className={classes.success} fontSize="small" />
                                 </Box>
                               </>
                             ) : (
                               <>
-                                <Box>{t('frequent|Disabled')}</Box>
+                                <Box>{t('frequent|disabled')}</Box>
                                 <Box>
                                   <CloseIcon color="error" />
                                 </Box>
@@ -206,7 +206,7 @@ function ItemExtended(props: {
                       <CardFeatureLabel>{t('groups|office_hours_only')}</CardFeatureLabel>
                       <Box my={1}>
                         <CardLabel>
-                          {group.policy_office_hours ? t('frequent|Yes') : t('frequent|No')}
+                          {group.policy_office_hours ? t('frequent|yes') : t('frequent|no')}
                         </CardLabel>
                       </Box>
                     </Grid>
@@ -214,7 +214,7 @@ function ItemExtended(props: {
                       <CardFeatureLabel>{t('groups|safe_mode')}</CardFeatureLabel>
                       <Box my={1}>
                         <CardLabel>
-                          {group.policy_safe_mode ? t('frequent|Yes') : t('frequent|No')}
+                          {group.policy_safe_mode ? t('frequent|yes') : t('frequent|no')}
                         </CardLabel>
                       </Box>
                     </Grid>

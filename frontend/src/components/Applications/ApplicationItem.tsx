@@ -48,11 +48,11 @@ export default function ApplicationItem(props: ApplicationItemProps) {
             <MoreMenu
               options={[
                 {
-                  label: t('frequent|Edit'),
+                  label: t('frequent|edit'),
                   action: () => props.onUpdate(id),
                 },
                 {
-                  label: t('frequent|Delete'),
+                  label: t('frequent|delete'),
                   action: () => {
                     window.confirm(
                       t('applications|confirm_delete_application?')
@@ -88,7 +88,7 @@ export default function ApplicationItem(props: ApplicationItemProps) {
             </Box>
             <Grid item xs={7}>
               <Box mt={2} p={1}>
-                <CardFeatureLabel>{t('frequent|Groups')}</CardFeatureLabel>
+                <CardFeatureLabel>{t('frequent|groups')}</CardFeatureLabel>
                 <Box display="inline-block" pl={2}>
                   <CardLabel>
                     {groups?.length === 0 ? t('applications|none') : groups?.length}
