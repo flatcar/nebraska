@@ -62,7 +62,7 @@ function GroupLayout() {
         breadcrumbs={[
           {
             path: '/apps',
-            label: t('layouts|Applications'),
+            label: t('layouts|applications'),
           },
           {
             path: `/apps/${appID}`,

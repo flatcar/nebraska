@@ -98,7 +98,7 @@ function Appbar(props: AppbarProps) {
         <div style={{ flex: '1 0 0' }} />
         {showAccountButton && (
           <IconButton
-            aria-label={t('header|User menu')}
+            aria-label={t('header|user_menu')}
             aria-controls="menu-appbar"
             aria-haspopup="true"
             onClick={handleMenu}
@@ -135,7 +135,7 @@ function Appbar(props: AppbarProps) {
                 disabled={!config?.access_management_url}
                 href={config?.access_management_url || ''}
               >
-                {t('header|Manage Account')}
+                {t('header|manage_account')}
               </Button>
             </Box>
           </Menu>

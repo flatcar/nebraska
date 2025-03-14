@@ -26,9 +26,9 @@ function StatusHistoryList(props: { entries: InstanceStatusHistory[] }) {
     <Table className={classes.root}>
       <TableHead>
         <TableRow>
-          <TableCell>{t('instances|Instances')}</TableCell>
-          <TableCell>{t('instances|Status')}</TableCell>
-          <TableCell>{t('instances|Message')}</TableCell>
+          <TableCell>{t('instances|instances_plural')}</TableCell>
+          <TableCell>{t('instances|status')}</TableCell>
+          <TableCell>{t('instances|message')}</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>

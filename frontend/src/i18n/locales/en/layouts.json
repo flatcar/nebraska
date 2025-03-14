@@ -1,4 +1,4 @@
 {
-  "Applications": "Applications",
-  "Instances": "Instances"
+  "applications": "Applications",
+  "instances": "Instances"
 }

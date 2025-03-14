@@ -80,19 +80,19 @@ function InstanceFilter(props: InstanceFilterProps) {
         <Grid item xs={5}>
           <FormControl fullWidth disabled={props.disabled}>
             <InputLabel variant="standard" htmlFor="select-status" shrink>
-              {t('instances|Filter Status')}
+              {t('instances|filter_status')}
             </InputLabel>
             <Select
               onChange={(event: any) => changeFilter('status', event.target.value)}
               input={<Input id="select-status" />}
               renderValue={(selected: any) =>
-                selected ? statusDefs[selected].label : t('instances|Show All')
+                selected ? statusDefs[selected].label : t('instances|show_all')
               }
               value={props.filter.status}
               displayEmpty
             >
               <MenuItem key="" value="">
-                {t('instances|Show All')}
+                {t('instances|show_all')}
               </MenuItem>
               {Object.keys(statusDefs).map(statusType => {
                 const label = statusDefs[statusType].label;
@@ -108,19 +108,19 @@ function InstanceFilter(props: InstanceFilterProps) {
         <Grid item xs={5}>
           <FormControl fullWidth disabled={props.disabled}>
             <InputLabel variant="standard" htmlFor="select-versions" shrink>
-              {t('instances|Filter Version')}
+              {t('instances|filter_version')}
             </InputLabel>
             <Select
               onChange={(event: SelectChangeEvent<string>) =>
                 changeFilter('version', event.target.value)
               }
               input={<Input id="select-versions" />}
-              renderValue={(selected: any) => (selected ? selected : t('instances|Show All'))}
+              renderValue={(selected: any) => (selected ? selected : t('instances|show_all'))}
               value={props.filter.version}
               displayEmpty
             >
               <MenuItem key="" value="">
-                {t('instances|Show All')}
+                {t('instances|show_all')}
               </MenuItem>
               {(versions || []).map(({ version }) => {
                 return (
@@ -401,7 +401,7 @@ function ListView(props: { application: Application; group: Group }) {
 
   return (
     <>
-      <ListHeader title={t('instances|Instance List')} />
+      <ListHeader title={t('instances|instance_list')} />
       <Paper>
         <Box padding="1em">
           <Grid container spacing={1}>
@@ -481,7 +481,7 @@ function ListView(props: { application: Application; group: Group }) {
               <Grid item md={12} container justifyContent="center">
                 <Grid item>
                   <Button variant="outlined" color="secondary" onClick={resetFilters}>
-                    {t('instances|Reset filters')}
+                    {t('instances|reset_filters')}
                   </Button>
                 </Grid>
               </Grid>

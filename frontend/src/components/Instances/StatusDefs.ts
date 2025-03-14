@@ -21,49 +21,49 @@ function makeStatusDefs(theme: Theme): {
 
   return {
     InstanceStatusComplete: {
-      label: t('instances|Complete'),
+      label: t('instances|complete'),
       color: 'rgba(15,15,15,1)',
       icon: checkCircleOutline,
       queryValue: '4',
     },
     InstanceStatusDownloaded: {
-      label: t('instances|Downloaded'),
+      label: t('instances|downloaded'),
       color: 'rgba(40,95,43,1)',
       icon: downloadCircleOutline,
       queryValue: '6',
     },
     InstanceStatusOnHold: {
-      label: t('instances|On Hold'),
+      label: t('instances|on_hold'),
       color: theme.palette.grey['400'],
       icon: pauseCircle,
       queryValue: '8',
     },
     InstanceStatusInstalled: {
-      label: t('instances|Installed'),
+      label: t('instances|installed'),
       color: 'rgba(27,92,145,1)',
       icon: packageVariantClosed,
       queryValue: '5',
     },
     InstanceStatusDownloading: {
-      label: t('instances|Downloading'),
+      label: t('instances|downloading'),
       color: 'rgba(17,40,141,1)',
       icon: progressDownload,
       queryValue: '7',
     },
     InstanceStatusError: {
-      label: t('instances|Error'),
+      label: t('instances|error'),
       color: 'rgba(164,45,36,1)',
       icon: alertCircleOutline,
       queryValue: '3',
     },
     InstanceStatusUndefined: {
-      label: t('instances|Unknown'),
+      label: t('instances|unknown'),
       color: 'rgb(89, 89, 89)',
       icon: helpCircleOutline,
       queryValue: '1',
     },
     InstanceStatusUpdateGranted: {
-      label: t('instances|Update Granted'),
+      label: t('instances|update_granted'),
       color: theme.palette.sapphireColor,
       icon: playCircle,
       queryValue: '2',
