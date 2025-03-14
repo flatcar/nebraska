@@ -88,7 +88,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
             label={t('frequent|Product ID')}
             type="text"
             fullWidth
-            helperText={t('applications|Example: io.example.MyApp')}
+            helperText={t('applications|example_app_id')}
           />
           <Field
             name="description"
@@ -104,7 +104,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
               type="text"
               name="appToClone"
               variant="standard"
-              label={t('applications|Groups/Channels')}
+              label={t('applications|groups_channels')}
               select
               helperText={t('applications|clone_channels_groups_from_another_app')}
               margin="normal"
@@ -114,7 +114,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
               }}
             >
               <MenuItem value="none" key="none">
-                {t('applications|Do not copy')}
+                {t('applications|do_not_copy')}
               </MenuItem>
               {props.data.applications &&
                 props.data.applications.map((application: Application, i: number) => {
@@ -165,7 +165,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
   return (
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
       <DialogTitle>
-        {isCreation ? t('applications|Add Application') : t('applications|Update Application')}
+        {isCreation ? t('applications|add_application') : t('applications|update_application')}
       </DialogTitle>
       <Formik
         initialValues={{
