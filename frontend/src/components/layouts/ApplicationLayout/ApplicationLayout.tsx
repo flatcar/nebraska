@@ -41,7 +41,7 @@ function ApplicationLayout() {
         breadcrumbs={[
           {
             path: '/apps',
-            label: t('layouts|Applications'),
+            label: t('layouts|applications'),
           },
         ]}
       />

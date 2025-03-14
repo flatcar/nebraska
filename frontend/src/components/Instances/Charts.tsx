@@ -205,8 +205,8 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
     {
       status: 'InstanceStatusOther',
       count: [
-        { key: 'onhold', label: t('instances|InstanceStatusOnHold') },
-        { key: 'undefined', label: t('instances|InstanceStatusUndefined') },
+        { key: 'onhold', label: t('instances|instance_status_on_hold') },
+        { key: 'undefined', label: t('instances|instance_status_undefined') },
       ],
     },
     {
@@ -216,8 +216,8 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
     {
       status: 'InstanceStatusDownloading',
       count: [
-        { key: 'downloading', label: t('instances|InstanceStatusDownloading') },
-        { key: 'update_granted', label: t('instances|InstanceStatusUpdateGranted') },
+        { key: 'downloading', label: t('instances|instance_status_downloading') },
+        { key: 'update_granted', label: t('instances|instance_status_update_granted') },
       ],
     },
     {
@@ -227,7 +227,7 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
   ];
 
   statusDefs['InstanceStatusOther'] = { ...statusDefs['InstanceStatusUndefined'] };
-  statusDefs['InstanceStatusOther'].label = t('instances|Other');
+  statusDefs['InstanceStatusOther'].label = t('instances|other');
 
   const totalInstances = instanceStats ? instanceStats.total : 0;
 

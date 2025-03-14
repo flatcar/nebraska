@@ -80,7 +80,7 @@ function Table(props: {
             isDefault={sortQuery === InstanceSortFilters['id']}
             defaultIsDescSortOrder={isDescSortOrder}
           >
-            {t('instances|Instance')}
+            {t('instances|instance')}
           </TableCellWithSortButtons>
           <TableCellWithSortButtons
             clickHandler={sortHandler}
@@ -88,17 +88,17 @@ function Table(props: {
             defaultIsDescSortOrder={isDescSortOrder}
             isDefault={sortQuery === InstanceSortFilters['ip']}
           >
-            {t('instances|IP')}
+            {t('instances|ip')}
           </TableCellWithSortButtons>
-          <TableCell>{t('instances|Current Status')}</TableCell>
-          <TableCell>{t('instances|Version')}</TableCell>
+          <TableCell>{t('instances|current_status')}</TableCell>
+          <TableCell>{t('instances|version')}</TableCell>
           <TableCellWithSortButtons
             clickHandler={sortHandler}
             sortQuery={InstanceSortFilters['last-check']}
             defaultIsDescSortOrder={isDescSortOrder}
             isDefault={sortQuery === InstanceSortFilters['last-check']}
           >
-            {t('instances|Last Check')}
+            {t('instances|last_check')}
           </TableCellWithSortButtons>
         </TableRow>
       </TableHead>
