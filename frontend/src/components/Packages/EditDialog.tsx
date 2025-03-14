@@ -360,7 +360,7 @@ function EditDialog(props: EditDialogProps) {
     filename: Yup.string()
       .max(
         maxFilenameChars,
-        t('common|Must enter a valid filename (less than x characters)', {
+        t('common|valid_filename_error', {
           number: maxFilenameChars,
         })
       )
@@ -371,13 +371,13 @@ function EditDialog(props: EditDialogProps) {
       .matches(REGEX_SEMVER, t('packages|Enter a valid semver (1.0.1)'))
       .required(t('frequent|required')),
     size: Yup.number()
-      .integer(t('common|Must be an integer number'))
-      .positive(t('common|Must be a positive number'))
+      .integer(t('common|integer_number_error'))
+      .positive(t('common|positive_number_error'))
       .required(t('frequent|required')),
     hash: Yup.string()
       .max(
         maxHashChars,
-        t('common|Must be a valid hash (less than x characters)', { number: maxHashChars })
+        t('common|valid_hash_error', { number: maxHashChars })
       )
       .required(t('frequent|required')),
   });
@@ -388,7 +388,7 @@ function EditDialog(props: EditDialogProps) {
     validation['flatcarHash'] = Yup.string()
       .max(
         maxFlatcarHashChars,
-        t('common|Must be a valid hash (less than x characters)', { number: maxFlatcarHashChars })
+        t('common|valid_hash_error', { number: maxFlatcarHashChars })
       )
       .required(t('frequent|required'));
 

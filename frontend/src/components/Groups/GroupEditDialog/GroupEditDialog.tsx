@@ -86,7 +86,7 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
       .catch(() => {
         actions.setSubmitting(false);
         actions.setStatus({
-          statusMessage: t('common|something_wrong'),
+          statusMessage: t('common|generic_error'),
         });
       });
   }
@@ -164,14 +164,14 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
     const minNr = 1;
     return Yup.number()
       .positive()
-      .min(minNr, t('common|Must be greather than or equal to x', { number: minNr }))
+      .min(minNr, t('common|min_value_error', { number: minNr }))
       .required('Required');
   }
 
   function maxCharacters(maxChars: number, required = false) {
     let validation = Yup.string().max(
       maxChars,
-      t('common|Must be less than x characters', { number: maxChars })
+      t('common|max_length_error', { number: maxChars })
     );
 
     if (required) validation = validation.required('Required');

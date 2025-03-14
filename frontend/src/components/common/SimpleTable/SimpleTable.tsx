@@ -44,7 +44,7 @@ export default function SimpleTable(props: SimpleTableProps) {
   }
 
   return props.instances.length === 0 ? (
-    <Empty>{props.emptyMessage ? props.emptyMessage : t('common|No data to be shown.')}</Empty>
+    <Empty>{props.emptyMessage ? props.emptyMessage : t('common|no_data_message')}</Empty>
   ) : (
     <React.Fragment>
       <Table>

@@ -69,7 +69,7 @@ function VersionProgressBar(props: { version_breakdown: any; channel: Channel | 
   const theme = useTheme();
   const { t } = useTranslation();
   let lastVersionChannel: string | null = '';
-  const otherVersionLabel = t('common|Other');
+  const otherVersionLabel = t('common|other_option');
   const [chartData, setChartData] = React.useState<{
     data: any;
     versions: string[];
