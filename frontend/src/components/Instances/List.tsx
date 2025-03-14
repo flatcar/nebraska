@@ -418,7 +418,7 @@ function ListView(props: { application: Application; group: Group }) {
               </Grid>
               <Grid item>
                 <InputLabel variant="standard" htmlFor="instance-search-filter" shrink>
-                  {t('frequent|Search')}
+                  {t('frequent|search')}
                 </InputLabel>
                 <SearchInput
                   id="instance-search-filter"
@@ -504,17 +504,17 @@ function ListView(props: { application: Application; group: Group }) {
                       rowsPerPage={rowsPerPage}
                       page={page}
                       backIconButtonProps={{
-                        'aria-label': t('frequent|previous page'),
+                        'aria-label': t('frequent|previous_page'),
                       }}
                       nextIconButtonProps={{
-                        'aria-label': t('frequent|next page'),
+                        'aria-label': t('frequent|next_page'),
                       }}
                       onPageChange={handleChangePage}
                       onRowsPerPageChange={handleChangeRowsPerPage}
                     />
                   </React.Fragment>
                 ) : (
-                  <Empty>{t('frequent|No instances.')}</Empty>
+                  <Empty>{t('frequent|no_instances')}</Empty>
                 )
               ) : (
                 <Loader />

@@ -95,7 +95,7 @@ function StatusLabel(props: StatusLabelProps) {
   const { t } = useTranslation();
 
   const { status, activated } = props;
-  const { label = t('frequent|Unknown') } = (status && statusDefs[status.type]) || {};
+  const { label = t('frequent|unknown') } = (status && statusDefs[status.type]) || {};
   let safeLabel: React.ReactNode;
 
   if (label !== null && typeof label === 'object') {
@@ -260,10 +260,10 @@ function EditDialog(props: EditDialogProps) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            {t('frequent|Cancel')}
+            {t('frequent|cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting} color="primary">
-            {t('frequent|Save')}
+            {t('frequent|save')}
           </Button>
         </DialogActions>
       </Form>
@@ -439,7 +439,7 @@ function DetailsView(props: DetailsViewProps) {
                           {group.channel ? (
                             <ChannelItem channel={group.channel} />
                           ) : (
-                            <CardLabel>{t('frequent|None')}</CardLabel>
+                            <CardLabel>{t('frequent|none')}</CardLabel>
                           )}
                         </Box>
                       </Grid>

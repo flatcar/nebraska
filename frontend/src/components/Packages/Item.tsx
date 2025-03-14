@@ -147,8 +147,8 @@ function Item(props: {
       <ListItemSecondaryAction>
         <MoreMenu
           options={[
-            { label: t('frequent|Edit'), action: updatePackage },
-            { label: t('frequent|Delete'), action: deletePackage },
+            { label: t('frequent|edit'), action: updatePackage },
+            { label: t('frequent|delete'), action: deletePackage },
           ]}
         />
       </ListItemSecondaryAction>

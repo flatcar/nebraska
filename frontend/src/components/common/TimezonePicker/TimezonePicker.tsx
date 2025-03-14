@@ -259,10 +259,10 @@ export default function TimzonePicker(props: {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            {t('frequent|Cancel')}
+            {t('frequent|cancel')}
           </Button>
           <Button onClick={handleSelect} color="primary">
-            {t('frequent|Select')}
+            {t('frequent|select')}
           </Button>
         </DialogActions>
       </Dialog>

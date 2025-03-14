@@ -30,10 +30,10 @@ function ConfirmationContent(props: {
       {t('common|Are you sure ... ?')}
       <p className="button-group">
         <button type="button" className="confirm-dialog-btn-abord">
-          {t('frequent|No')}
+          {t('frequent|no')}
         </button>
         <button type="button" className="confirm-dialog-btn-confirm" onClick={processClick}>
-          {t('frequent|Yes')}
+          {t('frequent|yes')}
         </button>
       </p>
     </div>

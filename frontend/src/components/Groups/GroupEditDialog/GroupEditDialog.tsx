@@ -147,12 +147,12 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
         <DialogActions>
           <Button onClick={handleClose}>
             <Box color={theme.palette.greyShadeColor} component="span">
-              {t('frequent|Cancel')}
+              {t('frequent|cancel')}
             </Box>
           </Button>
           <Button type="submit" disabled={isSubmitting}>
             <Box component="span" color="#ffff" bgcolor="#000" width="100%" px={1.5} py={1}>
-              {isCreation ? t('frequent|Add') : t('frequent|Save')}
+              {isCreation ? t('frequent|add_lower') : t('frequent|save')}
             </Box>
           </Button>
         </DialogActions>

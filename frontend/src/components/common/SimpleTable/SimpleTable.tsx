@@ -82,10 +82,10 @@ export default function SimpleTable(props: SimpleTableProps) {
           rowsPerPage={rowsPerPage}
           page={page}
           backIconButtonProps={{
-            'aria-label': t('frequent|previous page'),
+            'aria-label': t('frequent|previous_page'),
           }}
           nextIconButtonProps={{
-            'aria-label': t('frequent|next page'),
+            'aria-label': t('frequent|next_page'),
           }}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}

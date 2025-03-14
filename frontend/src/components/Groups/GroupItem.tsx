@@ -126,11 +126,11 @@ export function PureGroupItem({
             <MoreMenu
               options={[
                 {
-                  label: t('frequent|Edit'),
+                  label: t('frequent|edit'),
                   action: () => handleUpdateGroup(group.application_id, group.id),
                 },
                 {
-                  label: t('frequent|Delete'),
+                  label: t('frequent|delete'),
                   action: () => deleteGroup(group.application_id, group.id),
                 },
               ]}
@@ -147,10 +147,10 @@ export function PureGroupItem({
                     totalInstances > 0 ? (
                       totalInstances
                     ) : (
-                      t('frequent|None')
+                      t('frequent|none')
                     )
                   ) : (
-                    <Empty>{t('frequent|Loading...')}</Empty>
+                    <Empty>{t('frequent|loading')}</Empty>
                   )}
                 </CardLabel>
                 <Box display="flex" mr={2}>
@@ -178,14 +178,14 @@ export function PureGroupItem({
                   <Box display="flex">
                     {group.policy_updates_enabled ? (
                       <>
-                        <Box>{t('frequent|Enabled')}</Box>
+                        <Box>{t('frequent|enabled')}</Box>
                         <Box>
                           <CheckIcon className={classes.success} fontSize={'small'} />
                         </Box>
                       </>
                     ) : (
                       <>
-                        <Box>{t('frequent|Disabled')}</Box>
+                        <Box>{t('frequent|disabled')}</Box>
                         <Box>
                           <CloseIcon color="error" />
                         </Box>
@@ -207,7 +207,7 @@ export function PureGroupItem({
               </Grid>
               <Grid item xs={12}>
                 {versionBreakdown === null ? (
-                  <Empty>{t('frequent|Loading...')}</Empty>
+                  <Empty>{t('frequent|loading')}</Empty>
                 ) : versionBreakdown?.length > 0 ? (
                   <VersionProgressBar version_breakdown={versionBreakdown} channel={channel} />
                 ) : (

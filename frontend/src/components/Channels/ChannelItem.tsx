@@ -118,8 +118,8 @@ export default function ChannelItem(props: ChannelItemProps) {
         <ListItemSecondaryAction>
           <MoreMenu
             options={[
-              { label: t('frequent|Edit'), action: updateChannel },
-              { label: t('frequent|Delete'), action: deleteChannel },
+              { label: t('frequent|edit'), action: updateChannel },
+              { label: t('frequent|delete'), action: deleteChannel },
             ]}
           />
         </ListItemSecondaryAction>
