@@ -6,6 +6,7 @@
   "group_edit": "Edit Group",
   "instances": "Instances",
   "max_updates": "Max number of updates",
+  "max_updates_per_period": "Max {{policy_max_updates_per_period, number}} / {{policy_period_interval}}",
   "channel_none_assigned": "No channel assigned",
   "channel_none_provided": "No channel provided",
   "description_none_provided": "No description provided",

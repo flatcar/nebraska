@@ -234,7 +234,7 @@ function EditDialog(props: EditDialogProps) {
         actions.setStatus({
           statusMessage:
             err && err.message
-              ? t('instances|Something went wrong: {{message}}', { message: err.message })
+              ? t('instances|max_updates_per_period', { message: err.message })
               : t('instances|error_message'),
         });
       });
@@ -271,7 +271,7 @@ function EditDialog(props: EditDialogProps) {
   }
 
   const validation = Yup.object().shape({
-    name: Yup.string().max(256, t('instances|Must enter a valid name (less than 256 characters)')),
+    name: Yup.string().max(256, t('instances|valid_name_warning')),
   });
 
   return (

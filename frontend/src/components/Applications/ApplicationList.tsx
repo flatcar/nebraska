@@ -93,7 +93,7 @@ export function ApplicationListPure(props: ApplicationListPureProps) {
       } else {
         entries = (
           <Empty>
-            <Trans ns="applications" i18nKey="noappyet">
+            <Trans t={t} ns="applications" i18nKey="noappyet">
               Oops, it looks like you have not created any application yet..
               <br />
               <br />

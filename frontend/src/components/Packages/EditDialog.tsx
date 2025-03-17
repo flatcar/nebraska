@@ -227,7 +227,7 @@ function EditDialog(props: EditDialogProps) {
                             label={`${t('packages|version')}:`}
                             type="text"
                             required
-                            helperText={t('packages|Use SemVer format (1.0.1)')}
+                            helperText={t('packages|valid_name_warning')}
                             fullWidth
                           />
                         </Grid>
@@ -253,7 +253,7 @@ function EditDialog(props: EditDialogProps) {
                         label={t('packages|hash')}
                         type="text"
                         required
-                        helperText={t('packages|Tip: {{command}}', {
+                        helperText={t('packages|tip_command', {
                           command: 'cat update.gz | openssl dgst -sha1 -binary | base64',
                         })}
                         fullWidth
@@ -267,7 +267,7 @@ function EditDialog(props: EditDialogProps) {
                           label={t('packages|flatcar_action_sha256')}
                           type="text"
                           required
-                          helperText={t('packages|Tip: {{command}}', {
+                          helperText={t('packages|tip_command', {
                             command: 'cat update.gz | openssl dgst -sha256 -binary | base64',
                           })}
                           fullWidth
@@ -366,7 +366,7 @@ function EditDialog(props: EditDialogProps) {
     // @todo: Validate whether the version already exists so we can provide
     // better feedback.
     version: Yup.string()
-      .matches(REGEX_SEMVER, t('packages|Enter a valid semver (1.0.1)'))
+      .matches(REGEX_SEMVER, t('packages|valid_semver_prompt'))
       .required(t('frequent|required')),
     size: Yup.number()
       .integer(t('common|integer_number_error'))

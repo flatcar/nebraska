@@ -43,7 +43,7 @@ export function formatUpdateLimits(t: TFunction, group: Group) {
   if (group.policy_max_updates_per_period >= MAX_UPDATES_PER_TIME_PERIOD) {
     return t('groups|update_policy_unlimited');
   }
-  return t('groups|Max {{policy_max_updates_per_period, number}} / {{policy_period_interval}}', {
+  return t('groups|max_updates_per_period', {
     policy_max_updates_per_period: group.policy_max_updates_per_period,
     policy_period_interval: group.policy_period_interval,
   });

@@ -55,7 +55,7 @@ function FileListItem(props: FileListItemProps) {
           <Grid item container>
             <Grid item xs={5}>
               <Typography component="span" variant="body2" color="textSecondary">
-                {t('frequent|Size: {{size}}', { size: hasSize() ? fileToEdit.size : '-' })}
+                {t('frequent|size', { size: hasSize() ? fileToEdit.size : '-' })}
               </Typography>
             </Grid>
             <Grid item>
@@ -136,7 +136,7 @@ function FileListItem(props: FileListItemProps) {
               margin="dense"
               label={t('packages|sha1_hash_base64')}
               type="text"
-              helperText={t('packages|Tip: {{command}}', {
+              helperText={t('packages|tip_command', {
                 command: 'cat FILE | openssl dgst -sha1 -binary | base64',
               })}
               fullWidth
@@ -152,7 +152,7 @@ function FileListItem(props: FileListItemProps) {
               margin="dense"
               label={t('packages|sha256_hash_hex')}
               type="text"
-              helperText={t('packages|Tip: {{command}}', {
+              helperText={t('packages|tip_command', {
                 command: 'sha256sum FILE',
               })}
               fullWidth

@@ -9,5 +9,6 @@
   "no_package": "No package",
   "pick_package": "Pick a package",
   "release_date": "Release date",
-  "search_package_prompt": "Start typing to search a package"
+  "search_package_prompt": "Start typing to search a package",
+  "created": "created: {{date, date}}"
 }

@@ -22,6 +22,7 @@
   "search": "Search",
   "select": "Select",
   "unknown": "Unknown",
+  "size": "Size: {{size}}",
   "update": "Update",
   "updates": "Updates",
   "yes": "Yes",
