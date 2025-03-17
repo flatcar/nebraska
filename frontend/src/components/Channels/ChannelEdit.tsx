@@ -243,7 +243,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
                 const date = new Date(packageItem.created_ts);
                 return {
                   primary: packageItem.version,
-                  secondary: t('channels|created: {{date, date}}', { date: date }),
+                  secondary: t('channels|created', { date: date }),
                 };
               })}
             placeholder={t('channels|pick_package')}

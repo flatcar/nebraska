@@ -21,6 +21,7 @@
   "released": "Released:",
   "sha1_hash_base64": "SHA1 Hash (base64)",
   "sha256_hash_hex": "SHA256 Hash (hex)",
+  "tip_command": "Tip: {{command}}",
   "size": "Size",
   "url": "URL",
   "semver_format_prompt": "Use SemVer format (1.0.1)",
