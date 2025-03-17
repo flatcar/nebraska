@@ -169,10 +169,7 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
   }
 
   function maxCharacters(maxChars: number, required = false) {
-    let validation = Yup.string().max(
-      maxChars,
-      t('common|max_length_error', { number: maxChars })
-    );
+    let validation = Yup.string().max(maxChars, t('common|max_length_error', { number: maxChars }));
 
     if (required) validation = validation.required('Required');
 

@@ -77,7 +77,7 @@ function List(props: { appID: string }) {
   return (
     <>
       <ListHeader
-        title={t('packages|Packages')}
+        title={t('packages|packages')}
         actions={
           application
             ? [

@@ -64,9 +64,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
                   />
                 }
               />
-              <FormHelperText>
-                {t('groups|update_policy_single_instance')}
-              </FormHelperText>
+              <FormHelperText>{t('groups|update_policy_single_instance')}</FormHelperText>
             </Grid>
           </Grid>
         </Grid>
