@@ -54,9 +54,7 @@ export default function ApplicationItem(props: ApplicationItemProps) {
                 {
                   label: t('frequent|delete'),
                   action: () => {
-                    window.confirm(
-                      t('applications|confirm_delete_application?')
-                    )
+                    window.confirm(t('applications|confirm_delete_application?'))
                       ? applicationsStore().deleteApplication(id)
                       : null;
                   },
@@ -77,7 +75,9 @@ export default function ApplicationItem(props: ApplicationItemProps) {
                   <Box display="flex" my={1}>
                     <ScheduleIcon color="disabled" />
                     <Box pl={1} color="text.disabled">
-                      <Typography variant="subtitle1">{t('applications|time_last_24_hours')}</Typography>
+                      <Typography variant="subtitle1">
+                        {t('applications|time_last_24_hours')}
+                      </Typography>
                     </Box>
                   </Box>
                 </CardLabel>

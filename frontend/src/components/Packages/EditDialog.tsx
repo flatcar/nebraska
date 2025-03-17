@@ -305,9 +305,7 @@ function EditDialog(props: EditDialogProps) {
                                   <ListItemText
                                     primary={label}
                                     secondary={
-                                      isDisabled
-                                        ? t('packages|channel_pointing_to_package')
-                                        : null
+                                      isDisabled ? t('packages|channel_pointing_to_package') : null
                                     }
                                   />
                                 </MenuItem>
@@ -375,10 +373,7 @@ function EditDialog(props: EditDialogProps) {
       .positive(t('common|positive_number_error'))
       .required(t('frequent|required')),
     hash: Yup.string()
-      .max(
-        maxHashChars,
-        t('common|valid_hash_error', { number: maxHashChars })
-      )
+      .max(maxHashChars, t('common|valid_hash_error', { number: maxHashChars }))
       .required(t('frequent|required')),
   });
 
@@ -386,10 +381,7 @@ function EditDialog(props: EditDialogProps) {
   if (!isCreation) {
     const maxFlatcarHashChars = 64;
     validation['flatcarHash'] = Yup.string()
-      .max(
-        maxFlatcarHashChars,
-        t('common|valid_hash_error', { number: maxFlatcarHashChars })
-      )
+      .max(maxFlatcarHashChars, t('common|valid_hash_error', { number: maxFlatcarHashChars }))
       .required(t('frequent|required'));
 
     initialValues = {
