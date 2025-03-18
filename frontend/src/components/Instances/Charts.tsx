@@ -276,7 +276,7 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
     </Grid>
   ) : (
     <Empty>
-      <Trans ns="instances" i18nKey="noinstances">
+      <Trans t={t} ns="instances" i18nKey="noinstances">
         No instances have registered with this group for the past {period}.
         <br />
         <br />

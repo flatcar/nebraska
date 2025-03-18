@@ -95,7 +95,7 @@ function Item(props: {
         {processedChannels.length > 0 && (
           <Grid item>
             <Typography component="span" className={classes.subtitle}>
-              {t('packages|channels:')}
+              {`${t('packages|channels')}:`}
             </Typography>
             &nbsp;
             {processedChannels.map((channel, i) => {
@@ -111,7 +111,7 @@ function Item(props: {
         )}
         <Grid item>
           <Typography component="span" className={classes.subtitle}>
-            {t('packages|released:')}
+            {`${t('packages|released')}:`}
           </Typography>
           &nbsp;
           {makeLocaleTime(props.packageItem.created_ts, {
