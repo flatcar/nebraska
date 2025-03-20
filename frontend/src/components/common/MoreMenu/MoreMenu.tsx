@@ -38,7 +38,7 @@ export default function MoreMenu(props: MoreMenuProps) {
         edge="end"
         aria-controls={menuId}
         aria-haspopup="true"
-        aria-label={t('common|Open menu')}
+        aria-label={t('common|open_menu')}
         onClick={handleClick}
         data-testid="more-menu-open-button"
         {...props.iconButtonProps}

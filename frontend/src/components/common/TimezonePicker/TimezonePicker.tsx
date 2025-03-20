@@ -205,7 +205,7 @@ export default function TimzonePicker(props: {
           inputProps={{
             className: classes.pickerButtonInput,
           }}
-          placeholder={t('common|Pick a timezone')}
+          placeholder={t('common|pick_timezone')}
           readOnly
           data-testid="timezone-readonly-input"
         />
@@ -232,8 +232,8 @@ export default function TimzonePicker(props: {
                     fullWidth: true,
                     autoFocus: true,
                     classes,
-                    label: t('common|Timezone'),
-                    placeholder: t('common|Start typing to search a timezone'),
+                    label: t('common|timezone_label'),
+                    placeholder: t('common|search_timezone_prompt'),
                     InputLabelProps: getLabelProps(),
                     InputProps: { onBlur, onChange, onFocus },
                     inputProps,
@@ -259,10 +259,10 @@ export default function TimzonePicker(props: {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            {t('frequent|Cancel')}
+            {t('frequent|cancel')}
           </Button>
           <Button onClick={handleSelect} color="primary">
-            {t('frequent|Select')}
+            {t('frequent|select')}
           </Button>
         </DialogActions>
       </Dialog>

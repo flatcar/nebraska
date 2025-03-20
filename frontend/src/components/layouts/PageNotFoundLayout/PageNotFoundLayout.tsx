@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import pageNotFoundGraphic from './404.svg';
 
 export default function PageNotFoundLayout() {
-  const { t } = useTranslation('404');
+  const { t } = useTranslation('missing');
 
   return (
     <Grid
@@ -18,10 +18,10 @@ export default function PageNotFoundLayout() {
       <Grid item xs={6}>
         <img src={pageNotFoundGraphic} alt="page not found 404" style={{ maxWidth: '100%' }} />
         <Typography variant="h1" style={{ fontSize: '1.875rem' }}>
-          {t(`Whoops! This page doesn't exist`)}
+          {t('missing|error_page_not_found')}
         </Typography>
         <Typography variant="h2">
-          <Trans t={t} i18nKey="headback">
+          <Trans t={t} ns="missing" i18nKey="nav_head_back_home">
             Head back <Link to="/">home</Link>.
           </Trans>
         </Typography>
