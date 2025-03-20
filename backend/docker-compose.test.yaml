@@ -12,7 +12,7 @@
 
 services:
   postgres:
-    image: postgres:12.9
+    image: postgres:13.18
     ports:
       - "8001:5432"
     environment:
