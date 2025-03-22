@@ -2,11 +2,13 @@ module github.com/kinvolk/nebraska/backend
 
 go 1.23.0
 
+toolchain go1.24.1
+
 require (
 	github.com/blang/semver/v4 v4.0.0
 	github.com/coreos/go-oidc/v3 v3.12.0
 	github.com/doug-martin/goqu/v9 v9.19.0
-	github.com/getkin/kin-openapi v0.129.0
+	github.com/getkin/kin-openapi v0.130.0
 	github.com/golangci/golangci-lint v1.64.6
 	github.com/google/go-github/v28 v28.1.1
 	github.com/google/uuid v1.6.0
@@ -167,8 +169,8 @@ require (
 	github.com/nishanths/exhaustive v0.12.0 // indirect
 	github.com/nishanths/predeclared v0.2.2 // indirect
 	github.com/nunnatsa/ginkgolinter v0.19.1 // indirect
-	github.com/oasdiff/yaml v0.0.0-20241210131133-6b86fb107d80 // indirect
-	github.com/oasdiff/yaml3 v0.0.0-20241210130736-a94c01f36349 // indirect
+	github.com/oasdiff/yaml v0.0.0-20250309154309-f31be36b4037 // indirect
+	github.com/oasdiff/yaml3 v0.0.0-20250309153720-d2182401db90 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
