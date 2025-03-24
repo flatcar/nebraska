@@ -46,7 +46,7 @@ COPY frontend ./
 RUN npm run build
 
 # Final Docker image 
-FROM alpine:3.18.5
+FROM alpine:3.21.3
 
 RUN apk update && \
 	apk add ca-certificates tzdata
