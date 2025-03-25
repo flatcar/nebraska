@@ -1,4 +1,4 @@
-FROM golang:1.23 as base-build
+FROM golang:1.23 AS base-build
 
 ARG NEBRASKA_VERSION=""
 
@@ -9,7 +9,7 @@ ENV GOPATH=/go \
 	GOOS=linux 
 
 # Backend build
-FROM base-build as version-build
+FROM base-build AS version-build
 ARG NEBRASKA_VERSION=""
 
 WORKDIR /app/
@@ -23,7 +23,7 @@ COPY ./backend ./backend
 # there's none).
 ENV VERSION=${NEBRASKA_VERSION}
 
-FROM version-build as backend-build
+FROM version-build AS backend-build
 
 # make version uses the existing VERSION if set, otherwise gets it from git
 RUN export VERSION=`make -f backend/Makefile version | tail -1` && echo "VERSION:$VERSION"
@@ -35,7 +35,7 @@ COPY ./backend ./
 RUN make build
 
 # Frontend build
-FROM docker.io/library/node:22 as frontend-install
+FROM docker.io/library/node:22 AS frontend-install
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
 RUN npm install
@@ -56,7 +56,7 @@ WORKDIR /nebraska
 COPY --from=backend-build /app/backend/bin/nebraska ./
 COPY --from=frontend-build /app/frontend/build/ ./static/
 
-ENV NEBRASKA_DB_URL "postgres://postgres@postgres:5432/nebraska?sslmode=disable&connect_timeout=10"
+ENV NEBRASKA_DB_URL="postgres://postgres@postgres:5432/nebraska?sslmode=disable&connect_timeout=10"
 EXPOSE 8000
 
 USER nobody
