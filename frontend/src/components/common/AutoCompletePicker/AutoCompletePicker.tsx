@@ -287,7 +287,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
             }}
             color="primary"
           >
-            {t('frequent|Cancel')}
+            {t('frequent|cancel')}
           </Button>
           <Button
             onClick={() => {
@@ -297,7 +297,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
             }}
             color="primary"
           >
-            {t('frequent|Select')}
+            {t('frequent|select')}
           </Button>
         </DialogActions>
       </Dialog>

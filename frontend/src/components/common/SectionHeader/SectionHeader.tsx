@@ -48,7 +48,7 @@ export default function SectionHeader(props: SectionHeaderProps) {
       >
         <Grid item>
           <Breadcrumbs
-            aria-label={t('common|breadcrumbs').toString()}
+            aria-label={t('common|breadcrumbs_label').toString()}
             separator={<NavigateNextIcon fontSize="small" />}
           >
             {breadcrumbs &&

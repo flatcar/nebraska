@@ -155,7 +155,7 @@ function ItemExtended(props: {
             <MoreMenu
               options={[
                 {
-                  label: t('frequent|Edit'),
+                  label: t('frequent|edit'),
                   action: updateGroup,
                 },
               ]}
@@ -169,30 +169,30 @@ function ItemExtended(props: {
                 <Box p={2}>
                   <Grid container direction="column" justifyContent="space-between">
                     <Grid item>
-                      <CardFeatureLabel>{t('groups|Channel')}</CardFeatureLabel>
+                      <CardFeatureLabel>{t('groups|channel')}</CardFeatureLabel>
                       {_.isEmpty(group.channel) ? (
                         <Box my={1}>
-                          <CardLabel>{t('groups|No channel assigned')}</CardLabel>
+                          <CardLabel>{t('groups|channel_none_assigned')}</CardLabel>
                         </Box>
                       ) : (
                         <ChannelItem channel={group.channel} />
                       )}
                     </Grid>
                     <Grid item>
-                      <CardFeatureLabel>{t('frequent|Updates')}</CardFeatureLabel>
+                      <CardFeatureLabel>{t('frequent|updates')}</CardFeatureLabel>
                       <Box my={1}>
                         <CardLabel>
                           <Box display="flex">
                             {group.policy_updates_enabled ? (
                               <>
-                                <Box>{t('frequent|Enabled')}</Box>
+                                <Box>{t('frequent|enabled')}</Box>
                                 <Box pl={1}>
                                   <CheckIcon className={classes.success} fontSize="small" />
                                 </Box>
                               </>
                             ) : (
                               <>
-                                <Box>{t('frequent|Disabled')}</Box>
+                                <Box>{t('frequent|disabled')}</Box>
                                 <Box>
                                   <CloseIcon color="error" />
                                 </Box>
@@ -203,29 +203,29 @@ function ItemExtended(props: {
                       </Box>
                     </Grid>
                     <Grid item>
-                      <CardFeatureLabel>{t('groups|Only Office Hours')}</CardFeatureLabel>
+                      <CardFeatureLabel>{t('groups|office_hours_only')}</CardFeatureLabel>
                       <Box my={1}>
                         <CardLabel>
-                          {group.policy_office_hours ? t('frequent|Yes') : t('frequent|No')}
+                          {group.policy_office_hours ? t('frequent|yes') : t('frequent|no')}
                         </CardLabel>
                       </Box>
                     </Grid>
                     <Grid item>
-                      <CardFeatureLabel>{t('groups|Safe Mode')}</CardFeatureLabel>
+                      <CardFeatureLabel>{t('groups|safe_mode')}</CardFeatureLabel>
                       <Box my={1}>
                         <CardLabel>
-                          {group.policy_safe_mode ? t('frequent|Yes') : t('frequent|No')}
+                          {group.policy_safe_mode ? t('frequent|yes') : t('frequent|no')}
                         </CardLabel>
                       </Box>
                     </Grid>
                     <Grid item>
-                      <CardFeatureLabel>{t('groups|Updates Policy')}</CardFeatureLabel>
+                      <CardFeatureLabel>{t('groups|updates_policy')}</CardFeatureLabel>
                       <Box my={1}>
                         <CardLabel>{formatUpdateLimits(t, group)}</CardLabel>
                       </Box>
                     </Grid>
                     <Grid item>
-                      <CardFeatureLabel>{t('groups|Updates Timeout')}</CardFeatureLabel>
+                      <CardFeatureLabel>{t('groups|updates_timeout')}</CardFeatureLabel>
                       <Box my={1}>
                         <CardLabel>{group.policy_update_timeout}</CardLabel>
                       </Box>
@@ -246,7 +246,7 @@ function ItemExtended(props: {
                 <Grid container alignItems="center" justifyContent="space-between" spacing={2}>
                   <Grid item>
                     <Box color={theme.palette.greyShadeColor} fontSize={18} fontWeight={700}>
-                      {t('groups|Update Progress')}
+                      {t('groups|update_progress')}
                     </Box>
                   </Grid>
                   <Grid item>
@@ -286,7 +286,7 @@ function ItemExtended(props: {
                 <Grid item>
                   <Box pl={4} pt={4}>
                     <Box fontSize={18} fontWeight={700} color={theme.palette.greyShadeColor}>
-                      {t('groups|Version Breakdown')}
+                      {t('groups|version_breakdown')}
                     </Box>
                   </Box>
                 </Grid>
@@ -320,7 +320,7 @@ function ItemExtended(props: {
                     fontWeight={700}
                     pt={4}
                   >
-                    {t('groups|Status Breakdown')}
+                    {t('groups|status_breakdown')}
                   </Box>
                 </Grid>
                 <Grid item>

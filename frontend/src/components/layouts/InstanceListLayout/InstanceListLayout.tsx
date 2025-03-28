@@ -47,11 +47,11 @@ export default function InstanceListLayout() {
   return (
     <React.Fragment>
       <SectionHeader
-        title={t('layouts|Instances')}
+        title={t('layouts|instances')}
         breadcrumbs={[
           {
             path: '/apps',
-            label: t('layouts|Applications'),
+            label: t('layouts|applications'),
           },
           {
             path: `/apps/${appID}`,

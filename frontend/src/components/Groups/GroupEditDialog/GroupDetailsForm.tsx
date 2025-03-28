@@ -36,7 +36,7 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
         <Grid item xs={4}>
           <FormControl margin="dense" fullWidth>
             <InputLabel variant="standard" shrink>
-              {t('groups|Channel')}
+              {t('groups|channel')}
             </InputLabel>
             <Field
               name="channel"
@@ -49,7 +49,7 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
               }}
             >
               <MenuItem value="" key="">
-                {t('groups|None yet')}
+                {t('groups|none_yet')}
               </MenuItem>
               {channels.map((channelItem: Channel) => (
                 <MenuItem value={channelItem.id} key={channelItem.id}>
@@ -65,7 +65,7 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
             component={TextField}
             variant="standard"
             margin="dense"
-            label={t('groups|Track (identifier for clients, filled with the group ID if omitted)')}
+            label={t('groups|track_identifier')}
             fullWidth
             value={values.track}
             onChange={(e: any) => {
@@ -79,7 +79,7 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
             component={TextField}
             variant="standard"
             margin="dense"
-            label={t('groups|Description')}
+            label={t('groups|description')}
             fullWidth
             value={values.description}
             onChange={(e: any) => {
