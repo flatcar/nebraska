@@ -7,7 +7,7 @@ exports[`Confirmation Content should render Confirmation Content correctly 1`] =
     class="popover-content"
     data="[object Object]"
   >
-    Are you sure ... ?
+    Are you sure… ?
     <p
       class="button-group"
     >

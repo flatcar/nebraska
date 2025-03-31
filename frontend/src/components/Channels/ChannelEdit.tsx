@@ -225,7 +225,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
             select
             margin="dense"
             component={AutoCompletePicker}
-            helperText={t("channels|Showing only for the channel's architecture ({{arch}}).", {
+            helperText={t('channels|showing_only_for_architecture', {
               arch: ARCHES[arch],
             })}
             fullWidth

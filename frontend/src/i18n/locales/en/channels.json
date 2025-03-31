@@ -10,5 +10,6 @@
   "pick_package": "Pick a package",
   "release_date": "Release date",
   "search_package_prompt": "Start typing to search a package",
-  "created": "created: {{date, date}}"
+  "created": "created: {{date, date}}",
+  "showing_only_for_architecture": "Showing only for the channel's architecture ({{arch}})."
 }

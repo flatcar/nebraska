@@ -1,5 +1,5 @@
 {
-  "confirmation_prompt": "Are you sure ... ?",
+  "confirmation_prompt": "Are you sure… ?",
   "no_data_message": "No data to be shown.",
   "open_menu": "Open menu",
   "other_option": "Other",
@@ -14,5 +14,5 @@
   "integer_number_error": "Must be an integer number",
   "valid_filename_error": "Must enter a valid filename (less than {{number}} characters)",
   "reverse_domain_id_error": "Must be a reverse domain ID like io.example.MyApp",
-  "generic_error": "Something went wrong. Check the form or try again later..."
+  "generic_error": "Something went wrong. Check the form or try again later…"
 }

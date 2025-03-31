@@ -18,7 +18,7 @@ import { useTheme } from '@mui/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import _ from 'underscore';
 import API from '../../api/API';
@@ -389,12 +389,7 @@ function ListView(props: { application: Application; group: Group }) {
   }
 
   function getSearchTooltipText() {
-    return t(`instances|You can search by typing and pressing enter.
-     The search will show matches for the instances id, alias, and ip fields, in this order. 
-     It is also possible to match only one field by using its classifier, for example: 
-     id:0001
-     alias:"My instance" 
-     ip:256.0.0.1`);
+    return <Trans t={t} i18nKey="search_instruction" components={{ br: <br /> }} />;
   }
 
   const searchInputRef = React.createRef<HTMLInputElement>();

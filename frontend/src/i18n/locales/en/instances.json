@@ -42,5 +42,6 @@
   "unknown": "Unknown",
   "update_granted": "Update Granted",
   "version": "Version",
-  "no_instances_message": "No instances have registered with this group for the past {period}.<1/><2/>Instances will be shown here automatically the next time they request an update."
+  "no_instances_message": "No instances have registered with this group for the past {period}.<1/><2/>Instances will be shown here automatically the next time they request an update.",
+  "search_instruction": "You can search by typing and pressing enter.<br />The search will show matches for the instances id, alias, and ip fields, in this order.<br />It is also possible to match only one field by using its classifier, for example:<br />id:0001<br />alias:\"My instance\"<br />ip:256.0.0.1"
 }

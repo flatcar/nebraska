@@ -39,7 +39,7 @@ export default function ChannelItem(props: ChannelItemProps) {
     : t('channels|no_package');
 
   function deleteChannel() {
-    const confirmationText = t('channels|confirm_delete_channel?');
+    const confirmationText = t('channels|confirm_delete_channel');
     if (window.confirm(confirmationText)) {
       applicationsStore().deleteChannel(channel.application_id, channel.id);
     }

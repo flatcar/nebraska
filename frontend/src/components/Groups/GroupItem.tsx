@@ -60,7 +60,7 @@ function GroupItem({ group, handleUpdateGroup }: GroupItemProps) {
   const versionBreakdown = useGroupVersionBreakdown(group);
 
   function deleteGroup(appID: string, groupID: string) {
-    const confirmationText = t('groups|group_delete_confirmation?');
+    const confirmationText = t('groups|group_delete_confirmation');
     if (window.confirm(confirmationText)) {
       applicationsStore().deleteGroup(appID, groupID);
     }

@@ -54,7 +54,7 @@ export default function ApplicationItem(props: ApplicationItemProps) {
                 {
                   label: t('frequent|delete'),
                   action: () => {
-                    window.confirm(t('applications|confirm_delete_application?'))
+                    window.confirm(t('applications|confirm_delete_application'))
                       ? applicationsStore().deleteApplication(id)
                       : null;
                   },
