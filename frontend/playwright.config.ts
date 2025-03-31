@@ -24,7 +24,7 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
-  timeout: 120_000,
+  timeout: 60_000,
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     // baseURL: 'http://127.0.0.1:3000',
@@ -55,10 +55,10 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'cd ../backend && docker compose -f docker-compose.test.yaml up && docker ps -a',
+    command: 'cd ../backend && docker compose -f docker-compose.test.yaml up --wait && docker ps -a',
     url: 'http://127.0.0.1:8002', // Replace with the URL of your service
     reuseExistingServer: !process.env.CI,
-    timeout: 220_000,
+    timeout: 200_000,
   },
   expect: {
     toHaveScreenshot: {

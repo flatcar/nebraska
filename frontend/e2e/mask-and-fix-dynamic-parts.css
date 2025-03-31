@@ -1,3 +1,7 @@
 .MuiModal-backdrop {
 	background-color: red !important;
 }
+
+#main > div:last-child {
+	visibility: hidden;
+}

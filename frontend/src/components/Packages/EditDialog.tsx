@@ -224,7 +224,7 @@ function EditDialog(props: EditDialogProps) {
                             component={TextField}
                             variant="standard"
                             margin="dense"
-                            label={`${t('packages|version')}:`}
+                            label={`${t('packages|version')}`}
                             type="text"
                             required
                             helperText={t('packages|valid_name_warning')}

@@ -26,5 +26,6 @@
   "url": "URL",
   "semver_format_prompt": "Use SemVer format (1.0.1)",
   "version": "Version",
-  "channel_pointing_to_package": "channel pointing to this package"
+  "channel_pointing_to_package": "channel pointing to this package",
+  "valid_name_warning": "Use SemVer format (1.0.1)"
 }
