@@ -58,7 +58,7 @@ export default defineConfig({
     command: 'cd ../backend && docker compose -f docker-compose.test.yaml up && docker ps -a',
     url: 'http://127.0.0.1:8002', // Replace with the URL of your service
     reuseExistingServer: !process.env.CI,
-    timeout: 220_000,
+    timeout: 200_000,
   },
   expect: {
     toHaveScreenshot: {

@@ -250,7 +250,7 @@ exports[`groups/GroupItem Loading smoke-test 1`] = `
                 <p class="MuiTypography-root MuiTypography-body1 MuiTypography-alignCenter css-ii1goy-MuiTypography-root"
                    data-testid="empty"
                 >
-                  Loading...
+                  Loading…
                 </p>
               </div>
             </span>
@@ -353,7 +353,7 @@ exports[`groups/GroupItem Loading smoke-test 1`] = `
               <p class="MuiTypography-root MuiTypography-body1 MuiTypography-alignCenter css-ii1goy-MuiTypography-root"
                  data-testid="empty"
               >
-                Loading...
+                Loading…
               </p>
             </div>
           </div>

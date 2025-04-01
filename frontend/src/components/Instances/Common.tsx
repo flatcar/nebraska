@@ -36,7 +36,7 @@ export function InstanceCountLabel(props: {
   return (
     <Grid container direction="column">
       <Grid item>
-        <Typography className={classes.instancesLabel}>{t('instances|INSTANCES')}</Typography>
+        <Typography className={classes.instancesLabel}>{t('instances|instances')}</Typography>
       </Grid>
       <Grid item>
         <Typography className={classes.instancesCount}>{countText}</Typography>
@@ -47,7 +47,7 @@ export function InstanceCountLabel(props: {
             {!props.loading && (
               <Link to={{ ...href }} component={RouterLink} underline="hover">
                 <Typography className={classes.instanceLink}>
-                  {t('instances|See all instances')}
+                  {t('instances|see_all_instances')}
                 </Typography>
               </Link>
             )}

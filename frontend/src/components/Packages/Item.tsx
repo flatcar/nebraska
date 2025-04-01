@@ -9,7 +9,6 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
 import { Channel, Package } from '../../api/apiDataTypes';
@@ -70,7 +69,7 @@ function Item(props: {
   }
 
   function deletePackage() {
-    const confirmationText = t('packages|Are you sure you want to delete this package?');
+    const confirmationText = t('packages|confirm_delete_package');
     if (window.confirm(confirmationText)) {
       applicationsStore().deletePackage(
         props.packageItem.application_id,
@@ -88,7 +87,7 @@ function Item(props: {
       <Grid container direction="column">
         <Grid item>
           <Typography component="span" className={classes.subtitle}>
-            {t('packages|Version:')}
+            {`${t('packages|version')}:`}
           </Typography>
           &nbsp;
           {`${cleanSemverVersion(props.packageItem.version)} (${ARCHES[props.packageItem.arch]})`}
@@ -96,7 +95,7 @@ function Item(props: {
         {processedChannels.length > 0 && (
           <Grid item>
             <Typography component="span" className={classes.subtitle}>
-              {t('packages|Channels:')}
+              {`${t('packages|channels')}:`}
             </Typography>
             &nbsp;
             {processedChannels.map((channel, i) => {
@@ -112,7 +111,7 @@ function Item(props: {
         )}
         <Grid item>
           <Typography component="span" className={classes.subtitle}>
-            {t('packages|Released:')}
+            {`${t('packages|released')}:`}
           </Typography>
           &nbsp;
           {makeLocaleTime(props.packageItem.created_ts, {
@@ -147,8 +146,8 @@ function Item(props: {
       <ListItemSecondaryAction>
         <MoreMenu
           options={[
-            { label: t('frequent|Edit'), action: updatePackage },
-            { label: t('frequent|Delete'), action: deletePackage },
+            { label: t('frequent|edit'), action: updatePackage },
+            { label: t('frequent|delete'), action: deletePackage },
           ]}
         />
       </ListItemSecondaryAction>

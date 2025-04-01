@@ -188,7 +188,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
                   component={TextField}
                   variant="standard"
                   margin="dense"
-                  label={t('frequent|Name')}
+                  label={t('frequent|name')}
                   InputLabelProps={{ shrink: true }}
                   type="text"
                   required
@@ -216,16 +216,16 @@ export default function ChannelEdit(props: ChannelEditProps) {
                 );
               })}
             </MuiSelect>
-            <FormHelperText>{t('channels|Cannot be changed once created.')}</FormHelperText>
+            <FormHelperText>{t('channels|cannot_be_changed')}</FormHelperText>
           </FormControl>
           <Field
             type="text"
             name="package"
-            label={t('frequent|Package')}
+            label={t('frequent|package')}
             select
             margin="dense"
             component={AutoCompletePicker}
-            helperText={t("channels|Showing only for the channel's architecture ({{arch}}).", {
+            helperText={t('channels|showing_only_for_architecture', {
               arch: ARCHES[arch],
             })}
             fullWidth
@@ -243,13 +243,13 @@ export default function ChannelEdit(props: ChannelEditProps) {
                 const date = new Date(packageItem.created_ts);
                 return {
                   primary: packageItem.version,
-                  secondary: t('channels|created: {{date, date}}', { date: date }),
+                  secondary: t('channels|created', { date: date }),
                 };
               })}
-            placeholder={t('channels|Pick a package')}
-            pickerPlaceholder={t('channels|Start typing to search a package')}
+            placeholder={t('channels|pick_package')}
+            pickerPlaceholder={t('channels|search_package_prompt')}
             data={packages.packages.filter((packageItem: Package) => packageItem.arch === arch)}
-            dialogTitle={t('channels|Choose a package')}
+            dialogTitle={t('channels|choose_package')}
             defaultValue={channel && channel.package ? channel.package.version : ''}
             onValueChanged={(term: string | null) => {
               setPackageSearchTerm(term || '');
@@ -260,10 +260,10 @@ export default function ChannelEdit(props: ChannelEditProps) {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => props.onHide()} color="primary">
-            {t('frequent|Cancel')}
+            {t('frequent|cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting} color="primary">
-            {isCreation ? t('frequent|Add') : t('frequent|Save')}
+            {isCreation ? t('frequent|add_lower') : t('frequent|save')}
           </Button>
         </DialogActions>
       </Form>
@@ -273,7 +273,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
   const maxChars = 50;
   const validation = Yup.object().shape({
     name: Yup.string()
-      .max(maxChars, t('common|Must be less than x characters', { number: maxChars }))
+      .max(maxChars, t('common|max_length_error', { number: maxChars }))
       .required('Required'),
   });
 
@@ -288,7 +288,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
   return (
     <Dialog open={props.show} onClose={() => props.onHide()} aria-labelledby="form-dialog-title">
       <DialogTitle>
-        {isCreation ? t('channels|Add New Channel') : t('channels|Edit Channel')}
+        {isCreation ? t('channels|add_new_channel') : t('channels|edit_channel')}
       </DialogTitle>
       <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={validation}>
         {/* @todo add better types */}

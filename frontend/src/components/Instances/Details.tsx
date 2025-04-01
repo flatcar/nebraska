@@ -95,7 +95,7 @@ function StatusLabel(props: StatusLabelProps) {
   const { t } = useTranslation();
 
   const { status, activated } = props;
-  const { label = t('frequent|Unknown') } = (status && statusDefs[status.type]) || {};
+  const { label = t('frequent|unknown') } = (status && statusDefs[status.type]) || {};
   let safeLabel: React.ReactNode;
 
   if (label !== null && typeof label === 'object') {
@@ -184,14 +184,14 @@ function EventTable(props: { events: InstanceStatusHistory[] }) {
   const { t } = useTranslation();
 
   return props.events.length === 0 ? (
-    <Empty>{t('instances|No events to report for this instance yet.')}</Empty>
+    <Empty>{t('instances|no_events_message')}</Empty>
   ) : (
     <Table>
       <TableHead>
         <TableRow>
-          <TableCell>{t('instances|Status')}</TableCell>
-          <TableCell>{t('instances|Version')}</TableCell>
-          <TableCell>{t('instances|Time')}</TableCell>
+          <TableCell>{t('instances|status')}</TableCell>
+          <TableCell>{t('instances|version')}</TableCell>
+          <TableCell>{t('instances|time')}</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
@@ -234,8 +234,8 @@ function EditDialog(props: EditDialogProps) {
         actions.setStatus({
           statusMessage:
             err && err.message
-              ? t('instances|Something went wrong: {{message}}', { message: err.message })
-              : t('instances|Something went wrong…'),
+              ? t('instances|max_updates_per_period', { message: err.message })
+              : t('instances|error_message'),
         });
       });
   }
@@ -252,18 +252,18 @@ function EditDialog(props: EditDialogProps) {
             component={TextField}
             variant="standard"
             margin="dense"
-            label={t('instances|Name')}
+            label={t('instances|name')}
             type="text"
-            helperText={t('instances|Leave empty for displaying the instance ID')}
+            helperText={t('instances|leave_empty_for_displaying_the_instance_id')}
             fullWidth
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            {t('frequent|Cancel')}
+            {t('frequent|cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting} color="primary">
-            {t('frequent|Save')}
+            {t('frequent|save')}
           </Button>
         </DialogActions>
       </Form>
@@ -271,12 +271,12 @@ function EditDialog(props: EditDialogProps) {
   }
 
   const validation = Yup.object().shape({
-    name: Yup.string().max(256, t('instances|Must enter a valid name (less than 256 characters)')),
+    name: Yup.string().max(256, t('instances|valid_name_warning')),
   });
 
   return (
     <Dialog open={show} onClose={handleClose} aria-labelledby="form-dialog-title" fullWidth>
-      <DialogTitle>{t('instances|Edit Instance')}</DialogTitle>
+      <DialogTitle>{t('instances|edit_instance')}</DialogTitle>
       <Formik
         initialValues={{
           name: instance.alias || instance.id,
@@ -330,7 +330,7 @@ function DetailsView(props: DetailsViewProps) {
 
   return (
     <>
-      <ListHeader title={t('instances|Instance Information')} />
+      <ListHeader title={t('instances|instance_information')} />
       <Paper>
         <Box p={2}>
           <Grid container spacing={1}>
@@ -345,7 +345,7 @@ function DetailsView(props: DetailsViewProps) {
                   <MoreMenu
                     options={[
                       {
-                        label: t('instances|Rename'),
+                        label: t('instances|rename'),
                         action: updateInstance,
                       },
                     ]}
@@ -361,20 +361,20 @@ function DetailsView(props: DetailsViewProps) {
                       <Grid item container>
                         {hasAlias && (
                           <Grid item xs={12}>
-                            <CardFeatureLabel>{t('instances|ID')}</CardFeatureLabel>&nbsp;
+                            <CardFeatureLabel>{t('instances|id')}</CardFeatureLabel>&nbsp;
                             <Box mt={1} mb={1}>
                               <CardLabel>{instance.id}</CardLabel>
                             </Box>
                           </Grid>
                         )}
                         <Grid item xs={6}>
-                          <CardFeatureLabel>{t('instances|IP')}</CardFeatureLabel>
+                          <CardFeatureLabel>{t('instances|ip')}</CardFeatureLabel>
                           <Box mt={1}>
                             <CardLabel>{instance.ip}</CardLabel>
                           </Box>
                         </Grid>
                         <Grid item xs={6}>
-                          <CardFeatureLabel>{t('instances|Version')}</CardFeatureLabel>
+                          <CardFeatureLabel>{t('instances|version')}</CardFeatureLabel>
                           <Box mt={1}>
                             <CardLabel>{instance.application.version}</CardLabel>
                           </Box>
@@ -386,13 +386,13 @@ function DetailsView(props: DetailsViewProps) {
 
                       <Grid item xs={12} container>
                         <Grid item xs={6}>
-                          <CardFeatureLabel>{t('instances|Status')}</CardFeatureLabel>
+                          <CardFeatureLabel>{t('instances|status')}</CardFeatureLabel>
                           <Box mt={1}>
                             <StatusLabel status={instance.statusInfo} />
                           </Box>
                         </Grid>
                         <Grid item xs={6}>
-                          <CardFeatureLabel>{t('instances|Last Update Check')}</CardFeatureLabel>
+                          <CardFeatureLabel>{t('instances|last_update_check')}</CardFeatureLabel>
                           <Box mt={1}>
                             <CardLabel>
                               {makeLocaleTime(instance.application.last_check_for_updates)}
@@ -406,7 +406,7 @@ function DetailsView(props: DetailsViewProps) {
                       </Grid>
                       <Grid item xs={12} container>
                         <Grid item xs={6}>
-                          <CardFeatureLabel>{t('instances|Application')}</CardFeatureLabel>
+                          <CardFeatureLabel>{t('instances|application')}</CardFeatureLabel>
                           <Box mt={1}>
                             <Link
                               className={classes.link}
@@ -419,7 +419,7 @@ function DetailsView(props: DetailsViewProps) {
                           </Box>
                         </Grid>
                         <Grid item xs={6}>
-                          <CardFeatureLabel>{t('instances|Group')}</CardFeatureLabel>
+                          <CardFeatureLabel>{t('instances|group')}</CardFeatureLabel>
                           <Box mt={1}>
                             <Link
                               className={classes.link}
@@ -435,11 +435,11 @@ function DetailsView(props: DetailsViewProps) {
 
                       <Grid item xs={12}>
                         <Box mt={2}>
-                          <CardFeatureLabel>{t('instances|Channel')}</CardFeatureLabel>&nbsp;
+                          <CardFeatureLabel>{t('instances|channel')}</CardFeatureLabel>&nbsp;
                           {group.channel ? (
                             <ChannelItem channel={group.channel} />
                           ) : (
-                            <CardLabel>{t('frequent|None')}</CardLabel>
+                            <CardLabel>{t('frequent|none')}</CardLabel>
                           )}
                         </Box>
                       </Grid>
@@ -453,7 +453,7 @@ function DetailsView(props: DetailsViewProps) {
             </Box>
             <Grid item md>
               <Box mt={2} fontSize={18} fontWeight={700} color={theme.palette.greyShadeColor}>
-                {t('instances|Event Timeline')}
+                {t('instances|event_timeline')}
                 {eventHistory ? (
                   <Box padding="1em">
                     <div className={classes.timelineContainer}>

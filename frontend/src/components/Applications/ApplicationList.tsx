@@ -89,11 +89,11 @@ export function ApplicationListPure(props: ApplicationListPureProps) {
   } else {
     if (_.isEmpty(applications)) {
       if (searchTerm) {
-        entries = <Empty>{t('applications|No results found.')}</Empty>;
+        entries = <Empty>{t('applications|no_results_found')}</Empty>;
       } else {
         entries = (
           <Empty>
-            <Trans ns="applications" i18nKey="noappyet">
+            <Trans t={t} ns="applications" i18nKey="noappyet">
               Oops, it looks like you have not created any application yet..
               <br />
               <br />
@@ -124,7 +124,7 @@ export function ApplicationListPure(props: ApplicationListPureProps) {
   return (
     <>
       <ListHeader
-        title={t('applications|Applications')}
+        title={t('applications|applications')}
         actions={[
           <ModalButton modalToOpen="AddApplicationModal" data={{ applications: applications }} />,
         ]}

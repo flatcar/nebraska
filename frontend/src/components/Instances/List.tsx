@@ -18,7 +18,7 @@ import { useTheme } from '@mui/styles';
 import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import _ from 'underscore';
 import API from '../../api/API';
@@ -80,19 +80,19 @@ function InstanceFilter(props: InstanceFilterProps) {
         <Grid item xs={5}>
           <FormControl fullWidth disabled={props.disabled}>
             <InputLabel variant="standard" htmlFor="select-status" shrink>
-              {t('instances|Filter Status')}
+              {t('instances|filter_status')}
             </InputLabel>
             <Select
               onChange={(event: any) => changeFilter('status', event.target.value)}
               input={<Input id="select-status" />}
               renderValue={(selected: any) =>
-                selected ? statusDefs[selected].label : t('instances|Show All')
+                selected ? statusDefs[selected].label : t('instances|show_all')
               }
               value={props.filter.status}
               displayEmpty
             >
               <MenuItem key="" value="">
-                {t('instances|Show All')}
+                {t('instances|show_all')}
               </MenuItem>
               {Object.keys(statusDefs).map(statusType => {
                 const label = statusDefs[statusType].label;
@@ -108,19 +108,19 @@ function InstanceFilter(props: InstanceFilterProps) {
         <Grid item xs={5}>
           <FormControl fullWidth disabled={props.disabled}>
             <InputLabel variant="standard" htmlFor="select-versions" shrink>
-              {t('instances|Filter Version')}
+              {t('instances|filter_version')}
             </InputLabel>
             <Select
               onChange={(event: SelectChangeEvent<string>) =>
                 changeFilter('version', event.target.value)
               }
               input={<Input id="select-versions" />}
-              renderValue={(selected: any) => (selected ? selected : t('instances|Show All'))}
+              renderValue={(selected: any) => (selected ? selected : t('instances|show_all'))}
               value={props.filter.version}
               displayEmpty
             >
               <MenuItem key="" value="">
-                {t('instances|Show All')}
+                {t('instances|show_all')}
               </MenuItem>
               {(versions || []).map(({ version }) => {
                 return (
@@ -389,19 +389,14 @@ function ListView(props: { application: Application; group: Group }) {
   }
 
   function getSearchTooltipText() {
-    return t(`instances|You can search by typing and pressing enter.
-     The search will show matches for the instances id, alias, and ip fields, in this order. 
-     It is also possible to match only one field by using its classifier, for example: 
-     id:0001
-     alias:"My instance" 
-     ip:256.0.0.1`);
+    return <Trans t={t} i18nKey="search_instruction" components={{ br: <br /> }} />;
   }
 
   const searchInputRef = React.createRef<HTMLInputElement>();
 
   return (
     <>
-      <ListHeader title={t('instances|Instance List')} />
+      <ListHeader title={t('instances|instance_list')} />
       <Paper>
         <Box padding="1em">
           <Grid container spacing={1}>
@@ -418,7 +413,7 @@ function ListView(props: { application: Application; group: Group }) {
               </Grid>
               <Grid item>
                 <InputLabel variant="standard" htmlFor="instance-search-filter" shrink>
-                  {t('frequent|Search')}
+                  {t('frequent|search')}
                 </InputLabel>
                 <SearchInput
                   id="instance-search-filter"
@@ -481,7 +476,7 @@ function ListView(props: { application: Application; group: Group }) {
               <Grid item md={12} container justifyContent="center">
                 <Grid item>
                   <Button variant="outlined" color="secondary" onClick={resetFilters}>
-                    {t('instances|Reset filters')}
+                    {t('instances|reset_filters')}
                   </Button>
                 </Grid>
               </Grid>
@@ -504,17 +499,17 @@ function ListView(props: { application: Application; group: Group }) {
                       rowsPerPage={rowsPerPage}
                       page={page}
                       backIconButtonProps={{
-                        'aria-label': t('frequent|previous page'),
+                        'aria-label': t('frequent|previous_page'),
                       }}
                       nextIconButtonProps={{
-                        'aria-label': t('frequent|next page'),
+                        'aria-label': t('frequent|next_page'),
                       }}
                       onPageChange={handleChangePage}
                       onRowsPerPageChange={handleChangeRowsPerPage}
                     />
                   </React.Fragment>
                 ) : (
-                  <Empty>{t('frequent|No instances.')}</Empty>
+                  <Empty>{t('frequent|no_instances')}</Empty>
                 )
               ) : (
                 <Loader />

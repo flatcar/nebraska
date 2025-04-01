@@ -44,7 +44,7 @@ export default function SimpleTable(props: SimpleTableProps) {
   }
 
   return props.instances.length === 0 ? (
-    <Empty>{props.emptyMessage ? props.emptyMessage : t('common|No data to be shown.')}</Empty>
+    <Empty>{props.emptyMessage ? props.emptyMessage : t('common|no_data_message')}</Empty>
   ) : (
     <React.Fragment>
       <Table>
@@ -82,10 +82,10 @@ export default function SimpleTable(props: SimpleTableProps) {
           rowsPerPage={rowsPerPage}
           page={page}
           backIconButtonProps={{
-            'aria-label': t('frequent|previous page'),
+            'aria-label': t('frequent|previous_page'),
           }}
           nextIconButtonProps={{
-            'aria-label': t('frequent|next page'),
+            'aria-label': t('frequent|next_page'),
           }}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}

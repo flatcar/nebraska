@@ -36,10 +36,10 @@ export default function ChannelItem(props: ChannelItemProps) {
   const name = channel.name;
   const version = channel.package
     ? cleanSemverVersion(channel.package.version)
-    : t('channels|No package');
+    : t('channels|no_package');
 
   function deleteChannel() {
-    const confirmationText = t('channels|Are you sure you want to delete this channel?');
+    const confirmationText = t('channels|confirm_delete_channel');
     if (window.confirm(confirmationText)) {
       applicationsStore().deleteChannel(channel.application_id, channel.id);
     }
@@ -73,7 +73,7 @@ export default function ChannelItem(props: ChannelItemProps) {
           <Box pl={2}>
             <Box display="flex">
               <Box>
-                <Tooltip title={t('channels|Release date') || ''}>
+                <Tooltip title={t('channels|release_date') || ''}>
                   <ScheduleIcon fontSize="small" />
                 </Tooltip>
               </Box>
@@ -118,8 +118,8 @@ export default function ChannelItem(props: ChannelItemProps) {
         <ListItemSecondaryAction>
           <MoreMenu
             options={[
-              { label: t('frequent|Edit'), action: updateChannel },
-              { label: t('frequent|Delete'), action: deleteChannel },
+              { label: t('frequent|edit'), action: updateChannel },
+              { label: t('frequent|delete'), action: deleteChannel },
             ]}
           />
         </ListItemSecondaryAction>

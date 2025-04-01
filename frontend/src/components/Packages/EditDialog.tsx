@@ -149,10 +149,10 @@ function EditDialog(props: EditDialogProps) {
                   onChange={handlePackageTypeChange}
                 >
                   <MenuItem value={otherType} key="other">
-                    {t('packages|Other')}
+                    {t('packages|other')}
                   </MenuItem>
                   <MenuItem value={flatcarType} key="flatcar">
-                    {t('packages|Flatcar')}
+                    {t('packages|flatcar')}
                   </MenuItem>
                 </MuiSelect>
               </FormControl>
@@ -164,7 +164,7 @@ function EditDialog(props: EditDialogProps) {
                 className={classes.topSelect}
                 disabled={!isCreation}
               >
-                <InputLabel variant="standard">{t('packages|Architecture')}</InputLabel>
+                <InputLabel variant="standard">{t('packages|architecture')}</InputLabel>
                 <MuiSelect variant="standard" value={arch} onChange={handleArchChange}>
                   {Object.keys(ARCHES).map((key: string) => {
                     const archName = ARCHES[parseInt(key)];
@@ -175,7 +175,7 @@ function EditDialog(props: EditDialogProps) {
                     );
                   })}
                 </MuiSelect>
-                <FormHelperText>{t('packages|Cannot be changed once created.')}</FormHelperText>
+                <FormHelperText>{t('packages|immutable_warning')}</FormHelperText>
               </FormControl>
             </Grid>
           </Grid>
@@ -184,7 +184,7 @@ function EditDialog(props: EditDialogProps) {
               tabProps={{ centered: true, variant: 'standard' }}
               tabs={[
                 {
-                  label: t('frequent|Main'),
+                  label: t('frequent|main'),
                   component: (
                     <>
                       <Field
@@ -192,7 +192,7 @@ function EditDialog(props: EditDialogProps) {
                         component={TextField}
                         variant="standard"
                         margin="dense"
-                        label={t('packages|URL')}
+                        label={t('packages|url')}
                         type="url"
                         required
                         fullWidth
@@ -202,7 +202,7 @@ function EditDialog(props: EditDialogProps) {
                         component={TextField}
                         variant="standard"
                         margin="dense"
-                        label={t('packages|Filename')}
+                        label={t('packages|filename')}
                         type="text"
                         required
                         fullWidth
@@ -212,7 +212,7 @@ function EditDialog(props: EditDialogProps) {
                         component={TextField}
                         variant="standard"
                         margin="dense"
-                        label={t('packages|Description')}
+                        label={t('packages|description')}
                         type="text"
                         required
                         fullWidth
@@ -224,10 +224,10 @@ function EditDialog(props: EditDialogProps) {
                             component={TextField}
                             variant="standard"
                             margin="dense"
-                            label={t('packages|Version')}
+                            label={`${t('packages|version')}`}
                             type="text"
                             required
-                            helperText={t('packages|Use SemVer format (1.0.1)')}
+                            helperText={t('packages|valid_name_warning')}
                             fullWidth
                           />
                         </Grid>
@@ -237,10 +237,10 @@ function EditDialog(props: EditDialogProps) {
                             component={TextField}
                             variant="standard"
                             margin="dense"
-                            label={t('packages|Size')}
+                            label={t('packages|size')}
                             type="number"
                             required
-                            helperText={t('packages|In bytes')}
+                            helperText={t('packages|in_bytes')}
                             fullWidth
                           />
                         </Grid>
@@ -250,10 +250,10 @@ function EditDialog(props: EditDialogProps) {
                         component={TextField}
                         variant="standard"
                         margin="dense"
-                        label={t('packages|Hash')}
+                        label={t('packages|hash')}
                         type="text"
                         required
-                        helperText={t('packages|Tip: {{command}}', {
+                        helperText={t('packages|tip_command', {
                           command: 'cat update.gz | openssl dgst -sha1 -binary | base64',
                         })}
                         fullWidth
@@ -264,10 +264,10 @@ function EditDialog(props: EditDialogProps) {
                           component={TextField}
                           variant="standard"
                           margin="dense"
-                          label={t('packages|Flatcar Action SHA256')}
+                          label={t('packages|flatcar_action_sha256')}
                           type="text"
                           required
-                          helperText={t('packages|Tip: {{command}}', {
+                          helperText={t('packages|tip_command', {
                             command: 'cat update.gz | openssl dgst -sha256 -binary | base64',
                           })}
                           fullWidth
@@ -305,9 +305,7 @@ function EditDialog(props: EditDialogProps) {
                                   <ListItemText
                                     primary={label}
                                     secondary={
-                                      isDisabled
-                                        ? t('packages|channel pointing to this package')
-                                        : null
+                                      isDisabled ? t('packages|channel_pointing_to_package') : null
                                     }
                                   />
                                 </MenuItem>
@@ -324,7 +322,7 @@ function EditDialog(props: EditDialogProps) {
                   ),
                 },
                 {
-                  label: t('frequent|Extra Files'),
+                  label: t('frequent|extra_files'),
                   component: (
                     <FileList
                       files={values.filesList}
@@ -341,10 +339,10 @@ function EditDialog(props: EditDialogProps) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            {t('frequent|Cancel')}
+            {t('frequent|cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting || isAddingFiles} color="primary">
-            {isCreation ? t('frequent|Add') : t('frequent|Save')}
+            {isCreation ? t('frequent|add_lower') : t('frequent|save')}
           </Button>
         </DialogActions>
       </Form>
@@ -360,37 +358,31 @@ function EditDialog(props: EditDialogProps) {
     filename: Yup.string()
       .max(
         maxFilenameChars,
-        t('common|Must enter a valid filename (less than x characters)', {
+        t('common|valid_filename_error', {
           number: maxFilenameChars,
         })
       )
-      .required(t('frequent|Required')),
+      .required(t('frequent|required')),
     // @todo: Validate whether the version already exists so we can provide
     // better feedback.
     version: Yup.string()
-      .matches(REGEX_SEMVER, t('packages|Enter a valid semver (1.0.1)'))
-      .required(t('frequent|Required')),
+      .matches(REGEX_SEMVER, t('packages|valid_semver_prompt'))
+      .required(t('frequent|required')),
     size: Yup.number()
-      .integer(t('common|Must be an integer number'))
-      .positive(t('common|Must be a positive number'))
-      .required(t('frequent|Required')),
+      .integer(t('common|integer_number_error'))
+      .positive(t('common|positive_number_error'))
+      .required(t('frequent|required')),
     hash: Yup.string()
-      .max(
-        maxHashChars,
-        t('common|Must be a valid hash (less than x characters)', { number: maxHashChars })
-      )
-      .required(t('frequent|Required')),
+      .max(maxHashChars, t('common|valid_hash_error', { number: maxHashChars }))
+      .required(t('frequent|required')),
   });
 
   let initialValues: { [key: string]: any } = { channelsBlacklist: [] };
   if (!isCreation) {
     const maxFlatcarHashChars = 64;
     validation['flatcarHash'] = Yup.string()
-      .max(
-        maxFlatcarHashChars,
-        t('common|Must be a valid hash (less than x characters)', { number: maxFlatcarHashChars })
-      )
-      .required(t('frequent|Required'));
+      .max(maxFlatcarHashChars, t('common|valid_hash_error', { number: maxFlatcarHashChars }))
+      .required(t('frequent|required'));
 
     initialValues = {
       url: props.data.package.url,
@@ -413,7 +405,7 @@ function EditDialog(props: EditDialogProps) {
   return (
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title" fullWidth>
       <DialogTitle>
-        {isCreation ? t('packages|Add Package') : t('packages|Edit Package')}
+        {isCreation ? t('packages|add_package') : t('packages|edit_package')}
       </DialogTitle>
       <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={validation}>
         {/* @todo add better types for renderForm */}

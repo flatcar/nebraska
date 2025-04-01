@@ -86,7 +86,7 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
       .catch(() => {
         actions.setSubmitting(false);
         actions.setStatus({
-          statusMessage: t('common|something_wrong'),
+          statusMessage: t('common|generic_error'),
         });
       });
   }
@@ -147,12 +147,12 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
         <DialogActions>
           <Button onClick={handleClose}>
             <Box color={theme.palette.greyShadeColor} component="span">
-              {t('frequent|Cancel')}
+              {t('frequent|cancel')}
             </Box>
           </Button>
           <Button type="submit" disabled={isSubmitting}>
             <Box component="span" color="#ffff" bgcolor="#000" width="100%" px={1.5} py={1}>
-              {isCreation ? t('frequent|Add') : t('frequent|Save')}
+              {isCreation ? t('frequent|add_lower') : t('frequent|save')}
             </Box>
           </Button>
         </DialogActions>
@@ -164,15 +164,12 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
     const minNr = 1;
     return Yup.number()
       .positive()
-      .min(minNr, t('common|Must be greather than or equal to x', { number: minNr }))
+      .min(minNr, t('common|min_value_error', { number: minNr }))
       .required('Required');
   }
 
   function maxCharacters(maxChars: number, required = false) {
-    let validation = Yup.string().max(
-      maxChars,
-      t('common|Must be less than x characters', { number: maxChars })
-    );
+    let validation = Yup.string().max(maxChars, t('common|max_length_error', { number: maxChars }));
 
     if (required) validation = validation.required('Required');
 
@@ -236,7 +233,7 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
 
   return (
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
-      <DialogTitle>{isCreation ? t('groups|Add Group') : t('groups|Edit Group')}</DialogTitle>
+      <DialogTitle>{isCreation ? t('groups|group_add') : t('groups|group_edit')}</DialogTitle>
       <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={validation}>
         {/* @todo add better types for renderForm */}
         {/* @ts-ignore */}

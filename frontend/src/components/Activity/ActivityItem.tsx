@@ -76,7 +76,7 @@ export function ActivityItemPure(props: ActivityItemPureProps) {
 
   if (props.classType !== 'activityChannelPackageUpdated') {
     const groupPath = `apps/${props.appId}/groups/${props.groupId}`;
-    subtitle = t('activity|GROUP');
+    subtitle = t('activity|group');
     name = (
       <Link component={RouterLink} to={groupPath} className={classes.groupLink} underline="hover">
         {props.groupName}
