@@ -39,7 +39,7 @@ test.describe('Instances', () => {
     // maxDiffPixels set due to displaying date times that can change
     await expect(page).toHaveScreenshot('instances-list.png', {
       mask: [page.locator('tbody tr:first-child td:last-child')
-      ], maxDiffPixels: 500
+      ], maxDiffPixels: 200
     });
 
     await expect(page.locator('tbody')).toContainText('2c517ad881474ec6b5ab928df2a7b5f4');
