@@ -1,7 +1,10 @@
 import '../../i18n/config.ts';
+
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import { describe, expect, it } from 'vitest';
+
 import SectionHeader from '../../components/common/SectionHeader';
 import themes from '../../lib/themes';
 

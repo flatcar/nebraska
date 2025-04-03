@@ -1,13 +1,12 @@
 import '../../i18n/config.ts';
+
 import { fireEvent, render } from '@testing-library/react';
-import React from 'react';
+import { describe, expect, it, vi } from 'vitest';
+
 import ConfirmationContent from '../../components/common/ConfirmationContent';
 import { applicationsStore } from '../../stores/Stores';
 
-function mockResolver() {
-  return Promise.resolve([]);
-}
-mockResolver = vi.fn();
+const mockResolver = vi.fn();
 describe('Confirmation Content', () => {
   const minProps = {
     data: {
