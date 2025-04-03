@@ -1,5 +1,4 @@
 import { render } from '@testing-library/react';
-import React from 'react';
 import TimeIntervalLinks from '../../components/common/TimeIntervalLinks';
 import { defaultTimeInterval, timeIntervalsDefault } from '../../utils/helpers';
 
