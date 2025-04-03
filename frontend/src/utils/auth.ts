@@ -1,4 +1,4 @@
-import jwt_decode from 'jwt-decode';
+import { default as jwt_decode } from 'jwt-decode';
 import React from 'react';
 import { useHistory } from 'react-router';
 import { setUser, UserState } from '../stores/redux/features/user';

@@ -35,7 +35,7 @@ i18next
         packages,
       },
     },
-    debug: process.env.NODE_ENV === 'development',
+    debug: import.meta.env.NODE_ENV === 'development',
     fallbackLng: 'en',
     supportedLngs: ['en'],
     // nonExplicitSupportedLngs: true,
