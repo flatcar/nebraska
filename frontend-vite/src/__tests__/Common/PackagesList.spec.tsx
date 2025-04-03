@@ -1,14 +1,17 @@
 import '../../i18n/config.ts';
+
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import { render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import API from '../../api/API';
 import List from '../../components/Packages/List.tsx';
 import themes from '../../lib/themes';
 import { applicationsStore } from '../../stores/Stores';
 
-jest.mock('../../api/API');
-jest.mock('../../stores/Stores', () => ({
-  applicationsStore: jest.fn(),
+vi.mock('../../api/API');
+vi.mock('../../stores/Stores', () => ({
+  applicationsStore: vi.fn(),
 }));
 
 describe('List Component', () => {
@@ -16,10 +19,10 @@ describe('List Component', () => {
     appID: 'app123',
   };
 
-  const mockGetCachedApplication = jest.fn();
-  const mockGetApplication = jest.fn();
-  const mockAddChangeListener = jest.fn();
-  const mockRemoveChangeListener = jest.fn();
+  const mockGetCachedApplication = vi.fn();
+  const mockGetApplication = vi.fn();
+  const mockAddChangeListener = vi.fn();
+  const mockRemoveChangeListener = vi.fn();
 
   const mockStore = {
     getCachedApplication: mockGetCachedApplication,
@@ -48,6 +51,6 @@ describe('List Component', () => {
         </ThemeProvider>
       </StyledEngineProvider>
     );
-    expect(screen.getByText('Packages')).toBeInTheDocument();
+    expect(screen.getByText('Packages')).toBeTruthy();
   });
 });

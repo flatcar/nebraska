@@ -1,12 +1,16 @@
-import jwt_decode from 'jwt-decode';
+import { jwtDecode as jwt_decode } from 'jwt-decode';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+
 import { getToken, isValidToken, setToken } from '../../utils/auth';
 
-jest.mock('jwt-decode', () => jest.fn());
+vi.mock('jwt-decode', () => ({
+  jwtDecode: vi.fn(),
+}));
 
 describe('Auth Utility Functions', () => {
   beforeEach(() => {
     localStorage.clear();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('setToken', () => {
@@ -36,13 +40,13 @@ describe('Auth Utility Functions', () => {
 
     it('should return false for an expired token', () => {
       const expiredToken = 'expired-token';
-      (jwt_decode as jest.Mock).mockReturnValue({ exp: Math.floor(Date.now() / 1000) - 10 });
+      (jwt_decode as Mock).mockReturnValue({ exp: Math.floor(Date.now() / 1000) - 10 });
       expect(isValidToken(expiredToken)).toBe(false);
     });
 
     it('should return true for a valid token', () => {
       const validToken = 'valid-token';
-      (jwt_decode as jest.Mock).mockReturnValue({ exp: Math.floor(Date.now() / 1000) + 3600 });
+      (jwt_decode as Mock).mockReturnValue({ exp: Math.floor(Date.now() / 1000) + 3600 });
       expect(isValidToken(validToken)).toBe(true);
     });
   });

@@ -1,6 +1,9 @@
 import '../../i18n/config.ts';
+
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
+
 import ListHeader from '../../components/common/ListHeader';
 import ModalButton from '../../components/common/ModalButton';
 import themes from '../../lib/themes';
@@ -18,7 +21,7 @@ describe('List Header', () => {
         </ThemeProvider>
       </StyledEngineProvider>
     );
-    expect(getByText(minProps.title)).toBeInTheDocument();
+    expect(getByText(minProps.title)).toBeTruthy();
   });
   it('should render correct List Header actions', () => {
     const { asFragment } = render(

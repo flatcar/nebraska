@@ -1,0 +1,20 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`List Search > should render correct ListSearch 1`] = `
+<DocumentFragment>
+  <div
+    class="makeStyles-container-1"
+  >
+    <div
+      class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-colorPrimary makeStyles-input-2 css-7n36ng-MuiInputBase-root-MuiInput-root"
+    >
+      <input
+        aria-label="undefined"
+        class="MuiInputBase-input MuiInput-input css-1x51dt5-MuiInputBase-input-MuiInput-input"
+        type="text"
+        value=""
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;

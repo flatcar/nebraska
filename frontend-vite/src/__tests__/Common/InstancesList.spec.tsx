@@ -1,6 +1,8 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import { describe, expect, it } from 'vitest';
+
 import ListView from '../../components/Instances/List';
 import themes from '../../lib/themes';
 
@@ -17,6 +19,6 @@ describe('ListView Component', () => {
       </BrowserRouter>
     );
 
-    expect(screen.getByText('Group Name')).toBeInTheDocument();
+    expect(screen.getByText('Group Name')).toBeTruthy();
   });
 });
