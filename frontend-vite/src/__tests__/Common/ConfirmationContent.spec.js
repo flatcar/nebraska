@@ -7,7 +7,7 @@ import { applicationsStore } from '../../stores/Stores';
 function mockResolver() {
   return Promise.resolve([]);
 }
-mockResolver = jest.fn();
+mockResolver = vi.fn();
 describe('Confirmation Content', () => {
   const minProps = {
     data: {
