@@ -1,6 +1,6 @@
 import infoIcon from '@iconify/icons-mdi/information-circle-outline';
 import searchIcon from '@iconify/icons-mdi/search';
-import Icon from '@iconify/react';
+import { Icon } from '@iconify/react';
 import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';

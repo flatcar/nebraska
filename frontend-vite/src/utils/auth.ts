@@ -1,4 +1,4 @@
-import jwt_decode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import React from 'react';
 import { useHistory } from 'react-router';
 
@@ -25,7 +25,7 @@ export function isValidToken(token: string) {
     return false;
   }
 
-  const decoded = jwt_decode(token) as JWT;
+  const decoded = jwtDecode(token) as JWT;
 
   // Check if it's expired
   const expiration = new Date(decoded.exp * 1000);
@@ -46,7 +46,7 @@ function getUserInfoFromToken(token: string) {
     return info;
   }
 
-  const decoded = jwt_decode(token) as JWT;
+  const decoded = jwtDecode(token) as JWT;
 
   info.name = decoded.given_name || '';
   info.email = decoded.email || '';

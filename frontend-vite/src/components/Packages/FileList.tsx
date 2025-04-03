@@ -1,5 +1,5 @@
 import addIcon from '@iconify/icons-mdi/plus';
-import Icon from '@iconify/react';
+import { Icon } from '@iconify/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
@@ -227,7 +227,7 @@ export default function FileList(props: FileListProps) {
   }
 
   function deleteFile(index: number) {
-    onFilesChanged(files.filter((v, i) => i !== index));
+    onFilesChanged(files.filter((_, i) => i !== index));
   }
 
   return (

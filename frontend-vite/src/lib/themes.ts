@@ -37,7 +37,7 @@ const lightTheme = createTheme({
     },
     primary: {
       contrastText: '#fff',
-      main: process.env.REACT_APP_PRIMARY_COLOR ? process.env.REACT_APP_PRIMARY_COLOR : '#2C98F0',
+      main: import.meta.env.PRIMARY_COLOR ? import.meta.env.PRIMARY_COLOR : '#2C98F0',
     },
     success: {
       main: green['800'],
