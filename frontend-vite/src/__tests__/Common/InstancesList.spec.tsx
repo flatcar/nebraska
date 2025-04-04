@@ -1,12 +1,20 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import ListView from '../../components/Instances/List';
 import themes from '../../lib/themes';
 
 describe('ListView Component', () => {
+  global.fetch = vi.fn(() =>
+    Promise.resolve(
+      new Response(JSON.stringify({ count: 10 }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    )
+  );
   it('renders without crashing', () => {
     const mockApplication = { id: '1', name: 'App Name' };
     const mockGroup = { id: '1', name: 'Group Name' };
