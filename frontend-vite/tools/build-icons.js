@@ -6,12 +6,7 @@
  */
 import fs from 'fs';
 import path from 'path';
-import {
-  importDirectory,
-  parseSVG,
-  runSVGO,
-} from '@iconify/tools';
-
+import { SVG, runSVGO } from '@iconify/tools';
 
 const args = process.argv.slice(2);
 const sourceDir = args[0];
@@ -24,23 +19,28 @@ if (!fs.existsSync(sourceDir)) {
 
 fs.mkdirSync(destDir, { recursive: true });
 
-const collection = await importDirectory(sourceDir, {
-  prefix: '', // Match original behavior: no prefix
-  includeSubDirs: true,
-});
+// Read directory
+const files = await fs.promises.readdir(sourceDir);
+console.log(files);
 
-console.log(`Found ${collection.size} icons`);
+// Filter SVG files
+const collection = files
+  .filter(file => file.endsWith('.svg'))
+  .map(file => {
+    const name = path.basename(file, '.svg');
+    const content = fs.readFileSync(`${sourceDir}/${file}`, 'utf8');
+    return { svg: new SVG(content), name };
+  });
 
-await collection.forEach(async (svg, name) => {
+console.log(`Found ${collection.length} icons`);
+
+collection.forEach(async ({ svg, name }) => {
   try {
-    // Manually parse the SVG if needed
-    const parsedSVG = parseSVG(svg);
-    await runSVGO(parsedSVG);
+    runSVGO(svg);
 
-    // Proceed with other operations
-    const body = parsedSVG.body.replace(/\s*\n\s*/g, '');
-    const width = parsedSVG.width;
-    const height = parsedSVG.height;
+    const body = svg.body;
+    const width = svg.width;
+    const height = svg.height;
 
     const json = {
       body,
