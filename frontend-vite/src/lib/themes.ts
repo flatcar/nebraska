@@ -98,7 +98,6 @@ const themesConf: ThemesConf = {
 export default themesConf;
 
 export function usePrefersColorScheme() {
-
   const mql = window.matchMedia('(prefers-color-scheme: dark)');
   const [value, setValue] = React.useState(mql.matches);
 

@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import AppRoutes from './App';
 
 if (import.meta.env.MODE !== 'production') {
-  import('@axe-core/react').then((axe) => {
+  import('@axe-core/react').then(axe => {
     axe.default(React, createRoot, 1000); // Note: `.default` may be needed
   });
 }

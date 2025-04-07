@@ -9,26 +9,28 @@ export default {
   title: 'applications/ApplicationList',
 } as Meta;
 
-const Template: StoryFn<ApplicationListPureProps> =
-  (args: JSX.IntrinsicAttributes & ApplicationListPureProps) => {
-    class APIMock extends API {
-
-      static getInstancesCount(
+const Template: StoryFn<ApplicationListPureProps> = (
+  args: JSX.IntrinsicAttributes & ApplicationListPureProps
+) => {
+  class APIMock extends API {
+    static getInstancesCount(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        applicationID: string, groupID: string, duration: string
-      ): Promise<number> {
-        return new Promise(resolve => resolve(20));
-      }
+      applicationID: string,
+      groupID: string,
+      duration: string
+    ): Promise<number> {
+      return new Promise(resolve => resolve(20));
     }
+  }
 
-    return (
-      <APIContext.Provider value={APIMock}>
-        <MemoryRouter>
-          <ApplicationListPure {...args} />
-        </MemoryRouter>
-      </APIContext.Provider>
-    );
-  };
+  return (
+    <APIContext.Provider value={APIMock}>
+      <MemoryRouter>
+        <ApplicationListPure {...args} />
+      </MemoryRouter>
+    </APIContext.Provider>
+  );
+};
 
 export const Loading = {
   render: Template,

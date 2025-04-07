@@ -20,7 +20,6 @@ import { UserState } from '../stores/redux/features/user';
 import { useSelector } from '../stores/redux/hooks';
 
 declare module '@mui/styles/defaultTheme' {
-
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface DefaultTheme extends Theme {}
 }
@@ -174,10 +173,10 @@ export default function Header() {
   return config &&
     (config.header_style === 'dark' ||
       (config.header_style === undefined && config.appBarColor === 'dark')) ? (
-      <StyledEngineProvider injectFirst>
-        (<ThemeProvider theme={themes.dark}>{appBar}</ThemeProvider>)
-      </StyledEngineProvider>
-    ) : (
-      appBar
-    );
+    <StyledEngineProvider injectFirst>
+      (<ThemeProvider theme={themes.dark}>{appBar}</ThemeProvider>)
+    </StyledEngineProvider>
+  ) : (
+    appBar
+  );
 }

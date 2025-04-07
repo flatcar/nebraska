@@ -21,7 +21,6 @@ export default {
 } as Meta;
 
 const Template: StoryFn = args => {
-
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const store = createStore((state = { config: {} }, _action) => state, {
     config: {
