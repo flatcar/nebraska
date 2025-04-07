@@ -104,8 +104,8 @@ function getSuggestions(value: string | null, selectedItem: string) {
   return inputValue.length === 0
     ? suggestions
     : suggestions.filter(suggestion => {
-      return suggestion.label.toLowerCase().includes(inputValue);
-    });
+        return suggestion.label.toLowerCase().includes(inputValue);
+      });
 }
 
 const useStyles = makeStyles({

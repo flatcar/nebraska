@@ -22,7 +22,7 @@ const useStyles = makeStyles({
   },
 });
 
-export type ApplicationListProps = unknown
+export type ApplicationListProps = unknown;
 
 export default function ApplicationList() {
   const [applications, setApplications] = React.useState(

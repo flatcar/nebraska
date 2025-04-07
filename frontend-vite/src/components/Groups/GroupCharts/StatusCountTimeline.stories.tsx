@@ -44,25 +44,26 @@ const statusTimelineData = {
   '2021-11-08T10:35:28.823161+01:00': { '1': {}, '2': {}, '3': {}, '6': {}, '7': {} },
 };
 
-const Template: StoryFn<StatusCountTimelineProps> =
-  (args: JSX.IntrinsicAttributes & StatusCountTimelineProps) => {
-    class GroupChartsStoreMock extends GroupChartsStore {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      async getGroupStatusCountTimeline(appID: string, groupID: string, duration: string) {
-        return statusTimelineData;
-      }
+const Template: StoryFn<StatusCountTimelineProps> = (
+  args: JSX.IntrinsicAttributes & StatusCountTimelineProps
+) => {
+  class GroupChartsStoreMock extends GroupChartsStore {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async getGroupStatusCountTimeline(appID: string, groupID: string, duration: string) {
+      return statusTimelineData;
     }
+  }
 
-    const ChartStoreContext = groupChartStoreContext();
+  const ChartStoreContext = groupChartStoreContext();
 
-    return (
-      <ChartStoreContext.Provider value={new GroupChartsStoreMock()}>
-        <MemoryRouter>
-          <StatusCountTimeline {...args} />
-        </MemoryRouter>
-      </ChartStoreContext.Provider>
-    );
-  };
+  return (
+    <ChartStoreContext.Provider value={new GroupChartsStoreMock()}>
+      <MemoryRouter>
+        <StatusCountTimeline {...args} />
+      </MemoryRouter>
+    </ChartStoreContext.Provider>
+  );
+};
 
 export const Timeline = {
   render: Template,
