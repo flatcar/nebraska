@@ -138,5 +138,11 @@
       "prettier --config package.json --write"
     ]
   },
-  "prettier": "@headlamp-k8s/eslint-config/prettier-config"
+  "prettier": {
+    "arrowParens": "avoid",
+    "singleQuote": true,
+    "semi": true,
+    "printWidth": 100,
+    "trailingComma": "none" 
+  }
 }
