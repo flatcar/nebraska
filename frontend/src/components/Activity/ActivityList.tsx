@@ -2,6 +2,7 @@ import MuiList from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
+
 import { Activity } from '../../api/apiDataTypes';
 import { makeLocaleTime } from '../../i18n/dateTime';
 import ActivityItem from './ActivityItem';

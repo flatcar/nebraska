@@ -5,6 +5,7 @@ import { lime } from '@mui/material/colors';
 import { orange } from '@mui/material/colors';
 import { red } from '@mui/material/colors';
 import React from 'react';
+
 import API from '../api/API';
 import { Channel, Group, VersionBreakdownEntry } from '../api/apiDataTypes';
 
@@ -75,7 +76,7 @@ function makeColors() {
     // We choose the shades beyond 300 because they should not be too
     // light (in order to improve contrast).
     for (let i = 3; i <= 9; i += 2) {
-      //@ts-ignore
+      //@ts-expect-error as the type resolves any
       colors.push(color[i * 100]);
     }
   });
@@ -314,7 +315,7 @@ export function getErrorAndFlags(errorCode: number) {
   const errorMessage = [];
   let errorCodeVal = errorCode;
   // Extract and remove flags from the error code
-  var flags = [];
+  const flags = [];
   for (const [flag, flagValue] of Object.entries(flagsCodes)) {
     if (errorCodeVal & parseInt(flag)) {
       errorCodeVal &= ~flag;

@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
+
 import API from '../../api/API';
 import { Package } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';

@@ -1,5 +1,5 @@
 import addIcon from '@iconify/icons-mdi/plus';
-import Icon from '@iconify/react';
+import { Icon } from '@iconify/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
@@ -10,6 +10,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { File, Package } from '../../api/apiDataTypes';
 import ListItem from '../common/ListItem';
 import MoreMenu from '../common/MoreMenu';
@@ -77,13 +78,13 @@ function FileListItem(props: FileListItemProps) {
               {
                 label: t('frequent|edit'),
                 action: () => {
-                  onEditClicked && onEditClicked();
+                  onEditClicked?.();
                 },
               },
               {
                 label: t('frequent|delete'),
                 action: () => {
-                  onDeleteClicked && onDeleteClicked();
+                  onDeleteClicked?.();
                 },
               },
             ]}
@@ -226,7 +227,7 @@ export default function FileList(props: FileListProps) {
   }
 
   function deleteFile(index: number) {
-    onFilesChanged(files.filter((v, i) => i !== index));
+    onFilesChanged(files.filter((_, i) => i !== index));
   }
 
   return (
@@ -236,7 +237,7 @@ export default function FileList(props: FileListProps) {
           key={`file_list_item_${i}`}
           file={file}
           showEditOptions={isEditing()}
-          onEditFinished={(file?: File) => (!!file ? onFileChanged(file, i) : stopEditing())}
+          onEditFinished={(file?: File) => (file ? onFileChanged(file, i) : stopEditing())}
           edit={editFileIndex === i}
           onEditClicked={() => onEditClicked(i)}
           onDeleteClicked={() => deleteFile(i)}

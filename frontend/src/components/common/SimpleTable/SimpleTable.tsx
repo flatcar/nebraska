@@ -8,6 +8,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+
 import Empty from '../EmptyContent/EmptyContent';
 
 interface SimpleTableProps {

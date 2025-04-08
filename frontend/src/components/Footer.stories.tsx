@@ -2,6 +2,7 @@ import { createStore } from '@reduxjs/toolkit';
 import { Meta, StoryFn } from '@storybook/react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
+
 import FooterComponent from './Footer';
 
 export default {
@@ -20,8 +21,8 @@ export default {
 } as Meta;
 
 const Template: StoryFn = args => {
-  // eslint-disable-next-line no-unused-vars
-  const store = createStore((state = { config: {} }, action) => state, {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const store = createStore((state = { config: {} }, _action) => state, {
     config: {
       ...args,
     },

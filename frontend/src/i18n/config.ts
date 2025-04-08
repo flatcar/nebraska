@@ -1,6 +1,7 @@
 import i18next from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
+
 import activity from './locales/en/activity.json';
 import applications from './locales/en/applications.json';
 import channels from './locales/en/channels.json';
@@ -34,7 +35,7 @@ i18next
         packages,
       },
     },
-    debug: process.env.NODE_ENV === 'development',
+    debug: import.meta.env.NODE_ENV === 'development',
     fallbackLng: 'en',
     supportedLngs: ['en'],
     // nonExplicitSupportedLngs: true,

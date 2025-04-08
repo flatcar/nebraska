@@ -1,4 +1,5 @@
 import { Meta, StoryFn } from '@storybook/react';
+
 import ChannelItem, { ChannelItemProps } from './ChannelItem';
 
 export default {

@@ -3,6 +3,7 @@ import Popover from '@mui/material/Popover';
 import { makeStyles } from '@mui/styles';
 import React from 'react';
 import { TwitterPicker } from 'react-color';
+
 import ChannelAvatar from '../../Channels/ChannelAvatar';
 
 // @todo: This needs to become a FormControl so we can display it in a similar

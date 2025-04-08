@@ -2,6 +2,7 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { Area, AreaChart, AreaProps, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
+
 import { getMinuteDifference, makeLocaleTime } from '../../../i18n/dateTime';
 
 export interface Duration {

@@ -1,8 +1,0 @@
-.MuiModal-backdrop {
-	background-color: red !important;
-}
-
-/* Hide version label at the bottom of screen as it can change with each commit */
-#main > div:last-child {
-	visibility: hidden;
-}

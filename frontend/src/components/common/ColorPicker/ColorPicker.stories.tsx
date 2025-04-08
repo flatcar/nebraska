@@ -1,4 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react';
+
 import ChannelAvatar from '../../Channels/ChannelAvatar';
 import ColorPicker from './ColorPicker';
 

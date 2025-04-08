@@ -69,7 +69,7 @@ interface RenderSuggestionProps {
     secondary: string;
   };
   style?: object;
-  getSecondaryLabel?: () => {};
+  getSecondaryLabel?: () => object;
 }
 
 function renderSuggestion(suggestionProps: RenderSuggestionProps) {

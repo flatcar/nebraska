@@ -2,6 +2,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
+
 import { InstanceStatusHistory } from '../../api/apiDataTypes';
 import Empty from '../common/EmptyContent';
 import StatusHistoryList from './StatusHistoryList';

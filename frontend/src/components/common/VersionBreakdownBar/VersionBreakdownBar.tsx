@@ -9,6 +9,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+
 import { Channel } from '../../../api/apiDataTypes';
 import { cleanSemverVersion, makeColorsForVersions } from '../../../utils/helpers';
 

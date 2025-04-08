@@ -4,6 +4,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+
 import ApplicationEdit from '../../Applications/ApplicationEdit';
 import ChannelEdit from '../../Channels/ChannelEdit';
 import GroupEditDialog from '../../Groups/GroupEditDialog/GroupEditDialog';
