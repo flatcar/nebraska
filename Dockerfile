@@ -54,7 +54,7 @@ RUN apk update && \
 WORKDIR /nebraska
 
 COPY --from=backend-build /app/backend/bin/nebraska ./
-COPY --from=frontend-build /app/frontend/build/ ./static/
+COPY --from=frontend-build /app/frontend/dist/ ./static/
 
 ENV NEBRASKA_DB_URL="postgres://postgres@postgres:5432/nebraska?sslmode=disable&connect_timeout=10"
 EXPOSE 8000

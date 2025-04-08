@@ -1,5 +1,6 @@
 import { test as setup } from '@playwright/test';
-import { Client } from 'pg';
+import pg from 'pg';
+const { Client } = pg;
 
 setup('create new node instances in database', async () => {
   const client = new Client({
