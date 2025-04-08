@@ -1,5 +1,6 @@
 import { test as teardown } from '@playwright/test';
-import { Client } from 'pg';
+import pg from 'pg';
+const { Client } = pg;
 
 teardown('delete instance entries from db', async () => {
   const client = new Client({

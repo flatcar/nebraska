@@ -598,14 +598,15 @@ exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
           <tr class="MuiTableRow-root css-kc8myf-MuiTableRow-root">
             <td class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-xfdl9x-MuiTableCell-root">
               <svg xmlns="http://www.w3.org/2000/svg"
-                   focusable="false"
+                   xmlns:xlink="http://www.w3.org/1999/xlink"
+                   aria-hidden="true"
+                   role="img"
                    width="15"
                    height="15"
-                   preserveaspectratio="xMidYMid meet"
                    viewbox="0 0 24 24"
-                   style="transform: rotate(360deg); vertical-align: -0.125em;"
+                   style="color: rgb(44, 152, 240); vertical-align: -0.125em;"
               >
-                <path fill="#2C98F0"
+                <path fill="currentColor"
                       d="M3 3v18h18V3"
                 >
                 </path>
@@ -622,14 +623,15 @@ exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
           <tr class="MuiTableRow-root css-kc8myf-MuiTableRow-root">
             <td class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-xfdl9x-MuiTableCell-root">
               <svg xmlns="http://www.w3.org/2000/svg"
-                   focusable="false"
+                   xmlns:xlink="http://www.w3.org/1999/xlink"
+                   aria-hidden="true"
+                   role="img"
                    width="15"
                    height="15"
-                   preserveaspectratio="xMidYMid meet"
                    viewbox="0 0 24 24"
-                   style="transform: rotate(360deg); vertical-align: -0.125em;"
+                   style="color: rgb(220, 231, 117); vertical-align: -0.125em;"
               >
-                <path fill="#dce775"
+                <path fill="currentColor"
                       d="M3 3v18h18V3"
                 >
                 </path>
