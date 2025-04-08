@@ -6,7 +6,7 @@
  */
 import fs from 'fs';
 import path from 'path';
-import { SVG, runSVGO } from '@iconify/tools';
+import { SVG, cleanupSVG, runSVGO } from '@iconify/tools';
 
 const args = process.argv.slice(2);
 const sourceDir = args[0];
@@ -36,11 +36,12 @@ console.log(`Found ${collection.length} icons`);
 
 collection.forEach(async ({ svg, name }) => {
   try {
+    cleanupSVG(svg);
     runSVGO(svg);
 
-    const body = svg.body;
-    const width = svg.width;
-    const height = svg.height;
+    const body = svg.getBody();
+    const width = svg.getIcon().width;
+    const height = svg.getIcon().height;
 
     const json = {
       body,
