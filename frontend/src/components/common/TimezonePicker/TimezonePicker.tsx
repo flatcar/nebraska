@@ -134,7 +134,7 @@ interface LazyListProps {
 }
 
 interface LazyListProps {
-  //@ts-ignore
+  //@ts-expect-error as type missmatch
   options: RenderSuggestionProps['suggestion'][];
   itemData: any;
   height: number;
@@ -241,7 +241,7 @@ export default function TimzonePicker(props: {
                   })}
                   <LazyList
                     //@todo add better types
-                    //@ts-ignore
+                    //@ts-expect-error as type missmatch
                     options={getSuggestions(inputValue, selectedItem)}
                     itemData={{
                       getItemProps,

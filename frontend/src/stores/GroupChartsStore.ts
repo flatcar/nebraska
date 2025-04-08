@@ -47,8 +47,8 @@ export default class GroupChartsStore {
   ) {
     if (
       duration === '1h' ||
-      (this.versionBreakdownChartData.hasOwnProperty(groupID) &&
-        this.versionBreakdownChartData[groupID].hasOwnProperty(duration))
+      (Object.prototype.hasOwnProperty.call(this.versionBreakdownChartData, groupID) &&
+        Object.prototype.hasOwnProperty.call(this.versionBreakdownChartData[groupID], duration))
     ) {
       return;
     }
@@ -92,8 +92,8 @@ export default class GroupChartsStore {
   ) {
     if (
       duration === '1h' ||
-      (this.statusBreakdownChartData.hasOwnProperty(groupID) &&
-        this.statusBreakdownChartData[groupID].hasOwnProperty(duration))
+      (Object.prototype.hasOwnProperty.call(this.statusBreakdownChartData, groupID) &&
+        Object.prototype.hasOwnProperty.call(this.statusBreakdownChartData[groupID], duration))
     ) {
       return;
     }

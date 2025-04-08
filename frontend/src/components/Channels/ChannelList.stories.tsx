@@ -1,4 +1,5 @@
 import { Meta, StoryFn } from '@storybook/react';
+
 import { ChannelListPure, ChannelListPureProps } from './ChannelList';
 
 export default {

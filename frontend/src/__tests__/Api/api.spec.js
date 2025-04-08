@@ -1,11 +1,10 @@
-import { jest } from '@jest/globals';
 import API from '../../api/API';
 
 describe('API methods using URLSearchParams', () => {
   const BASE_URL = '/api';
   const applicationID = 'testAppID';
   const groupID = 'testGroupID';
-  const mockFetch = jest.spyOn(global, 'fetch');
+  const mockFetch = vi.spyOn(global, 'fetch');
 
   beforeEach(() => {
     mockFetch.mockClear();
@@ -77,7 +76,7 @@ describe('API methods using URLSearchParams', () => {
           ok: true,
           json: async () => ({}),
           headers: {
-            get: jest.fn().mockReturnValue('mocked-id-token'), // Mocked 'get' method
+            get: vi.fn().mockReturnValue('mocked-id-token'), // Mocked 'get' method
           },
         });
 
@@ -149,11 +148,11 @@ describe('API methods using URLSearchParams', () => {
     it.each(testCases)(
       'should construct the correct URL with $description',
       async ({ groupID, queryOptions, expectedURL }) => {
-        const mockFetch = jest.fn().mockResolvedValueOnce({
+        const mockFetch = vi.fn().mockResolvedValueOnce({
           ok: true,
           json: async () => ({}),
           headers: {
-            get: jest.fn().mockReturnValue('mocked-id-token'), // Mocked 'get' method
+            get: vi.fn().mockReturnValue('mocked-id-token'), // Mocked 'get' method
           },
         });
         global.fetch = mockFetch;

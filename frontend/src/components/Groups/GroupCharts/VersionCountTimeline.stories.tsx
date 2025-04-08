@@ -1,5 +1,6 @@
 import { Meta, StoryFn } from '@storybook/react';
 import { MemoryRouter } from 'react-router-dom';
+
 import GroupChartsStore from '../../../stores/GroupChartsStore';
 import { groupChartStoreContext } from '../../../stores/Stores';
 import VersionCountTimeline, { VersionCountTimelineProps } from './VersionCountTimeline';
@@ -38,7 +39,7 @@ const versionCountTimeline = {
 
 const Template: StoryFn<VersionCountTimelineProps> = args => {
   class GroupChartsStoreMock extends GroupChartsStore {
-    /* eslint-disable no-unused-vars */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async getGroupVersionCountTimeline(appID: string, groupID: string, duration: string) {
       return versionCountTimeline;
     }

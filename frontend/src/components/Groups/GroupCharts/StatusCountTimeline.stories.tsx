@@ -1,5 +1,7 @@
 import { Meta, StoryFn } from '@storybook/react';
+import { JSX } from 'react/jsx-runtime';
 import { MemoryRouter } from 'react-router-dom';
+
 import GroupChartsStore from '../../../stores/GroupChartsStore';
 import { groupChartStoreContext } from '../../../stores/Stores';
 import StatusCountTimeline, { StatusCountTimelineProps } from './StatusCountTimeline';
@@ -42,9 +44,11 @@ const statusTimelineData = {
   '2021-11-08T10:35:28.823161+01:00': { '1': {}, '2': {}, '3': {}, '6': {}, '7': {} },
 };
 
-const Template: StoryFn<StatusCountTimelineProps> = args => {
+const Template: StoryFn<StatusCountTimelineProps> = (
+  args: JSX.IntrinsicAttributes & StatusCountTimelineProps
+) => {
   class GroupChartsStoreMock extends GroupChartsStore {
-    /* eslint-disable no-unused-vars */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async getGroupStatusCountTimeline(appID: string, groupID: string, duration: string) {
       return statusTimelineData;
     }

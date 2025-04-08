@@ -9,7 +9,7 @@ export default defineConfig({
     setupFiles: 'src/setupTests.ts',
     include: ['src/**/*.{spec,test}.{js,jsx,ts,tsx}'],
     coverage: {
-      provider: "istanbul",
+      provider: 'istanbul',
       reporter: ['text', 'text-summary'],
       include: ['src/**/*.{js,jsx,ts,tsx}'],
       exclude: [
@@ -30,6 +30,7 @@ export default defineConfig({
   },
   plugins: [react()],
   server: {
+    port: 3000,
     proxy: {
       '/api': {
         target: 'http://localhost:8000',

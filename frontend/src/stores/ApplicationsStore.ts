@@ -1,4 +1,5 @@
 import _, { Collection, List } from 'underscore';
+
 import API from '../api/API';
 import { Application, Channel, Group, Package } from '../api/apiDataTypes';
 import Store from './BaseStore';

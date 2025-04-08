@@ -19,6 +19,7 @@ import { Select, TextField } from 'formik-mui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
+
 import { Channel, Package } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import { ARCHES } from '../../utils/helpers';
@@ -81,8 +82,8 @@ function EditDialog(props: EditDialogProps) {
   function handleArchChange(event: SelectChangeEvent<number>) {
     setArch(event.target.value as number);
   }
-  //@todo add better types
-  //@ts-ignore
+
+  //@ts-expect-error as not interface was created for these types
   function handleSubmit(values, actions) {
     const data: Partial<Package> = {
       arch: typeof arch === 'string' ? parseInt(arch) : arch,
@@ -130,7 +131,7 @@ function EditDialog(props: EditDialogProps) {
   }
 
   //@todo add better types
-  //@ts-ignore
+  //@ts-expect-error as no type was created for these params
   function renderForm({ values, status, isSubmitting, setValues }) {
     const channels = props.data.channels ? props.data.channels : [];
     return (
@@ -409,7 +410,7 @@ function EditDialog(props: EditDialogProps) {
       </DialogTitle>
       <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={validation}>
         {/* @todo add better types for renderForm */}
-        {/* @ts-ignore */}
+        {/* @ts-expect-error as no interface was created/defined */}
         {renderForm}
       </Formik>
     </Dialog>

@@ -17,6 +17,7 @@ function makeStatusDefs(theme: Theme): {
     queryValue: string;
   };
 } {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { t } = useTranslation();
 
   return {

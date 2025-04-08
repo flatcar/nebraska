@@ -10,6 +10,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import _ from 'underscore';
+
 import API from '../../api/API';
 import { Application, Group } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';

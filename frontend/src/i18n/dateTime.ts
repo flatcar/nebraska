@@ -6,7 +6,7 @@ export function toLocaleString(
   options?: Intl.DateTimeFormatOptions
 ) {
   // Locales and timezones can be different, so we set a default when under test.
-  if (process.env.TEST_TZ) {
+  if (import.meta.env.TEST_TZ) {
     const newOptions = options ? options : {};
     return new Date(date).toLocaleString('en-US', { ...newOptions, timeZone: 'UTC' });
   } else {
@@ -19,7 +19,7 @@ export function toLocaleDateString(
   locales?: string | string[],
   options?: Intl.DateTimeFormatOptions
 ) {
-  if (process.env.TEST_TZ) {
+  if (import.meta.env.TEST_TZ) {
     // Locales and timezones can be different, so we set a default when under test.
     const newOptions = options ? options : {};
     return new Date(date).toLocaleDateString('en-US', { ...newOptions, timeZone: 'UTC' });
