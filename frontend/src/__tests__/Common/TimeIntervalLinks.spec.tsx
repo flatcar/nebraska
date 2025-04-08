@@ -6,7 +6,16 @@ import { defaultTimeInterval, timeIntervalsDefault } from '../../utils/helpers';
 
 describe('TimeIntervalLinks', () => {
   it('should render correct time Interval links', () => {
-    const { getByText } = render(<TimeIntervalLinks selectedInterval={defaultTimeInterval} />);
+    const appID = 'yourAppID';
+    const groupID = 'yourGroupID';
+    const intervalChangeHandler = () => { };
+    const { getByText } = render(
+      <TimeIntervalLinks
+        selectedInterval={defaultTimeInterval.toString()}
+        intervalChangeHandler={intervalChangeHandler}
+        appID={appID}
+        groupID={groupID}
+      />);
     timeIntervalsDefault.forEach(timeInterval => {
       expect(getByText(timeInterval.displayValue)).toBeTruthy();
     });

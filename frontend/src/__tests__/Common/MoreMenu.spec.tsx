@@ -9,9 +9,11 @@ describe('More Menu', () => {
       options: [
         {
           label: 'item1',
+          action: () => {},
         },
         {
           label: 'item2',
+          action: () => {},
         },
       ],
     };

@@ -1,4 +1,4 @@
-import { Icon } from '@iconify/react';
+import { Icon, IconifyIcon } from '@iconify/react';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import CreateOutlined from '@mui/icons-material/CreateOutlined';
 import { Box, Button } from '@mui/material';
@@ -21,7 +21,7 @@ import { useSelector } from '../stores/redux/hooks';
 
 declare module '@mui/styles/defaultTheme' {
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  interface DefaultTheme extends Theme {}
+  interface DefaultTheme extends Theme { }
 }
 
 const useStyles = makeStyles(theme => ({
@@ -61,7 +61,7 @@ interface AppbarProps {
   config: NebraskaConfig | null;
   user: UserState | null;
   menuAnchorEl: MenuProps['anchorEl'];
-  projectLogo: object;
+  projectLogo: IconifyIcon;
   handleClose: MenuProps['onClose'];
   handleMenu: React.MouseEventHandler<HTMLButtonElement>;
 }

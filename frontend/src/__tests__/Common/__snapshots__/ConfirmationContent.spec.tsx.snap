@@ -3,7 +3,6 @@
 exports[`Confirmation Content > should render Confirmation Content correctly 1`] = `
 <DocumentFragment>
   <div
-    channel="[object Object]"
     class="popover-content"
     data="[object Object]"
   >

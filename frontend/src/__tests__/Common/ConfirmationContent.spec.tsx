@@ -15,13 +15,13 @@ describe('Confirmation Content', () => {
     },
   };
   it('should render Confirmation Content correctly', () => {
-    const { asFragment } = render(<ConfirmationContent data={minProps.data} channel={{}} />);
+    const { asFragment } = render(<ConfirmationContent data={minProps.data} />);
     expect(asFragment()).toMatchSnapshot();
   });
   it('should call delete handler function on yes confirmation', () => {
     applicationsStore().deleteApplication = mockResolver;
     const deleteApp = applicationsStore().deleteApplication;
-    const { getByText } = render(<ConfirmationContent data={minProps.data} channel={{}} />);
+    const { getByText } = render(<ConfirmationContent data={minProps.data} />);
     fireEvent.click(getByText('Yes'));
     expect(mockResolver).toHaveBeenCalled();
     applicationsStore().deleteApplication = deleteApp;

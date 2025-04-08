@@ -261,7 +261,7 @@ function ListView(props: { application: Application; group: Group }) {
   }
 
   function handleChangePage(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
+    _event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
     newPage: number
   ) {
     addQuery({ page: newPage + 1 });

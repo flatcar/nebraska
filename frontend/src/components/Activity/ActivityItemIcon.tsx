@@ -1,7 +1,7 @@
 import alertCircleOutline from '@iconify/icons-mdi/alert-circle-outline';
 import alertOutline from '@iconify/icons-mdi/alert-outline';
 import checkCircleOutline from '@iconify/icons-mdi/check-circle-outline';
-import { Icon } from '@iconify/react';
+import { Icon, IconifyIcon } from '@iconify/react';
 
 export interface ActivityItemIconProps {
   severityName?: string;
@@ -16,7 +16,7 @@ export default function ActivityItemIcon(props: ActivityItemIconProps) {
 
 const stateIcons: {
   [key: string]: {
-    icon: object;
+    icon: IconifyIcon;
     color: string;
   };
 } = {

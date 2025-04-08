@@ -41,7 +41,7 @@ export default function Tabs(props: TabsProps) {
   const classes = useStyle();
   const { t } = useTranslation('glossary');
 
-  function handleTabChange(event: any, newValue: number) {
+  function handleTabChange(_event: any, newValue: number) {
     setTabIndex(newValue);
 
     if (onTabChanged !== null) {

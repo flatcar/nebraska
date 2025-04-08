@@ -32,7 +32,7 @@ interface RenderInputProps {
   ref?: React.Ref<any>;
   InputProps: {
     onBlur?: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
-    onChange?: React.FormEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+    onChange?: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
     onFocus?: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   };
   fullWidth: boolean;
@@ -104,8 +104,8 @@ function getSuggestions(value: string | null, selectedItem: string) {
   return inputValue.length === 0
     ? suggestions
     : suggestions.filter(suggestion => {
-        return suggestion.label.toLowerCase().includes(inputValue);
-      });
+      return suggestion.label.toLowerCase().includes(inputValue);
+    });
 }
 
 const useStyles = makeStyles({
@@ -224,7 +224,7 @@ export default function TimzonePicker(props: {
             }) => {
               setSelectedTimezone(selectedItem);
 
-              const { onBlur, onChange, onFocus, ...inputProps } = getInputProps();
+              const { onBlur, onChange, ...inputProps } = getInputProps();
 
               return (
                 <div className={classes.container}>
@@ -235,7 +235,7 @@ export default function TimzonePicker(props: {
                     label: t('common|timezone_label'),
                     placeholder: t('common|search_timezone_prompt'),
                     InputLabelProps: getLabelProps(),
-                    InputProps: { onBlur, onChange, onFocus },
+                    InputProps: { onBlur, onChange },
                     inputProps,
                     variant: 'outlined',
                   })}

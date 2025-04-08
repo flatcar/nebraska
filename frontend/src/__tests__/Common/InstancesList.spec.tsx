@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
 
+import { Application, Group } from '../../api/apiDataTypes';
 import ListView from '../../components/Instances/List';
 import themes from '../../lib/themes';
 
@@ -16,8 +17,8 @@ describe('ListView Component', () => {
     )
   );
   it('renders without crashing', () => {
-    const mockApplication = { id: '1', name: 'App Name' };
-    const mockGroup = { id: '1', name: 'Group Name' };
+    const mockApplication = { id: '1', name: 'App Name' } as unknown as Application;
+    const mockGroup = { id: '1', name: 'Group Name' } as unknown as Group;
 
     render(
       <BrowserRouter>
