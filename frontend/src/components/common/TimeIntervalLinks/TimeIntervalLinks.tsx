@@ -13,8 +13,8 @@ const useStyles = makeStyles(() => ({
 
 interface TimeIntervalLinksProps {
   selectedInterval: string;
-  appID: string;
-  groupID: string;
+  appID?: string;
+  groupID?: string;
   intervalChangeHandler: (value: any) => any;
 }
 

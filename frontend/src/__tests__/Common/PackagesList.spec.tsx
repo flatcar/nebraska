@@ -10,7 +10,7 @@ vi.mock('../../stores/Stores', () => ({
 }));
 
 vi.mock('../../api/API', async () => ({
-  ... (await vi.importActual('../../api/API')),
+  ...(await vi.importActual('../../api/API')),
   getPackages: vi.fn().mockResolvedValue({ packages: [] }),
 }));
 
