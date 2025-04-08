@@ -8,6 +8,7 @@
 [![Bluesky](https://img.shields.io/badge/Bluesky-Follow-0285FF?logo=bluesky)](https://bsky.app/profile/flatcar.org)
 
 </div>
+
 # Nebraska  <img align="right" width=384 src="docs/nebraska-logo.svg">
 
 Nebraska is an update manager for [Flatcar Container Linux](https://www.flatcar.org/).
