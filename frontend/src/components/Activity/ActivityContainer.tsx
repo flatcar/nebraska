@@ -29,7 +29,7 @@ const useStyles = makeStyles({
   },
 });
 
-export type ActivityContainerProps = unknown;
+export type ActivityContainerProps = any;
 
 function Container() {
   const classes = useStyles();

@@ -27,7 +27,7 @@ describe('List Header', () => {
     const { asFragment } = render(
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={themes['light']}>
-          <ListHeader actions={minProps.actions} />
+          <ListHeader title={minProps.title} actions={minProps.actions} />
         </ThemeProvider>
       </StyledEngineProvider>
     );

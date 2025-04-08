@@ -1,4 +1,4 @@
-import _, { Collection, List } from 'underscore';
+import _ from 'underscore';
 
 import API from '../api/API';
 import { Application, Channel, Group, Package } from '../api/apiDataTypes';
@@ -75,51 +75,47 @@ class ApplicationsStore extends Store {
   }
 
   getCachedPackages(applicationID: string) {
-    const app = _.findWhere(this.applications as Collection<any>, { id: applicationID });
+    const app = _.findWhere(this.applications as _.Collection<any>, { id: applicationID });
     const packages = app ? app.packages : [];
     return packages;
   }
 
   getCachedChannels(applicationID: string) {
-    const app = _.findWhere(this.applications as Collection<any>, { id: applicationID });
+    const app = _.findWhere(this.applications as _.Collection<any>, { id: applicationID });
     const channels = app ? app.channels : [];
     return channels;
   }
 
-  createApplication(
+  async createApplication(
     data: Pick<Application, 'name' | 'description' | 'product_id'>,
     clonedApplication: string
   ) {
-    return API.createApplication(data, clonedApplication).then(application => {
-      const applicationItem = application;
-      if (this.applications) {
-        this.applications.unshift(applicationItem);
-        this.applications = [...this.applications];
-        this.emitChange();
-      }
-    });
+    const application = await API.createApplication(data, clonedApplication);
+    const applicationItem = application;
+    if (this.applications) {
+      this.applications.unshift(applicationItem);
+      this.applications = [...this.applications];
+      this.emitChange();
+    }
   }
 
-  updateApplication(applicationID: string, data: any) {
+  async updateApplication(applicationID: string, data: any) {
     data.id = applicationID;
 
-    return API.updateApplication(data).then(application => {
-      const applicationToUpdate = _.findWhere(this.applications as Collection<any>, {
-        id: application.id,
-      });
-
-      applicationToUpdate.name = application.name;
-      applicationToUpdate.description = application.description;
-      applicationToUpdate.product_id = application.product_id;
-
-      this.emitChange();
+    const application = await API.updateApplication(data);
+    const applicationToUpdate = _.findWhere(this.applications as _.Collection<any>, {
+      id: application.id,
     });
+    applicationToUpdate.name = application.name;
+    applicationToUpdate.description = application.description;
+    applicationToUpdate.product_id = application.product_id;
+    this.emitChange();
   }
 
   getAndUpdateApplication(applicationID: string) {
     API.getApplication(applicationID).then(application => {
       const applicationItem = application;
-      const index = _.findIndex(this.applications as List<any>, { id: applicationID });
+      const index = _.findIndex(this.applications as _.List<any>, { id: applicationID });
       if (this.applications) {
         this.applications[index] = applicationItem;
         this.emitChange();
@@ -130,8 +126,8 @@ class ApplicationsStore extends Store {
   deleteApplication(applicationID: string) {
     API.deleteApplication(applicationID).then(() => {
       this.applications = _.without(
-        this.applications as List<any>,
-        _.findWhere(this.applications as Collection<any>, { id: applicationID })
+        this.applications as _.List<any>,
+        _.findWhere(this.applications as _.Collection<any>, { id: applicationID })
       );
       this.emitChange();
     });
@@ -139,24 +135,23 @@ class ApplicationsStore extends Store {
 
   // Groups
 
-  createGroup(data: Group) {
-    return API.createGroup(data).then(group => {
-      const groupItem = group;
-      const applicationToUpdate = _.findWhere(this.applications as Collection<any>, {
-        id: groupItem.application_id,
-      });
-      if (applicationToUpdate.groups) {
-        applicationToUpdate.groups.unshift(groupItem);
-      } else {
-        applicationToUpdate.groups = [groupItem];
-      }
-      this.emitChange();
+  async createGroup(data: Group) {
+    const group = await API.createGroup(data);
+    const groupItem = group;
+    const applicationToUpdate = _.findWhere(this.applications as _.Collection<any>, {
+      id: groupItem.application_id,
     });
+    if (applicationToUpdate.groups) {
+      applicationToUpdate.groups.unshift(groupItem);
+    } else {
+      applicationToUpdate.groups = [groupItem];
+    }
+    this.emitChange();
   }
 
   deleteGroup(applicationID: string, groupID: string) {
     API.deleteGroup(applicationID, groupID).then(() => {
-      const applicationToUpdate = _.findWhere(this.applications as Collection<any>, {
+      const applicationToUpdate = _.findWhere(this.applications as _.Collection<any>, {
         id: applicationID,
       });
       const newGroups = _.without(
@@ -169,21 +164,20 @@ class ApplicationsStore extends Store {
     });
   }
 
-  updateGroup(data: Group) {
-    return API.updateGroup(data).then(group => {
-      const groupItem = group;
-      const applicationToUpdate = _.findWhere(this.applications as Collection<any>, {
-        id: groupItem.application_id,
-      });
-      const index = _.findIndex(applicationToUpdate.groups, { id: groupItem.id });
-      applicationToUpdate.groups[index] = groupItem;
-      this.emitChange();
+  async updateGroup(data: Group) {
+    const group = await API.updateGroup(data);
+    const groupItem = group;
+    const applicationToUpdate = _.findWhere(this.applications as _.Collection<any>, {
+      id: groupItem.application_id,
     });
+    const index = _.findIndex(applicationToUpdate.groups, { id: groupItem.id });
+    applicationToUpdate.groups[index] = groupItem;
+    this.emitChange();
   }
 
   getGroup(applicationID: string, groupID: string) {
     API.getGroup(applicationID, groupID).then(group => {
-      const applicationToUpdate = _.findWhere(this.applications as Collection<any>, {
+      const applicationToUpdate = _.findWhere(this.applications as _.Collection<any>, {
         id: group.application_id,
       });
       const index = _.findIndex(applicationToUpdate.groups, { id: group.id });
@@ -217,46 +211,40 @@ class ApplicationsStore extends Store {
 
   // Channels
 
-  createChannel(data: Channel): Promise<void> {
-    return API.createChannel(data).then(channel => {
-      const channelItem = channel;
-      this.getAndUpdateApplication(channelItem.application_id);
-    });
+  async createChannel(data: Channel): Promise<void> {
+    const channel = await API.createChannel(data);
+    const channelItem = channel;
+    this.getAndUpdateApplication(channelItem.application_id);
   }
 
-  deleteChannel(applicationID: string, channelID: string): Promise<void> {
-    return API.deleteChannel(applicationID, channelID).then(() => {
-      this.getAndUpdateApplication(applicationID);
-    });
+  async deleteChannel(applicationID: string, channelID: string): Promise<void> {
+    await API.deleteChannel(applicationID, channelID);
+    this.getAndUpdateApplication(applicationID);
   }
 
-  updateChannel(data: Channel): Promise<void> {
-    return API.updateChannel(data).then(channel => {
-      const channelItem = channel;
-      this.getAndUpdateApplication(channelItem.application_id);
-    });
+  async updateChannel(data: Channel): Promise<void> {
+    const channel = await API.updateChannel(data);
+    const channelItem = channel;
+    this.getAndUpdateApplication(channelItem.application_id);
   }
 
   // Packages
 
-  createPackage(data: Partial<Package>): Promise<void> {
-    return API.createPackage(data).then(packageItem => {
-      const newpackage = packageItem;
-      this.getAndUpdateApplication(newpackage.application_id);
-    });
+  async createPackage(data: Partial<Package>): Promise<void> {
+    const packageItem = await API.createPackage(data);
+    const newpackage = packageItem;
+    this.getAndUpdateApplication(newpackage.application_id);
   }
 
-  deletePackage(applicationID: string, packageID: string): Promise<void> {
-    return API.deletePackage(applicationID, packageID).then(() => {
-      this.getAndUpdateApplication(applicationID);
-    });
+  async deletePackage(applicationID: string, packageID: string): Promise<void> {
+    await API.deletePackage(applicationID, packageID);
+    this.getAndUpdateApplication(applicationID);
   }
 
-  updatePackage(data: Partial<Package>): Promise<void> {
-    return API.updatePackage(data).then(packageItem => {
-      const updatedpackage = packageItem;
-      this.getAndUpdateApplication(updatedpackage.application_id);
-    });
+  async updatePackage(data: Partial<Package>): Promise<void> {
+    const packageItem = await API.updatePackage(data);
+    const updatedpackage = packageItem;
+    this.getAndUpdateApplication(updatedpackage.application_id);
   }
 }
 

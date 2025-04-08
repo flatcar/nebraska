@@ -40,7 +40,7 @@ const versionCountTimeline = {
 const Template: StoryFn<VersionCountTimelineProps> = args => {
   class GroupChartsStoreMock extends GroupChartsStore {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async getGroupVersionCountTimeline(appID: string, groupID: string, duration: string) {
+    async getGroupVersionCountTimeline(_appID: string, _groupID: string, _duration: string) {
       return versionCountTimeline;
     }
   }

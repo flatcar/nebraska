@@ -97,13 +97,6 @@ function StatusLabel(props: StatusLabelProps) {
 
   const { status, activated } = props;
   const { label = t('frequent|unknown') } = (status && statusDefs[status.type]) || {};
-  let safeLabel: React.ReactNode;
-
-  if (label !== null && typeof label === 'object') {
-    safeLabel = label.toString();
-  } else {
-    safeLabel = label;
-  }
 
   return (
     <span>
@@ -117,7 +110,7 @@ function StatusLabel(props: StatusLabelProps) {
             display="inline-block"
             mr={1}
           >
-            {safeLabel}
+            {label}
           </Box>
           <InlineIcon
             icon={activated ? chevronUp : chevronDown}
@@ -127,7 +120,7 @@ function StatusLabel(props: StatusLabelProps) {
           />
         </Button>
       ) : (
-        <Typography className={classes.statusText}>{safeLabel}</Typography>
+        <Typography className={classes.statusText}>{label}</Typography>
       )}
     </span>
   );

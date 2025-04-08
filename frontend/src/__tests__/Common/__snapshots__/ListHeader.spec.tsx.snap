@@ -8,6 +8,19 @@ exports[`List Header > should render correct List Header actions 1`] = `
     <div
       class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
     >
+      <div
+        class="MuiBox-root css-2rlxtj"
+      >
+        <h1
+          class="MuiTypography-root MuiTypography-h1 css-17cy2p8-MuiTypography-root"
+        >
+          Applications
+        </h1>
+      </div>
+    </div>
+    <div
+      class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root"
+    >
       <div>
         <button
           aria-label="add"

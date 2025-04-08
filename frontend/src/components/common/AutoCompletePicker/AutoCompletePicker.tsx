@@ -244,7 +244,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
             }) => {
               setSelectedValue(selectedItem);
 
-              const { onBlur, onFocus, ...inputProps } = getInputProps();
+              const { onBlur, ...inputProps } = getInputProps();
 
               return (
                 <div className={classes.container}>
@@ -255,7 +255,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
                     label: props.label,
                     placeholder: props.pickerPlaceholder,
                     InputLabelProps: getLabelProps(),
-                    InputProps: { onBlur, onChange: onInputChange, onFocus },
+                    InputProps: { onBlur, onChange: onInputChange },
                     inputProps,
                     variant: 'outlined',
                     onKeyDown: handleEscape,

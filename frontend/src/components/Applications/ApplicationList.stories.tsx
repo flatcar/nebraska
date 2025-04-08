@@ -15,9 +15,7 @@ const Template: StoryFn<ApplicationListPureProps> = (
   class APIMock extends API {
     static getInstancesCount(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      applicationID: string,
-      groupID: string,
-      duration: string
+      _applicationID: string, _groupID: string, _duration: string
     ): Promise<number> {
       return new Promise(resolve => resolve(20));
     }

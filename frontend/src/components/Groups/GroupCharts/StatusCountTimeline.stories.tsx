@@ -49,7 +49,7 @@ const Template: StoryFn<StatusCountTimelineProps> = (
 ) => {
   class GroupChartsStoreMock extends GroupChartsStore {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async getGroupStatusCountTimeline(appID: string, groupID: string, duration: string) {
+    async getGroupStatusCountTimeline(_appID: string, _groupID: string, _duration: string) {
       return statusTimelineData;
     }
   }

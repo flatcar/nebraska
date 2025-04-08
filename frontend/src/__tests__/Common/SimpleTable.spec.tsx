@@ -15,6 +15,7 @@ describe('Simple Table', () => {
       key1: 'Column1',
       key2: 'Column2',
     },
+    emptyMessage: 'No data available'
   };
   it('shoudl render Table with correct data', async () => {
     const { getByText } = render(<SimpleTable {...minProps} />);

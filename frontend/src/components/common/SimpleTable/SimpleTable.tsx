@@ -26,7 +26,7 @@ export default function SimpleTable(props: SimpleTableProps) {
   const [rowsPerPage, setRowsPerPage] = React.useState(rowsPerPageOptions[0]);
   const { t } = useTranslation();
 
-  function handleChangePage(event: any, newPage: number) {
+  function handleChangePage(_event: any, newPage: number) {
     setPage(newPage);
   }
 

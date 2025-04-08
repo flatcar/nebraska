@@ -69,7 +69,7 @@ function List(props: { appID: string }) {
   }
 
   function handleChangePage(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
+    _event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
     newPage: number
   ) {
     setPage(newPage);
@@ -82,14 +82,14 @@ function List(props: { appID: string }) {
         actions={
           application
             ? [
-                <ModalButton
-                  modalToOpen="AddPackageModal"
-                  data={{
-                    channels: application.channels || [],
-                    appID: props.appID,
-                  }}
-                />,
-              ]
+              <ModalButton
+                modalToOpen="AddPackageModal"
+                data={{
+                  channels: application.channels || [],
+                  appID: props.appID,
+                }}
+              />,
+            ]
             : []
         }
       />
