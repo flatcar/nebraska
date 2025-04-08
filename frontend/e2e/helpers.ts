@@ -21,18 +21,29 @@ export async function createApplication(page: Page, appName: string, appId: stri
 }
 
 export async function deleteApplication(page: Page, appName: any) {
-  await page.locator('li').filter({ hasText: appName }).getByTestId('more-menu-open-button').click();
+  await page
+    .locator('li')
+    .filter({ hasText: appName })
+    .getByTestId('more-menu-open-button')
+    .click();
   page.once('dialog', dialog => {
-    dialog.accept().catch(() => { });
+    dialog.accept().catch(() => {});
   });
   await page.getByRole('menuitem', { name: 'Delete' }).click();
 }
 
 export async function createPackage(page: Page, packageVersion: string) {
-  await page.locator('div').filter({ hasText: /^Packages$/ }).first().getByTestId('modal-button').click();
+  await page
+    .locator('div')
+    .filter({ hasText: /^Packages$/ })
+    .first()
+    .getByTestId('modal-button')
+    .click();
 
   await page.getByLabel('Main').locator('div').filter({ hasText: 'URL *' }).click();
-  await page.getByLabel('URL *').fill('https://update.release.flatcar-linux.net/amd64-usr/4116.0.0/');
+  await page
+    .getByLabel('URL *')
+    .fill('https://update.release.flatcar-linux.net/amd64-usr/4116.0.0/');
   await page.getByLabel('Filename *').click();
   await page.getByLabel('Filename *').fill('flatcar_production_update.gz');
   await page.getByLabel('Description *').click();
@@ -44,7 +55,9 @@ export async function createPackage(page: Page, packageVersion: string) {
   await page.getByLabel('Hash *').click();
   await page.getByLabel('Hash *').fill('x47kqHYwJ9aF+Z8+Ooc+gR4ed6Q=');
   await page.getByLabel('Flatcar Action SHA256 *').click();
-  await page.getByLabel('Flatcar Action SHA256 *').fill('vrKk75R1A1ru9LfzWHp/C8Ko7NVgReDS7Fz401k9Ms8=');
+  await page
+    .getByLabel('Flatcar Action SHA256 *')
+    .fill('vrKk75R1A1ru9LfzWHp/C8Ko7NVgReDS7Fz401k9Ms8=');
   await page.getByRole('button', { name: 'Add' }).click();
 }
 
@@ -60,12 +73,19 @@ export async function addExtraFile(page: Page) {
   await page.getByLabel('SHA1 Hash (base64)').click();
   await page.getByLabel('SHA1 Hash (base64)').fill('3bIy5D+02noyBd0WuWBDm+Fskx8=');
   await page.getByLabel('SHA256 Hash (hex)').click();
-  await page.getByLabel('SHA256 Hash (hex)').fill('505e74c6c3228619c5c785b023ca70d60275c6a0d438a70d3f1fca9af5f26c3a');
+  await page
+    .getByLabel('SHA256 Hash (hex)')
+    .fill('505e74c6c3228619c5c785b023ca70d60275c6a0d438a70d3f1fca9af5f26c3a');
   await page.getByRole('button', { name: 'Done' }).click();
   await page.getByRole('button', { name: 'Save' }).click();
 }
 
-export async function createChannel(page: Page, channelName: string, architecture?: string, packageVersion?: string) {
+export async function createChannel(
+  page: Page,
+  channelName: string,
+  architecture?: string,
+  packageVersion?: string
+) {
   await page.getByTestId('modal-button').nth(1).click();
   await page.locator('input[name="name"]').click();
   await page.locator('input[name="name"]').fill(channelName);
@@ -79,14 +99,22 @@ export async function createChannel(page: Page, channelName: string, architectur
     await page.getByPlaceholder('Start typing to search a').fill(packageVersion);
     await page.waitForTimeout(500); // Let dropdown load
     await page.waitForSelector('div[role="option"]', { timeout: 4000 });
-    await page.locator('div[role="option"]').getByText(packageVersion).click({ force: true, clickCount: 2 });
+    await page
+      .locator('div[role="option"]')
+      .getByText(packageVersion)
+      .click({ force: true, clickCount: 2 });
 
     await page.getByRole('button', { name: 'Select' }).click();
   }
   await page.getByRole('button', { name: 'Add' }).click();
 }
 
-export async function createGroup(page: Page, groupName: string, channel?: string, trackIdentifier?: string) {
+export async function createGroup(
+  page: Page,
+  groupName: string,
+  channel?: string,
+  trackIdentifier?: string
+) {
   await page.getByTestId('modal-button').first().click();
   await page.locator('input[name="name"]').click();
   await page.locator('input[name="name"]').fill(groupName);

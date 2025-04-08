@@ -13,10 +13,7 @@ const Template: StoryFn<ApplicationListPureProps> = (
   args: JSX.IntrinsicAttributes & ApplicationListPureProps
 ) => {
   class APIMock extends API {
-    static getInstancesCount(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      _applicationID: string, _groupID: string, _duration: string
-    ): Promise<number> {
+    static getInstancesCount(): Promise<number> {
       return new Promise(resolve => resolve(20));
     }
   }

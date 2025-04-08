@@ -82,14 +82,14 @@ function List(props: { appID: string }) {
         actions={
           application
             ? [
-              <ModalButton
-                modalToOpen="AddPackageModal"
-                data={{
-                  channels: application.channels || [],
-                  appID: props.appID,
-                }}
-              />,
-            ]
+                <ModalButton
+                  modalToOpen="AddPackageModal"
+                  data={{
+                    channels: application.channels || [],
+                    appID: props.appID,
+                  }}
+                />,
+              ]
             : []
         }
       />

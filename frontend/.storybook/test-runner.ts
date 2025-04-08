@@ -1,4 +1,5 @@
 import type { TestRunnerConfig } from '@storybook/test-runner';
+import { expect } from 'vitest';
 
 const config: TestRunnerConfig = {
   // Hook that is executed before the test runner starts running tests
@@ -15,6 +16,7 @@ const config: TestRunnerConfig = {
    * The page argument is the Playwright's page object for the story
    * The context argument is a Storybook object containing the story's id, title, and name.
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async postVisit(page, _) {
     const elementHandler = await page.$('#storybook-root');
     if (elementHandler) {
