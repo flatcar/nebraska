@@ -8,6 +8,8 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+/.pnp
+.pnp.js
 dist
 dist-ssr
 *.local
@@ -23,6 +25,18 @@ dist-ssr
 *.sln
 *.sw?
 
+# testing
+/coverage
+
 storybook-static/
 playwright-report/
 test-results/
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+src/js/icons/*.json
+
