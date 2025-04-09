@@ -12,8 +12,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint . && prettier --config package.json --check src/",
-    "format": "prettier --config package.json --write src/",
+    "lint": "eslint . && prettier --config package.json --check src/ e2e/",
+    "format": "prettier --config package.json --write src/ e2e/",
     "i18n": "npx --no-install i18next ./src/**/ts* ./src/**/**/*.ts* ./src/**/**/**/*.ts* -c ./src/i18n/i18next-parser.config.js",
     "lint:fix": "eslint . --fix",
     "preview": "vite preview",
@@ -135,6 +135,12 @@
       "eslint -c package.json --fix"
     ],
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "prettier --config package.json --write"
+    ],
+    "e2e/**/*.{js,jsx,ts,tsx}": [
+      "eslint -c package.json --fix"
+    ],
+    "e2e/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --config package.json --write"
     ]
   },
