@@ -63,7 +63,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
     props.onHide();
   }
 
-  //@ts-expect-error as type missmatach
+  //@ts-expect-error as type mismatch
   function renderForm({ status, isSubmitting }) {
     return (
       <Form data-testid="app-edit-form">
@@ -179,7 +179,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
         validationSchema={validation}
       >
         {/* @todo add better types for renderForm */}
-        {/* @ts-expect-error as type missmatach */}
+        {/* @ts-expect-error as type mismatch */}
         {renderForm}
       </Formik>
     </Dialog>

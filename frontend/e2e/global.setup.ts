@@ -43,16 +43,19 @@ setup('create new node instances in database', async () => {
       1,
       '2025-01-29 17:36:04.47415+00',
       '4081.2.0',
+      //
       'AMD64',
       'alpha',
       1,
       '2025-01-30 07:38:36.044909+00',
       '4081.2.0',
+      //
       'AMD64',
       'alpha',
       1,
       '2025-01-30 08:48:54.986841+00',
       '4081.2.0',
+      //
       'AMD64',
       'alpha',
       1,
@@ -72,6 +75,7 @@ setup('create new node instances in database', async () => {
       '2c517ad881474ec6b5ab928df2a7b5f4',
       2,
       '5261.0.0',
+      //
       'e96281a6-d1af-4bde-9a0a-97b76e56dc57',
       '2025-01-30 09:57:54.658606+00',
       '5b810680-e36a-4879-b98a-4f989e80b899',
@@ -79,6 +83,7 @@ setup('create new node instances in database', async () => {
       '2c517ad881474ec6b5ab928df2a7b5f4',
       7,
       '5261.0.0',
+      //
       'e96281a6-d1af-4bde-9a0a-97b76e56dc57',
       '2025-01-30 09:58:37.034879+00',
       '5b810680-e36a-4879-b98a-4f989e80b899',
