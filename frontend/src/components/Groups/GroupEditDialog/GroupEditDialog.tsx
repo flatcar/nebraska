@@ -110,7 +110,7 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
     setGroupEditActiveTab(index);
   }
 
-  //@ts-expect-error type missmatch
+  //@ts-expect-error as type mismatch
   function renderForm({ values, status, setFieldValue, isSubmitting }) {
     const channels = props.data.channels ? props.data.channels : [];
 
@@ -237,7 +237,7 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
       <DialogTitle>{isCreation ? t('groups|group_add') : t('groups|group_edit')}</DialogTitle>
       <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={validation}>
         {/* @todo add better types for renderForm */}
-        {/* @ts-expect-error type missmatch */}
+        {/* @ts-expect-error as type mismatch */}
         {renderForm}
       </Formik>
     </Dialog>

@@ -162,7 +162,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
   }
 
   //@todo add better types
-  //@ts-expect-error type missmatch
+  //@ts-expect-error as type mismatch
   function renderForm({ values, status, setFieldValue, isSubmitting }) {
     return (
       <Form data-testid="channel-edit-form">
@@ -293,7 +293,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
       </DialogTitle>
       <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={validation}>
         {/* @todo add better types */}
-        {/* @ts-expect-error type missmatch */}
+        {/* @ts-expect-error as type mismatch */}
         {renderForm}
       </Formik>
     </Dialog>

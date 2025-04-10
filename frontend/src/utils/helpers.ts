@@ -76,7 +76,7 @@ function makeColors() {
     // We choose the shades beyond 300 because they should not be too
     // light (in order to improve contrast).
     for (let i = 3; i <= 9; i += 2) {
-      //@ts-expect-error as the type resolves any
+      //@ts-expect-error as missing types
       colors.push(color[i * 100]);
     }
   });
