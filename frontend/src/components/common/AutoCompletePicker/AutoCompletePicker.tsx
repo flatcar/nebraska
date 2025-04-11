@@ -233,7 +233,14 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
       <Dialog open={showPicker || false}>
         <DialogTitle>{props.dialogTitle}</DialogTitle>
         <DialogContent>
-          <Downshift id="downshift-options">
+          <Downshift
+            id="downshift-options"
+            onChange={selectedItem => {
+              if (selectedItem) {
+                setSelectedValue(selectedItem);
+              }
+            }}
+          >
             {({
               getInputProps,
               getItemProps,
@@ -242,8 +249,6 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
               inputValue,
               selectedItem,
             }) => {
-              setSelectedValue(selectedItem);
-
               const { onBlur, ...inputProps } = getInputProps();
 
               return (

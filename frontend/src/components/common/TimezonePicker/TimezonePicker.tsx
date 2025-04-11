@@ -213,7 +213,14 @@ export default function TimzonePicker(props: {
       <Dialog open={showPicker}>
         <DialogTitle>Choose a Timezone</DialogTitle>
         <DialogContent>
-          <Downshift id="downshift-options">
+          <Downshift
+            id="downshift-options"
+            onChange={selectedItem => {
+              if (selectedItem) {
+                setSelectedTimezone(selectedItem);
+              }
+            }}
+          >
             {({
               getInputProps,
               getItemProps,
@@ -222,8 +229,6 @@ export default function TimzonePicker(props: {
               inputValue,
               selectedItem,
             }) => {
-              setSelectedTimezone(selectedItem);
-
               const { onBlur, onChange, ...inputProps } = getInputProps();
 
               return (
