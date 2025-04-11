@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+---
+
 ## [Unreleased]
 
 ### Added
@@ -13,8 +15,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Testing:**
   - Introduced Playwright e2e tests for frontend workflows, integrated into our CI pipeline.
   
----
-
 ### Changed
 - **Backend Improvements:**
   - Upgraded core Go dependencies:
@@ -54,20 +54,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     - Multiple bumps to dependencies like `golang.org/x/crypto`, `github.com/stretchr/testify`, `github.com/golangci/golangci-lint`, `github.com/jmoiron/sqlx`, and others.
   - Updated several indirect dependencies (e.g., `path-to-regexp`, `express`, `tough-cookie`, `browserify-sign`, `async`, `url-parse`, etc.) ensuring that all parts of the stack align with current best practices.
 
----
-
 ### Deprecated
 - Deprecated the use of the legacy `golint` linter in favor of the actively maintained [revive](https://github.com/mgechev/revive).
 - Phasing out the old querystring package in frontend code, replacing it with native `URLSearchParams` functionality.
 - Gradually deprecating outdated Formik properties in favor of newer component APIs.
 
----
-
 ### Removed
 - Removed deprecated Formik render props and unused translation keys, simplifying the codebase.
 - Cleaned up legacy Docker Compose configurations now replaced by the standard `docker compose` command in CI workflows.
-
----
 
 ### Fixed
 - **Bug Fixes:**
@@ -77,8 +71,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Tooling & Integration:**
   - Fixed issues in the code generation tool for server APIs by updating `oapi-codegen` and related dependencies.
   - Adjusted CI workflows to prevent version conflicts, especially for tools like `github/codeql-action` and `actions/checkout`.
-
----
 
 ### Security
 - **Dependency & Infrastructure Security:**
@@ -94,3 +86,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Upgraded various npm packages to their secure versions.
 - **Vulnerability Mitigations:**
   - Regularly addressed and patched dependencies to avoid potential vulnerabilities
+
+---
+
