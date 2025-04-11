@@ -1,14 +1,21 @@
 import { expect, test } from '@playwright/test';
-import { createApplication, createChannel, createPackage, deleteApplication, generateSalt } from './helpers';
+
+import {
+  createApplication,
+  createChannel,
+  createPackage,
+  deleteApplication,
+  generateSalt,
+} from './helpers';
 
 test.describe('Channels', () => {
-
-  let appName: string; let appId: string;
+  let appName: string;
+  let appId: string;
 
   test.beforeEach(async ({ page }, testInfo) => {
     const appNameSalt = generateSalt(testInfo.title);
-    appName = "Test app" + appNameSalt;
-    appId = "io.test.app." + appNameSalt;
+    appName = 'Test app' + appNameSalt;
+    appId = 'io.test.app.' + appNameSalt;
 
     await page.goto('http://localhost:8002/');
     await createApplication(page, appName, appId);
@@ -59,4 +66,3 @@ test.describe('Channels', () => {
     await expect(page.locator('#main')).toContainText('No package');
   });
 });
-

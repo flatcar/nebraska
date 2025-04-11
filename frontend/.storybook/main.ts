@@ -1,4 +1,4 @@
-import { StorybookConfig } from '@storybook/react-webpack5';
+import { StorybookConfig } from '@storybook/react-vite';
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
@@ -6,10 +6,9 @@ const config: StorybookConfig = {
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
-    '@storybook/preset-create-react-app',
   ],
 
-  framework: '@storybook/react-webpack5',
+  framework: '@storybook/react-vite',
   staticDirs: ['../public'],
 
   docs: {},

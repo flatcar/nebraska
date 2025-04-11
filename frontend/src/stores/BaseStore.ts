@@ -1,11 +1,10 @@
-import EventEmitter from 'events';
+import EventEmitter from 'eventemitter3';
 
-var CHANGE_EVENT = 'change';
+const CHANGE_EVENT = 'change';
 
 class Store extends EventEmitter {
   constructor() {
     super();
-    this.setMaxListeners(100);
   }
 
   emitChange() {

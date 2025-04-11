@@ -4,6 +4,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import _ from 'underscore';
+
 import { Application } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import Empty from '../common/EmptyContent';
@@ -21,7 +22,7 @@ const useStyles = makeStyles({
   },
 });
 
-export interface ApplicationListProps {}
+export type ApplicationListProps = unknown;
 
 export default function ApplicationList() {
   const [applications, setApplications] = React.useState(

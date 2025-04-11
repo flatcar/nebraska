@@ -6,6 +6,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import _ from 'underscore';
+
 import { Activity } from '../../api/apiDataTypes';
 import { activityStore } from '../../stores/Stores';
 import Empty from '../common/EmptyContent';
@@ -28,7 +29,7 @@ const useStyles = makeStyles({
   },
 });
 
-export interface ActivityContainerProps {}
+export type ActivityContainerProps = any;
 
 function Container() {
   const classes = useStyles();
@@ -53,7 +54,7 @@ function Container() {
   }
 
   function handleChangePage(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
+    _: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
     newPage: number
   ) {
     setPage(newPage);

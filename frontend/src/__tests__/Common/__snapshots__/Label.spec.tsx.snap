@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Label > should render correct label 1`] = `
+<DocumentFragment>
+  <span
+    class="makeStyles-label-1"
+  >
+    dummy label
+  </span>
+</DocumentFragment>
+`;

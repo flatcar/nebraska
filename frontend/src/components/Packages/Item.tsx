@@ -11,6 +11,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
+
 import { Channel, Package } from '../../api/apiDataTypes';
 import { makeLocaleTime } from '../../i18n/dateTime';
 import flatcarIcon from '../../icons/flatcar-logo.json';
@@ -20,8 +21,6 @@ import ChannelAvatar from '../Channels/ChannelAvatar';
 import Label from '../common/Label';
 import MoreMenu from '../common/MoreMenu';
 
-//@todo visit this again
-//@ts-ignore
 const useStyles = makeStyles({
   packageName: {
     fontSize: '1.1em',

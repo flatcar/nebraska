@@ -2,6 +2,7 @@ import Link from '@mui/material/Link';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import _ from 'underscore';
+
 import API from '../api/API';
 import { Activity } from '../api/apiDataTypes';
 import { toLocaleDateString } from '../i18n/dateTime';

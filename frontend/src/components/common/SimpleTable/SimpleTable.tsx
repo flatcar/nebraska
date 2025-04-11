@@ -8,6 +8,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+
 import Empty from '../EmptyContent/EmptyContent';
 
 interface SimpleTableProps {
@@ -25,7 +26,7 @@ export default function SimpleTable(props: SimpleTableProps) {
   const [rowsPerPage, setRowsPerPage] = React.useState(rowsPerPageOptions[0]);
   const { t } = useTranslation();
 
-  function handleChangePage(event: any, newPage: number) {
+  function handleChangePage(_event: any, newPage: number) {
     setPage(newPage);
   }
 

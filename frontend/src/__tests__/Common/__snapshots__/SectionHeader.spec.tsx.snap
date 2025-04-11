@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Section Header renders section header correctly 1`] = `
+exports[`Section Header > renders section header correctly 1`] = `
 <DocumentFragment>
   <div
     class="MuiGrid-root MuiGrid-container makeStyles-sectionContainer-1 css-a8y23a-MuiGrid-root"

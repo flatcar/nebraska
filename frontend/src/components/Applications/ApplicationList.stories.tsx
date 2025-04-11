@@ -1,5 +1,7 @@
 import { Meta, StoryFn } from '@storybook/react';
+import { JSX } from 'react/jsx-runtime';
 import { MemoryRouter } from 'react-router-dom';
+
 import API, { APIContext } from '../../api/API';
 import { ApplicationListPure, ApplicationListPureProps } from './ApplicationList';
 
@@ -7,14 +9,11 @@ export default {
   title: 'applications/ApplicationList',
 } as Meta;
 
-const Template: StoryFn<ApplicationListPureProps> = args => {
+const Template: StoryFn<ApplicationListPureProps> = (
+  args: JSX.IntrinsicAttributes & ApplicationListPureProps
+) => {
   class APIMock extends API {
-    /* eslint-disable no-unused-vars */
-    static getInstancesCount(
-      applicationID: string,
-      groupID: string,
-      duration: string
-    ): Promise<number> {
+    static getInstancesCount(): Promise<number> {
       return new Promise(resolve => resolve(20));
     }
   }

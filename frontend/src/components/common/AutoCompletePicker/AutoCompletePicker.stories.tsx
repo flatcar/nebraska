@@ -1,4 +1,5 @@
 import { Meta, StoryFn } from '@storybook/react';
+
 import AutoCompletePicker, { AutoCompletePickerProps } from './AutoCompletePicker';
 
 export default {

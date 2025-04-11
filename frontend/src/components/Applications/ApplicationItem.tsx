@@ -3,6 +3,7 @@ import { Box, Divider, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import makeStyles from '@mui/styles/makeStyles';
 import { useTranslation } from 'react-i18next';
+
 import { Group } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../common/Card/Card';
@@ -54,9 +55,9 @@ export default function ApplicationItem(props: ApplicationItemProps) {
                 {
                   label: t('frequent|delete'),
                   action: () => {
-                    window.confirm(t('applications|confirm_delete_application'))
-                      ? applicationsStore().deleteApplication(id)
-                      : null;
+                    if (window.confirm(t('applications|confirm_delete_application'))) {
+                      applicationsStore().deleteApplication(id);
+                    }
                   },
                 },
               ]}

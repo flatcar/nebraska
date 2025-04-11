@@ -1,13 +1,12 @@
 import '../../i18n/config.ts';
+
 import { fireEvent, render } from '@testing-library/react';
-import React from 'react';
+import { describe, expect, it, vi } from 'vitest';
+
 import ConfirmationContent from '../../components/common/ConfirmationContent';
 import { applicationsStore } from '../../stores/Stores';
 
-function mockResolver() {
-  return Promise.resolve([]);
-}
-mockResolver = jest.fn();
+const mockResolver = vi.fn();
 describe('Confirmation Content', () => {
   const minProps = {
     data: {
@@ -16,13 +15,13 @@ describe('Confirmation Content', () => {
     },
   };
   it('should render Confirmation Content correctly', () => {
-    const { asFragment } = render(<ConfirmationContent data={minProps.data} channel={{}} />);
+    const { asFragment } = render(<ConfirmationContent data={minProps.data} />);
     expect(asFragment()).toMatchSnapshot();
   });
   it('should call delete handler function on yes confirmation', () => {
     applicationsStore().deleteApplication = mockResolver;
     const deleteApp = applicationsStore().deleteApplication;
-    const { getByText } = render(<ConfirmationContent data={minProps.data} channel={{}} />);
+    const { getByText } = render(<ConfirmationContent data={minProps.data} />);
     fireEvent.click(getByText('Yes'));
     expect(mockResolver).toHaveBeenCalled();
     applicationsStore().deleteApplication = deleteApp;

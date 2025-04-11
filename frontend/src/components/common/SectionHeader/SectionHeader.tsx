@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography';
 import makeStyles from '@mui/styles/makeStyles';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
+
 import PageTitle from '../PageTitle/PageTitle';
 
 const useStyles = makeStyles(theme => ({

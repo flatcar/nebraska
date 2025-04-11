@@ -9,6 +9,7 @@ import { Field, Form, Formik } from 'formik';
 import { TextField } from 'formik-mui';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
+
 import { Application } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 
@@ -29,7 +30,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
       [key: string]: any;
     }
   ) {
-    var data = {
+    const data = {
       name: values.name,
       description: values.description,
       product_id: values.product_id,
@@ -62,7 +63,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
     props.onHide();
   }
 
-  //@ts-ignore
+  //@ts-expect-error as type mismatch
   function renderForm({ status, isSubmitting }) {
     return (
       <Form data-testid="app-edit-form">
@@ -152,7 +153,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
       // Each segment must start with a letter.
       // Each segment must not end with a dash.
       .matches(
-        /^[a-zA-Z]+([a-zA-Z0-9\-]*[a-zA-Z0-9])*(\.[a-zA-Z]+([a-zA-Z0-9\-]*[a-zA-Z0-9])*)+$/,
+        /^[a-zA-Z]+([a-zA-Z0-9-]*[a-zA-Z0-9])*(\.[a-zA-Z]+([a-zA-Z0-9-]*[a-zA-Z0-9])*)+$/,
         t('common|reverse_domain_id_error')
       )
       .nullable(),
@@ -178,7 +179,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
         validationSchema={validation}
       >
         {/* @todo add better types for renderForm */}
-        {/* @ts-ignore */}
+        {/* @ts-expect-error as type mismatch */}
         {renderForm}
       </Formik>
     </Dialog>

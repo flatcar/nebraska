@@ -1,4 +1,4 @@
-import { Icon } from '@iconify/react';
+import { Icon, IconifyIcon } from '@iconify/react';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import CreateOutlined from '@mui/icons-material/CreateOutlined';
 import { Box, Button } from '@mui/material';
@@ -13,13 +13,14 @@ import DOMPurify from 'dompurify';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
+
 import nebraskaLogo from '../icons/nebraska-logo.json';
 import themes from '../lib/themes';
 import { UserState } from '../stores/redux/features/user';
 import { useSelector } from '../stores/redux/hooks';
 
 declare module '@mui/styles/defaultTheme' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface DefaultTheme extends Theme {}
 }
 
@@ -60,7 +61,7 @@ interface AppbarProps {
   config: NebraskaConfig | null;
   user: UserState | null;
   menuAnchorEl: MenuProps['anchorEl'];
-  projectLogo: object;
+  projectLogo: IconifyIcon;
   handleClose: MenuProps['onClose'];
   handleMenu: React.MouseEventHandler<HTMLButtonElement>;
 }

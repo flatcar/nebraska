@@ -3,6 +3,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import _ from 'underscore';
+
 import { applicationsStore } from '../../../stores/Stores';
 import ChannelList from '../../Channels/ChannelList';
 import SectionHeader from '../../common/SectionHeader/SectionHeader';
