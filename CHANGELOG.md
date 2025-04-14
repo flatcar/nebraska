@@ -8,84 +8,69 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+### Security
+- **Dependency & Infrastructure Security:**
+  - Upgraded Docker base images.
+  - Updated critical security libraries:
+    - Upgraded `github/coreos/go-oidc/v3` and `golang.org/x/oauth2` to patch known vulnerabilities.
+    - Bumped `golang.org/x/crypto` to version 0.31.0.
+  - Increased session management security by enforcing the HttpOnly flag on session cookies.
+- **CI/CD Pipeline Enhancements:**
+  - Updated GitHub Actions, Docker build tools, and various npm packages to incorporate the latest security patches.
+- **Vulnerability Mitigations:**
+  - Patched dependencies to mitigate potential vulnerabilities.
+
 ### Added
 - **Documentation & Process:**
-  - Added documentation on how Nebraska releases work, streamlining future release procedures.
-  - Updated the Helm chart defaults to support the new container image branding and release the Helm chart version 1.2.0.
-- **Testing:**
-  - Introduced Playwright e2e tests for frontend workflows, integrated into our CI pipeline.
-  
+  - Updated the Helm chart defaults to support new container image branding and released Helm chart version 1.2.0.
+
 ### Changed
 - **Backend Improvements:**
   - Upgraded core Go dependencies:
     - Bumped Go to version 1.23.
-    - Updated authentication libraries such as `github.com/coreos/go-oidc/v3` (to v3.14.1) and `golang.org/x/oauth2` (to v0.29.0).
+    - Updated authentication libraries (`github/coreos/go-oidc/v3` to v3.14.1 and `golang.org/x/oauth2` to v0.29.0).
     - Enhanced concurrency support with `golang.org/x/sync` updated to v0.13.0.
-  - Enhanced error handling and output:
-    - Fixed error formatting in the main application logic.
-  - Adjusted default OIDC scopes: Refresh tokens are now requested only if the access token has expired.
+  - Adjusted default OIDC scopes so that refresh tokens are requested only if the access token has expired.
 - **Frontend Enhancements:**
-  - **UI/UX & Testing:**
-    - Upgraded Storybook to version 8 and updated story definitions
-        - resulting in changes to snapshot tests.
-    - Upgraded from React 16 to 18
-    - Upgraded from MUI4 to MUI5
-        - Updated input field variants and component APIs to reflect newer defaults.
-        - Updated snapshots to align with MUI5 styling changes.
-        - Fixed several unit tests impacted by stricter type and style checks after upgrading React and MUI.
-    - Increased test coverage
-    - Made adjustments to ESLint configurations and TypeScript versions to address compatibility with updated libraries (e.g., React, MUI).
-    - Fixed unit tests by ensuring proper theme provider wrapping following stricter MUI5 requirements.
-  - **Dependency Updates:**
-    - Upgraded multiple npm dependencies:
-      - I.e., `@typescript-eslint/eslint-plugin` was bumped from 8.18.1 to 8.25.0 and `@types/node` was updated from 14.18.63 to 22.13.1.
-    - Updated frontend-related packages:
-      - Storybook now uses webpack 5.
-      - The API query construction in `api.ts` now uses native URLSearchParams instead of deprecated packages.
-  - **Extracted labels and text from the UI into separate language resources** to make the code cleaner and make translation much easier
+  - **UI/UX Updates:**
+    - Upgraded from React 16 to 18.
+    - Upgraded from MUI4 to MUI5:
+      - Updated input field variants, component APIs, and snapshots to reflect styling changes.
+      - Fixed several unit tests affected by stricter type and style checks.
+  - **Dependency Updates & Refactoring:**
+    - Upgraded multiple npm dependencies (e.g., `@typescript-eslint/eslint-plugin` from 8.18.1 to 8.25.0 and `@types/node` from 14.18.63 to 22.13.1).
+    - Updated the API query construction in `api.ts` to use native URLSearchParams, replacing deprecated packages.
+    - Extracted UI labels and text into separate language resources to simplify translation.
 - **CI/CD & DevOps:**
-  - Updated GitHub Actions workflows:
-    - Bumped actions such as `actions/setup-python`, `actions/setup-go`, `actions/setup-node`, and `actions/checkout` to their latest versions.
-    - Upgraded Docker actions like `docker/setup-buildx-action` and `docker/setup-qemu-action` for enhanced stability.
-  - Modernized CI workflows by integrating playwright.
+  - Modernized workflows:
+    - Bumped GitHub Actions (e.g., `actions/setup-python`, `actions/setup-go`, `actions/setup-node`, `actions/checkout`) and Docker actions (`docker/setup-buildx-action`, `docker/setup-qemu-action`) to their latest versions.
 - **General Dependency Updates:**
-  - Numerous dependencies across both backend and frontend have been updated, including:
-    - `github/labstack/echo/v4` updated from v4.12.0 to v4.13.3.
-    - Multiple bumps to dependencies like `golang.org/x/crypto`, `github.com/stretchr/testify`, `github.com/golangci/golangci-lint`, `github.com/jmoiron/sqlx`, and others.
-  - Updated several indirect dependencies (e.g., `path-to-regexp`, `express`, `tough-cookie`, `browserify-sign`, `async`, `url-parse`, etc.) ensuring that all parts of the stack align with current best practices.
+  - Updated various backend and frontend dependencies:
+    - For example, `github/labstack/echo/v4` was updated from v4.12.0 to v4.13.3.
+    - Updated other dependencies such as `github.com/stretchr/testify`, `github.com/golangci/golangci-lint`, `github.com/jmoiron/sqlx`, and several indirect dependencies (e.g., `path-to-regexp`, `express`, `tough-cookie`, `browserify-sign`, `async`, `url-parse`).
 
 ### Deprecated
-- Deprecated the use of the legacy `golint` linter in favor of the actively maintained [revive](https://github.com/mgechev/revive).
-- Phasing out the old querystring package in frontend code, replacing it with native `URLSearchParams` functionality.
+- Deprecated the legacy `golint` linter in favor of the actively maintained [revive](https://github.com/mgechev/revive).
+- Phasing out the old querystring package in favor of native `URLSearchParams` in frontend code.
 - Gradually deprecating outdated Formik properties in favor of newer component APIs.
 
 ### Removed
-- Removed deprecated Formik render props and unused translation keys, simplifying the codebase.
-- Cleaned up legacy Docker Compose configurations now replaced by the standard `docker compose` command in CI workflows.
+- Removed deprecated Formik render props and unused translation keys to simplify the codebase.
+- Cleaned up legacy Docker Compose configurations, replacing them with the standard `docker compose` command in CI workflows.
 
 ### Fixed
-- **Bug Fixes:**
-  - Fixed formatting issues.
-  - Resolved localization warnings to declutter development console.
-  - Addressed snapshot mismatches in Storybook due to style and configuration changes.
 - **Tooling & Integration:**
-  - Fixed issues in the code generation tool for server APIs by updating `oapi-codegen` and related dependencies.
-  - Adjusted CI workflows to prevent version conflicts, especially for tools like `github/codeql-action` and `actions/checkout`.
+  - Fixed issues with the server API code generation tool by updating `oapi-codegen` and related dependencies.
+  - Adjusted CI workflows to prevent version conflicts (e.g., with `github/codeql-action` and `actions/checkout`).
 
-### Security
-- **Dependency & Infrastructure Security:**
-  - Upgraded Docker base images
-  - Upgraded critical security libraries:
-    - Updated `github/coreos/go-oidc/v3` and `golang.org/x/oauth2` to patch known vulnerabilities.
-    - Bumped `golang.org/x/crypto` to version 0.31.0 in both backend and updater modules.
-  - Increased security in session management:
-    - Enforced HttpOnly flag on session cookies to mitigate cross-site scripting (XSS) attacks.
-- **CI/CD Pipeline Enhancements:**
-  - Updated GitHub Actions and Docker build tools to ensure the latest security patches are applied, including:
-    - Latest versions for `actions/setup-python`, `actions/setup-node`, `docker/setup-buildx-action`, and `docker/setup-qemu-action`.
-  - Upgraded various npm packages to their secure versions.
-- **Vulnerability Mitigations:**
-  - Regularly addressed and patched dependencies to avoid potential vulnerabilities
-
+### Codebase Enhancements
+- **Testing:**
+  - Integrated Playwright end-to-end tests for frontend workflows into the CI pipeline.
+  - Increased test coverage.
+  - Upgraded Storybook to version 8 with updated story definitions affecting snapshot tests.
+- **Tooling Configurations:**
+  - Updated ESLint configurations and TypeScript versions for compatibility with newer libraries (e.g., React, MUI).
+- **Static Code Analysis & Cleanup:**
+  - Fixed formatting issues and resolved localization warnings to declutter the development console.
 ---
 
