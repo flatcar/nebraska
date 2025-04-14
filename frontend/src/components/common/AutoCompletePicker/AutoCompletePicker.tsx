@@ -69,7 +69,7 @@ interface RenderSuggestionProps {
     secondary: string;
   };
   style?: object;
-  getSecondaryLabel?: () => {};
+  getSecondaryLabel?: () => object;
 }
 
 function renderSuggestion(suggestionProps: RenderSuggestionProps) {
@@ -233,7 +233,14 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
       <Dialog open={showPicker || false}>
         <DialogTitle>{props.dialogTitle}</DialogTitle>
         <DialogContent>
-          <Downshift id="downshift-options">
+          <Downshift
+            id="downshift-options"
+            onChange={selectedItem => {
+              if (selectedItem) {
+                setSelectedValue(selectedItem);
+              }
+            }}
+          >
             {({
               getInputProps,
               getItemProps,
@@ -242,9 +249,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
               inputValue,
               selectedItem,
             }) => {
-              setSelectedValue(selectedItem);
-
-              const { onBlur, onFocus, ...inputProps } = getInputProps();
+              const { onBlur, ...inputProps } = getInputProps();
 
               return (
                 <div className={classes.container}>
@@ -255,7 +260,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
                     label: props.label,
                     placeholder: props.pickerPlaceholder,
                     InputLabelProps: getLabelProps(),
-                    InputProps: { onBlur, onChange: onInputChange, onFocus },
+                    InputProps: { onBlur, onChange: onInputChange },
                     inputProps,
                     variant: 'outlined',
                     onKeyDown: handleEscape,

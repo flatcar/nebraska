@@ -41,7 +41,7 @@ export default function Tabs(props: TabsProps) {
   const classes = useStyle();
   const { t } = useTranslation('glossary');
 
-  function handleTabChange(event: any, newValue: number) {
+  function handleTabChange(_event: any, newValue: number) {
     setTabIndex(newValue);
 
     if (onTabChanged !== null) {
@@ -49,17 +49,13 @@ export default function Tabs(props: TabsProps) {
     }
   }
 
-  React.useEffect(
-    () => {
-      if (defaultIndex === null) {
-        setTabIndex(false);
-        return;
-      }
-      setTabIndex(defaultIndex);
-    },
-    // eslint-disable-next-line
-    [defaultIndex]
-  );
+  React.useEffect(() => {
+    if (defaultIndex === null) {
+      setTabIndex(false);
+      return;
+    }
+    setTabIndex(defaultIndex);
+  }, [defaultIndex]);
 
   return (
     <React.Fragment>

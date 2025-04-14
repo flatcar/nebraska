@@ -4,7 +4,7 @@ import React from 'react';
 
 const useStyles = makeStyles({
   divider: {
-    borderBottom: `2px solid rgba(0, 0, 0, 0.12)`,
+    borderBottom: '2px solid rgba(0, 0, 0, 0.12)',
   },
 });
 

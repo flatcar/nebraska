@@ -1,4 +1,6 @@
 import { render } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
+
 import SimpleTable from '../../components/common/SimpleTable';
 
 describe('Simple Table', () => {
@@ -13,12 +15,13 @@ describe('Simple Table', () => {
       key1: 'Column1',
       key2: 'Column2',
     },
+    emptyMessage: 'No data available',
   };
   it('shoudl render Table with correct data', async () => {
     const { getByText } = render(<SimpleTable {...minProps} />);
-    expect(getByText(minProps.instances[0].key1)).toBeInTheDocument();
-    expect(getByText(minProps.instances[0].key2)).toBeInTheDocument();
-    expect(getByText(minProps.columns.key1)).toBeInTheDocument();
-    expect(getByText(minProps.columns.key2)).toBeInTheDocument();
+    expect(getByText(minProps.instances[0].key1)).toBeTruthy();
+    expect(getByText(minProps.instances[0].key2)).toBeTruthy();
+    expect(getByText(minProps.columns.key1)).toBeTruthy();
+    expect(getByText(minProps.columns.key2)).toBeTruthy();
   });
 });

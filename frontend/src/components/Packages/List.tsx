@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
+
 import API from '../../api/API';
 import { Package } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
@@ -68,7 +69,7 @@ function List(props: { appID: string }) {
   }
 
   function handleChangePage(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
+    _event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
     newPage: number
   ) {
     setPage(newPage);

@@ -6,6 +6,7 @@ import { makeStyles, useTheme } from '@mui/styles';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Cell, Label, Pie, PieChart } from 'recharts';
+
 import Empty from '../common/EmptyContent';
 import LightTooltip from '../common/LightTooltip';
 import Loader from '../common/Loader';

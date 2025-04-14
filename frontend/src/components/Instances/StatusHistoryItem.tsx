@@ -2,6 +2,7 @@ import { Box } from '@mui/material';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import React from 'react';
+
 import { InstanceStatusHistory } from '../../api/apiDataTypes';
 import { makeLocaleTime } from '../../i18n/dateTime';
 import {

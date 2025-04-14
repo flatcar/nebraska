@@ -7,6 +7,7 @@ import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
+
 import { Activity } from '../../api/apiDataTypes';
 import { toLocaleString } from '../../i18n/dateTime';
 import { activityStore } from '../../stores/Stores';

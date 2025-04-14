@@ -1,6 +1,5 @@
-import type { TestRunnerConfig } from '@storybook/test-runner';
 
-const config: TestRunnerConfig = {
+const config = {
   // Hook that is executed before the test runner starts running tests
   setup() {
     // Add your configuration here.
@@ -26,4 +25,4 @@ const config: TestRunnerConfig = {
   },
 };
 
-export default config;
+module.exports = config;

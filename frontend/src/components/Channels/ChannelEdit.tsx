@@ -16,6 +16,7 @@ import { TextField } from 'formik-mui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
+
 import API from '../../api/API';
 import { Channel, Package } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
@@ -161,7 +162,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
   }
 
   //@todo add better types
-  //@ts-ignore
+  //@ts-expect-error as type mismatch
   function renderForm({ values, status, setFieldValue, isSubmitting }) {
     return (
       <Form data-testid="channel-edit-form">
@@ -292,7 +293,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
       </DialogTitle>
       <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={validation}>
         {/* @todo add better types */}
-        {/* @ts-ignore */}
+        {/* @ts-expect-error as type mismatch */}
         {renderForm}
       </Formik>
     </Dialog>

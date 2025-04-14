@@ -37,7 +37,7 @@ const lightTheme = createTheme({
     },
     primary: {
       contrastText: '#fff',
-      main: process.env.REACT_APP_PRIMARY_COLOR ? process.env.REACT_APP_PRIMARY_COLOR : '#2C98F0',
+      main: import.meta.env.VITE_PRIMARY_COLOR ? import.meta.env.VITE_PRIMARY_COLOR : '#2C98F0',
     },
     success: {
       main: green['800'],
@@ -98,10 +98,6 @@ const themesConf: ThemesConf = {
 export default themesConf;
 
 export function usePrefersColorScheme() {
-  if (DISABLE_BROWSER_THEME_PREF || typeof window.matchMedia !== 'function') {
-    return 'light';
-  }
-
   const mql = window.matchMedia('(prefers-color-scheme: dark)');
   const [value, setValue] = React.useState(mql.matches);
 
@@ -110,6 +106,10 @@ export function usePrefersColorScheme() {
     mql.addListener(handler);
     return () => mql.removeListener(handler);
   }, []);
+
+  if (DISABLE_BROWSER_THEME_PREF || typeof window.matchMedia !== 'function') {
+    return 'light';
+  }
 
   return value;
 }

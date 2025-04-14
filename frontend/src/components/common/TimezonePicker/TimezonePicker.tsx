@@ -32,7 +32,7 @@ interface RenderInputProps {
   ref?: React.Ref<any>;
   InputProps: {
     onBlur?: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
-    onChange?: React.FormEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+    onChange?: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
     onFocus?: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   };
   fullWidth: boolean;
@@ -134,7 +134,7 @@ interface LazyListProps {
 }
 
 interface LazyListProps {
-  //@ts-ignore
+  //@ts-expect-error as type mismatch
   options: RenderSuggestionProps['suggestion'][];
   itemData: any;
   height: number;
@@ -213,7 +213,14 @@ export default function TimzonePicker(props: {
       <Dialog open={showPicker}>
         <DialogTitle>Choose a Timezone</DialogTitle>
         <DialogContent>
-          <Downshift id="downshift-options">
+          <Downshift
+            id="downshift-options"
+            onChange={selectedItem => {
+              if (selectedItem) {
+                setSelectedTimezone(selectedItem);
+              }
+            }}
+          >
             {({
               getInputProps,
               getItemProps,
@@ -222,9 +229,7 @@ export default function TimzonePicker(props: {
               inputValue,
               selectedItem,
             }) => {
-              setSelectedTimezone(selectedItem);
-
-              const { onBlur, onChange, onFocus, ...inputProps } = getInputProps();
+              const { onBlur, onChange, ...inputProps } = getInputProps();
 
               return (
                 <div className={classes.container}>
@@ -235,13 +240,13 @@ export default function TimzonePicker(props: {
                     label: t('common|timezone_label'),
                     placeholder: t('common|search_timezone_prompt'),
                     InputLabelProps: getLabelProps(),
-                    InputProps: { onBlur, onChange, onFocus },
+                    InputProps: { onBlur, onChange },
                     inputProps,
                     variant: 'outlined',
                   })}
                   <LazyList
                     //@todo add better types
-                    //@ts-ignore
+                    //@ts-expect-error as type mismatch
                     options={getSuggestions(inputValue, selectedItem)}
                     itemData={{
                       getItemProps,

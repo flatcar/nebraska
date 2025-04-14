@@ -1,6 +1,8 @@
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import { fireEvent, render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { describe, expect, it } from 'vitest';
+
 import ModalButton from '../../components/common/ModalButton';
 import { theme } from '../../TestHelpers/theme';
 
@@ -16,7 +18,7 @@ describe('Modal Button', () => {
       </StyledEngineProvider>
     );
     fireEvent.click(getByTestId('modal-button'));
-    expect(getByTestId('app-edit-form')).toBeInTheDocument();
+    expect(getByTestId('app-edit-form')).toBeTruthy();
   });
   it('should render AddGroupModal on Add Icon click', () => {
     const { getByTestId } = render(
@@ -31,7 +33,7 @@ describe('Modal Button', () => {
       </StyledEngineProvider>
     );
     fireEvent.click(getByTestId('modal-button'));
-    expect(getByTestId('group-edit-form')).toBeInTheDocument();
+    expect(getByTestId('group-edit-form')).toBeTruthy();
   });
   it('should render AddChannelModal on Add Icon click', () => {
     const tree = (
@@ -47,7 +49,7 @@ describe('Modal Button', () => {
     );
     const { getByTestId } = render(tree);
     fireEvent.click(getByTestId('modal-button'));
-    expect(getByTestId('channel-edit-form')).toBeInTheDocument();
+    expect(getByTestId('channel-edit-form')).toBeTruthy();
   });
   it('should render AddPackageModal on Add Icon click', () => {
     const { getByTestId } = render(
@@ -62,6 +64,6 @@ describe('Modal Button', () => {
       </StyledEngineProvider>
     );
     fireEvent.click(getByTestId('modal-button'));
-    expect(getByTestId('package-edit-form')).toBeInTheDocument();
+    expect(getByTestId('package-edit-form')).toBeTruthy();
   });
 });

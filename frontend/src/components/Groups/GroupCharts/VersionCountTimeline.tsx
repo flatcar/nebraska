@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/styles';
 import React from 'react';
 import semver from 'semver';
+
 import { Group } from '../../../api/apiDataTypes';
 import { makeLocaleTime } from '../../../i18n/dateTime';
 import { groupChartStoreContext } from '../../../stores/Stores';

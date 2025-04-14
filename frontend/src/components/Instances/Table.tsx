@@ -1,7 +1,7 @@
 import menuDown from '@iconify/icons-mdi/menu-down';
 import menuSwap from '@iconify/icons-mdi/menu-swap';
 import menuUp from '@iconify/icons-mdi/menu-up';
-import Icon from '@iconify/react';
+import { Icon } from '@iconify/react';
 import { IconButton } from '@mui/material';
 import MuiTable from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -12,6 +12,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import semver from 'semver';
 import _ from 'underscore';
+
 import { Channel, Instance } from '../../api/apiDataTypes';
 import { cleanSemverVersion, InstanceSortFilters } from '../../utils/helpers';
 import Item from './Item';

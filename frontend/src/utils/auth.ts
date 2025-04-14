@@ -1,6 +1,7 @@
-import jwt_decode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import React from 'react';
 import { useHistory } from 'react-router';
+
 import { setUser, UserState } from '../stores/redux/features/user';
 import { useDispatch, useSelector } from '../stores/redux/hooks';
 
@@ -24,7 +25,7 @@ export function isValidToken(token: string) {
     return false;
   }
 
-  const decoded = jwt_decode(token) as JWT;
+  const decoded = jwtDecode(token) as JWT;
 
   // Check if it's expired
   const expiration = new Date(decoded.exp * 1000);
@@ -45,7 +46,7 @@ function getUserInfoFromToken(token: string) {
     return info;
   }
 
-  const decoded = jwt_decode(token) as JWT;
+  const decoded = jwtDecode(token) as JWT;
 
   info.name = decoded.given_name || '';
   info.email = decoded.email || '';
@@ -79,7 +80,7 @@ export function useAuthRedirect() {
     }
 
     const token = params.get('id_token');
-    if (!!token) {
+    if (token) {
       setToken(token);
       // Discard the URL search params
       dispatch(setUser({ authenticated: true }));
@@ -94,7 +95,7 @@ export function useAuthRedirect() {
     }
 
     if ((!isValidToken(currentToken) || !user?.authenticated) && !!config.login_url) {
-      var login_redirect_url = new URL(window.location.href);
+      const login_redirect_url = new URL(window.location.href);
       if (login_redirect_url.pathname === '/login') {
         login_redirect_url.pathname = '/';
       }

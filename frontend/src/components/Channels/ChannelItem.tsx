@@ -5,6 +5,7 @@ import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import makeStyles from '@mui/styles/makeStyles';
 import { useTranslation } from 'react-i18next';
+
 import { Channel } from '../../api/apiDataTypes';
 import { makeLocaleTime } from '../../i18n/dateTime';
 import { applicationsStore } from '../../stores/Stores';

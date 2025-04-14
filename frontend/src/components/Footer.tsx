@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import React from 'react';
+
 import { useSelector } from '../stores/redux/hooks';
 
 function Footer() {

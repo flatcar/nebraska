@@ -5,7 +5,7 @@ export const theme = createTheme({
   palette: {
     primary: {
       contrastText: '#fff',
-      main: process.env.REACT_APP_PRIMARY_COLOR || '#000',
+      main: import.meta.env.VITE_PRIMARY_COLOR || '#000',
     },
     success: {
       main: green['800'],

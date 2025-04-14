@@ -13,6 +13,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import * as Yup from 'yup';
+
 import { Group } from '../../../api/apiDataTypes';
 import { applicationsStore } from '../../../stores/Stores';
 import { DEFAULT_TIMEZONE } from '../../common/TimezonePicker';
@@ -105,11 +106,11 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
     props.onHide();
   }
 
-  function onEditGroupTabChange(event: any, index: any) {
+  function onEditGroupTabChange(_event: any, index: any) {
     setGroupEditActiveTab(index);
   }
 
-  //@ts-ignore
+  //@ts-expect-error as type mismatch
   function renderForm({ values, status, setFieldValue, isSubmitting }) {
     const channels = props.data.channels ? props.data.channels : [];
 
@@ -208,7 +209,7 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
       onlyOfficeHours: false,
       safeMode: false,
     };
-  } else if (!!props.data.group) {
+  } else if (props.data.group) {
     const group = props.data.group;
     const [currentUpdatesPeriodRange, currentUpdatesPeriodUnit] =
       group.policy_period_interval.split(' ');
@@ -236,7 +237,7 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
       <DialogTitle>{isCreation ? t('groups|group_add') : t('groups|group_edit')}</DialogTitle>
       <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={validation}>
         {/* @todo add better types for renderForm */}
-        {/* @ts-ignore */}
+        {/* @ts-expect-error as type mismatch */}
         {renderForm}
       </Formik>
     </Dialog>

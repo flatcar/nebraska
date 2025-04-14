@@ -1,13 +1,22 @@
 import { expect, test } from '@playwright/test';
-import { createApplication, createChannel, createGroup, createPackage, deleteApplication, generateSalt } from './helpers';
+
+import {
+  createApplication,
+  createChannel,
+  createGroup,
+  createPackage,
+  deleteApplication,
+  generateSalt,
+} from './helpers';
 
 test.describe('Groups', () => {
-  let appName: string; let appId: string;
+  let appName: string;
+  let appId: string;
 
   test.beforeEach(async ({ page }, testInfo) => {
     const appNameSalt = generateSalt(testInfo.title);
-    appName = "Test app" + appNameSalt;
-    appId = "io.test.app." + appNameSalt;
+    appName = 'Test app' + appNameSalt;
+    appId = 'io.test.app.' + appNameSalt;
 
     await page.goto('http://localhost:8002/');
     await createApplication(page, appName, appId);
@@ -19,7 +28,7 @@ test.describe('Groups', () => {
 
     await createPackage(page, '4117.0.0');
     await page.reload();
-    await createChannel(page, "testChannel", "AMD64", "4117.0.0");
+    await createChannel(page, 'testChannel', 'AMD64', '4117.0.0');
 
     await page.goto('http://localhost:8002/');
     await page.getByRole('link', { name: appName }).click();
@@ -89,11 +98,10 @@ test.describe('Groups', () => {
 
     await page.getByRole('button', { name: 'Save' }).click({ clickCount: 2 });
 
-    await page.getByTestId('list-item').getByRole('link').waitFor({ timeout: 4000 })
+    await page.getByTestId('list-item').getByRole('link').waitFor({ timeout: 4000 });
 
     await page.reload();
     await expect(page.getByTestId('list-item')).toContainText('Enabled');
     await expect(page.getByTestId('list-item')).toContainText('Max 1 / 1 minutes');
   });
 });
-
