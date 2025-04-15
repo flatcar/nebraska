@@ -89,7 +89,7 @@
     "@types/react-router-dom": "^5.3.3",
     "@types/underscore": "^1.13.0",
     "@typescript-eslint/eslint-plugin": "^8.29.0",
-    "@typescript-eslint/parser": "^8.29.0",
+    "@typescript-eslint/parser": "^8.30.1",
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/coverage-istanbul": "^3.1.1",
     "eslint": "^9.23.0",
