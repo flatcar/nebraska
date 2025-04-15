@@ -2,6 +2,38 @@ apiVersion: v1
 entries:
   nebraska:
   - apiVersion: v2
+    appVersion: 2.10.0
+    created: "2025-04-15T14:23:13.151927643Z"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 11.9.1
+    description: Nebraska is an update manager for Flatcar Container Linux.
+    digest: 1ca069d0c9beaeaf4c5495780a11d01a5dc0874fc7f68206591d3fbde643a96e
+    home: https://github.com/kinvolk/nebraska/tree/master/deploy/helm
+    icon: https://raw.githubusercontent.com/kinvolk/nebraska/master/docs/nebraska-logo.svg
+    keywords:
+    - nebraska
+    - kinvolk
+    - CoreOS
+    - update manager
+    - updates
+    - Omaha protocol
+    - flatcar
+    - Flatcar Container Linux
+    maintainers:
+    - name: kinvolk
+      url: https://kinvolk.io/
+    name: nebraska
+    sources:
+    - https://github.com/kinvolk/nebraska
+    - https://kinvolk.io/
+    type: application
+    urls:
+    - https://github.com/flatcar/nebraska/releases/download/nebraska-helm-1.3.0/nebraska-1.3.0.tgz
+    version: 1.3.0
+  - apiVersion: v2
     appVersion: 2.9.0
     created: "2024-04-26T09:06:51.720418469Z"
     dependencies:
@@ -609,4 +641,4 @@ entries:
     urls:
     - https://github.com/kinvolk/nebraska/releases/download/nebraska-helm-0.1.1/nebraska-0.1.1.tgz
     version: 0.1.1
-generated: "2024-04-26T09:06:51.720566286Z"
+generated: "2025-04-15T14:23:13.152074566Z"
