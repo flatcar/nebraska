@@ -1,6 +1,6 @@
 module github.com/kinvolk/nebraska/updater
 
-go 1.17
+go 1.23.0
 
 require (
 	github.com/google/uuid v1.6.0
@@ -27,8 +27,8 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rs/zerolog v1.21.0 // indirect
 	github.com/rubenv/sql-migrate v0.0.0-20210408115534-a32ed26c37ea // indirect
-	golang.org/x/crypto v0.31.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
+	golang.org/x/crypto v0.35.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 	gopkg.in/gorp.v1 v1.7.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
