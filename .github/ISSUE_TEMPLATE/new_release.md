@@ -14,6 +14,7 @@ labels: "kind/release"
 - [ ] `staging` deployment works as expected (basic user actions, Flatcar update payload, etc.)
 - [ ] Tag and push the released version (e.g: `git tag -as 2.9.0`)
 - [ ] Wait for CI to be green; create a GitHub release associated to the release tag and use the [`CHANGELOG.md`][changelog] content to create the release body
+- [ ] List contributors on the release note
 - [ ] Bump both `appVersion` and `version` in [Chart.yaml](https://github.com/flatcar/nebraska/blob/main/charts/nebraska/Chart.yaml), commit and open a PR.
 
 ## 3. Announcements
