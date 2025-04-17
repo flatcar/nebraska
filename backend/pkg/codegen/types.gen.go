@@ -13,6 +13,11 @@ const (
 	OidcCookieAuthScopes   = "oidcCookieAuth.Scopes"
 )
 
+// Defines values for InstanceStatsType.
+const (
+	InstanceStatsTypeInstanceCount InstanceStatsType = "instance_count"
+)
+
 // Activity defines model for activity.
 type Activity struct {
 	AppID           string    `json:"app_id"`
@@ -233,6 +238,19 @@ type InstancePage struct {
 	Instances []Instance `json:"instances"`
 	Total     int        `json:"total"`
 }
+
+// InstanceStats defines model for instanceStats.
+type InstanceStats struct {
+	Arch      string            `json:"arch"`
+	Channel   string            `json:"channel"`
+	Count     *int              `json:"count,omitempty"`
+	Timestamp string            `json:"timestamp"`
+	Type      InstanceStatsType `json:"type"`
+	Version   string            `json:"version"`
+}
+
+// InstanceStatsType defines model for InstanceStats.Type.
+type InstanceStatsType string
 
 // InstanceStatusHistories defines model for instanceStatusHistories.
 type InstanceStatusHistories = []InstanceStatusHistory
