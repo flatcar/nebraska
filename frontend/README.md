@@ -1,10 +1,40 @@
-# React + TypeScript + Vite
+# Nebraska
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Nebraska** is an update manager for [Flatcar Container Linux](https://www.flatcar.org/), built with **React**, **Vite**, and **MUI** (Material UI).
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- ⚛️ React + Vite
+- 🎨 MUI (Material UI) for UI components
+- 🌐 i18n with i18next
+- 🧪 Testing with Vitest
+- 🧼 Linting & formatting via ESLint + Prettier
+- 📖 Storybook for isolated UI development
 
-## Expanding the ESLint configuration
+## Getting Started
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Run tests
+npm test
+
+# Run linter and formatter
+npm run lint
+npm run format
+
+# Build for production
+npm run build
+
+# Run Storybook
+npm run storybook
+
+# Build Storybook
+npm run build-storybook
+
+# Generate test coverage report
+npm run test:coverage
