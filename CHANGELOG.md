@@ -10,9 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Dependency Audit & Vulnerability Mitigation:**
   - Initially pursued a clean `npm audit` outcome free of vulnerabilities. This goal was re-evaluated as legacy CRA/Webpack dependencies rely on unmaintained libraries, posing ongoing security risks.
 - **golang.org/x/net → v0.38.0**  
-  Fixes CVE-2025-22870 and CVE-2025-22872 in the HTML tokenizer/parser
+  Fixes CVE-2025-22870 and CVE-2025-22872 in the HTML tokenizer/parser (https://github.com/flatcar/nebraska/pull/1016)
 - **golang.org/x/crypto → v0.35.0**  
-  Patches CVE-2025-22869 in SSH server implementations to prevent DoS via untransmitted pending content
+  Patches CVE-2025-22869 in SSH server implementations to prevent DoS via untransmitted pending content (https://github.com/flatcar/nebraska/pull/1001)
 
 ### Added
 - **Tooling Upgrades:**
