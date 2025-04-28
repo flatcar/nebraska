@@ -23,7 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **TypeScript Enhancements:**
   - Simplified the `tsconfig.json` file and enabled stricter type-checking settings.
   - Addressed some newly surfaced TypeScript warnings and errors
-- Bump Helm chart versions: app → v2.10.0, charts → v1.3.0
+- Bump Helm chart versions: app → v2.10.0, charts → v1.3.0 (https://github.com/flatcar/nebraska/pull/1012)
 
 ### Internal / Maintenance Notes
   - The legacy CRA/Webpack setup, although reliable in the early stages, has become increasingly difficult to maintain due to slow update cycles and performance inefficiencies.
