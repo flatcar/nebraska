@@ -4,30 +4,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] # CRA to Vite migration
+## [Unreleased]
 
 ### Security
 - **Dependency Audit & Vulnerability Mitigation:**
   - Initially pursued a clean `npm audit` outcome free of vulnerabilities. This goal was re-evaluated as legacy CRA/Webpack dependencies rely on unmaintained libraries, posing ongoing security risks.
+- **golang.org/x/net → v0.38.0**  
+  Fixes CVE-2025-22870 and CVE-2025-22872 in the HTML tokenizer/parser (https://github.com/flatcar/nebraska/pull/1016)
+- **golang.org/x/crypto → v0.35.0**  
+  Patches CVE-2025-22869 in SSH server implementations to prevent DoS via untransmitted pending content (https://github.com/flatcar/nebraska/pull/1001)
 
 ### Added
 - **Tooling Upgrades:**
   - Migrated the build system from Webpack (CRA) to Vite to achieve faster build time and modern native ES module support.
+- Add `new_release.md` template based on Flatcar release guidelines (https://github.com/flatcar/nebraska/pull/1002)
 
 ### Changed
-  
 - **TypeScript Enhancements:**
   - Simplified the `tsconfig.json` file and enabled stricter type-checking settings.
-  - Addressed newly surfaced TypeScript warnings and errors
-
-### Refactors & Improvements
-- **Icon Management:**
-  - Refactored the icon builder to utilize the new Iconify API for improved performance and maintainability.
-  
-- **General Codebase Improvements:**
-  - Optimized import arrangements and removed unused parameters across multiple functions.
-  - Enhanced the `package.json` scripts for development, testing, and build processes.
-  - Updated various minor and major dependencies to maintain compatibility and stability.
+  - Addressed some newly surfaced TypeScript warnings and errors
+- Bump Helm chart versions: app → v2.10.0, charts → v1.3.0 (https://github.com/flatcar/nebraska/pull/1012)
 
 ### Internal / Maintenance Notes
   - The legacy CRA/Webpack setup, although reliable in the early stages, has become increasingly difficult to maintain due to slow update cycles and performance inefficiencies.
@@ -39,6 +35,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Introduced `eslint.config.js` to centralize and simplify linting rules.
   - Moved `index.html` from the `public/` folder to the root (`frontend/`) to better align with Vite’s optimal project structure and optimized the file for Vite usage.
   - Reformatted and cleaned up End-to-End (E2E) test files to enhance clarity and consistency.
+  - Add badges to README for CI/status/integration (#993)
+
+#### Refactors & Improvements
+- **Icon Management:**
+  - Refactored the icon builder to utilize the new Iconify API for improved performance and maintainability.
+  
+- **General Codebase Improvements:**
+  - Optimized import arrangements and removed unused parameters across multiple functions.
+  - Enhanced the `package.json` scripts for development, testing, and build processes.
+  - Updated various minor and major dependencies to maintain compatibility and stability.
 
 ---
 
