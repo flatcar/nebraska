@@ -17,7 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - **Tooling Upgrades:**
   - Migrated the build system from Webpack (CRA) to Vite to achieve faster build time and modern native ES module support.
-- Add `new_release.md` template based on Flatcar release guidelines (#1002)
+- Add `new_release.md` template based on Flatcar release guidelines (https://github.com/flatcar/nebraska/pull/1002)
 
 ### Changed
 - **TypeScript Enhancements:**
