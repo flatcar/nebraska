@@ -7,7 +7,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import FormControl from '@mui/material/FormControl';
 import Input from '@mui/material/Input';
 import InputLabel, { InputLabelProps } from '@mui/material/InputLabel';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import TextField from '@mui/material/TextField';
 import makeStyles from '@mui/styles/makeStyles';
 import Downshift from 'downshift';
@@ -77,9 +77,9 @@ function renderSuggestion(suggestionProps: RenderSuggestionProps) {
   const isSelected = (selectedItem || '').indexOf(suggestion.primary) > -1;
 
   return (
-    <ListItem {...itemProps} button key={suggestion.primary} selected={isSelected} style={style}>
+    <ListItemButton {...itemProps} key={suggestion.primary} selected={isSelected} style={style}>
       <ListItemText primary={suggestion.primary} secondary={suggestion.secondary} />
-    </ListItem>
+    </ListItemButton>
   );
 }
 

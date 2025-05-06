@@ -12,7 +12,7 @@ exports[`List Header > should render correct List Header actions 1`] = `
         class="MuiBox-root css-2rlxtj"
       >
         <h1
-          class="MuiTypography-root MuiTypography-h1 css-17cy2p8-MuiTypography-root"
+          class="MuiTypography-root MuiTypography-h1 css-12oqc8p-MuiTypography-root"
         >
           Applications
         </h1>
@@ -24,14 +24,14 @@ exports[`List Header > should render correct List Header actions 1`] = `
       <div>
         <button
           aria-label="add"
-          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-1pe4mpk-MuiButtonBase-root-MuiIconButton-root"
+          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-155wbr6-MuiButtonBase-root-MuiIconButton-root"
           data-testid="modal-button"
           tabindex="0"
           type="button"
         >
           <svg
             aria-hidden="true"
-            class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge makeStyles-root-3 css-tzssek-MuiSvgIcon-root"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge makeStyles-root-3 css-uks7c6-MuiSvgIcon-root"
             data-testid="AddIcon"
             focusable="false"
             viewBox="0 0 24 24"
@@ -40,9 +40,6 @@ exports[`List Header > should render correct List Header actions 1`] = `
               d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"
             />
           </svg>
-          <span
-            class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
-          />
         </button>
       </div>
     </div>
