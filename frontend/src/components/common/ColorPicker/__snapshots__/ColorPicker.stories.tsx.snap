@@ -2,36 +2,32 @@
 
 exports[`ColorPickerButton Closed smoke-test 1`] = `
 <div>
-  <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeLarge stable-makeStyles-iconButton-1 css-mf1cb5-MuiButtonBase-root-MuiIconButton-root"
+  <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeLarge stable-makeStyles-iconButton-1 css-154kngp-MuiButtonBase-root-MuiIconButton-root"
           tabindex="0"
           type="button"
           data-testid="icon-button"
   >
-    <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-2 stable-makeStyles-colorAvatar-3 css-1onlcy6-MuiAvatar-root">
-      <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-2 stable-makeStyles-colorAvatar-4 css-1onlcy6-MuiAvatar-root">
+    <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-2 stable-makeStyles-colorAvatar-3 css-jmdkhx-MuiAvatar-root">
+      <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-2 stable-makeStyles-colorAvatar-4 css-jmdkhx-MuiAvatar-root">
         Beta
       </div>
     </div>
-    <span class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root">
-    </span>
   </button>
 </div>
 `;
 
 exports[`ColorPickerButton Open smoke-test 1`] = `
 <div>
-  <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeLarge stable-makeStyles-iconButton-5 css-mf1cb5-MuiButtonBase-root-MuiIconButton-root"
+  <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeLarge stable-makeStyles-iconButton-5 css-154kngp-MuiButtonBase-root-MuiIconButton-root"
           tabindex="0"
           type="button"
           data-testid="icon-button"
   >
-    <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-6 stable-makeStyles-colorAvatar-7 css-1onlcy6-MuiAvatar-root">
-      <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-6 stable-makeStyles-colorAvatar-8 css-1onlcy6-MuiAvatar-root">
+    <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-6 stable-makeStyles-colorAvatar-7 css-jmdkhx-MuiAvatar-root">
+      <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-6 stable-makeStyles-colorAvatar-8 css-jmdkhx-MuiAvatar-root">
         Beta
       </div>
     </div>
-    <span class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root">
-    </span>
   </button>
 </div>
 `;

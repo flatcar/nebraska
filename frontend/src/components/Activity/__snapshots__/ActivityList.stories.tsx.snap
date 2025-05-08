@@ -1,11 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`activity/ActivityList BetaList smoke-test 1`] = `
-<p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-listTitle-2 css-1s23nr9-MuiTypography-root">
+<p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-listTitle-2 css-12h6qye-MuiTypography-root">
   Wednesday, May 13, 2020
 </p>
-<ul class="MuiList-root MuiList-padding css-h4y409-MuiList-root">
-  <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-6 css-15u9cok-MuiListItem-root">
+<ul class="MuiList-root MuiList-padding css-b7dj7n-MuiList-root">
+  <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-6 css-roeqa8-MuiListItem-root">
     <div class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root">
       <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root">
         <div class="MuiBox-root css-geek62">
@@ -26,14 +26,14 @@ exports[`activity/ActivityList BetaList smoke-test 1`] = `
             </svg>
           </div>
           <div class="MuiBox-root css-0">
-            <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-appName-4 css-1s23nr9-MuiTypography-root">
+            <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-appName-4 css-12h6qye-MuiTypography-root">
               ABC
             </p>
           </div>
         </div>
       </div>
       <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root">
-        <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-5 css-b4h4sf-MuiTypography-root">
+        <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-5 css-tis6ec-MuiTypography-root">
           02:56 PM
         </p>
       </div>
@@ -42,7 +42,7 @@ exports[`activity/ActivityList BetaList smoke-test 1`] = `
       </div>
     </div>
   </li>
-  <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-6 css-15u9cok-MuiListItem-root">
+  <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-6 css-roeqa8-MuiListItem-root">
     <div class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root">
       <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root">
         <div class="MuiBox-root css-geek62">
@@ -63,14 +63,14 @@ exports[`activity/ActivityList BetaList smoke-test 1`] = `
             </svg>
           </div>
           <div class="MuiBox-root css-0">
-            <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-appName-4 css-1s23nr9-MuiTypography-root">
+            <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-appName-4 css-12h6qye-MuiTypography-root">
               DEF
             </p>
           </div>
         </div>
       </div>
       <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root">
-        <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-5 css-b4h4sf-MuiTypography-root">
+        <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-5 css-tis6ec-MuiTypography-root">
           02:55 PM
         </p>
       </div>
@@ -83,9 +83,9 @@ exports[`activity/ActivityList BetaList smoke-test 1`] = `
 `;
 
 exports[`activity/ActivityList Empty smoke-test 1`] = `
-<p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-listTitle-1 css-1s23nr9-MuiTypography-root">
+<p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-listTitle-1 css-12h6qye-MuiTypography-root">
   Wednesday, May 13, 2020
 </p>
-<ul class="MuiList-root MuiList-padding css-h4y409-MuiList-root">
+<ul class="MuiList-root MuiList-padding css-b7dj7n-MuiList-root">
 </ul>
 `;

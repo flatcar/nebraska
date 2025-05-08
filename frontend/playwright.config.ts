@@ -44,8 +44,8 @@ export default defineConfig({
     },
 
     {
-      name: 'chrome',
-      use: { ...devices['Desktop Chrome'] },
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
       dependencies: ['setup db'],
     },
   ],

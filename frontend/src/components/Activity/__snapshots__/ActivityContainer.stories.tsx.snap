@@ -4,17 +4,20 @@ exports[`activity/ActivityContainer Empty smoke-test 1`] = `
 <div class="MuiGrid-root MuiGrid-container stable-makeStyles-sectionHeader-5 css-eei0dj-MuiGrid-root">
   <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
     <div class="MuiBox-root css-2rlxtj">
-      <h1 class="MuiTypography-root MuiTypography-h1 css-17cy2p8-MuiTypography-root">
+      <h1 class="MuiTypography-root MuiTypography-h1 css-12oqc8p-MuiTypography-root">
         Activity
       </h1>
     </div>
   </div>
 </div>
-<div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-5jb75g-MuiPaper-root">
+<div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-12jlilq-MuiPaper-root"
+     style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
+>
   <div class="MuiBox-root css-1kbmarl">
     <div class="MuiBox-root css-19midj6">
-      <p class="MuiTypography-root MuiTypography-body1 MuiTypography-alignCenter css-ii1goy-MuiTypography-root"
+      <p class="MuiTypography-root MuiTypography-body1 MuiTypography-alignCenter css-12k2fzb-MuiTypography-root"
          data-testid="empty"
+         style="--Typography-textAlign: center;"
       >
         No activity found for the last week.
         <br>
@@ -30,21 +33,23 @@ exports[`activity/ActivityContainer List smoke-test 1`] = `
 <div class="MuiGrid-root MuiGrid-container stable-makeStyles-sectionHeader-10 css-eei0dj-MuiGrid-root">
   <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
     <div class="MuiBox-root css-2rlxtj">
-      <h1 class="MuiTypography-root MuiTypography-h1 css-17cy2p8-MuiTypography-root">
+      <h1 class="MuiTypography-root MuiTypography-h1 css-12oqc8p-MuiTypography-root">
         Activity
       </h1>
     </div>
   </div>
 </div>
-<div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-5jb75g-MuiPaper-root">
+<div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-12jlilq-MuiPaper-root"
+     style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
+>
   <div class="MuiBox-root css-1kbmarl">
     <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-column css-1vpwcmr-MuiGrid-root">
       <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-        <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-listTitle-11 css-1s23nr9-MuiTypography-root">
+        <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-listTitle-11 css-12h6qye-MuiTypography-root">
           Wednesday, May 13, 2020
         </p>
-        <ul class="MuiList-root MuiList-padding css-h4y409-MuiList-root">
-          <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-15 css-15u9cok-MuiListItem-root">
+        <ul class="MuiList-root MuiList-padding css-b7dj7n-MuiList-root">
+          <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-15 css-roeqa8-MuiListItem-root">
             <div class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root">
               <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root">
                 <div class="MuiBox-root css-geek62">
@@ -65,14 +70,14 @@ exports[`activity/ActivityContainer List smoke-test 1`] = `
                     </svg>
                   </div>
                   <div class="MuiBox-root css-0">
-                    <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-appName-13 css-1s23nr9-MuiTypography-root">
+                    <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-appName-13 css-12h6qye-MuiTypography-root">
                       ABC
                     </p>
                   </div>
                 </div>
               </div>
               <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root">
-                <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-14 css-b4h4sf-MuiTypography-root">
+                <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-14 css-tis6ec-MuiTypography-root">
                   02:56 PM
                 </p>
               </div>
@@ -81,7 +86,7 @@ exports[`activity/ActivityContainer List smoke-test 1`] = `
               </div>
             </div>
           </li>
-          <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-15 css-15u9cok-MuiListItem-root">
+          <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-15 css-roeqa8-MuiListItem-root">
             <div class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root">
               <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root">
                 <div class="MuiBox-root css-geek62">
@@ -102,14 +107,14 @@ exports[`activity/ActivityContainer List smoke-test 1`] = `
                     </svg>
                   </div>
                   <div class="MuiBox-root css-0">
-                    <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-appName-13 css-1s23nr9-MuiTypography-root">
+                    <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-appName-13 css-12h6qye-MuiTypography-root">
                       DEF
                     </p>
                   </div>
                 </div>
               </div>
               <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root">
-                <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-14 css-b4h4sf-MuiTypography-root">
+                <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-14 css-tis6ec-MuiTypography-root">
                   02:55 PM
                 </p>
               </div>
@@ -121,34 +126,33 @@ exports[`activity/ActivityContainer List smoke-test 1`] = `
         </ul>
       </div>
       <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-        <div class="MuiTablePagination-root css-jtlhu6-MuiTablePagination-root">
-          <div class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular MuiTablePagination-toolbar stable-makeStyles-toolbar-6 css-78c6dr-MuiToolbar-root-MuiTablePagination-toolbar">
-            <div class="MuiTablePagination-spacer css-1psng7p-MuiTablePagination-spacer">
+        <div class="MuiTablePagination-root css-7mt0f-MuiTablePagination-root">
+          <div class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular MuiTablePagination-toolbar stable-makeStyles-toolbar-6 css-1gak8h1-MuiToolbar-root-MuiTablePagination-toolbar">
+            <div class="MuiTablePagination-spacer css-1wtxofq-MuiTablePagination-spacer">
             </div>
-            <p class="MuiTablePagination-selectLabel stable-makeStyles-selectLabel-8 css-tjonbb-MuiTablePagination-selectLabel"
-               id=":r1:"
+            <p id=":r1:"
+               class="MuiTablePagination-selectLabel stable-makeStyles-selectLabel-8 css-1iy78om-MuiTablePagination-selectLabel"
             >
               Rows per page:
             </p>
-            <div class="MuiInputBase-root MuiInputBase-colorPrimary MuiTablePagination-input css-1iqud9t-MuiInputBase-root-MuiTablePagination-select">
+            <div class="MuiInputBase-root MuiInputBase-colorPrimary MuiTablePagination-select stable-makeStyles-select-7 MuiSelect-root MuiTablePagination-input css-16xpxla-MuiInputBase-root-MuiTablePagination-select">
               <div tabindex="0"
                    role="combobox"
-                   aria-controls=":r2:"
                    aria-expanded="false"
                    aria-haspopup="listbox"
                    aria-labelledby=":r1: :r0:"
                    id=":r0:"
-                   class="MuiSelect-select MuiTablePagination-select stable-makeStyles-select-7 MuiSelect-standard MuiInputBase-input css-194a1fa-MuiSelect-select-MuiInputBase-input"
+                   class="MuiSelect-select MuiTablePagination-select stable-makeStyles-select-7 MuiSelect-standard MuiInputBase-input css-mmygx2-MuiSelect-select-MuiInputBase-input"
               >
                 5
               </div>
               <input aria-invalid="false"
                      aria-hidden="true"
                      tabindex="-1"
-                     class="MuiSelect-nativeInput css-yf8vq0-MuiSelect-nativeInput"
+                     class="MuiSelect-nativeInput css-j0riat-MuiSelect-nativeInput"
                      value="5"
               >
-              <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiTablePagination-selectIcon MuiSelect-iconStandard css-pqjvzy-MuiSvgIcon-root-MuiSelect-icon"
+              <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiTablePagination-selectIcon MuiSelect-iconStandard css-1gpuzre-MuiSvgIcon-root-MuiSelect-icon"
                    focusable="false"
                    aria-hidden="true"
                    viewbox="0 0 24 24"
@@ -158,18 +162,18 @@ exports[`activity/ActivityContainer List smoke-test 1`] = `
                 </path>
               </svg>
             </div>
-            <p class="MuiTablePagination-displayedRows stable-makeStyles-displayedRows-9 css-m2d60k-MuiTablePagination-displayedRows">
+            <p class="MuiTablePagination-displayedRows stable-makeStyles-displayedRows-9 css-7echhw-MuiTablePagination-displayedRows">
               1–2 of 2
             </p>
             <div class="MuiTablePagination-actions">
-              <button class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-colorInherit MuiIconButton-sizeMedium css-zylse7-MuiButtonBase-root-MuiIconButton-root"
+              <button class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-colorInherit MuiIconButton-sizeMedium css-h7cjts-MuiButtonBase-root-MuiIconButton-root"
                       tabindex="-1"
                       type="button"
                       disabled
                       aria-label="previous page"
                       title="Go to previous page"
               >
-                <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
                      focusable="false"
                      aria-hidden="true"
                      viewbox="0 0 24 24"
@@ -179,14 +183,14 @@ exports[`activity/ActivityContainer List smoke-test 1`] = `
                   </path>
                 </svg>
               </button>
-              <button class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-colorInherit MuiIconButton-sizeMedium css-zylse7-MuiButtonBase-root-MuiIconButton-root"
+              <button class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-colorInherit MuiIconButton-sizeMedium css-h7cjts-MuiButtonBase-root-MuiIconButton-root"
                       tabindex="-1"
                       type="button"
                       disabled
                       aria-label="next page"
                       title="Go to next page"
               >
-                <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
                      focusable="false"
                      aria-hidden="true"
                      viewbox="0 0 24 24"
@@ -209,21 +213,23 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
 <div class="MuiGrid-root MuiGrid-container stable-makeStyles-sectionHeader-20 css-eei0dj-MuiGrid-root">
   <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
     <div class="MuiBox-root css-2rlxtj">
-      <h1 class="MuiTypography-root MuiTypography-h1 css-17cy2p8-MuiTypography-root">
+      <h1 class="MuiTypography-root MuiTypography-h1 css-12oqc8p-MuiTypography-root">
         Activity
       </h1>
     </div>
   </div>
 </div>
-<div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-5jb75g-MuiPaper-root">
+<div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-12jlilq-MuiPaper-root"
+     style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
+>
   <div class="MuiBox-root css-1kbmarl">
     <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-column css-1vpwcmr-MuiGrid-root">
       <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-        <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-listTitle-21 css-1s23nr9-MuiTypography-root">
+        <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-listTitle-21 css-12h6qye-MuiTypography-root">
           Wednesday, May 13, 2020
         </p>
-        <ul class="MuiList-root MuiList-padding css-h4y409-MuiList-root">
-          <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-25 css-15u9cok-MuiListItem-root">
+        <ul class="MuiList-root MuiList-padding css-b7dj7n-MuiList-root">
+          <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-25 css-roeqa8-MuiListItem-root">
             <div class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root">
               <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root">
                 <div class="MuiBox-root css-geek62">
@@ -244,14 +250,14 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
                     </svg>
                   </div>
                   <div class="MuiBox-root css-0">
-                    <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-appName-23 css-1s23nr9-MuiTypography-root">
+                    <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-appName-23 css-12h6qye-MuiTypography-root">
                       ABC
                     </p>
                   </div>
                 </div>
               </div>
               <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root">
-                <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-24 css-b4h4sf-MuiTypography-root">
+                <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-24 css-tis6ec-MuiTypography-root">
                   02:56 PM
                 </p>
               </div>
@@ -260,7 +266,7 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
               </div>
             </div>
           </li>
-          <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-25 css-15u9cok-MuiListItem-root">
+          <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-25 css-roeqa8-MuiListItem-root">
             <div class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root">
               <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root">
                 <div class="MuiBox-root css-geek62">
@@ -281,14 +287,14 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
                     </svg>
                   </div>
                   <div class="MuiBox-root css-0">
-                    <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-appName-23 css-1s23nr9-MuiTypography-root">
+                    <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-appName-23 css-12h6qye-MuiTypography-root">
                       DEF
                     </p>
                   </div>
                 </div>
               </div>
               <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root">
-                <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-24 css-b4h4sf-MuiTypography-root">
+                <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-24 css-tis6ec-MuiTypography-root">
                   02:55 PM
                 </p>
               </div>
@@ -298,11 +304,11 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
             </div>
           </li>
         </ul>
-        <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-listTitle-21 css-1s23nr9-MuiTypography-root">
+        <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-listTitle-21 css-12h6qye-MuiTypography-root">
           Thursday, May 14, 2020
         </p>
-        <ul class="MuiList-root MuiList-padding css-h4y409-MuiList-root">
-          <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-25 css-15u9cok-MuiListItem-root">
+        <ul class="MuiList-root MuiList-padding css-b7dj7n-MuiList-root">
+          <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-25 css-roeqa8-MuiListItem-root">
             <div class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root">
               <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root">
                 <div class="MuiBox-root css-geek62">
@@ -323,14 +329,14 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
                     </svg>
                   </div>
                   <div class="MuiBox-root css-0">
-                    <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-appName-23 css-1s23nr9-MuiTypography-root">
+                    <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-appName-23 css-12h6qye-MuiTypography-root">
                       DEB
                     </p>
                   </div>
                 </div>
               </div>
               <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root">
-                <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-24 css-b4h4sf-MuiTypography-root">
+                <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-24 css-tis6ec-MuiTypography-root">
                   02:56 PM
                 </p>
               </div>
@@ -339,7 +345,7 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
               </div>
             </div>
           </li>
-          <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-25 css-15u9cok-MuiListItem-root">
+          <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-25 css-roeqa8-MuiListItem-root">
             <div class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root">
               <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root">
                 <div class="MuiBox-root css-geek62">
@@ -360,14 +366,14 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
                     </svg>
                   </div>
                   <div class="MuiBox-root css-0">
-                    <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-appName-23 css-1s23nr9-MuiTypography-root">
+                    <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-appName-23 css-12h6qye-MuiTypography-root">
                       DOF
                     </p>
                   </div>
                 </div>
               </div>
               <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root">
-                <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-24 css-b4h4sf-MuiTypography-root">
+                <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-24 css-tis6ec-MuiTypography-root">
                   02:55 PM
                 </p>
               </div>
@@ -376,7 +382,7 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
               </div>
             </div>
           </li>
-          <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-25 css-15u9cok-MuiListItem-root">
+          <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-25 css-roeqa8-MuiListItem-root">
             <div class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root">
               <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root">
                 <div class="MuiBox-root css-geek62">
@@ -397,14 +403,14 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
                     </svg>
                   </div>
                   <div class="MuiBox-root css-0">
-                    <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-appName-23 css-1s23nr9-MuiTypography-root">
+                    <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-appName-23 css-12h6qye-MuiTypography-root">
                       DAL
                     </p>
                   </div>
                 </div>
               </div>
               <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root">
-                <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-24 css-b4h4sf-MuiTypography-root">
+                <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-24 css-tis6ec-MuiTypography-root">
                   02:56 PM
                 </p>
               </div>
@@ -416,34 +422,33 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
         </ul>
       </div>
       <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-        <div class="MuiTablePagination-root css-jtlhu6-MuiTablePagination-root">
-          <div class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular MuiTablePagination-toolbar stable-makeStyles-toolbar-16 css-78c6dr-MuiToolbar-root-MuiTablePagination-toolbar">
-            <div class="MuiTablePagination-spacer css-1psng7p-MuiTablePagination-spacer">
+        <div class="MuiTablePagination-root css-7mt0f-MuiTablePagination-root">
+          <div class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular MuiTablePagination-toolbar stable-makeStyles-toolbar-16 css-1gak8h1-MuiToolbar-root-MuiTablePagination-toolbar">
+            <div class="MuiTablePagination-spacer css-1wtxofq-MuiTablePagination-spacer">
             </div>
-            <p class="MuiTablePagination-selectLabel stable-makeStyles-selectLabel-18 css-tjonbb-MuiTablePagination-selectLabel"
-               id=":r4:"
+            <p id=":r6:"
+               class="MuiTablePagination-selectLabel stable-makeStyles-selectLabel-18 css-1iy78om-MuiTablePagination-selectLabel"
             >
               Rows per page:
             </p>
-            <div class="MuiInputBase-root MuiInputBase-colorPrimary MuiTablePagination-input css-1iqud9t-MuiInputBase-root-MuiTablePagination-select">
+            <div class="MuiInputBase-root MuiInputBase-colorPrimary MuiTablePagination-select stable-makeStyles-select-17 MuiSelect-root MuiTablePagination-input css-16xpxla-MuiInputBase-root-MuiTablePagination-select">
               <div tabindex="0"
                    role="combobox"
-                   aria-controls=":r5:"
                    aria-expanded="false"
                    aria-haspopup="listbox"
-                   aria-labelledby=":r4: :r3:"
-                   id=":r3:"
-                   class="MuiSelect-select MuiTablePagination-select stable-makeStyles-select-17 MuiSelect-standard MuiInputBase-input css-194a1fa-MuiSelect-select-MuiInputBase-input"
+                   aria-labelledby=":r6: :r5:"
+                   id=":r5:"
+                   class="MuiSelect-select MuiTablePagination-select stable-makeStyles-select-17 MuiSelect-standard MuiInputBase-input css-mmygx2-MuiSelect-select-MuiInputBase-input"
               >
                 5
               </div>
               <input aria-invalid="false"
                      aria-hidden="true"
                      tabindex="-1"
-                     class="MuiSelect-nativeInput css-yf8vq0-MuiSelect-nativeInput"
+                     class="MuiSelect-nativeInput css-j0riat-MuiSelect-nativeInput"
                      value="5"
               >
-              <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiTablePagination-selectIcon MuiSelect-iconStandard css-pqjvzy-MuiSvgIcon-root-MuiSelect-icon"
+              <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiTablePagination-selectIcon MuiSelect-iconStandard css-1gpuzre-MuiSvgIcon-root-MuiSelect-icon"
                    focusable="false"
                    aria-hidden="true"
                    viewbox="0 0 24 24"
@@ -453,18 +458,18 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
                 </path>
               </svg>
             </div>
-            <p class="MuiTablePagination-displayedRows stable-makeStyles-displayedRows-19 css-m2d60k-MuiTablePagination-displayedRows">
+            <p class="MuiTablePagination-displayedRows stable-makeStyles-displayedRows-19 css-7echhw-MuiTablePagination-displayedRows">
               1–5 of 6
             </p>
             <div class="MuiTablePagination-actions">
-              <button class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-colorInherit MuiIconButton-sizeMedium css-zylse7-MuiButtonBase-root-MuiIconButton-root"
+              <button class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-colorInherit MuiIconButton-sizeMedium css-h7cjts-MuiButtonBase-root-MuiIconButton-root"
                       tabindex="-1"
                       type="button"
                       disabled
                       aria-label="previous page"
                       title="Go to previous page"
               >
-                <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
                      focusable="false"
                      aria-hidden="true"
                      viewbox="0 0 24 24"
@@ -474,13 +479,13 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
                   </path>
                 </svg>
               </button>
-              <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorInherit MuiIconButton-sizeMedium css-zylse7-MuiButtonBase-root-MuiIconButton-root"
+              <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorInherit MuiIconButton-sizeMedium css-h7cjts-MuiButtonBase-root-MuiIconButton-root"
                       tabindex="0"
                       type="button"
                       aria-label="next page"
                       title="Go to next page"
               >
-                <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
                      focusable="false"
                      aria-hidden="true"
                      viewbox="0 0 24 24"
@@ -489,8 +494,6 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
                   <path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z">
                   </path>
                 </svg>
-                <span class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root">
-                </span>
               </button>
             </div>
           </div>
