@@ -42,12 +42,9 @@ i18n:
 .PHONY: test-storybook-ci
 test-storybook-ci:
 	# Build Storybook
-	NODE_ENV=test npm run build-storybook --quiet
-
-	# Serve Storybook and run tests in parallel
-	npx concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \
-		"npx http-server storybook-static --port 6006 --silent" \
-		"npx wait-on tcp:127.0.0.1:6006 && npm run test-storybook"
+	npm run build-storybook:ci
+	npm run serve-storybook:ci
+	npm run test-storybook:ci
 
 .PHONY: test-playwright-ci
 test-playwright-ci:
