@@ -31,7 +31,7 @@ exports[`channels/ChannelList FullList smoke-test 1`] = `
       </div>
     </div>
   </div>
-  <div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 stable-ForwardRef(Paper2)-root-3 css-12jlilq-MuiPaper-root"
+  <div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 stable-ForwardRef-root-3 css-12jlilq-MuiPaper-root"
        style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
   >
     <ul class="MuiList-root MuiList-padding MuiList-dense MuiList-subheader stable-makeStyles-root-4 css-h1es49-MuiList-root">
@@ -543,7 +543,7 @@ exports[`channels/ChannelList Loading smoke-test 1`] = `
       </div>
     </div>
   </div>
-  <div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 stable-ForwardRef(Paper2)-root-17 css-12jlilq-MuiPaper-root"
+  <div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 stable-ForwardRef-root-17 css-12jlilq-MuiPaper-root"
        style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
   >
     <div class="stable-makeStyles-loaderContainer-18 MuiBox-root css-0"

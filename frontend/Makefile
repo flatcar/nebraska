@@ -41,10 +41,8 @@ i18n:
 
 .PHONY: test-storybook-ci
 test-storybook-ci:
-	# Build Storybook
-	npm run build-storybook:ci
-	npm run serve-storybook:ci
-	npm run test-storybook:ci
+	npm run build-storybook:ci && \
+		npx concurrently -k -s first -n SB,TEST "npm run serve-storybook:ci" "npm run test-storybook:ci"
 
 .PHONY: test-playwright-ci
 test-playwright-ci:

@@ -20,7 +20,7 @@ npm install
 # Start development server
 npm run dev
 
-# Run tests
+# To run vitests
 npm test
 
 # Run linter and formatter
@@ -32,6 +32,10 @@ npm run build
 
 # Run Storybook
 npm run storybook
+
+## To update storybook snapshots
+npm run build-storybook:ci && npm run serve-storybook:ci
+npm run test-storybook:ci -- -u
 
 # Build Storybook
 npm run build-storybook
