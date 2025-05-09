@@ -328,14 +328,14 @@ function DetailsView(props: DetailsViewProps) {
       <Paper>
         <Box p={2}>
           <Grid container spacing={1}>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Grid container justifyContent="space-between">
-                <Grid item>
+                <Grid>
                   <Box fontWeight={700} fontSize={30} color={theme.palette.greyShadeColor}>
                     {instance.alias || instance.id}
                   </Box>
                 </Grid>
-                <Grid item>
+                <Grid>
                   <MoreMenu
                     options={[
                       {
@@ -347,45 +347,49 @@ function DetailsView(props: DetailsViewProps) {
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item md>
+            <Grid
+              size={{
+                md: 'grow',
+              }}
+            >
               <Box mt={2}>
                 {application && group && instance && (
                   <Grid container>
-                    <Grid item xs={12} container>
-                      <Grid item container>
+                    <Grid container size={12}>
+                      <Grid container>
                         {hasAlias && (
-                          <Grid item xs={12}>
+                          <Grid size={12}>
                             <CardFeatureLabel>{t('instances|id')}</CardFeatureLabel>&nbsp;
                             <Box mt={1} mb={1}>
                               <CardLabel>{instance.id}</CardLabel>
                             </Box>
                           </Grid>
                         )}
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                           <CardFeatureLabel>{t('instances|ip')}</CardFeatureLabel>
                           <Box mt={1}>
                             <CardLabel>{instance.ip}</CardLabel>
                           </Box>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                           <CardFeatureLabel>{t('instances|version')}</CardFeatureLabel>
                           <Box mt={1}>
                             <CardLabel>{instance.application.version}</CardLabel>
                           </Box>
                         </Grid>
                       </Grid>
-                      <Grid item xs={12}>
+                      <Grid size={12}>
                         <Divider className={classes.divider} />
                       </Grid>
 
-                      <Grid item xs={12} container>
-                        <Grid item xs={6}>
+                      <Grid container size={12}>
+                        <Grid size={6}>
                           <CardFeatureLabel>{t('instances|status')}</CardFeatureLabel>
                           <Box mt={1}>
                             <StatusLabel status={instance.statusInfo} />
                           </Box>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                           <CardFeatureLabel>{t('instances|last_update_check')}</CardFeatureLabel>
                           <Box mt={1}>
                             <CardLabel>
@@ -395,11 +399,11 @@ function DetailsView(props: DetailsViewProps) {
                         </Grid>
                       </Grid>
 
-                      <Grid item xs={12}>
+                      <Grid size={12}>
                         <Divider className={classes.divider} />
                       </Grid>
-                      <Grid item xs={12} container>
-                        <Grid item xs={6}>
+                      <Grid container size={12}>
+                        <Grid size={6}>
                           <CardFeatureLabel>{t('instances|application')}</CardFeatureLabel>
                           <Box mt={1}>
                             <Link
@@ -412,7 +416,7 @@ function DetailsView(props: DetailsViewProps) {
                             </Link>
                           </Box>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                           <CardFeatureLabel>{t('instances|group')}</CardFeatureLabel>
                           <Box mt={1}>
                             <Link
@@ -427,7 +431,7 @@ function DetailsView(props: DetailsViewProps) {
                         </Grid>
                       </Grid>
 
-                      <Grid item xs={12}>
+                      <Grid size={12}>
                         <Box mt={2}>
                           <CardFeatureLabel>{t('instances|channel')}</CardFeatureLabel>&nbsp;
                           {group.channel ? (
@@ -445,7 +449,11 @@ function DetailsView(props: DetailsViewProps) {
             <Box width="1%">
               <Divider orientation="vertical" variant="fullWidth" />
             </Box>
-            <Grid item md>
+            <Grid
+              size={{
+                md: 'grow',
+              }}
+            >
               <Box mt={2} fontSize={18} fontWeight={700} color={theme.palette.greyShadeColor}>
                 {t('instances|event_timeline')}
                 {eventHistory ? (

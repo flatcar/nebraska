@@ -141,7 +141,7 @@ function EditDialog(props: EditDialogProps) {
             <DialogContentText color="error">{status.statusMessage}</DialogContentText>
           )}
           <Grid container justifyContent="space-between">
-            <Grid item>
+            <Grid>
               <FormControl margin="dense" className={classes.topSelect}>
                 <InputLabel variant="standard">Type</InputLabel>
                 <MuiSelect
@@ -158,7 +158,7 @@ function EditDialog(props: EditDialogProps) {
                 </MuiSelect>
               </FormControl>
             </Grid>
-            <Grid item>
+            <Grid>
               <FormControl
                 margin="dense"
                 fullWidth
@@ -219,7 +219,7 @@ function EditDialog(props: EditDialogProps) {
                         fullWidth
                       />
                       <Grid container justifyContent="space-between" spacing={4}>
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                           <Field
                             name="version"
                             component={TextField}
@@ -232,7 +232,7 @@ function EditDialog(props: EditDialogProps) {
                             fullWidth
                           />
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                           <Field
                             name="size"
                             component={TextField}

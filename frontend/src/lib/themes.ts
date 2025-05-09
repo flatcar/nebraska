@@ -4,7 +4,7 @@ import React from 'react';
 
 const DISABLE_BROWSER_THEME_PREF = true;
 
-declare module '@mui/material/styles/createPalette' {
+declare module '@mui/material/styles' {
   interface Palette {
     titleColor: '#000000';
     lightSilverShade: '#F0F0F0';

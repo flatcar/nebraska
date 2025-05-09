@@ -50,21 +50,21 @@ function FileListItem(props: FileListItemProps) {
     return (
       <ListItem>
         <Grid container direction="column">
-          <Grid item>
+          <Grid>
             <Typography>{fileToEdit.name}</Typography>
           </Grid>
-          <Grid item container>
-            <Grid item xs={5}>
+          <Grid container>
+            <Grid size={5}>
               <Typography component="span" variant="body2" color="textSecondary">
                 {t('frequent|size', { size: hasSize() ? fileToEdit.size : '-' })}
               </Typography>
             </Grid>
-            <Grid item>
+            <Grid>
               <Typography component="span" variant="body2" color="textSecondary">
                 {`${t('packages|sha1_hash_base64')}: ${fileToEdit.hash || '-'}`}
               </Typography>
             </Grid>
-            <Grid item>
+            <Grid>
               <Typography component="span" variant="body2" color="textSecondary">
                 {`${t('packages|sha256_hash_hex')}: ${fileToEdit.hash256 || '-'}`}
               </Typography>
@@ -97,12 +97,12 @@ function FileListItem(props: FileListItemProps) {
   return (
     <ListItem>
       <Grid container>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Typography variant="h5">
             {!file.name ? t('packages|new_file') : t('packages|edit_file')}
           </Typography>
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <TextField
             name="name"
             margin="dense"
@@ -116,8 +116,8 @@ function FileListItem(props: FileListItemProps) {
             }
           />
         </Grid>
-        <Grid item container spacing={1}>
-          <Grid item xs={6}>
+        <Grid container spacing={1}>
+          <Grid size={6}>
             <TextField
               name="size"
               margin="dense"
@@ -131,7 +131,7 @@ function FileListItem(props: FileListItemProps) {
               }
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={6}>
             <TextField
               name="hash"
               margin="dense"
@@ -147,7 +147,7 @@ function FileListItem(props: FileListItemProps) {
               }
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={6}>
             <TextField
               name="hash256"
               margin="dense"
@@ -164,8 +164,8 @@ function FileListItem(props: FileListItemProps) {
             />
           </Grid>
         </Grid>
-        <Grid item container>
-          <Grid item>
+        <Grid container>
+          <Grid>
             <Button
               onClick={() => {
                 setFileToEdit(file);
@@ -175,7 +175,7 @@ function FileListItem(props: FileListItemProps) {
               {t('frequent|cancel')}
             </Button>
           </Grid>
-          <Grid item>
+          <Grid>
             <Button onClick={() => onEditFinished(fileToEdit)}>{t('frequent|done')}</Button>
           </Grid>
         </Grid>

@@ -35,13 +35,13 @@ export function InstanceCountLabel(props: {
 
   return (
     <Grid container direction="column">
-      <Grid item>
+      <Grid>
         <Typography className={classes.instancesLabel}>{t('instances|instances')}</Typography>
       </Grid>
-      <Grid item>
+      <Grid>
         <Typography className={classes.instancesCount}>{countText}</Typography>
       </Grid>
-      <Grid item>
+      <Grid>
         {!instanceListView && Number(countText) > 0 ? (
           <Box>
             {!props.loading && (

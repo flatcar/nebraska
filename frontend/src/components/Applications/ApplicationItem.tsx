@@ -38,7 +38,7 @@ export default function ApplicationItem(props: ApplicationItemProps) {
   return (
     <ListItem className={classes.root}>
       <Grid container>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <CardHeader
             cardMainLinkLabel={name}
             cardMainLinkPath={{ pathname: `/apps/${id}` }}
@@ -64,9 +64,9 @@ export default function ApplicationItem(props: ApplicationItemProps) {
             />
           </CardHeader>
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Grid container className={classes.itemSection} spacing={0}>
-            <Grid item xs={4}>
+            <Grid size={4}>
               <Box mt={2}>
                 <CardFeatureLabel>{t('applications|instances_title')}</CardFeatureLabel>
                 <CardLabel>
@@ -87,7 +87,7 @@ export default function ApplicationItem(props: ApplicationItemProps) {
             <Box width="1%">
               <Divider orientation="vertical" variant="fullWidth" />
             </Box>
-            <Grid item xs={7}>
+            <Grid size={7}>
               <Box mt={2} p={1}>
                 <CardFeatureLabel>{t('frequent|groups')}</CardFeatureLabel>
                 <Box display="inline-block" pl={2}>

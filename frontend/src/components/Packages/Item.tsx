@@ -84,7 +84,7 @@ function Item(props: {
   function makeItemSecondaryInfo() {
     return (
       <Grid container direction="column">
-        <Grid item>
+        <Grid>
           <Typography component="span" className={classes.subtitle}>
             {`${t('packages|version')}:`}
           </Typography>
@@ -92,7 +92,7 @@ function Item(props: {
           {`${cleanSemverVersion(props.packageItem.version)} (${ARCHES[props.packageItem.arch]})`}
         </Grid>
         {processedChannels.length > 0 && (
-          <Grid item>
+          <Grid>
             <Typography component="span" className={classes.subtitle}>
               {`${t('packages|channels')}:`}
             </Typography>
@@ -108,7 +108,7 @@ function Item(props: {
             })}
           </Grid>
         )}
-        <Grid item>
+        <Grid>
           <Typography component="span" className={classes.subtitle}>
             {`${t('packages|released')}:`}
           </Typography>
@@ -119,7 +119,7 @@ function Item(props: {
           })}
         </Grid>
         {props.packageItem.channels_blacklist && (
-          <Grid item>
+          <Grid>
             {props.packageItem.channels_blacklist && (
               <Label>
                 <InlineIcon icon={cancelIcon} width="10" height="10" /> {blacklistInfo}

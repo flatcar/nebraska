@@ -164,10 +164,10 @@ export function ChannelListPure(props: ChannelListPureProps) {
     <Box mt={2}>
       <Box mb={2}>
         <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item>
+          <Grid>
             <Typography variant="h1">{t('channels|channels')}</Typography>
           </Grid>
-          <Grid item>
+          <Grid>
             <ModalButton
               modalToOpen="AddChannelModal"
               data={{

@@ -1,6 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
 import { IconButton } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,15 +11,8 @@ import PackageEditDialog, {
   EditDialogProps as PackageEditDialogProps,
 } from '../../Packages/EditDialog';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    color: theme.palette.titleColor,
-  },
-}));
-
 function ModalButton(props: { data: object; modalToOpen: string; icon?: string }) {
   const [showModal, setShowModal] = React.useState(false);
-  const classes = useStyles();
   const { t } = useTranslation();
 
   function close() {
@@ -64,7 +56,7 @@ function ModalButton(props: { data: object; modalToOpen: string; icon?: string }
         onClick={open}
         data-testid="modal-button"
       >
-        <AddIcon fontSize="large" className={classes.root} />
+        <AddIcon fontSize="large" sx={{ color: theme => theme.palette.titleColor }} />
       </IconButton>
       {modal}
     </div>

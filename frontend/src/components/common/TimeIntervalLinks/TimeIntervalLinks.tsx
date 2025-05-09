@@ -48,7 +48,7 @@ export default function TimeIntervalLinks(props: TimeIntervalLinksProps) {
     <Grid container spacing={1}>
       {timeIntervals.map((link, index) => (
         <React.Fragment key={link.queryValue}>
-          <Grid item>
+          <Grid>
             <Link
               underline="none"
               component="button"
@@ -68,7 +68,7 @@ export default function TimeIntervalLinks(props: TimeIntervalLinksProps) {
             </Link>
           </Grid>
           {index < timeIntervals.length - 1 && (
-            <Grid item>
+            <Grid>
               <Box color="text.disabled">{'.'}</Box>
             </Grid>
           )}

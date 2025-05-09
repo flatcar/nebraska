@@ -88,7 +88,7 @@ export function ActivityItemPure(props: ActivityItemPureProps) {
   return (
     <ListItem alignItems="flex-start" disableGutters className={classes.list}>
       <Grid container alignItems="center" justifyContent="space-between">
-        <Grid item xs={10}>
+        <Grid size={10}>
           <Box display="flex" alignItems="center" justifyContent="flex-start">
             <Box mr={1}>
               <ActivityItemIcon severityName={props.severityName} />
@@ -98,22 +98,22 @@ export function ActivityItemPure(props: ActivityItemPureProps) {
             </Box>
           </Box>
         </Grid>
-        <Grid item xs={2}>
+        <Grid size={2}>
           <Typography color="textSecondary" className={classes.time}>
             {time}
           </Typography>
         </Grid>
         {subtitle && (
-          <Grid item container spacing={2} xs={12}>
-            <Grid item>
+          <Grid container spacing={2} size={12}>
+            <Grid>
               <Typography color="textSecondary" display="inline">
                 {subtitle}
               </Typography>
             </Grid>
-            <Grid item>{name}</Grid>
+            <Grid>{name}</Grid>
           </Grid>
         )}
-        <Grid item>{props.description}</Grid>
+        <Grid>{props.description}</Grid>
       </Grid>
     </ListItem>
   );

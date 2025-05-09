@@ -3,7 +3,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import { Box, Divider, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import makeStyles from '@mui/styles/makeStyles';
 import { TFunction } from 'i18next';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,23 +18,6 @@ import Empty from '../common/EmptyContent';
 import ListItem from '../common/ListItem';
 import MoreMenu from '../common/MoreMenu';
 import VersionProgressBar from '../common/VersionBreakdownBar';
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    paddingBottom: 0,
-  },
-  itemSection: {
-    padding: '1em',
-  },
-  success: {
-    color: theme.palette.success.main,
-  },
-  last24hours: {
-    color: 'rgba(0,0,0,0.6)',
-    fontSize: '0.875rem',
-    lineHeight: 2.0,
-  },
-}));
 
 // From this number, we stop rate limiting in the backend
 const MAX_UPDATES_PER_TIME_PERIOD = 900000;
@@ -101,7 +83,6 @@ export function PureGroupItem({
   handleUpdateGroup,
   deleteGroup,
 }: PureGroupItemProps) {
-  const classes = useStyles();
   const { t } = useTranslation();
 
   const description = group.description || t('groups|description_none_provided');
@@ -114,9 +95,14 @@ export function PureGroupItem({
   );
 
   return (
-    <ListItem disableGutters className={classes.root}>
+    <ListItem
+      disableGutters
+      sx={{
+        paddingBottom: 0,
+      }}
+    >
       <Grid container>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <CardHeader
             cardMainLinkLabel={group.name}
             cardMainLinkPath={`/apps/${group.application_id}/groups/${group.id}`}
@@ -138,9 +124,9 @@ export function PureGroupItem({
             />
           </CardHeader>
         </Grid>
-        <Grid item xs={12} container justifyContent="space-between">
-          <Grid item xs={4} container direction="column" className={classes.itemSection}>
-            <Grid item>
+        <Grid container justifyContent="space-between" size={12}>
+          <Grid container direction="column" sx={{ padding: '1em' }} size={4}>
+            <Grid>
               <CardFeatureLabel>{t('groups|instances')}</CardFeatureLabel>
               <Box>
                 <CardLabel labelStyle={{ fontSize: '1.5rem' }}>
@@ -157,7 +143,13 @@ export function PureGroupItem({
                 <Box display="flex" mr={2}>
                   <ScheduleIcon color="disabled" />
                   <Box pl={1} color="text.disabled">
-                    <Typography className={classes.last24hours}>
+                    <Typography
+                      sx={{
+                        color: 'rgba(0,0,0,0.6)',
+                        fontSize: '0.875rem',
+                        lineHeight: 2.0,
+                      }}
+                    >
                       {t('groups|time_last_24_hours')}
                     </Typography>
                   </Box>
@@ -168,11 +160,11 @@ export function PureGroupItem({
           <Box width="1%">
             <Divider orientation="vertical" variant="fullWidth" />
           </Box>
-          <Grid item xs={7} container direction="column" className={classes.itemSection}>
-            <Grid item>
+          <Grid container direction="column" sx={{ padding: '1em' }} size={7}>
+            <Grid>
               <CardFeatureLabel>{t('groups|channel')}</CardFeatureLabel> {groupChannel}
             </Grid>
-            <Grid item>
+            <Grid>
               <CardFeatureLabel>{t('groups|updates')}</CardFeatureLabel>
               <Box p={1} mb={1}>
                 <CardLabel>
@@ -181,7 +173,10 @@ export function PureGroupItem({
                       <>
                         <Box>{t('frequent|enabled')}</Box>
                         <Box>
-                          <CheckIcon className={classes.success} fontSize={'small'} />
+                          <CheckIcon
+                            sx={{ color: theme => theme.palette.success.main }}
+                            fontSize={'small'}
+                          />
                         </Box>
                       </>
                     ) : (
@@ -196,17 +191,17 @@ export function PureGroupItem({
                 </CardLabel>
               </Box>
             </Grid>
-            <Grid item>
+            <Grid>
               <CardFeatureLabel>{t('groups|rollout_policy')}</CardFeatureLabel>
               <Box p={1} mb={1}>
                 <CardLabel>{formatUpdateLimits(t, group)}</CardLabel>
               </Box>
             </Grid>
-            <Grid item container>
-              <Grid item xs={12}>
+            <Grid container>
+              <Grid size={12}>
                 <CardFeatureLabel>{t('groups|version_breakdown_lower')}</CardFeatureLabel>
               </Grid>
-              <Grid item xs={12}>
+              <Grid size={12}>
                 {versionBreakdown === null ? (
                   <Empty>{t('frequent|loading')}</Empty>
                 ) : versionBreakdown?.length > 0 ? (

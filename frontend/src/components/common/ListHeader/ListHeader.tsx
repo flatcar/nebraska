@@ -21,18 +21,13 @@ export default function ListHeader(props: { title: string; actions?: React.React
       className={classes.sectionHeader}
     >
       {props.title && (
-        <Grid item>
+        <Grid>
           <Box p={0.5}>
             <Typography variant="h1">{props.title}</Typography>
           </Box>
         </Grid>
       )}
-      {actions &&
-        actions.map((action, i: number) => (
-          <Grid item key={i}>
-            {action}
-          </Grid>
-        ))}
+      {actions && actions.map((action, i: number) => <Grid key={i}>{action}</Grid>)}
     </Grid>
   );
 }

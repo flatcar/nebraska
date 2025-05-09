@@ -3,8 +3,8 @@ import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
+import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import { useTheme } from '@mui/styles';
 import React from 'react';
 import _ from 'underscore';
 
@@ -152,7 +152,7 @@ export default function StatusCountTimeline(props: StatusCountTimelineProps) {
       }
     }
 
-    status_breakdown.forEach((entry: { status: string; version: string; [key: string]: any }) => {
+    status_breakdown.forEach((entry: { status: string; version: string;[key: string]: any }) => {
       const statusInfo = getInstanceStatus(parseInt(entry.status), entry.version);
       const statusTheme = statusDefs[statusInfo.type];
 
@@ -206,7 +206,7 @@ export default function StatusCountTimeline(props: StatusCountTimelineProps) {
 
   return (
     <Grid container alignItems="center" spacing={2}>
-      <Grid item xs={12}>
+      <Grid size={12}>
         {timelineChartData.data.length > 0 ? (
           <TimelineChart
             {...timelineChartData}
@@ -218,8 +218,8 @@ export default function StatusCountTimeline(props: StatusCountTimelineProps) {
           <Loader />
         )}
       </Grid>
-      <Grid item xs={12} container>
-        <Grid item xs={12}>
+      <Grid container size={12}>
+        <Grid size={12}>
           <Box width={500}>
             {timelineChartData.data.length > 0 ? (
               selectedEntry !== -1 ? (
@@ -234,7 +234,12 @@ export default function StatusCountTimeline(props: StatusCountTimelineProps) {
                   />
                 </React.Fragment>
               ) : (
-                <Box color="text.secondary" fontSize={14} textAlign="center" lineHeight={1.5}>
+                <Box sx={{
+                  color: 'text.secondary',
+                  fontSize: 14,
+                  textAlign: 'center',
+                  lineHeight: 1.5,
+                }}>
                   Showing data for the last time point.
                   <br />
                   Click the chart to choose a different time point.
@@ -243,7 +248,7 @@ export default function StatusCountTimeline(props: StatusCountTimelineProps) {
             ) : null}
           </Box>
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={12}>
           {timelineChartData.data.length > 0 && (
             <SimpleTable
               emptyMessage="No data to show for this time point."
@@ -253,6 +258,6 @@ export default function StatusCountTimeline(props: StatusCountTimelineProps) {
           )}
         </Grid>
       </Grid>
-    </Grid>
+    </Grid >
   );
 }

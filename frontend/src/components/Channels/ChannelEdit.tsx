@@ -177,13 +177,13 @@ export default function ChannelEdit(props: ChannelEditProps) {
             alignItems="center"
             wrap="nowrap"
           >
-            <Grid item>
+            <Grid>
               <ColorPicker color={channelColor} onColorPicked={color => setChannelColor(color.hex)}>
                 {values.name ? values.name[0] : ''}
               </ColorPicker>
             </Grid>
-            <Grid item container alignItems="flex-start" spacing={2}>
-              <Grid item className={classes.nameField}>
+            <Grid container alignItems="flex-start" spacing={2}>
+              <Grid className={classes.nameField}>
                 <Field
                   name="name"
                   component={TextField}

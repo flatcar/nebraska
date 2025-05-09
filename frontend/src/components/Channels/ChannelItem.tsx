@@ -93,14 +93,14 @@ export default function ChannelItem(props: ChannelItemProps) {
   return (
     <ListItem component="div" {...others}>
       <Grid container spacing={2}>
-        <Grid item>
+        <Grid>
           {isAppView ? (
             <ChannelAvatar color={channel.color} size={theme.spacing(1)} />
           ) : (
             <ChannelAvatar color={channel.color}>{name[0]}</ChannelAvatar>
           )}
         </Grid>
-        <Grid item>
+        <Grid>
           <ListItemText
             primary={
               <Box display="flex" alignItems="center">

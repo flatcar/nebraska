@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`activity/ActivityContainer Empty smoke-test 1`] = `
-<div class="MuiGrid-root MuiGrid-container stable-makeStyles-sectionHeader-5 css-eei0dj-MuiGrid-root">
-  <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+<div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row stable-makeStyles-sectionHeader-5 css-1w173rl-MuiGrid-root">
+  <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
     <div class="MuiBox-root css-2rlxtj">
       <h1 class="MuiTypography-root MuiTypography-h1 css-12oqc8p-MuiTypography-root">
         Activity
@@ -30,8 +30,8 @@ exports[`activity/ActivityContainer Empty smoke-test 1`] = `
 `;
 
 exports[`activity/ActivityContainer List smoke-test 1`] = `
-<div class="MuiGrid-root MuiGrid-container stable-makeStyles-sectionHeader-10 css-eei0dj-MuiGrid-root">
-  <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+<div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row stable-makeStyles-sectionHeader-10 css-1w173rl-MuiGrid-root">
+  <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
     <div class="MuiBox-root css-2rlxtj">
       <h1 class="MuiTypography-root MuiTypography-h1 css-12oqc8p-MuiTypography-root">
         Activity
@@ -43,15 +43,15 @@ exports[`activity/ActivityContainer List smoke-test 1`] = `
      style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
 >
   <div class="MuiBox-root css-1kbmarl">
-    <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-column css-1vpwcmr-MuiGrid-root">
-      <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+    <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-column css-mm5x4a-MuiGrid-root">
+      <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
         <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-listTitle-11 css-12h6qye-MuiTypography-root">
           Wednesday, May 13, 2020
         </p>
         <ul class="MuiList-root MuiList-padding css-b7dj7n-MuiList-root">
           <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-15 css-roeqa8-MuiListItem-root">
-            <div class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root">
-              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-tqvfrr-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-10 css-r13beu-MuiGrid-root">
                 <div class="MuiBox-root css-geek62">
                   <div class="MuiBox-root css-12z0wuy">
                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -76,19 +76,19 @@ exports[`activity/ActivityContainer List smoke-test 1`] = `
                   </div>
                 </div>
               </div>
-              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-2 css-15bfe7d-MuiGrid-root">
                 <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-14 css-tis6ec-MuiTypography-root">
                   02:56 PM
                 </p>
               </div>
-              <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
                 Channel beta is now pointing to version 0.0.0
               </div>
             </div>
           </li>
           <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-15 css-roeqa8-MuiListItem-root">
-            <div class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root">
-              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-tqvfrr-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-10 css-r13beu-MuiGrid-root">
                 <div class="MuiBox-root css-geek62">
                   <div class="MuiBox-root css-12z0wuy">
                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -113,19 +113,19 @@ exports[`activity/ActivityContainer List smoke-test 1`] = `
                   </div>
                 </div>
               </div>
-              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-2 css-15bfe7d-MuiGrid-root">
                 <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-14 css-tis6ec-MuiTypography-root">
                   02:55 PM
                 </p>
               </div>
-              <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
                 Channel beta is now pointing to version 0.0.0
               </div>
             </div>
           </li>
         </ul>
       </div>
-      <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+      <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
         <div class="MuiTablePagination-root css-7mt0f-MuiTablePagination-root">
           <div class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular MuiTablePagination-toolbar stable-makeStyles-toolbar-6 css-1gak8h1-MuiToolbar-root-MuiTablePagination-toolbar">
             <div class="MuiTablePagination-spacer css-1wtxofq-MuiTablePagination-spacer">
@@ -210,8 +210,8 @@ exports[`activity/ActivityContainer List smoke-test 1`] = `
 `;
 
 exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
-<div class="MuiGrid-root MuiGrid-container stable-makeStyles-sectionHeader-20 css-eei0dj-MuiGrid-root">
-  <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+<div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row stable-makeStyles-sectionHeader-20 css-1w173rl-MuiGrid-root">
+  <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
     <div class="MuiBox-root css-2rlxtj">
       <h1 class="MuiTypography-root MuiTypography-h1 css-12oqc8p-MuiTypography-root">
         Activity
@@ -223,15 +223,15 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
      style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
 >
   <div class="MuiBox-root css-1kbmarl">
-    <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-column css-1vpwcmr-MuiGrid-root">
-      <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+    <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-column css-mm5x4a-MuiGrid-root">
+      <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
         <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-listTitle-21 css-12h6qye-MuiTypography-root">
           Wednesday, May 13, 2020
         </p>
         <ul class="MuiList-root MuiList-padding css-b7dj7n-MuiList-root">
           <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-25 css-roeqa8-MuiListItem-root">
-            <div class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root">
-              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-tqvfrr-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-10 css-r13beu-MuiGrid-root">
                 <div class="MuiBox-root css-geek62">
                   <div class="MuiBox-root css-12z0wuy">
                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -256,19 +256,19 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
                   </div>
                 </div>
               </div>
-              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-2 css-15bfe7d-MuiGrid-root">
                 <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-24 css-tis6ec-MuiTypography-root">
                   02:56 PM
                 </p>
               </div>
-              <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
                 Channel beta is now pointing to version 0.0.0
               </div>
             </div>
           </li>
           <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-25 css-roeqa8-MuiListItem-root">
-            <div class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root">
-              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-tqvfrr-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-10 css-r13beu-MuiGrid-root">
                 <div class="MuiBox-root css-geek62">
                   <div class="MuiBox-root css-12z0wuy">
                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -293,12 +293,12 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
                   </div>
                 </div>
               </div>
-              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-2 css-15bfe7d-MuiGrid-root">
                 <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-24 css-tis6ec-MuiTypography-root">
                   02:55 PM
                 </p>
               </div>
-              <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
                 Channel beta is now pointing to version 0.0.0
               </div>
             </div>
@@ -309,8 +309,8 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
         </p>
         <ul class="MuiList-root MuiList-padding css-b7dj7n-MuiList-root">
           <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-25 css-roeqa8-MuiListItem-root">
-            <div class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root">
-              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-tqvfrr-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-10 css-r13beu-MuiGrid-root">
                 <div class="MuiBox-root css-geek62">
                   <div class="MuiBox-root css-12z0wuy">
                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -335,19 +335,19 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
                   </div>
                 </div>
               </div>
-              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-2 css-15bfe7d-MuiGrid-root">
                 <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-24 css-tis6ec-MuiTypography-root">
                   02:56 PM
                 </p>
               </div>
-              <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
                 Channel beta is now pointing to version 0.0.1
               </div>
             </div>
           </li>
           <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-25 css-roeqa8-MuiListItem-root">
-            <div class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root">
-              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-tqvfrr-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-10 css-r13beu-MuiGrid-root">
                 <div class="MuiBox-root css-geek62">
                   <div class="MuiBox-root css-12z0wuy">
                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -372,19 +372,19 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
                   </div>
                 </div>
               </div>
-              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-2 css-15bfe7d-MuiGrid-root">
                 <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-24 css-tis6ec-MuiTypography-root">
                   02:55 PM
                 </p>
               </div>
-              <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
                 Channel beta is now pointing to version 0.0.1
               </div>
             </div>
           </li>
           <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-25 css-roeqa8-MuiListItem-root">
-            <div class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root">
-              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-tqvfrr-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-10 css-r13beu-MuiGrid-root">
                 <div class="MuiBox-root css-geek62">
                   <div class="MuiBox-root css-12z0wuy">
                     <svg xmlns="http://www.w3.org/2000/svg"
@@ -409,19 +409,19 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
                   </div>
                 </div>
               </div>
-              <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-2 css-15bfe7d-MuiGrid-root">
                 <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-24 css-tis6ec-MuiTypography-root">
                   02:56 PM
                 </p>
               </div>
-              <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
                 Channel alpha is now pointing to version 0.0.1
               </div>
             </div>
           </li>
         </ul>
       </div>
-      <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+      <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
         <div class="MuiTablePagination-root css-7mt0f-MuiTablePagination-root">
           <div class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular MuiTablePagination-toolbar stable-makeStyles-toolbar-16 css-1gak8h1-MuiToolbar-root-MuiTablePagination-toolbar">
             <div class="MuiTablePagination-spacer css-1wtxofq-MuiTablePagination-spacer">

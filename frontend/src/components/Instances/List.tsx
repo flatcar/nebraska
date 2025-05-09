@@ -78,7 +78,7 @@ function InstanceFilter(props: InstanceFilterProps) {
   return (
     <Box pr={2}>
       <Grid container spacing={2} justifyContent="flex-end">
-        <Grid item xs={5}>
+        <Grid size={5}>
           <FormControl fullWidth disabled={props.disabled}>
             <InputLabel variant="standard" htmlFor="select-status" shrink>
               {t('instances|filter_status')}
@@ -106,7 +106,7 @@ function InstanceFilter(props: InstanceFilterProps) {
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={5}>
+        <Grid size={5}>
           <FormControl fullWidth disabled={props.disabled}>
             <InputLabel variant="standard" htmlFor="select-versions" shrink>
               {t('instances|filter_version')}
@@ -401,8 +401,8 @@ function ListView(props: { application: Application; group: Group }) {
       <Paper>
         <Box padding="1em">
           <Grid container spacing={1}>
-            <Grid item container justifyContent="space-between" alignItems="stretch">
-              <Grid item>
+            <Grid container justifyContent="space-between" alignItems="stretch">
+              <Grid>
                 <Box
                   mb={2}
                   color={(theme as Theme).palette.greyShadeColor}
@@ -412,7 +412,7 @@ function ListView(props: { application: Application; group: Group }) {
                   {group.name}
                 </Box>
               </Grid>
-              <Grid item>
+              <Grid>
                 <InputLabel variant="standard" htmlFor="instance-search-filter" shrink>
                   {t('frequent|search')}
                 </InputLabel>
@@ -444,7 +444,7 @@ function ListView(props: { application: Application; group: Group }) {
                   ariaLabel="Search"
                 />
               </Grid>
-              <Grid item>
+              <Grid>
                 <TimeIntervalLinks
                   intervalChangeHandler={duration => addQuery({ period: duration.queryValue })}
                   selectedInterval={getDuration()}
@@ -454,15 +454,30 @@ function ListView(props: { application: Application; group: Group }) {
               </Grid>
             </Grid>
             <Box width="100%" borderTop={1} borderColor={'#E0E0E0'} className={classes.root}>
-              <Grid item container md={12} alignItems="stretch" justifyContent="space-between">
-                <Grid item md>
+              <Grid
+                container
+                alignItems="stretch"
+                justifyContent="space-between"
+                size={{
+                  md: 12,
+                }}
+              >
+                <Grid
+                  size={{
+                    md: 'grow',
+                  }}
+                >
                   <Box display="flex" alignItems="center">
                     <Box ml={2}>
                       <InstanceCountLabel countText={getInstanceCount()} instanceListView />
                     </Box>
                   </Box>
                 </Grid>
-                <Grid item md>
+                <Grid
+                  size={{
+                    md: 'grow',
+                  }}
+                >
                   <Box mt={2}>
                     <InstanceFilter
                       versions={versionBreakdown}
@@ -474,15 +489,25 @@ function ListView(props: { application: Application; group: Group }) {
               </Grid>
             </Box>
             {isFiltered() && (
-              <Grid item md={12} container justifyContent="center">
-                <Grid item>
+              <Grid
+                container
+                justifyContent="center"
+                size={{
+                  md: 12,
+                }}
+              >
+                <Grid>
                   <Button variant="outlined" color="secondary" onClick={resetFilters}>
                     {t('instances|reset_filters')}
                   </Button>
                 </Grid>
               </Grid>
             )}
-            <Grid item md={12}>
+            <Grid
+              size={{
+                md: 12,
+              }}
+            >
               {!instanceFetchLoading ? (
                 instancesObj.instances.length > 0 ? (
                   <React.Fragment>

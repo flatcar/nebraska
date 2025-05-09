@@ -3,13 +3,13 @@
 exports[`channels/ChannelList FullList smoke-test 1`] = `
 <div class="MuiBox-root css-1yuhvjn">
   <div class="MuiBox-root css-1qm1lh">
-    <div class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root">
-      <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+    <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-tqvfrr-MuiGrid-root">
+      <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
         <h1 class="MuiTypography-root MuiTypography-h1 css-12oqc8p-MuiTypography-root">
           Channels
         </h1>
       </div>
-      <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+      <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
         <div>
           <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-155wbr6-MuiButtonBase-root-MuiIconButton-root"
                   tabindex="0"
@@ -17,7 +17,7 @@ exports[`channels/ChannelList FullList smoke-test 1`] = `
                   aria-label="add"
                   data-testid="modal-button"
           >
-            <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge stable-makeStyles-root-1 css-uks7c6-MuiSvgIcon-root"
+            <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge css-uks7c6-MuiSvgIcon-root"
                  focusable="false"
                  aria-hidden="true"
                  viewbox="0 0 24 24"
@@ -31,23 +31,23 @@ exports[`channels/ChannelList FullList smoke-test 1`] = `
       </div>
     </div>
   </div>
-  <div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 stable-ForwardRef-root-3 css-12jlilq-MuiPaper-root"
+  <div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 stable-ForwardRef-root-2 css-12jlilq-MuiPaper-root"
        style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
   >
-    <ul class="MuiList-root MuiList-padding MuiList-dense MuiList-subheader stable-makeStyles-root-4 css-h1es49-MuiList-root">
+    <ul class="MuiList-root MuiList-padding MuiList-dense MuiList-subheader stable-makeStyles-root-3 css-h1es49-MuiList-root">
       <li class="MuiListSubheader-root MuiListSubheader-gutters css-1pog06u-MuiListSubheader-root">
         AMD64
       </li>
       <li class="MuiListItem-container css-xw6fwh-MuiListItem-container">
         <div class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-1l8q5xm-MuiListItem-root">
-          <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-11nsb57-MuiGrid-root">
-            <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-              <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-6 stable-makeStyles-colorAvatar-7 css-jmdkhx-MuiAvatar-root">
+          <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-2 css-zjhuaj-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+              <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-y2ley5-MuiAvatar-root">
                 a
               </div>
             </div>
-            <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline stable-makeStyles-root-5 css-14ln1j6-MuiListItemText-root">
+            <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline stable-makeStyles-root-4 css-14ln1j6-MuiListItemText-root">
                 <div class="MuiBox-root css-70qvj9">
                   <div class="MuiBox-root css-1xsd608">
                     alpha
@@ -109,14 +109,14 @@ exports[`channels/ChannelList FullList smoke-test 1`] = `
       </li>
       <li class="MuiListItem-container css-xw6fwh-MuiListItem-container">
         <div class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-1l8q5xm-MuiListItem-root">
-          <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-11nsb57-MuiGrid-root">
-            <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-              <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-6 stable-makeStyles-colorAvatar-8 css-jmdkhx-MuiAvatar-root">
+          <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-2 css-zjhuaj-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+              <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-1ms4bff-MuiAvatar-root">
                 b
               </div>
             </div>
-            <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline stable-makeStyles-root-5 css-14ln1j6-MuiListItemText-root">
+            <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline stable-makeStyles-root-4 css-14ln1j6-MuiListItemText-root">
                 <div class="MuiBox-root css-70qvj9">
                   <div class="MuiBox-root css-1xsd608">
                     beta
@@ -178,14 +178,14 @@ exports[`channels/ChannelList FullList smoke-test 1`] = `
       </li>
       <li class="MuiListItem-container css-xw6fwh-MuiListItem-container">
         <div class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-1l8q5xm-MuiListItem-root">
-          <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-11nsb57-MuiGrid-root">
-            <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-              <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-6 stable-makeStyles-colorAvatar-9 css-jmdkhx-MuiAvatar-root">
+          <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-2 css-zjhuaj-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+              <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-9j0yiw-MuiAvatar-root">
                 e
               </div>
             </div>
-            <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline stable-makeStyles-root-5 css-14ln1j6-MuiListItemText-root">
+            <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline stable-makeStyles-root-4 css-14ln1j6-MuiListItemText-root">
                 <div class="MuiBox-root css-70qvj9">
                   <div class="MuiBox-root css-1xsd608">
                     edge
@@ -247,14 +247,14 @@ exports[`channels/ChannelList FullList smoke-test 1`] = `
       </li>
       <li class="MuiListItem-container css-xw6fwh-MuiListItem-container">
         <div class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-1l8q5xm-MuiListItem-root">
-          <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-11nsb57-MuiGrid-root">
-            <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-              <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-6 stable-makeStyles-colorAvatar-10 css-jmdkhx-MuiAvatar-root">
+          <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-2 css-zjhuaj-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+              <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-ovhglf-MuiAvatar-root">
                 s
               </div>
             </div>
-            <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline stable-makeStyles-root-5 css-14ln1j6-MuiListItemText-root">
+            <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline stable-makeStyles-root-4 css-14ln1j6-MuiListItemText-root">
                 <div class="MuiBox-root css-70qvj9">
                   <div class="MuiBox-root css-1xsd608">
                     stable
@@ -315,20 +315,20 @@ exports[`channels/ChannelList FullList smoke-test 1`] = `
         </div>
       </li>
     </ul>
-    <ul class="MuiList-root MuiList-padding MuiList-dense MuiList-subheader stable-makeStyles-root-4 css-h1es49-MuiList-root">
+    <ul class="MuiList-root MuiList-padding MuiList-dense MuiList-subheader stable-makeStyles-root-3 css-h1es49-MuiList-root">
       <li class="MuiListSubheader-root MuiListSubheader-gutters css-1pog06u-MuiListSubheader-root">
         ARM64
       </li>
       <li class="MuiListItem-container css-xw6fwh-MuiListItem-container">
         <div class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-1l8q5xm-MuiListItem-root">
-          <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-11nsb57-MuiGrid-root">
-            <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-              <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-6 stable-makeStyles-colorAvatar-11 css-jmdkhx-MuiAvatar-root">
+          <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-2 css-zjhuaj-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+              <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-drebli-MuiAvatar-root">
                 a
               </div>
             </div>
-            <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline stable-makeStyles-root-5 css-14ln1j6-MuiListItemText-root">
+            <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline stable-makeStyles-root-4 css-14ln1j6-MuiListItemText-root">
                 <div class="MuiBox-root css-70qvj9">
                   <div class="MuiBox-root css-1xsd608">
                     alpha
@@ -368,14 +368,14 @@ exports[`channels/ChannelList FullList smoke-test 1`] = `
       </li>
       <li class="MuiListItem-container css-xw6fwh-MuiListItem-container">
         <div class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-1l8q5xm-MuiListItem-root">
-          <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-11nsb57-MuiGrid-root">
-            <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-              <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-6 stable-makeStyles-colorAvatar-12 css-jmdkhx-MuiAvatar-root">
+          <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-2 css-zjhuaj-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+              <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-1g2k61c-MuiAvatar-root">
                 b
               </div>
             </div>
-            <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline stable-makeStyles-root-5 css-14ln1j6-MuiListItemText-root">
+            <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline stable-makeStyles-root-4 css-14ln1j6-MuiListItemText-root">
                 <div class="MuiBox-root css-70qvj9">
                   <div class="MuiBox-root css-1xsd608">
                     beta
@@ -415,14 +415,14 @@ exports[`channels/ChannelList FullList smoke-test 1`] = `
       </li>
       <li class="MuiListItem-container css-xw6fwh-MuiListItem-container">
         <div class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-1l8q5xm-MuiListItem-root">
-          <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-11nsb57-MuiGrid-root">
-            <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-              <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-6 stable-makeStyles-colorAvatar-13 css-jmdkhx-MuiAvatar-root">
+          <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-2 css-zjhuaj-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+              <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-10t1wcf-MuiAvatar-root">
                 e
               </div>
             </div>
-            <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline stable-makeStyles-root-5 css-14ln1j6-MuiListItemText-root">
+            <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline stable-makeStyles-root-4 css-14ln1j6-MuiListItemText-root">
                 <div class="MuiBox-root css-70qvj9">
                   <div class="MuiBox-root css-1xsd608">
                     edge
@@ -462,14 +462,14 @@ exports[`channels/ChannelList FullList smoke-test 1`] = `
       </li>
       <li class="MuiListItem-container css-xw6fwh-MuiListItem-container">
         <div class="MuiListItem-root MuiListItem-dense MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-1l8q5xm-MuiListItem-root">
-          <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-11nsb57-MuiGrid-root">
-            <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-              <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-6 stable-makeStyles-colorAvatar-14 css-jmdkhx-MuiAvatar-root">
+          <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-2 css-zjhuaj-MuiGrid-root">
+            <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+              <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-14236jy-MuiAvatar-root">
                 s
               </div>
             </div>
-            <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline stable-makeStyles-root-5 css-14ln1j6-MuiListItemText-root">
+            <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline stable-makeStyles-root-4 css-14ln1j6-MuiListItemText-root">
                 <div class="MuiBox-root css-70qvj9">
                   <div class="MuiBox-root css-1xsd608">
                     stable
@@ -515,13 +515,13 @@ exports[`channels/ChannelList FullList smoke-test 1`] = `
 exports[`channels/ChannelList Loading smoke-test 1`] = `
 <div class="MuiBox-root css-1yuhvjn">
   <div class="MuiBox-root css-1qm1lh">
-    <div class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root">
-      <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+    <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-tqvfrr-MuiGrid-root">
+      <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
         <h1 class="MuiTypography-root MuiTypography-h1 css-12oqc8p-MuiTypography-root">
           Channels
         </h1>
       </div>
-      <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+      <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
         <div>
           <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-155wbr6-MuiButtonBase-root-MuiIconButton-root"
                   tabindex="0"
@@ -529,7 +529,7 @@ exports[`channels/ChannelList Loading smoke-test 1`] = `
                   aria-label="add"
                   data-testid="modal-button"
           >
-            <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge stable-makeStyles-root-15 css-uks7c6-MuiSvgIcon-root"
+            <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeLarge css-uks7c6-MuiSvgIcon-root"
                  focusable="false"
                  aria-hidden="true"
                  viewbox="0 0 24 24"
@@ -543,10 +543,10 @@ exports[`channels/ChannelList Loading smoke-test 1`] = `
       </div>
     </div>
   </div>
-  <div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 stable-ForwardRef-root-17 css-12jlilq-MuiPaper-root"
+  <div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 stable-ForwardRef-root-6 css-12jlilq-MuiPaper-root"
        style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
   >
-    <div class="stable-makeStyles-loaderContainer-18 MuiBox-root css-0"
+    <div class="stable-makeStyles-loaderContainer-7 MuiBox-root css-0"
          data-testid="loader-container"
     >
       <span class="MuiCircularProgress-root MuiCircularProgress-indeterminate MuiCircularProgress-colorPrimary css-haxlbp-MuiCircularProgress-root"

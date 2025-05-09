@@ -3,7 +3,7 @@
 exports[`AutoCompletePicker Closed smoke-test 1`] = `
 <div>
   <div class="MuiFormControl-root MuiFormControl-fullWidth css-ytlejw-MuiFormControl-root">
-    <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-standard MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-standard css-10zwvn9-MuiFormLabel-root-MuiInputLabel-root"
+    <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-standard MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-standard css-10zwvn9-MuiFormLabel-root-MuiInputLabel-root"
            data-shrink="true"
     >
       Package
@@ -24,7 +24,7 @@ exports[`AutoCompletePicker Closed smoke-test 1`] = `
 exports[`AutoCompletePicker Open smoke-test 1`] = `
 <div>
   <div class="MuiFormControl-root MuiFormControl-fullWidth css-ytlejw-MuiFormControl-root">
-    <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-standard MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-sizeMedium MuiInputLabel-standard css-10zwvn9-MuiFormLabel-root-MuiInputLabel-root"
+    <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-standard MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-standard css-10zwvn9-MuiFormLabel-root-MuiInputLabel-root"
            data-shrink="true"
     >
       Package

@@ -6,8 +6,8 @@ exports[`activity/ActivityList BetaList smoke-test 1`] = `
 </p>
 <ul class="MuiList-root MuiList-padding css-b7dj7n-MuiList-root">
   <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-6 css-roeqa8-MuiListItem-root">
-    <div class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root">
-      <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root">
+    <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-tqvfrr-MuiGrid-root">
+      <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-10 css-r13beu-MuiGrid-root">
         <div class="MuiBox-root css-geek62">
           <div class="MuiBox-root css-12z0wuy">
             <svg xmlns="http://www.w3.org/2000/svg"
@@ -32,19 +32,19 @@ exports[`activity/ActivityList BetaList smoke-test 1`] = `
           </div>
         </div>
       </div>
-      <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root">
+      <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-2 css-15bfe7d-MuiGrid-root">
         <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-5 css-tis6ec-MuiTypography-root">
           02:56 PM
         </p>
       </div>
-      <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+      <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
         Channel beta is now pointing to version 0.0.0
       </div>
     </div>
   </li>
   <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart stable-makeStyles-list-6 css-roeqa8-MuiListItem-root">
-    <div class="MuiGrid-root MuiGrid-container css-1oukqxz-MuiGrid-root">
-      <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-10 css-17p3wh3-MuiGrid-root">
+    <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-tqvfrr-MuiGrid-root">
+      <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-10 css-r13beu-MuiGrid-root">
         <div class="MuiBox-root css-geek62">
           <div class="MuiBox-root css-12z0wuy">
             <svg xmlns="http://www.w3.org/2000/svg"
@@ -69,12 +69,12 @@ exports[`activity/ActivityList BetaList smoke-test 1`] = `
           </div>
         </div>
       </div>
-      <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-2 css-1o7apob-MuiGrid-root">
+      <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-2 css-15bfe7d-MuiGrid-root">
         <p class="MuiTypography-root MuiTypography-body1 stable-makeStyles-time-5 css-tis6ec-MuiTypography-root">
           02:55 PM
         </p>
       </div>
-      <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+      <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
         Channel beta is now pointing to version 0.0.0
       </div>
     </div>

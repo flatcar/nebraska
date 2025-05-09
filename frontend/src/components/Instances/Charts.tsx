@@ -98,7 +98,7 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
 
   return (
     <Grid container direction="column" justifyContent="center" alignItems="center">
-      <Grid item>
+      <Grid>
         <PieChart width={width} height={height}>
           <Pie
             data={dataSet}
@@ -143,13 +143,13 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
           </Pie>
         </PieChart>
       </Grid>
-      <Grid item container alignItems="center" justifyContent="center" spacing={1}>
+      <Grid container alignItems="center" justifyContent="center" spacing={1}>
         {icon && (
-          <Grid item>
+          <Grid>
             <InlineIcon icon={icon} color={color} width={iconSize} height={iconSize} />
           </Grid>
         )}
-        <Grid item>
+        <Grid>
           <LightTooltip title={getTooltipText() || mainTooltipText} open={showTooltip}>
             <Typography
               onMouseOver={() => {
@@ -238,10 +238,10 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
 
   return totalInstances > 0 ? (
     <Grid container justifyContent="space-between" alignItems="center">
-      <Grid item xs={4}>
+      <Grid size={4}>
         <InstanceCountLabel countText={totalInstances} href={href} />
       </Grid>
-      <Grid item container justifyContent="space-between" xs={8}>
+      <Grid container justifyContent="space-between" size={8}>
         {instanceStateCount.map(({ status, count }, i) => {
           // Sort the data entries so the smaller amounts are shown first.
           count.sort((obj1, obj2) => {
@@ -253,7 +253,7 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
           });
 
           return (
-            <Grid item key={i}>
+            <Grid key={i}>
               <ProgressDoughnut
                 data={count.map(({ key, label = status }) => {
                   const statusLabel = statusDefs[label].label;

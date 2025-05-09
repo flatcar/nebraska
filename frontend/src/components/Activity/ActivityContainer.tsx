@@ -125,14 +125,14 @@ function Container() {
             </Empty>
           ) : (
             <Grid container direction="column">
-              <Grid item>
+              <Grid>
                 {Object.values(
                   _.mapObject(getPagedActivity(), (entries, timestamp) => {
                     return <ActivityList timestamp={timestamp} entries={entries} key={timestamp} />;
                   })
                 )}
               </Grid>
-              <Grid item>
+              <Grid>
                 <TablePagination
                   classes={classes}
                   rowsPerPageOptions={rowsOptions}

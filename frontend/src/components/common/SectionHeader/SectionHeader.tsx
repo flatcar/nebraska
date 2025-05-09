@@ -47,7 +47,7 @@ export default function SectionHeader(props: SectionHeaderProps) {
         justifyContent="flex-start"
         className={classes.sectionContainer}
       >
-        <Grid item>
+        <Grid>
           <Breadcrumbs
             aria-label={t('common|breadcrumbs_label').toString()}
             separator={<NavigateNextIcon fontSize="small" />}
