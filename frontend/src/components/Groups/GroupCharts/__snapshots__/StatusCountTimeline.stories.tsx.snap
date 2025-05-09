@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
-<div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-ofrcno-MuiGrid-root">
+<div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-1cth5tq-MuiGrid-root">
   <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
     <div class="recharts-wrapper"
          style="position: relative; cursor: default; width: 500px; height: 400px;"
@@ -625,9 +625,11 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
            style="visibility: hidden; pointer-events: none; position: absolute; top: 0px; left: 0px; transform: translate(60px, 10px);"
       >
         <div class="custom-tooltip">
-          <div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-5jb75g-MuiPaper-root">
+          <div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-12jlilq-MuiPaper-root"
+               style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
+          >
             <div class="MuiBox-root css-hpgf8j">
-              <p class="MuiTypography-root MuiTypography-body1 css-1s23nr9-MuiTypography-root">
+              <p class="MuiTypography-root MuiTypography-body1 css-12h6qye-MuiTypography-root">
               </p>
             </div>
           </div>
@@ -647,8 +649,9 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
     </div>
     <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
       <div class="MuiBox-root css-19midj6">
-        <p class="MuiTypography-root MuiTypography-body1 MuiTypography-alignCenter css-ii1goy-MuiTypography-root"
+        <p class="MuiTypography-root MuiTypography-body1 MuiTypography-alignCenter css-12k2fzb-MuiTypography-root"
            data-testid="empty"
+           style="--Typography-textAlign: center;"
         >
           No data to show for this time point.
         </p>

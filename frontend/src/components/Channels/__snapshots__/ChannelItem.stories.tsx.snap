@@ -1,15 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`channels/ChannelItem AppView smoke-test 1`] = `
-<li class="MuiListItem-container css-oyakqy-MuiListItem-container">
-  <div class="MuiListItem-root MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-aimc6m-MuiListItem-root">
-    <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root">
+<li class="MuiListItem-container css-xw6fwh-MuiListItem-container">
+  <div class="MuiListItem-root MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-xo5bya-MuiListItem-root">
+    <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-11nsb57-MuiGrid-root">
       <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-        <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-11 stable-makeStyles-colorAvatar-12 css-1onlcy6-MuiAvatar-root">
+        <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-11 stable-makeStyles-colorAvatar-12 css-jmdkhx-MuiAvatar-root">
         </div>
       </div>
       <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-        <div class="MuiListItemText-root MuiListItemText-multiline stable-makeStyles-root-10 css-konndc-MuiListItemText-root">
+        <div class="MuiListItemText-root MuiListItemText-multiline stable-makeStyles-root-10 css-14ln1j6-MuiListItemText-root">
           <div class="MuiBox-root css-70qvj9">
             <div class="MuiBox-root css-1xsd608">
               edge
@@ -22,7 +22,7 @@ exports[`channels/ChannelItem AppView smoke-test 1`] = `
             <div class="MuiBox-root css-n085mf">
               <div class="MuiBox-root css-k008qs">
                 <div class="MuiBox-root css-0">
-                  <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-ptiqhd-MuiSvgIcon-root"
+                  <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-120dh41-MuiSvgIcon-root"
                        focusable="false"
                        aria-hidden="true"
                        viewbox="0 0 24 24"
@@ -46,9 +46,9 @@ exports[`channels/ChannelItem AppView smoke-test 1`] = `
       </div>
     </div>
   </div>
-  <div class="MuiListItemSecondaryAction-root css-518kzi-MuiListItemSecondaryAction-root">
+  <div class="MuiListItemSecondaryAction-root css-zezwi5-MuiListItemSecondaryAction-root">
     <div>
-      <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-1pux6rn-MuiButtonBase-root-MuiIconButton-root"
+      <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-geyil9-MuiButtonBase-root-MuiIconButton-root"
               tabindex="0"
               type="button"
               aria-controls="simple-menu-4"
@@ -56,7 +56,7 @@ exports[`channels/ChannelItem AppView smoke-test 1`] = `
               aria-label="Open menu"
               data-testid="more-menu-open-button"
       >
-        <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+        <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
              focusable="false"
              aria-hidden="true"
              viewbox="0 0 24 24"
@@ -65,8 +65,6 @@ exports[`channels/ChannelItem AppView smoke-test 1`] = `
           <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2">
           </path>
         </svg>
-        <span class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root">
-        </span>
       </button>
     </div>
   </div>
@@ -74,16 +72,16 @@ exports[`channels/ChannelItem AppView smoke-test 1`] = `
 `;
 
 exports[`channels/ChannelItem NoArch smoke-test 1`] = `
-<li class="MuiListItem-container css-oyakqy-MuiListItem-container">
-  <div class="MuiListItem-root MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-aimc6m-MuiListItem-root">
-    <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root">
+<li class="MuiListItem-container css-xw6fwh-MuiListItem-container">
+  <div class="MuiListItem-root MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-xo5bya-MuiListItem-root">
+    <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-11nsb57-MuiGrid-root">
       <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-        <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-8 stable-makeStyles-colorAvatar-9 css-1onlcy6-MuiAvatar-root">
+        <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-8 stable-makeStyles-colorAvatar-9 css-jmdkhx-MuiAvatar-root">
           e
         </div>
       </div>
       <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-        <div class="MuiListItemText-root MuiListItemText-multiline stable-makeStyles-root-7 css-konndc-MuiListItemText-root">
+        <div class="MuiListItemText-root MuiListItemText-multiline stable-makeStyles-root-7 css-14ln1j6-MuiListItemText-root">
           <div class="MuiBox-root css-70qvj9">
             <div class="MuiBox-root css-1xsd608">
               edge
@@ -96,7 +94,7 @@ exports[`channels/ChannelItem NoArch smoke-test 1`] = `
             <div class="MuiBox-root css-n085mf">
               <div class="MuiBox-root css-k008qs">
                 <div class="MuiBox-root css-0">
-                  <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-ptiqhd-MuiSvgIcon-root"
+                  <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-120dh41-MuiSvgIcon-root"
                        focusable="false"
                        aria-hidden="true"
                        viewbox="0 0 24 24"
@@ -120,9 +118,9 @@ exports[`channels/ChannelItem NoArch smoke-test 1`] = `
       </div>
     </div>
   </div>
-  <div class="MuiListItemSecondaryAction-root css-518kzi-MuiListItemSecondaryAction-root">
+  <div class="MuiListItemSecondaryAction-root css-zezwi5-MuiListItemSecondaryAction-root">
     <div>
-      <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-1pux6rn-MuiButtonBase-root-MuiIconButton-root"
+      <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-geyil9-MuiButtonBase-root-MuiIconButton-root"
               tabindex="0"
               type="button"
               aria-controls="simple-menu-3"
@@ -130,7 +128,7 @@ exports[`channels/ChannelItem NoArch smoke-test 1`] = `
               aria-label="Open menu"
               data-testid="more-menu-open-button"
       >
-        <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+        <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
              focusable="false"
              aria-hidden="true"
              viewbox="0 0 24 24"
@@ -139,8 +137,6 @@ exports[`channels/ChannelItem NoArch smoke-test 1`] = `
           <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2">
           </path>
         </svg>
-        <span class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root">
-        </span>
       </button>
     </div>
   </div>
@@ -148,16 +144,16 @@ exports[`channels/ChannelItem NoArch smoke-test 1`] = `
 `;
 
 exports[`channels/ChannelItem NoPackage smoke-test 1`] = `
-<li class="MuiListItem-container css-oyakqy-MuiListItem-container">
-  <div class="MuiListItem-root MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-aimc6m-MuiListItem-root">
-    <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root">
+<li class="MuiListItem-container css-xw6fwh-MuiListItem-container">
+  <div class="MuiListItem-root MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-xo5bya-MuiListItem-root">
+    <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-11nsb57-MuiGrid-root">
       <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-        <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-5 stable-makeStyles-colorAvatar-6 css-1onlcy6-MuiAvatar-root">
+        <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-5 stable-makeStyles-colorAvatar-6 css-jmdkhx-MuiAvatar-root">
           e
         </div>
       </div>
       <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-        <div class="MuiListItemText-root MuiListItemText-multiline stable-makeStyles-root-4 css-konndc-MuiListItemText-root">
+        <div class="MuiListItemText-root MuiListItemText-multiline stable-makeStyles-root-4 css-14ln1j6-MuiListItemText-root">
           <div class="MuiBox-root css-70qvj9">
             <div class="MuiBox-root css-1xsd608">
               edge
@@ -172,9 +168,9 @@ exports[`channels/ChannelItem NoPackage smoke-test 1`] = `
       </div>
     </div>
   </div>
-  <div class="MuiListItemSecondaryAction-root css-518kzi-MuiListItemSecondaryAction-root">
+  <div class="MuiListItemSecondaryAction-root css-zezwi5-MuiListItemSecondaryAction-root">
     <div>
-      <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-1pux6rn-MuiButtonBase-root-MuiIconButton-root"
+      <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-geyil9-MuiButtonBase-root-MuiIconButton-root"
               tabindex="0"
               type="button"
               aria-controls="simple-menu-2"
@@ -182,7 +178,7 @@ exports[`channels/ChannelItem NoPackage smoke-test 1`] = `
               aria-label="Open menu"
               data-testid="more-menu-open-button"
       >
-        <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+        <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
              focusable="false"
              aria-hidden="true"
              viewbox="0 0 24 24"
@@ -191,8 +187,6 @@ exports[`channels/ChannelItem NoPackage smoke-test 1`] = `
           <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2">
           </path>
         </svg>
-        <span class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root">
-        </span>
       </button>
     </div>
   </div>
@@ -200,16 +194,16 @@ exports[`channels/ChannelItem NoPackage smoke-test 1`] = `
 `;
 
 exports[`channels/ChannelItem ShowArch smoke-test 1`] = `
-<li class="MuiListItem-container css-oyakqy-MuiListItem-container">
-  <div class="MuiListItem-root MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-aimc6m-MuiListItem-root">
-    <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-mhc70k-MuiGrid-root">
+<li class="MuiListItem-container css-xw6fwh-MuiListItem-container">
+  <div class="MuiListItem-root MuiListItem-gutters MuiListItem-padding MuiListItem-secondaryAction css-xo5bya-MuiListItem-root">
+    <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-11nsb57-MuiGrid-root">
       <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-        <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-2 stable-makeStyles-colorAvatar-3 css-1onlcy6-MuiAvatar-root">
+        <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-2 stable-makeStyles-colorAvatar-3 css-jmdkhx-MuiAvatar-root">
           e
         </div>
       </div>
       <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-        <div class="MuiListItemText-root MuiListItemText-multiline stable-makeStyles-root-1 css-konndc-MuiListItemText-root">
+        <div class="MuiListItemText-root MuiListItemText-multiline stable-makeStyles-root-1 css-14ln1j6-MuiListItemText-root">
           <div class="MuiBox-root css-70qvj9">
             <div class="MuiBox-root css-1xsd608">
               edge
@@ -222,7 +216,7 @@ exports[`channels/ChannelItem ShowArch smoke-test 1`] = `
             <div class="MuiBox-root css-n085mf">
               <div class="MuiBox-root css-k008qs">
                 <div class="MuiBox-root css-0">
-                  <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-ptiqhd-MuiSvgIcon-root"
+                  <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-120dh41-MuiSvgIcon-root"
                        focusable="false"
                        aria-hidden="true"
                        viewbox="0 0 24 24"
@@ -246,9 +240,9 @@ exports[`channels/ChannelItem ShowArch smoke-test 1`] = `
       </div>
     </div>
   </div>
-  <div class="MuiListItemSecondaryAction-root css-518kzi-MuiListItemSecondaryAction-root">
+  <div class="MuiListItemSecondaryAction-root css-zezwi5-MuiListItemSecondaryAction-root">
     <div>
-      <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-1pux6rn-MuiButtonBase-root-MuiIconButton-root"
+      <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-geyil9-MuiButtonBase-root-MuiIconButton-root"
               tabindex="0"
               type="button"
               aria-controls="simple-menu-1"
@@ -256,7 +250,7 @@ exports[`channels/ChannelItem ShowArch smoke-test 1`] = `
               aria-label="Open menu"
               data-testid="more-menu-open-button"
       >
-        <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+        <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
              focusable="false"
              aria-hidden="true"
              viewbox="0 0 24 24"
@@ -265,8 +259,6 @@ exports[`channels/ChannelItem ShowArch smoke-test 1`] = `
           <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2m0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2">
           </path>
         </svg>
-        <span class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root">
-        </span>
       </button>
     </div>
   </div>

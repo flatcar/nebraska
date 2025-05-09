@@ -6,7 +6,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import FormControl from '@mui/material/FormControl';
 import Input from '@mui/material/Input';
 import InputLabel, { InputLabelProps } from '@mui/material/InputLabel';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import TextField from '@mui/material/TextField';
 import makeStyles from '@mui/styles/makeStyles';
@@ -87,9 +87,9 @@ function renderSuggestion(suggestionProps: RenderSuggestionProps) {
   }
 
   return (
-    <ListItem {...itemProps} button key={suggestion.label} selected={isSelected} style={style}>
+    <ListItemButton {...itemProps} key={suggestion.label} selected={isSelected} style={style}>
       <ListItemText primary={suggestion.label} secondary={getUtcLabel(suggestion.utcDiff)} />
-    </ListItem>
+    </ListItemButton>
   );
 }
 

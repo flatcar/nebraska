@@ -1,5 +1,5 @@
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
-import { fireEvent, render } from '@testing-library/react';
+import { act, fireEvent, render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 
@@ -7,7 +7,7 @@ import ModalButton from '../../components/common/ModalButton';
 import { theme } from '../../TestHelpers/theme';
 
 describe('Modal Button', () => {
-  it('should render Application Edit Dialog on Add Icon click', () => {
+  it('should render Application Edit Dialog on Add Icon click', async () => {
     const { getByTestId } = render(
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>
@@ -17,10 +17,10 @@ describe('Modal Button', () => {
         </ThemeProvider>
       </StyledEngineProvider>
     );
-    fireEvent.click(getByTestId('modal-button'));
+    await act(async () => fireEvent.click(getByTestId('modal-button')));
     expect(getByTestId('app-edit-form')).toBeTruthy();
   });
-  it('should render AddGroupModal on Add Icon click', () => {
+  it('should render AddGroupModal on Add Icon click', async () => {
     const { getByTestId } = render(
       <StyledEngineProvider injectFirst>
         (
@@ -32,10 +32,10 @@ describe('Modal Button', () => {
         )
       </StyledEngineProvider>
     );
-    fireEvent.click(getByTestId('modal-button'));
+    await act(async () => fireEvent.click(getByTestId('modal-button')));
     expect(getByTestId('group-edit-form')).toBeTruthy();
   });
-  it('should render AddChannelModal on Add Icon click', () => {
+  it('should render AddChannelModal on Add Icon click', async () => {
     const tree = (
       <StyledEngineProvider injectFirst>
         (
@@ -48,10 +48,10 @@ describe('Modal Button', () => {
       </StyledEngineProvider>
     );
     const { getByTestId } = render(tree);
-    fireEvent.click(getByTestId('modal-button'));
+    await act(async () => fireEvent.click(getByTestId('modal-button')));
     expect(getByTestId('channel-edit-form')).toBeTruthy();
   });
-  it('should render AddPackageModal on Add Icon click', () => {
+  it('should render AddPackageModal on Add Icon click', async () => {
     const { getByTestId } = render(
       <StyledEngineProvider injectFirst>
         (
@@ -63,7 +63,7 @@ describe('Modal Button', () => {
         )
       </StyledEngineProvider>
     );
-    fireEvent.click(getByTestId('modal-button'));
+    await act(async () => fireEvent.click(getByTestId('modal-button')));
     expect(getByTestId('package-edit-form')).toBeTruthy();
   });
 });

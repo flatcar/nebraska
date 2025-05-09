@@ -17,13 +17,32 @@
 # Install dependencies
 npm install
 
-# Start development server
+# Development
+## Start the backend
+```bash
+docker run --rm -d --name nebraska-postgres-dev -p 5432:5432 -e POSTGRES_PASSWORD=nebraska postgres && \
+    sleep 10 && \
+    psql postgres://postgres:nebraska@localhost:5432/postgres -c 'create database nebraska;' && \
+    psql postgres://postgres:nebraska@localhost:5432/nebraska -c 'set timezone = "utc";'
+make run-backend
+```
+## Run development server
 npm run dev
 
 # Run tests
+## To run vitests
 npm test
 
-# Run linter and formatter
+## To update storybook snapshots
+npm run build-storybook:ci && npm run serve-storybook:ci
+npm run test-storybook:ci -- -u
+
+## [E2E Playwright tests](./e2e/README.md)
+
+## Generate test coverage report
+npm run test:coverage
+
+## Run linter and formatter
 npm run lint
 npm run format
 
@@ -35,6 +54,3 @@ npm run storybook
 
 # Build Storybook
 npm run build-storybook
-
-# Generate test coverage report
-npm run test:coverage

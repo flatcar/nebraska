@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
-<div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-ofrcno-MuiGrid-root">
+<div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-1cth5tq-MuiGrid-root">
   <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
     <div class="recharts-wrapper"
          style="position: relative; cursor: default; width: 500px; height: 400px;"
@@ -553,9 +553,11 @@ exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
            style="visibility: hidden; pointer-events: none; position: absolute; top: 0px; left: 0px; transform: translate(60px, 10px);"
       >
         <div class="custom-tooltip">
-          <div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-5jb75g-MuiPaper-root">
+          <div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-12jlilq-MuiPaper-root"
+               style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
+          >
             <div class="MuiBox-root css-hpgf8j">
-              <p class="MuiTypography-root MuiTypography-body1 css-1s23nr9-MuiTypography-root">
+              <p class="MuiTypography-root MuiTypography-body1 css-12h6qye-MuiTypography-root">
               </p>
             </div>
           </div>
@@ -574,29 +576,29 @@ exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
       </div>
     </div>
     <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-11 css-ykovpn-MuiGrid-root">
-      <table class="MuiTable-root css-vzt8dn-MuiTable-root">
-        <thead class="MuiTableHead-root css-15wwp11-MuiTableHead-root">
-          <tr class="MuiTableRow-root MuiTableRow-head css-kc8myf-MuiTableRow-root">
-            <th class="MuiTableCell-root MuiTableCell-head MuiTableCell-sizeMedium css-1btn10p-MuiTableCell-root"
+      <table class="MuiTable-root css-1ybyiew-MuiTable-root">
+        <thead class="MuiTableHead-root css-1a7iywq-MuiTableHead-root">
+          <tr class="MuiTableRow-root MuiTableRow-head css-gg5lq5-MuiTableRow-root">
+            <th class="MuiTableCell-root MuiTableCell-head MuiTableCell-sizeMedium css-1ghcho9-MuiTableCell-root"
                 scope="col"
             >
               Version
             </th>
-            <th class="MuiTableCell-root MuiTableCell-head MuiTableCell-sizeMedium css-1btn10p-MuiTableCell-root"
+            <th class="MuiTableCell-root MuiTableCell-head MuiTableCell-sizeMedium css-1ghcho9-MuiTableCell-root"
                 scope="col"
             >
               Count
             </th>
-            <th class="MuiTableCell-root MuiTableCell-head MuiTableCell-sizeMedium css-1btn10p-MuiTableCell-root"
+            <th class="MuiTableCell-root MuiTableCell-head MuiTableCell-sizeMedium css-1ghcho9-MuiTableCell-root"
                 scope="col"
             >
               Percentage
             </th>
           </tr>
         </thead>
-        <tbody class="MuiTableBody-root css-apqrd9-MuiTableBody-root">
-          <tr class="MuiTableRow-root css-kc8myf-MuiTableRow-root">
-            <td class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-xfdl9x-MuiTableCell-root">
+        <tbody class="MuiTableBody-root css-gmh7jj-MuiTableBody-root">
+          <tr class="MuiTableRow-root css-gg5lq5-MuiTableRow-root">
+            <td class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-zihrmi-MuiTableCell-root">
               <svg xmlns="http://www.w3.org/2000/svg"
                    xmlns:xlink="http://www.w3.org/1999/xlink"
                    aria-hidden="true"
@@ -613,15 +615,15 @@ exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
               </svg>
               &nbsp;2191.5.0
             </td>
-            <td class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-xfdl9x-MuiTableCell-root">
+            <td class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-zihrmi-MuiTableCell-root">
               152
             </td>
-            <td class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-xfdl9x-MuiTableCell-root">
+            <td class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-zihrmi-MuiTableCell-root">
               71.4
             </td>
           </tr>
-          <tr class="MuiTableRow-root css-kc8myf-MuiTableRow-root">
-            <td class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-xfdl9x-MuiTableCell-root">
+          <tr class="MuiTableRow-root css-gg5lq5-MuiTableRow-root">
+            <td class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-zihrmi-MuiTableCell-root">
               <svg xmlns="http://www.w3.org/2000/svg"
                    xmlns:xlink="http://www.w3.org/1999/xlink"
                    aria-hidden="true"
@@ -638,10 +640,10 @@ exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
               </svg>
               &nbsp;0.0.0
             </td>
-            <td class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-xfdl9x-MuiTableCell-root">
+            <td class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-zihrmi-MuiTableCell-root">
               61
             </td>
-            <td class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-xfdl9x-MuiTableCell-root">
+            <td class="MuiTableCell-root MuiTableCell-body MuiTableCell-sizeMedium css-zihrmi-MuiTableCell-root">
               28.6
             </td>
           </tr>
