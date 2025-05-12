@@ -22,7 +22,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestNilTo(t *testing.T) {
-	var to sessions.ValuesType = nil
+	var to sessions.ValuesType
 	data := testData()
 	c := New()
 	assert.NoError(t, c.Copy(&to, data))

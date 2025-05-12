@@ -1,25 +1,27 @@
 import infoIcon from '@iconify/icons-mdi/information-circle-outline';
 import searchIcon from '@iconify/icons-mdi/search';
-import Icon from '@iconify/react';
-import { makeStyles, Theme } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import Input from '@material-ui/core/Input';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
-import Select from '@material-ui/core/Select';
-import TablePagination from '@material-ui/core/TablePagination';
-import { useTheme } from '@material-ui/styles';
+import { Icon } from '@iconify/react';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import Input from '@mui/material/Input';
+import InputAdornment from '@mui/material/InputAdornment';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Paper from '@mui/material/Paper';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import TablePagination from '@mui/material/TablePagination';
+import { useTheme } from '@mui/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
-import React, { ChangeEvent } from 'react';
-import { useTranslation } from 'react-i18next';
+import React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import _ from 'underscore';
+
 import API from '../../api/API';
 import { Application, Group, Instance, Instances } from '../../api/apiDataTypes';
 import {
@@ -75,23 +77,23 @@ function InstanceFilter(props: InstanceFilterProps) {
 
   return (
     <Box pr={2}>
-      <Grid container spacing={2} justify="flex-end">
+      <Grid container spacing={2} justifyContent="flex-end">
         <Grid item xs={5}>
           <FormControl fullWidth disabled={props.disabled}>
-            <InputLabel htmlFor="select-status" shrink>
-              {t('instances|Filter Status')}
+            <InputLabel variant="standard" htmlFor="select-status" shrink>
+              {t('instances|filter_status')}
             </InputLabel>
             <Select
               onChange={(event: any) => changeFilter('status', event.target.value)}
               input={<Input id="select-status" />}
               renderValue={(selected: any) =>
-                selected ? statusDefs[selected].label : t('instances|Show All')
+                selected ? statusDefs[selected].label : t('instances|show_all')
               }
               value={props.filter.status}
               displayEmpty
             >
               <MenuItem key="" value="">
-                {t('instances|Show All')}
+                {t('instances|show_all')}
               </MenuItem>
               {Object.keys(statusDefs).map(statusType => {
                 const label = statusDefs[statusType].label;
@@ -106,20 +108,20 @@ function InstanceFilter(props: InstanceFilterProps) {
         </Grid>
         <Grid item xs={5}>
           <FormControl fullWidth disabled={props.disabled}>
-            <InputLabel htmlFor="select-versions" shrink>
-              {t('instances|Filter Version')}
+            <InputLabel variant="standard" htmlFor="select-versions" shrink>
+              {t('instances|filter_version')}
             </InputLabel>
             <Select
-              onChange={(event: ChangeEvent<{ name?: string | undefined; value: any }>) =>
+              onChange={(event: SelectChangeEvent<string>) =>
                 changeFilter('version', event.target.value)
               }
               input={<Input id="select-versions" />}
-              renderValue={(selected: any) => (selected ? selected : t('instances|Show All'))}
+              renderValue={(selected: any) => (selected ? selected : t('instances|show_all'))}
               value={props.filter.version}
               displayEmpty
             >
               <MenuItem key="" value="">
-                {t('instances|Show All')}
+                {t('instances|show_all')}
               </MenuItem>
               {(versions || []).map(({ version }) => {
                 return (
@@ -259,7 +261,7 @@ function ListView(props: { application: Application; group: Group }) {
   }
 
   function handleChangePage(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
+    _event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
     newPage: number
   ) {
     addQuery({ page: newPage + 1 });
@@ -388,23 +390,18 @@ function ListView(props: { application: Application; group: Group }) {
   }
 
   function getSearchTooltipText() {
-    return t(`instances|You can search by typing and pressing enter.
-     The search will show matches for the instances id, alias, and ip fields, in this order. 
-     It is also possible to match only one field by using its classifier, for example: 
-     id:0001
-     alias:"My instance" 
-     ip:256.0.0.1`);
+    return <Trans t={t} i18nKey="search_instruction" components={{ br: <br /> }} />;
   }
 
   const searchInputRef = React.createRef<HTMLInputElement>();
 
   return (
     <>
-      <ListHeader title={t('instances|Instance List')} />
+      <ListHeader title={t('instances|instance_list')} />
       <Paper>
         <Box padding="1em">
           <Grid container spacing={1}>
-            <Grid item container justify="space-between" alignItems="stretch">
+            <Grid item container justifyContent="space-between" alignItems="stretch">
               <Grid item>
                 <Box
                   mb={2}
@@ -416,8 +413,8 @@ function ListView(props: { application: Application; group: Group }) {
                 </Box>
               </Grid>
               <Grid item>
-                <InputLabel htmlFor="instance-search-filter" shrink>
-                  {t('frequent|Search')}
+                <InputLabel variant="standard" htmlFor="instance-search-filter" shrink>
+                  {t('frequent|search')}
                 </InputLabel>
                 <SearchInput
                   id="instance-search-filter"
@@ -426,6 +423,7 @@ function ListView(props: { application: Application; group: Group }) {
                       <IconButton
                         onClick={() => searchInputRef.current?.focus()}
                         title="Search Icon"
+                        size="large"
                       >
                         <Icon icon={searchIcon} width="15" height="15" />
                       </IconButton>
@@ -434,7 +432,7 @@ function ListView(props: { application: Application; group: Group }) {
                   endAdornment={
                     <InputAdornment position="end">
                       <LightTooltip title={getSearchTooltipText()}>
-                        <IconButton>
+                        <IconButton size="large">
                           <Icon icon={infoIcon} width="20" height="20" />
                         </IconButton>
                       </LightTooltip>
@@ -456,7 +454,7 @@ function ListView(props: { application: Application; group: Group }) {
               </Grid>
             </Grid>
             <Box width="100%" borderTop={1} borderColor={'#E0E0E0'} className={classes.root}>
-              <Grid item container md={12} alignItems="stretch" justify="space-between">
+              <Grid item container md={12} alignItems="stretch" justifyContent="space-between">
                 <Grid item md>
                   <Box display="flex" alignItems="center">
                     <Box ml={2}>
@@ -476,10 +474,10 @@ function ListView(props: { application: Application; group: Group }) {
               </Grid>
             </Box>
             {isFiltered() && (
-              <Grid item md={12} container justify="center">
+              <Grid item md={12} container justifyContent="center">
                 <Grid item>
                   <Button variant="outlined" color="secondary" onClick={resetFilters}>
-                    {t('instances|Reset filters')}
+                    {t('instances|reset_filters')}
                   </Button>
                 </Grid>
               </Grid>
@@ -502,17 +500,17 @@ function ListView(props: { application: Application; group: Group }) {
                       rowsPerPage={rowsPerPage}
                       page={page}
                       backIconButtonProps={{
-                        'aria-label': t('frequent|previous page'),
+                        'aria-label': t('frequent|previous_page'),
                       }}
                       nextIconButtonProps={{
-                        'aria-label': t('frequent|next page'),
+                        'aria-label': t('frequent|next_page'),
                       }}
-                      onChangePage={handleChangePage}
-                      onChangeRowsPerPage={handleChangeRowsPerPage}
+                      onPageChange={handleChangePage}
+                      onRowsPerPageChange={handleChangeRowsPerPage}
                     />
                   </React.Fragment>
                 ) : (
-                  <Empty>{t('frequent|No instances.')}</Empty>
+                  <Empty>{t('frequent|no_instances')}</Empty>
                 )
               ) : (
                 <Loader />

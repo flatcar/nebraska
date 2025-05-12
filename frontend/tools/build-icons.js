@@ -3,75 +3,56 @@
  *
  * This file was taken and adapted from:
  *   https://github.com/iconify/tools/blob/master/sample/parse.js
- *
- * @todo: Make this a webpack loader.
  */
-"use strict";
+import fs from 'fs';
+import path from 'path';
+import { SVG, cleanupSVG, runSVGO } from '@iconify/tools';
 
-const fs = require('fs');
-const path = require('path');
-const tools = require('@iconify/tools');
-
-let collection;
-let args = process.argv.slice(2);
-let sourceDir = args[0];
-let destDir = args[1];
+const args = process.argv.slice(2);
+const sourceDir = args[0];
+const destDir = args[1];
 
 if (!fs.existsSync(sourceDir)) {
-    console.log(`Input folder ${sourceDir} does not exist; quitting...`);
-    process.exit(1);
+  console.error(`Input folder ${sourceDir} does not exist; quitting...`);
+  process.exit(1);
 }
 
-// Create directories
-try {
-    fs.mkdirSync(destDir);
-} catch (err) {
-    if (err.code !== 'EEXIST') {
-        console.log(err);
-    }
-}
+fs.mkdirSync(destDir, { recursive: true });
 
-// Do stuff
-tools.ImportDir(sourceDir).then(result => {
-    collection = result;
-    console.log('Found ' + collection.length() + ' icons.');
+// Read directory
+const files = await fs.promises.readdir(sourceDir);
+console.log(files);
 
-    // SVGO optimization
-    return collection.promiseAll(svg => tools.SVGO(svg));
-}).then(() => {
-    // Clean up tags
-    return collection.promiseAll(svg => tools.Tags(svg));
-}).then(() => {
-    // SVGO optimization again. Might make files smaller after color/tags changes
-    return collection.promiseAll(svg => tools.SVGO(svg));
-}).then(() => {
-    // Export each icon as JSON
-    collection.forEach((item, key) => {
-        let json = {
-            body: item.getBody().replace(/\s*\n\s*/g, ''),
-            width: item.width,
-            height: item.height
-        };
-        let content = JSON.stringify(json, null, '\t');
-        let target = path.join(destDir, `${key}.json`);
+// Filter SVG files
+const collection = files
+  .filter(file => file.endsWith('.svg'))
+  .map(file => {
+    const name = path.basename(file, '.svg');
+    const content = fs.readFileSync(`${sourceDir}/${file}`, 'utf8');
+    return { svg: new SVG(content), name };
+  });
 
-        try {
-            try {
-                fs.mkdirSync(destDir);
-            } catch (err) {
-                if (err.code !== 'EEXIST') {
-                    console.log(err);
-                    process.exit(1);
-                }
-            }
+console.log(`Found ${collection.length} icons`);
 
-            fs.writeFileSync(target, content, 'utf8');
-            console.log(`Created ${target}`);
-        } catch (err) {
-            console.log(err);
-            process.exit(1);
-        }
-    });
-}).catch(err => {
-    console.log(err);
+collection.forEach(async ({ svg, name }) => {
+  try {
+    cleanupSVG(svg);
+    runSVGO(svg);
+
+    const body = svg.getBody();
+    const width = svg.getIcon().width;
+    const height = svg.getIcon().height;
+
+    const json = {
+      body,
+      width,
+      height,
+    };
+
+    const targetPath = path.join(destDir, `${name}.json`);
+    fs.writeFileSync(targetPath, JSON.stringify(json, null, 2), 'utf8');
+    console.log(`Created ${targetPath}`);
+  } catch (err) {
+    console.error(`Error processing icon "${name}":`, err);
+  }
 });

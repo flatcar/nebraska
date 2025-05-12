@@ -155,17 +155,6 @@ func (oa *oidcAuth) ValidateToken(c echo.Context) error {
 		return nil
 	}
 
-	// If refresh token is not available in the session
-	// mark the request as unauthorized so that the session
-	// can be recreated with refresh_token
-	session := echosessions.GetSession(c)
-	refreshToken := session.Get("refresh_token")
-	if refreshToken == nil {
-		logger.Debug().Str("request_id", requestID).Msg("ValidateToken, Refresh token not found in session")
-		httpError(c, http.StatusUnauthorized)
-		return nil
-	}
-
 	_, err := oa.verifier.Verify(ctx, token)
 	if err != nil {
 		logger.Error().Str("request_id", requestID).AnErr("error", err).Msg("ValidateToken, Token verification error")
@@ -354,7 +343,7 @@ func rolesFromToken(token *oidc.IDToken, rolesPath string) ([]string, error) {
 	}
 
 	result := gjson.Get(string(out), rolesPath)
-	result.ForEach(func(key, value gjson.Result) bool {
+	result.ForEach(func(_, value gjson.Result) bool {
 		roles = append(roles, value.String())
 		return true
 	})
@@ -375,23 +364,22 @@ func (oa *oidcAuth) Authenticate(c echo.Context) (teamID string, replied bool) {
 		return "", true
 	}
 
-	// If refresh token is not available in the session
-	// mark the request as unauthorized so that the session
-	// can be recreated with refresh_token
-	session := echosessions.GetSession(c)
-	refreshToken := session.Get("refresh_token")
-	if refreshToken == nil {
-		logger.Debug().Str("request_id", requestID).Msg("Refresh token not found in session")
-		httpError(c, http.StatusUnauthorized)
-		return "", true
-	}
-
 	// Verify Token
 	tk, err := oa.verifier.Verify(ctx, token)
 	if err != nil {
 		// If token is expired, use the refresh_token to fetch a new token
 		// and set the new id_token in response header
 		if strings.Contains(err.Error(), "token is expired") {
+			// If refresh token is not available in the session
+			// mark the request as unauthorized so that the session
+			// can be recreated with refresh_token
+			session := echosessions.GetSession(c)
+			refreshToken := session.Get("refresh_token")
+			if refreshToken == nil || refreshToken == "" {
+				logger.Debug().Str("request_id", requestID).Msg("Refresh token not found in session")
+				httpError(c, http.StatusUnauthorized)
+				return "", true
+			}
 			ts := oa.oauthConfig.TokenSource(ctx, &oauth2.Token{RefreshToken: refreshToken.(string)})
 			newToken, err := ts.Token()
 			if err != nil {

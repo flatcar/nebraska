@@ -1,14 +1,15 @@
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import MenuItem from '@material-ui/core/MenuItem';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import MenuItem from '@mui/material/MenuItem';
 import { Field, Form, Formik } from 'formik';
-import { TextField } from 'formik-material-ui';
+import { TextField } from 'formik-mui';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
+
 import { Application } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 
@@ -29,7 +30,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
       [key: string]: any;
     }
   ) {
-    var data = {
+    const data = {
       name: values.name,
       description: values.description,
       product_id: values.product_id,
@@ -53,9 +54,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
       .catch(() => {
         actions.setSubmitting(false);
         actions.setStatus({
-          statusMessage: t(
-            'applications|Something went wrong. Check the form or try again later...'
-          ),
+          statusMessage: t('common|generic_error'),
         });
       });
   }
@@ -64,7 +63,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
     props.onHide();
   }
 
-  //@ts-ignore
+  //@ts-expect-error as type mismatch
   function renderForm({ status, isSubmitting }) {
     return (
       <Form data-testid="app-edit-form">
@@ -75,8 +74,9 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
           <Field
             name="name"
             component={TextField}
+            variant="standard"
             margin="dense"
-            label={t('frequent|Name')}
+            label={t('frequent|name')}
             type="text"
             fullWidth
             required
@@ -84,17 +84,19 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
           <Field
             name="product_id"
             component={TextField}
+            variant="standard"
             margin="dense"
-            label={t('frequent|Product ID')}
+            label={t('frequent|product_id')}
             type="text"
             fullWidth
-            helperText={t('applications|Example: io.example.MyApp')}
+            helperText={t('applications|example_app_id')}
           />
           <Field
             name="description"
             component={TextField}
+            variant="standard"
             margin="dense"
-            label={t('frequent|Description')}
+            label={t('frequent|description')}
             type="text"
             fullWidth
           />
@@ -102,11 +104,10 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
             <Field
               type="text"
               name="appToClone"
-              label={t('applications|Groups/Channels')}
+              variant="standard"
+              label={t('applications|groups_channels')}
               select
-              helperText={t(
-                'applications|Clone channels and groups from another other application'
-              )}
+              helperText={t('applications|clone_channels_groups_from_another_app')}
               margin="normal"
               component={TextField}
               InputLabelProps={{
@@ -114,7 +115,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
               }}
             >
               <MenuItem value="none" key="none">
-                {t('applications|Do not copy')}
+                {t('applications|do_not_copy')}
               </MenuItem>
               {props.data.applications &&
                 props.data.applications.map((application: Application, i: number) => {
@@ -129,19 +130,21 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            {t('frequent|Cancel')}
+            {t('frequent|cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting} color="primary">
-            {isCreation ? t('frequent|Add') : t('frequent|Update')}
+            {isCreation ? t('frequent|add_lower') : t('frequent|update')}
           </Button>
         </DialogActions>
       </Form>
     );
   }
 
+  const maxNameChars = 50;
+  const maxDescChars = 155;
   const validation = Yup.object().shape({
     name: Yup.string()
-      .max(50, t('applications|Must be less than 50 characters'))
+      .max(maxNameChars, t('common|max_length_error', { number: maxNameChars }))
       .required('Required'),
     product_id: Yup.string()
       // This regex matches an ID that matches
@@ -150,30 +153,35 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
       // Each segment must start with a letter.
       // Each segment must not end with a dash.
       .matches(
-        /^[a-zA-Z]+([a-zA-Z0-9\-]*[a-zA-Z0-9])*(\.[a-zA-Z]+([a-zA-Z0-9\-]*[a-zA-Z0-9])*)+$/,
-        t('applications|Must be a reverse domain ID like io.example.MyApp')
+        /^[a-zA-Z]+([a-zA-Z0-9-]*[a-zA-Z0-9])*(\.[a-zA-Z]+([a-zA-Z0-9-]*[a-zA-Z0-9])*)+$/,
+        t('common|reverse_domain_id_error')
       )
       .nullable(),
-    description: Yup.string().max(155, t('applications|Must be less than 155 characters')),
+    description: Yup.string().max(
+      maxDescChars,
+      t('common|max_length_error', { number: maxDescChars })
+    ),
   });
 
   return (
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
       <DialogTitle>
-        {isCreation ? t('applications|Add Application') : t('applications|Update Application')}
+        {isCreation ? t('applications|add_application') : t('applications|update_application')}
       </DialogTitle>
       <Formik
         initialValues={{
-          name: props.data.name,
-          description: props.data.description,
-          product_id: props.data.product_id,
+          name: props.data.name || '',
+          description: props.data.description || '',
+          product_id: props.data.product_id || '',
+          appToClone: 'none',
         }}
         onSubmit={handleSubmit}
         validationSchema={validation}
-        //@todo add better types for renderForm
-        //@ts-ignore
-        render={renderForm}
-      />
+      >
+        {/* @todo add better types for renderForm */}
+        {/* @ts-expect-error as type mismatch */}
+        {renderForm}
+      </Formik>
     </Dialog>
   );
 }

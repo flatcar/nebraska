@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
+
 import { Application, Group } from '../../../api/apiDataTypes';
 import { applicationsStore } from '../../../stores/Stores';
 import Loader from '../../common/Loader';
@@ -47,11 +48,11 @@ export default function InstanceListLayout() {
   return (
     <React.Fragment>
       <SectionHeader
-        title={t('layouts|Instances')}
+        title={t('layouts|instances')}
         breadcrumbs={[
           {
             path: '/apps',
-            label: t('layouts|Applications'),
+            label: t('layouts|applications'),
           },
           {
             path: `/apps/${appID}`,

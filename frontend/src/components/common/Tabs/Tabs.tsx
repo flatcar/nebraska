@@ -1,7 +1,7 @@
-import { makeStyles } from '@material-ui/core/styles';
-import MuiTab from '@material-ui/core/Tab';
-import MuiTabs from '@material-ui/core/Tabs';
-import Typography, { TypographyProps } from '@material-ui/core/Typography';
+import MuiTab from '@mui/material/Tab';
+import MuiTabs from '@mui/material/Tabs';
+import Typography, { TypographyProps } from '@mui/material/Typography';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -41,7 +41,7 @@ export default function Tabs(props: TabsProps) {
   const classes = useStyle();
   const { t } = useTranslation('glossary');
 
-  function handleTabChange(event: any, newValue: number) {
+  function handleTabChange(_event: any, newValue: number) {
     setTabIndex(newValue);
 
     if (onTabChanged !== null) {
@@ -49,17 +49,13 @@ export default function Tabs(props: TabsProps) {
     }
   }
 
-  React.useEffect(
-    () => {
-      if (defaultIndex === null) {
-        setTabIndex(false);
-        return;
-      }
-      setTabIndex(defaultIndex);
-    },
-    // eslint-disable-next-line
-    [defaultIndex]
-  );
+  React.useEffect(() => {
+    if (defaultIndex === null) {
+      setTabIndex(false);
+      return;
+    }
+    setTabIndex(defaultIndex);
+  }, [defaultIndex]);
 
   return (
     <React.Fragment>

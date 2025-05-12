@@ -1,11 +1,12 @@
-import { Theme } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Chip from '@material-ui/core/Chip';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { useTheme } from '@material-ui/styles';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { useTheme } from '@mui/styles';
 import React from 'react';
 import semver from 'semver';
+
 import { Group } from '../../../api/apiDataTypes';
 import { makeLocaleTime } from '../../../i18n/dateTime';
 import { groupChartStoreContext } from '../../../stores/Stores';
@@ -18,6 +19,7 @@ import { Duration } from './TimelineChart';
 export interface VersionCountTimelineProps {
   group: Group | null;
   duration: Duration;
+  isAnimationActive?: boolean;
 }
 
 export default function VersionCountTimeline(props: VersionCountTimelineProps) {
@@ -184,7 +186,11 @@ export default function VersionCountTimeline(props: VersionCountTimelineProps) {
     <Grid container alignItems="center" spacing={2}>
       <Grid item xs={12}>
         {timelineChartData.data.length > 0 ? (
-          <TimelineChart {...timelineChartData} onSelect={setSelectedEntry} />
+          <TimelineChart
+            {...timelineChartData}
+            onSelect={setSelectedEntry}
+            isAnimationActive={props.isAnimationActive}
+          />
         ) : (
           <Loader />
         )}

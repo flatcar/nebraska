@@ -1,21 +1,28 @@
-import { Icon } from '@iconify/react';
-import { Box, Button } from '@material-ui/core';
-import AppBar from '@material-ui/core/AppBar';
-import IconButton from '@material-ui/core/IconButton';
-import Menu, { MenuProps } from '@material-ui/core/Menu';
-import { makeStyles, ThemeProvider } from '@material-ui/core/styles';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import CreateOutlined from '@material-ui/icons/CreateOutlined';
+import { Icon, IconifyIcon } from '@iconify/react';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import CreateOutlined from '@mui/icons-material/CreateOutlined';
+import { Box, Button } from '@mui/material';
+import AppBar from '@mui/material/AppBar';
+import IconButton from '@mui/material/IconButton';
+import Menu, { MenuProps } from '@mui/material/Menu';
+import { StyledEngineProvider, Theme, ThemeProvider } from '@mui/material/styles';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import makeStyles from '@mui/styles/makeStyles';
 import DOMPurify from 'dompurify';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
+
 import nebraskaLogo from '../icons/nebraska-logo.json';
 import themes from '../lib/themes';
 import { UserState } from '../stores/redux/features/user';
 import { useSelector } from '../stores/redux/hooks';
+
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  interface DefaultTheme extends Theme {}
+}
 
 const useStyles = makeStyles(theme => ({
   title: {
@@ -29,7 +36,7 @@ const useStyles = makeStyles(theme => ({
   header: {
     marginBottom: theme.spacing(1),
     backgroundColor:
-      theme.palette.type === 'dark' ? theme.palette.common.black : theme.palette.common.white,
+      theme.palette.mode === 'dark' ? theme.palette.common.black : theme.palette.common.white,
   },
   svgContainer: {
     '& svg': { maxHeight: '3rem' },
@@ -54,7 +61,7 @@ interface AppbarProps {
   config: NebraskaConfig | null;
   user: UserState | null;
   menuAnchorEl: MenuProps['anchorEl'];
-  projectLogo: object;
+  projectLogo: IconifyIcon;
   handleClose: MenuProps['onClose'];
   handleMenu: React.MouseEventHandler<HTMLButtonElement>;
 }
@@ -92,10 +99,11 @@ function Appbar(props: AppbarProps) {
         <div style={{ flex: '1 0 0' }} />
         {showAccountButton && (
           <IconButton
-            aria-label={t('header|User menu')}
+            aria-label={t('header|user_menu')}
             aria-controls="menu-appbar"
             aria-haspopup="true"
             onClick={handleMenu}
+            size="large"
           >
             <AccountCircle />
           </IconButton>
@@ -128,7 +136,7 @@ function Appbar(props: AppbarProps) {
                 disabled={!config?.access_management_url}
                 href={config?.access_management_url || ''}
               >
-                {t('header|Manage Account')}
+                {t('header|manage_account')}
               </Button>
             </Box>
           </Menu>
@@ -165,7 +173,9 @@ export default function Header() {
   return config &&
     (config.header_style === 'dark' ||
       (config.header_style === undefined && config.appBarColor === 'dark')) ? (
-    <ThemeProvider theme={themes.dark}>{appBar}</ThemeProvider>
+    <StyledEngineProvider injectFirst>
+      (<ThemeProvider theme={themes.dark}>{appBar}</ThemeProvider>)
+    </StyledEngineProvider>
   ) : (
     appBar
   );

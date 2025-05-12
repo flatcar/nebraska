@@ -1,11 +1,13 @@
-import { Box, makeStyles } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import MuiList from '@material-ui/core/List';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import Typography from '@material-ui/core/Typography';
+import { Box } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import MuiList from '@mui/material/List';
+import ListSubheader from '@mui/material/ListSubheader';
+import Typography from '@mui/material/Typography';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
+
 import API from '../../api/API';
 import { Channel, Package } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
@@ -50,7 +52,7 @@ function Channels(props: { channels: null | Channel[]; onEdit: (channelId: strin
   );
 
   if (noChannels) {
-    return <Empty>{t('channels|No channels created for this application yet')}</Empty>;
+    return <Empty>{t('channels|no_channels_created')}</Empty>;
   }
 
   return (
@@ -161,9 +163,9 @@ export function ChannelListPure(props: ChannelListPureProps) {
   return (
     <Box mt={2}>
       <Box mb={2}>
-        <Grid container alignItems="center" justify="space-between">
+        <Grid container alignItems="center" justifyContent="space-between">
           <Grid item>
-            <Typography variant="h1">{t('channels|Channels')}</Typography>
+            <Typography variant="h1">{t('channels|channels')}</Typography>
           </Grid>
           <Grid item>
             <ModalButton

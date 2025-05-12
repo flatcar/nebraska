@@ -1,8 +1,10 @@
-import { IconButton, makeStyles } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
+import AddIcon from '@mui/icons-material/Add';
+import { IconButton } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+
 import ApplicationEdit from '../../Applications/ApplicationEdit';
 import ChannelEdit from '../../Channels/ChannelEdit';
 import GroupEditDialog from '../../Groups/GroupEditDialog/GroupEditDialog';
@@ -58,7 +60,7 @@ function ModalButton(props: { data: object; modalToOpen: string; icon?: string }
     <div>
       <IconButton
         size="small"
-        aria-label={t('frequent|add')}
+        aria-label={t('frequent|add_lower')}
         onClick={open}
         data-testid="modal-button"
       >

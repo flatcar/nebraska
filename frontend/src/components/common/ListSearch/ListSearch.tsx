@@ -1,6 +1,5 @@
-import Input from '@material-ui/core/Input';
-import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
+import Input from '@mui/material/Input';
+import makeStyles from '@mui/styles/makeStyles';
 import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles(theme => ({

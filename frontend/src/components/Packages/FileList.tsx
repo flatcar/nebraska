@@ -1,15 +1,16 @@
 import addIcon from '@iconify/icons-mdi/plus';
-import Icon from '@iconify/react';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import { Icon } from '@iconify/react';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { File, Package } from '../../api/apiDataTypes';
 import ListItem from '../common/ListItem';
 import MoreMenu from '../common/MoreMenu';
@@ -55,21 +56,17 @@ function FileListItem(props: FileListItemProps) {
           <Grid item container>
             <Grid item xs={5}>
               <Typography component="span" variant="body2" color="textSecondary">
-                {t('frequent|Size: {{size}}', { size: hasSize() ? fileToEdit.size : '-' })}
+                {t('frequent|size', { size: hasSize() ? fileToEdit.size : '-' })}
               </Typography>
             </Grid>
             <Grid item>
               <Typography component="span" variant="body2" color="textSecondary">
-                {t('frequent|SHA1 Hash (base64): {{hash}}', {
-                  hash: fileToEdit.hash || '-',
-                })}
+                {`${t('packages|sha1_hash_base64')}: ${fileToEdit.hash || '-'}`}
               </Typography>
             </Grid>
             <Grid item>
               <Typography component="span" variant="body2" color="textSecondary">
-                {t('frequent|SHA256 Hash (hex): {{hash256}}', {
-                  hash256: fileToEdit.hash256 || '-',
-                })}
+                {`${t('packages|sha256_hash_hex')}: ${fileToEdit.hash256 || '-'}`}
               </Typography>
             </Grid>
           </Grid>
@@ -79,15 +76,15 @@ function FileListItem(props: FileListItemProps) {
             iconButtonProps={{ disabled: showEditOptions }}
             options={[
               {
-                label: t('frequent|Edit'),
+                label: t('frequent|edit'),
                 action: () => {
-                  onEditClicked && onEditClicked();
+                  onEditClicked?.();
                 },
               },
               {
-                label: t('frequent|Delete'),
+                label: t('frequent|delete'),
                 action: () => {
-                  onDeleteClicked && onDeleteClicked();
+                  onDeleteClicked?.();
                 },
               },
             ]}
@@ -102,14 +99,14 @@ function FileListItem(props: FileListItemProps) {
       <Grid container>
         <Grid item xs={12}>
           <Typography variant="h5">
-            {!file.name ? t('packages|New File') : t('packages|Edit File')}
+            {!file.name ? t('packages|new_file') : t('packages|edit_file')}
           </Typography>
         </Grid>
         <Grid item xs={12}>
           <TextField
             name="name"
             margin="dense"
-            label={t('packages|Name')}
+            label={t('packages|name')}
             type="text"
             required
             fullWidth
@@ -124,9 +121,9 @@ function FileListItem(props: FileListItemProps) {
             <TextField
               name="size"
               margin="dense"
-              label={t('packages|Size')}
+              label={t('packages|size')}
               type="text"
-              helperText={t('packages|In bytes')}
+              helperText={t('packages|in_bytes')}
               fullWidth
               value={fileToEdit.size}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) =>
@@ -138,9 +135,9 @@ function FileListItem(props: FileListItemProps) {
             <TextField
               name="hash"
               margin="dense"
-              label={t('packages|SHA1 Hash (base64)')}
+              label={t('packages|sha1_hash_base64')}
               type="text"
-              helperText={t('packages|Tip: {{command}}', {
+              helperText={t('packages|tip_command', {
                 command: 'cat FILE | openssl dgst -sha1 -binary | base64',
               })}
               fullWidth
@@ -154,9 +151,9 @@ function FileListItem(props: FileListItemProps) {
             <TextField
               name="hash256"
               margin="dense"
-              label={t('packages|SHA256 Hash (hex)')}
+              label={t('packages|sha256_hash_hex')}
               type="text"
-              helperText={t('packages|Tip: {{command}}', {
+              helperText={t('packages|tip_command', {
                 command: 'sha256sum FILE',
               })}
               fullWidth
@@ -175,11 +172,11 @@ function FileListItem(props: FileListItemProps) {
                 onEditFinished();
               }}
             >
-              {t('frequent|Cancel')}
+              {t('frequent|cancel')}
             </Button>
           </Grid>
           <Grid item>
-            <Button onClick={() => onEditFinished(fileToEdit)}>{t('frequent|Done')}</Button>
+            <Button onClick={() => onEditFinished(fileToEdit)}>{t('frequent|done')}</Button>
           </Grid>
         </Grid>
       </Grid>
@@ -230,7 +227,7 @@ export default function FileList(props: FileListProps) {
   }
 
   function deleteFile(index: number) {
-    onFilesChanged(files.filter((v, i) => i !== index));
+    onFilesChanged(files.filter((_, i) => i !== index));
   }
 
   return (
@@ -240,7 +237,7 @@ export default function FileList(props: FileListProps) {
           key={`file_list_item_${i}`}
           file={file}
           showEditOptions={isEditing()}
-          onEditFinished={(file?: File) => (!!file ? onFileChanged(file, i) : stopEditing())}
+          onEditFinished={(file?: File) => (file ? onFileChanged(file, i) : stopEditing())}
           edit={editFileIndex === i}
           onEditClicked={() => onEditClicked(i)}
           onDeleteClicked={() => deleteFile(i)}
@@ -255,10 +252,11 @@ export default function FileList(props: FileListProps) {
       ) : (
         <Box textAlign="center">
           <IconButton
-            title={t('packages|Add File')}
+            title={t('packages|add_file')}
             disabled={isEditing()}
-            aria-label={t('packages|Add File')}
+            aria-label={t('packages|add_file')}
             onClick={() => addFile()}
+            size="large"
           >
             <Icon icon={addIcon} width="15" height="15" />
           </IconButton>

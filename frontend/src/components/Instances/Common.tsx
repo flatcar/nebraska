@@ -1,8 +1,7 @@
-import { Box, Link, Theme } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/styles';
-import React from 'react';
+import { Box, Link, Theme } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { makeStyles } from '@mui/styles';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -37,18 +36,18 @@ export function InstanceCountLabel(props: {
   return (
     <Grid container direction="column">
       <Grid item>
-        <Typography className={classes.instancesLabel}>{t('instances|INSTANCES')}</Typography>
+        <Typography className={classes.instancesLabel}>{t('instances|instances')}</Typography>
       </Grid>
       <Grid item>
         <Typography className={classes.instancesCount}>{countText}</Typography>
       </Grid>
       <Grid item>
-        {!instanceListView && countText > 0 ? (
+        {!instanceListView && Number(countText) > 0 ? (
           <Box>
             {!props.loading && (
-              <Link to={{ ...href }} component={RouterLink}>
+              <Link to={{ ...href }} component={RouterLink} underline="hover">
                 <Typography className={classes.instanceLink}>
-                  {t('instances|See all instances')}
+                  {t('instances|see_all_instances')}
                 </Typography>
               </Link>
             )}

@@ -1,11 +1,12 @@
 import { IconifyIcon, InlineIcon } from '@iconify/react';
-import { Theme } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles, useTheme } from '@material-ui/styles';
+import { Theme } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { makeStyles, useTheme } from '@mui/styles';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Cell, Label, Pie, PieChart } from 'recharts';
+
 import Empty from '../common/EmptyContent';
 import LightTooltip from '../common/LightTooltip';
 import Loader from '../common/Loader';
@@ -96,7 +97,7 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
   });
 
   return (
-    <Grid container direction="column" justify="center" alignItems="center">
+    <Grid container direction="column" justifyContent="center" alignItems="center">
       <Grid item>
         <PieChart width={width} height={height}>
           <Pie
@@ -142,7 +143,7 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
           </Pie>
         </PieChart>
       </Grid>
-      <Grid item container alignItems="center" justify="center" spacing={1}>
+      <Grid item container alignItems="center" justifyContent="center" spacing={1}>
         {icon && (
           <Grid item>
             <InlineIcon icon={icon} color={color} width={iconSize} height={iconSize} />
@@ -205,8 +206,8 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
     {
       status: 'InstanceStatusOther',
       count: [
-        { key: 'onhold', label: t('instances|InstanceStatusOnHold') },
-        { key: 'undefined', label: t('instances|InstanceStatusUndefined') },
+        { key: 'onhold', label: t('instances|instance_status_on_hold') },
+        { key: 'undefined', label: t('instances|instance_status_undefined') },
       ],
     },
     {
@@ -216,8 +217,8 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
     {
       status: 'InstanceStatusDownloading',
       count: [
-        { key: 'downloading', label: t('instances|InstanceStatusDownloading') },
-        { key: 'update_granted', label: t('instances|InstanceStatusUpdateGranted') },
+        { key: 'downloading', label: t('instances|instance_status_downloading') },
+        { key: 'update_granted', label: t('instances|instance_status_update_granted') },
       ],
     },
     {
@@ -227,7 +228,7 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
   ];
 
   statusDefs['InstanceStatusOther'] = { ...statusDefs['InstanceStatusUndefined'] };
-  statusDefs['InstanceStatusOther'].label = t('instances|Other');
+  statusDefs['InstanceStatusOther'].label = t('instances|other');
 
   const totalInstances = instanceStats ? instanceStats.total : 0;
 
@@ -236,11 +237,11 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
   }
 
   return totalInstances > 0 ? (
-    <Grid container justify="space-between" alignItems="center">
+    <Grid container justifyContent="space-between" alignItems="center">
       <Grid item xs={4}>
         <InstanceCountLabel countText={totalInstances} href={href} />
       </Grid>
-      <Grid item container justify="space-between" xs={8}>
+      <Grid item container justifyContent="space-between" xs={8}>
         {instanceStateCount.map(({ status, count }, i) => {
           // Sort the data entries so the smaller amounts are shown first.
           count.sort((obj1, obj2) => {
@@ -276,7 +277,7 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
     </Grid>
   ) : (
     <Empty>
-      <Trans ns="instances">
+      <Trans t={t} ns="instances" i18nKey="noinstances">
         No instances have registered with this group for the past {period}.
         <br />
         <br />

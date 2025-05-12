@@ -1,13 +1,14 @@
-import { Box, Divider, Typography } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import CheckIcon from '@material-ui/icons/Check';
-import CloseIcon from '@material-ui/icons/Close';
-import ScheduleIcon from '@material-ui/icons/Schedule';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import { Box, Divider, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import makeStyles from '@mui/styles/makeStyles';
 import { TFunction } from 'i18next';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
+
 import API from '../../api/API';
 import { Group, VersionBreakdownEntry } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
@@ -41,9 +42,9 @@ const MAX_UPDATES_PER_TIME_PERIOD = 900000;
 
 export function formatUpdateLimits(t: TFunction, group: Group) {
   if (group.policy_max_updates_per_period >= MAX_UPDATES_PER_TIME_PERIOD) {
-    return t('groups|Unlimited number of parallel updates');
+    return t('groups|update_policy_unlimited');
   }
-  return t('groups|Max {{policy_max_updates_per_period, number}} / {{policy_period_interval}}', {
+  return t('groups|max_updates_per_period', {
     policy_max_updates_per_period: group.policy_max_updates_per_period,
     policy_period_interval: group.policy_period_interval,
   });
@@ -58,10 +59,9 @@ function GroupItem({ group, handleUpdateGroup }: GroupItemProps) {
   const { t } = useTranslation();
   const [totalInstances, setTotalInstances] = React.useState<null | number>(null);
   const versionBreakdown = useGroupVersionBreakdown(group);
-  console.log('versionBreakdown', JSON.stringify(versionBreakdown));
 
   function deleteGroup(appID: string, groupID: string) {
-    const confirmationText = t('groups|Are you sure you want to delete this group?');
+    const confirmationText = t('groups|group_delete_confirmation');
     if (window.confirm(confirmationText)) {
       applicationsStore().deleteGroup(appID, groupID);
     }
@@ -104,11 +104,11 @@ export function PureGroupItem({
   const classes = useStyles();
   const { t } = useTranslation();
 
-  const description = group.description || t('groups|No description provided');
+  const description = group.description || t('groups|description_none_provided');
   const channel = group.channel || null;
 
   const groupChannel = _.isEmpty(group.channel) ? (
-    <CardLabel>{t('groups|No channel provided')}</CardLabel>
+    <CardLabel>{t('groups|channel_none_provided')}</CardLabel>
   ) : (
     <ChannelItem channel={group.channel} />
   );
@@ -127,38 +127,38 @@ export function PureGroupItem({
             <MoreMenu
               options={[
                 {
-                  label: t('frequent|Edit'),
+                  label: t('frequent|edit'),
                   action: () => handleUpdateGroup(group.application_id, group.id),
                 },
                 {
-                  label: t('frequent|Delete'),
+                  label: t('frequent|delete'),
                   action: () => deleteGroup(group.application_id, group.id),
                 },
               ]}
             />
           </CardHeader>
         </Grid>
-        <Grid item xs={12} container justify="space-between">
+        <Grid item xs={12} container justifyContent="space-between">
           <Grid item xs={4} container direction="column" className={classes.itemSection}>
             <Grid item>
-              <CardFeatureLabel>{t('groups|Instances')}</CardFeatureLabel>
+              <CardFeatureLabel>{t('groups|instances')}</CardFeatureLabel>
               <Box>
                 <CardLabel labelStyle={{ fontSize: '1.5rem' }}>
                   {totalInstances !== null ? (
                     totalInstances > 0 ? (
                       totalInstances
                     ) : (
-                      t('frequent|None')
+                      t('frequent|none')
                     )
                   ) : (
-                    <Empty>{t('frequent|Loading...')}</Empty>
+                    <Empty>{t('frequent|loading')}</Empty>
                   )}
                 </CardLabel>
                 <Box display="flex" mr={2}>
                   <ScheduleIcon color="disabled" />
                   <Box pl={1} color="text.disabled">
                     <Typography className={classes.last24hours}>
-                      {t('groups|last 24 hours')}
+                      {t('groups|time_last_24_hours')}
                     </Typography>
                   </Box>
                 </Box>
@@ -170,23 +170,23 @@ export function PureGroupItem({
           </Box>
           <Grid item xs={7} container direction="column" className={classes.itemSection}>
             <Grid item>
-              <CardFeatureLabel>{t('groups|Channel')}</CardFeatureLabel> {groupChannel}
+              <CardFeatureLabel>{t('groups|channel')}</CardFeatureLabel> {groupChannel}
             </Grid>
             <Grid item>
-              <CardFeatureLabel>{t('groups|Updates')}</CardFeatureLabel>
+              <CardFeatureLabel>{t('groups|updates')}</CardFeatureLabel>
               <Box p={1} mb={1}>
                 <CardLabel>
                   <Box display="flex">
                     {group.policy_updates_enabled ? (
                       <>
-                        <Box>{t('frequent|Enabled')}</Box>
+                        <Box>{t('frequent|enabled')}</Box>
                         <Box>
                           <CheckIcon className={classes.success} fontSize={'small'} />
                         </Box>
                       </>
                     ) : (
                       <>
-                        <Box>{t('frequent|Disabled')}</Box>
+                        <Box>{t('frequent|disabled')}</Box>
                         <Box>
                           <CloseIcon color="error" />
                         </Box>
@@ -197,22 +197,22 @@ export function PureGroupItem({
               </Box>
             </Grid>
             <Grid item>
-              <CardFeatureLabel>{t('groups|Rollout Policy')}</CardFeatureLabel>
+              <CardFeatureLabel>{t('groups|rollout_policy')}</CardFeatureLabel>
               <Box p={1} mb={1}>
                 <CardLabel>{formatUpdateLimits(t, group)}</CardLabel>
               </Box>
             </Grid>
             <Grid item container>
               <Grid item xs={12}>
-                <CardFeatureLabel>{t('groups|Version breakdown')}</CardFeatureLabel>
+                <CardFeatureLabel>{t('groups|version_breakdown_lower')}</CardFeatureLabel>
               </Grid>
               <Grid item xs={12}>
                 {versionBreakdown === null ? (
-                  <Empty>{t('frequent|Loading...')}</Empty>
+                  <Empty>{t('frequent|loading')}</Empty>
                 ) : versionBreakdown?.length > 0 ? (
                   <VersionProgressBar version_breakdown={versionBreakdown} channel={channel} />
                 ) : (
-                  <Empty>{t('groups|No instances available.')}</Empty>
+                  <Empty>{t('groups|instances_none_available')}</Empty>
                 )}
               </Grid>
             </Grid>

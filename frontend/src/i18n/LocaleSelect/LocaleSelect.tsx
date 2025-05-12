@@ -1,9 +1,10 @@
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import { createStyles, makeStyles, Theme, useTheme } from '@material-ui/core/styles';
-import React from 'react';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { Theme, useTheme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -26,8 +27,8 @@ export default function LocaleSelect(props: LocaleSelectProps) {
   const { t, i18n } = useTranslation('frequent');
   const theme = useTheme();
 
-  const changeLng = (event: React.ChangeEvent<{ value: unknown }>) => {
-    const lng = event.target.value as string;
+  const changeLng = (event: SelectChangeEvent<string>) => {
+    const lng = event.target.value;
 
     i18n.changeLanguage(lng);
     document.body.dir = i18n.dir();

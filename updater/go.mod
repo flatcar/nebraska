@@ -1,12 +1,12 @@
 module github.com/kinvolk/nebraska/updater
 
-go 1.17
+go 1.23.0
 
 require (
 	github.com/google/uuid v1.6.0
 	github.com/kinvolk/go-omaha v0.0.2-0.20221206142015-1518a03b832b
 	github.com/kinvolk/nebraska/backend v0.0.0-20210826093658-9a22e1e98f4b
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	gopkg.in/guregu/null.v4 v4.0.0
 )
 
@@ -27,8 +27,8 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rs/zerolog v1.21.0 // indirect
 	github.com/rubenv/sql-migrate v0.0.0-20210408115534-a32ed26c37ea // indirect
-	golang.org/x/crypto v0.20.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/crypto v0.35.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 	gopkg.in/gorp.v1 v1.7.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

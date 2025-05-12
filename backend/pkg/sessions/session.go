@@ -110,10 +110,11 @@ func (s *Session) Save(writer http.ResponseWriter) error {
 		value = encoded
 	}
 	cookie := &http.Cookie{
-		Name:   s.Name(),
-		Value:  value,
-		Path:   "/",
-		MaxAge: maxAge,
+		Name:     s.Name(),
+		Value:    value,
+		Path:     "/",
+		MaxAge:   maxAge,
+		HttpOnly: true,
 	}
 	http.SetCookie(writer, cookie)
 	return nil

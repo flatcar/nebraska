@@ -62,6 +62,7 @@ test-clean-work-tree-backend:
 	  echo 'Working tree of backend code is not clean'; \
 	  echo; \
 	  git status; \
+	  git diff; \
 	  exit 1; \
 	fi
 
@@ -75,7 +76,7 @@ tools/go-bindata: go.mod go.sum
 	env GOBIN=$(CURDIR)/tools/ go install github.com/kevinburke/go-bindata/go-bindata@v3.24.0
 
 tools/golangci-lint: go.mod go.sum
-	env GOBIN=$(CURDIR)/tools/ go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.2
+	env GOBIN=$(CURDIR)/tools/ go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.6
 
 tools/swag:
 	env GOBIN=$(CURDIR)/tools/ go install github.com/swaggo/swag/cmd/swag@v1.8.10

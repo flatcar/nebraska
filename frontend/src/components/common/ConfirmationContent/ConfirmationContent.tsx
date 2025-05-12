@@ -1,5 +1,5 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
+
 import { applicationsStore } from '../../../stores/Stores';
 
 function ConfirmationContent(props: {
@@ -27,13 +27,13 @@ function ConfirmationContent(props: {
 
   return (
     <div className="popover-content" {...props}>
-      {t('common|Are you sure ... ?')}
+      {t('common|confirmation_prompt')}
       <p className="button-group">
         <button type="button" className="confirm-dialog-btn-abord">
-          {t('frequent|No')}
+          {t('frequent|no')}
         </button>
         <button type="button" className="confirm-dialog-btn-confirm" onClick={processClick}>
-          {t('frequent|Yes')}
+          {t('frequent|yes')}
         </button>
       </p>
     </div>

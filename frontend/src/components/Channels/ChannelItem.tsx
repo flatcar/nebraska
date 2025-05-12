@@ -1,9 +1,11 @@
-import { Box, Grid, makeStyles, Tooltip, useTheme } from '@material-ui/core';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import ScheduleIcon from '@material-ui/icons/Schedule';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import { Box, Grid, Tooltip, useTheme } from '@mui/material';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import makeStyles from '@mui/styles/makeStyles';
 import { useTranslation } from 'react-i18next';
+
 import { Channel } from '../../api/apiDataTypes';
 import { makeLocaleTime } from '../../i18n/dateTime';
 import { applicationsStore } from '../../stores/Stores';
@@ -35,10 +37,10 @@ export default function ChannelItem(props: ChannelItemProps) {
   const name = channel.name;
   const version = channel.package
     ? cleanSemverVersion(channel.package.version)
-    : t('channels|No package');
+    : t('channels|no_package');
 
   function deleteChannel() {
-    const confirmationText = t('channels|Are you sure you want to delete this channel?');
+    const confirmationText = t('channels|confirm_delete_channel');
     if (window.confirm(confirmationText)) {
       applicationsStore().deleteChannel(channel.application_id, channel.id);
     }
@@ -72,7 +74,7 @@ export default function ChannelItem(props: ChannelItemProps) {
           <Box pl={2}>
             <Box display="flex">
               <Box>
-                <Tooltip title={t('channels|Release date') || ''}>
+                <Tooltip title={t('channels|release_date') || ''}>
                   <ScheduleIcon fontSize="small" />
                 </Tooltip>
               </Box>
@@ -117,8 +119,8 @@ export default function ChannelItem(props: ChannelItemProps) {
         <ListItemSecondaryAction>
           <MoreMenu
             options={[
-              { label: t('frequent|Edit'), action: updateChannel },
-              { label: t('frequent|Delete'), action: deleteChannel },
+              { label: t('frequent|edit'), action: updateChannel },
+              { label: t('frequent|delete'), action: deleteChannel },
             ]}
           />
         </ListItemSecondaryAction>

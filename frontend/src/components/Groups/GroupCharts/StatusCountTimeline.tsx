@@ -1,12 +1,13 @@
 import { IconifyIcon } from '@iconify/react';
-import { Theme } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Chip from '@material-ui/core/Chip';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { useTheme } from '@material-ui/styles';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import { useTheme } from '@mui/styles';
 import React from 'react';
 import _ from 'underscore';
+
 import { Group } from '../../../api/apiDataTypes';
 import { makeLocaleTime } from '../../../i18n/dateTime';
 import { groupChartStoreContext } from '../../../stores/Stores';
@@ -20,6 +21,7 @@ import { Duration } from './TimelineChart';
 export interface StatusCountTimelineProps {
   duration: Duration;
   group: Group | null;
+  isAnimationActive?: boolean;
 }
 
 export default function StatusCountTimeline(props: StatusCountTimelineProps) {
@@ -206,7 +208,12 @@ export default function StatusCountTimeline(props: StatusCountTimelineProps) {
     <Grid container alignItems="center" spacing={2}>
       <Grid item xs={12}>
         {timelineChartData.data.length > 0 ? (
-          <TimelineChart {...timelineChartData} interpolation="step" onSelect={setSelectedEntry} />
+          <TimelineChart
+            {...timelineChartData}
+            interpolation="step"
+            onSelect={setSelectedEntry}
+            isAnimationActive={props.isAnimationActive}
+          />
         ) : (
           <Loader />
         )}

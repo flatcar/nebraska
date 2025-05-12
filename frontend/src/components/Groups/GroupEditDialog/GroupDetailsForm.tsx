@@ -1,7 +1,8 @@
-import { FormControl, Grid, InputLabel, MenuItem, Select } from '@material-ui/core';
+import { FormControl, Grid, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { Field } from 'formik';
-import { TextField } from 'formik-material-ui';
+import { TextField } from 'formik-mui';
 import { useTranslation } from 'react-i18next';
+
 import { Channel } from '../../../api/apiDataTypes';
 import { ARCHES } from '../../../utils/helpers';
 
@@ -17,32 +18,39 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
 
   return (
     <div style={{ padding: '1rem' }}>
-      <Grid container spacing={2} justify="center">
+      <Grid container spacing={2} justifyContent="center">
         <Grid item xs={8}>
           <Field
             name="name"
             component={TextField}
+            variant="standard"
             margin="dense"
             label="Name"
             required
             fullWidth
-            defaultValue={values.name}
+            value={values.name}
+            onChange={(e: any) => {
+              setFieldValue('name', e.target.value);
+            }}
           />
         </Grid>
         <Grid item xs={4}>
           <FormControl margin="dense" fullWidth>
-            <InputLabel shrink>{t('groups|Channel')}</InputLabel>
+            <InputLabel variant="standard" shrink>
+              {t('groups|channel')}
+            </InputLabel>
             <Field
               name="channel"
               component={Select}
+              variant="standard"
               displayEmpty
               defaultValue={values.channel}
-              onChange={(e: any) => {
+              onChange={(e: SelectChangeEvent) => {
                 setFieldValue('channel', e.target.value);
               }}
             >
               <MenuItem value="" key="">
-                {t('groups|None yet')}
+                {t('groups|none_yet')}
               </MenuItem>
               {channels.map((channelItem: Channel) => (
                 <MenuItem value={channelItem.id} key={channelItem.id}>
@@ -56,20 +64,28 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
           <Field
             name="track"
             component={TextField}
+            variant="standard"
             margin="dense"
-            label={t('groups|Track (identifier for clients, filled with the group ID if omitted)')}
+            label={t('groups|track_identifier')}
             fullWidth
-            defaultValue={values.track}
+            value={values.track}
+            onChange={(e: any) => {
+              setFieldValue('track', e.target.value);
+            }}
           />
         </Grid>
         <Grid item xs={12}>
           <Field
             name="description"
             component={TextField}
+            variant="standard"
             margin="dense"
-            label={t('groups|Description')}
+            label={t('groups|description')}
             fullWidth
-            defaultValue={values.description}
+            value={values.description}
+            onChange={(e: any) => {
+              setFieldValue('description', e.target.value);
+            }}
           />
         </Grid>
       </Grid>

@@ -1,17 +1,19 @@
-import { Box, Divider, makeStyles, useTheme } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
+import { Box, Divider, useTheme } from '@mui/material';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+import makeStyles from '@mui/styles/makeStyles';
 import { Form, Formik } from 'formik';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import * as Yup from 'yup';
+
 import { Group } from '../../../api/apiDataTypes';
 import { applicationsStore } from '../../../stores/Stores';
 import { DEFAULT_TIMEZONE } from '../../common/TimezonePicker';
@@ -85,7 +87,7 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
       .catch(() => {
         actions.setSubmitting(false);
         actions.setStatus({
-          statusMessage: t('groups|Something went wrong. Check the form or try again later...'),
+          statusMessage: t('common|generic_error'),
         });
       });
   }
@@ -104,11 +106,11 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
     props.onHide();
   }
 
-  function onEditGroupTabChange(event: any, index: any) {
+  function onEditGroupTabChange(_event: any, index: any) {
     setGroupEditActiveTab(index);
   }
 
-  //@ts-ignore
+  //@ts-expect-error as type mismatch
   function renderForm({ values, status, setFieldValue, isSubmitting }) {
     const channels = props.data.channels ? props.data.channels : [];
 
@@ -146,12 +148,12 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
         <DialogActions>
           <Button onClick={handleClose}>
             <Box color={theme.palette.greyShadeColor} component="span">
-              {t('frequent|Cancel')}
+              {t('frequent|cancel')}
             </Box>
           </Button>
           <Button type="submit" disabled={isSubmitting}>
             <Box component="span" color="#ffff" bgcolor="#000" width="100%" px={1.5} py={1}>
-              {isCreation ? t('frequent|Add') : t('frequent|Save')}
+              {isCreation ? t('frequent|add_lower') : t('frequent|save')}
             </Box>
           </Button>
         </DialogActions>
@@ -160,17 +162,15 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
   }
 
   function positiveNum() {
+    const minNr = 1;
     return Yup.number()
       .positive()
-      .min(1, t('groups|Must be greather than or equal to 1'))
+      .min(minNr, t('common|min_value_error', { number: minNr }))
       .required('Required');
   }
 
   function maxCharacters(maxChars: number, required = false) {
-    let validation = Yup.string().max(
-      maxChars,
-      t(`groups|Must be less than ${maxChars} characters`)
-    );
+    let validation = Yup.string().max(maxChars, t('common|max_length_error', { number: maxChars }));
 
     if (required) validation = validation.required('Required');
 
@@ -194,6 +194,8 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
 
   if (isCreation) {
     initialValues = {
+      name: '',
+      track: '',
       appID: appID,
       maxUpdates: 1,
       updatesPeriodRange: 1,
@@ -207,15 +209,15 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
       onlyOfficeHours: false,
       safeMode: false,
     };
-  } else if (!!props.data.group) {
+  } else if (props.data.group) {
     const group = props.data.group;
     const [currentUpdatesPeriodRange, currentUpdatesPeriodUnit] =
       group.policy_period_interval.split(' ');
     const [currentupdatesTimeout, currentUpdatesTimeoutUnit] =
       group.policy_update_timeout.split(' ');
     initialValues = {
-      name: group.name,
-      track: group.track,
+      name: group.name || '',
+      track: group.track || '',
       description: group.description,
       timezone: group.policy_timezone || DEFAULT_TIMEZONE,
       updatesEnabled: group.policy_updates_enabled,
@@ -232,15 +234,12 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
 
   return (
     <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
-      <DialogTitle>{isCreation ? t('groups|Add Group') : t('groups|Edit Group')}</DialogTitle>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={handleSubmit}
-        validationSchema={validation}
-        //@todo add better types
-        //@ts-ignore
-        render={renderForm}
-      />
+      <DialogTitle>{isCreation ? t('groups|group_add') : t('groups|group_edit')}</DialogTitle>
+      <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={validation}>
+        {/* @todo add better types for renderForm */}
+        {/* @ts-expect-error as type mismatch */}
+        {renderForm}
+      </Formik>
     </Dialog>
   );
 }

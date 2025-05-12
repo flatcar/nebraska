@@ -1,9 +1,10 @@
-import { Box } from '@material-ui/core';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import { Box } from '@mui/material';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import Link from '@mui/material/Link';
+import { useTheme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -101,8 +102,8 @@ export function CardHeader(props: CardHeaderProps) {
   const theme = useTheme();
   return (
     <React.Fragment>
-      <Grid container className={classes.gridHeader} justify="space-between">
-        <Grid item container spacing={1} alignItems="center" justify="space-between">
+      <Grid container className={classes.gridHeader} justifyContent="space-between">
+        <Grid item container spacing={1} alignItems="center" justifyContent="space-between">
           <Grid item xs={12}>
             {props.cardMainLinkPath ? (
               <Typography variant="h2">
@@ -110,6 +111,7 @@ export function CardHeader(props: CardHeaderProps) {
                   component={RouterLink}
                   to={props.cardMainLinkPath}
                   className={classes.mainLink}
+                  underline="hover"
                 >
                   {props.cardMainLinkLabel}
                 </Link>

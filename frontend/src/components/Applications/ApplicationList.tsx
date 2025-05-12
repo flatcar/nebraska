@@ -1,9 +1,10 @@
-import { List } from '@material-ui/core';
-import Paper from '@material-ui/core/Paper';
-import { makeStyles } from '@material-ui/core/styles';
+import { List } from '@mui/material';
+import Paper from '@mui/material/Paper';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import _ from 'underscore';
+
 import { Application } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import Empty from '../common/EmptyContent';
@@ -21,7 +22,7 @@ const useStyles = makeStyles({
   },
 });
 
-export interface ApplicationListProps {}
+export type ApplicationListProps = unknown;
 
 export default function ApplicationList() {
   const [applications, setApplications] = React.useState(
@@ -89,15 +90,15 @@ export function ApplicationListPure(props: ApplicationListPureProps) {
   } else {
     if (_.isEmpty(applications)) {
       if (searchTerm) {
-        entries = <Empty>{t('applications|No results found.')}</Empty>;
+        entries = <Empty>{t('applications|no_results_found')}</Empty>;
       } else {
         entries = (
           <Empty>
-            <Trans ns="applications">
+            <Trans t={t} ns="applications" i18nKey="noappyet">
               Oops, it looks like you have not created any application yet..
               <br />
-              <br /> Now is a great time to create your first one, just click on the plus symbol
-              above.
+              <br />
+              Now is a great time to create your first one, just click on the plus symbol above.
             </Trans>
           </Empty>
         );
@@ -124,7 +125,7 @@ export function ApplicationListPure(props: ApplicationListPureProps) {
   return (
     <>
       <ListHeader
-        title={t('applications|Applications')}
+        title={t('applications|applications')}
         actions={[
           <ModalButton modalToOpen="AddApplicationModal" data={{ applications: applications }} />,
         ]}

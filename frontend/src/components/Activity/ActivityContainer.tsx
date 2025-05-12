@@ -1,11 +1,12 @@
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import { makeStyles } from '@material-ui/core/styles';
-import TablePagination from '@material-ui/core/TablePagination';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import TablePagination from '@mui/material/TablePagination';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import _ from 'underscore';
+
 import { Activity } from '../../api/apiDataTypes';
 import { activityStore } from '../../stores/Stores';
 import Empty from '../common/EmptyContent';
@@ -17,15 +18,18 @@ const useStyles = makeStyles({
   toolbar: {
     padding: 0,
   },
-  caption: {
+  select: {
     fontSize: '.85em',
   },
-  select: {
+  selectLabel: {
+    fontSize: '.85em',
+  },
+  displayedRows: {
     fontSize: '.85em',
   },
 });
 
-export interface ActivityContainerProps {}
+export type ActivityContainerProps = any;
 
 function Container() {
   const classes = useStyles();
@@ -50,7 +54,7 @@ function Container() {
   }
 
   function handleChangePage(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
+    _: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
     newPage: number
   ) {
     setPage(newPage);
@@ -104,14 +108,14 @@ function Container() {
 
   return (
     <>
-      <ListHeader title={t('activity|Activity')} />
+      <ListHeader title={t('activity|activity')} />
       <Paper>
         <Box padding="1em">
           {_.isNull(activity) ? (
             <Loader />
           ) : _.isEmpty(activity) ? (
             <Empty>
-              <Trans ns="activity">
+              <Trans t={t} ns="activity" i18nKey="no_activity">
                 No activity found for the last week.
                 <br />
                 <br />
@@ -137,13 +141,13 @@ function Container() {
                   rowsPerPage={rowsPerPage}
                   page={page}
                   backIconButtonProps={{
-                    'aria-label': t('activity|previous page'),
+                    'aria-label': t('activity|previous_page'),
                   }}
                   nextIconButtonProps={{
-                    'aria-label': t('activity|next page'),
+                    'aria-label': t('activity|next_page'),
                   }}
-                  onChangePage={handleChangePage}
-                  onChangeRowsPerPage={handleChangeRowsPerPage}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
                 />
               </Grid>
             </Grid>

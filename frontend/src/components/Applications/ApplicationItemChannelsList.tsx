@@ -1,5 +1,6 @@
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import React from 'react';
+
 import { Channel } from '../../api/apiDataTypes';
 import ChannelItem from '../Channels/ChannelItem';
 
@@ -14,7 +15,7 @@ function ApplicationItemChannelsList(props: { channels?: Channel[] }) {
   }
 
   return (
-    <Grid container justify="space-between">
+    <Grid container justifyContent="space-between">
       {entries.map((entry: React.ReactNode, i: number) => (
         <Grid item xs={4} key={i}>
           {entry}

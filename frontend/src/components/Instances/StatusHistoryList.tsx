@@ -1,11 +1,11 @@
-import { makeStyles } from '@material-ui/core';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import React from 'react';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import makeStyles from '@mui/styles/makeStyles';
 import { useTranslation } from 'react-i18next';
+
 import { InstanceStatusHistory } from '../../api/apiDataTypes';
 import StatusHistoryItem from './StatusHistoryItem';
 
@@ -26,9 +26,9 @@ function StatusHistoryList(props: { entries: InstanceStatusHistory[] }) {
     <Table className={classes.root}>
       <TableHead>
         <TableRow>
-          <TableCell>{t('instances|Instances')}</TableCell>
-          <TableCell>{t('instances|Status')}</TableCell>
-          <TableCell>{t('instances|Message')}</TableCell>
+          <TableCell>{t('instances|instances_plural')}</TableCell>
+          <TableCell>{t('instances|status')}</TableCell>
+          <TableCell>{t('instances|message')}</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>

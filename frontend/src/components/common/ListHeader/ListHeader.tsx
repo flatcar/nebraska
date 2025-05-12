@@ -1,7 +1,7 @@
-import { Box } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import { Box } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 
 const useStyles = makeStyles({
@@ -17,7 +17,7 @@ export default function ListHeader(props: { title: string; actions?: React.React
     <Grid
       container
       alignItems="flex-start"
-      justify="space-between"
+      justifyContent="space-between"
       className={classes.sectionHeader}
     >
       {props.title && (

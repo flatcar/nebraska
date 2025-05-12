@@ -1,8 +1,9 @@
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import _ from 'underscore';
+
 import { applicationsStore } from '../../../stores/Stores';
 import ChannelList from '../../Channels/ChannelList';
 import SectionHeader from '../../common/SectionHeader/SectionHeader';
@@ -41,11 +42,11 @@ function ApplicationLayout() {
         breadcrumbs={[
           {
             path: '/apps',
-            label: t('layouts|Applications'),
+            label: t('layouts|applications'),
           },
         ]}
       />
-      <Grid container spacing={1} justify="space-between">
+      <Grid container spacing={1} justifyContent="space-between">
         <Grid item xs={12} sm={8}>
           <GroupList appID={appID} />
         </Grid>

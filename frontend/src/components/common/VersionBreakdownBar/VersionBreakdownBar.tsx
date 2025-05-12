@@ -1,13 +1,15 @@
-import Paper from '@material-ui/core/Paper';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import { useTheme } from '@material-ui/styles';
+import Paper from '@mui/material/Paper';
+import { Theme } from '@mui/material/styles';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import { useTheme } from '@mui/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+
 import { Channel } from '../../../api/apiDataTypes';
 import { cleanSemverVersion, makeColorsForVersions } from '../../../utils/helpers';
 
@@ -68,7 +70,7 @@ function VersionProgressBar(props: { version_breakdown: any; channel: Channel | 
   const theme = useTheme();
   const { t } = useTranslation();
   let lastVersionChannel: string | null = '';
-  const otherVersionLabel = t('common|Other');
+  const otherVersionLabel = t('common|other_option');
   const [chartData, setChartData] = React.useState<{
     data: any;
     versions: string[];

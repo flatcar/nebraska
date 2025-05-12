@@ -1,10 +1,10 @@
-import MuiListItem from '@material-ui/core/ListItem';
-import { makeStyles } from '@material-ui/core/styles';
+import MuiListItem from '@mui/material/ListItem';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 
 const useStyles = makeStyles({
   divider: {
-    borderBottom: `2px solid rgba(0, 0, 0, 0.12)`,
+    borderBottom: '2px solid rgba(0, 0, 0, 0.12)',
   },
 });
 

@@ -1,13 +1,13 @@
-import { Box } from '@material-ui/core';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import React from 'react';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { Box } from '@mui/material';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Grid from '@mui/material/Grid';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import makeStyles from '@mui/styles/makeStyles';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
+
 import PageTitle from '../PageTitle/PageTitle';
 
 const useStyles = makeStyles(theme => ({
@@ -41,10 +41,15 @@ export default function SectionHeader(props: SectionHeaderProps) {
   return (
     <>
       <PageTitle title={title} />
-      <Grid container alignItems="center" justify="flex-start" className={classes.sectionContainer}>
+      <Grid
+        container
+        alignItems="center"
+        justifyContent="flex-start"
+        className={classes.sectionContainer}
+      >
         <Grid item>
           <Breadcrumbs
-            aria-label={t('common|breadcrumbs')}
+            aria-label={t('common|breadcrumbs_label').toString()}
             separator={<NavigateNextIcon fontSize="small" />}
           >
             {breadcrumbs &&
@@ -56,7 +61,7 @@ export default function SectionHeader(props: SectionHeaderProps) {
                       className={classes.breadCrumbsItem}
                       key={'breadcrumb_' + index}
                     >
-                      <Link to={path} component={RouterLink}>
+                      <Link to={path} component={RouterLink} underline="hover">
                         {label}
                       </Link>
                     </Box>

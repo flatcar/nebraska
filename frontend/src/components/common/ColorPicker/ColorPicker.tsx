@@ -1,8 +1,9 @@
-import IconButton from '@material-ui/core/IconButton';
-import Popover from '@material-ui/core/Popover';
-import { makeStyles } from '@material-ui/styles';
+import IconButton from '@mui/material/IconButton';
+import Popover from '@mui/material/Popover';
+import { makeStyles } from '@mui/styles';
 import React from 'react';
 import { TwitterPicker } from 'react-color';
+
 import ChannelAvatar from '../../Channels/ChannelAvatar';
 
 // @todo: This needs to become a FormControl so we can display it in a similar
@@ -52,6 +53,7 @@ export default function ColorPicker(props: ColorPickerProps) {
         className={classes.iconButton}
         onClick={handleColorButtonClick}
         data-testid="icon-button"
+        size="large"
       >
         {props.children ? (
           <ChannelAvatar color={channelColor}>{props.children}</ChannelAvatar>

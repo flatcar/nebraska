@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
+
 import API from '../../../api/API';
 import { Application, Instance } from '../../../api/apiDataTypes';
 import { applicationsStore } from '../../../stores/Stores';
@@ -68,7 +69,7 @@ export default function InstanceLayout() {
         breadcrumbs={[
           {
             path: '/apps',
-            label: t('layouts|Applications'),
+            label: t('layouts|applications'),
           },
           {
             path: `/apps/${appID}`,
@@ -80,7 +81,7 @@ export default function InstanceLayout() {
           },
           {
             path: `/apps/${appID}/groups/${groupID}/instances?${searchParams}`,
-            label: t('layouts|Instances'),
+            label: t('layouts|instances'),
           },
         ]}
       />

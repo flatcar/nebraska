@@ -1,5 +1,7 @@
-import { Box, Grid, Link, makeStyles, Typography } from '@material-ui/core';
+import { Box, Grid, Link, Typography } from '@mui/material';
+import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
+
 import API from '../../../api/API';
 import { timeIntervalsDefault } from '../../../utils/helpers';
 
@@ -11,8 +13,8 @@ const useStyles = makeStyles(() => ({
 
 interface TimeIntervalLinksProps {
   selectedInterval: string;
-  appID: string;
-  groupID: string;
+  appID?: string;
+  groupID?: string;
   intervalChangeHandler: (value: any) => any;
 }
 
@@ -55,8 +57,8 @@ export default function TimeIntervalLinks(props: TimeIntervalLinksProps) {
                 link.disabled
                   ? 'textSecondary'
                   : link.queryValue === selectedInterval
-                  ? 'inherit'
-                  : 'primary'
+                    ? 'inherit'
+                    : 'primary'
               }
               style={{
                 color: !link.disabled && link.queryValue !== selectedInterval ? '#1b5c91' : '',

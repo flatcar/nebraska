@@ -76,7 +76,7 @@ func (h *Handler) CreatePackage(ctx echo.Context, appIDorProductID string) error
 	return ctx.JSON(http.StatusOK, pkg)
 }
 
-func (h *Handler) GetPackage(ctx echo.Context, appIDorProductID string, packageID string) error {
+func (h *Handler) GetPackage(ctx echo.Context, _ string, packageID string) error {
 	pkg, err := h.db.GetPackage(packageID)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -133,7 +133,7 @@ func (h *Handler) UpdatePackage(ctx echo.Context, appIDorProductID string, packa
 	return ctx.JSON(http.StatusOK, pkg)
 }
 
-func (h *Handler) DeletePackage(ctx echo.Context, appIDorProductID string, packageID string) error {
+func (h *Handler) DeletePackage(ctx echo.Context, _ string, packageID string) error {
 	logger := loggerWithUsername(logger, ctx)
 
 	pkg, err := h.db.GetPackage(packageID)

@@ -122,7 +122,7 @@ func copyValues(to, from ValuesType) {
 // MockCodec is an implementation of Codec used for mocking.
 type MockCodec struct {
 	idsToValues map[string]string
-	valuesToIds map[string]string
+	valuesToIDs map[string]string
 }
 
 var _ Codec = &MockCodec{}
@@ -131,7 +131,7 @@ var _ Codec = &MockCodec{}
 func NewMockCodec() *MockCodec {
 	return &MockCodec{
 		idsToValues: make(map[string]string),
-		valuesToIds: make(map[string]string),
+		valuesToIDs: make(map[string]string),
 	}
 }
 
@@ -146,13 +146,13 @@ func (c *MockCodec) AddIDValueMapping(idValuePairs ...string) {
 		id := idValuePairs[idx]
 		value := idValuePairs[idx+1]
 		c.idsToValues[id] = value
-		c.valuesToIds[value] = id
+		c.valuesToIDs[value] = id
 	}
 }
 
 // Decode is a part of Codec interface.
 func (c *MockCodec) Decode(name, value string) (string, error) {
-	if id, ok := c.valuesToIds[value]; ok {
+	if id, ok := c.valuesToIDs[value]; ok {
 		return id, nil
 	}
 	return "", fmt.Errorf("no mapped id for name %q and value %q", name, value)

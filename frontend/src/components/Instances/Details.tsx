@@ -1,32 +1,33 @@
 import chevronDown from '@iconify/icons-mdi/chevron-down';
 import chevronUp from '@iconify/icons-mdi/chevron-up';
 import { InlineIcon } from '@iconify/react';
-import { Theme } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Button, { ButtonProps } from '@material-ui/core/Button';
-import Collapse from '@material-ui/core/Collapse';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles, useTheme } from '@material-ui/styles';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button, { ButtonProps } from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import Link from '@mui/material/Link';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
+import { makeStyles, useTheme } from '@mui/styles';
 import { Field, Form, Formik, FormikHelpers, FormikProps } from 'formik';
-import { TextField } from 'formik-material-ui';
+import { TextField } from 'formik-mui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 import * as Yup from 'yup';
+
 import API from '../../api/API';
 import { Application, Group, Instance, InstanceStatusHistory } from '../../api/apiDataTypes';
 import { makeLocaleTime } from '../../i18n/dateTime';
@@ -95,7 +96,7 @@ function StatusLabel(props: StatusLabelProps) {
   const { t } = useTranslation();
 
   const { status, activated } = props;
-  const { label = t('frequent|Unknown') } = (status && statusDefs[status.type]) || {};
+  const { label = t('frequent|unknown') } = (status && statusDefs[status.type]) || {};
 
   return (
     <span>
@@ -177,14 +178,14 @@ function EventTable(props: { events: InstanceStatusHistory[] }) {
   const { t } = useTranslation();
 
   return props.events.length === 0 ? (
-    <Empty>{t('instances|No events to report for this instance yet.')}</Empty>
+    <Empty>{t('instances|no_events_message')}</Empty>
   ) : (
     <Table>
       <TableHead>
         <TableRow>
-          <TableCell>{t('instances|Status')}</TableCell>
-          <TableCell>{t('instances|Version')}</TableCell>
-          <TableCell>{t('instances|Time')}</TableCell>
+          <TableCell>{t('instances|status')}</TableCell>
+          <TableCell>{t('instances|version')}</TableCell>
+          <TableCell>{t('instances|time')}</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
@@ -227,8 +228,8 @@ function EditDialog(props: EditDialogProps) {
         actions.setStatus({
           statusMessage:
             err && err.message
-              ? t('instances|Something went wrong: {{message}}', { message: err.message })
-              : t('instances|Something went wrong…'),
+              ? t('instances|max_updates_per_period', { message: err.message })
+              : t('instances|error_message'),
         });
       });
   }
@@ -243,19 +244,20 @@ function EditDialog(props: EditDialogProps) {
           <Field
             name="name"
             component={TextField}
+            variant="standard"
             margin="dense"
-            label={t('instances|Name')}
+            label={t('instances|name')}
             type="text"
-            helperText={t('instances|Leave empty for displaying the instance ID')}
+            helperText={t('instances|leave_empty_for_displaying_the_instance_id')}
             fullWidth
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            {t('frequent|Cancel')}
+            {t('frequent|cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting} color="primary">
-            {t('frequent|Save')}
+            {t('frequent|save')}
           </Button>
         </DialogActions>
       </Form>
@@ -263,20 +265,21 @@ function EditDialog(props: EditDialogProps) {
   }
 
   const validation = Yup.object().shape({
-    name: Yup.string().max(256, t('instances|Must enter a valid name (less than 256 characters)')),
+    name: Yup.string().max(256, t('instances|valid_name_warning')),
   });
 
   return (
     <Dialog open={show} onClose={handleClose} aria-labelledby="form-dialog-title" fullWidth>
-      <DialogTitle>{t('instances|Edit Instance')}</DialogTitle>
+      <DialogTitle>{t('instances|edit_instance')}</DialogTitle>
       <Formik
         initialValues={{
           name: instance.alias || instance.id,
         }}
         onSubmit={handleSubmit}
         validationSchema={validation}
-        render={renderForm}
-      />
+      >
+        {renderForm}
+      </Formik>
     </Dialog>
   );
 }
@@ -321,12 +324,12 @@ function DetailsView(props: DetailsViewProps) {
 
   return (
     <>
-      <ListHeader title={t('instances|Instance Information')} />
+      <ListHeader title={t('instances|instance_information')} />
       <Paper>
         <Box p={2}>
           <Grid container spacing={1}>
             <Grid item xs={12}>
-              <Grid container justify="space-between">
+              <Grid container justifyContent="space-between">
                 <Grid item>
                   <Box fontWeight={700} fontSize={30} color={theme.palette.greyShadeColor}>
                     {instance.alias || instance.id}
@@ -336,7 +339,7 @@ function DetailsView(props: DetailsViewProps) {
                   <MoreMenu
                     options={[
                       {
-                        label: t('instances|Rename'),
+                        label: t('instances|rename'),
                         action: updateInstance,
                       },
                     ]}
@@ -352,20 +355,20 @@ function DetailsView(props: DetailsViewProps) {
                       <Grid item container>
                         {hasAlias && (
                           <Grid item xs={12}>
-                            <CardFeatureLabel>{t('instances|ID')}</CardFeatureLabel>&nbsp;
+                            <CardFeatureLabel>{t('instances|id')}</CardFeatureLabel>&nbsp;
                             <Box mt={1} mb={1}>
                               <CardLabel>{instance.id}</CardLabel>
                             </Box>
                           </Grid>
                         )}
                         <Grid item xs={6}>
-                          <CardFeatureLabel>{t('instances|IP')}</CardFeatureLabel>
+                          <CardFeatureLabel>{t('instances|ip')}</CardFeatureLabel>
                           <Box mt={1}>
                             <CardLabel>{instance.ip}</CardLabel>
                           </Box>
                         </Grid>
                         <Grid item xs={6}>
-                          <CardFeatureLabel>{t('instances|Version')}</CardFeatureLabel>
+                          <CardFeatureLabel>{t('instances|version')}</CardFeatureLabel>
                           <Box mt={1}>
                             <CardLabel>{instance.application.version}</CardLabel>
                           </Box>
@@ -377,13 +380,13 @@ function DetailsView(props: DetailsViewProps) {
 
                       <Grid item xs={12} container>
                         <Grid item xs={6}>
-                          <CardFeatureLabel>{t('instances|Status')}</CardFeatureLabel>
+                          <CardFeatureLabel>{t('instances|status')}</CardFeatureLabel>
                           <Box mt={1}>
                             <StatusLabel status={instance.statusInfo} />
                           </Box>
                         </Grid>
                         <Grid item xs={6}>
-                          <CardFeatureLabel>{t('instances|Last Update Check')}</CardFeatureLabel>
+                          <CardFeatureLabel>{t('instances|last_update_check')}</CardFeatureLabel>
                           <Box mt={1}>
                             <CardLabel>
                               {makeLocaleTime(instance.application.last_check_for_updates)}
@@ -397,24 +400,26 @@ function DetailsView(props: DetailsViewProps) {
                       </Grid>
                       <Grid item xs={12} container>
                         <Grid item xs={6}>
-                          <CardFeatureLabel>{t('instances|Application')}</CardFeatureLabel>
+                          <CardFeatureLabel>{t('instances|application')}</CardFeatureLabel>
                           <Box mt={1}>
                             <Link
                               className={classes.link}
                               to={`/apps/${application.id}`}
                               component={RouterLink}
+                              underline="hover"
                             >
                               {application.name}
                             </Link>
                           </Box>
                         </Grid>
                         <Grid item xs={6}>
-                          <CardFeatureLabel>{t('instances|Group')}</CardFeatureLabel>
+                          <CardFeatureLabel>{t('instances|group')}</CardFeatureLabel>
                           <Box mt={1}>
                             <Link
                               className={classes.link}
                               to={`/apps/${application.id}/groups/${group.id}`}
                               component={RouterLink}
+                              underline="hover"
                             >
                               {group.name}
                             </Link>
@@ -424,11 +429,11 @@ function DetailsView(props: DetailsViewProps) {
 
                       <Grid item xs={12}>
                         <Box mt={2}>
-                          <CardFeatureLabel>{t('instances|Channel')}</CardFeatureLabel>&nbsp;
+                          <CardFeatureLabel>{t('instances|channel')}</CardFeatureLabel>&nbsp;
                           {group.channel ? (
                             <ChannelItem channel={group.channel} />
                           ) : (
-                            <CardLabel>{t('frequent|None')}</CardLabel>
+                            <CardLabel>{t('frequent|none')}</CardLabel>
                           )}
                         </Box>
                       </Grid>
@@ -442,7 +447,7 @@ function DetailsView(props: DetailsViewProps) {
             </Box>
             <Grid item md>
               <Box mt={2} fontSize={18} fontWeight={700} color={theme.palette.greyShadeColor}>
-                {t('instances|Event Timeline')}
+                {t('instances|event_timeline')}
                 {eventHistory ? (
                   <Box padding="1em">
                     <div className={classes.timelineContainer}>

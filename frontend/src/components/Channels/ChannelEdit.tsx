@@ -1,21 +1,22 @@
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import MuiSelect from '@material-ui/core/Select';
-import { makeStyles } from '@material-ui/core/styles';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import MuiSelect, { SelectChangeEvent } from '@mui/material/Select';
+import makeStyles from '@mui/styles/makeStyles';
 import { Field, Form, Formik } from 'formik';
-import { TextField } from 'formik-material-ui';
+import { TextField } from 'formik-mui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
+
 import API from '../../api/API';
 import { Channel, Package } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
@@ -104,7 +105,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
   }
 
   function fetchPackages(term: string, page: number) {
-    API.getPackages(props.data.applicationID, term || '', {
+    API.getPackages(props.data.applicationID, term.trim() || '', {
       page: (page || 0) + 1,
       perpage: PackagesPerPage,
     })
@@ -161,7 +162,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
   }
 
   //@todo add better types
-  //@ts-ignore
+  //@ts-expect-error as type mismatch
   function renderForm({ values, status, setFieldValue, isSubmitting }) {
     return (
       <Form data-testid="channel-edit-form">
@@ -169,7 +170,13 @@ export default function ChannelEdit(props: ChannelEditProps) {
           {status && status.statusMessage && (
             <DialogContentText color="error">{status.statusMessage}</DialogContentText>
           )}
-          <Grid container spacing={2} justify="space-between" alignItems="center" wrap="nowrap">
+          <Grid
+            container
+            spacing={2}
+            justifyContent="space-between"
+            alignItems="center"
+            wrap="nowrap"
+          >
             <Grid item>
               <ColorPicker color={channelColor} onColorPicked={color => setChannelColor(color.hex)}>
                 {values.name ? values.name[0] : ''}
@@ -180,8 +187,9 @@ export default function ChannelEdit(props: ChannelEditProps) {
                 <Field
                   name="name"
                   component={TextField}
+                  variant="standard"
                   margin="dense"
-                  label={t('frequent|Name')}
+                  label={t('frequent|name')}
                   InputLabelProps={{ shrink: true }}
                   type="text"
                   required
@@ -194,10 +202,11 @@ export default function ChannelEdit(props: ChannelEditProps) {
             </Grid>
           </Grid>
           <FormControl margin="dense" disabled={!isCreation} fullWidth>
-            <InputLabel>Architecture</InputLabel>
+            <InputLabel variant="standard">Architecture</InputLabel>
             <MuiSelect
+              variant="standard"
               value={arch}
-              onChange={(event: React.ChangeEvent<{ value: any }>) => setArch(event.target.value)}
+              onChange={(event: SelectChangeEvent<number>) => setArch(event.target.value as number)}
             >
               {Object.keys(ARCHES).map((key: string) => {
                 const archName = ARCHES[parseInt(key)];
@@ -208,16 +217,16 @@ export default function ChannelEdit(props: ChannelEditProps) {
                 );
               })}
             </MuiSelect>
-            <FormHelperText>{t('channels|Cannot be changed once created.')}</FormHelperText>
+            <FormHelperText>{t('channels|cannot_be_changed')}</FormHelperText>
           </FormControl>
           <Field
             type="text"
             name="package"
-            label={t('frequent|Package')}
+            label={t('frequent|package')}
             select
             margin="dense"
             component={AutoCompletePicker}
-            helperText={t("channels|Showing only for the channel's architecture ({{arch}}).", {
+            helperText={t('channels|showing_only_for_architecture', {
               arch: ARCHES[arch],
             })}
             fullWidth
@@ -225,7 +234,9 @@ export default function ChannelEdit(props: ChannelEditProps) {
               const selectedPackage = packages.packages
                 .filter((packageItem: Package) => packageItem.arch === arch)
                 .filter((packageItem: Package) => packageItem.version === packageVersion);
-              setFieldValue('package', selectedPackage[0].id);
+              if (selectedPackage.length) {
+                setFieldValue('package', selectedPackage[0].id);
+              }
             }}
             suggestions={packages.packages
               .filter((packageItem: Package) => packageItem.arch === arch)
@@ -233,13 +244,13 @@ export default function ChannelEdit(props: ChannelEditProps) {
                 const date = new Date(packageItem.created_ts);
                 return {
                   primary: packageItem.version,
-                  secondary: t('channels|created: {{date, date}}', { date: date }),
+                  secondary: t('channels|created', { date: date }),
                 };
               })}
-            placeholder={t('channels|Pick a package')}
-            pickerPlaceholder={t('channels|Start typing to search a package')}
+            placeholder={t('channels|pick_package')}
+            pickerPlaceholder={t('channels|search_package_prompt')}
             data={packages.packages.filter((packageItem: Package) => packageItem.arch === arch)}
-            dialogTitle={t('channels|Choose a package')}
+            dialogTitle={t('channels|choose_package')}
             defaultValue={channel && channel.package ? channel.package.version : ''}
             onValueChanged={(term: string | null) => {
               setPackageSearchTerm(term || '');
@@ -250,18 +261,21 @@ export default function ChannelEdit(props: ChannelEditProps) {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => props.onHide()} color="primary">
-            {t('frequent|Cancel')}
+            {t('frequent|cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting} color="primary">
-            {isCreation ? t('frequent|Add') : t('frequent|Save')}
+            {isCreation ? t('frequent|add_lower') : t('frequent|save')}
           </Button>
         </DialogActions>
       </Form>
     );
   }
 
+  const maxChars = 50;
   const validation = Yup.object().shape({
-    name: Yup.string().max(50, t('channels|Must be less than 50 characters')).required('Required'),
+    name: Yup.string()
+      .max(maxChars, t('common|max_length_error', { number: maxChars }))
+      .required('Required'),
   });
 
   let initialValues = {};
@@ -275,16 +289,13 @@ export default function ChannelEdit(props: ChannelEditProps) {
   return (
     <Dialog open={props.show} onClose={() => props.onHide()} aria-labelledby="form-dialog-title">
       <DialogTitle>
-        {isCreation ? t('channels|Add New Channel') : t('channels|Edit Channel')}
+        {isCreation ? t('channels|add_new_channel') : t('channels|edit_channel')}
       </DialogTitle>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={handleSubmit}
-        validationSchema={validation}
-        //@todo add better types
-        //@ts-ignore
-        render={renderForm}
-      />
+      <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={validation}>
+        {/* @todo add better types */}
+        {/* @ts-expect-error as type mismatch */}
+        {renderForm}
+      </Formik>
     </Dialog>
   );
 }
