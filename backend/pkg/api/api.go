@@ -4,14 +4,12 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 
 	//register "pgx" sql driver
 	"github.com/doug-martin/goqu/v9"
 	"github.com/jmoiron/sqlx"
-	"github.com/joho/godotenv"
 	migrate "github.com/rubenv/sql-migrate"
 
 	"github.com/kinvolk/nebraska/backend/pkg/util"
@@ -77,12 +75,6 @@ type API struct {
 
 // New creates a new API instance, creates the underlying db connection.
 func New(options ...func(*API) error) (*API, error) {
-	// Load .env
-	envErr := godotenv.Load()
-	if envErr != nil {
-		log.Fatal("Error loading .env file")
-	}
-
 	api := &API{
 		dbDriver: "pgx",
 		dbURL:    os.Getenv("NEBRASKA_DB_URL"),
