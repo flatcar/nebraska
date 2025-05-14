@@ -17,7 +17,7 @@ import GroupItem from './GroupItem';
 const PREFIX = 'GroupList';
 
 const classes = {
-  root: `${PREFIX}-root`
+  root: `${PREFIX}-root`,
 };
 
 const Root = styled('div')(() => ({
@@ -25,7 +25,7 @@ const Root = styled('div')(() => ({
     '& > hr:first-child': {
       display: 'none',
     },
-  }
+  },
 }));
 
 export interface GroupListProps {
@@ -33,7 +33,6 @@ export interface GroupListProps {
 }
 
 function GroupList({ appID }: GroupListProps) {
-
   const { t } = useTranslation();
   const [application, setApplication] = React.useState(
     applicationsStore().getCachedApplication(appID)

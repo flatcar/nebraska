@@ -3,7 +3,6 @@ import Grid from '@mui/material/Grid';
 import MuiList from '@mui/material/List';
 import ListSubheader from '@mui/material/ListSubheader';
 import Typography from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
@@ -23,7 +22,7 @@ function Channels(props: { channels: null | Channel[]; onEdit: (channelId: strin
   const { channels, onEdit } = props;
   const { t } = useTranslation();
 
-  const channelsPerArch = (function() {
+  const channelsPerArch = (function () {
     const perArch: {
       [key: number]: Channel[];
     } = {};

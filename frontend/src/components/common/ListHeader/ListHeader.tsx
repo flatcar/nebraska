@@ -7,7 +7,7 @@ import React from 'react';
 const PREFIX = 'ListHeader';
 
 const classes = {
-  sectionHeader: `${PREFIX}-sectionHeader`
+  sectionHeader: `${PREFIX}-sectionHeader`,
 };
 
 const StyledGrid = styled(Grid)({
@@ -17,7 +17,6 @@ const StyledGrid = styled(Grid)({
 });
 
 export default function ListHeader(props: { title: string; actions?: React.ReactElement[] }) {
-
   const actions = props.actions || [];
   return (
     <StyledGrid

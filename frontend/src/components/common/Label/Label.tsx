@@ -4,7 +4,7 @@ import React from 'react';
 const PREFIX = 'Label';
 
 const classes = {
-  label: `${PREFIX}-label`
+  label: `${PREFIX}-label`,
 };
 
 const Root = styled('span')({

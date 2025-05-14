@@ -9,7 +9,7 @@ import ChannelAvatar from '../../Channels/ChannelAvatar';
 const PREFIX = 'ColorPicker';
 
 const classes = {
-  iconButton: `${PREFIX}-iconButton`
+  iconButton: `${PREFIX}-iconButton`,
 };
 
 const Root = styled('div')({
@@ -29,7 +29,6 @@ export interface ColorPickerProps {
 }
 
 export default function ColorPicker(props: ColorPickerProps) {
-
   const [channelColor, setChannelColor] = React.useState(props.color);
   const [displayColorPicker, setDisplayColorPicker] = React.useState(props.initialOpen);
   const [anchorEl, setAnchorEl] = React.useState(null);

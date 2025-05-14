@@ -10,7 +10,7 @@ import StatusHistoryList from './StatusHistoryList';
 const PREFIX = 'StatusHistoryContainer';
 
 const classes = {
-  historyBox: `${PREFIX}-historyBox`
+  historyBox: `${PREFIX}-historyBox`,
 };
 
 const Root = styled('div')({
@@ -23,7 +23,6 @@ const Root = styled('div')({
 });
 
 function StatusHistoryContainer(props: { statusHistory: InstanceStatusHistory[] }) {
-
   const { t } = useTranslation();
   let entries: React.ReactElement;
 

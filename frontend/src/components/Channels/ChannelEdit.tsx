@@ -27,7 +27,7 @@ import ColorPicker from '../common/ColorPicker';
 const PREFIX = 'ChannelEdit';
 
 const classes = {
-  nameField: `${PREFIX}-nameField`
+  nameField: `${PREFIX}-nameField`,
 };
 
 const StyledDialog = styled(Dialog)({
@@ -46,7 +46,6 @@ export interface ChannelEditProps {
 }
 
 export default function ChannelEdit(props: ChannelEditProps) {
-
   const { t } = useTranslation();
   const defaultColor = '';
   const [channelColor, setChannelColor] = React.useState(defaultColor);
@@ -293,7 +292,11 @@ export default function ChannelEdit(props: ChannelEditProps) {
   }
 
   return (
-    <StyledDialog open={props.show} onClose={() => props.onHide()} aria-labelledby="form-dialog-title">
+    <StyledDialog
+      open={props.show}
+      onClose={() => props.onHide()}
+      aria-labelledby="form-dialog-title"
+    >
       <DialogTitle>
         {isCreation ? t('channels|add_new_channel') : t('channels|edit_channel')}
       </DialogTitle>

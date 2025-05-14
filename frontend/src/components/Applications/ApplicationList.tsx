@@ -127,7 +127,9 @@ export function ApplicationListPure(props: ApplicationListPureProps) {
               display: 'none',
             },
           }}
-        >{entries}</List>
+        >
+          {entries}
+        </List>
         {appToUpdate && (
           <ApplicationEdit data={appToUpdate} show={editOpen} onHide={closeUpdateAppModal} />
         )}

@@ -29,14 +29,10 @@ const PREFIX = 'ItemExtended';
 const classes = {
   link: `${PREFIX}-link`,
   instancesChartPaper: `${PREFIX}-instancesChartPaper`,
-  success: `${PREFIX}-success`
+  success: `${PREFIX}-success`,
 };
 
-const StyledPaper = styled(Paper)((
-  {
-    theme
-  }
-) => ({
+const StyledPaper = styled(Paper)(({ theme }) => ({
   [`& .${classes.link}`]: {
     fontSize: '1rem',
   },
@@ -47,7 +43,7 @@ const StyledPaper = styled(Paper)((
 
   [`& .${classes.success}`]: {
     color: theme.palette.success.main,
-  }
+  },
 }));
 
 function ItemExtended(props: {

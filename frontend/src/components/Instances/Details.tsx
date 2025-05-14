@@ -51,7 +51,7 @@ const PREFIX = 'DetailsView';
 const classes = {
   timelineContainer: `${PREFIX}-timelineContainer`,
   divider: `${PREFIX}-divider`,
-  link: `${PREFIX}-link`
+  link: `${PREFIX}-link`,
 };
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -68,7 +68,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   [`& .${classes.link}`]: {
     fontSize: '1rem',
     color: '#1b5c91',
-  }
+  },
 }));
 
 interface StatusLabelProps {
@@ -88,10 +88,14 @@ function StatusLabel(props: StatusLabelProps) {
     <span>
       {/* If there is no onClick passed to it, then we're not a button */}
       {props.onClick ? (
-        <Button size="small" onClick={props.onClick} sx={{
-          textTransform: 'unset',
-          verticalAlign: 'bottom',
-        }}>
+        <Button
+          size="small"
+          onClick={props.onClick}
+          sx={{
+            textTransform: 'unset',
+            verticalAlign: 'bottom',
+          }}
+        >
           <Box
             bgcolor={status?.bgColor}
             color={status?.textColor}
@@ -109,11 +113,15 @@ function StatusLabel(props: StatusLabelProps) {
           />
         </Button>
       ) : (
-        <Typography sx={{
-          display: 'inline',
-          verticalAlign: 'bottom',
-          lineHeight: '30px',
-        }}>{label}</Typography>
+        <Typography
+          sx={{
+            display: 'inline',
+            verticalAlign: 'bottom',
+            lineHeight: '30px',
+          }}
+        >
+          {label}
+        </Typography>
       )}
     </span>
   );
@@ -140,11 +148,13 @@ function StatusRow(props: StatusRow) {
 
   return (
     <React.Fragment>
-      <TableRow sx={{
-        '& .MuiTableCell-root': {
-          padding: '0.5rem',
-        },
-      }}>
+      <TableRow
+        sx={{
+          '& .MuiTableCell-root': {
+            padding: '0.5rem',
+          },
+        }}
+      >
         <TableCell>
           <StatusLabel onClick={onStatusClick} activated={!collapsed} status={status} />
         </TableCell>
@@ -154,15 +164,17 @@ function StatusRow(props: StatusRow) {
       <TableRow>
         <TableCell padding="none" colSpan={3}>
           <Collapse in={!collapsed}>
-            <Typography sx={{
-              padding: theme => theme.spacing(2),
-            }}>
+            <Typography
+              sx={{
+                padding: theme => theme.spacing(2),
+              }}
+            >
               {status.explanation}
               {extendedErrorLabel && (
-                (<>
+                <>
                   {':'}
                   <Box>{extendedErrorLabel}</Box>
-                </>)
+                </>
               )}
             </Typography>
           </Collapse>

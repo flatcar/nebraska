@@ -12,7 +12,7 @@ import StatusHistoryItem from './StatusHistoryItem';
 const PREFIX = 'StatusHistoryList';
 
 const classes = {
-  root: `${PREFIX}-root`
+  root: `${PREFIX}-root`,
 };
 
 const StyledTable = styled(Table)({

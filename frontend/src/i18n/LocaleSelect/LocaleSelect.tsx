@@ -9,13 +9,13 @@ import { useTranslation } from 'react-i18next';
 const PREFIX = 'LocaleSelect';
 
 const classes = {
-  formControl: `${PREFIX}-formControl`
+  formControl: `${PREFIX}-formControl`,
 };
 
 const StyledFormControl = styled(FormControl)(({ theme }) => ({
   [`&.${classes.formControl}`]: {
     margin: theme.spacing(2),
-  }
+  },
 }));
 
 export interface LocaleSelectProps {
@@ -26,8 +26,6 @@ export interface LocaleSelectProps {
  * A UI for selecting the locale with i18next
  */
 export default function LocaleSelect(props: LocaleSelectProps) {
-
-
   const { t, i18n } = useTranslation('frequent');
   const theme = useTheme();
 

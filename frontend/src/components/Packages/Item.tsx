@@ -27,7 +27,7 @@ const classes = {
   packageName: `${PREFIX}-packageName`,
   subtitle: `${PREFIX}-subtitle`,
   packageIcon: `${PREFIX}-packageIcon`,
-  channelLabel: `${PREFIX}-channelLabel`
+  channelLabel: `${PREFIX}-channelLabel`,
 };
 
 const StyledListItem = styled(ListItem)({
@@ -61,7 +61,6 @@ function Item(props: {
   channels: Channel[];
   handleUpdatePackage: (pkgId: string) => void;
 }) {
-
   const { t } = useTranslation();
 
   const type = props.packageItem.type || 1;

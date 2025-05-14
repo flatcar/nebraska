@@ -16,9 +16,11 @@ export default function ActivityList(props: ActivityListProps) {
 
   return (
     <React.Fragment>
-      <Typography sx={{
-        fontSize: '1em',
-      }}>
+      <Typography
+        sx={{
+          fontSize: '1em',
+        }}
+      >
         {makeLocaleTime(props.timestamp, {
           showTime: false,
           dateFormat: { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' },

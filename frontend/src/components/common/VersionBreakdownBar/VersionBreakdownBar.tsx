@@ -17,11 +17,11 @@ const PREFIX = 'VersionProgressBar';
 
 const classes = {
   chart: `${PREFIX}-chart`,
-  container: `${PREFIX}-container`
+  container: `${PREFIX}-container`,
 };
 
 const BorderlessTableCell = styled(TableCell)(() => ({
-  border: 'none'
+  border: 'none',
 }));
 
 const StyledResponsiveContainer = styled(ResponsiveContainer)(({ theme }) => ({
@@ -32,7 +32,7 @@ const StyledResponsiveContainer = styled(ResponsiveContainer)(({ theme }) => ({
   [`&.${classes.container}`]: {
     marginLeft: 'auto',
     marginRight: 'auto',
-  }
+  },
 }));
 
 function VersionsTooltip(props: {
@@ -44,7 +44,6 @@ function VersionsTooltip(props: {
     };
   };
 }) {
-
   const { data, versions, colors } = props.versionsData;
 
   return (

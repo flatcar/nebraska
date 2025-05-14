@@ -6,14 +6,10 @@ const PREFIX = 'ListSearch';
 
 const classes = {
   container: `${PREFIX}-container`,
-  input: `${PREFIX}-input`
+  input: `${PREFIX}-input`,
 };
 
-const Root = styled('div')((
-  {
-    theme
-  }
-) => ({
+const Root = styled('div')(({ theme }) => ({
   [`&.${classes.container}`]: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -21,11 +17,10 @@ const Root = styled('div')((
 
   [`& .${classes.input}`]: {
     margin: theme.spacing(1),
-  }
+  },
 }));
 
 export default function SearchInput(props: { [key: string]: any }) {
-
   const { t } = useTranslation();
 
   return (

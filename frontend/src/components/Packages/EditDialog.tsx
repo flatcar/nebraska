@@ -31,7 +31,7 @@ const PREFIX = 'EditDialog';
 
 const classes = {
   topSelect: `${PREFIX}-topSelect`,
-  dialog: `${PREFIX}-dialog`
+  dialog: `${PREFIX}-dialog`,
 };
 
 const StyledDialog = styled(Dialog)({
@@ -55,7 +55,6 @@ export interface EditDialogProps {
 }
 
 function EditDialog(props: EditDialogProps) {
-
   const [flatcarType, otherType] = [1, 4];
   const [packageType, setPackageType] = React.useState(
     props.data.package ? props.data.package.type : flatcarType
@@ -411,7 +410,12 @@ function EditDialog(props: EditDialogProps) {
   }
 
   return (
-    <StyledDialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title" fullWidth>
+    <StyledDialog
+      open={props.show}
+      onClose={handleClose}
+      aria-labelledby="form-dialog-title"
+      fullWidth
+    >
       <DialogTitle>
         {isCreation ? t('packages|add_package') : t('packages|edit_package')}
       </DialogTitle>

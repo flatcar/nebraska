@@ -22,7 +22,7 @@ const staticClasses = {
   textFieldRoot: `${PREFIX}-textFieldRoot`,
   inputRoot: `${PREFIX}-inputRoot`,
   inputInput: `${PREFIX}-inputInput`,
-  pickerButtonInput: `${PREFIX}-pickerButtonInput`
+  pickerButtonInput: `${PREFIX}-pickerButtonInput`,
 };
 
 const Root = styled('div')({
@@ -198,7 +198,6 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
   const [currentValue, setCurrentValue] = React.useState(props.defaultValue);
   const { onBottomScrolled } = props;
   const { t } = useTranslation();
-
 
   function onInputChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     props.onValueChanged(event.target.value);

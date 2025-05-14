@@ -66,10 +66,14 @@ export function ActivityItemPure(props: ActivityItemPureProps) {
   }
 
   return (
-    <ListItem alignItems="flex-start" disableGutters sx={{
-      paddingTop: '15px',
-      paddingLeft: '15px',
-    }}>
+    <ListItem
+      alignItems="flex-start"
+      disableGutters
+      sx={{
+        paddingTop: '15px',
+        paddingLeft: '15px',
+      }}
+    >
       <Grid container alignItems="center" justifyContent="space-between">
         <Grid size={10}>
           <Box display="flex" alignItems="center" justifyContent="flex-start">
@@ -77,18 +81,25 @@ export function ActivityItemPure(props: ActivityItemPureProps) {
               <ActivityItemIcon severityName={props.severityName} />
             </Box>
             <Box>
-              <Typography sx={{
-                fontWeight: 'bold',
-                fontSize: '1.1rem',
-                color: '#474747',
-              }}>{props.appName}</Typography>
+              <Typography
+                sx={{
+                  fontWeight: 'bold',
+                  fontSize: '1.1rem',
+                  color: '#474747',
+                }}
+              >
+                {props.appName}
+              </Typography>
             </Box>
           </Box>
         </Grid>
         <Grid size={2}>
-          <Typography color="textSecondary" sx={{
-            fontSize: '.7rem',
-          }}>
+          <Typography
+            color="textSecondary"
+            sx={{
+              fontSize: '.7rem',
+            }}
+          >
             {time}
           </Typography>
         </Grid>

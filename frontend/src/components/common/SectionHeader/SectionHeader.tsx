@@ -14,7 +14,7 @@ const PREFIX = 'SectionHeader';
 
 const classes = {
   sectionContainer: `${PREFIX}-sectionContainer`,
-  breadCrumbsItem: `${PREFIX}-breadCrumbsItem`
+  breadCrumbsItem: `${PREFIX}-breadCrumbsItem`,
 };
 
 const Root = styled('div')(({ theme }) => ({
@@ -30,7 +30,7 @@ const Root = styled('div')(({ theme }) => ({
     '& > a': {
       color: theme.palette.text.secondary,
     },
-  }
+  },
 }));
 
 interface SectionHeaderProps {
@@ -42,7 +42,6 @@ interface SectionHeaderProps {
 }
 
 export default function SectionHeader(props: SectionHeaderProps) {
-
   const { t } = useTranslation();
   const { breadcrumbs, title } = props;
 

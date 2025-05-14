@@ -8,13 +8,13 @@ import { timeIntervalsDefault } from '../../../utils/helpers';
 const PREFIX = 'TimeIntervalLinks';
 
 const classes = {
-  title: `${PREFIX}-title`
+  title: `${PREFIX}-title`,
 };
 
 const StyledGrid = styled(Grid)(() => ({
   [`& .${classes.title}`]: {
     fontSize: '1rem',
-  }
+  },
 }));
 
 interface TimeIntervalLinksProps {
@@ -28,7 +28,6 @@ export default function TimeIntervalLinks(props: TimeIntervalLinksProps) {
   const { selectedInterval, intervalChangeHandler } = props;
   const [timeIntervals, setTimeIntervals] = React.useState(timeIntervalsDefault);
   const { appID, groupID } = props;
-
 
   React.useEffect(() => {
     if (appID && groupID) {

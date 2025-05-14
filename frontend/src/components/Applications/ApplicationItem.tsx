@@ -15,7 +15,7 @@ const PREFIX = 'ApplicationItem';
 
 const classes = {
   root: `${PREFIX}-root`,
-  itemSection: `${PREFIX}-itemSection`
+  itemSection: `${PREFIX}-itemSection`,
 };
 
 const StyledListItem = styled(ListItem)({
@@ -38,7 +38,6 @@ export interface ApplicationItemProps {
 }
 
 export default function ApplicationItem(props: ApplicationItemProps) {
-
   const { t } = useTranslation();
   const { description, groups, numberOfInstances, id, productId, name } = props;
 

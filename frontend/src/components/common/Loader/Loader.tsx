@@ -4,7 +4,7 @@ import { styled } from '@mui/material/styles';
 const PREFIX = 'Loader';
 
 const classes = {
-  loaderContainer: `${PREFIX}-loaderContainer`
+  loaderContainer: `${PREFIX}-loaderContainer`,
 };
 
 const StyledBox = styled(Box)({
@@ -15,7 +15,6 @@ const StyledBox = styled(Box)({
 });
 
 export default function Loader(props: { noContainer?: boolean }) {
-
   const { noContainer = false, ...other } = props;
   const progress = <CircularProgress aria-label="Loading" {...other} />;
 

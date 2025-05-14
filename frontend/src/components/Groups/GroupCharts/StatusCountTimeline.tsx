@@ -152,7 +152,7 @@ export default function StatusCountTimeline(props: StatusCountTimelineProps) {
       }
     }
 
-    status_breakdown.forEach((entry: { status: string; version: string;[key: string]: any }) => {
+    status_breakdown.forEach((entry: { status: string; version: string; [key: string]: any }) => {
       const statusInfo = getInstanceStatus(parseInt(entry.status), entry.version);
       const statusTheme = statusDefs[statusInfo.type];
 
@@ -234,12 +234,14 @@ export default function StatusCountTimeline(props: StatusCountTimelineProps) {
                   />
                 </React.Fragment>
               ) : (
-                <Box sx={{
-                  color: 'text.secondary',
-                  fontSize: 14,
-                  textAlign: 'center',
-                  lineHeight: 1.5,
-                }}>
+                <Box
+                  sx={{
+                    color: 'text.secondary',
+                    fontSize: 14,
+                    textAlign: 'center',
+                    lineHeight: 1.5,
+                  }}
+                >
                   Showing data for the last time point.
                   <br />
                   Click the chart to choose a different time point.
@@ -258,6 +260,6 @@ export default function StatusCountTimeline(props: StatusCountTimelineProps) {
           )}
         </Grid>
       </Grid>
-    </Grid >
+    </Grid>
   );
 }

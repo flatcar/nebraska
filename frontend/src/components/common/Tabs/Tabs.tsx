@@ -66,9 +66,13 @@ export default function Tabs(props: TabsProps) {
           <MuiTab
             key={i}
             label={label}
-            sx={tabs?.length > 7 ? {
-              minWidth: 150
-            } : undefined}
+            sx={
+              tabs?.length > 7
+                ? {
+                    minWidth: 150,
+                  }
+                : undefined
+            }
             {...a11yProps(i)}
           />
         ))}

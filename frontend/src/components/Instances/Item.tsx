@@ -22,7 +22,7 @@ import StatusHistoryContainer from './StatusHistoryContainer';
 const PREFIX = 'Item';
 
 const classes = {
-  link: `${PREFIX}-link`
+  link: `${PREFIX}-link`,
 };
 
 const Root = styled('div')({

@@ -26,14 +26,10 @@ const classes = {
   header: `${PREFIX}-header`,
   svgContainer: `${PREFIX}-svgContainer`,
   userName: `${PREFIX}-userName`,
-  email: `${PREFIX}-email`
+  email: `${PREFIX}-email`,
 };
 
-const StyledStyledEngineProvider = styled(StyledEngineProvider)((
-  {
-    theme
-  }
-) => ({
+const StyledStyledEngineProvider = styled(StyledEngineProvider)(({ theme }) => ({
   [`& .${classes.title}`]: {
     flexGrow: 1,
     display: 'none',
@@ -57,12 +53,12 @@ const StyledStyledEngineProvider = styled(StyledEngineProvider)((
 
   [`& .${classes.email}`]: {
     fontSize: '1.2em',
-  }
+  },
 }));
 
 declare module '@mui/styles/defaultTheme' {
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  interface DefaultTheme extends Theme { }
+  interface DefaultTheme extends Theme {}
 }
 
 interface NebraskaConfig {

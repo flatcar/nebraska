@@ -180,7 +180,6 @@ interface InstanceStatusCount {
 
 export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
   const theme = useTheme<Theme>();
-  debugger;
   const statusDefs = makeStatusDefs(theme);
   const { t } = useTranslation();
 

@@ -32,7 +32,7 @@ const lightTheme = createTheme({
     },
     MuiAppBar: {
       styleOverrides: {
-        root: { '--AppBar-background': '#fff' }
+        root: { '--AppBar-background': '#fff' },
       },
     },
   },
@@ -85,7 +85,7 @@ const darkTheme = createTheme({
   components: {
     MuiAppBar: {
       styleOverrides: {
-        root: { '--AppBar-background': '#000' }
+        root: { '--AppBar-background': '#000' },
       },
     },
   },

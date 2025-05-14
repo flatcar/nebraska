@@ -24,7 +24,7 @@ const PREFIX = 'GroupEditDialog';
 
 const classes = {
   root: `${PREFIX}-root`,
-  indicator: `${PREFIX}-indicator`
+  indicator: `${PREFIX}-indicator`,
 };
 
 const StyledDialog = styled(Dialog)({

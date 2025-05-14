@@ -44,13 +44,13 @@ import Table from './Table';
 const PREFIX = 'ListView';
 
 const classes = {
-  root: `${PREFIX}-root`
+  root: `${PREFIX}-root`,
 };
 
 const Root = styled('div')(({ theme }) => ({
   [`& .${classes.root}`]: {
     backgroundColor: theme.palette.lightSilverShade,
-  }
+  },
 }));
 
 // The indexes for the sorting names match the backend index for that criteria as well.
@@ -145,7 +145,6 @@ function InstanceFilter(props: InstanceFilterProps) {
 }
 
 function ListView(props: { application: Application; group: Group }) {
-
   const theme = useTheme();
   const { t } = useTranslation();
   const statusDefs = makeStatusDefs(useTheme());
