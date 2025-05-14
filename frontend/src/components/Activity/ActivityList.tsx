@@ -1,17 +1,10 @@
 import MuiList from '@mui/material/List';
 import Typography from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 
 import { Activity } from '../../api/apiDataTypes';
 import { makeLocaleTime } from '../../i18n/dateTime';
 import ActivityItem from './ActivityItem';
-
-const useStyles = makeStyles({
-  listTitle: {
-    fontSize: '1em',
-  },
-});
 
 export interface ActivityListProps {
   entries?: Activity[];
@@ -19,12 +12,13 @@ export interface ActivityListProps {
 }
 
 export default function ActivityList(props: ActivityListProps) {
-  const classes = useStyles();
   const entries = props.entries ? props.entries : [];
 
   return (
     <React.Fragment>
-      <Typography className={classes.listTitle}>
+      <Typography sx={{
+        fontSize: '1em',
+      }}>
         {makeLocaleTime(props.timestamp, {
           showTime: false,
           dateFormat: { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' },

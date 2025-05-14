@@ -8,13 +8,43 @@ import Input from '@mui/material/Input';
 import InputLabel, { InputLabelProps } from '@mui/material/InputLabel';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
-import makeStyles from '@mui/styles/makeStyles';
 import Downshift from 'downshift';
 import moment from 'moment-timezone';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FixedSizeList } from 'react-window';
+
+const PREFIX = 'DEFAULT_TIMEZONE';
+
+const classes = {
+  container: `${PREFIX}-container`,
+  textFieldRoot: `${PREFIX}-textFieldRoot`,
+  inputRoot: `${PREFIX}-inputRoot`,
+  inputInput: `${PREFIX}-inputInput`,
+  pickerButtonInput: `${PREFIX}-pickerButtonInput`
+};
+
+const Root = styled('div')({
+  [`& .${classes.container}`]: {
+    flexGrow: 1,
+    position: 'relative',
+  },
+  [`& .${classes.textFieldRoot}`]: {
+    marginTop: '0.6em',
+  },
+  [`& .${classes.inputRoot}`]: {
+    flexWrap: 'wrap',
+  },
+  [`& .${classes.inputInput}`]: {
+    width: 'auto',
+    flexGrow: 1,
+  },
+  [`& .${classes.pickerButtonInput}`]: {
+    cursor: 'pointer',
+  },
+});
 
 const suggestions = moment.tz.names().map(timezone => {
   return {
@@ -24,11 +54,6 @@ const suggestions = moment.tz.names().map(timezone => {
 });
 
 interface RenderInputProps {
-  classes: {
-    inputRoot: string;
-    inputInput: string;
-    textFieldRoot: string;
-  };
   ref?: React.Ref<any>;
   InputProps: {
     onBlur?: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
@@ -45,7 +70,7 @@ interface RenderInputProps {
 }
 
 function renderInput(inputProps: RenderInputProps) {
-  const { InputProps, classes, ref, ...other } = inputProps;
+  const { InputProps, ref, ...other } = inputProps;
 
   return (
     <TextField
@@ -104,29 +129,9 @@ function getSuggestions(value: string | null, selectedItem: string) {
   return inputValue.length === 0
     ? suggestions
     : suggestions.filter(suggestion => {
-        return suggestion.label.toLowerCase().includes(inputValue);
-      });
+      return suggestion.label.toLowerCase().includes(inputValue);
+    });
 }
-
-const useStyles = makeStyles({
-  container: {
-    flexGrow: 1,
-    position: 'relative',
-  },
-  textFieldRoot: {
-    marginTop: '0.6em',
-  },
-  inputRoot: {
-    flexWrap: 'wrap',
-  },
-  inputInput: {
-    width: 'auto',
-    flexGrow: 1,
-  },
-  pickerButtonInput: {
-    cursor: 'pointer',
-  },
-});
 
 interface LazyListProps {
   options: string[];
@@ -177,7 +182,7 @@ export default function TimzonePicker(props: {
   const [selectedTimezone, setSelectedTimezone] = React.useState(
     props.value ? props.value : DEFAULT_TIMEZONE
   );
-  const classes = useStyles();
+
   const { t } = useTranslation();
 
   function onInputActivate() {
@@ -194,7 +199,7 @@ export default function TimzonePicker(props: {
   }
 
   return (
-    <div>
+    <Root>
       <FormControl fullWidth>
         <InputLabel variant="standard" shrink>
           Timezone
@@ -271,6 +276,6 @@ export default function TimzonePicker(props: {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </Root>
   );
 }

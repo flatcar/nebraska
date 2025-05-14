@@ -4,8 +4,8 @@ import { Divider } from '@mui/material';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
+import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -24,16 +24,30 @@ import StatusCountTimeline from './GroupCharts/StatusCountTimeline';
 import VersionCountTimeline from './GroupCharts/VersionCountTimeline';
 import { formatUpdateLimits } from './GroupItem';
 
-const useStyles = makeStyles(theme => ({
-  link: {
+const PREFIX = 'ItemExtended';
+
+const classes = {
+  link: `${PREFIX}-link`,
+  instancesChartPaper: `${PREFIX}-instancesChartPaper`,
+  success: `${PREFIX}-success`
+};
+
+const StyledPaper = styled(Paper)((
+  {
+    theme
+  }
+) => ({
+  [`& .${classes.link}`]: {
     fontSize: '1rem',
   },
-  instancesChartPaper: {
+
+  [`& .${classes.instancesChartPaper}`]: {
     height: '100%',
   },
-  success: {
+
+  [`& .${classes.success}`]: {
     color: theme.palette.success.main,
-  },
+  }
 }));
 
 function ItemExtended(props: {
@@ -54,7 +68,7 @@ function ItemExtended(props: {
   const [statusChartDuration, setStatusChartDuration] = React.useState(defaultTimeInterval);
   const location = useLocation();
   const history = useHistory();
-  const classes = useStyles();
+
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -144,7 +158,7 @@ function ItemExtended(props: {
   }, [group, updateProgressChartDuration]);
 
   return (
-    <Paper>
+    <StyledPaper>
       <Grid container alignItems="stretch" justifyContent="space-between">
         <Grid size={12}>
           <CardHeader
@@ -358,7 +372,7 @@ function ItemExtended(props: {
           </Grid>
         )}
       </Grid>
-    </Paper>
+    </StyledPaper>
   );
 }
 

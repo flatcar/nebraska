@@ -3,7 +3,6 @@ import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
 import ListItem from '@mui/material/ListItem';
 import Typography from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
@@ -12,24 +11,6 @@ import { Activity } from '../../api/apiDataTypes';
 import { toLocaleString } from '../../i18n/dateTime';
 import { activityStore } from '../../stores/Stores';
 import ActivityItemIcon from './ActivityItemIcon';
-
-const useStyles = makeStyles({
-  groupLink: {
-    color: '#1b5c91',
-  },
-  appName: {
-    fontWeight: 'bold',
-    fontSize: '1.1rem',
-    color: '#474747',
-  },
-  time: {
-    fontSize: '.7rem',
-  },
-  list: {
-    paddingTop: '15px',
-    paddingLeft: '15px',
-  },
-});
 
 export interface ActivityItemProps {
   entry: Activity;
@@ -65,7 +46,6 @@ export interface ActivityItemPureProps {
 }
 
 export function ActivityItemPure(props: ActivityItemPureProps) {
-  const classes = useStyles();
   const { t } = useTranslation();
 
   const time = toLocaleString(props.createdTs, undefined, {
@@ -79,14 +59,17 @@ export function ActivityItemPure(props: ActivityItemPureProps) {
     const groupPath = `apps/${props.appId}/groups/${props.groupId}`;
     subtitle = t('activity|group');
     name = (
-      <Link component={RouterLink} to={groupPath} className={classes.groupLink} underline="hover">
+      <Link component={RouterLink} to={groupPath} sx={{ color: '#1b5c91' }} underline="hover">
         {props.groupName}
       </Link>
     );
   }
 
   return (
-    <ListItem alignItems="flex-start" disableGutters className={classes.list}>
+    <ListItem alignItems="flex-start" disableGutters sx={{
+      paddingTop: '15px',
+      paddingLeft: '15px',
+    }}>
       <Grid container alignItems="center" justifyContent="space-between">
         <Grid size={10}>
           <Box display="flex" alignItems="center" justifyContent="flex-start">
@@ -94,12 +77,18 @@ export function ActivityItemPure(props: ActivityItemPureProps) {
               <ActivityItemIcon severityName={props.severityName} />
             </Box>
             <Box>
-              <Typography className={classes.appName}>{props.appName}</Typography>
+              <Typography sx={{
+                fontWeight: 'bold',
+                fontSize: '1.1rem',
+                color: '#474747',
+              }}>{props.appName}</Typography>
             </Box>
           </Box>
         </Grid>
         <Grid size={2}>
-          <Typography color="textSecondary" className={classes.time}>
+          <Typography color="textSecondary" sx={{
+            fontSize: '.7rem',
+          }}>
             {time}
           </Typography>
         </Grid>

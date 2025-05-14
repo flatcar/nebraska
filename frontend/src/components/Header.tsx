@@ -5,10 +5,10 @@ import { Box, Button } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import IconButton from '@mui/material/IconButton';
 import Menu, { MenuProps } from '@mui/material/Menu';
+import { styled } from '@mui/material/styles';
 import { StyledEngineProvider, Theme, ThemeProvider } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
 import DOMPurify from 'dompurify';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,13 +19,22 @@ import themes from '../lib/themes';
 import { UserState } from '../stores/redux/features/user';
 import { useSelector } from '../stores/redux/hooks';
 
-declare module '@mui/styles/defaultTheme' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  interface DefaultTheme extends Theme {}
-}
+const PREFIX = 'Header';
 
-const useStyles = makeStyles(theme => ({
-  title: {
+const classes = {
+  title: `${PREFIX}-title`,
+  header: `${PREFIX}-header`,
+  svgContainer: `${PREFIX}-svgContainer`,
+  userName: `${PREFIX}-userName`,
+  email: `${PREFIX}-email`
+};
+
+const StyledStyledEngineProvider = styled(StyledEngineProvider)((
+  {
+    theme
+  }
+) => ({
+  [`& .${classes.title}`]: {
     flexGrow: 1,
     display: 'none',
     color: theme.palette.titleColor,
@@ -33,21 +42,28 @@ const useStyles = makeStyles(theme => ({
       display: 'block',
     },
   },
-  header: {
+
+  [`& .${classes.header}`]: {
     marginBottom: theme.spacing(1),
-    backgroundColor:
-      theme.palette.mode === 'dark' ? theme.palette.common.black : theme.palette.common.white,
   },
-  svgContainer: {
+
+  [`& .${classes.svgContainer}`]: {
     '& svg': { maxHeight: '3rem' },
   },
-  userName: {
+
+  [`& .${classes.userName}`]: {
     fontSize: '1.5em',
   },
-  email: {
+
+  [`& .${classes.email}`]: {
     fontSize: '1.2em',
-  },
+  }
 }));
+
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  interface DefaultTheme extends Theme { }
+}
 
 interface NebraskaConfig {
   title?: string;
@@ -68,7 +84,7 @@ interface AppbarProps {
 
 function Appbar(props: AppbarProps) {
   const { config, user, menuAnchorEl, projectLogo, handleClose, handleMenu } = props;
-  const classes = useStyles();
+
   const { t } = useTranslation();
 
   React.useEffect(() => {
@@ -173,9 +189,9 @@ export default function Header() {
   return config &&
     (config.header_style === 'dark' ||
       (config.header_style === undefined && config.appBarColor === 'dark')) ? (
-    <StyledEngineProvider injectFirst>
+    <StyledStyledEngineProvider injectFirst>
       (<ThemeProvider theme={themes.dark}>{appBar}</ThemeProvider>)
-    </StyledEngineProvider>
+    </StyledStyledEngineProvider>
   ) : (
     appBar
   );

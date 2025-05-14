@@ -30,6 +30,11 @@ const lightTheme = createTheme({
         variant: 'standard',
       },
     },
+    MuiAppBar: {
+      styleOverrides: {
+        root: { '--AppBar-background': '#fff' }
+      },
+    },
   },
   palette: {
     background: {
@@ -77,6 +82,13 @@ const lightTheme = createTheme({
 
 const darkTheme = createTheme({
   ...lightTheme,
+  components: {
+    MuiAppBar: {
+      styleOverrides: {
+        root: { '--AppBar-background': '#000' }
+      },
+    },
+  },
   palette: {
     mode: 'dark',
     primary: {

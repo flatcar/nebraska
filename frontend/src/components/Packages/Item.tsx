@@ -6,8 +6,8 @@ import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
+import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
@@ -21,21 +21,30 @@ import ChannelAvatar from '../Channels/ChannelAvatar';
 import Label from '../common/Label';
 import MoreMenu from '../common/MoreMenu';
 
-const useStyles = makeStyles({
-  packageName: {
+const PREFIX = 'Item';
+
+const classes = {
+  packageName: `${PREFIX}-packageName`,
+  subtitle: `${PREFIX}-subtitle`,
+  packageIcon: `${PREFIX}-packageIcon`,
+  channelLabel: `${PREFIX}-channelLabel`
+};
+
+const StyledListItem = styled(ListItem)({
+  [`& .${classes.packageName}`]: {
     fontSize: '1.1em',
   },
-  subtitle: {
+  [`& .${classes.subtitle}`]: {
     fontSize: '.9em',
     textTransform: 'uppercase',
     fontWeight: 300,
     paddingRight: '.05em',
     color: '#595959',
   },
-  packageIcon: {
+  [`& .${classes.packageIcon}`]: {
     minWidth: '40px',
   },
-  channelLabel: {
+  [`& .${classes.channelLabel}`]: {
     marginRight: '5px',
   },
 });
@@ -52,7 +61,7 @@ function Item(props: {
   channels: Channel[];
   handleUpdatePackage: (pkgId: string) => void;
 }) {
-  const classes = useStyles();
+
   const { t } = useTranslation();
 
   const type = props.packageItem.type || 1;
@@ -132,7 +141,7 @@ function Item(props: {
   }
 
   return (
-    <ListItem dense alignItems="flex-start">
+    <StyledListItem dense alignItems="flex-start">
       <ListItemIcon className={classes.packageIcon}>
         <InlineIcon icon={item.icon} width="35" height="35" />
       </ListItemIcon>
@@ -150,7 +159,7 @@ function Item(props: {
           ]}
         />
       </ListItemSecondaryAction>
-    </ListItem>
+    </StyledListItem>
   );
 }
 

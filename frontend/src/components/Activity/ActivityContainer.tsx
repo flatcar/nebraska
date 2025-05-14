@@ -2,7 +2,6 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import TablePagination from '@mui/material/TablePagination';
-import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import _ from 'underscore';
@@ -14,25 +13,9 @@ import ListHeader from '../common/ListHeader';
 import Loader from '../common/Loader';
 import ActivityList from './ActivityList';
 
-const useStyles = makeStyles({
-  toolbar: {
-    padding: 0,
-  },
-  select: {
-    fontSize: '.85em',
-  },
-  selectLabel: {
-    fontSize: '.85em',
-  },
-  displayedRows: {
-    fontSize: '.85em',
-  },
-});
-
 export type ActivityContainerProps = any;
 
 function Container() {
-  const classes = useStyles();
   const { t } = useTranslation();
 
   const [activity, setActivity] = React.useState(getActivityEntries());
@@ -134,7 +117,20 @@ function Container() {
               </Grid>
               <Grid>
                 <TablePagination
-                  classes={classes}
+                  slotProps={{
+                    toolbar: {
+                      sx: { p: 0 },
+                    },
+                    select: {
+                      sx: { fontSize: '.85em' },
+                    },
+                    selectLabel: {
+                      sx: { fontSize: '.85em' },
+                    },
+                    displayedRows: {
+                      sx: { fontSize: '.85em' },
+                    },
+                  }}
                   rowsPerPageOptions={rowsOptions}
                   component="div"
                   count={activity.length}

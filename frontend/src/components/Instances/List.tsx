@@ -13,9 +13,9 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { styled } from '@mui/material/styles';
 import TablePagination from '@mui/material/TablePagination';
 import { useTheme } from '@mui/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -41,14 +41,20 @@ import { InstanceCountLabel } from './Common';
 import makeStatusDefs from './StatusDefs';
 import Table from './Table';
 
+const PREFIX = 'ListView';
+
+const classes = {
+  root: `${PREFIX}-root`
+};
+
+const Root = styled('div')(({ theme }) => ({
+  [`& .${classes.root}`]: {
+    backgroundColor: theme.palette.lightSilverShade,
+  }
+}));
+
 // The indexes for the sorting names match the backend index for that criteria as well.
 const SORT_ORDERS = ['asc', 'desc'];
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    backgroundColor: theme.palette.lightSilverShade,
-  },
-}));
 
 interface InstanceFilterProps {
   versions: any[];
@@ -139,7 +145,7 @@ function InstanceFilter(props: InstanceFilterProps) {
 }
 
 function ListView(props: { application: Application; group: Group }) {
-  const classes = useStyles();
+
   const theme = useTheme();
   const { t } = useTranslation();
   const statusDefs = makeStatusDefs(useTheme());
@@ -396,7 +402,7 @@ function ListView(props: { application: Application; group: Group }) {
   const searchInputRef = React.createRef<HTMLInputElement>();
 
   return (
-    <>
+    <Root>
       <ListHeader title={t('instances|instance_list')} />
       <Paper>
         <Box padding="1em">
@@ -544,7 +550,7 @@ function ListView(props: { application: Application; group: Group }) {
           </Grid>
         </Box>
       </Paper>
-    </>
+    </Root>
   );
 }
 

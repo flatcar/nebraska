@@ -1,4 +1,4 @@
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
@@ -7,8 +7,14 @@ import { InstanceStatusHistory } from '../../api/apiDataTypes';
 import Empty from '../common/EmptyContent';
 import StatusHistoryList from './StatusHistoryList';
 
-const useStyles = makeStyles({
-  historyBox: {
+const PREFIX = 'StatusHistoryContainer';
+
+const classes = {
+  historyBox: `${PREFIX}-historyBox`
+};
+
+const Root = styled('div')({
+  [`&.${classes.historyBox}`]: {
     paddingLeft: '2em',
     paddingRight: '2em',
     maxHeight: '400px',
@@ -17,7 +23,7 @@ const useStyles = makeStyles({
 });
 
 function StatusHistoryContainer(props: { statusHistory: InstanceStatusHistory[] }) {
-  const classes = useStyles();
+
   const { t } = useTranslation();
   let entries: React.ReactElement;
 
@@ -33,7 +39,7 @@ function StatusHistoryContainer(props: { statusHistory: InstanceStatusHistory[] 
     entries = <StatusHistoryList entries={props.statusHistory} />;
   }
 
-  return <div className={classes.historyBox}>{entries}</div>;
+  return <Root className={classes.historyBox}>{entries}</Root>;
 }
 
 export default StatusHistoryContainer;

@@ -1,6 +1,5 @@
 import { List } from '@mui/material';
 import Paper from '@mui/material/Paper';
-import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import _ from 'underscore';
@@ -13,14 +12,6 @@ import Loader from '../common/Loader';
 import ModalButton from '../common/ModalButton';
 import ApplicationEdit from './ApplicationEdit';
 import ApplicationItem from './ApplicationItem';
-
-const useStyles = makeStyles({
-  root: {
-    '& > hr:first-child': {
-      display: 'none',
-    },
-  },
-});
 
 export type ApplicationListProps = unknown;
 
@@ -63,7 +54,6 @@ export interface ApplicationListPureProps {
 }
 
 export function ApplicationListPure(props: ApplicationListPureProps) {
-  const classes = useStyles();
   const { t } = useTranslation();
   const [editOpen, setEditOpen] = React.useState(!!props.editOpen);
   const [editId, setEditId] = React.useState<null | string>(props.editId ? props.editId : null);
@@ -131,7 +121,13 @@ export function ApplicationListPure(props: ApplicationListPureProps) {
         ]}
       />
       <Paper>
-        <List className={classes.root}>{entries}</List>
+        <List
+          sx={{
+            '& > hr:first-child': {
+              display: 'none',
+            },
+          }}
+        >{entries}</List>
         {appToUpdate && (
           <ApplicationEdit data={appToUpdate} show={editOpen} onHide={closeUpdateAppModal} />
         )}

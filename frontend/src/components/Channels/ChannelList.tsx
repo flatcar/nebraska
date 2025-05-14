@@ -19,20 +19,11 @@ import SectionPaper from '../common/SectionPaper';
 import ChannelEdit from './ChannelEdit';
 import ChannelItem from './ChannelItem';
 
-const useStyles = makeStyles({
-  root: {
-    '& > hr:first-child': {
-      display: 'none',
-    },
-  },
-});
-
 function Channels(props: { channels: null | Channel[]; onEdit: (channelId: string) => void }) {
   const { channels, onEdit } = props;
-  const classes = useStyles();
   const { t } = useTranslation();
 
-  const channelsPerArch = (function () {
+  const channelsPerArch = (function() {
     const perArch: {
       [key: number]: Channel[];
     } = {};
@@ -62,7 +53,11 @@ function Channels(props: { channels: null | Channel[]; onEdit: (channelId: strin
           key={arch}
           subheader={<ListSubheader disableSticky>{ARCHES[parseInt(arch)]}</ListSubheader>}
           dense
-          className={classes.root}
+          sx={{
+            '& > hr:first-child': {
+              display: 'none',
+            },
+          }}
         >
           {channels.map(channel => (
             <ChannelItem

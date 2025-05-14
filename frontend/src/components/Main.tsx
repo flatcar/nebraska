@@ -43,7 +43,7 @@ export default function Main() {
       console.debug('Got config', config);
       dispatch(setConfig(config));
     });
-  }, []);
+  }, [dispatch]);
 
   useAuthRedirect();
 
@@ -52,7 +52,7 @@ export default function Main() {
       <CssBaseline />
       <SkipLink />
       <Header />
-      <Container component="main" id="main">
+      <Container component="main" id="main" sx={{ paddingTop: '0.52rem' }}>
         <Switch>
           <Route path="/" exact component={MainLayout} />
           <Route path="/apps" exact component={MainLayout} />

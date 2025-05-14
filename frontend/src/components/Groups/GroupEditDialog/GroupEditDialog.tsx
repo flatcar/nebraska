@@ -5,9 +5,9 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { styled } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import makeStyles from '@mui/styles/makeStyles';
 import { Form, Formik } from 'formik';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,12 +20,19 @@ import { DEFAULT_TIMEZONE } from '../../common/TimezonePicker';
 import GroupDetailsForm from './GroupDetailsForm';
 import GroupPolicyForm from './GroupPolicyForm';
 
-const useStyles = makeStyles({
-  root: {
+const PREFIX = 'GroupEditDialog';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  indicator: `${PREFIX}-indicator`
+};
+
+const StyledDialog = styled(Dialog)({
+  [`& .${classes.root}`]: {
     padding: '0.5em 0em',
     overflow: 'hidden',
   },
-  indicator: {
+  [`& .${classes.indicator}`]: {
     background: '#000',
   },
 });
@@ -41,7 +48,7 @@ export interface GroupEditDialogProps {
 
 export default function GroupEditDialog(props: GroupEditDialogProps) {
   const isCreation = Boolean(props.create);
-  const classes = useStyles();
+
   const [groupEditActiveTab, setGroupEditActiveTab] = React.useState(0);
   const { t } = useTranslation();
   const theme = useTheme();
@@ -233,13 +240,13 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
   }
 
   return (
-    <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
+    <StyledDialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
       <DialogTitle>{isCreation ? t('groups|group_add') : t('groups|group_edit')}</DialogTitle>
       <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={validation}>
         {/* @todo add better types for renderForm */}
         {/* @ts-expect-error as type mismatch */}
         {renderForm}
       </Formik>
-    </Dialog>
+    </StyledDialog>
   );
 }

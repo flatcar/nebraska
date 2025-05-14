@@ -1,6 +1,6 @@
 import MuiList from '@mui/material/List';
 import Paper from '@mui/material/Paper';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import _ from 'underscore';
@@ -14,12 +14,18 @@ import ModalButton from '../common/ModalButton';
 import GroupEditDialog from './GroupEditDialog';
 import GroupItem from './GroupItem';
 
-const useStyles = makeStyles(() => ({
-  root: {
+const PREFIX = 'GroupList';
+
+const classes = {
+  root: `${PREFIX}-root`
+};
+
+const Root = styled('div')(() => ({
+  [`& .${classes.root}`]: {
     '& > hr:first-child': {
       display: 'none',
     },
-  },
+  }
 }));
 
 export interface GroupListProps {
@@ -27,7 +33,7 @@ export interface GroupListProps {
 }
 
 function GroupList({ appID }: GroupListProps) {
-  const classes = useStyles();
+
   const { t } = useTranslation();
   const [application, setApplication] = React.useState(
     applicationsStore().getCachedApplication(appID)
@@ -96,7 +102,7 @@ function GroupList({ appID }: GroupListProps) {
       : null;
 
   return (
-    <>
+    <Root>
       <ListHeader
         title="Groups"
         actions={[
@@ -120,7 +126,7 @@ function GroupList({ appID }: GroupListProps) {
           />
         )}
       </Paper>
-    </>
+    </Root>
   );
 }
 

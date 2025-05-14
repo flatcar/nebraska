@@ -1,7 +1,7 @@
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import { Box, Divider, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 
 import { Group } from '../../api/apiDataTypes';
@@ -11,11 +11,18 @@ import ListItem from '../common/ListItem';
 import MoreMenu from '../common/MoreMenu';
 import ApplicationItemGroupsList from './ApplicationItemGroupsList';
 
-const useStyles = makeStyles({
-  root: {
+const PREFIX = 'ApplicationItem';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  itemSection: `${PREFIX}-itemSection`
+};
+
+const StyledListItem = styled(ListItem)({
+  [`&.${classes.root}`]: {
     padding: '0px 8px',
   },
-  itemSection: {
+  [`& .${classes.itemSection}`]: {
     padding: '0 1em',
   },
 });
@@ -31,12 +38,12 @@ export interface ApplicationItemProps {
 }
 
 export default function ApplicationItem(props: ApplicationItemProps) {
-  const classes = useStyles();
+
   const { t } = useTranslation();
   const { description, groups, numberOfInstances, id, productId, name } = props;
 
   return (
-    <ListItem className={classes.root}>
+    <StyledListItem className={classes.root}>
       <Grid container>
         <Grid size={12}>
           <CardHeader
@@ -101,6 +108,6 @@ export default function ApplicationItem(props: ApplicationItemProps) {
           </Grid>
         </Grid>
       </Grid>
-    </ListItem>
+    </StyledListItem>
   );
 }

@@ -2,7 +2,7 @@ import { IconifyIcon, InlineIcon } from '@iconify/react';
 import { Theme } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { makeStyles, useTheme } from '@mui/styles';
+import { useTheme } from '@mui/styles';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Cell, Label, Pie, PieChart } from 'recharts';
@@ -12,20 +12,6 @@ import LightTooltip from '../common/LightTooltip';
 import Loader from '../common/Loader';
 import { InstanceCountLabel } from './Common';
 import makeStatusDefs from './StatusDefs';
-
-interface DoughnutLabelProps {
-  color: string;
-  labelSize: string;
-}
-
-const useStyles = makeStyles((theme: Theme) => ({
-  doughnutLabel: ({ color, labelSize }: DoughnutLabelProps) => ({
-    fontSize: labelSize,
-    color: color || theme.palette.text.secondary,
-    display: 'inline',
-    boxShadow: 'none',
-  }),
-}));
 
 interface ProgressData {
   value: number;
@@ -56,7 +42,6 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
   const [activeIndex, setActiveIndex] = React.useState(-1);
   const iconSize = '1.1rem';
 
-  const classes = useStyles({ color: color, labelSize: iconSize });
   const theme = useTheme<Theme>();
 
   const pieSize = width > height ? height : width;
@@ -158,7 +143,12 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
               onMouseOut={() => {
                 setShowTooltip(false);
               }}
-              className={classes.doughnutLabel}
+              sx={{
+                fontSize: iconSize,
+                color: theme => color || theme.palette.text.secondary,
+                display: 'inline',
+                boxShadow: 'none',
+              }}
             >
               {label}
             </Typography>
@@ -190,6 +180,7 @@ interface InstanceStatusCount {
 
 export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
   const theme = useTheme<Theme>();
+  debugger;
   const statusDefs = makeStatusDefs(theme);
   const { t } = useTranslation();
 

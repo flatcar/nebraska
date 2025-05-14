@@ -1,14 +1,20 @@
 import { Box, Grid, Link, Typography } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 
 import API from '../../../api/API';
 import { timeIntervalsDefault } from '../../../utils/helpers';
 
-const useStyles = makeStyles(() => ({
-  title: {
+const PREFIX = 'TimeIntervalLinks';
+
+const classes = {
+  title: `${PREFIX}-title`
+};
+
+const StyledGrid = styled(Grid)(() => ({
+  [`& .${classes.title}`]: {
     fontSize: '1rem',
-  },
+  }
 }));
 
 interface TimeIntervalLinksProps {
@@ -22,7 +28,7 @@ export default function TimeIntervalLinks(props: TimeIntervalLinksProps) {
   const { selectedInterval, intervalChangeHandler } = props;
   const [timeIntervals, setTimeIntervals] = React.useState(timeIntervalsDefault);
   const { appID, groupID } = props;
-  const classes = useStyles();
+
 
   React.useEffect(() => {
     if (appID && groupID) {
@@ -45,7 +51,7 @@ export default function TimeIntervalLinks(props: TimeIntervalLinksProps) {
   }, [appID, groupID]);
 
   return (
-    <Grid container spacing={1}>
+    <StyledGrid container spacing={1}>
       {timeIntervals.map((link, index) => (
         <React.Fragment key={link.queryValue}>
           <Grid>
@@ -74,6 +80,6 @@ export default function TimeIntervalLinks(props: TimeIntervalLinksProps) {
           )}
         </React.Fragment>
       ))}
-    </Grid>
+    </StyledGrid>
   );
 }
