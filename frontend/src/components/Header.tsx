@@ -56,7 +56,7 @@ const StyledStyledEngineProvider = styled(StyledEngineProvider)(({ theme }) => (
   },
 }));
 
-declare module '@mui/styles/defaultTheme' {
+declare module '@mui/material/styles' {
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface DefaultTheme extends Theme {}
 }

@@ -1,7 +1,6 @@
 import chevronDown from '@iconify/icons-mdi/chevron-down';
 import chevronUp from '@iconify/icons-mdi/chevron-up';
 import { InlineIcon } from '@iconify/react';
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button, { ButtonProps } from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
@@ -15,13 +14,13 @@ import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import { useTheme } from '@mui/styles';
 import { Field, Form, Formik, FormikHelpers, FormikProps } from 'formik';
 import { TextField } from 'formik-mui';
 import React from 'react';
@@ -78,7 +77,8 @@ interface StatusLabelProps {
 }
 
 function StatusLabel(props: StatusLabelProps) {
-  const statusDefs = makeStatusDefs(useTheme());
+  const theme = useTheme();
+  const statusDefs = makeStatusDefs(theme);
   const { t } = useTranslation();
 
   const { status, activated } = props;
@@ -302,8 +302,7 @@ interface DetailsViewProps {
 }
 
 function DetailsView(props: DetailsViewProps) {
-  const classes = useDetailsStyles();
-  const theme = useTheme<Theme>();
+  const theme = useTheme();
   const { application, group, instance, onInstanceUpdated } = props;
   const [eventHistory, setEventHistory] = React.useState<InstanceStatusHistory[] | null>(null);
   const [showEdit, setShowEdit] = React.useState(false);

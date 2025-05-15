@@ -1,8 +1,7 @@
 import { IconifyIcon, InlineIcon } from '@iconify/react';
-import { Theme } from '@mui/material';
 import Grid from '@mui/material/Grid';
+import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import { useTheme } from '@mui/styles';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Cell, Label, Pie, PieChart } from 'recharts';
@@ -42,7 +41,7 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
   const [activeIndex, setActiveIndex] = React.useState(-1);
   const iconSize = '1.1rem';
 
-  const theme = useTheme<Theme>();
+  const theme = useTheme();
 
   const pieSize = width > height ? height : width;
   const radius = pieSize * 0.45;
@@ -179,7 +178,7 @@ interface InstanceStatusCount {
 }
 
 export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
-  const theme = useTheme<Theme>();
+  const theme = useTheme();
   const statusDefs = makeStatusDefs(theme);
   const { t } = useTranslation();
 

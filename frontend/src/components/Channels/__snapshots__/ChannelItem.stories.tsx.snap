@@ -9,7 +9,7 @@ exports[`channels/ChannelItem AppView smoke-test 1`] = `
         </div>
       </div>
       <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
-        <div class="MuiListItemText-root MuiListItemText-multiline stable-makeStyles-root-4 css-14ln1j6-MuiListItemText-root">
+        <div class="MuiListItemText-root MuiListItemText-multiline css-1fnxsti-MuiListItemText-root">
           <div class="MuiBox-root css-70qvj9">
             <div class="MuiBox-root css-1xsd608">
               edge
@@ -81,7 +81,7 @@ exports[`channels/ChannelItem NoArch smoke-test 1`] = `
         </div>
       </div>
       <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
-        <div class="MuiListItemText-root MuiListItemText-multiline stable-makeStyles-root-3 css-14ln1j6-MuiListItemText-root">
+        <div class="MuiListItemText-root MuiListItemText-multiline css-1fnxsti-MuiListItemText-root">
           <div class="MuiBox-root css-70qvj9">
             <div class="MuiBox-root css-1xsd608">
               edge
@@ -153,7 +153,7 @@ exports[`channels/ChannelItem NoPackage smoke-test 1`] = `
         </div>
       </div>
       <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
-        <div class="MuiListItemText-root MuiListItemText-multiline stable-makeStyles-root-2 css-14ln1j6-MuiListItemText-root">
+        <div class="MuiListItemText-root MuiListItemText-multiline css-1fnxsti-MuiListItemText-root">
           <div class="MuiBox-root css-70qvj9">
             <div class="MuiBox-root css-1xsd608">
               edge
@@ -203,7 +203,7 @@ exports[`channels/ChannelItem ShowArch smoke-test 1`] = `
         </div>
       </div>
       <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
-        <div class="MuiListItemText-root MuiListItemText-multiline stable-makeStyles-root-1 css-14ln1j6-MuiListItemText-root">
+        <div class="MuiListItemText-root MuiListItemText-multiline css-1fnxsti-MuiListItemText-root">
           <div class="MuiBox-root css-70qvj9">
             <div class="MuiBox-root css-1xsd608">
               edge

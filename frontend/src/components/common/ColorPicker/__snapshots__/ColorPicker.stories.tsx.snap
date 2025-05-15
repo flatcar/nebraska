@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ColorPickerButton Closed smoke-test 1`] = `
-<div>
-  <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeLarge stable-makeStyles-iconButton-1 css-154kngp-MuiButtonBase-root-MuiIconButton-root"
+<div class="css-1t32mh7">
+  <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeLarge ColorPicker-iconButton css-154kngp-MuiButtonBase-root-MuiIconButton-root"
           tabindex="0"
           type="button"
           data-testid="icon-button"
@@ -17,8 +17,8 @@ exports[`ColorPickerButton Closed smoke-test 1`] = `
 `;
 
 exports[`ColorPickerButton Open smoke-test 1`] = `
-<div>
-  <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeLarge stable-makeStyles-iconButton-2 css-154kngp-MuiButtonBase-root-MuiIconButton-root"
+<div class="css-1t32mh7">
+  <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeLarge ColorPicker-iconButton css-154kngp-MuiButtonBase-root-MuiIconButton-root"
           tabindex="0"
           type="button"
           data-testid="icon-button"

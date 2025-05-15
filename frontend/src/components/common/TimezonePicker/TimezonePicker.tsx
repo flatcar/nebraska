@@ -241,7 +241,6 @@ export default function TimzonePicker(props: {
                   {renderInput({
                     fullWidth: true,
                     autoFocus: true,
-                    classes,
                     label: t('common|timezone_label'),
                     placeholder: t('common|search_timezone_prompt'),
                     InputLabelProps: getLabelProps(),
