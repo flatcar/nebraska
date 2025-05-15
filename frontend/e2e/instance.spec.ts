@@ -26,7 +26,9 @@ test.describe('Instances', () => {
 
     await page.getByRole('link', { name: 'See all instances' }).click();
 
-    // Fix the width of columns withd date values, because date values can change in this test from execution to execution, therefore the witdth of columns can also stretch more or less based on these values.
+    // Fix the width of columns with date values,
+    // because date values can change in this test from execution to execution,
+    // therefore the width of columns can also stretch more or less based on these values.
     await page.addStyleTag({
       content: `
       table tr td:first-child,
