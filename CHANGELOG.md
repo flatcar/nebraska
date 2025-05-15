@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] # CRA to Vite migration
+## [Unreleased]
 
 ### Security
 - **Dependency Audit & Vulnerability Mitigation:**
@@ -23,6 +23,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Refactors & Improvements
 - **Icon Management:**
   - Refactored the icon builder to utilize the new Iconify API for improved performance and maintainability.
+- **MUI Upgrade:**
+  - Minor visual improvements
+  by upgrading @mui/material, @mui/system, @mui/icons-material, @mui/utils, @mui/styles, @mui/styled-engine-sc to ^7.0.0
   
 - **General Codebase Improvements:**
   - Optimized import arrangements and removed unused parameters across multiple functions.
