@@ -9,7 +9,7 @@ const classes = {
 };
 
 const StyledMuiListItem = styled(MuiListItem)({
-  [`& .${classes.divider}`]: {
+  [`&.${classes.divider}`]: {
     borderBottom: '2px solid rgba(0, 0, 0, 0.12)',
   },
 });

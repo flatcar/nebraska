@@ -25,7 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Refactored the icon builder to utilize the new Iconify API for improved performance and maintainability.
 - **MUI Upgrade:**
   - Minor visual improvements
-  by upgrading @mui/material, @mui/system, @mui/icons-material, @mui/utils, @mui/styles, @mui/styled-engine-sc to ^7.0.0
+  by upgrading @mui/material, @mui/system, @mui/icons-material, @mui/utils, @mui/styles, @mui/styled-engine-sc to ^7.0.0 ([#1040](https://github.com/flatcar/nebraska/pull/1040/files))
   
 - **General Codebase Improvements:**
   - Optimized import arrangements and removed unused parameters across multiple functions.
