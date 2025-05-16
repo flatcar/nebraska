@@ -3,63 +3,59 @@
 exports[`Section Header > renders section header correctly 1`] = `
 <DocumentFragment>
   <div
-    class="css-1p4n3eh"
+    class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-gjxcxd-MuiGrid-root"
   >
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row SectionHeader-sectionContainer css-12esy9w-MuiGrid-root"
+      class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root"
     >
-      <div
-        class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root"
+      <nav
+        aria-label="breadcrumbs"
+        class="MuiTypography-root MuiTypography-body1 MuiBreadcrumbs-root css-13untqk-MuiTypography-root-MuiBreadcrumbs-root"
       >
-        <nav
-          aria-label="breadcrumbs"
-          class="MuiTypography-root MuiTypography-body1 MuiBreadcrumbs-root css-xp7nxv-MuiTypography-root-MuiBreadcrumbs-root"
+        <ol
+          class="MuiBreadcrumbs-ol css-1uwp4ue-MuiBreadcrumbs-ol"
         >
-          <ol
-            class="MuiBreadcrumbs-ol css-1uwp4ue-MuiBreadcrumbs-ol"
+          <li
+            class="MuiBreadcrumbs-li"
           >
-            <li
-              class="MuiBreadcrumbs-li"
+            <span
+              class="SectionHeader-breadCrumbsItem MuiBox-root css-0"
             >
-              <span
-                class="SectionHeader-breadCrumbsItem MuiBox-root css-0"
+              <a
+                class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-1tr280c-MuiTypography-root-MuiLink-root"
+                href="/apps"
               >
-                <a
-                  class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-1tr280c-MuiTypography-root-MuiLink-root"
-                  href="/apps"
-                >
-                  Applications
-                </a>
-              </span>
-            </li>
-            <li
+                Applications
+              </a>
+            </span>
+          </li>
+          <li
+            aria-hidden="true"
+            class="MuiBreadcrumbs-separator css-jhr02i-MuiBreadcrumbs-separator"
+          >
+            <svg
               aria-hidden="true"
-              class="MuiBreadcrumbs-separator css-jhr02i-MuiBreadcrumbs-separator"
+              class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-120dh41-MuiSvgIcon-root"
+              data-testid="NavigateNextIcon"
+              focusable="false"
+              viewBox="0 0 24 24"
             >
-              <svg
-                aria-hidden="true"
-                class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-120dh41-MuiSvgIcon-root"
-                data-testid="NavigateNextIcon"
-                focusable="false"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"
-                />
-              </svg>
-            </li>
-            <li
-              class="MuiBreadcrumbs-li"
+              <path
+                d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"
+              />
+            </svg>
+          </li>
+          <li
+            class="MuiBreadcrumbs-li"
+          >
+            <p
+              class="MuiTypography-root MuiTypography-body1 css-zbfhf1-MuiTypography-root"
             >
-              <p
-                class="MuiTypography-root MuiTypography-body1 css-zbfhf1-MuiTypography-root"
-              >
-                Flatcar
-              </p>
-            </li>
-          </ol>
-        </nav>
-      </div>
+              Flatcar
+            </p>
+          </li>
+        </ol>
+      </nav>
     </div>
   </div>
 </DocumentFragment>

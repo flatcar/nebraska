@@ -1,7 +1,7 @@
 import infoIcon from '@iconify/icons-mdi/information-circle-outline';
 import searchIcon from '@iconify/icons-mdi/search';
 import { Icon } from '@iconify/react';
-import { Theme } from '@mui/material';
+import { TableContainer, Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
@@ -44,11 +44,11 @@ import Table from './Table';
 const PREFIX = 'ListView';
 
 const classes = {
-  root: `${PREFIX}-root`,
+  mainTable: `${PREFIX}-mainTable`,
 };
 
 const Root = styled('div')(({ theme }) => ({
-  [`& .${classes.root}`]: {
+  [`& .${classes.mainTable}`]: {
     backgroundColor: theme.palette.lightSilverShade,
   },
 }));
@@ -406,7 +406,7 @@ function ListView(props: { application: Application; group: Group }) {
       <Paper>
         <Box padding="1em">
           <Grid container spacing={1}>
-            <Grid container justifyContent="space-between" alignItems="stretch">
+            <Grid container sx={{ display: 'flex', justifyContent: 'space-between' }}>
               <Grid>
                 <Box
                   mb={2}
@@ -458,7 +458,7 @@ function ListView(props: { application: Application; group: Group }) {
                 />
               </Grid>
             </Grid>
-            <Box width="100%" borderTop={1} borderColor={'#E0E0E0'} className={classes.root}>
+            <Box width="100%" borderTop={1} borderColor={'#E0E0E0'} className={classes.mainTable}>
               <Grid
                 container
                 alignItems="stretch"
@@ -516,13 +516,15 @@ function ListView(props: { application: Application; group: Group }) {
               {!instanceFetchLoading ? (
                 instancesObj.instances.length > 0 ? (
                   <React.Fragment>
-                    <Table
-                      channel={group.channel}
-                      instances={instancesObj.instances}
-                      isDescSortOrder={isDescSortOrder}
-                      sortQuery={sortQuery}
-                      sortHandler={sortHandler}
-                    />
+                    <TableContainer component={Paper}>
+                      <Table
+                        channel={group.channel}
+                        instances={instancesObj.instances}
+                        isDescSortOrder={isDescSortOrder}
+                        sortQuery={sortQuery}
+                        sortHandler={sortHandler}
+                      />
+                    </TableContainer>
                     <TablePagination
                       rowsPerPageOptions={[10, 25, 50, 100]}
                       component="div"

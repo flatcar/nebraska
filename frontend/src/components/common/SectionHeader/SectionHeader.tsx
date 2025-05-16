@@ -13,19 +13,10 @@ import PageTitle from '../PageTitle/PageTitle';
 const PREFIX = 'SectionHeader';
 
 const classes = {
-  sectionContainer: `${PREFIX}-sectionContainer`,
   breadCrumbsItem: `${PREFIX}-breadCrumbsItem`,
 };
 
-const Root = styled('div')(({ theme }) => ({
-  [`& .${classes.sectionContainer}`]: {
-    padding: theme.spacing(1),
-    flexShrink: 1,
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-    display: 'inline-block',
-  },
-
+const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
   [`& .${classes.breadCrumbsItem}`]: {
     '& > a': {
       color: theme.palette.text.secondary,
@@ -46,16 +37,22 @@ export default function SectionHeader(props: SectionHeaderProps) {
   const { breadcrumbs, title } = props;
 
   return (
-    <Root>
+    <>
       <PageTitle title={title} />
       <Grid
         container
         alignItems="center"
         justifyContent="flex-start"
-        className={classes.sectionContainer}
+        sx={{
+          padding: theme => theme.spacing(1),
+          flexShrink: 1,
+          marginTop: theme => theme.spacing(1),
+          marginBottom: theme => theme.spacing(1),
+          display: 'inline-block',
+        }}
       >
         <Grid>
-          <Breadcrumbs
+          <StyledBreadcrumbs
             aria-label={t('common|breadcrumbs_label').toString()}
             separator={<NavigateNextIcon fontSize="small" />}
           >
@@ -81,9 +78,9 @@ export default function SectionHeader(props: SectionHeaderProps) {
                   );
               })}
             {title && <Typography color="textPrimary">{title}</Typography>}
-          </Breadcrumbs>
+          </StyledBreadcrumbs>
         </Grid>
       </Grid>
-    </Root>
+    </>
   );
 }

@@ -25,7 +25,7 @@ const classes = {
   link: `${PREFIX}-link`,
 };
 
-const Root = styled('div')({
+const StyledTableRow = styled(TableRow)({
   [`& .${classes.link}`]: {
     color: '#1b5c91',
   },
@@ -109,8 +109,8 @@ function Item(props: ItemProps) {
   const instanceName = props.instance.alias || props.instance.id;
 
   return (
-    <Root>
-      <TableRow>
+    <>
+      <StyledTableRow>
         <TableCell>
           <Link to={instancePath} component={RouterLink} className={classes.link} underline="hover">
             {instanceName}
@@ -137,7 +137,7 @@ function Item(props: ItemProps) {
             </Box>
           </Box>
         </TableCell>
-      </TableRow>
+      </StyledTableRow>
       <TableRow>
         <TableCell padding="none" colSpan={5}>
           <Collapse in={props.selected}>
@@ -145,7 +145,7 @@ function Item(props: ItemProps) {
           </Collapse>
         </TableCell>
       </TableRow>
-    </Root>
+    </>
   );
 }
 

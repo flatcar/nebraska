@@ -1,6 +1,5 @@
 import MuiList from '@mui/material/List';
 import Paper from '@mui/material/Paper';
-import { styled } from '@mui/material/styles';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import _ from 'underscore';
@@ -13,20 +12,6 @@ import Loader from '../common/Loader/Loader';
 import ModalButton from '../common/ModalButton';
 import GroupEditDialog from './GroupEditDialog';
 import GroupItem from './GroupItem';
-
-const PREFIX = 'GroupList';
-
-const classes = {
-  root: `${PREFIX}-root`,
-};
-
-const Root = styled('div')(() => ({
-  [`& .${classes.root}`]: {
-    '& > hr:first-child': {
-      display: 'none',
-    },
-  },
-}));
 
 export interface GroupListProps {
   appID: string;
@@ -101,7 +86,7 @@ function GroupList({ appID }: GroupListProps) {
       : null;
 
   return (
-    <Root>
+    <>
       <ListHeader
         title="Groups"
         actions={[
@@ -116,7 +101,15 @@ function GroupList({ appID }: GroupListProps) {
         ]}
       />
       <Paper>
-        <MuiList className={classes.root}>{entries}</MuiList>
+        <MuiList
+          sx={{
+            '& > hr:first-child': {
+              display: 'none',
+            },
+          }}
+        >
+          {entries}
+        </MuiList>
         {groupToUpdate && (
           <GroupEditDialog
             data={{ group: groupToUpdate, channels: channels, appID: appID }}
@@ -125,7 +118,7 @@ function GroupList({ appID }: GroupListProps) {
           />
         )}
       </Paper>
-    </Root>
+    </>
   );
 }
 
