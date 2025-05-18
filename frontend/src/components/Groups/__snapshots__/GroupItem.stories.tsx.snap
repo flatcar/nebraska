@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`groups/GroupItem Group smoke-test 1`] = `
-<li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider css-lieihf-MuiListItem-root"
+<li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider css-ndb4kr-MuiListItem-root"
     data-testid="list-item"
 >
   <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-d64g0g-MuiGrid-root">
@@ -183,7 +183,7 @@ exports[`groups/GroupItem Group smoke-test 1`] = `
 `;
 
 exports[`groups/GroupItem Loading smoke-test 1`] = `
-<li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider css-lieihf-MuiListItem-root"
+<li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider css-ndb4kr-MuiListItem-root"
     data-testid="list-item"
 >
   <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-d64g0g-MuiGrid-root">

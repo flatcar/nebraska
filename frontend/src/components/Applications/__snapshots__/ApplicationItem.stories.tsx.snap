@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`applications/ApplicationItem Application smoke-test 1`] = `
-<li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider ApplicationItem-root css-13t1jol-MuiListItem-root"
+<li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider ApplicationItem-root css-12bropj-MuiListItem-root"
     data-testid="list-item"
 >
   <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-d64g0g-MuiGrid-root">
@@ -191,7 +191,7 @@ exports[`applications/ApplicationItem Application smoke-test 1`] = `
 `;
 
 exports[`applications/ApplicationItem NoGroups smoke-test 1`] = `
-<li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider ApplicationItem-root css-13t1jol-MuiListItem-root"
+<li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider ApplicationItem-root css-12bropj-MuiListItem-root"
     data-testid="list-item"
 >
   <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-d64g0g-MuiGrid-root">

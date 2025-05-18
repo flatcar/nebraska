@@ -34,7 +34,7 @@ exports[`applications/ApplicationList Applications smoke-test 1`] = `
      style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
 >
   <ul class="MuiList-root MuiList-padding css-ny6vsp-MuiList-root">
-    <li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider ApplicationItem-root css-13t1jol-MuiListItem-root"
+    <li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider ApplicationItem-root css-12bropj-MuiListItem-root"
         data-testid="list-item"
     >
       <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-d64g0g-MuiGrid-root">
@@ -221,7 +221,7 @@ exports[`applications/ApplicationList Applications smoke-test 1`] = `
         </div>
       </div>
     </li>
-    <li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider ApplicationItem-root css-13t1jol-MuiListItem-root"
+    <li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider ApplicationItem-root css-12bropj-MuiListItem-root"
         data-testid="list-item"
     >
       <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-d64g0g-MuiGrid-root">
@@ -446,7 +446,7 @@ exports[`applications/ApplicationList EditOpen smoke-test 1`] = `
      style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
 >
   <ul class="MuiList-root MuiList-padding css-ny6vsp-MuiList-root">
-    <li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider ApplicationItem-root css-13t1jol-MuiListItem-root"
+    <li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider ApplicationItem-root css-12bropj-MuiListItem-root"
         data-testid="list-item"
     >
       <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-d64g0g-MuiGrid-root">
@@ -633,7 +633,7 @@ exports[`applications/ApplicationList EditOpen smoke-test 1`] = `
         </div>
       </div>
     </li>
-    <li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider ApplicationItem-root css-13t1jol-MuiListItem-root"
+    <li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider ApplicationItem-root css-12bropj-MuiListItem-root"
         data-testid="list-item"
     >
       <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-d64g0g-MuiGrid-root">
@@ -918,7 +918,7 @@ exports[`applications/ApplicationList SearchTerm smoke-test 1`] = `
      style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
 >
   <ul class="MuiList-root MuiList-padding css-ny6vsp-MuiList-root">
-    <li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider ApplicationItem-root css-13t1jol-MuiListItem-root"
+    <li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider ApplicationItem-root css-12bropj-MuiListItem-root"
         data-testid="list-item"
     >
       <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-d64g0g-MuiGrid-root">
