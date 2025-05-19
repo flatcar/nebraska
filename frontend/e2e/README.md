@@ -36,6 +36,24 @@ Run the test:
 npx playwright test e2e/example.spec.ts
 ```
 
+If you use podman, you might need to build the the image first
+
+```sh
+podman build --file ../Dockerfile --tag backend_server:local ../ && npx playwright test
+```
+
+Use the playwright flags to open the UI
+
+```sh
+npx playwright test --fully-parallel --ui
+```
+
+Update the snapshots with `-u`
+
+```sh
+npx playwright test --fully-parallel -u
+```
+
 ### 🔍 Debugging
 
 - Use `--debug` to pause execution.

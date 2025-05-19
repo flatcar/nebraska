@@ -40,7 +40,6 @@ export default function Main() {
 
   React.useEffect(() => {
     API.getConfig().then(config => {
-      console.debug('Got config', config);
       dispatch(setConfig(config));
     });
   }, [dispatch]);

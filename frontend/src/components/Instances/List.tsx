@@ -406,7 +406,10 @@ function ListView(props: { application: Application; group: Group }) {
       <Paper>
         <Box padding="1em">
           <Grid container spacing={1}>
-            <Grid container sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Grid
+              container
+              sx={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}
+            >
               <Grid>
                 <Box
                   mb={2}

@@ -365,7 +365,7 @@ function DetailsView(props: DetailsViewProps) {
                 {application && group && instance && (
                   <Grid container>
                     <Grid container size={12}>
-                      <Grid container>
+                      <Grid container sx={{ width: '100%' }}>
                         {hasAlias && (
                           <Grid size={12}>
                             <CardFeatureLabel>{t('instances|id')}</CardFeatureLabel>&nbsp;
