@@ -52,7 +52,7 @@
     "eventemitter3": "^5.0.1",
     "formik": "^2.4.6",
     "formik-mui": "^4.0.0",
-    "i18next": "^24.2.3",
+    "i18next": "^25.2.0",
     "i18next-browser-languagedetector": "^8.0.4",
     "jwt-decode": "^4.0.0",
     "moment-timezone": "^0.5.48",
