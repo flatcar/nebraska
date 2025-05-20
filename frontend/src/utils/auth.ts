@@ -1,6 +1,6 @@
 import { jwtDecode } from 'jwt-decode';
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 
 import { setUser, UserState } from '../stores/redux/features/user';
 import { useDispatch, useSelector } from '../stores/redux/hooks';

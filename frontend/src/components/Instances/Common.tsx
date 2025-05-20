@@ -2,7 +2,7 @@ import { Box, Link } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router';
 
 export function InstanceCountLabel(props: {
   countText: string | number;

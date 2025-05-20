@@ -19,7 +19,7 @@ import TablePagination from '@mui/material/TablePagination';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 import _ from 'underscore';
 
 import API from '../../api/API';

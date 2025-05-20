@@ -1,7 +1,7 @@
 import './i18n/config';
 
 import { Provider } from 'react-redux';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router';
 
 import Main from './components/Main';
 import store from './stores/redux/store';
