@@ -45,6 +45,7 @@ exports[`applications/ApplicationList Applications smoke-test 1`] = `
                 <h2 class="MuiTypography-root MuiTypography-h2 css-wqt949-MuiTypography-root">
                   <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-nlfr05-MuiTypography-root-MuiLink-root"
                      href="/apps/FFFF-AAAA-CCCC-EEEE"
+                     data-discover="true"
                   >
                     ABC
                   </a>
@@ -144,6 +145,7 @@ exports[`applications/ApplicationList Applications smoke-test 1`] = `
                     <div class="MuiBox-root css-126n10b">
                       <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-lv5yp2-MuiTypography-root-MuiLink-root"
                          href="/apps//groups/xxx-xxx-1"
+                         data-discover="true"
                       >
                         First group
                       </a>
@@ -151,6 +153,7 @@ exports[`applications/ApplicationList Applications smoke-test 1`] = `
                     <div class="MuiBox-root css-qiye2o">
                       <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-1mxnekj-MuiTypography-root-MuiLink-root"
                          href="/apps//groups/xxx-xxx-1/instances?period=1d"
+                         data-discover="true"
                       >
                         <div class="MuiBox-root css-k008qs">
                           <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
@@ -232,6 +235,7 @@ exports[`applications/ApplicationList Applications smoke-test 1`] = `
                 <h2 class="MuiTypography-root MuiTypography-h2 css-wqt949-MuiTypography-root">
                   <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-nlfr05-MuiTypography-root-MuiLink-root"
                      href="/apps/BBBB-AAAA-CCCC-EEEE"
+                     data-discover="true"
                   >
                     ABC 2 the return
                   </a>
@@ -331,6 +335,7 @@ exports[`applications/ApplicationList Applications smoke-test 1`] = `
                     <div class="MuiBox-root css-126n10b">
                       <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-lv5yp2-MuiTypography-root-MuiLink-root"
                          href="/apps//groups/xxx-xxx-1"
+                         data-discover="true"
                       >
                         First group
                       </a>
@@ -338,6 +343,7 @@ exports[`applications/ApplicationList Applications smoke-test 1`] = `
                     <div class="MuiBox-root css-qiye2o">
                       <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-1mxnekj-MuiTypography-root-MuiLink-root"
                          href="/apps//groups/xxx-xxx-1/instances?period=1d"
+                         data-discover="true"
                       >
                         <div class="MuiBox-root css-k008qs">
                           <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
@@ -457,6 +463,7 @@ exports[`applications/ApplicationList EditOpen smoke-test 1`] = `
                 <h2 class="MuiTypography-root MuiTypography-h2 css-wqt949-MuiTypography-root">
                   <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-nlfr05-MuiTypography-root-MuiLink-root"
                      href="/apps/FFFF-AAAA-CCCC-EEEE"
+                     data-discover="true"
                   >
                     ABC
                   </a>
@@ -556,6 +563,7 @@ exports[`applications/ApplicationList EditOpen smoke-test 1`] = `
                     <div class="MuiBox-root css-126n10b">
                       <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-lv5yp2-MuiTypography-root-MuiLink-root"
                          href="/apps//groups/xxx-xxx-1"
+                         data-discover="true"
                       >
                         First group
                       </a>
@@ -563,6 +571,7 @@ exports[`applications/ApplicationList EditOpen smoke-test 1`] = `
                     <div class="MuiBox-root css-qiye2o">
                       <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-1mxnekj-MuiTypography-root-MuiLink-root"
                          href="/apps//groups/xxx-xxx-1/instances?period=1d"
+                         data-discover="true"
                       >
                         <div class="MuiBox-root css-k008qs">
                           <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
@@ -644,6 +653,7 @@ exports[`applications/ApplicationList EditOpen smoke-test 1`] = `
                 <h2 class="MuiTypography-root MuiTypography-h2 css-wqt949-MuiTypography-root">
                   <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-nlfr05-MuiTypography-root-MuiLink-root"
                      href="/apps/BBBB-AAAA-CCCC-EEEE"
+                     data-discover="true"
                   >
                     ABC 2 the return
                   </a>
@@ -743,6 +753,7 @@ exports[`applications/ApplicationList EditOpen smoke-test 1`] = `
                     <div class="MuiBox-root css-126n10b">
                       <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-lv5yp2-MuiTypography-root-MuiLink-root"
                          href="/apps//groups/xxx-xxx-1"
+                         data-discover="true"
                       >
                         First group
                       </a>
@@ -750,6 +761,7 @@ exports[`applications/ApplicationList EditOpen smoke-test 1`] = `
                     <div class="MuiBox-root css-qiye2o">
                       <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-1mxnekj-MuiTypography-root-MuiLink-root"
                          href="/apps//groups/xxx-xxx-1/instances?period=1d"
+                         data-discover="true"
                       >
                         <div class="MuiBox-root css-k008qs">
                           <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
@@ -929,6 +941,7 @@ exports[`applications/ApplicationList SearchTerm smoke-test 1`] = `
                 <h2 class="MuiTypography-root MuiTypography-h2 css-wqt949-MuiTypography-root">
                   <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-nlfr05-MuiTypography-root-MuiLink-root"
                      href="/apps/BBBB-AAAA-CCCC-EEEE"
+                     data-discover="true"
                   >
                     ABC 2 the return
                   </a>
@@ -1028,6 +1041,7 @@ exports[`applications/ApplicationList SearchTerm smoke-test 1`] = `
                     <div class="MuiBox-root css-126n10b">
                       <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-lv5yp2-MuiTypography-root-MuiLink-root"
                          href="/apps//groups/xxx-xxx-1"
+                         data-discover="true"
                       >
                         First group
                       </a>
@@ -1035,6 +1049,7 @@ exports[`applications/ApplicationList SearchTerm smoke-test 1`] = `
                     <div class="MuiBox-root css-qiye2o">
                       <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-1mxnekj-MuiTypography-root-MuiLink-root"
                          href="/apps//groups/xxx-xxx-1/instances?period=1d"
+                         data-discover="true"
                       >
                         <div class="MuiBox-root css-k008qs">
                           <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"

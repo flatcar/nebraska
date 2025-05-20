@@ -10,7 +10,7 @@ const AppRoutes = function () {
   return (
     <Provider store={store}>
       <Routes>
-        <Route path="*" element={<Main />} />;
+        <Route path="*" element={<Main />} />
       </Routes>
     </Provider>
   );
