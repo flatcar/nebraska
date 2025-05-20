@@ -1,7 +1,7 @@
 import Grid from '@mui/material/Grid';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 import _ from 'underscore';
 
 import { applicationsStore } from '../../../stores/Stores';
@@ -33,6 +33,10 @@ function ApplicationLayout() {
 
   if (application) {
     appName = application.name;
+  }
+
+  if (!appID) {
+    return <Navigate to="/404" replace />;
   }
 
   return (

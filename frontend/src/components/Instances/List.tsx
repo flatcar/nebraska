@@ -19,7 +19,7 @@ import TablePagination from '@mui/material/TablePagination';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import _ from 'underscore';
 
 import API from '../../api/API';
@@ -171,7 +171,7 @@ function ListView(props: { application: Application; group: Group }) {
     searchValue?: string;
   }>({});
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   function getDuration() {
     return new URLSearchParams(location.search).get('period') || '1d';
@@ -214,7 +214,7 @@ function ListView(props: { application: Application; group: Group }) {
       }
     }
 
-    history.push({
+    navigate({
       pathname: pathname,
       search: searchParams.toString(),
     });
@@ -361,7 +361,7 @@ function ListView(props: { application: Application; group: Group }) {
 
   function searchHandler(e: React.ChangeEvent<{ value: string }>) {
     const value = e.target.value;
-    // This means user has reseted the input field, and now we need to fetch all the instances
+    // This means user has reset the input field, and now we need to fetch all the instances
     if (value === '') {
       handleInstanceFetch({});
     }
@@ -449,7 +449,7 @@ function ListView(props: { application: Application; group: Group }) {
                   onChange={searchHandler}
                   onKeyPress={handleSearchSubmit}
                   inputRef={searchInputRef}
-                  ariaLabel="Search"
+                  aria-label="Search"
                 />
               </Grid>
               <Grid>

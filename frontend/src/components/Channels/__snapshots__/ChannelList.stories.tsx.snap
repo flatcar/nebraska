@@ -34,7 +34,7 @@ exports[`channels/ChannelList FullList smoke-test 1`] = `
   <div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-iwweii-MuiPaper-root"
        style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
   >
-    <ul class="MuiList-root MuiList-padding MuiList-dense MuiList-subheader css-15utrvs-MuiList-root">
+    <ul class="MuiList-root MuiList-padding MuiList-dense MuiList-subheader css-15qugz6-MuiList-root">
       <li class="MuiListSubheader-root MuiListSubheader-gutters css-1pog06u-MuiListSubheader-root">
         AMD64
       </li>
@@ -315,7 +315,7 @@ exports[`channels/ChannelList FullList smoke-test 1`] = `
         </div>
       </li>
     </ul>
-    <ul class="MuiList-root MuiList-padding MuiList-dense MuiList-subheader css-15utrvs-MuiList-root">
+    <ul class="MuiList-root MuiList-padding MuiList-dense MuiList-subheader css-15qugz6-MuiList-root">
       <li class="MuiListSubheader-root MuiListSubheader-gutters css-1pog06u-MuiListSubheader-root">
         ARM64
       </li>

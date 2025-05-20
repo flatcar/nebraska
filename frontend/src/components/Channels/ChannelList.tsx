@@ -53,7 +53,7 @@ function Channels(props: { channels: null | Channel[]; onEdit: (channelId: strin
           subheader={<ListSubheader disableSticky>{ARCHES[parseInt(arch)]}</ListSubheader>}
           dense
           sx={{
-            '& > hr:first-child': {
+            '& > hr:first-of-type': {
               display: 'none',
             },
           }}

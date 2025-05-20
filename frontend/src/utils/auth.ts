@@ -1,6 +1,6 @@
 import { jwtDecode } from 'jwt-decode';
 import React from 'react';
-import { useHistory } from 'react-router';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { setUser, UserState } from '../stores/redux/features/user';
 import { useDispatch, useSelector } from '../stores/redux/hooks';
@@ -58,22 +58,26 @@ export function useAuthRedirect() {
   const config = useSelector(state => state.config);
   const user = useSelector(state => state.user);
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  function shouldUpdateUser(token: string) {
-    const newInfo = getUserInfoFromToken(token);
+  const shouldUpdateUser = React.useCallback(
+    (token: string) => {
+      const newInfo = getUserInfoFromToken(token);
 
-    for (const [key, value] of Object.entries(newInfo)) {
-      if (user[key] !== value) {
-        return true;
+      for (const [key, value] of Object.entries(newInfo)) {
+        if (user[key] !== value) {
+          return true;
+        }
       }
-    }
 
-    return false;
-  }
+      return false;
+    },
+    [user]
+  );
 
   React.useEffect(() => {
-    const params = new URLSearchParams(history.location.search);
+    const params = new URLSearchParams(location.search);
     // We only do the login dance if the auth mode is OIDC
     if (config.auth_mode !== 'oidc') {
       return;
@@ -84,7 +88,7 @@ export function useAuthRedirect() {
       setToken(token);
       // Discard the URL search params
       dispatch(setUser({ authenticated: true }));
-      history.push(history.location.pathname);
+      navigate(location.pathname);
       return;
     }
 
@@ -102,5 +106,5 @@ export function useAuthRedirect() {
       window.location.href =
         config.login_url + '?login_redirect_url=' + login_redirect_url.toString();
     }
-  }, [history, user, config]);
+  }, [navigate, location, user, config, dispatch, shouldUpdateUser]);
 }
