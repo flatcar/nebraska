@@ -3,7 +3,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Link from '@mui/material/Link';
 import { visuallyHidden } from '@mui/utils';
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
 import API from '../api/API';
 import ThemeProviderNexti18n from '../i18n/ThemeProviderNexti18n';
@@ -52,23 +52,19 @@ export default function Main() {
       <SkipLink />
       <Header />
       <Container component="main" id="main" sx={{ paddingTop: '0.52rem' }}>
-        <Switch>
-          <Route path="/" exact component={MainLayout} />
-          <Route path="/apps" exact component={MainLayout} />
-          <Route path="/apps/:appID" exact component={ApplicationLayout} />
-          <Route path="/apps/:appID/groups/:groupID" exact component={GroupLayout} />
-          <Route
-            path="/apps/:appID/groups/:groupID/instances"
-            exact
-            component={InstanceListLayout}
-          />
+        <Routes>
+          <Route path="/" element={<MainLayout />} />
+          <Route path="/apps" element={<MainLayout />} />
+          <Route path="/apps/:appID" element={<ApplicationLayout />} />
+          <Route path="/apps/:appID/groups/:groupID" element={<GroupLayout />} />
+          <Route path="/apps/:appID/groups/:groupID/instances" element={<InstanceListLayout />} />
           <Route
             path="/apps/:appID/groups/:groupID/instances/:instanceID"
-            exact
-            component={InstanceLayout}
+            element={<InstanceLayout />}
           />
-          <Route path="*" component={PageNotFoundLayout} />
-        </Switch>
+          <Route path="/404" element={<PageNotFoundLayout />} />
+          <Route path="*" element={<PageNotFoundLayout />} />
+        </Routes>
         <Footer />
       </Container>
     </ThemeProviderNexti18n>

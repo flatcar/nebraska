@@ -123,7 +123,7 @@ export function ApplicationListPure(props: ApplicationListPureProps) {
       <Paper>
         <List
           sx={{
-            '& > hr:first-child': {
+            '& > hr:first-of-type': {
               display: 'none',
             },
           }}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 import _ from 'underscore';
 
 import { Channel, Group } from '../../../api/apiDataTypes';
@@ -18,12 +18,15 @@ function GroupLayout() {
   const { t } = useTranslation();
 
   React.useEffect(() => {
+    if (!appID) {
+      return;
+    }
     applicationsStore().getApplication(appID);
     applicationsStore().addChangeListener(onChange);
     return () => {
       applicationsStore().removeChangeListener(onChange);
     };
-  }, []);
+  }, [appID]);
 
   function onChange() {
     setApplications(applicationsStore().getCachedApplications() || []);
@@ -55,6 +58,10 @@ function GroupLayout() {
   }
 
   const groupToUpdate = _.findWhere(groups, { id: groupID });
+
+  if (!appID || !groupID) {
+    return <Navigate to="/404" replace />;
+  }
 
   return (
     <div>
