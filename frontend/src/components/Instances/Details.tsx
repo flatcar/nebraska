@@ -25,7 +25,7 @@ import { Field, Form, Formik, FormikHelpers, FormikProps } from 'formik';
 import { TextField } from 'formik-mui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router';
 import * as Yup from 'yup';
 
 import API from '../../api/API';

@@ -3,7 +3,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Link from '@mui/material/Link';
 import { visuallyHidden } from '@mui/utils';
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router';
 
 import API from '../api/API';
 import ThemeProviderNexti18n from '../i18n/ThemeProviderNexti18n';

@@ -8,7 +8,7 @@ import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/material/styles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 import _ from 'underscore';
 
 import API from '../../api/API';

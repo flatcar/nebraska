@@ -5,7 +5,7 @@ import ListItem from '@mui/material/ListItem';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router';
 
 import { Activity } from '../../api/apiDataTypes';
 import { toLocaleString } from '../../i18n/dateTime';

@@ -11,7 +11,7 @@ import Tabs from '@mui/material/Tabs';
 import { Form, Formik } from 'formik';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import * as Yup from 'yup';
 
 import { Group } from '../../../api/apiDataTypes';
