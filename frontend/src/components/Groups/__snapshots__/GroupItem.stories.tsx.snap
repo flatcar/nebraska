@@ -12,6 +12,7 @@ exports[`groups/GroupItem Group smoke-test 1`] = `
             <h2 class="MuiTypography-root MuiTypography-h2 css-wqt949-MuiTypography-root">
               <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-nlfr05-MuiTypography-root-MuiLink-root"
                  href="/apps/e96281a6-d1af-4bde-9a0a-97b76e56dc57/groups/11a585f6-9418-4df0-8863-78b2fd3240f8"
+                 data-discover="true"
               >
                 Stable (ARM)
               </a>
@@ -194,6 +195,7 @@ exports[`groups/GroupItem Loading smoke-test 1`] = `
             <h2 class="MuiTypography-root MuiTypography-h2 css-wqt949-MuiTypography-root">
               <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-nlfr05-MuiTypography-root-MuiLink-root"
                  href="/apps/e96281a6-d1af-4bde-9a0a-97b76e56dc57/groups/11a585f6-9418-4df0-8863-78b2fd3240f8"
+                 data-discover="true"
               >
                 Stable (ARM)
               </a>

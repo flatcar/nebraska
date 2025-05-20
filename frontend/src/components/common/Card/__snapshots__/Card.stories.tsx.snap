@@ -21,6 +21,7 @@ exports[`Card Header smoke-test 1`] = `
       <h2 class="MuiTypography-root MuiTypography-h2 css-wqt949-MuiTypography-root">
         <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-nlfr05-MuiTypography-root-MuiLink-root"
            href="/apps/123"
+           data-discover="true"
         >
           Flatcar
         </a>
@@ -160,6 +161,7 @@ exports[`Card HeaderWithLink smoke-test 1`] = `
       <h2 class="MuiTypography-root MuiTypography-h2 css-wqt949-MuiTypography-root">
         <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-nlfr05-MuiTypography-root-MuiLink-root"
            href="/apps/123"
+           data-discover="true"
         >
           Flatcar
         </a>
