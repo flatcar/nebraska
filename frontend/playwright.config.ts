@@ -5,6 +5,8 @@ import { loadEnv } from 'vite';
 export const ENV_DIR = './';
 Object.assign(process.env, loadEnv('', ENV_DIR));
 
+console.log('CI=', process.env.CI);
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -23,8 +25,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   timeout: 120_000,
   use: {
-    /* Base URL to use in actions like `await page.goto('/')`. */
-    // baseURL: 'http://127.0.0.1:3000',
+    baseURL: process.env.CI ? 'http://127.0.0.1:8002' : 'http://localhost:3000',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -51,12 +52,12 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: {
+  webServer: process.env.CI ? {
     command: 'cd ../backend && docker compose -f docker-compose.test.yaml up && docker ps -a',
     url: 'http://127.0.0.1:8002', // Replace with the URL of your service
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 200_000,
-  },
+  } : undefined,
   expect: {
     toHaveScreenshot: {
       stylePath: './e2e/mask-and-fix-dynamic-parts.css',
