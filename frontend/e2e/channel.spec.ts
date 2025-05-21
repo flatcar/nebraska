@@ -17,7 +17,7 @@ test.describe('Channels', () => {
     appName = 'Test app' + appNameSalt;
     appId = 'io.test.app.' + appNameSalt;
 
-    await page.goto('http://localhost:8002/');
+    await page.goto('/');
     await createApplication(page, appName, appId);
 
     await expect(page.getByRole('list')).toContainText(appName);
@@ -29,12 +29,12 @@ test.describe('Channels', () => {
     await createPackage(page, '5439.0.0');
     await createPackage(page, '87.194.0');
 
-    await page.goto('http://localhost:8002/');
+    await page.goto('/');
     await page.getByRole('link', { name: appName }).click();
   });
 
   test.afterEach(async ({ page }) => {
-    await page.goto('http://localhost:8002/');
+    await page.goto('/');
 
     await deleteApplication(page, appName);
 

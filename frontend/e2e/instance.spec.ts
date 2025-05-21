@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 test.describe('Instances', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:8002/');
+    await page.goto('/');
   });
 
   test('Application should have an instance', async ({ page }) => {
@@ -64,23 +64,26 @@ test.describe('Instances', () => {
     await expect(page.locator('#main')).toContainText('Downloading');
     await expect(page.locator('#main')).toContainText('Granted');
 
-    await page.getByLabel('Search', { exact: true }).click();
-    await page.getByLabel('Search', { exact: true }).fill('89');
-    await page.getByLabel('Search', { exact: true }).press('Enter');
+    const searchInput = page.locator('div[aria-label="Search"]').getByRole('textbox');
+
+    await searchInput.click();
+    await searchInput.fill('89');
+    await searchInput.press('Enter');
 
     await expect(page.locator('#main')).toContainText('0/1');
 
-    await page.getByLabel('Search', { exact: true }).click();
-    await page.getByLabel('Search', { exact: true }).fill('4081');
-    await page.getByLabel('Search', { exact: true }).press('Enter');
-    await page.getByLabel('Search', { exact: true }).fill('517');
-    await page.getByLabel('Search', { exact: true }).press('Enter');
+    await searchInput.click();
+    await searchInput.fill('4081');
+    await searchInput.press('Enter');
+    await searchInput.fill('517');
+    await searchInput.press('Enter');
 
     await expect(page.locator('tbody')).toContainText('2c517ad881474ec6b5ab928df2a7b5f4');
 
     await page.getByRole('link', { name: '2c517ad881474ec6b5ab928df2a7b5f4' }).click();
 
-    // mask elements that are: cells where we can find timedate values, and nebraska version at the bottom
+    // mask elements that are: cells where we can find timedate values,
+    // and nebraska version at the bottom
     await expect(page).toHaveScreenshot('instance-info.png', {
       mask: [
         page.locator('//*[contains(text(), "/")]'),
