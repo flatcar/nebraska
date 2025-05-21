@@ -32,7 +32,7 @@
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^6.4.11",
     "@mui/material": "^6.4.11",
-    "@mui/styled-engine-sc": "^6.4.9",
+    "@mui/styled-engine-sc": "^7.1.0",
     "@mui/styles": "^6.4.11",
     "@mui/system": "^6.4.11",
     "@mui/utils": "^6.4.9",
