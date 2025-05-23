@@ -19,7 +19,7 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
   return (
     <div style={{ padding: '1rem' }}>
       <Grid container spacing={2} justifyContent="center">
-        <Grid item xs={8}>
+        <Grid size={8}>
           <Field
             name="name"
             component={TextField}
@@ -34,7 +34,7 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
             }}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid size={4}>
           <FormControl margin="dense" fullWidth>
             <InputLabel variant="standard" shrink>
               {t('groups|channel')}
@@ -60,7 +60,7 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
             </Field>
           </FormControl>
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Field
             name="track"
             component={TextField}
@@ -74,7 +74,7 @@ export default function GroupDetailsForm(props: GroupDetailsFormProps) {
             }}
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Field
             name="description"
             component={TextField}

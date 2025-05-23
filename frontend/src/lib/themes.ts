@@ -4,7 +4,7 @@ import React from 'react';
 
 const DISABLE_BROWSER_THEME_PREF = true;
 
-declare module '@mui/material/styles/createPalette' {
+declare module '@mui/material/styles' {
   interface Palette {
     titleColor: '#000000';
     lightSilverShade: '#F0F0F0';
@@ -28,6 +28,11 @@ const lightTheme = createTheme({
     MuiTextField: {
       defaultProps: {
         variant: 'standard',
+      },
+    },
+    MuiAppBar: {
+      styleOverrides: {
+        root: { '--AppBar-background': '#fff' },
       },
     },
   },
@@ -77,6 +82,13 @@ const lightTheme = createTheme({
 
 const darkTheme = createTheme({
   ...lightTheme,
+  components: {
+    MuiAppBar: {
+      styleOverrides: {
+        root: { '--AppBar-background': '#000' },
+      },
+    },
+  },
   palette: {
     mode: 'dark',
     primary: {

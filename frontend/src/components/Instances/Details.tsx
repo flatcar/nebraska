@@ -1,7 +1,6 @@
 import chevronDown from '@iconify/icons-mdi/chevron-down';
 import chevronUp from '@iconify/icons-mdi/chevron-up';
 import { InlineIcon } from '@iconify/react';
-import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button, { ButtonProps } from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
@@ -14,13 +13,14 @@ import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
+import { styled } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import { makeStyles, useTheme } from '@mui/styles';
 import { Field, Form, Formik, FormikHelpers, FormikProps } from 'formik';
 import { TextField } from 'formik-mui';
 import React from 'react';
@@ -45,44 +45,30 @@ import Loader from '../common/Loader/Loader';
 import MoreMenu from '../common/MoreMenu/MoreMenu';
 import makeStatusDefs from './StatusDefs';
 
-const useDetailsStyles = makeStyles((theme: Theme) => ({
-  timelineContainer: {
+const PREFIX = 'DetailsView';
+
+const classes = {
+  timelineContainer: `${PREFIX}-timelineContainer`,
+  divider: `${PREFIX}-divider`,
+  link: `${PREFIX}-link`,
+};
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  [`& .${classes.timelineContainer}`]: {
     maxHeight: '700px',
     overflow: 'auto',
   },
-  divider: {
+
+  [`& .${classes.divider}`]: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
   },
-  link: {
+
+  [`& .${classes.link}`]: {
     fontSize: '1rem',
     color: '#1b5c91',
   },
 }));
-
-const useRowStyles = makeStyles((theme: Theme) => ({
-  statusExplanation: {
-    padding: theme.spacing(2),
-  },
-  root: {
-    '& .MuiTableCell-root': {
-      padding: '0.5rem',
-    },
-  },
-}));
-
-const useStatusStyles = makeStyles({
-  statusButton: {
-    textTransform: 'unset',
-    verticalAlign: 'bottom',
-  },
-  // Align text with icon
-  statusText: {
-    display: 'inline',
-    verticalAlign: 'bottom',
-    lineHeight: '30px',
-  },
-});
 
 interface StatusLabelProps {
   status: Instance['statusInfo'];
@@ -91,8 +77,8 @@ interface StatusLabelProps {
 }
 
 function StatusLabel(props: StatusLabelProps) {
-  const classes = useStatusStyles();
-  const statusDefs = makeStatusDefs(useTheme());
+  const theme = useTheme();
+  const statusDefs = makeStatusDefs(theme);
   const { t } = useTranslation();
 
   const { status, activated } = props;
@@ -102,7 +88,14 @@ function StatusLabel(props: StatusLabelProps) {
     <span>
       {/* If there is no onClick passed to it, then we're not a button */}
       {props.onClick ? (
-        <Button size="small" onClick={props.onClick} className={classes.statusButton}>
+        <Button
+          size="small"
+          onClick={props.onClick}
+          sx={{
+            textTransform: 'unset',
+            verticalAlign: 'bottom',
+          }}
+        >
           <Box
             bgcolor={status?.bgColor}
             color={status?.textColor}
@@ -120,7 +113,15 @@ function StatusLabel(props: StatusLabelProps) {
           />
         </Button>
       ) : (
-        <Typography className={classes.statusText}>{label}</Typography>
+        <Typography
+          sx={{
+            display: 'inline',
+            verticalAlign: 'bottom',
+            lineHeight: '30px',
+          }}
+        >
+          {label}
+        </Typography>
       )}
     </span>
   );
@@ -131,7 +132,6 @@ interface StatusRow {
 }
 
 function StatusRow(props: StatusRow) {
-  const classes = useRowStyles();
   const { entry } = props;
   const time = makeLocaleTime(entry.created_ts);
   const status = getInstanceStatus(entry.status, entry.version);
@@ -148,7 +148,13 @@ function StatusRow(props: StatusRow) {
 
   return (
     <React.Fragment>
-      <TableRow className={classes.root}>
+      <TableRow
+        sx={{
+          '& .MuiTableCell-root': {
+            padding: '0.5rem',
+          },
+        }}
+      >
         <TableCell>
           <StatusLabel onClick={onStatusClick} activated={!collapsed} status={status} />
         </TableCell>
@@ -158,7 +164,11 @@ function StatusRow(props: StatusRow) {
       <TableRow>
         <TableCell padding="none" colSpan={3}>
           <Collapse in={!collapsed}>
-            <Typography className={classes.statusExplanation}>
+            <Typography
+              sx={{
+                padding: theme => theme.spacing(2),
+              }}
+            >
               {status.explanation}
               {extendedErrorLabel && (
                 <>
@@ -292,8 +302,7 @@ interface DetailsViewProps {
 }
 
 function DetailsView(props: DetailsViewProps) {
-  const classes = useDetailsStyles();
-  const theme = useTheme<Theme>();
+  const theme = useTheme();
   const { application, group, instance, onInstanceUpdated } = props;
   const [eventHistory, setEventHistory] = React.useState<InstanceStatusHistory[] | null>(null);
   const [showEdit, setShowEdit] = React.useState(false);
@@ -325,17 +334,17 @@ function DetailsView(props: DetailsViewProps) {
   return (
     <>
       <ListHeader title={t('instances|instance_information')} />
-      <Paper>
+      <StyledPaper>
         <Box p={2}>
           <Grid container spacing={1}>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Grid container justifyContent="space-between">
-                <Grid item>
+                <Grid>
                   <Box fontWeight={700} fontSize={30} color={theme.palette.greyShadeColor}>
                     {instance.alias || instance.id}
                   </Box>
                 </Grid>
-                <Grid item>
+                <Grid>
                   <MoreMenu
                     options={[
                       {
@@ -347,45 +356,49 @@ function DetailsView(props: DetailsViewProps) {
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item md>
+            <Grid
+              size={{
+                md: 'grow',
+              }}
+            >
               <Box mt={2}>
                 {application && group && instance && (
                   <Grid container>
-                    <Grid item xs={12} container>
-                      <Grid item container>
+                    <Grid container size={12}>
+                      <Grid container sx={{ width: '100%' }}>
                         {hasAlias && (
-                          <Grid item xs={12}>
+                          <Grid size={12}>
                             <CardFeatureLabel>{t('instances|id')}</CardFeatureLabel>&nbsp;
                             <Box mt={1} mb={1}>
                               <CardLabel>{instance.id}</CardLabel>
                             </Box>
                           </Grid>
                         )}
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                           <CardFeatureLabel>{t('instances|ip')}</CardFeatureLabel>
                           <Box mt={1}>
                             <CardLabel>{instance.ip}</CardLabel>
                           </Box>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                           <CardFeatureLabel>{t('instances|version')}</CardFeatureLabel>
                           <Box mt={1}>
                             <CardLabel>{instance.application.version}</CardLabel>
                           </Box>
                         </Grid>
                       </Grid>
-                      <Grid item xs={12}>
+                      <Grid size={12}>
                         <Divider className={classes.divider} />
                       </Grid>
 
-                      <Grid item xs={12} container>
-                        <Grid item xs={6}>
+                      <Grid container size={12}>
+                        <Grid size={6}>
                           <CardFeatureLabel>{t('instances|status')}</CardFeatureLabel>
                           <Box mt={1}>
                             <StatusLabel status={instance.statusInfo} />
                           </Box>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                           <CardFeatureLabel>{t('instances|last_update_check')}</CardFeatureLabel>
                           <Box mt={1}>
                             <CardLabel>
@@ -395,11 +408,11 @@ function DetailsView(props: DetailsViewProps) {
                         </Grid>
                       </Grid>
 
-                      <Grid item xs={12}>
+                      <Grid size={12}>
                         <Divider className={classes.divider} />
                       </Grid>
-                      <Grid item xs={12} container>
-                        <Grid item xs={6}>
+                      <Grid container size={12}>
+                        <Grid size={6}>
                           <CardFeatureLabel>{t('instances|application')}</CardFeatureLabel>
                           <Box mt={1}>
                             <Link
@@ -412,7 +425,7 @@ function DetailsView(props: DetailsViewProps) {
                             </Link>
                           </Box>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                           <CardFeatureLabel>{t('instances|group')}</CardFeatureLabel>
                           <Box mt={1}>
                             <Link
@@ -427,7 +440,7 @@ function DetailsView(props: DetailsViewProps) {
                         </Grid>
                       </Grid>
 
-                      <Grid item xs={12}>
+                      <Grid size={12}>
                         <Box mt={2}>
                           <CardFeatureLabel>{t('instances|channel')}</CardFeatureLabel>&nbsp;
                           {group.channel ? (
@@ -445,7 +458,11 @@ function DetailsView(props: DetailsViewProps) {
             <Box width="1%">
               <Divider orientation="vertical" variant="fullWidth" />
             </Box>
-            <Grid item md>
+            <Grid
+              size={{
+                md: 'grow',
+              }}
+            >
               <Box mt={2} fontSize={18} fontWeight={700} color={theme.palette.greyShadeColor}>
                 {t('instances|event_timeline')}
                 {eventHistory ? (
@@ -461,7 +478,7 @@ function DetailsView(props: DetailsViewProps) {
             </Grid>
           </Grid>
         </Box>
-      </Paper>
+      </StyledPaper>
       <EditDialog show={showEdit} onHide={onEditHide} instance={instance} />
     </>
   );

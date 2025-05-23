@@ -10,7 +10,7 @@ import Grid from '@mui/material/Grid';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import MuiSelect, { SelectChangeEvent } from '@mui/material/Select';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import { Field, Form, Formik } from 'formik';
 import { TextField } from 'formik-mui';
 import React from 'react';
@@ -24,8 +24,14 @@ import { ARCHES } from '../../utils/helpers';
 import AutoCompletePicker from '../common/AutoCompletePicker';
 import ColorPicker from '../common/ColorPicker';
 
-const useStyles = makeStyles({
-  nameField: {
+const PREFIX = 'ChannelEdit';
+
+const classes = {
+  nameField: `${PREFIX}-nameField`,
+};
+
+const StyledDialog = styled(Dialog)({
+  [`& .${classes.nameField}`]: {
     width: '15rem',
   },
 });
@@ -40,7 +46,6 @@ export interface ChannelEditProps {
 }
 
 export default function ChannelEdit(props: ChannelEditProps) {
-  const classes = useStyles();
   const { t } = useTranslation();
   const defaultColor = '';
   const [channelColor, setChannelColor] = React.useState(defaultColor);
@@ -177,13 +182,13 @@ export default function ChannelEdit(props: ChannelEditProps) {
             alignItems="center"
             wrap="nowrap"
           >
-            <Grid item>
+            <Grid>
               <ColorPicker color={channelColor} onColorPicked={color => setChannelColor(color.hex)}>
                 {values.name ? values.name[0] : ''}
               </ColorPicker>
             </Grid>
-            <Grid item container alignItems="flex-start" spacing={2}>
-              <Grid item className={classes.nameField}>
+            <Grid container alignItems="flex-start" spacing={2}>
+              <Grid className={classes.nameField}>
                 <Field
                   name="name"
                   component={TextField}
@@ -287,7 +292,11 @@ export default function ChannelEdit(props: ChannelEditProps) {
   }
 
   return (
-    <Dialog open={props.show} onClose={() => props.onHide()} aria-labelledby="form-dialog-title">
+    <StyledDialog
+      open={props.show}
+      onClose={() => props.onHide()}
+      aria-labelledby="form-dialog-title"
+    >
       <DialogTitle>
         {isCreation ? t('channels|add_new_channel') : t('channels|edit_channel')}
       </DialogTitle>
@@ -296,6 +305,6 @@ export default function ChannelEdit(props: ChannelEditProps) {
         {/* @ts-expect-error as type mismatch */}
         {renderForm}
       </Formik>
-    </Dialog>
+    </StyledDialog>
   );
 }

@@ -2,18 +2,22 @@ import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { Theme, useTheme } from '@mui/material/styles';
-import createStyles from '@mui/styles/createStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    formControl: {
-      margin: theme.spacing(2),
-    },
-  })
-);
+const PREFIX = 'LocaleSelect';
+
+const classes = {
+  formControl: `${PREFIX}-formControl`,
+};
+
+const StyledFormControl = styled(FormControl)(({ theme }) => ({
+  [`&.${classes.formControl}`]: {
+    margin: theme.spacing(2),
+  },
+}));
+
 export interface LocaleSelectProps {
   showTitle?: boolean;
 }
@@ -22,8 +26,6 @@ export interface LocaleSelectProps {
  * A UI for selecting the locale with i18next
  */
 export default function LocaleSelect(props: LocaleSelectProps) {
-  const classes = useStyles();
-
   const { t, i18n } = useTranslation('frequent');
   const theme = useTheme();
 
@@ -36,7 +38,7 @@ export default function LocaleSelect(props: LocaleSelectProps) {
   };
 
   return (
-    <FormControl className={classes.formControl}>
+    <StyledFormControl className={classes.formControl}>
       {props.showTitle && <FormLabel component="legend">{t('Select locale')}</FormLabel>}
       <Select
         value={i18n.language ? i18n.language : 'en'}
@@ -48,6 +50,6 @@ export default function LocaleSelect(props: LocaleSelectProps) {
             .filter(lng => lng !== 'cimode')
             .map(lng => <MenuItem value={lng}>{lng}</MenuItem>)}
       </Select>
-    </FormControl>
+    </StyledFormControl>
   );
 }

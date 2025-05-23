@@ -5,9 +5,9 @@ import { Box } from '@mui/material';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
+import { styled } from '@mui/material/styles';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import makeStyles from '@mui/styles/makeStyles';
 import React, { PropsWithChildren } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import semver from 'semver';
@@ -19,6 +19,18 @@ import { makeLocaleTime } from '../../i18n/dateTime';
 import { cleanSemverVersion } from '../../utils/helpers';
 import StatusHistoryContainer from './StatusHistoryContainer';
 
+const PREFIX = 'Item';
+
+const classes = {
+  link: `${PREFIX}-link`,
+};
+
+const StyledTableRow = styled(TableRow)({
+  [`& .${classes.link}`]: {
+    color: '#1b5c91',
+  },
+});
+
 const TableLabel = function (props: PropsWithChildren<{ bgColor?: string; textColor?: string }>) {
   return (
     <Box bgcolor={props.bgColor} color={props.textColor} display="inline-block" py={1} px={2}>
@@ -26,12 +38,6 @@ const TableLabel = function (props: PropsWithChildren<{ bgColor?: string; textCo
     </Box>
   );
 };
-
-const useStyles = makeStyles({
-  link: {
-    color: '#1b5c91',
-  },
-});
 
 interface ItemProps {
   instance: Instance;
@@ -43,7 +49,7 @@ interface ItemProps {
 
 function Item(props: ItemProps) {
   const { instance, selected, lastVersionChannel, versionNumbers } = props;
-  const classes = useStyles();
+
   const date = instance.application.last_check_for_updates;
   const statusDescription = instance.statusInfo?.description;
   const instanceLabel = instance.statusInfo?.className ? (
@@ -103,8 +109,8 @@ function Item(props: ItemProps) {
   const instanceName = props.instance.alias || props.instance.id;
 
   return (
-    <React.Fragment>
-      <TableRow>
+    <>
+      <StyledTableRow>
         <TableCell>
           <Link to={instancePath} component={RouterLink} className={classes.link} underline="hover">
             {instanceName}
@@ -131,7 +137,7 @@ function Item(props: ItemProps) {
             </Box>
           </Box>
         </TableCell>
-      </TableRow>
+      </StyledTableRow>
       <TableRow>
         <TableCell padding="none" colSpan={5}>
           <Collapse in={props.selected}>
@@ -139,7 +145,7 @@ function Item(props: ItemProps) {
           </Collapse>
         </TableCell>
       </TableRow>
-    </React.Fragment>
+    </>
   );
 }
 

@@ -3,10 +3,10 @@
 exports[`List Search > should render correct ListSearch 1`] = `
 <DocumentFragment>
   <div
-    class="makeStyles-container-1"
+    class="ListSearch-container css-a1y0db"
   >
     <div
-      class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-colorPrimary makeStyles-input-2 css-swlut5-MuiInputBase-root-MuiInput-root"
+      class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-colorPrimary ListSearch-input css-swlut5-MuiInputBase-root-MuiInput-root"
     >
       <input
         aria-label="undefined"

@@ -3,7 +3,6 @@ import { Box, Grid, Tooltip, useTheme } from '@mui/material';
 import ListItem from '@mui/material/ListItem';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
-import makeStyles from '@mui/styles/makeStyles';
 import { useTranslation } from 'react-i18next';
 
 import { Channel } from '../../api/apiDataTypes';
@@ -12,12 +11,6 @@ import { applicationsStore } from '../../stores/Stores';
 import { ARCHES, cleanSemverVersion } from '../../utils/helpers';
 import MoreMenu from '../common/MoreMenu';
 import ChannelAvatar from './ChannelAvatar';
-
-const useStyles = makeStyles({
-  root: {
-    margin: '0px',
-  },
-});
 
 export interface ChannelItemProps {
   channel: Channel;
@@ -31,7 +24,6 @@ export interface ChannelItemProps {
 
 export default function ChannelItem(props: ChannelItemProps) {
   const theme = useTheme();
-  const classes = useStyles();
   const { t } = useTranslation();
   const { channel, showArch = true, isAppView = false, onChannelUpdate = null, ...others } = props;
   const name = channel.name;
@@ -93,14 +85,14 @@ export default function ChannelItem(props: ChannelItemProps) {
   return (
     <ListItem component="div" {...others}>
       <Grid container spacing={2}>
-        <Grid item>
+        <Grid>
           {isAppView ? (
             <ChannelAvatar color={channel.color} size={theme.spacing(1)} />
           ) : (
             <ChannelAvatar color={channel.color}>{name[0]}</ChannelAvatar>
           )}
         </Grid>
-        <Grid item>
+        <Grid>
           <ListItemText
             primary={
               <Box display="flex" alignItems="center">
@@ -110,7 +102,9 @@ export default function ChannelItem(props: ChannelItemProps) {
               </Box>
             }
             secondary={getSecondaryText()}
-            className={classes.root}
+            sx={{
+              margin: '0px',
+            }}
             disableTypography
           />
         </Grid>

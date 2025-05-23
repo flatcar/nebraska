@@ -3,7 +3,7 @@ import { createTheme, StyledEngineProvider, Theme, ThemeProvider } from '@mui/ma
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-declare module '@mui/styles/defaultTheme' {
+declare module '@mui/material/styles' {
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface DefaultTheme extends Theme {}
 }

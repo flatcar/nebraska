@@ -1,18 +1,22 @@
 import MuiListItem from '@mui/material/ListItem';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 
-const useStyles = makeStyles({
-  divider: {
+const PREFIX = 'ListItem';
+
+const classes = {
+  divider: `${PREFIX}-divider`,
+};
+
+const StyledMuiListItem = styled(MuiListItem)({
+  [`&.${classes.divider}`]: {
     borderBottom: '2px solid rgba(0, 0, 0, 0.12)',
   },
 });
 
 export default function ListItem(props: { children: React.ReactNode; [key: string]: any }) {
-  const classes = useStyles();
-
   return (
-    <MuiListItem
+    <StyledMuiListItem
       classes={{
         divider: classes.divider,
       }}

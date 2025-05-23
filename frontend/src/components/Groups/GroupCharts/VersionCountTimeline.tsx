@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { useTheme } from '@mui/styles';
+import { useTheme } from '@mui/material/styles';
 import React from 'react';
 import semver from 'semver';
 
@@ -184,7 +184,7 @@ export default function VersionCountTimeline(props: VersionCountTimelineProps) {
 
   return (
     <Grid container alignItems="center" spacing={2}>
-      <Grid item xs={12}>
+      <Grid size={12}>
         {timelineChartData.data.length > 0 ? (
           <TimelineChart
             {...timelineChartData}
@@ -195,8 +195,8 @@ export default function VersionCountTimeline(props: VersionCountTimelineProps) {
           <Loader />
         )}
       </Grid>
-      <Grid item xs={12} container>
-        <Grid item xs={12}>
+      <Grid container size={12}>
+        <Grid size={12}>
           <Box width={500}>
             {timelineChartData.data.length > 0 ? (
               selectedEntry !== -1 ? (
@@ -220,7 +220,7 @@ export default function VersionCountTimeline(props: VersionCountTimelineProps) {
             ) : null}
           </Box>
         </Grid>
-        <Grid item xs={11}>
+        <Grid size={11}>
           {timelineChartData.data.length > 0 && (
             <SimpleTable
               emptyMessage="No data to show for this time point."

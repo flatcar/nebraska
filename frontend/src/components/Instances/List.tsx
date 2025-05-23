@@ -1,7 +1,7 @@
 import infoIcon from '@iconify/icons-mdi/information-circle-outline';
 import searchIcon from '@iconify/icons-mdi/search';
 import { Icon } from '@iconify/react';
-import { Theme } from '@mui/material';
+import { TableContainer, Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
@@ -13,9 +13,9 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { styled } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import TablePagination from '@mui/material/TablePagination';
-import { useTheme } from '@mui/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -41,14 +41,20 @@ import { InstanceCountLabel } from './Common';
 import makeStatusDefs from './StatusDefs';
 import Table from './Table';
 
-// The indexes for the sorting names match the backend index for that criteria as well.
-const SORT_ORDERS = ['asc', 'desc'];
+const PREFIX = 'ListView';
 
-const useStyles = makeStyles(theme => ({
-  root: {
+const classes = {
+  mainTable: `${PREFIX}-mainTable`,
+};
+
+const Root = styled('div')(({ theme }) => ({
+  [`& .${classes.mainTable}`]: {
     backgroundColor: theme.palette.lightSilverShade,
   },
 }));
+
+// The indexes for the sorting names match the backend index for that criteria as well.
+const SORT_ORDERS = ['asc', 'desc'];
 
 interface InstanceFilterProps {
   versions: any[];
@@ -78,7 +84,7 @@ function InstanceFilter(props: InstanceFilterProps) {
   return (
     <Box pr={2}>
       <Grid container spacing={2} justifyContent="flex-end">
-        <Grid item xs={5}>
+        <Grid size={5}>
           <FormControl fullWidth disabled={props.disabled}>
             <InputLabel variant="standard" htmlFor="select-status" shrink>
               {t('instances|filter_status')}
@@ -106,7 +112,7 @@ function InstanceFilter(props: InstanceFilterProps) {
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={5}>
+        <Grid size={5}>
           <FormControl fullWidth disabled={props.disabled}>
             <InputLabel variant="standard" htmlFor="select-versions" shrink>
               {t('instances|filter_version')}
@@ -139,7 +145,6 @@ function InstanceFilter(props: InstanceFilterProps) {
 }
 
 function ListView(props: { application: Application; group: Group }) {
-  const classes = useStyles();
   const theme = useTheme();
   const { t } = useTranslation();
   const statusDefs = makeStatusDefs(useTheme());
@@ -396,13 +401,16 @@ function ListView(props: { application: Application; group: Group }) {
   const searchInputRef = React.createRef<HTMLInputElement>();
 
   return (
-    <>
+    <Root>
       <ListHeader title={t('instances|instance_list')} />
       <Paper>
         <Box padding="1em">
           <Grid container spacing={1}>
-            <Grid item container justifyContent="space-between" alignItems="stretch">
-              <Grid item>
+            <Grid
+              container
+              sx={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}
+            >
+              <Grid>
                 <Box
                   mb={2}
                   color={(theme as Theme).palette.greyShadeColor}
@@ -412,7 +420,7 @@ function ListView(props: { application: Application; group: Group }) {
                   {group.name}
                 </Box>
               </Grid>
-              <Grid item>
+              <Grid>
                 <InputLabel variant="standard" htmlFor="instance-search-filter" shrink>
                   {t('frequent|search')}
                 </InputLabel>
@@ -444,7 +452,7 @@ function ListView(props: { application: Application; group: Group }) {
                   ariaLabel="Search"
                 />
               </Grid>
-              <Grid item>
+              <Grid>
                 <TimeIntervalLinks
                   intervalChangeHandler={duration => addQuery({ period: duration.queryValue })}
                   selectedInterval={getDuration()}
@@ -453,16 +461,31 @@ function ListView(props: { application: Application; group: Group }) {
                 />
               </Grid>
             </Grid>
-            <Box width="100%" borderTop={1} borderColor={'#E0E0E0'} className={classes.root}>
-              <Grid item container md={12} alignItems="stretch" justifyContent="space-between">
-                <Grid item md>
+            <Box width="100%" borderTop={1} borderColor={'#E0E0E0'} className={classes.mainTable}>
+              <Grid
+                container
+                alignItems="stretch"
+                justifyContent="space-between"
+                size={{
+                  md: 12,
+                }}
+              >
+                <Grid
+                  size={{
+                    md: 'grow',
+                  }}
+                >
                   <Box display="flex" alignItems="center">
                     <Box ml={2}>
                       <InstanceCountLabel countText={getInstanceCount()} instanceListView />
                     </Box>
                   </Box>
                 </Grid>
-                <Grid item md>
+                <Grid
+                  size={{
+                    md: 'grow',
+                  }}
+                >
                   <Box mt={2}>
                     <InstanceFilter
                       versions={versionBreakdown}
@@ -474,25 +497,37 @@ function ListView(props: { application: Application; group: Group }) {
               </Grid>
             </Box>
             {isFiltered() && (
-              <Grid item md={12} container justifyContent="center">
-                <Grid item>
+              <Grid
+                container
+                justifyContent="center"
+                size={{
+                  md: 12,
+                }}
+              >
+                <Grid>
                   <Button variant="outlined" color="secondary" onClick={resetFilters}>
                     {t('instances|reset_filters')}
                   </Button>
                 </Grid>
               </Grid>
             )}
-            <Grid item md={12}>
+            <Grid
+              size={{
+                md: 12,
+              }}
+            >
               {!instanceFetchLoading ? (
                 instancesObj.instances.length > 0 ? (
                   <React.Fragment>
-                    <Table
-                      channel={group.channel}
-                      instances={instancesObj.instances}
-                      isDescSortOrder={isDescSortOrder}
-                      sortQuery={sortQuery}
-                      sortHandler={sortHandler}
-                    />
+                    <TableContainer component={Paper}>
+                      <Table
+                        channel={group.channel}
+                        instances={instancesObj.instances}
+                        isDescSortOrder={isDescSortOrder}
+                        sortQuery={sortQuery}
+                        sortHandler={sortHandler}
+                      />
+                    </TableContainer>
                     <TablePagination
                       rowsPerPageOptions={[10, 25, 50, 100]}
                       component="div"
@@ -519,7 +554,7 @@ function ListView(props: { application: Application; group: Group }) {
           </Grid>
         </Box>
       </Paper>
-    </>
+    </Root>
   );
 }
 

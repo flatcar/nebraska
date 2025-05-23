@@ -3,22 +3,21 @@ import { Box } from '@mui/material';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
+import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router-dom';
 
 import PageTitle from '../PageTitle/PageTitle';
 
-const useStyles = makeStyles(theme => ({
-  sectionContainer: {
-    padding: theme.spacing(1),
-    flexShrink: 1,
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-    display: 'inline-block',
-  },
-  breadCrumbsItem: {
+const PREFIX = 'SectionHeader';
+
+const classes = {
+  breadCrumbsItem: `${PREFIX}-breadCrumbsItem`,
+};
+
+const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
+  [`& .${classes.breadCrumbsItem}`]: {
     '& > a': {
       color: theme.palette.text.secondary,
     },
@@ -34,7 +33,6 @@ interface SectionHeaderProps {
 }
 
 export default function SectionHeader(props: SectionHeaderProps) {
-  const classes = useStyles();
   const { t } = useTranslation();
   const { breadcrumbs, title } = props;
 
@@ -45,10 +43,16 @@ export default function SectionHeader(props: SectionHeaderProps) {
         container
         alignItems="center"
         justifyContent="flex-start"
-        className={classes.sectionContainer}
+        sx={{
+          padding: theme => theme.spacing(1),
+          flexShrink: 1,
+          marginTop: theme => theme.spacing(1),
+          marginBottom: theme => theme.spacing(1),
+          display: 'inline-block',
+        }}
       >
-        <Grid item>
-          <Breadcrumbs
+        <Grid>
+          <StyledBreadcrumbs
             aria-label={t('common|breadcrumbs_label').toString()}
             separator={<NavigateNextIcon fontSize="small" />}
           >
@@ -74,7 +78,7 @@ export default function SectionHeader(props: SectionHeaderProps) {
                   );
               })}
             {title && <Typography color="textPrimary">{title}</Typography>}
-          </Breadcrumbs>
+          </StyledBreadcrumbs>
         </Grid>
       </Grid>
     </>

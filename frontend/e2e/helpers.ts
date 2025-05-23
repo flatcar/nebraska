@@ -1,4 +1,5 @@
 import { Page } from '@playwright/test';
+import { expect } from '@playwright/test';
 import * as crypto from 'crypto';
 
 export function generateSalt(testName: string): string {
@@ -87,8 +88,19 @@ export async function createChannel(
   packageVersion?: string
 ) {
   await page.getByTestId('modal-button').nth(1).click();
+
+  await page.getByTestId('icon-button').click();
+  await page.getByTitle('#9900EF').click({ clickCount: 2 });
+  await page.getByTitle('#9900EF').press('Escape');
+
+  await expect(page.getByTestId('icon-button').locator('div')).toHaveCSS(
+    'background-color',
+    'rgb(153, 0, 239)'
+  );
+
   await page.locator('input[name="name"]').click();
   await page.locator('input[name="name"]').fill(channelName);
+
   if (architecture) {
     // await page.click('div[role = "combobox"] >> text=ARM64');
     await page.getByTestId('channel-edit-form').getByText('AMD64').click();

@@ -1,8 +1,7 @@
 import { IconifyIcon, InlineIcon } from '@iconify/react';
-import { Theme } from '@mui/material';
 import Grid from '@mui/material/Grid';
+import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import { makeStyles, useTheme } from '@mui/styles';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Cell, Label, Pie, PieChart } from 'recharts';
@@ -12,20 +11,6 @@ import LightTooltip from '../common/LightTooltip';
 import Loader from '../common/Loader';
 import { InstanceCountLabel } from './Common';
 import makeStatusDefs from './StatusDefs';
-
-interface DoughnutLabelProps {
-  color: string;
-  labelSize: string;
-}
-
-const useStyles = makeStyles((theme: Theme) => ({
-  doughnutLabel: ({ color, labelSize }: DoughnutLabelProps) => ({
-    fontSize: labelSize,
-    color: color || theme.palette.text.secondary,
-    display: 'inline',
-    boxShadow: 'none',
-  }),
-}));
 
 interface ProgressData {
   value: number;
@@ -56,8 +41,7 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
   const [activeIndex, setActiveIndex] = React.useState(-1);
   const iconSize = '1.1rem';
 
-  const classes = useStyles({ color: color, labelSize: iconSize });
-  const theme = useTheme<Theme>();
+  const theme = useTheme();
 
   const pieSize = width > height ? height : width;
   const radius = pieSize * 0.45;
@@ -98,7 +82,7 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
 
   return (
     <Grid container direction="column" justifyContent="center" alignItems="center">
-      <Grid item>
+      <Grid>
         <PieChart width={width} height={height}>
           <Pie
             data={dataSet}
@@ -143,13 +127,13 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
           </Pie>
         </PieChart>
       </Grid>
-      <Grid item container alignItems="center" justifyContent="center" spacing={1}>
+      <Grid container alignItems="center" justifyContent="center" spacing={1}>
         {icon && (
-          <Grid item>
+          <Grid>
             <InlineIcon icon={icon} color={color} width={iconSize} height={iconSize} />
           </Grid>
         )}
-        <Grid item>
+        <Grid>
           <LightTooltip title={getTooltipText() || mainTooltipText} open={showTooltip}>
             <Typography
               onMouseOver={() => {
@@ -158,7 +142,12 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
               onMouseOut={() => {
                 setShowTooltip(false);
               }}
-              className={classes.doughnutLabel}
+              sx={{
+                fontSize: iconSize,
+                color: theme => color || theme.palette.text.secondary,
+                display: 'inline',
+                boxShadow: 'none',
+              }}
             >
               {label}
             </Typography>
@@ -189,7 +178,7 @@ interface InstanceStatusCount {
 }
 
 export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
-  const theme = useTheme<Theme>();
+  const theme = useTheme();
   const statusDefs = makeStatusDefs(theme);
   const { t } = useTranslation();
 
@@ -238,10 +227,10 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
 
   return totalInstances > 0 ? (
     <Grid container justifyContent="space-between" alignItems="center">
-      <Grid item xs={4}>
+      <Grid size={4}>
         <InstanceCountLabel countText={totalInstances} href={href} />
       </Grid>
-      <Grid item container justifyContent="space-between" xs={8}>
+      <Grid container justifyContent="space-between" size={8}>
         {instanceStateCount.map(({ status, count }, i) => {
           // Sort the data entries so the smaller amounts are shown first.
           count.sort((obj1, obj2) => {
@@ -253,7 +242,7 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
           });
 
           return (
-            <Grid item key={i}>
+            <Grid key={i}>
               <ProgressDoughnut
                 data={count.map(({ key, label = status }) => {
                   const statusLabel = statusDefs[label].label;

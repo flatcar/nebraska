@@ -13,25 +13,28 @@ export default function InstanceListLayout() {
   const [application, setApplication] = React.useState(
     applicationsStore().getCachedApplication(appID)
   );
+  const getGroupFromApplication = React.useCallback(
+    (app: Application | null) => {
+      if (!app) {
+        return null;
+      }
+      const group = app.groups.find(({ id }) => id === groupID);
+      return group || null;
+    },
+    [groupID]
+  );
+
   const [group, setGroup] = React.useState<Group | null>(getGroupFromApplication(application));
   const { t } = useTranslation();
 
-  function onChange() {
+  const onChange = React.useCallback(() => {
     const apps = applicationsStore().getCachedApplications() || [];
     const app = apps.find(({ id }) => id === appID) || null;
     if (app !== application) {
       setApplication(app);
       setGroup(getGroupFromApplication(app));
     }
-  }
-
-  function getGroupFromApplication(app: Application | null) {
-    if (!app) {
-      return null;
-    }
-    const group = app.groups.find(({ id }) => id === groupID);
-    return group || null;
-  }
+  }, [appID, application, getGroupFromApplication]);
 
   React.useEffect(() => {
     applicationsStore().addChangeListener(onChange);
@@ -40,7 +43,7 @@ export default function InstanceListLayout() {
     return function cleanup() {
       applicationsStore().removeChangeListener(onChange);
     };
-  }, []);
+  }, [appID, onChange]);
 
   const applicationName = application ? application.name : '…';
   const groupName = group ? group.name : '…';

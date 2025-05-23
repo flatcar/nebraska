@@ -1,6 +1,5 @@
 import MuiList from '@mui/material/List';
 import Paper from '@mui/material/Paper';
-import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import _ from 'underscore';
@@ -14,20 +13,11 @@ import ModalButton from '../common/ModalButton';
 import GroupEditDialog from './GroupEditDialog';
 import GroupItem from './GroupItem';
 
-const useStyles = makeStyles(() => ({
-  root: {
-    '& > hr:first-child': {
-      display: 'none',
-    },
-  },
-}));
-
 export interface GroupListProps {
   appID: string;
 }
 
 function GroupList({ appID }: GroupListProps) {
-  const classes = useStyles();
   const { t } = useTranslation();
   const [application, setApplication] = React.useState(
     applicationsStore().getCachedApplication(appID)
@@ -111,7 +101,15 @@ function GroupList({ appID }: GroupListProps) {
         ]}
       />
       <Paper>
-        <MuiList className={classes.root}>{entries}</MuiList>
+        <MuiList
+          sx={{
+            '& > hr:first-child': {
+              display: 'none',
+            },
+          }}
+        >
+          {entries}
+        </MuiList>
         {groupToUpdate && (
           <GroupEditDialog
             data={{ group: groupToUpdate, channels: channels, appID: appID }}

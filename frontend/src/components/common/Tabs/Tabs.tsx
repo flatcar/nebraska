@@ -1,15 +1,8 @@
 import MuiTab from '@mui/material/Tab';
 import MuiTabs from '@mui/material/Tabs';
 import Typography, { TypographyProps } from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-
-const useStyle = makeStyles(() => ({
-  tab: {
-    minWidth: 150, // allows 8 tabs to show like on pods
-  },
-}));
 
 function a11yProps(index: number) {
   return {
@@ -38,7 +31,6 @@ export default function Tabs(props: TabsProps) {
   const [tabIndex, setTabIndex] = React.useState<TabsProps['defaultIndex']>(
     defaultIndex && Math.min(defaultIndex as number, 0)
   );
-  const classes = useStyle();
   const { t } = useTranslation('glossary');
 
   function handleTabChange(_event: any, newValue: number) {
@@ -74,7 +66,13 @@ export default function Tabs(props: TabsProps) {
           <MuiTab
             key={i}
             label={label}
-            className={tabs?.length > 7 ? classes.tab : ''}
+            sx={
+              tabs?.length > 7
+                ? {
+                    minWidth: 150,
+                  }
+                : undefined
+            }
             {...a11yProps(i)}
           />
         ))}

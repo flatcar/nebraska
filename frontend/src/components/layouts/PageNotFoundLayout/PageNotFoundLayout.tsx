@@ -16,7 +16,7 @@ export default function PageNotFoundLayout() {
       justifyContent="center"
       style={{ minHeight: '100vh', textAlign: 'center' }}
     >
-      <Grid item xs={6}>
+      <Grid size={6}>
         <img src={pageNotFoundGraphic} alt="page not found 404" style={{ maxWidth: '100%' }} />
         <Typography variant="h1" style={{ fontSize: '1.875rem' }}>
           {t('missing|error_page_not_found')}

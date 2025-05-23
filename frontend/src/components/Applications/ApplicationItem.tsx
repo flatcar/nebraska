@@ -1,7 +1,7 @@
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import { Box, Divider, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 
 import { Group } from '../../api/apiDataTypes';
@@ -11,11 +11,18 @@ import ListItem from '../common/ListItem';
 import MoreMenu from '../common/MoreMenu';
 import ApplicationItemGroupsList from './ApplicationItemGroupsList';
 
-const useStyles = makeStyles({
-  root: {
+const PREFIX = 'ApplicationItem';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  itemSection: `${PREFIX}-itemSection`,
+};
+
+const StyledListItem = styled(ListItem)({
+  [`&.${classes.root}`]: {
     padding: '0px 8px',
   },
-  itemSection: {
+  [`& .${classes.itemSection}`]: {
     padding: '0 1em',
   },
 });
@@ -31,14 +38,13 @@ export interface ApplicationItemProps {
 }
 
 export default function ApplicationItem(props: ApplicationItemProps) {
-  const classes = useStyles();
   const { t } = useTranslation();
   const { description, groups, numberOfInstances, id, productId, name } = props;
 
   return (
-    <ListItem className={classes.root}>
+    <StyledListItem className={classes.root}>
       <Grid container>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <CardHeader
             cardMainLinkLabel={name}
             cardMainLinkPath={{ pathname: `/apps/${id}` }}
@@ -64,9 +70,9 @@ export default function ApplicationItem(props: ApplicationItemProps) {
             />
           </CardHeader>
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Grid container className={classes.itemSection} spacing={0}>
-            <Grid item xs={4}>
+            <Grid size={4}>
               <Box mt={2}>
                 <CardFeatureLabel>{t('applications|instances_title')}</CardFeatureLabel>
                 <CardLabel>
@@ -87,7 +93,7 @@ export default function ApplicationItem(props: ApplicationItemProps) {
             <Box width="1%">
               <Divider orientation="vertical" variant="fullWidth" />
             </Box>
-            <Grid item xs={7}>
+            <Grid size={7}>
               <Box mt={2} p={1}>
                 <CardFeatureLabel>{t('frequent|groups')}</CardFeatureLabel>
                 <Box display="inline-block" pl={2}>
@@ -101,6 +107,6 @@ export default function ApplicationItem(props: ApplicationItemProps) {
           </Grid>
         </Grid>
       </Grid>
-    </ListItem>
+    </StyledListItem>
   );
 }

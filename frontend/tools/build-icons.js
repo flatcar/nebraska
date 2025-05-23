@@ -37,7 +37,19 @@ console.log(`Found ${collection.length} icons`);
 collection.forEach(async ({ svg, name }) => {
   try {
     cleanupSVG(svg);
-    runSVGO(svg);
+    runSVGO(svg, {
+      plugins: [
+        { name: 'preset-default' },
+        // then drop any unwanted attributes in one go
+        {
+          name: 'removeAttrs',
+          // attrs is a regexp: here we strip stroke, stroke-width and fill-opacity
+          params: { attrs: '(stroke|stroke-width|fill-opacity)' }
+        },
+        // nuke any leftover <style> blocks:
+        { name: 'removeStyleElement' },
+      ],
+    });
 
     const body = svg.getBody();
     const width = svg.getIcon().width;

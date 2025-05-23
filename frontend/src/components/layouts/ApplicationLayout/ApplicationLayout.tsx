@@ -47,15 +47,25 @@ function ApplicationLayout() {
         ]}
       />
       <Grid container spacing={1} justifyContent="space-between">
-        <Grid item xs={12} sm={8}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 8,
+          }}
+        >
           <GroupList appID={appID} />
         </Grid>
-        <Grid item xs={12} sm={4}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 4,
+          }}
+        >
           <Grid container direction="column" alignItems="stretch" spacing={2}>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <ChannelList appID={appID} />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <PackagesList appID={appID} />
             </Grid>
           </Grid>

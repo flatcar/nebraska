@@ -46,7 +46,7 @@ test.describe('Packages', () => {
     await page.evaluate(() => window.scrollTo(0, 0));
     await expect(page).toHaveScreenshot('empty-application-before-package-creation.png', {
       fullPage: true,
-      maxDiffPixels: 350,
+      maxDiffPixels: 250,
     });
 
     await page

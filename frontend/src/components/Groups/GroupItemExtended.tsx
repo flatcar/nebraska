@@ -4,8 +4,8 @@ import { Divider } from '@mui/material';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
+import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -24,14 +24,24 @@ import StatusCountTimeline from './GroupCharts/StatusCountTimeline';
 import VersionCountTimeline from './GroupCharts/VersionCountTimeline';
 import { formatUpdateLimits } from './GroupItem';
 
-const useStyles = makeStyles(theme => ({
-  link: {
+const PREFIX = 'ItemExtended';
+
+const classes = {
+  link: `${PREFIX}-link`,
+  instancesChartPaper: `${PREFIX}-instancesChartPaper`,
+  success: `${PREFIX}-success`,
+};
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  [`& .${classes.link}`]: {
     fontSize: '1rem',
   },
-  instancesChartPaper: {
+
+  [`& .${classes.instancesChartPaper}`]: {
     height: '100%',
   },
-  success: {
+
+  [`& .${classes.success}`]: {
     color: theme.palette.success.main,
   },
 }));
@@ -54,7 +64,7 @@ function ItemExtended(props: {
   const [statusChartDuration, setStatusChartDuration] = React.useState(defaultTimeInterval);
   const location = useLocation();
   const history = useHistory();
-  const classes = useStyles();
+
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -144,9 +154,9 @@ function ItemExtended(props: {
   }, [group, updateProgressChartDuration]);
 
   return (
-    <Paper>
+    <StyledPaper>
       <Grid container alignItems="stretch" justifyContent="space-between">
-        <Grid item xs={12}>
+        <Grid size={12}>
           <CardHeader
             cardMainLinkLabel={group ? group.name : '…'}
             cardId={group ? group.id : '…'}
@@ -163,13 +173,13 @@ function ItemExtended(props: {
             />
           </CardHeader>
         </Grid>
-        <Grid item xs={4}>
+        <Grid size={4}>
           <Grid container>
             {group && (
-              <Grid item xs={12}>
+              <Grid size={12}>
                 <Box p={2}>
                   <Grid container direction="column" justifyContent="space-between">
-                    <Grid item>
+                    <Grid>
                       <CardFeatureLabel>{t('groups|channel')}</CardFeatureLabel>
                       {_.isEmpty(group.channel) ? (
                         <Box my={1}>
@@ -179,7 +189,7 @@ function ItemExtended(props: {
                         <ChannelItem channel={group.channel} />
                       )}
                     </Grid>
-                    <Grid item>
+                    <Grid>
                       <CardFeatureLabel>{t('frequent|updates')}</CardFeatureLabel>
                       <Box my={1}>
                         <CardLabel>
@@ -203,7 +213,7 @@ function ItemExtended(props: {
                         </CardLabel>
                       </Box>
                     </Grid>
-                    <Grid item>
+                    <Grid>
                       <CardFeatureLabel>{t('groups|office_hours_only')}</CardFeatureLabel>
                       <Box my={1}>
                         <CardLabel>
@@ -211,7 +221,7 @@ function ItemExtended(props: {
                         </CardLabel>
                       </Box>
                     </Grid>
-                    <Grid item>
+                    <Grid>
                       <CardFeatureLabel>{t('groups|safe_mode')}</CardFeatureLabel>
                       <Box my={1}>
                         <CardLabel>
@@ -219,13 +229,13 @@ function ItemExtended(props: {
                         </CardLabel>
                       </Box>
                     </Grid>
-                    <Grid item>
+                    <Grid>
                       <CardFeatureLabel>{t('groups|updates_policy')}</CardFeatureLabel>
                       <Box my={1}>
                         <CardLabel>{formatUpdateLimits(t, group)}</CardLabel>
                       </Box>
                     </Grid>
-                    <Grid item>
+                    <Grid>
                       <CardFeatureLabel>{t('groups|updates_timeout')}</CardFeatureLabel>
                       <Box my={1}>
                         <CardLabel>{group.policy_update_timeout}</CardLabel>
@@ -240,17 +250,17 @@ function ItemExtended(props: {
         <Box>
           <Divider orientation="vertical" />
         </Box>
-        <Grid item xs={7}>
+        <Grid size={7}>
           <Box mt={1} ml={-3}>
             {group && (
               <>
                 <Grid container alignItems="center" justifyContent="space-between" spacing={2}>
-                  <Grid item>
+                  <Grid>
                     <Box color={theme.palette.greyShadeColor} fontSize={18} fontWeight={700}>
                       {t('groups|update_progress')}
                     </Box>
                   </Grid>
-                  <Grid item>
+                  <Grid>
                     <Box m={2}>
                       <TimeIntervalLinks
                         intervalChangeHandler={duration =>
@@ -277,21 +287,28 @@ function ItemExtended(props: {
             )}
           </Box>
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Divider variant="fullWidth" />
         </Grid>
         {instancesStats && instancesStats.total > 0 && (
-          <Grid item xs={12} container>
-            <Grid item md xs={12} container direction="column">
+          <Grid container size={12}>
+            <Grid
+              container
+              direction="column"
+              size={{
+                md: 'grow',
+                xs: 12,
+              }}
+            >
               <Grid container alignItems="center" justifyContent="space-between">
-                <Grid item>
+                <Grid>
                   <Box pl={4} pt={4}>
                     <Box fontSize={18} fontWeight={700} color={theme.palette.greyShadeColor}>
                       {t('groups|version_breakdown')}
                     </Box>
                   </Box>
                 </Grid>
-                <Grid item>
+                <Grid>
                   <Box pt={4} pr={2}>
                     <TimeIntervalLinks
                       intervalChangeHandler={duration =>
@@ -311,9 +328,16 @@ function ItemExtended(props: {
             <Box width="1%">
               <Divider orientation="vertical" />
             </Box>
-            <Grid item md xs={12} container direction="column">
+            <Grid
+              container
+              direction="column"
+              size={{
+                md: 'grow',
+                xs: 12,
+              }}
+            >
               <Grid container alignItems="center" justifyContent="space-between">
-                <Grid item>
+                <Grid>
                   <Box
                     pl={2}
                     color={theme.palette.greyShadeColor}
@@ -324,7 +348,7 @@ function ItemExtended(props: {
                     {t('groups|status_breakdown')}
                   </Box>
                 </Grid>
-                <Grid item>
+                <Grid>
                   <Box pt={4} pr={2}>
                     <TimeIntervalLinks
                       intervalChangeHandler={duration =>
@@ -344,7 +368,7 @@ function ItemExtended(props: {
           </Grid>
         )}
       </Grid>
-    </Paper>
+    </StyledPaper>
   );
 }
 

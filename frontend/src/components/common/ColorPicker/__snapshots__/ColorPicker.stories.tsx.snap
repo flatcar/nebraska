@@ -1,14 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ColorPickerButton Closed smoke-test 1`] = `
-<div>
-  <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeLarge stable-makeStyles-iconButton-1 css-154kngp-MuiButtonBase-root-MuiIconButton-root"
+<div class="css-1t32mh7">
+  <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeLarge ColorPicker-iconButton css-154kngp-MuiButtonBase-root-MuiIconButton-root"
           tabindex="0"
           type="button"
           data-testid="icon-button"
   >
-    <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-2 stable-makeStyles-colorAvatar-3 css-jmdkhx-MuiAvatar-root">
-      <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-2 stable-makeStyles-colorAvatar-4 css-jmdkhx-MuiAvatar-root">
+    <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-1mo2r65-MuiAvatar-root">
+      <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-1yqfavt-MuiAvatar-root">
         Beta
       </div>
     </div>
@@ -17,14 +17,14 @@ exports[`ColorPickerButton Closed smoke-test 1`] = `
 `;
 
 exports[`ColorPickerButton Open smoke-test 1`] = `
-<div>
-  <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeLarge stable-makeStyles-iconButton-5 css-154kngp-MuiButtonBase-root-MuiIconButton-root"
+<div class="css-1t32mh7">
+  <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeLarge ColorPicker-iconButton css-154kngp-MuiButtonBase-root-MuiIconButton-root"
           tabindex="0"
           type="button"
           data-testid="icon-button"
   >
-    <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-6 stable-makeStyles-colorAvatar-7 css-jmdkhx-MuiAvatar-root">
-      <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-6 stable-makeStyles-colorAvatar-8 css-jmdkhx-MuiAvatar-root">
+    <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-1mo2r65-MuiAvatar-root">
+      <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-1yqfavt-MuiAvatar-root">
         Beta
       </div>
     </div>

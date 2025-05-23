@@ -1,38 +1,38 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`applications/ApplicationItem Application smoke-test 1`] = `
-<li class="MuiListItem-root MuiListItem-padding MuiListItem-divider stable-makeStyles-divider-20 stable-makeStyles-root-18 css-7y9j02-MuiListItem-root"
+<li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider ApplicationItem-root css-12bropj-MuiListItem-root"
     data-testid="list-item"
 >
-  <div class="MuiGrid-root MuiGrid-container css-11lq3yg-MuiGrid-root">
-    <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
-      <div class="MuiGrid-root MuiGrid-container stable-makeStyles-gridHeader-21 css-1xzqqmo-MuiGrid-root">
-        <div class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-1 css-8wqwjn-MuiGrid-root">
-          <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+  <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-d64g0g-MuiGrid-root">
+    <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
+      <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-rk1ovi-MuiGrid-root">
+        <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-1 css-1h67b43-MuiGrid-root">
+          <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
             <h2 class="MuiTypography-root MuiTypography-h2 css-wqt949-MuiTypography-root">
-              <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover stable-makeStyles-mainLink-23 css-1tr280c-MuiTypography-root-MuiLink-root"
+              <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-nlfr05-MuiTypography-root-MuiLink-root"
                  href="/apps/123"
               >
                 ABC
               </a>
             </h2>
           </div>
-          <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+          <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
             <div class="MuiBox-root css-1yq8yj7">
-              <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap stable-makeStyles-idLabel-26 css-10i0fr3-MuiTypography-root"
+              <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap css-1i0hvgs-MuiTypography-root"
                  arial-label="group-id"
               >
                 xxx-xxx-yyy
               </p>
             </div>
             <div class="MuiBox-root css-1yuhvjn">
-              <span class="MuiTypography-root MuiTypography-body1 stable-makeStyles-descriptionLabel-25 css-12h6qye-MuiTypography-root">
+              <span class="MuiTypography-root MuiTypography-body1 css-1cs8bct-MuiTypography-root">
                 App Item Description
               </span>
             </div>
           </div>
         </div>
-        <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+        <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
           <div>
             <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-geyil9-MuiButtonBase-root-MuiIconButton-root"
                     tabindex="0"
@@ -55,16 +55,16 @@ exports[`applications/ApplicationItem Application smoke-test 1`] = `
           </div>
         </div>
       </div>
-      <hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light stable-makeStyles-innerDivider-27 css-cwcxuo-MuiDivider-root">
+      <hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light css-e5zbmt-MuiDivider-root">
     </div>
-    <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
-      <div class="MuiGrid-root MuiGrid-container stable-makeStyles-itemSection-19 css-11lq3yg-MuiGrid-root">
-        <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4 css-gj1fbr-MuiGrid-root">
+    <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
+      <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row ApplicationItem-itemSection css-d64g0g-MuiGrid-root">
+        <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-4 css-1oxte1b-MuiGrid-root">
           <div class="MuiBox-root css-1yuhvjn">
-            <span class="MuiTypography-root MuiTypography-body1 stable-makeStyles-featureLabel-24 css-12h6qye-MuiTypography-root">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
               INSTANCES
             </span>
-            <span class="MuiTypography-root MuiTypography-body1 stable-makeStyles-label-28 stable-makeStyles-label-32 css-12h6qye-MuiTypography-root">
+            <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
               <h5 class="MuiTypography-root MuiTypography-h5 css-optum0-MuiTypography-root">
                 1
               </h5>
@@ -96,27 +96,27 @@ exports[`applications/ApplicationItem Application smoke-test 1`] = `
           >
           </div>
         </div>
-        <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-7 css-uqwprf-MuiGrid-root">
+        <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-7 css-1k6bf5n-MuiGrid-root">
           <div class="MuiBox-root css-10wfmn8">
-            <span class="MuiTypography-root MuiTypography-body1 stable-makeStyles-featureLabel-24 css-12h6qye-MuiTypography-root">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
               Groups
             </span>
             <div class="MuiBox-root css-1t04ftt">
-              <span class="MuiTypography-root MuiTypography-body1 stable-makeStyles-label-28 stable-makeStyles-label-34 css-12h6qye-MuiTypography-root">
+              <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
                 1
               </span>
             </div>
             <div class="MuiBox-root css-164r41r">
               <div class="MuiBox-root css-1ckupud">
                 <div class="MuiBox-root css-126n10b">
-                  <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover stable-makeStyles-groupLink-35 css-1tr280c-MuiTypography-root-MuiLink-root"
+                  <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-lv5yp2-MuiTypography-root-MuiLink-root"
                      href="/apps//groups/xxx-xxx-1"
                   >
                     First group
                   </a>
                 </div>
                 <div class="MuiBox-root css-qiye2o">
-                  <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover stable-makeStyles-instanceLink-36 css-1tr280c-MuiTypography-root-MuiLink-root"
+                  <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-1mxnekj-MuiTypography-root-MuiLink-root"
                      href="/apps//groups/xxx-xxx-1/instances?period=1d"
                   >
                     <div class="MuiBox-root css-k008qs">
@@ -138,13 +138,13 @@ exports[`applications/ApplicationItem Application smoke-test 1`] = `
                 </div>
               </div>
               <div class="MuiListItem-root MuiListItem-gutters MuiListItem-padding css-cfd5wn-MuiListItem-root">
-                <div class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-11nsb57-MuiGrid-root">
-                  <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-                    <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault stable-makeStyles-colorAvatar-38 stable-makeStyles-colorAvatar-39 css-jmdkhx-MuiAvatar-root">
+                <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-2 css-zjhuaj-MuiGrid-root">
+                  <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+                    <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-1ewzyie-MuiAvatar-root">
                     </div>
                   </div>
-                  <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
-                    <div class="MuiListItemText-root MuiListItemText-multiline stable-makeStyles-root-37 css-14ln1j6-MuiListItemText-root">
+                  <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+                    <div class="MuiListItemText-root MuiListItemText-multiline css-1fnxsti-MuiListItemText-root">
                       <div class="MuiBox-root css-70qvj9">
                         <div class="MuiBox-root css-1xsd608">
                           main
@@ -191,38 +191,38 @@ exports[`applications/ApplicationItem Application smoke-test 1`] = `
 `;
 
 exports[`applications/ApplicationItem NoGroups smoke-test 1`] = `
-<li class="MuiListItem-root MuiListItem-padding MuiListItem-divider stable-makeStyles-divider-3 stable-makeStyles-root-1 css-7y9j02-MuiListItem-root"
+<li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider ApplicationItem-root css-12bropj-MuiListItem-root"
     data-testid="list-item"
 >
-  <div class="MuiGrid-root MuiGrid-container css-11lq3yg-MuiGrid-root">
-    <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
-      <div class="MuiGrid-root MuiGrid-container stable-makeStyles-gridHeader-4 css-1xzqqmo-MuiGrid-root">
-        <div class="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-spacing-xs-1 css-8wqwjn-MuiGrid-root">
-          <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+  <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-d64g0g-MuiGrid-root">
+    <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
+      <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-rk1ovi-MuiGrid-root">
+        <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-1 css-1h67b43-MuiGrid-root">
+          <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
             <h2 class="MuiTypography-root MuiTypography-h2 css-wqt949-MuiTypography-root">
-              <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover stable-makeStyles-mainLink-6 css-1tr280c-MuiTypography-root-MuiLink-root"
+              <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-nlfr05-MuiTypography-root-MuiLink-root"
                  href="/apps/123"
               >
                 ABC
               </a>
             </h2>
           </div>
-          <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
+          <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
             <div class="MuiBox-root css-1yq8yj7">
-              <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap stable-makeStyles-idLabel-9 css-10i0fr3-MuiTypography-root"
+              <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap css-1i0hvgs-MuiTypography-root"
                  arial-label="group-id"
               >
                 xxx-xxx-yyy
               </p>
             </div>
             <div class="MuiBox-root css-1yuhvjn">
-              <span class="MuiTypography-root MuiTypography-body1 stable-makeStyles-descriptionLabel-8 css-12h6qye-MuiTypography-root">
+              <span class="MuiTypography-root MuiTypography-body1 css-1cs8bct-MuiTypography-root">
                 App Item Description
               </span>
             </div>
           </div>
         </div>
-        <div class="MuiGrid-root MuiGrid-item css-13i4rnv-MuiGrid-root">
+        <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
           <div>
             <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-edgeEnd MuiIconButton-sizeLarge css-geyil9-MuiButtonBase-root-MuiIconButton-root"
                     tabindex="0"
@@ -245,16 +245,16 @@ exports[`applications/ApplicationItem NoGroups smoke-test 1`] = `
           </div>
         </div>
       </div>
-      <hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light stable-makeStyles-innerDivider-10 css-cwcxuo-MuiDivider-root">
+      <hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light css-e5zbmt-MuiDivider-root">
     </div>
-    <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1idn90j-MuiGrid-root">
-      <div class="MuiGrid-root MuiGrid-container stable-makeStyles-itemSection-2 css-11lq3yg-MuiGrid-root">
-        <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-4 css-gj1fbr-MuiGrid-root">
+    <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
+      <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row ApplicationItem-itemSection css-d64g0g-MuiGrid-root">
+        <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-4 css-1oxte1b-MuiGrid-root">
           <div class="MuiBox-root css-1yuhvjn">
-            <span class="MuiTypography-root MuiTypography-body1 stable-makeStyles-featureLabel-7 css-12h6qye-MuiTypography-root">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
               INSTANCES
             </span>
-            <span class="MuiTypography-root MuiTypography-body1 stable-makeStyles-label-11 stable-makeStyles-label-15 css-12h6qye-MuiTypography-root">
+            <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
               <h5 class="MuiTypography-root MuiTypography-h5 css-optum0-MuiTypography-root">
                 1
               </h5>
@@ -286,13 +286,13 @@ exports[`applications/ApplicationItem NoGroups smoke-test 1`] = `
           >
           </div>
         </div>
-        <div class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-7 css-uqwprf-MuiGrid-root">
+        <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-7 css-1k6bf5n-MuiGrid-root">
           <div class="MuiBox-root css-10wfmn8">
-            <span class="MuiTypography-root MuiTypography-body1 stable-makeStyles-featureLabel-7 css-12h6qye-MuiTypography-root">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
               Groups
             </span>
             <div class="MuiBox-root css-1t04ftt">
-              <span class="MuiTypography-root MuiTypography-body1 stable-makeStyles-label-11 stable-makeStyles-label-17 css-12h6qye-MuiTypography-root">
+              <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
                 None
               </span>
             </div>

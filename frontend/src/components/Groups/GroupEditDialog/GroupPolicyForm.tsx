@@ -29,12 +29,12 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
   return (
     <div style={{ padding: '1rem' }}>
       <Grid container justifyContent="space-between" spacing={4}>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Box mt={1}>
             <FormLabel component="legend">{t('groups|update')}</FormLabel>
           </Box>
           <Grid container>
-            <Grid item xs={6}>
+            <Grid size={6}>
               <FormControlLabel
                 label={t('groups|updates_enabled')}
                 control={
@@ -50,7 +50,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
                 }
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid size={6}>
               <FormControlLabel
                 label={t('groups|safe_mode_lower')}
                 control={
@@ -78,7 +78,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
       </Box>
       <Box>
         <Grid container>
-          <Grid item xs={6}>
+          <Grid size={6}>
             <FormControlLabel
               label={
                 <Box display="flex" alignItems="center">
@@ -105,7 +105,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
               }
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={6}>
             <Field
               component={TimezonePicker}
               name="timezone"
@@ -118,8 +118,8 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
         </Grid>
       </Box>
       <Box my={2}>
-        <Grid item xs={12} container spacing={2} justifyContent="space-between" alignItems="center">
-          <Grid item xs={5}>
+        <Grid container spacing={2} justifyContent="space-between" alignItems="center" size={12}>
+          <Grid size={5}>
             <Box pl={2}>
               <Field
                 name="maxUpdates"
@@ -133,10 +133,10 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
               />
             </Box>
           </Grid>
-          <Grid item>
+          <Grid>
             <Typography color="textSecondary">{t('groups|time_per')}</Typography>
           </Grid>
-          <Grid item xs={3}>
+          <Grid size={3}>
             <Box mt={2}>
               <Field
                 name="updatesPeriodRange"
@@ -149,7 +149,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
               />
             </Box>
           </Grid>
-          <Grid item xs={3}>
+          <Grid size={3}>
             <Box mt={2} mr={2}>
               <Field
                 name="updatesPeriodUnit"
@@ -172,11 +172,11 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
             </Box>
           </Grid>
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Box mt={2} pl={2}>
             <FormLabel>{t('groups|updates_timeout_lower')}</FormLabel>
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid size={4}>
                 <Field
                   name="updatesTimeout"
                   component={TextField}
@@ -186,7 +186,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
                   inputProps={{ min: 0 }}
                 />
               </Grid>
-              <Grid item xs={3}>
+              <Grid size={3}>
                 <Box pr={2}>
                   <Field
                     name="updatesTimeoutUnit"

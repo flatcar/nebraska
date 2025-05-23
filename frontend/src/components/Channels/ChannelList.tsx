@@ -3,7 +3,6 @@ import Grid from '@mui/material/Grid';
 import MuiList from '@mui/material/List';
 import ListSubheader from '@mui/material/ListSubheader';
 import Typography from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
@@ -19,17 +18,8 @@ import SectionPaper from '../common/SectionPaper';
 import ChannelEdit from './ChannelEdit';
 import ChannelItem from './ChannelItem';
 
-const useStyles = makeStyles({
-  root: {
-    '& > hr:first-child': {
-      display: 'none',
-    },
-  },
-});
-
 function Channels(props: { channels: null | Channel[]; onEdit: (channelId: string) => void }) {
   const { channels, onEdit } = props;
-  const classes = useStyles();
   const { t } = useTranslation();
 
   const channelsPerArch = (function () {
@@ -62,7 +52,11 @@ function Channels(props: { channels: null | Channel[]; onEdit: (channelId: strin
           key={arch}
           subheader={<ListSubheader disableSticky>{ARCHES[parseInt(arch)]}</ListSubheader>}
           dense
-          className={classes.root}
+          sx={{
+            '& > hr:first-child': {
+              display: 'none',
+            },
+          }}
         >
           {channels.map(channel => (
             <ChannelItem
@@ -164,10 +158,10 @@ export function ChannelListPure(props: ChannelListPureProps) {
     <Box mt={2}>
       <Box mb={2}>
         <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item>
+          <Grid>
             <Typography variant="h1">{t('channels|channels')}</Typography>
           </Grid>
-          <Grid item>
+          <Grid>
             <ModalButton
               modalToOpen="AddChannelModal"
               data={{

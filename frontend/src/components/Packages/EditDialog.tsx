@@ -13,7 +13,7 @@ import InputLabel from '@mui/material/InputLabel';
 import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
 import MuiSelect, { SelectChangeEvent } from '@mui/material/Select';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import { Field, Form, Formik } from 'formik';
 import { Select, TextField } from 'formik-mui';
 import React from 'react';
@@ -27,11 +27,18 @@ import { REGEX_SEMVER } from '../../utils/regex';
 import Tabs from '../common/Tabs';
 import FileList from './FileList';
 
-const useStyles = makeStyles({
-  topSelect: {
+const PREFIX = 'EditDialog';
+
+const classes = {
+  topSelect: `${PREFIX}-topSelect`,
+  dialog: `${PREFIX}-dialog`,
+};
+
+const StyledDialog = styled(Dialog)({
+  [`& .${classes.topSelect}`]: {
     width: '10rem',
   },
-  dialog: {
+  [`& .${classes.dialog}`]: {
     height: 'calc(100% - 64px)',
   },
 });
@@ -48,7 +55,6 @@ export interface EditDialogProps {
 }
 
 function EditDialog(props: EditDialogProps) {
-  const classes = useStyles();
   const [flatcarType, otherType] = [1, 4];
   const [packageType, setPackageType] = React.useState(
     props.data.package ? props.data.package.type : flatcarType
@@ -141,7 +147,7 @@ function EditDialog(props: EditDialogProps) {
             <DialogContentText color="error">{status.statusMessage}</DialogContentText>
           )}
           <Grid container justifyContent="space-between">
-            <Grid item>
+            <Grid>
               <FormControl margin="dense" className={classes.topSelect}>
                 <InputLabel variant="standard">Type</InputLabel>
                 <MuiSelect
@@ -158,7 +164,7 @@ function EditDialog(props: EditDialogProps) {
                 </MuiSelect>
               </FormControl>
             </Grid>
-            <Grid item>
+            <Grid>
               <FormControl
                 margin="dense"
                 fullWidth
@@ -219,7 +225,7 @@ function EditDialog(props: EditDialogProps) {
                         fullWidth
                       />
                       <Grid container justifyContent="space-between" spacing={4}>
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                           <Field
                             name="version"
                             component={TextField}
@@ -232,7 +238,7 @@ function EditDialog(props: EditDialogProps) {
                             fullWidth
                           />
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid size={6}>
                           <Field
                             name="size"
                             component={TextField}
@@ -404,7 +410,12 @@ function EditDialog(props: EditDialogProps) {
   }
 
   return (
-    <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title" fullWidth>
+    <StyledDialog
+      open={props.show}
+      onClose={handleClose}
+      aria-labelledby="form-dialog-title"
+      fullWidth
+    >
       <DialogTitle>
         {isCreation ? t('packages|add_package') : t('packages|edit_package')}
       </DialogTitle>
@@ -413,7 +424,7 @@ function EditDialog(props: EditDialogProps) {
         {/* @ts-expect-error as no interface was created/defined */}
         {renderForm}
       </Formik>
-    </Dialog>
+    </StyledDialog>
   );
 }
 

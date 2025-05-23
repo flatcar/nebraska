@@ -3,7 +3,7 @@
 exports[`Label > should render correct label 1`] = `
 <DocumentFragment>
   <span
-    class="makeStyles-label-1"
+    class="Label-label css-1wzl15x"
   >
     dummy label
   </span>
