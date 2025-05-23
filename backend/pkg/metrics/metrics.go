@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/kinvolk/nebraska/backend/pkg/api"
 	"github.com/kinvolk/nebraska/backend/pkg/util"
@@ -16,6 +17,9 @@ const (
 )
 
 var (
+	InstanceMetricsRegistry = prometheus.NewRegistry()
+	InstanceMetricsHandler  = promhttp.HandlerFor(InstanceMetricsRegistry, promhttp.HandlerOpts{})
+
 	appInstancePerChannelGaugeMetric = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Namespace: "nebraska",
@@ -37,6 +41,20 @@ var (
 		},
 		[]string{
 			"application",
+		},
+	)
+
+	latestInstanceStatsGaugeMetric = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: "nebraska",
+			Name:      "instance_count",
+			Help:      "Number of instances per channel, version, and architecture",
+		},
+		[]string{
+			"channel",
+			"version",
+			"arch",
+			"timestamp",
 		},
 	)
 
@@ -72,15 +90,22 @@ func registerNebraskaMetrics() error {
 	collectors := []prometheus.Collector{
 		appInstancePerChannelGaugeMetric,
 		failedUpdatesGaugeMetric,
+		latestInstanceStatsGaugeMetric,
 		openConnections,
 		inUseConnections,
 		idleConnections,
 	}
 
 	for _, collector := range collectors {
-		err := prometheus.Register(collector)
-		if err != nil {
-			return err
+		if collector == latestInstanceStatsGaugeMetric {
+			if err := InstanceMetricsRegistry.Register(collector); err != nil {
+				return fmt.Errorf("registering instance stats collector: %w", err)
+			}
+		} else {
+			err := prometheus.Register(collector)
+			if err != nil {
+				return fmt.Errorf("registering Prometheus collector: %w", err)
+			}
 		}
 	}
 	return nil
@@ -130,6 +155,9 @@ func RegisterAndInstrument(api *api.API) error {
 
 // calculateMetrics calculates the application metrics and updates the respective metric.
 func calculateMetrics(api *api.API) error {
+	// reset instance stats on each refresh
+	latestInstanceStatsGaugeMetric.Reset()
+
 	aipcMetrics, err := api.GetAppInstancesPerChannelMetrics()
 	if err != nil {
 		return fmt.Errorf("failed to get app instances per channel metrics: %w", err)
@@ -146,6 +174,15 @@ func calculateMetrics(api *api.API) error {
 
 	for _, metric := range fuMetrics {
 		failedUpdatesGaugeMetric.WithLabelValues(metric.ApplicationName).Set(float64(metric.FailureCount))
+	}
+
+	lisMetrics, err := api.GetLatestInstanceStatsMetrics()
+	if err != nil {
+		return fmt.Errorf("failed to get latest instance stats metrics: %w", err)
+	}
+
+	for _, metric := range lisMetrics {
+		latestInstanceStatsGaugeMetric.WithLabelValues(metric.ChannelName, metric.Version, metric.Arch, metric.Timestamp).Set(float64(metric.InstancesCount))
 	}
 
 	// db stats
