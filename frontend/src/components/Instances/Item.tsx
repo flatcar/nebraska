@@ -9,7 +9,7 @@ import { styled } from '@mui/material/styles';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import React, { PropsWithChildren } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router';
 import semver from 'semver';
 import _ from 'underscore';
 

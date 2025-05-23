@@ -1,6 +1,6 @@
 import Link from '@mui/material/Link';
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router';
 import _ from 'underscore';
 
 import API from '../api/API';

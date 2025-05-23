@@ -5,7 +5,7 @@ import ListItem from '@mui/material/ListItem';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router';
 
 import { Activity } from '../../api/apiDataTypes';
 import { toLocaleString } from '../../i18n/dateTime';
@@ -56,7 +56,7 @@ export function ActivityItemPure(props: ActivityItemPureProps) {
   let name: React.ReactNode = '';
 
   if (props.classType !== 'activityChannelPackageUpdated') {
-    const groupPath = `apps/${props.appId}/groups/${props.groupId}`;
+    const groupPath = `/apps/${props.appId}/groups/${props.groupId}`;
     subtitle = t('activity|group');
     name = (
       <Link component={RouterLink} to={groupPath} sx={{ color: '#1b5c91' }} underline="hover">

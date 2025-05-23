@@ -6,9 +6,9 @@ setup('create new node instances in database', async () => {
   const client = new Client({
     user: 'postgres',
     host: 'localhost',
-    database: 'nebraska_tests',
+    database: process.env.CI ? 'nebraska_tests' : 'nebraska',
     password: 'nebraska',
-    port: 8001,
+    port: process.env.CI ? 8001 : 5432,
   });
   await client.connect();
 
