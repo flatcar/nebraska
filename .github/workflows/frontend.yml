@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-
+    name: Frontend Build Steps
     runs-on: ubuntu-24.04
 
     strategy:

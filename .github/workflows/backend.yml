@@ -15,7 +15,7 @@ on:
 jobs:
 
   build:
-    name: Lint & Build
+    name: Backend Build Steps
     runs-on: ubuntu-24.04
 
     steps:
