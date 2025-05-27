@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 
 import { Application, Group } from '../../../api/apiDataTypes';
 import { applicationsStore } from '../../../stores/Stores';
@@ -11,7 +11,7 @@ import List from '../../Instances/List';
 export default function InstanceListLayout() {
   const { appID, groupID } = useParams<{ appID: string; groupID: string }>();
   const [application, setApplication] = React.useState(
-    applicationsStore().getCachedApplication(appID)
+    applicationsStore().getCachedApplication(appID || '')
   );
   const getGroupFromApplication = React.useCallback(
     (app: Application | null) => {
@@ -34,9 +34,13 @@ export default function InstanceListLayout() {
       setApplication(app);
       setGroup(getGroupFromApplication(app));
     }
-  }, [appID, application, getGroupFromApplication]);
+  }, [appID, getGroupFromApplication]);
 
   React.useEffect(() => {
+    if (!appID) {
+      return;
+    }
+
     applicationsStore().addChangeListener(onChange);
     applicationsStore().getApplication(appID);
 

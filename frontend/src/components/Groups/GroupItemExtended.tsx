@@ -8,7 +8,7 @@ import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/material/styles';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 import _ from 'underscore';
 
 import API from '../../api/API';
@@ -63,12 +63,12 @@ function ItemExtended(props: {
     React.useState(defaultTimeInterval);
   const [statusChartDuration, setStatusChartDuration] = React.useState(defaultTimeInterval);
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const theme = useTheme();
   const { t } = useTranslation();
 
-  function onChange() {
+  const onChange = React.useCallback(() => {
     const app = applicationsStore().getCachedApplication(props.appID);
 
     if (!app) {
@@ -84,7 +84,8 @@ function ItemExtended(props: {
     if (groupFound !== group) {
       setGroup(groupFound || null);
     }
-  }
+  }, [props.appID, props.groupID]);
+
   function updateGroup() {
     props.handleUpdateGroup(props.groupID, props.appID);
   }
@@ -92,7 +93,7 @@ function ItemExtended(props: {
   function setDurationToURL(key: string, duration: string) {
     const searchParams = new URLSearchParams(location.search);
     searchParams.set(key, duration);
-    history.push({
+    navigate({
       pathname: location.pathname,
       search: searchParams.toString(),
     });
@@ -105,31 +106,34 @@ function ItemExtended(props: {
     return function cleanup() {
       applicationsStore().removeChangeListener(onChange);
     };
-  }, []);
+  }, [onChange]);
 
-  function setDurationStateForCharts(
-    key: string,
-    setState: React.Dispatch<
-      React.SetStateAction<{
-        displayValue: string;
-        queryValue: string;
-        disabled: boolean;
-      }>
-    >
-  ) {
-    const searchParams = new URLSearchParams(location.search);
-    const period = searchParams.get(key);
-    const selectedInterval = timeIntervalsDefault.find(
-      intervals => intervals.queryValue === period
-    );
-    setState(selectedInterval || defaultTimeInterval);
-  }
+  const setDurationStateForCharts = React.useCallback(
+    (
+      key: string,
+      setState: React.Dispatch<
+        React.SetStateAction<{
+          displayValue: string;
+          queryValue: string;
+          disabled: boolean;
+        }>
+      >
+    ) => {
+      const searchParams = new URLSearchParams(location.search);
+      const period = searchParams.get(key);
+      const selectedInterval = timeIntervalsDefault.find(
+        intervals => intervals.queryValue === period
+      );
+      setState(selectedInterval || defaultTimeInterval);
+    },
+    [location.search]
+  );
 
   React.useEffect(() => {
     setDurationStateForCharts('version_timeline_period', setVersionChartSelectedDuration);
     setDurationStateForCharts('status_timeline_period', setStatusChartDuration);
     setDurationStateForCharts('stats_period', setUpdateProgressChartDuration);
-  }, [location]);
+  }, [location, setDurationStateForCharts]);
 
   React.useEffect(() => {
     if (group) {

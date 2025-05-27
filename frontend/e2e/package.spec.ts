@@ -18,7 +18,7 @@ test.describe('Packages', () => {
     appName = 'Test app' + appNameSalt;
     appId = 'io.test.app.' + appNameSalt;
 
-    await page.goto('http://localhost:8002/');
+    await page.goto('/');
     await createApplication(page, appName, appId);
 
     await page.reload();
@@ -29,7 +29,7 @@ test.describe('Packages', () => {
   test.afterAll(async ({ browser }) => {
     const context = await browser.newContext();
     const page = await context.newPage();
-    await page.goto('http://localhost:8002/');
+    await page.goto('/');
 
     await deleteApplication(page, appName);
 
@@ -38,7 +38,7 @@ test.describe('Packages', () => {
   });
 
   test('should open package creation dialog', async ({ page }) => {
-    await page.goto('http://localhost:8002/');
+    await page.goto('/');
     await page.getByRole('link', { name: appName }).click();
 
     await createChannel(page, 'testChannel');
@@ -60,8 +60,6 @@ test.describe('Packages', () => {
     await expect(page).toHaveScreenshot('arch-dropdown-package-creation.png');
     await page.locator('#menu- div').first().click();
     await page.getByTestId('package-edit-form').getByText('Flatcar', { exact: true }).click();
-
-    // await expect(page).toHaveScreenshot('type-dropdown-package-creation.png', { fullPage: true });
 
     await page.locator('#menu- div').first().click();
     await page.getByLabel('Main').locator('div').filter({ hasText: 'URL *' }).click();
@@ -91,10 +89,10 @@ test.describe('Packages', () => {
   });
 
   test('should create package', async ({ page }) => {
-    await page.goto('http://localhost:8002/');
+    await page.goto('/');
     await page.getByRole('link', { name: appName }).click();
 
-    await expect(page.locator('ul')).toContainText(
+    await expect(page.getByText('There are no groups for this')).toContainText(
       'There are no groups for this application yet.Groups help you control how you want to distribute updates to a specific set of instances.'
     );
 
@@ -132,10 +130,13 @@ test.describe('Packages', () => {
   });
 
   test('should delete package', async ({ page }) => {
-    await page.goto('http://localhost:8002/');
-    await page.getByRole('link', { name: appName }).click();
+    await page.goto('/');
 
-    await expect(page.locator('ul')).toContainText(
+    const navigationPromise = page.waitForLoadState('domcontentloaded');
+    await page.getByRole('link', { name: appName }).click();
+    await navigationPromise;
+
+    await expect(page.getByTestId('empty')).toContainText(
       'There are no groups for this application yet.Groups help you control how you want to distribute updates to a specific set of instances.'
     );
 
@@ -159,7 +160,7 @@ test.describe('Packages', () => {
   });
 
   test('should test become searchable', async ({ page }) => {
-    await page.goto('http://localhost:8002/');
+    await page.goto('/');
     await page.getByRole('link', { name: appName }).click();
 
     await createPackage(page, '4117.0.0');

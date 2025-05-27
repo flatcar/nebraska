@@ -36,6 +36,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - The legacy CRA/Webpack setup, although reliable in the early stages, has become increasingly difficult to maintain due to slow update cycles and performance inefficiencies.
   - Transitioning to Vite and Vitest was driven by the need for a modern build and testing environment that offers faster development cycles, improved maintainability, and a cleaner security profile.
   - Switched from Jest to Vitest to leverage a Vite-native testing environment, enhancing overall developer experience with faster test cycles.
+  - Upgraded react router to v7 ([#1048](https://github.com/flatcar/nebraska/pull/1048))
   - improved HMR
   - Updated and standardized ESLint and Prettier configurations.
   - Removed the deprecated `headlamp` dependency.

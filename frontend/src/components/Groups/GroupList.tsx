@@ -103,7 +103,7 @@ function GroupList({ appID }: GroupListProps) {
       <Paper>
         <MuiList
           sx={{
-            '& > hr:first-child': {
+            '& > hr:first-of-type': {
               display: 'none',
             },
           }}

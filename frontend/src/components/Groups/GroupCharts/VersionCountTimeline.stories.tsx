@@ -1,5 +1,5 @@
 import { Meta, StoryFn } from '@storybook/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router';
 
 import GroupChartsStore from '../../../stores/GroupChartsStore';
 import { groupChartStoreContext } from '../../../stores/Stores';

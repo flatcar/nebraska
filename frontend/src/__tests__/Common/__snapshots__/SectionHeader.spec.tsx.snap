@@ -23,6 +23,7 @@ exports[`Section Header > renders section header correctly 1`] = `
             >
               <a
                 class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-1tr280c-MuiTypography-root-MuiLink-root"
+                data-discover="true"
                 href="/apps"
               >
                 Applications

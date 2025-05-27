@@ -1,5 +1,5 @@
 import { Meta, StoryFn } from '@storybook/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router';
 
 import { activityStore } from '../../stores/Stores';
 import ActivityContainer, { ActivityContainerProps } from './ActivityContainer';

@@ -82,6 +82,7 @@ exports[`activity/ActivityItem Warning smoke-test 1`] = `
       <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
         <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-1mxnekj-MuiTypography-root-MuiLink-root"
            href="/apps/XXXX-XXX/groups/YYYY-YYYY"
+           data-discover="true"
         >
           some group
         </a>

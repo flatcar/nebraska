@@ -1,6 +1,6 @@
 import { Meta, StoryFn } from '@storybook/react';
 import { JSX } from 'react/jsx-runtime';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router';
 
 import API, { APIContext } from '../../api/API';
 import ApplicationItem, { ApplicationItemProps } from './ApplicationItem';

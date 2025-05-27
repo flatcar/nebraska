@@ -11,7 +11,7 @@ test.describe('Applications', () => {
     appName = 'Test app' + appNameSalt;
     appId = 'io.test.app.' + appNameSalt;
 
-    await page.goto('http://localhost:8002/');
+    await page.goto('/');
   });
 
   test.afterEach(async ({ page }) => {
