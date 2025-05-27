@@ -61,8 +61,6 @@ test.describe('Packages', () => {
     await page.locator('#menu- div').first().click();
     await page.getByTestId('package-edit-form').getByText('Flatcar', { exact: true }).click();
 
-    // await expect(page).toHaveScreenshot('type-dropdown-package-creation.png', { fullPage: true });
-
     await page.locator('#menu- div').first().click();
     await page.getByLabel('Main').locator('div').filter({ hasText: 'URL *' }).click();
     await page
@@ -133,9 +131,12 @@ test.describe('Packages', () => {
 
   test('should delete package', async ({ page }) => {
     await page.goto('/');
-    await page.getByRole('link', { name: appName }).click();
 
-    await expect(page.locator('ul')).toContainText(
+    const navigationPromise = page.waitForLoadState('domcontentloaded');
+    await page.getByRole('link', { name: appName }).click();
+    await navigationPromise;
+
+    await expect(page.getByTestId('empty')).toContainText(
       'There are no groups for this application yet.Groups help you control how you want to distribute updates to a specific set of instances.'
     );
 
