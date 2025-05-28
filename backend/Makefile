@@ -1,7 +1,18 @@
 GO111MODULE=on
 export GO111MODULE
 
-TAG := `git describe --tags --always --exclude 'nebraska-helm*'`
+BASE_TAG := $(shell git describe --tags --always --exclude 'nebraska-helm*' 2>/dev/null)
+
+# We work only with one staging tag as per the one staging environment for Nebraska.
+# Appending the short hash code helps checking the new deployments by
+# asserting the version label in the footer that the hash changed.
+TAG := $(shell \
+    if [ "$(BASE_TAG)" = "staging" ]; then \
+        echo "staging-$$(git rev-parse --short HEAD)"; \
+    else \
+        echo "$(BASE_TAG)"; \
+    fi)
+
 SHELL = /bin/bash
 DOCKER_CMD ?= "docker"
 DOCKER_REPO ?= "ghcr.io/flatcar"
