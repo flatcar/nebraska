@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/joho/godotenv"
 	"github.com/labstack/gommon/log"
 	"github.com/rs/zerolog"
 
@@ -14,6 +15,12 @@ import (
 )
 
 func main() {
+	// Load .env
+	envErr := godotenv.Load()
+	if envErr != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	// config parse
 	conf, err := config.Parse()
 	if err != nil {
