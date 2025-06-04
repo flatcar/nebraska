@@ -2,7 +2,7 @@ import '../src/i18n/config';
 
 import { StyledEngineProvider } from '@mui/material/styles';
 import { createGenerateClassName, StylesProvider } from '@mui/styles';
-import type { Preview } from '@storybook/react';
+import type { Preview } from '@storybook/react-vite';
 import React from 'react';
 
 import ThemeProviderNexti18n from '../src/i18n/ThemeProviderNexti18n';
