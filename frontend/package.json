@@ -38,7 +38,7 @@
     "@mui/utils": "^7.1.0",
     "@reduxjs/toolkit": "^2.6.1",
     "@types/dompurify": "^3.2.0",
-    "@types/node": "^22.15.23",
+    "@types/node": "^22.15.29",
     "@types/pubsub-js": "^1.8.6",
     "@types/react": "^18.3.17",
     "@types/react-color": "^3.0.13",
