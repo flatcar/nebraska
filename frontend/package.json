@@ -77,7 +77,7 @@
     "@iconify/tools": "^4.1.2",
     "@playwright/test": "1.53.0",
     "@storybook/addon-essentials": "^8.5.8",
-    "@storybook/addon-links": "^8.5.8",
+    "@storybook/addon-links": "^9.0.4",
     "@storybook/manager-api": "^8.5.8",
     "@storybook/node-logger": "^8.5.8",
     "@storybook/preview-api": "^8.6.14",
