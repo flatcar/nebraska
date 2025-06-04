@@ -165,7 +165,7 @@ exports[`activity/ActivityContainer List smoke-test 1`] = `
             <p class="MuiTablePagination-displayedRows css-z6ezh0-MuiTablePagination-displayedRows">
               1–2 of 2
             </p>
-            <div class="MuiTablePagination-actions">
+            <div class="MuiTablePaginationActions-root MuiTablePagination-actions css-sjsoon-MuiTablePaginationActions-root">
               <button class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-colorInherit MuiIconButton-sizeMedium css-h7cjts-MuiButtonBase-root-MuiIconButton-root"
                       tabindex="-1"
                       type="button"
@@ -461,7 +461,7 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
             <p class="MuiTablePagination-displayedRows css-z6ezh0-MuiTablePagination-displayedRows">
               1–5 of 6
             </p>
-            <div class="MuiTablePagination-actions">
+            <div class="MuiTablePaginationActions-root MuiTablePagination-actions css-sjsoon-MuiTablePaginationActions-root">
               <button class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-colorInherit MuiIconButton-sizeMedium css-h7cjts-MuiButtonBase-root-MuiIconButton-root"
                       tabindex="-1"
                       type="button"
