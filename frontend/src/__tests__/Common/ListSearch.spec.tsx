@@ -12,7 +12,7 @@ describe('List Search', () => {
     const { asFragment } = render(
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={themes['light']}>
-          <SearchInput />
+          <SearchInput value="test" />
         </ThemeProvider>
       </StyledEngineProvider>
     );

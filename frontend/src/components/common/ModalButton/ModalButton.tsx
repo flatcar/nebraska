@@ -11,7 +11,12 @@ import PackageEditDialog, {
   EditDialogProps as PackageEditDialogProps,
 } from '../../Packages/EditDialog';
 
-function ModalButton(props: { data: object; modalToOpen: string; icon?: string }) {
+interface ModalButtonProps {
+  modalToOpen: string;
+  data: { [key: string]: any };
+}
+
+function ModalButton(props: ModalButtonProps) {
   const [showModal, setShowModal] = React.useState(false);
   const { t } = useTranslation();
 

@@ -1,6 +1,7 @@
 import MuiTab from '@mui/material/Tab';
 import MuiTabs from '@mui/material/Tabs';
 import Typography, { TypographyProps } from '@mui/material/Typography';
+import { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,7 +14,7 @@ function a11yProps(index: number) {
 
 export interface Tab {
   label: string;
-  component: JSX.Element | JSX.Element[];
+  component: ReactElement | ReactElement[];
 }
 
 export interface TabsProps {

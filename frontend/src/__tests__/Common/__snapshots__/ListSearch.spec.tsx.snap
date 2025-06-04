@@ -12,7 +12,7 @@ exports[`List Search > should render correct ListSearch 1`] = `
         aria-label="undefined"
         class="MuiInputBase-input MuiInput-input css-1yrc8ca-MuiInputBase-input-MuiInput-input"
         type="text"
-        value=""
+        value="test"
       />
     </div>
   </div>
