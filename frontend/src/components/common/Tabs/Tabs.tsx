@@ -1,7 +1,7 @@
 import MuiTab from '@mui/material/Tab';
 import MuiTabs from '@mui/material/Tabs';
 import Typography, { TypographyProps } from '@mui/material/Typography';
-import {ReactElement} from 'react';
+import { ReactElement } from 'react';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
