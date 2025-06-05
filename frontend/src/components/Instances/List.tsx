@@ -16,7 +16,6 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/material/styles';
 import TablePagination from '@mui/material/TablePagination';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
@@ -144,7 +143,12 @@ function InstanceFilter(props: InstanceFilterProps) {
   );
 }
 
-function ListView(props: { application: Application; group: Group }) {
+interface ListViewProps {
+  application: Application;
+  group: Group;
+}
+
+function ListView(props: ListViewProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const statusDefs = makeStatusDefs(useTheme());
@@ -557,10 +561,5 @@ function ListView(props: { application: Application; group: Group }) {
     </Root>
   );
 }
-
-ListView.propTypes = {
-  application: PropTypes.object.isRequired,
-  group: PropTypes.object.isRequired,
-};
 
 export default ListView;
