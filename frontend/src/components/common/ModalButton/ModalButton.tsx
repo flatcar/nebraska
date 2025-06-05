@@ -12,7 +12,7 @@ import PackageEditDialog, {
 
 interface ModalButtonProps {
   modalToOpen: string;
-  data: object;
+  data: { [key: string]: any };
 }
 
 function ModalButton(props: ModalButtonProps) {

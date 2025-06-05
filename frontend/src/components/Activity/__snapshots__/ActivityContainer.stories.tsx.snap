@@ -130,7 +130,7 @@ exports[`activity/ActivityContainer List smoke-test 1`] = `
           <div class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular MuiTablePagination-toolbar css-1594vo9-MuiToolbar-root-MuiTablePagination-toolbar">
             <div class="MuiTablePagination-spacer css-1wtxofq-MuiTablePagination-spacer">
             </div>
-            <p id=":r1:"
+            <p id="«r1»"
                class="MuiTablePagination-selectLabel css-1dl7m68-MuiTablePagination-selectLabel"
             >
               Rows per page:
@@ -140,8 +140,8 @@ exports[`activity/ActivityContainer List smoke-test 1`] = `
                    role="combobox"
                    aria-expanded="false"
                    aria-haspopup="listbox"
-                   aria-labelledby=":r1: :r0:"
-                   id=":r0:"
+                   aria-labelledby="«r1» «r0»"
+                   id="«r0»"
                    class="MuiSelect-select MuiTablePagination-select MuiSelect-standard MuiInputBase-input css-mmygx2-MuiSelect-select-MuiInputBase-input"
               >
                 5
@@ -426,7 +426,7 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
           <div class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular MuiTablePagination-toolbar css-1594vo9-MuiToolbar-root-MuiTablePagination-toolbar">
             <div class="MuiTablePagination-spacer css-1wtxofq-MuiTablePagination-spacer">
             </div>
-            <p id=":r6:"
+            <p id="«r6»"
                class="MuiTablePagination-selectLabel css-1dl7m68-MuiTablePagination-selectLabel"
             >
               Rows per page:
@@ -436,8 +436,8 @@ exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
                    role="combobox"
                    aria-expanded="false"
                    aria-haspopup="listbox"
-                   aria-labelledby=":r6: :r5:"
-                   id=":r5:"
+                   aria-labelledby="«r6» «r5»"
+                   id="«r5»"
                    class="MuiSelect-select MuiTablePagination-select MuiSelect-standard MuiInputBase-input css-mmygx2-MuiSelect-select-MuiInputBase-input"
               >
                 5
