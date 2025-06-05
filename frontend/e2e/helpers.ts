@@ -87,7 +87,9 @@ export async function createChannel(
   architecture?: string,
   packageVersion?: string
 ) {
+  const navigationPromise = page.waitForLoadState('domcontentloaded');
   await page.getByTestId('modal-button').nth(1).click();
+  await navigationPromise;
 
   await page.getByTestId('icon-button').click();
   await page.getByTitle('#9900EF').click({ clickCount: 2 });
@@ -127,7 +129,10 @@ export async function createGroup(
   channel?: string,
   trackIdentifier?: string
 ) {
+  const navigationPromise = page.waitForLoadState('domcontentloaded');
   await page.getByTestId('modal-button').first().click();
+  await navigationPromise;
+
   await page.locator('input[name="name"]').click();
   await page.locator('input[name="name"]').fill(groupName);
 
