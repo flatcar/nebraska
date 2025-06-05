@@ -91,7 +91,6 @@ function GroupList({ appID }: GroupListProps) {
         title="Groups"
         actions={[
           <ModalButton
-            icon="plus"
             modalToOpen="AddGroupModal"
             data={{
               channels: channels,

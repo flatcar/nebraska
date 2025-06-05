@@ -1,6 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
 import { IconButton } from '@mui/material';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -67,10 +66,5 @@ function ModalButton(props: ModalButtonProps) {
     </div>
   );
 }
-
-ModalButton.propTypes = {
-  modalToOpen: PropTypes.string.isRequired,
-  data: PropTypes.object,
-};
 
 export default ModalButton;

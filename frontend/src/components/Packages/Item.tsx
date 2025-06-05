@@ -8,7 +8,6 @@ import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
 
@@ -56,11 +55,13 @@ const containerIcons: {
   other: { icon: cubeOutline, name: 'Other' },
 };
 
-function Item(props: {
+interface ItemProps {
   packageItem: Package;
   channels: Channel[];
-  handleUpdatePackage: (pkgId: string) => void;
-}) {
+  handleUpdatePackage(pkgId: string): void;
+}
+
+function Item(props: ItemProps) {
   const { t } = useTranslation();
 
   const type = props.packageItem.type || 1;
@@ -161,11 +162,5 @@ function Item(props: {
     </StyledListItem>
   );
 }
-
-Item.propTypes = {
-  packageItem: PropTypes.object.isRequired,
-  channels: PropTypes.array,
-  handleUpdatePackage: PropTypes.func.isRequired,
-};
 
 export default Item;
