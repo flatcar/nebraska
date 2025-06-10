@@ -110,12 +110,6 @@ type ServerInterface interface {
 	// (GET /health)
 	Health(ctx echo.Context) error
 
-	// (GET /login)
-	Login(ctx echo.Context, params LoginParams) error
-
-	// (GET /login/cb)
-	LoginCb(ctx echo.Context) error
-
 	// (POST /login/token)
 	LoginToken(ctx echo.Context) error
 
@@ -1207,33 +1201,6 @@ func (w *ServerInterfaceWrapper) Health(ctx echo.Context) error {
 	return err
 }
 
-// Login converts echo context to params.
-func (w *ServerInterfaceWrapper) Login(ctx echo.Context) error {
-	var err error
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params LoginParams
-	// ------------- Required query parameter "login_redirect_url" -------------
-
-	err = runtime.BindQueryParameter("form", true, true, "login_redirect_url", ctx.QueryParams(), &params.LoginRedirectUrl)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter login_redirect_url: %s", err))
-	}
-
-	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.Login(ctx, params)
-	return err
-}
-
-// LoginCb converts echo context to params.
-func (w *ServerInterfaceWrapper) LoginCb(ctx echo.Context) error {
-	var err error
-
-	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.LoginCb(ctx)
-	return err
-}
-
 // LoginToken converts echo context to params.
 func (w *ServerInterfaceWrapper) LoginToken(ctx echo.Context) error {
 	var err error
@@ -1369,8 +1336,6 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.PUT(baseURL+"/api/instances/:instanceID", wrapper.UpdateInstance)
 	router.GET(baseURL+"/config", wrapper.GetConfig)
 	router.GET(baseURL+"/health", wrapper.Health)
-	router.GET(baseURL+"/login", wrapper.Login)
-	router.GET(baseURL+"/login/cb", wrapper.LoginCb)
 	router.POST(baseURL+"/login/token", wrapper.LoginToken)
 	router.GET(baseURL+"/login/validate_token", wrapper.ValidateToken)
 	router.POST(baseURL+"/login/webhook", wrapper.LoginWebhook)

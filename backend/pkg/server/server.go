@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"net/url"
 	"path"
 	"strings"
 	"time"
@@ -176,36 +175,12 @@ func setupAuthenticator(conf config.Config, sessionStore *sessions.Store, defaul
 		}
 		return auth.NewGithubAuthenticator(gituhbAuthConfig), nil
 	case "oidc":
-
-		url, err := url.Parse(conf.NebraskaURL)
-		if err != nil {
-			return nil, errors.Wrap(err, "nebraska-url is invalid, can't generate oidc callback URL")
-		}
-
-		url.Path = "/login/cb"
-		if conf.OidcValidRedirectURLs == "" {
-			url, err := url.Parse(conf.NebraskaURL)
-			if err != nil {
-				return nil, fmt.Errorf("nebraska-url is invalid, can't generate valid redirect URL, Err: %w", err)
-			}
-			url.Path = strings.TrimSuffix(url.Path, "/")
-			generatedValidRedirectURLs := fmt.Sprintf("%s/*", url.String())
-			conf.OidcValidRedirectURLs = generatedValidRedirectURLs
-		}
 		oidcAuthConfig := &auth.OIDCAuthConfig{
-			DefaultTeamID:     defaultTeamID,
-			ClientID:          conf.OidcClientID,
-			ClientSecret:      conf.OidcClientSecret,
-			IssuerURL:         conf.OidcIssuerURL,
-			CallbackURL:       url.String(),
-			ValidRedirectURLs: strings.Split(conf.OidcValidRedirectURLs, ","),
-			ManagementURL:     conf.OidcManagementURL,
-			LogoutURL:         conf.OidcLogutURL,
-			AdminRoles:        strings.Split(conf.OidcAdminRoles, ","),
-			ViewerRoles:       strings.Split(conf.OidcViewerRoles, ","),
-			Scopes:            strings.Split(conf.OidcScopes, ","),
-			SessionStore:      sessionStore,
-			RolesPath:         conf.OidcRolesPath,
+			DefaultTeamID: defaultTeamID,
+			IssuerURL:     conf.OidcIssuerURL,
+			AdminRoles:    strings.Split(conf.OidcAdminRoles, ","),
+			ViewerRoles:   strings.Split(conf.OidcViewerRoles, ","),
+			RolesPath:     conf.OidcRolesPath,
 		}
 		return auth.NewOIDCAuthenticator(oidcAuthConfig)
 	}

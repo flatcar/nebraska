@@ -52,7 +52,6 @@ type Config struct {
 	OidcSessionAuthKey    string `koanf:"oidc-session-secret"`
 	OidcSessionCryptKey   string `koanf:"oidc-session-crypt_key"`
 	OidcManagementURL     string `koanf:"oidc-management-url"`
-	OidcLogutURL          string `koanf:"oidc-logout-url"`
 }
 
 const (
@@ -129,11 +128,10 @@ func Parse() (*Config, error) {
 	f.String("oidc-admin-roles", "", "comma-separated list of accepted roles with admin access")
 	f.String("oidc-viewer-roles", "", "comma-separated list of accepted roles with viewer access")
 	f.String("oidc-roles-path", "roles", "json path in which the roles array is present in the id token")
-	f.String("oidc-scopes", "openid,offline_access", "comma-separated list of scopes to be used in OIDC")
+	f.String("oidc-scopes", "openid,profile,email", "comma-separated list of scopes to be used in OIDC")
 	f.String("oidc-session-secret", "", fmt.Sprintf("Session secret used for authenticating sessions in cookies used for storing OIDC info , will be generated if none is passed; can be taken from %s env var too", oidcSessionAuthKeyEnvName))
 	f.String("oidc-session-crypt-key", "", fmt.Sprintf("Session key used for encrypting sessions in cookies used for storing OIDC info, will be generated if none is passed; can be taken from %s env var too", oidcSessionCryptKeyEnvName))
 	f.String("oidc-management-url", "", "OIDC management url for managing the account")
-	f.String("oidc-logout-url", "", "URL to logout the user from current session")
 	f.String("sync-update-url", "https://public.update.flatcar-linux.net/v1/update/", "Flatcar update URL to sync from")
 	f.String("sync-interval", "1h", "Sync check interval (the minimum depends on the number of channels to sync, e.g., 8m for 8 channels incl. different architectures)")
 	f.String("client-logo", "", "Client app logo, should be a path to svg file")

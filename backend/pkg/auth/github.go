@@ -130,7 +130,7 @@ func (gha *githubAuth) ValidateToken(ctx echo.Context) error {
 	return ctx.NoContent(http.StatusNotImplemented)
 }
 
-func (gha *githubAuth) Authenticate(c echo.Context) (teamID string, replied bool) {
+func (gha *githubAuth) Authorize(c echo.Context) (teamID string, replied bool) {
 	session := echosessions.GetSession(c)
 	if session.Has("teamID") {
 		if session.Get("accesslevel") != "rw" {
@@ -799,3 +799,13 @@ func (gha *githubAuth) stealSessionIDsForOrgAndTeam(org, team string) []string {
 func makeTeamName(org, team string) string {
 	return fmt.Sprintf("%s/%s", org, team)
 }
+
+func sessionSave(c echo.Context, session interface{}, description string) {
+	// Type assert to session with Save method
+	if s, ok := session.(interface{ Save() error }); ok {
+		if err := s.Save(); err != nil {
+			logger.Error().AnErr("error", err).Str("description", description).Msg("Failed to save session")
+		}
+	}
+}
+

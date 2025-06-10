@@ -69,7 +69,6 @@ func New(db *api.API, conf *config.Config, auth auth.Authenticator) (*Handler, e
 		url.Path = "/login"
 		clientConfig.LoginUrl = url.String()
 		clientConfig.AccessManagementUrl = conf.OidcManagementURL
-		clientConfig.LogoutUrl = conf.OidcLogutURL
 	}
 
 	return &Handler{db, omaha.NewHandler(db), conf, clientConfig, auth}, nil
