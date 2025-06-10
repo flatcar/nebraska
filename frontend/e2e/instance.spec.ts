@@ -50,7 +50,8 @@ test.describe('Instances', () => {
 
     await page.locator('tbody tr.MuiTableRow-root').getByRole('button').click();
 
-    // mask elements that are: cells where we can find timedate values, and nebraska version at the bottom
+    // mask elements that are: cells where we can find timedate values, and nebraska version at the
+    // bottom
     await expect(page).toHaveScreenshot('instance-history.png', {
       mask: [
         page.locator('//*[contains(text(), "/")]'),
