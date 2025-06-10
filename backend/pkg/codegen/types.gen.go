@@ -101,7 +101,6 @@ type Config struct {
 	HeaderStyle         string `json:"header_style"`
 	LoginUrl            string `json:"login_url"`
 	Logo                string `json:"logo"`
-	LogoutUrl           string `json:"logout_url"`
 	NebraskaVersion     string `json:"nebraska_version"`
 	Title               string `json:"title"`
 }
@@ -392,11 +391,6 @@ type PaginatePackagesParams struct {
 	Page          *int    `form:"page,omitempty" json:"page,omitempty"`
 	Perpage       *int    `form:"perpage,omitempty" json:"perpage,omitempty"`
 	SearchVersion *string `form:"searchVersion,omitempty" json:"searchVersion,omitempty"`
-}
-
-// LoginParams defines parameters for Login.
-type LoginParams struct {
-	LoginRedirectUrl string `form:"login_redirect_url" json:"login_redirect_url"`
 }
 
 // LoginWebhookParams defines parameters for LoginWebhook.

@@ -4,16 +4,75 @@ import { useLocation, useNavigate } from 'react-router';
 
 import { setUser, UserState } from '../stores/redux/features/user';
 import { useDispatch, useSelector } from '../stores/redux/hooks';
+import { createOIDCClient, getOIDCClient, OIDCConfig } from './oidc';
 
-const TOKEN_KEY = 'token';
+// In-memory token storage for better security
+let accessToken: string | null = null;
 
-export function setToken(token: string) {
-  localStorage.setItem(TOKEN_KEY, token);
+interface TokenPair {
+  access_token: string;
+  expires_in?: number;
+}
+
+export function setTokens(tokens: TokenPair) {
+  accessToken = tokens.access_token;
 }
 
 export function getToken() {
-  return localStorage.getItem(TOKEN_KEY);
+  return accessToken;
 }
+
+export function clearTokens() {
+  accessToken = null;
+}
+
+// Legacy function for backward compatibility
+export function setToken(token: string) {
+  accessToken = token;
+}
+
+export function clearToken() {
+  clearTokens();
+}
+
+// Check if we have a valid token
+export function ensureValidToken(): string | null {
+  if (!accessToken) {
+    return null;
+  }
+  
+  // If token is still valid, return it
+  if (isValidToken(accessToken)) {
+    return accessToken;
+  }
+  
+  // Token is expired, clear it
+  clearTokens();
+  return null;
+}
+
+// PKCE helper functions
+export async function generateCodeVerifier(): Promise<string> {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  return base64URLEncode(array);
+}
+
+export async function generateCodeChallenge(verifier: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(verifier);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return base64URLEncode(new Uint8Array(digest));
+}
+
+function base64URLEncode(buffer: Uint8Array): string {
+  const base64 = btoa(String.fromCharCode(...buffer));
+  return base64
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
+}
+
 
 interface JWT {
   exp: number;
@@ -77,34 +136,76 @@ export function useAuthRedirect() {
   );
 
   React.useEffect(() => {
-    const params = new URLSearchParams(location.search);
     // We only do the login dance if the auth mode is OIDC
     if (config.auth_mode !== 'oidc') {
       return;
     }
 
-    const token = params.get('id_token');
-    if (token) {
-      setToken(token);
-      // Discard the URL search params
-      dispatch(setUser({ authenticated: true }));
-      navigate(location.pathname);
-      return;
-    }
+    const initOIDC = async () => {
+      // Create OIDC configuration from config
+      const oidcConfig: OIDCConfig = {
+        issuerUrl: config.oidc_issuer_url || '',
+        clientId: config.oidc_client_id || '',
+        redirectUri: window.location.origin + '/auth/callback',
+        scopes: ['openid', 'profile', 'email'],
+        logoutUrl: config.oidc_logout_url,
+      };
 
-    const currentToken = getToken() || '';
+      // Create OIDC client
+      const oidcClient = createOIDCClient(oidcConfig);
+      await oidcClient.init();
 
-    if (isValidToken(currentToken) && shouldUpdateUser(currentToken)) {
-      dispatch(setUser({ authenticated: true, ...getUserInfoFromToken(currentToken) }));
-    }
-
-    if ((!isValidToken(currentToken) || !user?.authenticated) && !!config.login_url) {
-      const login_redirect_url = new URL(window.location.href);
-      if (login_redirect_url.pathname === '/login') {
-        login_redirect_url.pathname = '/';
+      // Check if this is a callback from OIDC provider
+      if (oidcClient.isCallback()) {
+        try {
+          const tokenResponse = await oidcClient.handleCallback();
+          
+          // Store access token
+          setTokens({
+            access_token: tokenResponse.access_token,
+            expires_in: tokenResponse.expires_in
+          });
+          
+          // Get user info from userinfo endpoint
+          let userInfo: UserState = { authenticated: true };
+          try {
+            const userInfoResponse = await oidcClient.getUserInfo(tokenResponse.access_token);
+            userInfo.name = userInfoResponse.name || userInfoResponse.given_name || '';
+            userInfo.email = userInfoResponse.email || '';
+          } catch (error) {
+            console.warn('Failed to get user info:', error);
+          }
+          
+          dispatch(setUser(userInfo));
+          
+          // Clean up URL and redirect
+          navigate(location.pathname, { replace: true });
+          return;
+        } catch (error) {
+          console.error('OIDC callback error:', error);
+          // Clear stored tokens and redirect to login
+          clearTokens();
+          dispatch(setUser({ authenticated: false }));
+        }
       }
-      window.location.href =
-        config.login_url + '?login_redirect_url=' + login_redirect_url.toString();
-    }
+
+      // Check if user is already authenticated
+      const currentToken = ensureValidToken();
+
+      if (currentToken && shouldUpdateUser(currentToken)) {
+        dispatch(setUser({ authenticated: true, ...getUserInfoFromToken(currentToken) }));
+        return;
+      } else if (currentToken) {
+        // Token is valid but user info hasn't changed
+        return;
+      }
+
+      // If not authenticated and we have OIDC config, start authorization
+      if (!user?.authenticated && oidcConfig.issuerUrl && oidcConfig.clientId) {
+        await oidcClient.authorize();
+      }
+    };
+
+    initOIDC().catch(console.error);
   }, [navigate, location, user, config, dispatch, shouldUpdateUser]);
 }

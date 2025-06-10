@@ -8,26 +8,6 @@ info:
     email: hello@kinvolk.io
     url: http://kinvolk.io
 paths:
-  /login:
-    get:
-      operationId: login
-      description: login browser flow
-      security: []
-      parameters:
-        - in: query
-          name: login_redirect_url
-          required: true
-          schema:
-            type: string
-      responses:
-        "302":
-          description: login response
-        "400":
-          description: bad request
-        "500":
-          description: internal server error
-        "501":
-          description: not implemented for non oidc auth modes
   /login/token:
     post:
       operationId: loginToken
@@ -51,20 +31,6 @@ paths:
           description: internal server error
         "501":
           description: not implemented for non oidc auth modes          
-  /login/cb: 
-    get:
-      operationId: loginCb
-      description: login callback
-      security: []
-      responses:
-        "200":
-          description: login cb success response
-        "400":
-          description: bad request
-        "401":
-          description: unauthorized
-        "500":
-          description: internal server error        
   /login/validate_token:
     get:
       operationId: validateToken
@@ -1345,7 +1311,6 @@ components:
       type: object
       required:
         - accessManagementUrl
-        - logoutUrl
         - nebraskaVersion
         - logo
         - title
@@ -1357,10 +1322,6 @@ components:
           type: string
           x-oapi-codegen-extra-tags:
             json: "access_management_url"
-        logoutUrl:
-          type: string
-          x-oapi-codegen-extra-tags:
-            json: "logout_url"
         nebraskaVersion:
           type: string
           x-oapi-codegen-extra-tags:

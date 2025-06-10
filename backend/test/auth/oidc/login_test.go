@@ -103,8 +103,8 @@ func waitServerReady() (bool, error) {
 	}
 	return false, ErrOutOfRetries
 }
-func TestLogin(t *testing.T) {
-	t.Run("no_login_redirect_url", func(t *testing.T) {
+func TestLoginEndpointsNotImplemented(t *testing.T) {
+	t.Run("login_endpoint_not_implemented", func(t *testing.T) {
 		// establish db connection
 		db := newDBForTest(t)
 
@@ -136,15 +136,11 @@ func TestLogin(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
-		bodyBytes, err := io.ReadAll(resp.Body)
-		require.NoError(t, err)
-
-		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-		assert.Contains(t, string(bodyBytes), `login_redirect_url`)
-		assert.Contains(t, string(bodyBytes), `value is required but missing`)
+		// Should return 404 since endpoint is removed
+		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
 	})
 
-	t.Run("invalid_login_redirect_url", func(t *testing.T) {
+	t.Run("login_cb_endpoint_not_implemented", func(t *testing.T) {
 		// establish db connection
 		db := newDBForTest(t)
 
@@ -169,7 +165,7 @@ func TestLogin(t *testing.T) {
 		_, err = waitServerReady()
 		require.NoError(t, err)
 
-		req, err := http.NewRequest("GET", fmt.Sprintf("%s/login?login_redirect_url=http://localhost:9000", testServerURL), nil)
+		req, err := http.NewRequest("GET", fmt.Sprintf("%s/login/cb", testServerURL), nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
@@ -177,11 +173,8 @@ func TestLogin(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
-		bodyBytes, err := io.ReadAll(resp.Body)
-		require.NoError(t, err)
-
-		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-		assert.Contains(t, string(bodyBytes), `Invalid login_redirect_url`)
+		// Should return 404 since endpoint is removed
+		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
 	})
 
 	t.Run("invalid_oidc_client_id", func(t *testing.T) {
@@ -498,14 +491,16 @@ func TestLogin(t *testing.T) {
 		t.Log(string(bodyBytes))
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-		tokenCode := resp.Request.URL.Query().Get("id_token")
-		require.NotEmpty(t, tokenCode)
+		accessToken := resp.Request.URL.Query().Get("access_token")
+		tokenType := resp.Request.URL.Query().Get("token_type")
+		require.NotEmpty(t, accessToken)
+		require.Equal(t, "Bearer", tokenType)
 
 		req, err = http.NewRequest("GET", fmt.Sprintf("%s/api/apps", testServerURL), nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
-		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tokenCode))
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
 
 		resp, err = client.Do(req)
 		require.NoError(t, err)
@@ -569,8 +564,10 @@ func TestLogin(t *testing.T) {
 		t.Log(string(bodyBytes))
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-		tokenCode := resp.Request.URL.Query().Get("id_token")
-		require.NotEmpty(t, tokenCode)
+		accessToken := resp.Request.URL.Query().Get("access_token")
+		tokenType := resp.Request.URL.Query().Get("token_type")
+		require.NotEmpty(t, accessToken)
+		require.Equal(t, "Bearer", tokenType)
 
 		payload := strings.NewReader(`{"name":"someApp"}`)
 		req, err = http.NewRequest("POST", fmt.Sprintf("%s/api/apps", testServerURL), payload)
@@ -578,7 +575,7 @@ func TestLogin(t *testing.T) {
 		require.NotNil(t, req)
 
 		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tokenCode))
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
 
 		resp, err = client.Do(req)
 		require.NoError(t, err)
@@ -695,14 +692,16 @@ func TestLogin(t *testing.T) {
 		t.Log(string(bodyBytes))
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-		tokenCode := resp.Request.URL.Query().Get("id_token")
-		require.NotEmpty(t, tokenCode)
+		accessToken := resp.Request.URL.Query().Get("access_token")
+		tokenType := resp.Request.URL.Query().Get("token_type")
+		require.NotEmpty(t, accessToken)
+		require.Equal(t, "Bearer", tokenType)
 
 		req, err = http.NewRequest("GET", fmt.Sprintf("%s/api/apps", testServerURL), nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
-		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tokenCode))
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
 
 		resp, err = client.Do(req)
 		require.NoError(t, err)
@@ -773,14 +772,16 @@ func TestValidateToken(t *testing.T) {
 		t.Log(string(bodyBytes))
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-		tokenCode := resp.Request.URL.Query().Get("id_token")
-		require.NotEmpty(t, tokenCode)
+		accessToken := resp.Request.URL.Query().Get("access_token")
+		tokenType := resp.Request.URL.Query().Get("token_type")
+		require.NotEmpty(t, accessToken)
+		require.Equal(t, "Bearer", tokenType)
 
 		req, err = http.NewRequest("GET", fmt.Sprintf("%s/login/validate_token", testServerURL), nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)
 
-		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", tokenCode))
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
 
 		resp, err = client.Do(req)
 		require.NoError(t, err)

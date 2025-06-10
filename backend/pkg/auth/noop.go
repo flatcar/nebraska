@@ -38,9 +38,9 @@ func NewNoopAuthenticator(config *NoopAuthConfig) Authenticator {
 func (noa *noopAuth) SetupRouter(_ *echo.Echo) {
 }
 
-// Authenticate is a part of the Authenticator interface
+// Authorize is a part of the Authenticator interface
 // implementation.
-func (noa *noopAuth) Authenticate(_ echo.Context) (teamID string, replied bool) {
+func (noa *noopAuth) Authorize(_ echo.Context) (teamID string, replied bool) {
 	teamID = noa.defaultTeamID
 	replied = false
 	return
@@ -65,3 +65,4 @@ func (noa *noopAuth) ValidateToken(ctx echo.Context) error {
 func (noa *noopAuth) LoginWebhook(ctx echo.Context) error {
 	return ctx.NoContent(http.StatusNotImplemented)
 }
+
