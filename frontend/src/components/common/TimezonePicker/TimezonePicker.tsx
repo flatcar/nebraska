@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -8,43 +9,12 @@ import Input from '@mui/material/Input';
 import InputLabel, { InputLabelProps } from '@mui/material/InputLabel';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import Downshift from 'downshift';
 import moment from 'moment-timezone';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FixedSizeList } from 'react-window';
-
-const PREFIX = 'DEFAULT_TIMEZONE';
-
-const classes = {
-  container: `${PREFIX}-container`,
-  textFieldRoot: `${PREFIX}-textFieldRoot`,
-  inputRoot: `${PREFIX}-inputRoot`,
-  inputInput: `${PREFIX}-inputInput`,
-  pickerButtonInput: `${PREFIX}-pickerButtonInput`,
-};
-
-const Root = styled('div')({
-  [`& .${classes.container}`]: {
-    flexGrow: 1,
-    position: 'relative',
-  },
-  [`& .${classes.textFieldRoot}`]: {
-    marginTop: '0.6em',
-  },
-  [`& .${classes.inputRoot}`]: {
-    flexWrap: 'wrap',
-  },
-  [`& .${classes.inputInput}`]: {
-    width: 'auto',
-    flexGrow: 1,
-  },
-  [`& .${classes.pickerButtonInput}`]: {
-    cursor: 'pointer',
-  },
-});
 
 const suggestions = moment.tz.names().map(timezone => {
   return {
@@ -74,16 +44,21 @@ function renderInput(inputProps: RenderInputProps) {
 
   return (
     <TextField
-      classes={{
-        root: classes.textFieldRoot,
+      sx={{
+        marginTop: '0.6em',
       }}
-      InputProps={{
-        inputRef: ref,
-        classes: {
-          root: classes.inputRoot,
-          input: classes.inputInput,
+      slotProps={{
+        input: {
+          inputRef: ref,
+          sx: {
+            flexWrap: 'wrap',
+            '& input': {
+              width: 'auto',
+              flexGrow: 1,
+            },
+          },
+          ...InputProps,
         },
-        ...InputProps,
       }}
       {...other}
       data-testid="timezone-input"
@@ -199,7 +174,7 @@ export default function TimzonePicker(props: {
   }
 
   return (
-    <Root>
+    <Box>
       <FormControl fullWidth>
         <InputLabel variant="standard" shrink>
           Timezone
@@ -207,8 +182,12 @@ export default function TimzonePicker(props: {
         <Input
           onClick={onInputActivate}
           value={selectedTimezone}
-          inputProps={{
-            className: classes.pickerButtonInput,
+          slotProps={{
+            input: {
+              sx: {
+                cursor: 'pointer',
+              },
+            },
           }}
           placeholder={t('common|pick_timezone')}
           readOnly
@@ -230,6 +209,7 @@ export default function TimzonePicker(props: {
               getInputProps,
               getItemProps,
               getLabelProps,
+              getRootProps,
               highlightedIndex,
               inputValue,
               selectedItem,
@@ -237,7 +217,13 @@ export default function TimzonePicker(props: {
               const { onBlur, onChange, ...inputProps } = getInputProps();
 
               return (
-                <div className={classes.container}>
+                <Box
+                  {...getRootProps()}
+                  sx={{
+                    flexGrow: 1,
+                    position: 'relative',
+                  }}
+                >
                   {renderInput({
                     fullWidth: true,
                     autoFocus: true,
@@ -261,7 +247,7 @@ export default function TimzonePicker(props: {
                     width={400}
                     itemSize={50}
                   />
-                </div>
+                </Box>
               );
             }}
           </Downshift>
@@ -275,6 +261,6 @@ export default function TimzonePicker(props: {
           </Button>
         </DialogActions>
       </Dialog>
-    </Root>
+    </Box>
   );
 }
