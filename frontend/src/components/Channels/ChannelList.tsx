@@ -113,7 +113,7 @@ export default function ChannelList(props: ChannelListProps) {
   }, [application]);
 
   const channels = application ? (application.channels ? application.channels : []) : [];
-  const loading = (application ? application.channels === null : true) || packages === null;
+  const loading = !application || packages === null;
 
   return (
     <ChannelListPure
