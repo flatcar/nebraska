@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`AutoCompletePicker Closed smoke-test 1`] = `
-<div class="css-1ow7tgr">
+<div class="MuiBox-root css-0">
   <div class="MuiFormControl-root MuiFormControl-fullWidth css-ytlejw-MuiFormControl-root">
     <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-standard MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-standard css-10zwvn9-MuiFormLabel-root-MuiInputLabel-root"
            data-shrink="true"
@@ -13,7 +13,7 @@ exports[`AutoCompletePicker Closed smoke-test 1`] = `
              placeholder="Pick a package"
              readonly
              type="text"
-             class="MuiInputBase-input MuiInput-input Mui-readOnly AutoCompletePicker-pickerButtonInput MuiInputBase-readOnly css-1yrc8ca-MuiInputBase-input-MuiInput-input"
+             class="MuiInputBase-input MuiInput-input Mui-readOnly MuiInputBase-readOnly css-1ri2le8-MuiInputBase-input-MuiInput-input"
              value="2261.0.0"
       >
     </div>
@@ -22,7 +22,7 @@ exports[`AutoCompletePicker Closed smoke-test 1`] = `
 `;
 
 exports[`AutoCompletePicker Open smoke-test 1`] = `
-<div class="css-1ow7tgr">
+<div class="MuiBox-root css-0">
   <div class="MuiFormControl-root MuiFormControl-fullWidth css-ytlejw-MuiFormControl-root">
     <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-standard MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-standard css-10zwvn9-MuiFormLabel-root-MuiInputLabel-root"
            data-shrink="true"
@@ -34,7 +34,7 @@ exports[`AutoCompletePicker Open smoke-test 1`] = `
              placeholder="Pick a package"
              readonly
              type="text"
-             class="MuiInputBase-input MuiInput-input Mui-readOnly AutoCompletePicker-pickerButtonInput MuiInputBase-readOnly css-1yrc8ca-MuiInputBase-input-MuiInput-input"
+             class="MuiInputBase-input MuiInput-input Mui-readOnly MuiInputBase-readOnly css-1ri2le8-MuiInputBase-input-MuiInput-input"
              value="2261.0.0"
       >
     </div>
