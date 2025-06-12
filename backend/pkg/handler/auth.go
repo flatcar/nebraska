@@ -6,7 +6,6 @@ import (
 	"github.com/kinvolk/nebraska/backend/pkg/codegen"
 )
 
-
 func (h *Handler) LoginCb(ctx echo.Context) error {
 	return h.auth.LoginCb(ctx)
 }
@@ -22,4 +21,3 @@ func (h *Handler) ValidateToken(ctx echo.Context) error {
 func (h *Handler) LoginWebhook(ctx echo.Context, _ codegen.LoginWebhookParams) error {
 	return h.auth.LoginWebhook(ctx)
 }
-

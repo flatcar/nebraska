@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"strings"
 
+	"slices"
+
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/labstack/echo/v4"
 	"github.com/tidwall/gjson"
@@ -36,7 +38,7 @@ func NewOIDCAuthenticator(config *OIDCAuthConfig) (Authenticator, error) {
 	// setup oidc provider
 	provider, err := oidc.NewProvider(ctx, config.IssuerURL)
 	if err != nil {
-		return nil, fmt.Errorf("Error setting up oidc provider: %w", err)
+		return nil, fmt.Errorf("error setting up oidc provider: %w", err)
 	}
 
 	// Configure verifier for JWT access tokens (not ID tokens)
@@ -61,7 +63,7 @@ func NewOIDCAuthenticator(config *OIDCAuthConfig) (Authenticator, error) {
 	return oidcAuthenticator, nil
 }
 
-func (oa *oidcAuth) SetupRouter(router *echo.Echo) {
+func (oa *oidcAuth) SetupRouter(_ *echo.Echo) {
 	// No setup needed for stateless token validation
 }
 
@@ -125,7 +127,7 @@ func rolesFromToken(token *oidc.IDToken, rolesPath string) ([]string, error) {
 		return roles, nil
 	}
 
-	var claims map[string]interface{}
+	var claims map[string]any
 	if err := token.Claims(&claims); err != nil {
 		return roles, err
 	}
@@ -152,11 +154,8 @@ func (oa *oidcAuth) determineAccessLevel(roles []string) string {
 checkloop:
 	for _, role := range roles {
 		if accessLevel != "viewer" {
-			for _, roRole := range oa.viewerRoles {
-				if roRole == role {
-					accessLevel = "viewer"
-					break
-				}
+			if slices.Contains(oa.viewerRoles, role) {
+				accessLevel = "viewer"
 			}
 		}
 
@@ -217,7 +216,6 @@ func (oa *oidcAuth) Authorize(c echo.Context) (teamID string, replied bool) {
 	return oa.defaultTeamID, false
 }
 
-
 func (oa *oidcAuth) LoginWebhook(ctx echo.Context) error {
 	return ctx.NoContent(http.StatusNotImplemented)
 }
@@ -231,4 +229,3 @@ func redirectTo(c echo.Context, where string) {
 	//nolint:errcheck
 	c.Redirect(http.StatusTemporaryRedirect, where)
 }
-
