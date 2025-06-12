@@ -4,6 +4,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
+	"slices"
+
 	"github.com/kinvolk/nebraska/backend/pkg/auth"
 )
 
@@ -12,17 +14,13 @@ func NewAuthSkipper(auth string) middleware.Skipper {
 		switch auth {
 		case "oidc":
 			paths := []string{"/health", "/config", "/*", "/flatcar/*", "/login/cb", "/login/webhook", "/v1/update"}
-			for _, path := range paths {
-				if c.Path() == path {
-					return true
-				}
+			if slices.Contains(paths, c.Path()) {
+				return true
 			}
 		case "github":
 			paths := []string{"/health", "/v1/update", "/login/cb", "/login/webhook", "/flatcar/*"}
-			for _, path := range paths {
-				if c.Path() == path {
-					return true
-				}
+			if slices.Contains(paths, c.Path()) {
+				return true
 			}
 		}
 
