@@ -26,6 +26,7 @@ function List(props: { appID: string }) {
   const rowsPerPage = 10;
   const [page, setPage] = React.useState(0);
   const { t } = useTranslation();
+  const [totalCount, setTotalCount] = React.useState(0);
 
   function onChange() {
     setApplication(applicationsStore().getCachedApplication(props.appID));
@@ -42,6 +43,7 @@ function List(props: { appID: string }) {
             return;
           }
           setPackages(result.packages);
+          setTotalCount(result.totalCount);
         })
         .catch(err => {
           console.error('Error getting the packages in the Packages/List: ', err);
@@ -126,7 +128,7 @@ function List(props: { appID: string }) {
                 <TablePagination
                   rowsPerPageOptions={[]}
                   component="div"
-                  count={packages.length}
+                  count={totalCount}
                   rowsPerPage={rowsPerPage}
                   page={page}
                   backIconButtonProps={{
