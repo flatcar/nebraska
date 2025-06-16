@@ -43,7 +43,7 @@ export default function ApplicationItem(props: ApplicationItemProps) {
 
   return (
     <StyledListItem className={classes.root}>
-      <Grid container>
+      <Grid container sx={{ width: '100%' }}>
         <Grid size={12}>
           <CardHeader
             cardMainLinkLabel={name}

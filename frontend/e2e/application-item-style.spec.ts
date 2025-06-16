@@ -8,7 +8,7 @@ test.describe('Application Item Style', () => {
 
   test.beforeEach(async ({ page }, testInfo): Promise<void> => {
     const appNameSalt = generateSalt(testInfo.title);
-    appName = 'Test style app ' + appNameSalt;
+    appName = 'Sty';
     appId = 'io.test.style.app.' + appNameSalt;
 
     await page.goto('/');
@@ -49,8 +49,8 @@ test.describe('Application Item Style', () => {
         x: 0,
         y: -10,
         width: await appItem.boundingBox().then(box => box?.width || 800),
-        height: await appItem.boundingBox().then(box => (box?.height || 200) + 20)
-      }
+        height: await appItem.boundingBox().then(box => (box?.height || 200) + 20),
+      },
     });
   });
 });
