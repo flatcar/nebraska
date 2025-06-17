@@ -1,4 +1,5 @@
 import { ListItemText } from '@mui/material';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -8,42 +9,11 @@ import FormControl from '@mui/material/FormControl';
 import Input from '@mui/material/Input';
 import InputLabel, { InputLabelProps } from '@mui/material/InputLabel';
 import ListItemButton from '@mui/material/ListItemButton';
-import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import Downshift from 'downshift';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FixedSizeList, ListOnItemsRenderedProps } from 'react-window';
-
-const PREFIX = 'AutoCompletePicker';
-
-const staticClasses = {
-  container: `${PREFIX}-container`,
-  textFieldRoot: `${PREFIX}-textFieldRoot`,
-  inputRoot: `${PREFIX}-inputRoot`,
-  inputInput: `${PREFIX}-inputInput`,
-  pickerButtonInput: `${PREFIX}-pickerButtonInput`,
-};
-
-const Root = styled('div')({
-  [`& .${staticClasses.container}`]: {
-    flexGrow: 1,
-    position: 'relative',
-  },
-  [`& .${staticClasses.textFieldRoot}`]: {
-    marginTop: '0.6em',
-  },
-  [`& .${staticClasses.inputRoot}`]: {
-    flexWrap: 'wrap',
-  },
-  [`& .${staticClasses.inputInput}`]: {
-    width: 'auto',
-    flexGrow: 1,
-  },
-  [`& .${staticClasses.pickerButtonInput}`]: {
-    cursor: 'pointer',
-  },
-});
 
 interface RenderInputProps {
   ref?: React.Ref<any>;
@@ -67,16 +37,21 @@ function renderInput(inputProps: RenderInputProps) {
 
   return (
     <TextField
-      classes={{
-        root: staticClasses.textFieldRoot,
+      sx={{
+        marginTop: '0.6em',
       }}
-      InputProps={{
-        inputRef: ref,
-        classes: {
-          root: staticClasses.inputRoot,
-          input: staticClasses.inputInput,
+      slotProps={{
+        input: {
+          inputRef: ref,
+          sx: {
+            flexWrap: 'wrap',
+            '& input': {
+              width: 'auto',
+              flexGrow: 1,
+            },
+          },
+          ...InputProps,
         },
-        ...InputProps,
       }}
       onKeyDown={onKeyDown}
       {...other}
@@ -217,7 +192,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
   }
 
   return (
-    <Root>
+    <Box>
       <FormControl fullWidth>
         <InputLabel variant="standard" shrink>
           {props.label}
@@ -226,8 +201,12 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
           onClick={() => {
             setShowPicker(true);
           }}
-          inputProps={{
-            className: staticClasses.pickerButtonInput,
+          slotProps={{
+            input: {
+              sx: {
+                cursor: 'pointer',
+              },
+            },
           }}
           value={currentValue}
           placeholder={props.placeholder}
@@ -249,6 +228,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
               getInputProps,
               getItemProps,
               getLabelProps,
+              getRootProps,
               highlightedIndex,
               inputValue,
               selectedItem,
@@ -256,7 +236,13 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
               const { onBlur, ...inputProps } = getInputProps();
 
               return (
-                <div className={staticClasses.container}>
+                <Box
+                  {...getRootProps()}
+                  sx={{
+                    flexGrow: 1,
+                    position: 'relative',
+                  }}
+                >
                   {renderInput({
                     fullWidth: true,
                     autoFocus: true,
@@ -280,7 +266,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
                     itemSize={50}
                     onItemsRendered={onItemsRendered}
                   />
-                </div>
+                </Box>
               );
             }}
           </Downshift>
@@ -309,6 +295,6 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
           </Button>
         </DialogActions>
       </Dialog>
-    </Root>
+    </Box>
   );
 }

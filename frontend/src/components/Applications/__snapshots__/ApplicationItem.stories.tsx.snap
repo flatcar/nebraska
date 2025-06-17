@@ -4,7 +4,7 @@ exports[`applications/ApplicationItem Application smoke-test 1`] = `
 <li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider ApplicationItem-root css-12bropj-MuiListItem-root"
     data-testid="list-item"
 >
-  <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-d64g0g-MuiGrid-root">
+  <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-1l3uuuo-MuiGrid-root">
     <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
       <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-rk1ovi-MuiGrid-root">
         <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-1 css-1h67b43-MuiGrid-root">
@@ -197,7 +197,7 @@ exports[`applications/ApplicationItem NoGroups smoke-test 1`] = `
 <li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider ApplicationItem-root css-12bropj-MuiListItem-root"
     data-testid="list-item"
 >
-  <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-d64g0g-MuiGrid-root">
+  <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-1l3uuuo-MuiGrid-root">
     <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
       <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-rk1ovi-MuiGrid-root">
         <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-1 css-1h67b43-MuiGrid-root">
