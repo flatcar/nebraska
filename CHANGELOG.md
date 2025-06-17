@@ -7,8 +7,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Security
+
+### Added
+
+### Changed
+
+### Bugfixes
+
+## [v2.11.0] - 17/06/2025
+
+### Security
 - **Dependency Audit & Vulnerability Mitigation:**
-  - Initially pursued a clean `npm audit` outcome free of vulnerabilities. This goal was re-evaluated as legacy CRA/Webpack dependencies rely on unmaintained libraries, posing ongoing security risks.
+  - In the pursuite of a clean `npm audit` outcome free of vulnerabilities removed legacy CRA/Webpack dependencies that relied on unmaintained libraries, posing ongoing security risks. [See the Internal / Maintenance Notes](#internal--maintenance-notes) for further details.
 - **golang.org/x/net → v0.38.0**  
   - Fixes CVE-2025-22870 and CVE-2025-22872 in the HTML tokenizer/parser (https://github.com/flatcar/nebraska/pull/1016)
 - **golang.org/x/crypto → v0.35.0**  
@@ -39,11 +49,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Add badges to README for CI/status/integration (https://github.com/flatcar/nebraska/pull/993)
 
 ### Refactors & Improvements
-- **Icon Management:**
-  - Refactored the icon builder to utilize the new Iconify API for improved performance and maintainability.
 - **MUI Upgrade:**
   - Minor visual improvements
   by upgrading @mui/material, @mui/system, @mui/icons-material, @mui/utils, @mui/styles, @mui/styled-engine-sc to ^7.0.0 (https://github.com/flatcar/nebraska/pull/1040/files)
+- **Icon Management:**
+  - Refactored the icon builder to utilize the new Iconify API for improved performance and maintainability.
   
 - **General Codebase Improvements:**
   - Optimized import arrangements and removed unused parameters across multiple functions.
