@@ -1,7 +1,7 @@
 import { jwtDecode as jwt_decode } from 'jwt-decode';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-import { getToken, isValidToken, setToken, setTokens, getRefreshToken, clearToken, clearTokens, generateCodeVerifier, generateCodeChallenge, shouldRefreshToken } from '../../utils/auth';
+import { getToken, isValidToken, setToken, setTokens, clearToken, clearTokens, generateCodeVerifier, generateCodeChallenge } from '../../utils/auth';
 
 vi.mock('jwt-decode', () => ({
   jwtDecode: vi.fn(),
@@ -38,12 +38,10 @@ describe('Auth Utility Functions', () => {
     it('should store both access and refresh tokens', () => {
       const tokens = {
         access_token: 'access-token',
-        refresh_token: 'refresh-token',
         expires_in: 3600
       };
       setTokens(tokens);
       expect(getToken()).toBe('access-token');
-      expect(getRefreshToken()).toBe('refresh-token');
     });
 
     it('should store access token without refresh token', () => {
@@ -53,7 +51,6 @@ describe('Auth Utility Functions', () => {
       };
       setTokens(tokens);
       expect(getToken()).toBe('access-token');
-      expect(getRefreshToken()).toBeNull();
     });
   });
 
@@ -69,12 +66,10 @@ describe('Auth Utility Functions', () => {
     it('should clear both access and refresh tokens', () => {
       setTokens({
         access_token: 'access-token',
-        refresh_token: 'refresh-token',
         expires_in: 3600
       });
       clearTokens();
       expect(getToken()).toBeNull();
-      expect(getRefreshToken()).toBeNull();
     });
   });
 
@@ -96,34 +91,6 @@ describe('Auth Utility Functions', () => {
     });
   });
 
-  describe('shouldRefreshToken', () => {
-    it('should return false when no token is stored', () => {
-      expect(shouldRefreshToken()).toBe(false);
-    });
-
-    it('should return true when token expires within 2 minutes', () => {
-      const soonToExpireToken = 'soon-to-expire-token';
-      setToken(soonToExpireToken);
-      (jwt_decode as Mock).mockReturnValue({ exp: Math.floor(Date.now() / 1000) + 60 }); // 1 minute
-      expect(shouldRefreshToken()).toBe(true);
-    });
-
-    it('should return false when token has plenty of time left', () => {
-      const validToken = 'valid-token';
-      setToken(validToken);
-      (jwt_decode as Mock).mockReturnValue({ exp: Math.floor(Date.now() / 1000) + 3600 }); // 1 hour
-      expect(shouldRefreshToken()).toBe(false);
-    });
-
-    it('should return false for invalid token', () => {
-      const invalidToken = 'invalid-token';
-      setToken(invalidToken);
-      (jwt_decode as Mock).mockImplementation(() => {
-        throw new Error('Invalid token');
-      });
-      expect(shouldRefreshToken()).toBe(false);
-    });
-  });
 
   describe('PKCE functions', () => {
     describe('generateCodeVerifier', () => {

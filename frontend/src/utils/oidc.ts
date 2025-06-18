@@ -181,13 +181,13 @@ export class OIDCClient {
       await this.init();
     }
 
-    if (this.metadata.end_session_endpoint) {
+    if (this.metadata?.end_session_endpoint) {
       const params = new URLSearchParams();
       if (postLogoutRedirectUri) {
         params.set('post_logout_redirect_uri', postLogoutRedirectUri);
       }
       
-      const logoutUrl = `${this.metadata.end_session_endpoint}?${params}`;
+      const logoutUrl = `${this.metadata?.end_session_endpoint}?${params}`;
       window.location.href = logoutUrl;
     } else if (postLogoutRedirectUri) {
       // If no end_session_endpoint, just redirect to post logout URI

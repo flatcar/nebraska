@@ -89,22 +89,25 @@ func (oa *oidcAuth) ValidateToken(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]bool{"valid": true})
 }
 
+// LoginCb is not used in the new OIDC architecture
+// Frontend handles OAuth flow directly with OIDC provider
 func (oa *oidcAuth) LoginCb(c echo.Context) error {
-	// OAuth flow is handled by frontend directly with OIDC provider
 	return c.JSON(http.StatusNotImplemented, map[string]string{
 		"error": "OAuth flow is handled by frontend. Use direct OIDC provider authorization.",
 	})
 }
 
+// Login is not used in the new OIDC architecture
+// Frontend handles OAuth flow directly with OIDC provider
 func (oa *oidcAuth) Login(c echo.Context) error {
-	// OAuth flow is handled by frontend directly with OIDC provider
 	return c.JSON(http.StatusNotImplemented, map[string]string{
 		"error": "OAuth flow is handled by frontend. Use direct OIDC provider authorization.",
 	})
 }
 
+// LoginToken is deprecated for security reasons
+// Password grant type is vulnerable and not recommended for SPAs
 func (oa *oidcAuth) LoginToken(c echo.Context) error {
-	// Password grant type is deprecated and removed for security reasons
 	return c.JSON(http.StatusNotImplemented, map[string]string{
 		"error": "Password grant type is not supported. Please use the authorization code flow.",
 	})

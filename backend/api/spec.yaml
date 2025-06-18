@@ -11,7 +11,7 @@ paths:
   /login/token:
     post:
       operationId: loginToken
-      description: login token flow
+      description: login token flow (deprecated - returns 501 Not Implemented for OIDC mode)
       security: []
       requestBody:
         description: payload for login token
@@ -30,19 +30,21 @@ paths:
         "500":
           description: internal server error
         "501":
-          description: not implemented for non oidc auth modes          
+          description: not implemented for OIDC auth mode (deprecated password grant)          
   /login/validate_token:
     get:
       operationId: validateToken
-      description: validate token
+      description: validate JWT access token (OIDC mode only)
       security: []
       responses:
         "200":
           description: validate token response
+        "401":
+          description: invalid or expired token
   /login/webhook:
     post:
       operationId: loginWebhook
-      description: login web hook
+      description: login webhook for GitHub auth mode only
       security: []
       parameters:
         - in: header

@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router';
 
 import { setUser, UserState } from '../stores/redux/features/user';
 import { useDispatch, useSelector } from '../stores/redux/hooks';
-import { createOIDCClient, getOIDCClient, OIDCConfig } from './oidc';
+import { createOIDCClient, OIDCConfig } from './oidc';
 
 // In-memory token storage for better security
 let accessToken: string | null = null;
