@@ -81,6 +81,44 @@ Completely refactored the OIDC implementation to follow modern SPA security best
 - Existing OIDC provider configuration compatible
 - Better alignment with existing documentations of auth provider setup
 
+### Configuration Changes and Removed Flags
+
+**Removed OIDC Configuration Flags (Breaking Changes):**
+
+The following flags have been **removed** as they are no longer needed in the stateless architecture:
+
+1. **`--oidc-client-secret`** ❌ 
+   - **Reason**: New architecture uses public client with PKCE (no client secret needed)
+   - **Impact**: OIDC provider setup must change from confidential to public client
+
+2. **`--oidc-session-secret`** ❌
+   - **Reason**: Stateless architecture eliminates backend session management
+   - **Impact**: No more backend session storage for OIDC
+
+3. **`--oidc-session-crypt-key`** ❌  
+   - **Reason**: Stateless architecture eliminates backend session management
+   - **Impact**: No more backend session encryption
+
+4. **`--oidc-valid-redirect-urls`** ❌
+   - **Reason**: Frontend handles OAuth flow directly with OIDC provider
+   - **Impact**: Redirect URL validation moves to OIDC provider configuration
+
+**Enhanced Frontend Configuration:**
+
+The `/config` endpoint now provides OIDC configuration to the frontend:
+
+- `oidc_issuer_url` - OIDC provider issuer URL for frontend OAuth flow
+- `oidc_client_id` - Public client ID for frontend OAuth flow  
+- `oidc_scopes` - OAuth scopes for frontend to request
+- `oidc_logout_url` - Account management/logout URL for frontend
+
+**Migration Requirements:**
+
+- **OIDC Provider Setup**: Must reconfigure from confidential client to public client
+- **Client Secret Removal**: Remove client secret from provider and Nebraska configuration
+- **CORS Configuration**: OIDC provider must allow CORS from Nebraska frontend domain
+- **Flag Cleanup**: Remove the 4 deprecated flags from your Nebraska configuration
+
 ### Consequences
 
 **What becomes easier:**

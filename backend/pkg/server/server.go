@@ -192,9 +192,7 @@ func setupSessionStore(conf config.Config) *sessions.Store {
 	case "noop":
 		return nil
 	case "oidc":
-		cache := memcache.New(memcachegob.New())
-		codec := securecookie.New([]byte(conf.OidcSessionAuthKey), []byte(conf.OidcSessionCryptKey))
-		return sessions.NewStore(cache, codec)
+		return nil
 	case "github":
 		cache := memcache.New(memcachegob.New())
 		codec := securecookie.New([]byte(conf.GhSessionAuthKey), []byte(conf.GhSessionCryptKey))

@@ -1348,6 +1348,22 @@ components:
           type: string
           x-oapi-codegen-extra-tags:
             json: "auth_mode"
+        oidcIssuerUrl:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: "oidc_issuer_url"
+        oidcClientId:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: "oidc_client_id"
+        oidcScopes:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: "oidc_scopes"
+        oidcLogoutUrl:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: "oidc_logout_url"
     loginToken:
       type: object
       required:
