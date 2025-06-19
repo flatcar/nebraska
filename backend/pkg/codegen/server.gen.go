@@ -1185,8 +1185,6 @@ func (w *ServerInterfaceWrapper) UpdateInstance(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) GetConfig(ctx echo.Context) error {
 	var err error
 
-	ctx.Set(GithubCookieAuthScopes, []string{})
-
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.GetConfig(ctx)
 	return err

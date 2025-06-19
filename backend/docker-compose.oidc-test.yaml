@@ -47,17 +47,14 @@ services:
 
   server:
     build: 
-      context: ../
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile.oidc-test
       network: host
     network_mode: host
-    # Workaround for missing support for depends_on conditions in podman-compose:
-    restart: always
+    # Simple dependency without conditions (podman-compose compatible)
     depends_on:
-      postgres:
-        condition: service_healthy
-      keycloak:
-        condition: service_healthy
+      - postgres
+      - keycloak
     environment:
       - NEBRASKA_DB_URL=postgres://postgres:nebraska@localhost:8001/nebraska_tests?sslmode=disable&connect_timeout=10
-    command: /nebraska/nebraska --auth-mode=oidc --oidc-issuer-url=http://localhost:8063/realms/test --oidc-client-id=nebraska-test --oidc-admin-roles=test_admin --oidc-viewer-roles=test_viewer --oidc-roles-path=realm_access.roles --oidc-scopes=openid,profile,email --http-static-dir=/nebraska/static --api-endpoint-suffix=/ --port=8003
+    command: /startup-oidc.sh
