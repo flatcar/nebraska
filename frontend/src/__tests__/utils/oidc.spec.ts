@@ -1,5 +1,6 @@
-import { beforeEach, describe, expect, it, vi, Mock } from 'vitest';
-import { OIDCClient, OIDCConfig, createOIDCClient, getOIDCClient } from '../../utils/oidc';
+import { beforeEach, describe, expect, it, Mock,vi } from 'vitest';
+
+import { createOIDCClient, getOIDCClient,OIDCClient, OIDCConfig } from '../../utils/oidc';
 
 // Mock fetch
 global.fetch = vi.fn();

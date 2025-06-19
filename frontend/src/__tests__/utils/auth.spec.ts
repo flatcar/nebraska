@@ -1,7 +1,7 @@
 import { jwtDecode as jwt_decode } from 'jwt-decode';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-import { getToken, isValidToken, setToken, setTokens, clearToken, clearTokens, generateCodeVerifier, generateCodeChallenge } from '../../utils/auth';
+import { clearToken, clearTokens, generateCodeChallenge,generateCodeVerifier, getToken, isValidToken, setToken, setTokens } from '../../utils/auth';
 
 vi.mock('jwt-decode', () => ({
   jwtDecode: vi.fn(),

@@ -114,10 +114,23 @@ The `/config` endpoint now provides OIDC configuration to the frontend:
 
 **Migration Requirements:**
 
+⚠️ **Important**: This is a breaking change that requires OIDC provider reconfiguration and Nebraska deployment updates.
+
+**Summary of Required Changes:**
 - **OIDC Provider Setup**: Must reconfigure from confidential client to public client
 - **Client Secret Removal**: Remove client secret from provider and Nebraska configuration
 - **CORS Configuration**: OIDC provider must allow CORS from Nebraska frontend domain
-- **Flag Cleanup**: Remove the 4 deprecated flags from your Nebraska configuration
+- **Flag Cleanup**: Remove 4 deprecated flags from your Nebraska configuration
+
+📖 **For detailed migration instructions, see: [OIDC Migration Guide](./oidc-migration-guide.md)**
+
+The migration guide includes:
+- Step-by-step OIDC provider configuration for Keycloak, Auth0, Okta, Azure AD, and Google
+- Nebraska configuration examples and templates
+- Deployment verification procedures
+- Troubleshooting common issues
+- Rollback procedures
+- Security validation checklist
 
 ### Consequences
 
@@ -133,12 +146,53 @@ The `/config` endpoint now provides OIDC configuration to the frontend:
 - OIDC provider must support CORS for direct frontend communication
 - Initial setup requires understanding of public client configuration
 
+### Known Limitations and TODOs
+
+#### Current Limitations
+
+**1. Session Persistence (Page Refresh Issue)**
+- **Problem**: Users lose authentication state on page refresh/browser reload
+- **Cause**: Tokens stored in memory for security (not in localStorage)
+- **Impact**: Requires re-authentication, potential UX friction
+
+**2. Short Session Duration**
+- **Problem**: Limited to access token lifetime (typically 15-60 minutes)
+- **Cause**: No refresh token implementation for session extension
+- **Impact**: Frequent re-authentication prompts
+
+#### Priority TODOs
+
+**TODO-1: Implement Refresh Token Support**
+- **Solves**: Both page refresh issue AND short session duration
+- **Approach**: 
+  - Store refresh tokens in secure HTTP-only cookies with SameSite=Strict
+  - Implement background token refresh before access token expiration
+  - Add session recovery on page load using refresh tokens
+  - Handle refresh token rotation per OAuth2 Security BCP
+- **Benefits**: 
+  - Users stay authenticated across page refreshes
+  - Extended session duration (hours/days instead of minutes)
+  - Seamless background token renewal
+  - Maintains current security posture
+- **Implementation**: Requires careful security design to remain XSS-resistant
+
+**TODO-2: Multi-tab Session Synchronization**
+- **Problem**: Authentication state inconsistent across browser tabs (user logs out in one tab, others still think they're authenticated)
+- **Approach**:
+  - Use BroadcastChannel API to sync authentication state across tabs
+  - Sync token updates, logout events, and session expiration
+  - Handle tab-to-tab communication for token refresh
+- **Benefits**:
+  - Consistent authentication state across all tabs
+  - Logout in one tab properly logs out all tabs
+  - Token refresh in one tab updates all tabs
+- **Implementation**: Standard web API, commonly implemented in modern SPAs
+
 ### Future Considerations
 
 - Evaluate token binding or proof-of-possession tokens for enhanced security
 - Monitor OAuth2/OIDC specification updates for additional security features
-- Consider implementing refresh tokens if longer session duration is required
-- Consider implementing background token validation
+- Consider integration with enterprise identity providers
 
 ### References
 

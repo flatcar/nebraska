@@ -167,7 +167,7 @@ export function useAuthRedirect() {
           });
           
           // Get user info from userinfo endpoint
-          let userInfo: UserState = { authenticated: true };
+          const userInfo: UserState = { authenticated: true };
           try {
             const userInfoResponse = await oidcClient.getUserInfo(tokenResponse.access_token);
             userInfo.name = userInfoResponse.name || userInfoResponse.given_name || '';
