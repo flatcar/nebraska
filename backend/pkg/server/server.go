@@ -113,11 +113,15 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 		return nil, fmt.Errorf("Error setting up handlers: %w", err)
 	}
 
-	e.Static("/", conf.HTTPStaticDir)
+	// Register API handlers first
+	codegen.RegisterHandlers(e, handlers)
 
 	if conf.HostFlatcarPackages && conf.FlatcarPackagesPath != "" {
 		e.Static("/flatcar/", conf.FlatcarPackagesPath)
 	}
+
+	// Register static file handler last to serve frontend assets
+	e.Static("/", conf.HTTPStaticDir)
 
 	e.HTTPErrorHandler = func(err error, c echo.Context) {
 		code := http.StatusNotFound
@@ -132,7 +136,6 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 		}
 		e.DefaultHTTPErrorHandler(err, c)
 	}
-	codegen.RegisterHandlers(e, handlers)
 
 	// setup background job for updating instance stats
 	go func() {

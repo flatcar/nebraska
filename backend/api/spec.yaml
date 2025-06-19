@@ -72,8 +72,7 @@ paths:
     get:
       operationId: getConfig
       description: get app config
-      security:
-        - githubCookieAuth: [] 
+      security: [] 
       responses:
         "200":
           description: get config response
