@@ -11,7 +11,7 @@ RUN apk update && \
     apk add --no-cache curl netcat-openbsd
 
 # Copy startup script
-COPY startup-oidc.sh /startup-oidc.sh
+COPY test-configs/oidc/startup-oidc.sh /startup-oidc.sh
 RUN chmod +x /startup-oidc.sh
 
 # Switch back to nobody user

@@ -1,38 +1,22 @@
 # Docker-compose file for OIDC E2E testing.
+# Inherits shared PostgreSQL service from docker-compose.base.yaml
 #
 # This extends the existing test infrastructure but adds Keycloak and configures
 # Nebraska with OIDC authentication instead of noop auth.
 #
 # Build docker image from local sources:
-#   docker compose --file docker-compose.oidc-test.yaml build
+#   docker compose -f docker-compose.base.yaml -f docker-compose.oidc-test.yaml build
 #
 # Run:
-#   docker compose --file docker-compose.oidc-test.yaml up
-# Run with persistent storage:
-#   docker compose --file docker-compose.oidc-test.yaml --file docker-compose.oidc-test-persist.yaml up
+#   docker compose -f docker-compose.base.yaml -f docker-compose.oidc-test.yaml up
 
 services:
-  postgres:
-    image: postgres:13.18
-    ports:
-      - "8001:5432"
-    environment:
-      POSTGRES_PASSWORD: nebraska
-      POSTGRES_DB: nebraska_tests
-      POSTGRES_USER: postgres
-      TZ: UTC 
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     ports:
       - "8063:8080"
     volumes:
-      - ./test-realm-config.json:/opt/keycloak/data/import/test-realm.json:Z
+      - ./test-configs/oidc/test-realm-config.json:/opt/keycloak/data/import/test-realm.json:Z
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
@@ -48,7 +32,7 @@ services:
   server:
     build: 
       context: .
-      dockerfile: Dockerfile.oidc-test
+      dockerfile: test-configs/oidc/Dockerfile.oidc-test
       network: host
     network_mode: host
     # Simple dependency without conditions (podman-compose compatible)
