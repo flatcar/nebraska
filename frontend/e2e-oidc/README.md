@@ -75,7 +75,7 @@ For local development without CI:
 ```bash
 # Start the OIDC test environment manually
 cd ../backend
-docker compose -f docker-compose.oidc-test.yaml up --build
+docker compose -f docker-compose.base.yaml -f docker-compose.oidc-test.yaml up --build
 
 # In another terminal, run tests
 npm run test:oidc
@@ -85,7 +85,7 @@ npm run test:oidc
 
 ### Docker Compose
 
-The OIDC tests use `docker-compose.oidc-test.yaml` which includes:
+The OIDC tests use `docker-compose.base.yaml` and `docker-compose.oidc-test.yaml` which includes:
 
 - **PostgreSQL** (port 8001): Test database
 - **Keycloak** (port 8063): OIDC provider with test realm
@@ -175,10 +175,10 @@ View container logs:
 
 ```bash
 # Keycloak logs
-docker compose -f docker-compose.oidc-test.yaml logs keycloak
+docker compose -f docker-compose.base.yaml -f docker-compose.oidc-test.yaml logs keycloak
 
 # Nebraska backend logs
-docker compose -f docker-compose.oidc-test.yaml logs server
+docker compose -f docker-compose.base.yaml -f docker-compose.oidc-test.yaml logs server
 ```
 
 ## CI/CD Integration

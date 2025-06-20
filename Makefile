@@ -86,6 +86,14 @@ frontend-build:
 frontend-test:
 	$(MAKE) -C frontend test
 
+.PHONY: test-oidc
+test-oidc:
+	$(MAKE) -C frontend test-oidc
+
+.PHONY: test-oidc-ci
+test-oidc-ci:
+	$(MAKE) -C frontend test-oidc-ci
+
 .PHONY: frontend-lint
 frontend-lint:
 	$(MAKE) -C frontend lint

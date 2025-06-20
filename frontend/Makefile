@@ -44,10 +44,31 @@ test-storybook-ci:
 	npm run build-storybook:ci && \
 		npx concurrently -k -s first -n SB,TEST "npm run serve-storybook:ci" "npm run test-storybook:ci"
 
+# OIDC test infrastructure commands
+OIDC_COMPOSE_CMD = cd ../backend && docker compose -f docker-compose.base.yaml -f docker-compose.oidc-test.yaml
+
+.PHONY: oidc-up
+oidc-up:
+	$(OIDC_COMPOSE_CMD) up --build -d
+
+.PHONY: oidc-down
+oidc-down:
+	$(OIDC_COMPOSE_CMD) down
+
 .PHONY: test-playwright-ci
 test-playwright-ci:
 	# Run Playwright tests and capture failure
-	npx playwright test 
+	npx playwright test
+
+.PHONY: test-oidc
+test-oidc:
+	npm run test:oidc
+
+.PHONY: test-oidc-ci
+test-oidc-ci: oidc-up
+	# Run OIDC tests (Playwright setup handles service readiness checks)
+	npx playwright test --config=playwright.oidc.config.ts || ($(MAKE) oidc-down && exit 1)
+	$(MAKE) oidc-down 
 
 .PHONY: ci
 ci: install-ci lint test install-playwright test-storybook-ci test-playwright-ci tsc build 
