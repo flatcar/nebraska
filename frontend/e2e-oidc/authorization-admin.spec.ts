@@ -42,8 +42,8 @@ test.describe('OIDC Authorization - Admin User', () => {
       request, 'POST', `${baseUrl}/api/apps`, adminToken.token, newApp
     );
     
-    // Should either succeed (201) or fail due to business logic (400/409/500), not authorization (403)
-    expect([200, 201, 400, 409, 500]).toContain(createResult.status);
+    // Should either succeed (201) or fail due to business logic (400/409), not authorization (403) or server errors (500)
+    expect([200, 201, 400, 409]).toContain(createResult.status);
     expect(createResult.status).not.toBe(403);
   });
 

@@ -187,8 +187,8 @@ test.describe('OIDC API Endpoint Protection', () => {
       expect(response.status()).not.toBe(401);
       expect(response.status()).not.toBe(403);
       
-      // Should fail with business logic errors (400, 422, etc.)
-      expect([400, 422, 500]).toContain(response.status());
+      // Should fail with client errors (400, 422) - malformed requests are client errors
+      expect([400, 422]).toContain(response.status());
     }
   });
 
@@ -262,7 +262,7 @@ test.describe('OIDC API Endpoint Protection', () => {
     // Create a large payload
     const largePayload = {
       name: 'Large Payload Test App',
-      product_id: 'large-payload-test',
+      product_id: 'io.test.large-payload',
       description: 'A'.repeat(10000) // Large description
     };
     
@@ -274,7 +274,7 @@ test.describe('OIDC API Endpoint Protection', () => {
     expect(result.status).not.toBe(401);
     expect(result.status).not.toBe(403);
     
-    // May succeed or fail with business logic, but auth should work
-    expect([200, 201, 400, 413, 422, 500]).toContain(result.status);
+    // Should handle large payloads appropriately - no internal server errors
+    expect([200, 201, 400, 413, 422]).toContain(result.status);
   });
 });
