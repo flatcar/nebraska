@@ -5,12 +5,19 @@ import { TestUser, TEST_USERS } from './test-users';
 import { OIDC_TEST_CONFIG } from '../test-config';
 
 export class OIDCHelpers {
-  private tokenManager: TokenManager;
+  private _tokenManager: TokenManager;
   private keycloakAPI: KeycloakAPI;
 
   constructor() {
-    this.tokenManager = new TokenManager();
+    this._tokenManager = new TokenManager();
     this.keycloakAPI = new KeycloakAPI();
+  }
+
+  /**
+   * Get the token manager instance
+   */
+  get tokenManager(): TokenManager {
+    return this._tokenManager;
   }
 
   /**
@@ -61,7 +68,7 @@ export class OIDCHelpers {
     expect(malformedResult.status).toBe(401); // Should be unauthorized with malformed token
 
     // Test with valid admin token
-    const adminToken = await this.tokenManager.getValidToken(TEST_USERS.ADMIN);
+    const adminToken = await this._tokenManager.getValidToken(TEST_USERS.ADMIN);
     const adminResult = await this.makeAuthenticatedRequest(
       request, 'GET', endpoint, adminToken.token
     );

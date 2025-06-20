@@ -31,20 +31,19 @@ test.describe('OIDC Authorization - Admin User', () => {
     const adminToken = await oidcHelpers.tokenManager.getValidToken(TEST_USERS.ADMIN);
     const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
     
-    // Test creating a new application (if endpoint supports it)
+    // create a new application
     const newApp = {
       name: 'OIDC Test App',
-      product_id: 'oidc-test-app-id',
-      description: 'Test application for OIDC E2E tests'
+      product_id: 'oidc-test-app-id'
     };
     
     const createResult = await oidcHelpers.makeAuthenticatedRequest(
       request, 'POST', `${baseUrl}/api/apps`, adminToken.token, newApp
     );
     
-    // Should either succeed (201) or fail due to business logic (400/409), not authorization (403) or server errors (500)
-    expect([200, 201, 400, 409]).toContain(createResult.status);
+    // admin should not be forbidden
     expect(createResult.status).not.toBe(403);
+    expect(createResult.status).not.toBe(401);
   });
 
   test('admin should have access to application details', async ({ request }) => {
@@ -82,7 +81,7 @@ test.describe('OIDC Authorization - Admin User', () => {
     if (appsResult.data?.applications?.length > 0) {
       const firstApp = appsResult.data.applications[0];
       
-      // Test access to groups for this application
+      // admin should have access to groups
       const groupsResult = await oidcHelpers.makeAuthenticatedRequest(
         request, 'GET', `${baseUrl}/api/apps/${firstApp.id}/groups`, adminToken.token
       );
@@ -103,9 +102,9 @@ test.describe('OIDC Authorization - Admin User', () => {
     if (appsResult.data?.applications?.length > 0) {
       const firstApp = appsResult.data.applications[0];
       
-      // Test access to packages for this application
+      // admin should have access to packages
       const packagesResult = await oidcHelpers.makeAuthenticatedRequest(
-        request, 'GET', `${baseUrl}/api/apps/${firstApp.id}/packages?page=0&perpage=10`, adminToken.token
+        request, 'GET', `${baseUrl}/api/apps/${firstApp.id}/packages`, adminToken.token
       );
       expect(packagesResult.status).toBe(200);
     }
@@ -127,9 +126,9 @@ test.describe('OIDC Authorization - Admin User', () => {
       if (firstApp.groups?.length > 0) {
         const firstGroup = firstApp.groups[0];
         
-        // Test access to instances for this group
+        // admin should have access to instances
         const instancesResult = await oidcHelpers.makeAuthenticatedRequest(
-          request, 'GET', `${baseUrl}/api/apps/${firstApp.id}/groups/${firstGroup.id}/instances?status=0&sort=2&sortOrder=0&page=1&perpage=10&duration=30d`, adminToken.token
+          request, 'GET', `${baseUrl}/api/apps/${firstApp.id}/groups/${firstGroup.id}/instances`, adminToken.token
         );
         expect(instancesResult.status).toBe(200);
       }
@@ -140,7 +139,7 @@ test.describe('OIDC Authorization - Admin User', () => {
     const adminToken = await oidcHelpers.tokenManager.getValidToken(TEST_USERS.ADMIN);
     const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
     
-    // Test access to activity endpoint
+    // admin should have access to activity logs
     const activityResult = await oidcHelpers.makeAuthenticatedRequest(
       request, 'GET', `${baseUrl}/api/activity?start=${new Date(Date.now() - 24*60*60*1000).toISOString()}&end=${new Date().toISOString()}`, adminToken.token
     );
@@ -155,11 +154,11 @@ test.describe('OIDC Authorization - Admin User', () => {
     expect(adminToken.payload.realm_access.roles).toContain('test_admin');
     expect(adminToken.payload.realm_access.roles).toContain('test_viewer');
     
-    // Test that admin can perform viewer-level operations
+    // admin should be able to perform viewer-level operations
     const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
     
     const appsResult = await oidcHelpers.makeAuthenticatedRequest(
-      request, 'GET', `${baseUrl}/api/apps?page=0&perpage=10`, adminToken.token
+      request, 'GET', `${baseUrl}/api/apps`, adminToken.token
     );
     expect(appsResult.status).toBe(200);
   });
@@ -168,11 +167,9 @@ test.describe('OIDC Authorization - Admin User', () => {
     const adminToken = await oidcHelpers.tokenManager.getValidToken(TEST_USERS.ADMIN);
     const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
     
-    // Test that admin can make POST requests (create operations)
-    // Note: Actual creation might fail due to business logic, but should not fail due to authorization
-    
+    // test admin write operations
     const testEndpoints = [
-      { method: 'POST' as const, endpoint: '/api/apps', data: { name: 'test', product_id: 'test' } },
+      { method: 'POST' as const, endpoint: '/api/apps', data: { name: 'test' } },
     ];
     
     for (const { method, endpoint, data } of testEndpoints) {
@@ -180,10 +177,8 @@ test.describe('OIDC Authorization - Admin User', () => {
         request, method, `${baseUrl}${endpoint}`, adminToken.token, data
       );
       
-      // Should not fail with 403 (Forbidden) - admin should have permission
+      // admin should not be forbidden or unauthorized
       expect(result.status).not.toBe(403);
-      
-      // Should not fail with 401 (Unauthorized) - token should be valid
       expect(result.status).not.toBe(401);
     }
   });

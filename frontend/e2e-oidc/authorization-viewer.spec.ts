@@ -36,18 +36,16 @@ test.describe('OIDC Authorization - Viewer User', () => {
     const viewerToken = await oidcHelpers.tokenManager.getValidToken(TEST_USERS.VIEWER);
     const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
     
-    // Test that viewer cannot create applications
+    // viewer cannot create applications
     const newApp = {
-      name: 'Viewer Test App',
-      product_id: 'viewer-test-app',
-      description: 'This should be rejected'
+      name: 'Viewer Test App'
     };
     
     const createResult = await oidcHelpers.makeAuthenticatedRequest(
       request, 'POST', `${baseUrl}/api/apps`, viewerToken.token, newApp
     );
     
-    // Should be forbidden (403) for write operations
+    // viewer should be forbidden for write operations
     expect(createResult.status).toBe(403);
   });
 
@@ -64,17 +62,16 @@ test.describe('OIDC Authorization - Viewer User', () => {
     if (appsResult.data?.applications?.length > 0) {
       const firstApp = appsResult.data.applications[0];
       
-      // Try to update the application
+      // try to update the application
       const updateData = {
-        name: 'Updated by viewer',
-        description: 'This should be rejected'
+        name: 'Updated by viewer'
       };
       
       const updateResult = await oidcHelpers.makeAuthenticatedRequest(
         request, 'PUT', `${baseUrl}/api/apps/${firstApp.id}`, viewerToken.token, updateData
       );
       
-      // Should be forbidden for write operations
+      // viewer should be forbidden for write operations
       expect(updateResult.status).toBe(403);
     }
   });
@@ -158,21 +155,18 @@ test.describe('OIDC Authorization - Viewer User', () => {
     if (appsResult.data?.applications?.length > 0) {
       const firstApp = appsResult.data.applications[0];
       
-      // Try to create a new group
+      // try to create a new group
       const newGroup = {
         name: 'Viewer Test Group',
-        description: 'This should be rejected',
         policy_max_updates_per_period: 1,
-        policy_period_interval: '15 minutes',
-        policy_timezone: 'UTC',
-        policy_update_timeout: '10 minutes'
+        policy_period_interval: '15 minutes'
       };
       
       const createResult = await oidcHelpers.makeAuthenticatedRequest(
         request, 'POST', `${baseUrl}/api/apps/${firstApp.id}/groups`, viewerToken.token, newGroup
       );
       
-      // Should be forbidden for write operations
+      // viewer should be forbidden for write operations
       expect(createResult.status).toBe(403);
     }
   });
@@ -211,15 +205,10 @@ test.describe('OIDC Authorization - Viewer User', () => {
     if (appsResult.data?.applications?.length > 0) {
       const firstApp = appsResult.data.applications[0];
       
-      // Try to create a new package
+      // try to create a new package
       const newPackage = {
         application_id: firstApp.id,
         arch: 1,
-        channels_blacklist: [],
-        description: 'Test package',
-        filename: 'package.gz',
-        hash: 'sha256:abcd1234',
-        size: '1024',
         type: 1,
         url: 'https://example.com/package.gz',
         version: '1.0.0'
@@ -229,7 +218,7 @@ test.describe('OIDC Authorization - Viewer User', () => {
         request, 'POST', `${baseUrl}/api/apps/${firstApp.id}/packages`, viewerToken.token, newPackage
       );
       
-      // Should be forbidden for write operations
+      // viewer should be forbidden for write operations
       expect(createResult.status).toBe(403);
     }
   });
@@ -250,9 +239,9 @@ test.describe('OIDC Authorization - Viewer User', () => {
       if (firstApp.groups?.length > 0) {
         const firstGroup = firstApp.groups[0];
         
-        // Test read access to instances
+        // viewer should have read access to instances
         const instancesResult = await oidcHelpers.makeAuthenticatedRequest(
-          request, 'GET', `${baseUrl}/api/apps/${firstApp.id}/groups/${firstGroup.id}/instances?status=0&sort=2&sortOrder=0&page=1&perpage=10&duration=30d`, viewerToken.token
+          request, 'GET', `${baseUrl}/api/apps/${firstApp.id}/groups/${firstGroup.id}/instances`, viewerToken.token
         );
         expect(instancesResult.status).toBe(200);
       }
@@ -263,7 +252,7 @@ test.describe('OIDC Authorization - Viewer User', () => {
     const viewerToken = await oidcHelpers.tokenManager.getValidToken(TEST_USERS.VIEWER);
     const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
     
-    // Test read access to activity
+    // viewer should have read access to activity
     const activityResult = await oidcHelpers.makeAuthenticatedRequest(
       request, 'GET', `${baseUrl}/api/activity?start=${new Date(Date.now() - 24*60*60*1000).toISOString()}&end=${new Date().toISOString()}`, viewerToken.token
     );
@@ -284,17 +273,17 @@ test.describe('OIDC Authorization - Viewer User', () => {
   test('compare viewer vs admin permissions', async ({ request }) => {
     const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
     
-    // Test the same endpoint with both user types
+    // compare admin vs viewer permissions
     const { adminResult, viewerResult } = await oidcHelpers.testRoleBasedAccess(
-      request, '/api/apps?page=0&perpage=10', 'GET'
+      request, '/api/apps', 'GET'
     );
     
-    // Both should be able to read
+    // both should be able to read
     expect(adminResult.status).toBe(200);
     expect(viewerResult.status).toBe(200);
     
-    // Test write operation
-    const newApp = { name: 'Role Test App', product_id: 'role-test', description: 'Test app for role comparison' };
+    // test write operation permissions
+    const newApp = { name: 'Role Test App' };
     
     const adminToken = await oidcHelpers.tokenManager.getValidToken(TEST_USERS.ADMIN);
     const viewerToken = await oidcHelpers.tokenManager.getValidToken(TEST_USERS.VIEWER);
@@ -306,11 +295,11 @@ test.describe('OIDC Authorization - Viewer User', () => {
       request, 'POST', `${baseUrl}/api/apps`, viewerToken.token, newApp
     );
     
-    // Admin should be allowed (or fail due to business logic, not auth)
+    // admin should be authorized
     expect(adminWrite.status).not.toBe(403);
     expect(adminWrite.status).not.toBe(401);
     
-    // Viewer should be forbidden
+    // viewer should be forbidden
     expect(viewerWrite.status).toBe(403);
   });
 });
