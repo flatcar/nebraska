@@ -1,13 +1,15 @@
 import { TestUser } from './test-users';
+import { OIDC_TEST_CONFIG } from '../test-config';
 
 export class KeycloakAPI {
   private baseUrl: string;
-  private realm = 'test';
-  private clientId = 'nebraska-test';
+  private realm: string;
+  private clientId: string;
 
   constructor() {
-    // Use different port for OIDC tests
-    this.baseUrl = process.env.CI ? 'http://127.0.0.1:8063' : 'http://localhost:8063';
+    this.baseUrl = OIDC_TEST_CONFIG.keycloak.baseURL;
+    this.realm = OIDC_TEST_CONFIG.keycloak.realm;
+    this.clientId = OIDC_TEST_CONFIG.keycloak.clientId;
   }
 
   async getAccessToken(user: TestUser): Promise<string> {

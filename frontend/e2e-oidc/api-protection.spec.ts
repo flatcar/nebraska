@@ -10,8 +10,6 @@ test.describe('OIDC API Endpoint Protection', () => {
   });
 
   test('should protect all API endpoints from unauthenticated access', async ({ request }) => {
-    const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
-    
     // List of API endpoints that should be protected
     const protectedEndpoints = [
       '/api/apps',
@@ -20,11 +18,11 @@ test.describe('OIDC API Endpoint Protection', () => {
     
     for (const endpoint of protectedEndpoints) {
       // Test without any authorization header
-      const noAuthResponse = await request.get(`${baseUrl}${endpoint}`);
+      const noAuthResponse = await request.get(endpoint);
       expect(noAuthResponse.status()).toBe(403); // Should be forbidden
       
       // Test with invalid authorization header  
-      const invalidAuthResponse = await request.get(`${baseUrl}${endpoint}`, {
+      const invalidAuthResponse = await request.get(endpoint, {
         headers: { 'Authorization': 'Invalid header format' }
       });
       expect(invalidAuthResponse.status()).toBe(403); // Should be forbidden
@@ -32,10 +30,8 @@ test.describe('OIDC API Endpoint Protection', () => {
   });
 
   test('should allow access to unprotected config endpoint', async ({ request }) => {
-    const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
-    
     // /config endpoint should be accessible without authentication for frontend bootstrap
-    const configResponse = await request.get(`${baseUrl}/config`);
+    const configResponse = await request.get('/config');
     expect(configResponse.status()).toBe(200);
     
     const configData = await configResponse.json();
@@ -45,7 +41,6 @@ test.describe('OIDC API Endpoint Protection', () => {
   });
 
   test('should validate token on every API request', async ({ request }) => {
-    const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
     
     const validToken = await oidcHelpers.tokenManager.getValidToken(TEST_USERS.ADMIN);
     const invalidToken = 'invalid-token-12345';
@@ -59,20 +54,19 @@ test.describe('OIDC API Endpoint Protection', () => {
     for (const endpoint of endpoints) {
       // Valid token should work
       const validResult = await oidcHelpers.makeAuthenticatedRequest(
-        request, 'GET', `${baseUrl}${endpoint}`, validToken.token
+        request, 'GET', endpoint, validToken.token
       );
       expect(validResult.status).toBe(200);
       
       // Invalid token should be rejected
       const invalidResult = await oidcHelpers.makeAuthenticatedRequest(
-        request, 'GET', `${baseUrl}${endpoint}`, invalidToken
+        request, 'GET', endpoint, invalidToken
       );
       expect(invalidResult.status).toBe(401);
     }
   });
 
   test('should enforce role-based access control on write operations', async ({ request }) => {
-    const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
     
     const adminToken = await oidcHelpers.tokenManager.getValidToken(TEST_USERS.ADMIN);
     const viewerToken = await oidcHelpers.tokenManager.getValidToken(TEST_USERS.VIEWER);
@@ -86,25 +80,24 @@ test.describe('OIDC API Endpoint Protection', () => {
     
     // Admin should be allowed to create (or get business logic error, not auth error)
     const adminCreateResult = await oidcHelpers.makeAuthenticatedRequest(
-      request, 'POST', `${baseUrl}/api/apps`, adminToken.token, newApp
+      request, 'POST', '/api/apps', adminToken.token, newApp
     );
     expect(adminCreateResult.status).not.toBe(403); // Not forbidden
     expect(adminCreateResult.status).not.toBe(401); // Not unauthorized
     
     // Viewer should be forbidden from creating
     const viewerCreateResult = await oidcHelpers.makeAuthenticatedRequest(
-      request, 'POST', `${baseUrl}/api/apps`, viewerToken.token, newApp
+      request, 'POST', '/api/apps', viewerToken.token, newApp
     );
     expect(viewerCreateResult.status).toBe(403); // Should be forbidden
   });
 
   test('should handle HEAD requests properly', async ({ request }) => {
-    const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
     
     const viewerToken = await oidcHelpers.tokenManager.getValidToken(TEST_USERS.VIEWER);
     
     // HEAD requests should be allowed for viewers (read-only operation)
-    const headResponse = await request.head(`${baseUrl}/api/apps`, {
+    const headResponse = await request.head('/api/apps', {
       headers: { 'Authorization': `Bearer ${viewerToken.token}` }
     });
     
@@ -113,10 +106,9 @@ test.describe('OIDC API Endpoint Protection', () => {
   });
 
   test('should properly handle OPTIONS requests', async ({ request }) => {
-    const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
     
     // OPTIONS requests are typically for CORS preflight
-    const optionsResponse = await request.fetch(`${baseUrl}/api/apps`, {
+    const optionsResponse = await request.fetch('/api/apps', {
       method: 'OPTIONS'
     });
     
@@ -125,13 +117,12 @@ test.describe('OIDC API Endpoint Protection', () => {
   });
 
   test('should protect nested API endpoints', async ({ request }) => {
-    const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
     
     const adminToken = await oidcHelpers.tokenManager.getValidToken(TEST_USERS.ADMIN);
     
     // First get an application to work with
     const appsResult = await oidcHelpers.makeAuthenticatedRequest(
-      request, 'GET', `${baseUrl}/api/apps`, adminToken.token
+      request, 'GET', '/api/apps', adminToken.token
     );
     expect(appsResult.status).toBe(200);
     
@@ -147,12 +138,12 @@ test.describe('OIDC API Endpoint Protection', () => {
       
       for (const endpoint of nestedEndpoints) {
         // Test without auth
-        const noAuthResponse = await request.get(`${baseUrl}${endpoint}`);
+        const noAuthResponse = await request.get(endpoint);
         expect([401, 403]).toContain(noAuthResponse.status());
         
         // Test with valid auth
         const authResult = await oidcHelpers.makeAuthenticatedRequest(
-          request, 'GET', `${baseUrl}${endpoint}`, adminToken.token
+          request, 'GET', endpoint, adminToken.token
         );
         expect(authResult.status).toBe(200);
       }
@@ -160,7 +151,6 @@ test.describe('OIDC API Endpoint Protection', () => {
   });
 
   test('should handle malformed API requests with authentication', async ({ request }) => {
-    const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
     
     const validToken = await oidcHelpers.tokenManager.getValidToken(TEST_USERS.ADMIN);
     
@@ -184,7 +174,7 @@ test.describe('OIDC API Endpoint Protection', () => {
     ];
     
     for (const { method, endpoint, data, contentType } of malformedRequests) {
-      const response = await request.fetch(`${baseUrl}${endpoint}`, {
+      const response = await request.fetch(endpoint, {
         method,
         headers: {
           'Authorization': `Bearer ${validToken.token}`,
@@ -203,17 +193,16 @@ test.describe('OIDC API Endpoint Protection', () => {
   });
 
   test('should handle concurrent API requests with authentication', async ({ request }) => {
-    const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
     
     const adminToken = await oidcHelpers.tokenManager.getValidToken(TEST_USERS.ADMIN);
     const viewerToken = await oidcHelpers.tokenManager.getValidToken(TEST_USERS.VIEWER);
     
     // Make multiple concurrent requests
     const concurrentRequests = [
-      oidcHelpers.makeAuthenticatedRequest(request, 'GET', `${baseUrl}/api/apps`, adminToken.token),
-      oidcHelpers.makeAuthenticatedRequest(request, 'GET', `${baseUrl}/api/config`, adminToken.token),
-      oidcHelpers.makeAuthenticatedRequest(request, 'GET', `${baseUrl}/api/apps`, viewerToken.token),
-      oidcHelpers.makeAuthenticatedRequest(request, 'GET', `${baseUrl}/api/config`, viewerToken.token),
+      oidcHelpers.makeAuthenticatedRequest(request, 'GET', '/api/apps', adminToken.token),
+      oidcHelpers.makeAuthenticatedRequest(request, 'GET', '/api/config', adminToken.token),
+      oidcHelpers.makeAuthenticatedRequest(request, 'GET', '/api/apps', viewerToken.token),
+      oidcHelpers.makeAuthenticatedRequest(request, 'GET', '/api/config', viewerToken.token),
     ];
     
     const results = await Promise.all(concurrentRequests);
@@ -225,12 +214,11 @@ test.describe('OIDC API Endpoint Protection', () => {
   });
 
   test('should validate Content-Type for POST/PUT requests', async ({ request }) => {
-    const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
     
     const adminToken = await oidcHelpers.tokenManager.getValidToken(TEST_USERS.ADMIN);
     
     // Test POST with wrong Content-Type
-    const wrongContentTypeResponse = await request.fetch(`${baseUrl}/api/apps`, {
+    const wrongContentTypeResponse = await request.fetch('/api/apps', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${adminToken.token}`,
@@ -248,7 +236,6 @@ test.describe('OIDC API Endpoint Protection', () => {
   });
 
   test('should handle API requests with query parameters', async ({ request }) => {
-    const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
     
     const viewerToken = await oidcHelpers.tokenManager.getValidToken(TEST_USERS.VIEWER);
     
@@ -260,7 +247,7 @@ test.describe('OIDC API Endpoint Protection', () => {
     
     for (const endpoint of endpointsWithParams) {
       const result = await oidcHelpers.makeAuthenticatedRequest(
-        request, 'GET', `${baseUrl}${endpoint}`, viewerToken.token
+        request, 'GET', endpoint, viewerToken.token
       );
       
       // Should work with valid token
@@ -269,7 +256,6 @@ test.describe('OIDC API Endpoint Protection', () => {
   });
 
   test('should handle large payloads with authentication', async ({ request }) => {
-    const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
     
     const adminToken = await oidcHelpers.tokenManager.getValidToken(TEST_USERS.ADMIN);
     
@@ -281,7 +267,7 @@ test.describe('OIDC API Endpoint Protection', () => {
     };
     
     const result = await oidcHelpers.makeAuthenticatedRequest(
-      request, 'POST', `${baseUrl}/api/apps`, adminToken.token, largePayload
+      request, 'POST', '/api/apps', adminToken.token, largePayload
     );
     
     // Should not fail with auth errors

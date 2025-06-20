@@ -55,10 +55,18 @@ oidc-up:
 oidc-down:
 	$(OIDC_COMPOSE_CMD) down
 
+# Regular test infrastructure commands  
+REGULAR_COMPOSE_CMD = cd ../backend && docker compose -f docker-compose.base.yaml -f docker-compose.test.yaml
+
+.PHONY: regular-test-down
+regular-test-down:
+	$(REGULAR_COMPOSE_CMD) down
+
 .PHONY: test-playwright-ci
 test-playwright-ci:
-	# Run Playwright tests and capture failure
-	npx playwright test
+	# Run Playwright tests and capture failure, then ensure cleanup
+	npx playwright test || ($(MAKE) regular-test-down && exit 1)
+	$(MAKE) regular-test-down
 
 .PHONY: test-oidc
 test-oidc:
@@ -71,7 +79,7 @@ test-oidc-ci: oidc-up
 	$(MAKE) oidc-down 
 
 .PHONY: ci
-ci: install-ci lint test install-playwright test-storybook-ci test-playwright-ci tsc build 
+ci: install-ci lint test install-playwright test-storybook-ci test-playwright-ci test-oidc-ci tsc build 
 
 node_modules:
 	npm install

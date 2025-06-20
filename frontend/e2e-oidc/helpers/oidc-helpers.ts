@@ -2,6 +2,7 @@ import { Page, expect, APIRequestContext } from '@playwright/test';
 import { TokenManager, TokenInfo } from './token-manager';
 import { KeycloakAPI } from './keycloak-api';
 import { TestUser, TEST_USERS } from './test-users';
+import { OIDC_TEST_CONFIG } from '../test-config';
 
 export class OIDCHelpers {
   private tokenManager: TokenManager;
@@ -42,28 +43,27 @@ export class OIDCHelpers {
    * Test API endpoint protection with various token scenarios
    */
   async testAPIProtection(request: APIRequestContext, endpoint: string) {
-    const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
     
     // Test without token
-    const noTokenResponse = await request.get(`${baseUrl}${endpoint}`);
+    const noTokenResponse = await request.get(endpoint);
     expect(noTokenResponse.status()).toBe(403); // Should be forbidden without token
 
     // Test with invalid token
     const invalidResult = await this.makeAuthenticatedRequest(
-      request, 'GET', `${baseUrl}${endpoint}`, 'invalid-token'
+      request, 'GET', endpoint, 'invalid-token'
     );
     expect(invalidResult.status).toBe(401); // Should be unauthorized with invalid token
 
     // Test with malformed token
     const malformedResult = await this.makeAuthenticatedRequest(
-      request, 'GET', `${baseUrl}${endpoint}`, 'malformed.jwt.token'
+      request, 'GET', endpoint, 'malformed.jwt.token'
     );
     expect(malformedResult.status).toBe(401); // Should be unauthorized with malformed token
 
     // Test with valid admin token
     const adminToken = await this.tokenManager.getValidToken(TEST_USERS.ADMIN);
     const adminResult = await this.makeAuthenticatedRequest(
-      request, 'GET', `${baseUrl}${endpoint}`, adminToken.token
+      request, 'GET', endpoint, adminToken.token
     );
     expect(adminResult.status).toBe(200); // Should be OK with valid admin token
 
@@ -74,18 +74,17 @@ export class OIDCHelpers {
    * Test role-based access control
    */
   async testRoleBasedAccess(request: APIRequestContext, endpoint: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET') {
-    const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
     
     // Test admin access
     const adminToken = await this.tokenManager.getValidToken(TEST_USERS.ADMIN);
     const adminResult = await this.makeAuthenticatedRequest(
-      request, method, `${baseUrl}${endpoint}`, adminToken.token
+      request, method, endpoint, adminToken.token
     );
 
     // Test viewer access
     const viewerToken = await this.tokenManager.getValidToken(TEST_USERS.VIEWER);
     const viewerResult = await this.makeAuthenticatedRequest(
-      request, method, `${baseUrl}${endpoint}`, viewerToken.token
+      request, method, endpoint, viewerToken.token
     );
 
     return { adminResult, viewerResult };
@@ -95,11 +94,10 @@ export class OIDCHelpers {
    * Simulate expired token scenario
    */
   async testExpiredToken(request: APIRequestContext, endpoint: string) {
-    const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
     
     const expiredToken = await this.tokenManager.getExpiredToken(TEST_USERS.VIEWER);
     const result = await this.makeAuthenticatedRequest(
-      request, 'GET', `${baseUrl}${endpoint}`, expiredToken.token
+      request, 'GET', endpoint, expiredToken.token
     );
     
     expect(result.status).toBe(401); // Should be unauthorized with expired token

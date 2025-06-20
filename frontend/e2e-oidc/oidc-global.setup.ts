@@ -2,16 +2,18 @@ import { test as setup } from '@playwright/test';
 import pg from 'pg';
 const { Client } = pg;
 
+import { OIDC_TEST_CONFIG } from './test-config';
+
 setup('setup OIDC test environment', async () => {
   console.log('Setting up OIDC test environment...');
   
   // Connect to the test database
   const client = new Client({
-    user: 'postgres',
-    host: process.env.CI ? '127.0.0.1' : 'localhost',
-    database: 'nebraska_tests',
-    password: 'nebraska',
-    port: 8001, // OIDC test postgres port
+    user: OIDC_TEST_CONFIG.database.user,
+    host: OIDC_TEST_CONFIG.database.host,
+    database: OIDC_TEST_CONFIG.database.name,
+    password: OIDC_TEST_CONFIG.database.password,
+    port: OIDC_TEST_CONFIG.database.port,
   });
 
   try {
@@ -82,7 +84,7 @@ setup('setup OIDC test environment', async () => {
   // Wait for Nebraska backend
   const maxRetries = 30;
   let retries = 0;
-  const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
+  const baseUrl = OIDC_TEST_CONFIG.nebraska.baseURL;
   
   while (retries < maxRetries) {
     try {
@@ -104,7 +106,7 @@ setup('setup OIDC test environment', async () => {
   }
 
   // Wait for Keycloak
-  const keycloakUrl = process.env.CI ? 'http://127.0.0.1:8063' : 'http://localhost:8063';
+  const keycloakUrl = OIDC_TEST_CONFIG.keycloak.baseURL;
   retries = 0;
   
   while (retries < maxRetries) {

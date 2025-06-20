@@ -49,32 +49,30 @@ test.describe('OIDC Authentication Flows', () => {
     expect(appsData.applications).toBeDefined();
     
     // Test /config endpoint is accessible without authentication
-    const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
-    const configResponse = await request.get(`${baseUrl}/config`);
+    const configResponse = await request.get('/config');
     expect(configResponse.status()).toBe(200);
   });
 
   test('should handle invalid authentication scenarios', async ({ request }) => {
-    const baseUrl = process.env.CI ? 'http://127.0.0.1:8003' : 'http://localhost:8003';
     
     // Test with no Authorization header
-    const noAuthResponse = await request.get(`${baseUrl}/api/apps?page=0&perpage=10`);
+    const noAuthResponse = await request.get('/api/apps?page=0&perpage=10');
     expect(noAuthResponse.status()).toBe(403);
     
     // Test with invalid token
-    const invalidTokenResponse = await request.get(`${baseUrl}/api/apps?page=0&perpage=10`, {
+    const invalidTokenResponse = await request.get('/api/apps?page=0&perpage=10', {
       headers: { 'Authorization': 'Bearer invalid-token-12345' }
     });
     expect(invalidTokenResponse.status()).toBe(401);
     
     // Test with malformed Authorization header
-    const malformedHeaderResponse = await request.get(`${baseUrl}/api/apps?page=0&perpage=10`, {
+    const malformedHeaderResponse = await request.get('/api/apps?page=0&perpage=10', {
       headers: { 'Authorization': 'InvalidFormat token' }
     });
     expect(malformedHeaderResponse.status()).toBe(403);
     
     // Test with malformed JWT
-    const malformedJWTResponse = await request.get(`${baseUrl}/api/apps`, {
+    const malformedJWTResponse = await request.get('/api/apps', {
       headers: { 'Authorization': 'Bearer eyJhbGciOiJSUzI1NiJ9.invalid.signature' }
     });
     expect(malformedJWTResponse.status()).toBe(401);
