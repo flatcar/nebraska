@@ -400,9 +400,10 @@ func (api *API) GetInstances(p InstancesQueryParams, duration string) (Instances
 
 	instanceAppQuery := prepareInstanceAppQuery()
 	finalQuery := prepareGetInstancesQuery(instancesQuery, instanceAppQuery)
-	if sortOrder == sortOrderAsc {
+	switch sortOrder {
+	case sortOrderAsc:
 		finalQuery = finalQuery.Order(goqu.I(sortFilter).Asc().NullsLast())
-	} else if sortOrder == sortOrderDesc {
+	case sortOrderDesc:
 		finalQuery = finalQuery.Order(goqu.I(sortFilter).Desc().NullsLast())
 	}
 
@@ -589,9 +590,10 @@ func (api *API) instanceAppQuery(appID, instanceID string, duration postgresDura
 	}
 
 	if sortFilter != "" {
-		if orderOfSort == sortOrderAsc {
+		switch orderOfSort {
+		case sortOrderAsc:
 			query = query.Order(goqu.I(sortFilter).Asc().NullsLast())
-		} else if orderOfSort == sortOrderDesc {
+		case sortOrderDesc:
 			query = query.Order(goqu.I(sortFilter).Desc().NullsLast())
 		}
 	}
