@@ -5,12 +5,13 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+
 	"github.com/kinvolk/nebraska/updater"
 )
 
 type exampleUpdateHandler struct{}
 
-func (e exampleUpdateHandler) FetchUpdate(ctx context.Context, info updater.UpdateInfo) error {
+func (e exampleUpdateHandler) FetchUpdate(_ context.Context, _ updater.UpdateInfo) error {
 	// download, err := someFunctionThatDownloadsAFile(ctx, info.GetURL())
 	// if err != nil {
 	// 	return err
@@ -18,7 +19,7 @@ func (e exampleUpdateHandler) FetchUpdate(ctx context.Context, info updater.Upda
 	return nil
 }
 
-func (e exampleUpdateHandler) ApplyUpdate(ctx context.Context, info updater.UpdateInfo) error {
+func (e exampleUpdateHandler) ApplyUpdate(_ context.Context, _ updater.UpdateInfo) error {
 	// err := someFunctionThatExtractsTheUpdateAndInstallIt(ctx, getDownloadFile(ctx))
 	// if err != nil {
 	// 	// Oops something went wrong
@@ -35,7 +36,7 @@ func (e exampleUpdateHandler) ApplyUpdate(ctx context.Context, info updater.Upda
 
 // ExampleUpdater_withUpdateHandler shows how to use the updater package to
 // update an application automatically using exampleUpdateHandler.
-func ExampleUpdater_withUpdateHandler() error {
+func ExampleUpdater_withUpdateHandler() error { //nolint: govet
 	conf := updater.Config{
 		OmahaURL:        "http://test.omahaserver.com/v1/update/",
 		AppID:           "application_id",
