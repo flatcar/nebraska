@@ -5,22 +5,23 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+
 	"github.com/kinvolk/nebraska/updater"
 )
 
-func someFunctionThatDownloadsAFile(ctx context.Context, url string) (string, error) {
+func someFunctionThatDownloadsAFile(_ context.Context, _ string) (string, error) {
 	// Download file logic goes here
 	return "/tmp/downloads/examplefile.txt", nil
 }
 
-func someFunctionThatExtractsTheUpdateAndInstallIt(ctx context.Context, filePath string) error {
+func someFunctionThatExtractsTheUpdateAndInstallIt(_ context.Context, _ string) error {
 	// Extract and install update logic goes here
 	return nil
 }
 
 // ExampleUpdater shows how to use the updater package to
 // update an application manually.
-func ExampleUpdater() error {
+func ExampleUpdater() error { //nolint:govet
 	conf := updater.Config{
 		OmahaURL:        "http://test.omahaserver.com/v1/update/",
 		AppID:           "application_id",

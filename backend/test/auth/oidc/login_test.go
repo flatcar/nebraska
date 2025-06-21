@@ -97,7 +97,7 @@ func waitServerReady() (bool, error) {
 			continue
 		}
 
-		if (http.StatusOK == resp.StatusCode) && ("OK" == string(bodyBytes)) {
+		if (http.StatusOK == resp.StatusCode) && (string(bodyBytes) == "OK") {
 			return true, nil
 		}
 	}
