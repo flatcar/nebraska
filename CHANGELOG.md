@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- Postgresql 17.x is now the tested and default version. For Helm users, to stay on 13.x: pin the desired version `image.tag` in `values.yaml` or do not upgrade the chart to >= 1.5.0 ([nebraska#1088](https://github.com/flatcar/nebraska/pull/1088))
+
 ### Bugfixes
 
 ## [v2.11.0] - 17/06/2025
