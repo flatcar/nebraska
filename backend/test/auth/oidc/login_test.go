@@ -30,7 +30,7 @@ func TestOIDCAuthModeSetup(t *testing.T) {
 		server, err := server.New(conf, db)
 		assert.Nil(t, server)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "Error setting up oidc provider")
+		assert.Contains(t, err.Error(), "error setting up oidc provider")
 		assert.Contains(t, err.Error(), "connect: connection refused")
 	})
 
@@ -50,7 +50,7 @@ func TestOIDCAuthModeSetup(t *testing.T) {
 
 		server, err := server.New(&testConfig, db)
 		assert.Nil(t, server)
-		assert.Contains(t, err.Error(), "Error setting up oidc provider")
+		assert.Contains(t, err.Error(), "error setting up oidc provider")
 		assert.Contains(t, err.Error(), "404 page not found")
 
 		err = oidcServer.Shutdown()
@@ -97,7 +97,7 @@ func waitServerReady() (bool, error) {
 			continue
 		}
 
-		if (http.StatusOK == resp.StatusCode) && ("OK" == string(bodyBytes)) {
+		if (http.StatusOK == resp.StatusCode) && (string(bodyBytes) == "OK") {
 			return true, nil
 		}
 	}

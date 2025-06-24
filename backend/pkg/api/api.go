@@ -228,7 +228,7 @@ func OptionDisableUpdatesOnFailedRollout(api *API) error {
 
 // Close releases the connections to the database.
 func (api *API) Close() {
-	_ = api.db.DB.Close()
+	_ = api.db.Close()
 }
 
 // NewForTest creates a new API instance with given options and fills

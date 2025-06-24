@@ -32,7 +32,7 @@ func newTestHandler(api *api.API) *testOmahaHandler {
 	}
 }
 
-func (h *testOmahaHandler) Handle(ctx context.Context, url string, req *omahaSpec.Request) (*omahaSpec.Response, error) {
+func (h *testOmahaHandler) Handle(_ context.Context, _ string, req *omahaSpec.Request) (*omahaSpec.Response, error) {
 	requestBuf := bytes.NewBuffer(nil)
 	encoder := xml.NewEncoder(requestBuf)
 	err := encoder.Encode(req)
@@ -152,11 +152,11 @@ type updateTestHandler struct {
 	applyUpdateResult error
 }
 
-func (u updateTestHandler) FetchUpdate(ctx context.Context, info UpdateInfo) error {
+func (u updateTestHandler) FetchUpdate(_ context.Context, _ UpdateInfo) error {
 	return u.fetchUpdateResult
 }
 
-func (u updateTestHandler) ApplyUpdate(ctx context.Context, info UpdateInfo) error {
+func (u updateTestHandler) ApplyUpdate(_ context.Context, _ UpdateInfo) error {
 	return u.applyUpdateResult
 }
 

@@ -298,7 +298,7 @@ func (api *API) GetPackage(pkgID string) (*Package, error) {
 func (api *API) GetPackageByVersionAndArch(appID, version string, arch Arch) (*Package, error) {
 	var pkg Package
 	if !isValidSemver(version) {
-		return nil, fmt.Errorf("Error GetPackageByVersionAndArch version %s is not valid", version)
+		return nil, fmt.Errorf("error GetPackageByVersionAndArch version %s is not valid", version)
 	}
 	query, _, err := api.packagesQuery().
 		Where(goqu.C("application_id").Eq(appID), goqu.C("arch").Eq(arch), goqu.C("version").Eq(version)).
