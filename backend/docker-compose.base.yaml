@@ -1,0 +1,18 @@
+# Base docker-compose file with shared services for Nebraska testing
+# This file provides common services that are inherited by test-specific compose files.
+
+services:
+  postgres:
+    image: postgres:13.18
+    ports:
+      - "8001:5432"
+    environment:
+      POSTGRES_PASSWORD: nebraska
+      POSTGRES_DB: nebraska_tests
+      POSTGRES_USER: postgres
+      TZ: UTC 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
