@@ -119,18 +119,27 @@ func (gha *githubAuth) SetupRouter(router *echo.Echo) {
 }
 
 func (gha *githubAuth) Login(c echo.Context) error {
-	return c.NoContent(http.StatusNotImplemented)
+	return c.JSON(http.StatusNotImplemented, map[string]any{
+		"error":       "login_not_supported",
+		"description": "Direct login endpoint is not supported in GitHub mode. Authentication is initiated when accessing protected resources.",
+	})
 }
 
 func (gha *githubAuth) LoginToken(ctx echo.Context) error {
-	return ctx.NoContent(http.StatusNotImplemented)
+	return ctx.JSON(http.StatusNotImplemented, map[string]any{
+		"error":       "token_login_not_supported",
+		"description": "Token-based login is not supported in GitHub mode. Use OAuth flow instead.",
+	})
 }
 
 func (gha *githubAuth) ValidateToken(ctx echo.Context) error {
-	return ctx.NoContent(http.StatusNotImplemented)
+	return ctx.JSON(http.StatusNotImplemented, map[string]any{
+		"error":       "validate_token_not_supported",
+		"description": "Token validation is not supported in GitHub mode. GitHub uses session-based authentication.",
+	})
 }
 
-func (gha *githubAuth) Authenticate(c echo.Context) (teamID string, replied bool) {
+func (gha *githubAuth) Authorize(c echo.Context) (teamID string, replied bool) {
 	session := echosessions.GetSession(c)
 	if session.Has("teamID") {
 		if session.Get("accesslevel") != "rw" {
@@ -798,4 +807,13 @@ func (gha *githubAuth) stealSessionIDsForOrgAndTeam(org, team string) []string {
 
 func makeTeamName(org, team string) string {
 	return fmt.Sprintf("%s/%s", org, team)
+}
+
+func sessionSave(_ echo.Context, session any, description string) {
+	// Type assert to session with Save method
+	if s, ok := session.(interface{ Save() error }); ok {
+		if err := s.Save(); err != nil {
+			l.Error().AnErr("error", err).Str("description", description).Msg("Failed to save session")
+		}
+	}
 }
