@@ -65,7 +65,11 @@ func (h *Handler) CreateApp(ctx echo.Context, params codegen.CreateAppParams) er
 
 	app, err = h.db.AddAppCloning(app, source)
 	if err != nil {
-		l.Error().Err(err).Str("sourceAppID", *params.CloneFrom).Msgf("addApp - cloning app %v", app)
+		sourceAppID := "none"
+		if params.CloneFrom != nil {
+			sourceAppID = *params.CloneFrom
+		}
+		l.Error().Err(err).Str("sourceAppID", sourceAppID).Msgf("addApp - cloning app %v", app)
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
