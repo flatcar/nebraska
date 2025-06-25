@@ -1,7 +1,8 @@
 import { Icon, IconifyIcon } from '@iconify/react';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import CreateOutlined from '@mui/icons-material/CreateOutlined';
-import { Box, Button } from '@mui/material';
+import LogoutOutlined from '@mui/icons-material/LogoutOutlined';
+import { Box, Button, Divider } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import IconButton from '@mui/material/IconButton';
 import Menu, { MenuProps } from '@mui/material/Menu';
@@ -16,8 +17,10 @@ import _ from 'underscore';
 
 import nebraskaLogo from '../icons/nebraska-logo.json';
 import themes from '../lib/themes';
-import { UserState } from '../stores/redux/features/user';
-import { useSelector } from '../stores/redux/hooks';
+import { setUser, UserState } from '../stores/redux/features/user';
+import { useDispatch, useSelector } from '../stores/redux/hooks';
+import { clearTokens, getIdToken } from '../utils/auth';
+import { getOIDCClient } from '../utils/oidc';
 
 const PREFIX = 'Header';
 
@@ -76,10 +79,11 @@ interface AppbarProps {
   projectLogo: IconifyIcon;
   handleClose: MenuProps['onClose'];
   handleMenu: React.MouseEventHandler<HTMLButtonElement>;
+  handleLogout: () => void;
 }
 
 function Appbar(props: AppbarProps) {
-  const { config, user, menuAnchorEl, projectLogo, handleClose, handleMenu } = props;
+  const { config, user, menuAnchorEl, projectLogo, handleClose, handleMenu, handleLogout } = props;
 
   const { t } = useTranslation();
 
@@ -151,6 +155,16 @@ function Appbar(props: AppbarProps) {
                 {t('header|manage_account')}
               </Button>
             </Box>
+            {user?.authenticated && config?.auth_mode === 'oidc' && (
+              <>
+                <Divider />
+                <Box paddingY={1} paddingX={2} textAlign="center">
+                  <Button startIcon={<LogoutOutlined />} onClick={handleLogout} fullWidth>
+                    {t('header|logout')}
+                  </Button>
+                </Box>
+              </>
+            )}
           </Menu>
         )}
       </Toolbar>
@@ -160,6 +174,7 @@ function Appbar(props: AppbarProps) {
 
 export default function Header() {
   const { config, user } = useSelector(state => ({ config: state.config, user: state.user }));
+  const dispatch = useDispatch();
   const projectLogo = _.isEmpty(nebraskaLogo) ? null : nebraskaLogo;
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLButtonElement | null>(null);
 
@@ -171,6 +186,28 @@ export default function Header() {
     setMenuAnchorEl(null);
   }
 
+  function handleLogout() {
+    // Use OIDC client for logout (direct provider logout only)
+    const oidcClient = getOIDCClient();
+    if (oidcClient && config?.auth_mode === 'oidc') {
+      const logoutRedirectUrl = new URL(window.location.href);
+      logoutRedirectUrl.pathname = '/';
+      // Get ID token BEFORE clearing tokens
+      const idTokenHint = getIdToken();
+
+      // Clear tokens and user state
+      clearTokens();
+      dispatch(setUser({ authenticated: false, name: '', email: '' }));
+
+      // Redirect to OIDC logout endpoint
+      oidcClient.logout(logoutRedirectUrl.toString(), idTokenHint || undefined);
+    } else {
+      // For non-OIDC auth modes, just clear tokens and user state
+      clearTokens();
+      dispatch(setUser({ authenticated: false, name: '', email: '' }));
+    }
+  }
+
   const props = {
     config,
     user,
@@ -178,6 +215,7 @@ export default function Header() {
     projectLogo: projectLogo as object,
     handleClose,
     handleMenu,
+    handleLogout,
   } as AppbarProps;
   const appBar = <Appbar {...props} />;
   // cachedConfig.appBarColor is for backward compatibility (the name used for the setting before).
