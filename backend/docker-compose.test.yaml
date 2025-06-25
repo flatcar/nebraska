@@ -19,15 +19,15 @@ services:
       POSTGRES_PASSWORD: nebraska
       POSTGRES_DB: nebraska_tests
       POSTGRES_USER: postgres
-      TZ: UTC 
+      TZ: UTC
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
-      retries: 5      
+      retries: 5
 
   server:
-    build: 
+    build:
       context: ../
       dockerfile: Dockerfile
       network: host

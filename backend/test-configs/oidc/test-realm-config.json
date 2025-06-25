@@ -1,0 +1,85 @@
+{
+  "realm": "test",
+  "enabled": true,
+  "sslRequired": "none",
+  "roles": {
+    "realm": [
+      {
+        "name": "test_admin",
+        "composite": true,
+        "composites": {
+          "realm": ["test_viewer"]
+        }
+      },
+      {
+        "name": "test_viewer"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "nebraska-test",
+      "enabled": true,
+      "publicClient": true,
+      "bearerOnly": false,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "implicitFlowEnabled": false,
+      "redirectUris": ["http://localhost:8003/*", "http://127.0.0.1:8003/*"],
+      "webOrigins": ["http://localhost:8003", "http://127.0.0.1:8003"],
+      "protocolMappers": [
+        {
+          "name": "realm-roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "realm_access.roles",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "test-admin",
+      "email": "admin@test.com",
+      "firstName": "Test",
+      "lastName": "Admin",
+      "enabled": true,
+      "credentials": [{
+        "type": "password",
+        "value": "admin123"
+      }],
+      "realmRoles": ["test_admin"]
+    },
+    {
+      "username": "test-viewer",
+      "email": "viewer@test.com", 
+      "firstName": "Test",
+      "lastName": "Viewer",
+      "enabled": true,
+      "credentials": [{
+        "type": "password",
+        "value": "viewer123"
+      }],
+      "realmRoles": ["test_viewer"]
+    },
+    {
+      "username": "test-expired",
+      "email": "expired@test.com",
+      "firstName": "Test", 
+      "lastName": "Expired",
+      "enabled": true,
+      "credentials": [{
+        "type": "password",
+        "value": "expired123"
+      }],
+      "realmRoles": ["test_viewer"]
+    }
+  ]
+}

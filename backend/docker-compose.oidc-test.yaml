@@ -1,0 +1,62 @@
+# Docker-compose file for OIDC E2E testing.
+#
+# This extends the existing test infrastructure but adds Keycloak and configures
+# Nebraska with OIDC authentication instead of noop auth.
+#
+# Build docker image from local sources:
+#   docker compose -f docker-compose.oidc-test.yaml build
+#
+# Run:
+#   docker compose -f docker-compose.oidc-test.yaml up
+
+services:
+  postgres:
+    image: postgres:17
+    ports:
+      - "8001:5432"
+    environment:
+      POSTGRES_PASSWORD: nebraska
+      POSTGRES_DB: nebraska_tests
+      POSTGRES_USER: postgres
+      TZ: UTC
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    ports:
+      - "8063:8080"
+    volumes:
+      - ./test-configs/oidc/test-realm-config.json:/opt/keycloak/data/import/test-realm.json:Z
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HTTP_PORT: 8080
+    command: start-dev --import-realm --hostname-strict=false
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/realms/test || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  server:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    network_mode: host
+    # Simple dependency without conditions (podman-compose compatible)
+    depends_on:
+      - postgres
+      - keycloak
+    environment:
+      - NEBRASKA_DB_URL=postgres://postgres:nebraska@localhost:8001/nebraska_tests?sslmode=disable&connect_timeout=10
+    volumes:
+      - ./test-configs/oidc/startup-oidc.sh:/startup-oidc.sh:ro
+    # Install dependencies and run startup script
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["apk add --no-cache curl netcat-openbsd && /startup-oidc.sh"]
+    user: root
+

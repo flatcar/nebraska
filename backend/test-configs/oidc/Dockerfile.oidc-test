@@ -1,0 +1,21 @@
+# Dockerfile for OIDC testing
+# Extends the main Nebraska image with tools needed for startup script
+
+FROM backend_server:latest
+
+# Switch to root to install packages
+USER root
+
+# Add curl and netcat for startup script dependency checking
+RUN apk update && \
+    apk add --no-cache curl netcat-openbsd
+
+# Copy startup script
+COPY test-configs/oidc/startup-oidc.sh /startup-oidc.sh
+RUN chmod +x /startup-oidc.sh
+
+# Switch back to nobody user
+USER nobody
+
+# Default command will be overridden by docker-compose
+CMD ["/startup-oidc.sh"]
