@@ -19,6 +19,13 @@
     "preview": "vite preview",
     "test": "cross-env TEST_TZ=true vitest --silent",
     "test:coverage": "cross-env TEST_TZ=true vitest --silent --coverage --environment=jsdom --reporter=default --coverage.dir=coverage/report",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:oidc": "playwright test --config=playwright.oidc.config.ts",
+    "test:oidc:ui": "playwright test --config=playwright.oidc.config.ts --ui",
+    "test:oidc:headed": "playwright test --config=playwright.oidc.config.ts --headed",
+    "test:oidc:debug": "playwright test --config=playwright.oidc.config.ts --debug",
     "build-storybook:ci": "cross-env NODE_ENV=test storybook build --quiet",
     "serve-storybook:ci": "npm exec -- http-server storybook-static --port 6006 --silent",
     "test-storybook:ci": "npx wait-on tcp:127.0.0.1:6006 && cross-env NODE_ENV=test TZ=UTC test-storybook",
@@ -141,6 +148,12 @@
       "eslint -c package.json --fix"
     ],
     "e2e/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "prettier --config package.json --write"
+    ],
+    "e2e-oidc/**/*.{js,jsx,ts,tsx}": [
+      "eslint -c package.json --fix"
+    ],
+    "e2e-oidc/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --config package.json --write"
     ]
   },
