@@ -26,16 +26,16 @@ type mockAuthenticator struct {
 	callCount   int
 }
 
-func (m *mockAuthenticator) Authorize(c echo.Context) (string, bool) {
+func (m *mockAuthenticator) Authorize(_ echo.Context) (string, bool) {
 	m.callCount++
 	return m.teamID, m.shouldReply
 }
 
-func (m *mockAuthenticator) Login(c echo.Context) error {
+func (m *mockAuthenticator) Login(_ echo.Context) error {
 	return nil
 }
 
-func (m *mockAuthenticator) LoginCb(c echo.Context) error {
+func (m *mockAuthenticator) LoginCb(_ echo.Context) error {
 	return nil
 }
 

@@ -5,8 +5,6 @@ import { loadEnv } from 'vite';
 export const ENV_DIR = './';
 Object.assign(process.env, loadEnv('', ENV_DIR));
 
-console.log('CI=', process.env.CI);
-
 /**
  * See https://playwright.dev/docs/test-configuration.
  */

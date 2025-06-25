@@ -7,10 +7,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 
 	"github.com/kinvolk/nebraska/backend/pkg/auth"
-	"github.com/kinvolk/nebraska/backend/pkg/util"
 )
-
-var logger = util.NewLogger("auth-middleware")
 
 func NewAuthSkipper(auth string) middleware.Skipper {
 	return func(c echo.Context) bool {
