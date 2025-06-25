@@ -1,33 +1,19 @@
 # Docker-compose file for interactive and for automated testing.
+# Inherits shared PostgreSQL service from docker-compose.base.yaml
 #
 # Build docker image from local sources:
-#   docker compose --file docker-compose.test.yaml build
+#   docker compose -f docker-compose.base.yaml -f docker-compose.test.yaml build
 #
 # Run:
-#   docker compose --file docker-compose.test.yaml run
+#   docker compose -f docker-compose.base.yaml -f docker-compose.test.yaml up
 # Run with persistent storage:
-#   docker compose --file docker-compose.test.yaml --file docker-compose.test-db-persist.yaml up
+#   docker compose -f docker-compose.base.yaml -f docker-compose.test.yaml -f docker-compose.pg-persist.yaml up
 #
 # See docker-compose.pg-persist.yaml for more information on persistent storage.
 
 services:
-  postgres:
-    image: postgres:17
-    ports:
-      - "8001:5432"
-    environment:
-      POSTGRES_PASSWORD: nebraska
-      POSTGRES_DB: nebraska_tests
-      POSTGRES_USER: postgres
-      TZ: UTC 
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5      
-
   server:
-    build: 
+    build:
       context: ../
       dockerfile: Dockerfile
       network: host
