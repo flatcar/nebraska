@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"net/url"
 	"path"
 	"strings"
 	"time"
@@ -14,7 +13,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	echomiddleware "github.com/oapi-codegen/echo-middleware"
-	"github.com/pkg/errors"
 
 	db "github.com/kinvolk/nebraska/backend/pkg/api"
 	"github.com/kinvolk/nebraska/backend/pkg/auth"
@@ -35,10 +33,10 @@ const serviceName = "nebraska"
 var (
 	l                 = logger.New("nebraska")
 	middlewareSkipper = func(c echo.Context) bool {
-		requestPath := c.Path()
-		paths := []string{"/health", "/metrics", "/config", "/v1/update", "/flatcar/*", "/*"}
-		for _, path := range paths {
-			if requestPath == path {
+		requestPath := c.Request().URL.Path
+		paths := []string{"/health", "/metrics", "/config", "/v1/update", "/flatcar/*"}
+		for _, pattern := range paths {
+			if custommiddleware.MatchesPattern(pattern, requestPath) {
 				return true
 			}
 		}
@@ -106,8 +104,22 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 	if sessionStore != nil {
 		e.Use(echosessions.SessionsMiddleware(sessionStore, conf.AuthMode))
 	}
-	e.Use(echomiddleware.OapiRequestValidatorWithOptions(swagger, &echomiddleware.Options{Options: openapi3filter.Options{AuthenticationFunc: nebraskaAuthenticationFunc(conf.AuthMode)}, Skipper: middlewareSkipper}))
+
+	// MIDDLEWARE EXECUTION ORDER:
+	// 1. Session middleware (if enabled)
+	// 2. Authentication middleware (for ALL HTTP methods)
+	// 3. OpenAPI request validation middleware
+	//
+	// This order ensures authorization errors (403) are returned before
+	// validation errors (400), preventing information leakage.
 	e.Use(custommiddleware.Auth(authenticator, custommiddleware.AuthConfig{Skipper: custommiddleware.NewAuthSkipper(conf.AuthMode)}))
+
+	e.Use(echomiddleware.OapiRequestValidatorWithOptions(
+		swagger,
+		&echomiddleware.Options{Options: openapi3filter.Options{
+			AuthenticationFunc: nebraskaAuthenticationFunc()},
+			Skipper: middlewareSkipper,
+		}))
 
 	// setup handler
 	handlers, err := handler.New(db, conf, authenticator)
@@ -115,11 +127,15 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 		return nil, fmt.Errorf("error setting up handlers: %w", err)
 	}
 
-	e.Static("/", conf.HTTPStaticDir)
+	// Register API handlers first
+	codegen.RegisterHandlers(e, handlers)
 
 	if conf.HostFlatcarPackages && conf.FlatcarPackagesPath != "" {
 		e.Static("/flatcar/", conf.FlatcarPackagesPath)
 	}
+
+	// Register static file handler last to serve frontend assets
+	e.Static("/", conf.HTTPStaticDir)
 
 	e.HTTPErrorHandler = func(err error, c echo.Context) {
 		code := http.StatusNotFound
@@ -134,7 +150,6 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 		}
 		e.DefaultHTTPErrorHandler(err, c)
 	}
-	codegen.RegisterHandlers(e, handlers)
 
 	// setup background job for updating instance stats
 	go func() {
@@ -177,36 +192,12 @@ func setupAuthenticator(conf config.Config, sessionStore *sessions.Store, defaul
 		}
 		return auth.NewGithubAuthenticator(gituhbAuthConfig), nil
 	case "oidc":
-
-		url, err := url.Parse(conf.NebraskaURL)
-		if err != nil {
-			return nil, errors.Wrap(err, "nebraska-url is invalid, can't generate oidc callback URL")
-		}
-
-		url.Path = "/login/cb"
-		if conf.OidcValidRedirectURLs == "" {
-			url, err := url.Parse(conf.NebraskaURL)
-			if err != nil {
-				return nil, fmt.Errorf("nebraska-url is invalid, can't generate valid redirect URL, Err: %w", err)
-			}
-			url.Path = strings.TrimSuffix(url.Path, "/")
-			generatedValidRedirectURLs := fmt.Sprintf("%s/*", url.String())
-			conf.OidcValidRedirectURLs = generatedValidRedirectURLs
-		}
 		oidcAuthConfig := &auth.OIDCAuthConfig{
-			DefaultTeamID:     defaultTeamID,
-			ClientID:          conf.OidcClientID,
-			ClientSecret:      conf.OidcClientSecret,
-			IssuerURL:         conf.OidcIssuerURL,
-			CallbackURL:       url.String(),
-			ValidRedirectURLs: strings.Split(conf.OidcValidRedirectURLs, ","),
-			ManagementURL:     conf.OidcManagementURL,
-			LogoutURL:         conf.OidcLogutURL,
-			AdminRoles:        strings.Split(conf.OidcAdminRoles, ","),
-			ViewerRoles:       strings.Split(conf.OidcViewerRoles, ","),
-			Scopes:            strings.Split(conf.OidcScopes, ","),
-			SessionStore:      sessionStore,
-			RolesPath:         conf.OidcRolesPath,
+			DefaultTeamID: defaultTeamID,
+			IssuerURL:     conf.OidcIssuerURL,
+			AdminRoles:    strings.Split(conf.OidcAdminRoles, ","),
+			ViewerRoles:   strings.Split(conf.OidcViewerRoles, ","),
+			RolesPath:     conf.OidcRolesPath,
 		}
 		return auth.NewOIDCAuthenticator(oidcAuthConfig)
 	}
@@ -218,9 +209,7 @@ func setupSessionStore(conf config.Config) *sessions.Store {
 	case "noop":
 		return nil
 	case "oidc":
-		cache := memcache.New(memcachegob.New())
-		codec := securecookie.New([]byte(conf.OidcSessionAuthKey), []byte(conf.OidcSessionCryptKey))
-		return sessions.NewStore(cache, codec)
+		return nil
 	case "github":
 		cache := memcache.New(memcachegob.New())
 		codec := securecookie.New([]byte(conf.GhSessionAuthKey), []byte(conf.GhSessionCryptKey))
@@ -229,44 +218,10 @@ func setupSessionStore(conf config.Config) *sessions.Store {
 	return nil
 }
 
-func nebraskaAuthenticationFunc(authMode string) func(context.Context, *openapi3filter.AuthenticationInput) error {
-	return func(_ context.Context, input *openapi3filter.AuthenticationInput) error {
-		switch authMode {
-		case "noop":
-			return nil
-		case "oidc":
-			// check if token is present in query params
-			if input.RequestValidationInput.Request.URL.Query().Get("id_token") != "" {
-				return nil
-			}
-			return validateAuthorizationToken(input)
-		case "github":
-			err := validateAuthorizationToken(input)
-			if err != nil {
-				_, err := input.RequestValidationInput.Request.Cookie("github")
-				if err != nil {
-					return errors.Wrap(err, "github cookie not found")
-				}
-			}
-			return nil
-		}
+func nebraskaAuthenticationFunc() func(context.Context, *openapi3filter.AuthenticationInput) error {
+	return func(_ context.Context, _ *openapi3filter.AuthenticationInput) error {
+		// Skip authentication - handled by custom auth middleware
+		// This eliminates redundant authentication checks
 		return nil
 	}
-}
-
-// check if Authorization Header is present and valid
-func validateAuthorizationToken(input *openapi3filter.AuthenticationInput) error {
-	token := input.RequestValidationInput.Request.Header.Get("Authorization")
-	if token == "" {
-		return errors.New("Bearer token not found in request")
-	}
-	split := strings.Split(token, " ")
-	if len(split) == 2 {
-		if split[0] != "Bearer" {
-			return errors.New("Bearer token not found in request")
-		}
-	} else {
-		return errors.New("Invalid Bearer token")
-	}
-	return nil
 }
