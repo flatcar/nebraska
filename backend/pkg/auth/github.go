@@ -125,13 +125,6 @@ func (gha *githubAuth) Login(c echo.Context) error {
 	})
 }
 
-func (gha *githubAuth) LoginToken(ctx echo.Context) error {
-	return ctx.JSON(http.StatusNotImplemented, map[string]any{
-		"error":       "token_login_not_supported",
-		"description": "Token-based login is not supported in GitHub mode. Use OAuth flow instead.",
-	})
-}
-
 func (gha *githubAuth) ValidateToken(ctx echo.Context) error {
 	return ctx.JSON(http.StatusNotImplemented, map[string]any{
 		"error":       "validate_token_not_supported",

@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"strings"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
@@ -9,25 +11,47 @@ import (
 
 func NewAuthSkipper(auth string) middleware.Skipper {
 	return func(c echo.Context) bool {
+		path := c.Request().URL.Path
 		switch auth {
 		case "oidc":
-			paths := []string{"/health", "/login", "/config", "/*", "/flatcar/*", "/login/cb", "/login/token", "/v1/update"}
-			for _, path := range paths {
-				if c.Path() == path {
+			paths := []string{"/", "/auth/callback", "/health", "/config", "/flatcar/*", "/v1/update", "/assets/*", "/apps", "/apps/*", "/instances", "/instances/*", "/404"}
+			for _, pattern := range paths {
+				if MatchesPattern(pattern, path) {
 					return true
 				}
 			}
 		case "github":
-			paths := []string{"/health", "/v1/update", "/login/cb", "/login/webhook", "/flatcar/*"}
-			for _, path := range paths {
-				if c.Path() == path {
+			paths := []string{"/", "/health", "/v1/update", "/login/cb", "/login/webhook", "/flatcar/*", "/assets/*", "/apps", "/apps/*", "/instances", "/instances/*", "/404"}
+			for _, pattern := range paths {
+				if MatchesPattern(pattern, path) {
 					return true
 				}
 			}
 		}
-
 		return false
 	}
+}
+
+// MatchesPattern checks if a path matches a pattern with wildcard support
+func MatchesPattern(pattern, path string) bool {
+	// Handle empty inputs
+	if pattern == "" || path == "" {
+		return pattern == path
+	}
+
+	// Exact match case
+	if !strings.Contains(pattern, "*") {
+		return pattern == path
+	}
+
+	// Handle /* suffix for matching any subpath
+	if strings.HasSuffix(pattern, "/*") {
+		prefix := strings.TrimSuffix(pattern, "/*")
+		return strings.HasPrefix(path, prefix+"/") || path == prefix
+	}
+
+	// For any other wildcard patterns, fall back to exact match
+	return pattern == path
 }
 
 type AuthConfig struct {
@@ -40,7 +64,7 @@ func Auth(auth auth.Authenticator, conf AuthConfig) echo.MiddlewareFunc {
 			if conf.Skipper(c) {
 				return next(c)
 			}
-			teamID, replied := auth.Authenticate(c)
+			teamID, replied := auth.Authorize(c)
 			if replied {
 				return nil
 			}
