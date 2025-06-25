@@ -8,7 +8,6 @@ import (
 
 	"github.com/flatcar/nebraska/backend/pkg/api"
 	"github.com/flatcar/nebraska/backend/pkg/config"
-	"github.com/flatcar/nebraska/backend/pkg/random"
 )
 
 const (
@@ -23,21 +22,18 @@ const (
 var serverPortStr = fmt.Sprintf(":%d", serverPort)
 
 var conf = &config.Config{
-	EnableSyncer:        true,
-	NebraskaURL:         testServerURL,
-	HTTPLog:             true,
-	AuthMode:            "oidc",
-	Debug:               true,
-	ServerPort:          serverPort,
-	OidcSessionAuthKey:  string(random.Data(32)),
-	OidcSessionCryptKey: string(random.Data(32)),
-	OidcClientID:        clientID,
-	OidcClientSecret:    clientSecret,
-	OidcIssuerURL:       issuerURL,
-	OidcAdminRoles:      "nebraska-admin",
-	OidcViewerRoles:     "nebraska-member",
-	OidcRolesPath:       "groups",
-	OidcScopes:          "openid,profile,email,groups",
+	EnableSyncer:    true,
+	NebraskaURL:     testServerURL,
+	HTTPLog:         true,
+	AuthMode:        "oidc",
+	Debug:           true,
+	ServerPort:      serverPort,
+	OidcClientID:    clientID,
+	OidcIssuerURL:   issuerURL,
+	OidcAdminRoles:  "nebraska-admin",
+	OidcViewerRoles: "nebraska-member",
+	OidcRolesPath:   "groups",
+	OidcScopes:      "openid,profile,email,groups",
 }
 
 func TestMain(m *testing.M) {
