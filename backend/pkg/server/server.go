@@ -60,7 +60,7 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 
 	swagger, err := codegen.GetSwagger()
 	if err != nil {
-		return nil, fmt.Errorf("Swagger config error: %w", err)
+		return nil, fmt.Errorf("swagger config error: %w", err)
 	}
 
 	p := prometheus.NewPrometheus(serviceName, nil)
@@ -69,7 +69,7 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 	// setup authenticator
 	defaultTeam, err := db.GetTeam()
 	if err != nil {
-		return nil, fmt.Errorf("Cannot fetch the default teamID: %w", err)
+		return nil, fmt.Errorf("cannot fetch the default teamID: %w", err)
 	}
 
 	// setup session store
@@ -77,10 +77,10 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 
 	authenticator, err := setupAuthenticator(*conf, sessionStore, defaultTeam.ID)
 	if err != nil {
-		return nil, fmt.Errorf("Authenticator setup error: %w", err)
+		return nil, fmt.Errorf("authenticator setup error: %w", err)
 	}
 	if authenticator == nil {
-		return nil, fmt.Errorf("Invalid auth mode %s", conf.AuthMode)
+		return nil, fmt.Errorf("invalid auth mode %s", conf.AuthMode)
 	}
 
 	// setup middlewares
@@ -111,7 +111,7 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 	// setup handler
 	handlers, err := handler.New(db, conf, authenticator)
 	if err != nil {
-		return nil, fmt.Errorf("Error setting up handlers: %w", err)
+		return nil, fmt.Errorf("error setting up handlers: %w", err)
 	}
 
 	e.Static("/", conf.HTTPStaticDir)

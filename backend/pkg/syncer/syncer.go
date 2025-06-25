@@ -80,7 +80,7 @@ type Config struct {
 func Setup(conf *config.Config, db *api.API) (*Syncer, error) {
 	checkFrequency, err := time.ParseDuration(conf.CheckFrequencyVal)
 	if err != nil {
-		return nil, fmt.Errorf("Invalid Check Frequency value: %w", err)
+		return nil, fmt.Errorf("invalid Check Frequency value: %w", err)
 	}
 
 	if conf.SyncerPkgsURL == "" && conf.HostFlatcarPackages {
@@ -96,7 +96,7 @@ func Setup(conf *config.Config, db *api.API) (*Syncer, error) {
 		CheckFrequency:    checkFrequency,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("Error setting up syncer: %w", err)
+		return nil, fmt.Errorf("error setting up syncer: %w", err)
 	}
 	return syncer, nil
 }

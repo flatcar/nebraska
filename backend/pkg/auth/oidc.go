@@ -86,7 +86,7 @@ func NewOIDCAuthenticator(config *OIDCAuthConfig) (Authenticator, error) {
 	// setup oidc provider
 	provider, err := oidc.NewProvider(ctx, config.IssuerURL)
 	if err != nil {
-		return nil, fmt.Errorf("Error setting up oidc provider: %w", err)
+		return nil, fmt.Errorf("error setting up oidc provider: %w", err)
 	}
 
 	oidcProviderConfig := &oidc.Config{
