@@ -96,14 +96,30 @@ type ChannelPage struct {
 
 // Config defines model for config.
 type Config struct {
-	AccessManagementUrl string `json:"access_management_url"`
-	AuthMode            string `json:"auth_mode"`
-	HeaderStyle         string `json:"header_style"`
-	LoginUrl            string `json:"login_url"`
-	Logo                string `json:"logo"`
-	LogoutUrl           string `json:"logout_url"`
-	NebraskaVersion     string `json:"nebraska_version"`
-	Title               string `json:"title"`
+	AccessManagementUrl string  `json:"access_management_url"`
+	AuthMode            string  `json:"auth_mode"`
+	HeaderStyle         string  `json:"header_style"`
+	LoginUrl            string  `json:"login_url"`
+	Logo                string  `json:"logo"`
+	NebraskaVersion     string  `json:"nebraska_version"`
+	OidcAudience        *string `json:"oidc_audience"`
+	OidcClientId        *string `json:"oidc_client_id"`
+	OidcIssuerUrl       *string `json:"oidc_issuer_url"`
+	OidcLogoutUrl       *string `json:"oidc_logout_url"`
+	OidcScopes          *string `json:"oidc_scopes"`
+	Title               string  `json:"title"`
+}
+
+// ErrorResponse defines model for errorResponse.
+type ErrorResponse struct {
+	// Description Human-readable error description
+	Description string `json:"description"`
+
+	// Docs Link to documentation (optional)
+	Docs *string `json:"docs,omitempty"`
+
+	// Error Error code identifier
+	Error string `json:"error"`
 }
 
 // ExtraFiles defines model for extraFiles.
@@ -245,17 +261,6 @@ type InstanceStatusHistory struct {
 	Verison   string    `json:"verison"`
 }
 
-// LoginInfo defines model for loginInfo.
-type LoginInfo struct {
-	Password string `json:"password"`
-	Username string `json:"username"`
-}
-
-// LoginToken defines model for loginToken.
-type LoginToken struct {
-	Token string `json:"token"`
-}
-
 // OmahaRequest defines model for omahaRequest.
 type OmahaRequest = map[string]interface{}
 
@@ -394,11 +399,6 @@ type PaginatePackagesParams struct {
 	SearchVersion *string `form:"searchVersion,omitempty" json:"searchVersion,omitempty"`
 }
 
-// LoginParams defines parameters for Login.
-type LoginParams struct {
-	LoginRedirectUrl string `form:"login_redirect_url" json:"login_redirect_url"`
-}
-
 // LoginWebhookParams defines parameters for LoginWebhook.
 type LoginWebhookParams struct {
 	XHubSignature string `json:"X-Hub-Signature"`
@@ -431,6 +431,3 @@ type UpdatePackageJSONRequestBody = PackageConfig
 
 // UpdateInstanceJSONRequestBody defines body for UpdateInstance for application/json ContentType.
 type UpdateInstanceJSONRequestBody = UpdateInstanceConfig
-
-// LoginTokenFormdataRequestBody defines body for LoginToken for application/x-www-form-urlencoded ContentType.
-type LoginTokenFormdataRequestBody = LoginInfo
