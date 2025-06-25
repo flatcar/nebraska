@@ -862,6 +862,14 @@ func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (m
 	return timelineCount, false, nil
 }
 
+// setCacheLifespanForTest temporarily sets the cache lifespan for testing purposes
+// Returns the previous lifespan so it can be restored
+func (api *API) setCacheLifespanForTest(lifespan time.Duration) time.Duration {
+	oldLifespan := cachedGroupVersionCountLifespan
+	cachedGroupVersionCountLifespan = lifespan
+	return oldLifespan
+}
+
 func (api *API) GetGroupStatusCountTimeline(groupID string, duration string) (map[time.Time](map[int](VersionCountMap)), error) {
 	var timelineEntry []StatusVersionCountTimelineEntry
 	durationString, interval, err := durationParamToPostgresTimings(durationParam(duration))
