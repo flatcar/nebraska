@@ -150,3 +150,41 @@ func waitServerReady(serverURL string) (bool, error) {
 	}
 	return false, ErrOutOfRetries
 }
+
+// httpDecodeResponse is a helper function that decodes HTTP response body
+// into the provided interface based on Content-Type
+func httpDecodeResponse(resp *http.Response, response interface{}) error {
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	contentType := resp.Header.Get("Content-Type")
+	switch contentType {
+	case "application/json", "":
+		return json.Unmarshal(bodyBytes, response)
+	case "application/xml":
+		return xml.Unmarshal(bodyBytes, response)
+	}
+
+	return errors.New("unsupported content type")
+}
+
+// httpMakeRequest is a helper function for making HTTP requests with custom headers
+func httpMakeRequest(t *testing.T, method, url string, payload io.Reader, headers map[string]string) *http.Response {
+	t.Helper()
+
+	req, err := http.NewRequest(method, url, payload)
+	require.NoError(t, err)
+
+	// Set custom headers
+	for key, value := range headers {
+		req.Header.Set(key, value)
+	}
+
+	client := &http.Client{Timeout: 30 * time.Second}
+	resp, err := client.Do(req)
+	require.NoError(t, err)
+
+	return resp
+}
