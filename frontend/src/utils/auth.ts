@@ -139,11 +139,12 @@ export function useAuthRedirect() {
 
     const initOIDC = async () => {
       // Create OIDC configuration from config
+      const configuredScopes = config.oidc_scopes || 'openid,profile,email';
       const oidcConfig: OIDCConfig = {
         issuerUrl: config.oidc_issuer_url || '',
         clientId: config.oidc_client_id || '',
         redirectUri: window.location.origin + '/auth/callback',
-        scopes: ['openid', 'profile', 'email'],
+        scopes: configuredScopes.split(',').map((s: string) => s.trim()),
         logoutUrl: config.oidc_logout_url,
       };
 

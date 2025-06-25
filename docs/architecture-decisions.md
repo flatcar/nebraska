@@ -60,7 +60,8 @@ This document captures important architectural decisions made for the Nebraska p
 ### Priority TODOs
 
 **Refresh Token Support:** Secure HTTP-only cookies for session persistence  
-**Multi-tab Sync:** BroadcastChannel API for consistent authentication state
+**Multi-tab Sync:** BroadcastChannel API for consistent authentication state  
+**Update Flatcar Website Documentation:** Update Nebraska authentication documentation on the Flatcar website to reflect the new OIDC implementation and migration guide
 
 ### References
 

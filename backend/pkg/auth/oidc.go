@@ -92,24 +92,30 @@ func (oa *oidcAuth) ValidateToken(c echo.Context) error {
 // LoginCb is not used in the new OIDC architecture
 // Frontend handles OAuth flow directly with OIDC provider
 func (oa *oidcAuth) LoginCb(c echo.Context) error {
-	return c.JSON(http.StatusNotImplemented, map[string]string{
-		"error": "OAuth flow is handled by frontend. Use direct OIDC provider authorization.",
+	return c.JSON(http.StatusNotImplemented, map[string]interface{}{
+		"error":       "login_callback_not_supported",
+		"description": "OAuth callback flow is not supported in OIDC mode. The frontend handles OIDC authorization flow directly with the identity provider.",
+		"docs":        "See OIDC migration guide for proper configuration.",
 	})
 }
 
 // Login is not used in the new OIDC architecture
 // Frontend handles OAuth flow directly with OIDC provider
 func (oa *oidcAuth) Login(c echo.Context) error {
-	return c.JSON(http.StatusNotImplemented, map[string]string{
-		"error": "OAuth flow is handled by frontend. Use direct OIDC provider authorization.",
+	return c.JSON(http.StatusNotImplemented, map[string]interface{}{
+		"error":       "login_endpoint_not_supported",
+		"description": "Server-side login flow is not supported in OIDC mode. The frontend handles OIDC authorization flow directly with the identity provider.",
+		"docs":        "See OIDC migration guide for proper configuration.",
 	})
 }
 
 // LoginToken is deprecated for security reasons
 // Password grant type is vulnerable and not recommended for SPAs
 func (oa *oidcAuth) LoginToken(c echo.Context) error {
-	return c.JSON(http.StatusNotImplemented, map[string]string{
-		"error": "Password grant type is not supported. Please use the authorization code flow.",
+	return c.JSON(http.StatusNotImplemented, map[string]interface{}{
+		"error":       "password_grant_not_supported",
+		"description": "Password grant type is not supported for security reasons. Use the authorization code flow with PKCE instead.",
+		"docs":        "See OIDC migration guide for secure authentication flow setup.",
 	})
 }
 

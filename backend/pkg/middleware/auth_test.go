@@ -3,12 +3,21 @@ package middleware
 import (
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func TestMain(m *testing.M) {
+	if os.Getenv("NEBRASKA_SKIP_TESTS") != "" {
+		return
+	}
+
+	os.Exit(m.Run())
+}
 
 // mockAuthenticator implements the auth.Authenticator interface for testing
 type mockAuthenticator struct {

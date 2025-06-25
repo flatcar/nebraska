@@ -3,6 +3,7 @@ package server
 import (
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 
@@ -11,6 +12,14 @@ import (
 	
 	"github.com/kinvolk/nebraska/backend/pkg/middleware"
 )
+
+func TestMain(m *testing.M) {
+	if os.Getenv("NEBRASKA_SKIP_TESTS") != "" {
+		return
+	}
+
+	os.Exit(m.Run())
+}
 
 // mockAuthenticatorForViewerTest simulates a viewer user
 type mockAuthenticatorForViewerTest struct {

@@ -37,6 +37,11 @@ func NewAuthSkipper(auth string) middleware.Skipper {
 
 // matchesPattern checks if a path matches a pattern with wildcard support
 func matchesPattern(pattern, path string) bool {
+	// Handle empty inputs
+	if pattern == "" || path == "" {
+		return pattern == path
+	}
+	
 	// Exact match case
 	if !strings.Contains(pattern, "*") {
 		return pattern == path

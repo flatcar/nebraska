@@ -214,8 +214,9 @@ func TestGetVersionCountTimeline(t *testing.T) {
 	defer a.Close()
 
 	// Set cache lifespan to 50ms for testing and restore when done
-	oldLifespan := a.setCacheLifespanForTest(50 * time.Millisecond)
-	defer a.setCacheLifespanForTest(oldLifespan)
+	cacheManager := NewTestCacheManager(a)
+	oldLifespan := cacheManager.SetCacheLifespanForTest(50 * time.Millisecond)
+	defer cacheManager.RestoreCacheLifespan(oldLifespan)
 
 	version := "4.0.0"
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})

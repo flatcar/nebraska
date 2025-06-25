@@ -31,22 +31,20 @@ Quick migration guide for the new secure OIDC implementation with Authorization 
 
 ### 2. Nebraska Configuration
 
-**Remove these flags:**
-```bash
---oidc-client-secret
---oidc-session-secret
---oidc-session-crypt-key  
---oidc-valid-redirect-urls
-```
-
 **Required configuration:**
 ```bash
---auth-mode=oidc
 --oidc-client-id=your-public-client-id
 --oidc-issuer-url=https://your-oidc-provider.com
 --oidc-admin-roles=nebraska-admin
 --oidc-viewer-roles=nebraska-viewer
---oidc-scopes=openid,profile,email,roles
+```
+
+**Optional configuration:**
+```bash
+--auth-mode=oidc                           # Authentication mode (default: "oidc")
+--oidc-roles-path=roles                    # JSON path for roles in token (default: "roles")
+--oidc-scopes=openid,profile,email         # OIDC scopes (default: "openid,profile,email")
+--oidc-management-url=https://your-idp.com # URL for account management
 ```
 
 ### 3. Verification
