@@ -203,16 +203,8 @@ type ClientInterface interface {
 	// Health request
 	Health(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// Login request
-	Login(ctx context.Context, params *LoginParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// LoginCb request
 	LoginCb(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// LoginTokenWithBody request with any body
-	LoginTokenWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	LoginTokenWithFormdataBody(ctx context.Context, body LoginTokenFormdataRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ValidateToken request
 	ValidateToken(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -716,44 +708,8 @@ func (c *Client) Health(ctx context.Context, reqEditors ...RequestEditorFn) (*ht
 	return c.Client.Do(req)
 }
 
-func (c *Client) Login(ctx context.Context, params *LoginParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewLoginRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 func (c *Client) LoginCb(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewLoginCbRequest(c.Server)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) LoginTokenWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewLoginTokenRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) LoginTokenWithFormdataBody(ctx context.Context, body LoginTokenFormdataRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewLoginTokenRequestWithFormdataBody(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -2687,51 +2643,6 @@ func NewHealthRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
-// NewLoginRequest generates requests for Login
-func NewLoginRequest(server string, params *LoginParams) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/login")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-		queryValues := queryURL.Query()
-
-		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "login_redirect_url", runtime.ParamLocationQuery, params.LoginRedirectUrl); err != nil {
-			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-			return nil, err
-		} else {
-			for k, v := range parsed {
-				for _, v2 := range v {
-					queryValues.Add(k, v2)
-				}
-			}
-		}
-
-		queryURL.RawQuery = queryValues.Encode()
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
 // NewLoginCbRequest generates requests for LoginCb
 func NewLoginCbRequest(server string) (*http.Request, error) {
 	var err error
@@ -2755,46 +2666,6 @@ func NewLoginCbRequest(server string) (*http.Request, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	return req, nil
-}
-
-// NewLoginTokenRequestWithFormdataBody calls the generic LoginToken builder with application/x-www-form-urlencoded body
-func NewLoginTokenRequestWithFormdataBody(server string, body LoginTokenFormdataRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	bodyStr, err := runtime.MarshalForm(body, nil)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = strings.NewReader(bodyStr.Encode())
-	return NewLoginTokenRequestWithBody(server, "application/x-www-form-urlencoded", bodyReader)
-}
-
-// NewLoginTokenRequestWithBody generates requests for LoginToken with any type of body
-func NewLoginTokenRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/login/token")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -3061,16 +2932,8 @@ type ClientWithResponsesInterface interface {
 	// HealthWithResponse request
 	HealthWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*HealthResponse, error)
 
-	// LoginWithResponse request
-	LoginWithResponse(ctx context.Context, params *LoginParams, reqEditors ...RequestEditorFn) (*LoginResponse, error)
-
 	// LoginCbWithResponse request
 	LoginCbWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*LoginCbResponse, error)
-
-	// LoginTokenWithBodyWithResponse request with any body
-	LoginTokenWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*LoginTokenResponse, error)
-
-	LoginTokenWithFormdataBodyWithResponse(ctx context.Context, body LoginTokenFormdataRequestBody, reqEditors ...RequestEditorFn) (*LoginTokenResponse, error)
 
 	// ValidateTokenWithResponse request
 	ValidateTokenWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ValidateTokenResponse, error)
@@ -3781,30 +3644,10 @@ func (r HealthResponse) StatusCode() int {
 	return 0
 }
 
-type LoginResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-}
-
-// Status returns HTTPResponse.Status
-func (r LoginResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r LoginResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type LoginCbResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON501      *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -3823,31 +3666,10 @@ func (r LoginCbResponse) StatusCode() int {
 	return 0
 }
 
-type LoginTokenResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *LoginToken
-}
-
-// Status returns HTTPResponse.Status
-func (r LoginTokenResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r LoginTokenResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type ValidateTokenResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON501      *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -3869,6 +3691,7 @@ func (r ValidateTokenResponse) StatusCode() int {
 type LoginWebhookResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON501      *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -4268,15 +4091,6 @@ func (c *ClientWithResponses) HealthWithResponse(ctx context.Context, reqEditors
 	return ParseHealthResponse(rsp)
 }
 
-// LoginWithResponse request returning *LoginResponse
-func (c *ClientWithResponses) LoginWithResponse(ctx context.Context, params *LoginParams, reqEditors ...RequestEditorFn) (*LoginResponse, error) {
-	rsp, err := c.Login(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseLoginResponse(rsp)
-}
-
 // LoginCbWithResponse request returning *LoginCbResponse
 func (c *ClientWithResponses) LoginCbWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*LoginCbResponse, error) {
 	rsp, err := c.LoginCb(ctx, reqEditors...)
@@ -4284,23 +4098,6 @@ func (c *ClientWithResponses) LoginCbWithResponse(ctx context.Context, reqEditor
 		return nil, err
 	}
 	return ParseLoginCbResponse(rsp)
-}
-
-// LoginTokenWithBodyWithResponse request with arbitrary body returning *LoginTokenResponse
-func (c *ClientWithResponses) LoginTokenWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*LoginTokenResponse, error) {
-	rsp, err := c.LoginTokenWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseLoginTokenResponse(rsp)
-}
-
-func (c *ClientWithResponses) LoginTokenWithFormdataBodyWithResponse(ctx context.Context, body LoginTokenFormdataRequestBody, reqEditors ...RequestEditorFn) (*LoginTokenResponse, error) {
-	rsp, err := c.LoginTokenWithFormdataBody(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseLoginTokenResponse(rsp)
 }
 
 // ValidateTokenWithResponse request returning *ValidateTokenResponse
@@ -5112,22 +4909,6 @@ func ParseHealthResponse(rsp *http.Response) (*HealthResponse, error) {
 	return response, nil
 }
 
-// ParseLoginResponse parses an HTTP response from a LoginWithResponse call
-func ParseLoginResponse(rsp *http.Response) (*LoginResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &LoginResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	return response, nil
-}
-
 // ParseLoginCbResponse parses an HTTP response from a LoginCbWithResponse call
 func ParseLoginCbResponse(rsp *http.Response) (*LoginCbResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -5141,29 +4922,13 @@ func ParseLoginCbResponse(rsp *http.Response) (*LoginCbResponse, error) {
 		HTTPResponse: rsp,
 	}
 
-	return response, nil
-}
-
-// ParseLoginTokenResponse parses an HTTP response from a LoginTokenWithResponse call
-func ParseLoginTokenResponse(rsp *http.Response) (*LoginTokenResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &LoginTokenResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
 	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest LoginToken
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 501:
+		var dest ErrorResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
-		response.JSON200 = &dest
+		response.JSON501 = &dest
 
 	}
 
@@ -5183,6 +4948,16 @@ func ParseValidateTokenResponse(rsp *http.Response) (*ValidateTokenResponse, err
 		HTTPResponse: rsp,
 	}
 
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 501:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON501 = &dest
+
+	}
+
 	return response, nil
 }
 
@@ -5197,6 +4972,16 @@ func ParseLoginWebhookResponse(rsp *http.Response) (*LoginWebhookResponse, error
 	response := &LoginWebhookResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 501:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON501 = &dest
+
 	}
 
 	return response, nil
