@@ -85,8 +85,8 @@ func TestOIDCAuthorization(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
-		// Should return 403 Forbidden - OpenAPI validation middleware rejects requests without Bearer token
-		assert.Equal(t, http.StatusForbidden, resp.StatusCode)
+		// Should return 401 Unauthorized - auth middleware rejects requests without Bearer token
+		assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 	})
 
 	t.Run("authorize_with_malformed_header", func(t *testing.T) {
@@ -124,8 +124,8 @@ func TestOIDCAuthorization(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
-		// Should return 403 Forbidden - OpenAPI validation middleware rejects malformed Bearer tokens
-		assert.Equal(t, http.StatusForbidden, resp.StatusCode)
+		// Should return 401 Unauthorized - auth middleware rejects malformed Bearer tokens
+		assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 	})
 }
 

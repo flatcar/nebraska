@@ -14,7 +14,7 @@ func NewAuthSkipper(auth string) middleware.Skipper {
 		path := c.Path()
 		switch auth {
 		case "oidc":
-			paths := []string{"/health", "/config", "/flatcar/*", "/login/cb", "/login/webhook", "/v1/update"}
+			paths := []string{"/health", "/config", "/flatcar/*", "/login", "/login/cb", "/login/webhook", "/v1/update"}
 			for _, pattern := range paths {
 				if matchesPattern(pattern, path) {
 					return true
