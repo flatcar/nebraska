@@ -35,6 +35,8 @@ config:
     # nebraskaURL: http://flatcar.example.com
     persistence:
       enabled: false
+      labels: {}
+      annotations: {}
       storageClass:
       accessModes:
         - ReadWriteOnce
@@ -121,6 +123,7 @@ strategy:
   #   maxUnavailable: 25%
 
 podAnnotations: {}
+podLabels: {}
 
 podSecurityContext:
   runAsUser: 65534
@@ -187,6 +190,9 @@ readinessProbe:
   httpGet:
     path: /
     port: http
+
+extraLabels: {}
+extraAnnotations: {}
 
 # Configuration values for the postgresql dependency.
 # ... for more options see https://github.com/bitnami/charts/tree/master/bitnami/postgresql
