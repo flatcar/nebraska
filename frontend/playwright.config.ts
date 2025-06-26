@@ -5,8 +5,6 @@ import { loadEnv } from 'vite';
 export const ENV_DIR = './';
 Object.assign(process.env, loadEnv('', ENV_DIR));
 
-console.log('CI=', process.env.CI);
-
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -53,7 +51,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: process.env.CI ? {
-    command: 'cd ../backend && docker compose -f docker-compose.test.yaml up && docker ps -a',
+    command: 'cd ../backend && docker compose -f docker-compose.base.yaml -f docker-compose.test.yaml up -d',
     url: 'http://127.0.0.1:8002', // Replace with the URL of your service
     reuseExistingServer: false,
     timeout: 200_000,
