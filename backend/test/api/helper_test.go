@@ -158,32 +158,33 @@ func httpDecodeResponse(resp *http.Response, response interface{}) error {
 	if err != nil {
 		return err
 	}
-	
+
 	contentType := resp.Header.Get("Content-Type")
-	if contentType == "application/json" || contentType == "" {
+	switch contentType {
+	case "application/json", "":
 		return json.Unmarshal(bodyBytes, response)
-	} else if contentType == "application/xml" {
+	case "application/xml":
 		return xml.Unmarshal(bodyBytes, response)
 	}
-	
+
 	return errors.New("unsupported content type")
 }
 
 // httpMakeRequest is a helper function for making HTTP requests with custom headers
 func httpMakeRequest(t *testing.T, method, url string, payload io.Reader, headers map[string]string) *http.Response {
 	t.Helper()
-	
+
 	req, err := http.NewRequest(method, url, payload)
 	require.NoError(t, err)
-	
+
 	// Set custom headers
 	for key, value := range headers {
 		req.Header.Set(key, value)
 	}
-	
+
 	client := &http.Client{Timeout: 30 * time.Second}
 	resp, err := client.Do(req)
 	require.NoError(t, err)
-	
+
 	return resp
 }

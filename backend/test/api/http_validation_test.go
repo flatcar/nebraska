@@ -48,9 +48,9 @@ func TestMalformedRequestHandling(t *testing.T) {
 
 		// Test various malformed JSON cases
 		malformedCases := []string{
-			`{"name":"test_app","description":}`,           // Invalid JSON syntax
-			`{"name":"test_app","description":"test"`,      // Incomplete JSON
-			`name=test_app&description=test`,               // Non-JSON content
+			`{"name":"test_app","description":}`,      // Invalid JSON syntax
+			`{"name":"test_app","description":"test"`, // Incomplete JSON
+			`name=test_app&description=test`,          // Non-JSON content
 		}
 
 		for _, malformedJSON := range malformedCases {

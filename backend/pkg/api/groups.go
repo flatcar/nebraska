@@ -862,7 +862,6 @@ func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (m
 	return timelineCount, false, nil
 }
 
-
 func (api *API) GetGroupStatusCountTimeline(groupID string, duration string) (map[time.Time](map[int](VersionCountMap)), error) {
 	var timelineEntry []StatusVersionCountTimelineEntry
 	durationString, interval, err := durationParamToPostgresTimings(durationParam(duration))

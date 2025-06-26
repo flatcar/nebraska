@@ -104,16 +104,16 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 	if sessionStore != nil {
 		e.Use(echosessions.SessionsMiddleware(sessionStore, conf.AuthMode))
 	}
-	
+
 	// MIDDLEWARE EXECUTION ORDER:
 	// 1. Session middleware (if enabled)
 	// 2. Authentication middleware (for ALL HTTP methods)
 	// 3. OpenAPI request validation middleware
 	//
-	// This order ensures authorization errors (403) are returned before 
+	// This order ensures authorization errors (403) are returned before
 	// validation errors (400), preventing information leakage.
 	e.Use(custommiddleware.Auth(authenticator, custommiddleware.AuthConfig{Skipper: custommiddleware.NewAuthSkipper(conf.AuthMode)}))
-	
+
 	e.Use(echomiddleware.OapiRequestValidatorWithOptions(swagger, &echomiddleware.Options{Options: openapi3filter.Options{AuthenticationFunc: nebraskaAuthenticationFunc(conf.AuthMode)}, Skipper: middlewareSkipper}))
 
 	// setup handler

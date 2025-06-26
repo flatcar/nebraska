@@ -41,23 +41,23 @@ type Config struct {
 	GhReadOnlyTeams   string `koanf:"gh-ro-teams"`
 	GhEnterpriseURL   string `koanf:"gh-enterprise-url"`
 
-	OidcClientID          string `koanf:"oidc-client-id"`
-	OidcIssuerURL         string `koanf:"oidc-issuer-url"`
-	OidcAdminRoles        string `koanf:"oidc-admin-roles"`
-	OidcViewerRoles       string `koanf:"oidc-viewer-roles"`
-	OidcRolesPath         string `koanf:"oidc-roles-path"`
-	OidcScopes            string `koanf:"oidc-scopes"`
-	OidcManagementURL     string `koanf:"oidc-management-url"`
+	OidcClientID      string `koanf:"oidc-client-id"`
+	OidcIssuerURL     string `koanf:"oidc-issuer-url"`
+	OidcAdminRoles    string `koanf:"oidc-admin-roles"`
+	OidcViewerRoles   string `koanf:"oidc-viewer-roles"`
+	OidcRolesPath     string `koanf:"oidc-roles-path"`
+	OidcScopes        string `koanf:"oidc-scopes"`
+	OidcManagementURL string `koanf:"oidc-management-url"`
 }
 
 const (
-	oidcClientIDEnvName        = "NEBRASKA_OIDC_CLIENT_ID"
-	ghClientIDEnvName          = "NEBRASKA_GITHUB_OAUTH_CLIENT_ID"
-	ghClientSecretEnvName      = "NEBRASKA_GITHUB_OAUTH_CLIENT_SECRET"
-	ghSessionAuthKeyEnvName    = "NEBRASKA_GITHUB_SESSION_SECRET"
-	ghSessionCryptKeyEnvName   = "NEBRASKA_GITHUB_SESSION_CRYPT_KEY"
-	ghWebhookSecretEnvName     = "NEBRASKA_GITHUB_WEBHOOK_SECRET"
-	ghEnterpriseURLEnvName     = "NEBRASKA_GITHUB_ENTERPRISE_URL"
+	oidcClientIDEnvName      = "NEBRASKA_OIDC_CLIENT_ID"
+	ghClientIDEnvName        = "NEBRASKA_GITHUB_OAUTH_CLIENT_ID"
+	ghClientSecretEnvName    = "NEBRASKA_GITHUB_OAUTH_CLIENT_SECRET"
+	ghSessionAuthKeyEnvName  = "NEBRASKA_GITHUB_SESSION_SECRET"
+	ghSessionCryptKeyEnvName = "NEBRASKA_GITHUB_SESSION_CRYPT_KEY"
+	ghWebhookSecretEnvName   = "NEBRASKA_GITHUB_WEBHOOK_SECRET"
+	ghEnterpriseURLEnvName   = "NEBRASKA_GITHUB_ENTERPRISE_URL"
 )
 
 func (c *Config) Validate() error {
@@ -151,7 +151,6 @@ func Parse() (*Config, error) {
 	switch config.AuthMode {
 	case "oidc":
 		config.OidcClientID = getPotentialOrEnv(config.OidcClientID, oidcClientIDEnvName)
-
 
 	case "github":
 		config.GhClientID = getPotentialOrEnv(config.GhClientID, ghClientIDEnvName)

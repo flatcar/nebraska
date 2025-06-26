@@ -39,21 +39,21 @@ func (m *mockAuthenticator) LoginCb(_ echo.Context) error {
 	return nil
 }
 
-func (m *mockAuthenticator) LoginToken(c echo.Context) error {
+func (m *mockAuthenticator) LoginToken(_ echo.Context) error {
 	return nil
 }
 
-func (m *mockAuthenticator) ValidateToken(c echo.Context) error {
+func (m *mockAuthenticator) ValidateToken(_ echo.Context) error {
 	return nil
 }
 
-func (m *mockAuthenticator) LoginWebhook(c echo.Context) error {
+func (m *mockAuthenticator) LoginWebhook(_ echo.Context) error {
 	return nil
 }
 
 func TestNewAuthSkipper_OIDC_SkippedPaths(t *testing.T) {
 	skipper := NewAuthSkipper("oidc")
-	
+
 	testCases := []struct {
 		path     string
 		expected bool
@@ -91,7 +91,7 @@ func TestNewAuthSkipper_OIDC_SkippedPaths(t *testing.T) {
 
 func TestNewAuthSkipper_GitHub_SkippedPaths(t *testing.T) {
 	skipper := NewAuthSkipper("github")
-	
+
 	testCases := []struct {
 		path     string
 		expected bool
@@ -122,7 +122,7 @@ func TestNewAuthSkipper_GitHub_SkippedPaths(t *testing.T) {
 
 func TestNewAuthSkipper_UnknownAuth(t *testing.T) {
 	skipper := NewAuthSkipper("unknown")
-	
+
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, "/api/apps", nil)
 	rec := httptest.NewRecorder()
@@ -138,32 +138,32 @@ func TestAuth_SkipperCalled(t *testing.T) {
 		shouldReply: false,
 		teamID:      "test-team",
 	}
-	
+
 	skipperCalled := false
-	mockSkipper := func(c echo.Context) bool {
+	mockSkipper := func(_ echo.Context) bool {
 		skipperCalled = true
 		return true // Skip this request
 	}
-	
+
 	config := AuthConfig{Skipper: mockSkipper}
 	middleware := Auth(mockAuth, config)
-	
+
 	// Create a dummy handler
 	nextCalled := false
-	handler := func(c echo.Context) error {
+	handler := func(_ echo.Context) error {
 		nextCalled = true
 		return nil
 	}
 	wrappedHandler := middleware(handler)
-	
+
 	// Create test request
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, "/health", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	
+
 	err := wrappedHandler(c)
-	
+
 	require.NoError(t, err)
 	assert.True(t, skipperCalled, "Skipper should be called")
 	assert.True(t, nextCalled, "Next handler should be called when skipped")
@@ -175,30 +175,30 @@ func TestAuth_AuthenticatorCalled(t *testing.T) {
 		shouldReply: false,
 		teamID:      "test-team",
 	}
-	
-	mockSkipper := func(c echo.Context) bool {
+
+	mockSkipper := func(_ echo.Context) bool {
 		return false // Don't skip
 	}
-	
+
 	config := AuthConfig{Skipper: mockSkipper}
 	middleware := Auth(mockAuth, config)
-	
+
 	// Create a dummy handler
 	nextCalled := false
-	handler := func(c echo.Context) error {
+	handler := func(_ echo.Context) error {
 		nextCalled = true
 		return nil
 	}
 	wrappedHandler := middleware(handler)
-	
+
 	// Create test request
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, "/api/apps", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	
+
 	err := wrappedHandler(c)
-	
+
 	require.NoError(t, err)
 	assert.Equal(t, 1, mockAuth.callCount, "Authenticator should be called once")
 	assert.True(t, nextCalled, "Next handler should be called when auth succeeds")
@@ -210,14 +210,14 @@ func TestAuth_TeamIDSet(t *testing.T) {
 		shouldReply: false,
 		teamID:      expectedTeamID,
 	}
-	
-	mockSkipper := func(c echo.Context) bool {
+
+	mockSkipper := func(_ echo.Context) bool {
 		return false // Don't skip
 	}
-	
+
 	config := AuthConfig{Skipper: mockSkipper}
 	middleware := Auth(mockAuth, config)
-	
+
 	// Create a dummy handler that checks team_id
 	var actualTeamID interface{}
 	handler := func(c echo.Context) error {
@@ -225,15 +225,15 @@ func TestAuth_TeamIDSet(t *testing.T) {
 		return nil
 	}
 	wrappedHandler := middleware(handler)
-	
+
 	// Create test request
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, "/api/apps", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	
+
 	err := wrappedHandler(c)
-	
+
 	require.NoError(t, err)
 	assert.Equal(t, expectedTeamID, actualTeamID, "team_id should be set in context")
 }
@@ -243,30 +243,30 @@ func TestAuth_AuthenticatorReplied(t *testing.T) {
 		shouldReply: true, // Authenticator handles the response
 		teamID:      "test-team",
 	}
-	
-	mockSkipper := func(c echo.Context) bool {
+
+	mockSkipper := func(_ echo.Context) bool {
 		return false // Don't skip
 	}
-	
+
 	config := AuthConfig{Skipper: mockSkipper}
 	middleware := Auth(mockAuth, config)
-	
+
 	// Create a dummy handler
 	nextCalled := false
-	handler := func(c echo.Context) error {
+	handler := func(_ echo.Context) error {
 		nextCalled = true
 		return nil
 	}
 	wrappedHandler := middleware(handler)
-	
+
 	// Create test request
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, "/api/apps", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	
+
 	err := wrappedHandler(c)
-	
+
 	require.NoError(t, err)
 	assert.Equal(t, 1, mockAuth.callCount, "Authenticator should be called once")
 	assert.False(t, nextCalled, "Next handler should not be called when authenticator replies")

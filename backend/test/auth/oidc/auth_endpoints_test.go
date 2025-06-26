@@ -92,7 +92,7 @@ func waitServerReady() (bool, error) {
 			continue
 		}
 
-		if (http.StatusOK == resp.StatusCode) && ("OK" == string(bodyBytes)) {
+		if (http.StatusOK == resp.StatusCode) && (string(bodyBytes) == "OK") {
 			return true, nil
 		}
 	}
@@ -136,7 +136,7 @@ func TestOIDCEndpointBehavior(t *testing.T) {
 		// In OIDC mode, frontend handles authentication directly with OIDC provider
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-		// Test /login/cb endpoint - not registered in OIDC mode, falls back to SPA  
+		// Test /login/cb endpoint - not registered in OIDC mode, falls back to SPA
 		req, err = http.NewRequest("GET", fmt.Sprintf("%s/login/cb", testServerURL), nil)
 		require.NoError(t, err)
 		require.NotNil(t, req)

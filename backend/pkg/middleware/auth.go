@@ -38,18 +38,18 @@ func matchesPattern(pattern, path string) bool {
 	if pattern == "" || path == "" {
 		return pattern == path
 	}
-	
+
 	// Exact match case
 	if !strings.Contains(pattern, "*") {
 		return pattern == path
 	}
-	
+
 	// Handle /* suffix for matching any subpath
 	if strings.HasSuffix(pattern, "/*") {
 		prefix := strings.TrimSuffix(pattern, "/*")
 		return strings.HasPrefix(path, prefix+"/") || path == prefix
 	}
-	
+
 	// For any other wildcard patterns, fall back to exact match
 	return pattern == path
 }
