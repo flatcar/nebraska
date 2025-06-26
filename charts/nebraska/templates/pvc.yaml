@@ -5,6 +5,19 @@ metadata:
   name: {{ include "nebraska.fullname" . }}-packages
   labels:
     {{- include "nebraska.labels" . | nindent 4 }}
+    {{- with .Values.config.hostFlatcarPackages.persistence.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with .Values.extraLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- with .Values.config.hostFlatcarPackages.persistence.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with .Values.extraAnnotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   accessModes: {{ .Values.config.hostFlatcarPackages.persistence.accessModes }}
   resources:
