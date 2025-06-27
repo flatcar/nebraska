@@ -10,7 +10,7 @@ import (
 	"github.com/knadh/koanf/providers/basicflag"
 	"github.com/pkg/errors"
 
-	"github.com/kinvolk/nebraska/backend/pkg/random"
+	"github.com/flatcar/nebraska/backend/pkg/random"
 )
 
 type Config struct {

@@ -3,7 +3,7 @@ package handler
 import (
 	"github.com/labstack/echo/v4"
 
-	"github.com/kinvolk/nebraska/backend/pkg/codegen"
+	"github.com/flatcar/nebraska/backend/pkg/codegen"
 )
 
 func (h *Handler) Login(ctx echo.Context, _ codegen.LoginParams) error {

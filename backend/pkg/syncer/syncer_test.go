@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"gopkg.in/guregu/null.v4"
 
-	"github.com/kinvolk/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api"
 )
 
 const (

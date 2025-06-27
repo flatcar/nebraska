@@ -170,7 +170,7 @@ func TestGetApp(t *testing.T) {
 	_, err = a.GetApp(uuid.New().String())
 	assert.Error(t, err, "Trying to get non existent app.")
 
-	tApp1, err := a.AddApp(&Application{Name: "test_app1", ProductID: null.StringFrom("io.kinvolk.MyNewApp"), TeamID: tTeam.ID})
+	tApp1, err := a.AddApp(&Application{Name: "test_app1", ProductID: null.StringFrom("io.flatcar.MyNewApp"), TeamID: tTeam.ID})
 	assert.NoError(t, err)
 	assert.NotEqual(t, null.StringFrom(""), tApp1.ProductID)
 
@@ -186,7 +186,7 @@ func TestGetApp(t *testing.T) {
 	assert.Equal(t, tApp1.ProductID, app.ProductID)
 
 	// App with same product_id
-	_, err = a.AddApp(&Application{Name: "test_app2", ProductID: null.StringFrom("io.kinvolk.MyNewApp"), TeamID: tTeam.ID})
+	_, err = a.AddApp(&Application{Name: "test_app2", ProductID: null.StringFrom("io.flatcar.MyNewApp"), TeamID: tTeam.ID})
 	assert.Error(t, err)
 
 	// App with a default product_id, to test the constraint is not limiting too much
@@ -220,7 +220,7 @@ func TestGetAppIDs(t *testing.T) {
 
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
 	tApp1, _ := a.AddApp(&Application{Name: "test_app1", TeamID: tTeam.ID})
-	tApp2, _ := a.AddApp(&Application{Name: "test_app2", TeamID: tTeam.ID, ProductID: null.StringFrom("io.kinvolk.MyApp2")})
+	tApp2, _ := a.AddApp(&Application{Name: "test_app2", TeamID: tTeam.ID, ProductID: null.StringFrom("io.flatcar.MyApp2")})
 
 	apps, err := a.GetApps(tTeam.ID, 0, 0)
 	assert.NoError(t, err)
@@ -236,7 +236,7 @@ func TestGetAppIDs(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, tApp2.ID, app2ID)
 
-	_, err = a.GetAppID("io.kinvolk.InvalidApp")
+	_, err = a.GetAppID("io.flatcar.InvalidApp")
 	assert.Error(t, err)
 
 	_, err = a.GetAppID("")
@@ -245,35 +245,35 @@ func TestGetAppIDs(t *testing.T) {
 	_, err = a.GetAppID("{")
 	assert.Error(t, err)
 
-	app2ID, err = a.GetAppID("io.kinvolk.MyApp2")
+	app2ID, err = a.GetAppID("io.flatcar.MyApp2")
 	assert.NoError(t, err)
 	assert.Equal(t, tApp2.ID, app2ID)
 
-	tApp3, err := a.AddApp(&Application{Name: "test_app3", TeamID: tTeam.ID, ProductID: null.StringFrom("io.kinvolk.MyApp3")})
+	tApp3, err := a.AddApp(&Application{Name: "test_app3", TeamID: tTeam.ID, ProductID: null.StringFrom("io.flatcar.MyApp3")})
 	assert.NoError(t, err)
 
-	app3ID, err := a.GetAppID("io.kinvolk.MyApp3")
+	app3ID, err := a.GetAppID("io.flatcar.MyApp3")
 	assert.NoError(t, err)
 	assert.Equal(t, tApp3.ID, app3ID)
 
-	tApp2.ProductID = null.StringFrom("io.kinvolk.App")
+	tApp2.ProductID = null.StringFrom("io.flatcar.App")
 	err = a.UpdateApp(tApp2)
 	assert.NoError(t, err)
 
-	_, err = a.GetAppID("io.kinvolk.MyApp2")
+	_, err = a.GetAppID("io.flatcar.MyApp2")
 	assert.Error(t, err)
 	assert.Equal(t, tApp2.ID, app2ID)
 
-	app2ID, err = a.GetAppID("io.kinvolk.App")
+	app2ID, err = a.GetAppID("io.flatcar.App")
 	assert.NoError(t, err)
 	assert.Equal(t, tApp2.ID, app2ID)
 
-	wrappedInBrackets := "{io.kinvolk.App}"
+	wrappedInBrackets := "{io.flatcar.App}"
 	app2ID, err = a.GetAppID(wrappedInBrackets)
 	assert.NoError(t, err)
 	assert.Equal(t, tApp2.ID, app2ID)
 
-	caseInsensitive := "io.Kinvolk.app"
+	caseInsensitive := "io.Flatcar.app"
 	app2ID, err = a.GetAppID(caseInsensitive)
 	assert.NoError(t, err)
 	assert.Equal(t, tApp2.ID, app2ID)

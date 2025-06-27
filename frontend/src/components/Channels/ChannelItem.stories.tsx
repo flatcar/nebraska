@@ -26,7 +26,7 @@ export const ShowArch = {
         id: 'PACK_ID',
         type: 4,
         version: '1.11.3',
-        url: 'https://github.com/kinvolk',
+        url: 'https://github.com/flatcar',
         filename: '',
         description: '',
         size: '',

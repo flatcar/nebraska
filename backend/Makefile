@@ -29,7 +29,7 @@ ifeq ($(VERSION),)
 	endif
 endif
 
-LDFLAGS := "-w -X github.com/kinvolk/nebraska/backend/pkg/version.Version=$(VERSION) -extldflags \"-static\""
+LDFLAGS := "-w -X github.com/flatcar/nebraska/backend/pkg/version.Version=$(VERSION) -extldflags \"-static\""
 .PHONY: all
 all: codegen run-generators code-checks build
 

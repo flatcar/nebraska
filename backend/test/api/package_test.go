@@ -15,8 +15,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"gopkg.in/guregu/null.v4"
 
-	"github.com/kinvolk/nebraska/backend/pkg/api"
-	"github.com/kinvolk/nebraska/backend/pkg/codegen"
+	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/codegen"
 )
 
 func TestListPackages(t *testing.T) {
@@ -94,7 +94,7 @@ func TestCreatePackage(t *testing.T) {
 		method := "POST"
 
 		packageName := "test_package"
-		payload := strings.NewReader(fmt.Sprintf(`{"arch":1,"filename":"%s","description":"kinvolk package","url":"http://kinvolk.io","version":"20.2.1","type":4,"size":"199","hash":"some random hash","application_id":"%s","channels_blacklist":[]}`, packageName, app.ID))
+		payload := strings.NewReader(fmt.Sprintf(`{"arch":1,"filename":"%s","description":"flatcar package","url":"http://flatcar.org","version":"20.2.1","type":4,"size":"199","hash":"some random hash","application_id":"%s","channels_blacklist":[]}`, packageName, app.ID))
 
 		// response
 		var packageResp api.Package
@@ -124,7 +124,7 @@ func TestCreatePackage(t *testing.T) {
 		method := "POST"
 
 		packageName := "test_package"
-		payload := strings.NewReader(fmt.Sprintf(`{"arch":1,"filename":"%s","description":"kinvolk package","url":"http://kinvolk.io","version":"20.2.4","type":4,"size":"199","hash":"some random hash","application_id":"%s","channels_blacklist":[]}`, packageName, app.ID))
+		payload := strings.NewReader(fmt.Sprintf(`{"arch":1,"filename":"%s","description":"flatcar package","url":"http://flatcar.org","version":"20.2.4","type":4,"size":"199","hash":"some random hash","application_id":"%s","channels_blacklist":[]}`, packageName, app.ID))
 
 		// response
 		var packageResp api.Package
