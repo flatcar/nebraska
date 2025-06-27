@@ -5,8 +5,8 @@ import (
 	stdgob "encoding/gob"
 	"fmt"
 
-	"github.com/kinvolk/nebraska/backend/pkg/sessions"
-	"github.com/kinvolk/nebraska/backend/pkg/sessions/memcache"
+	"github.com/flatcar/nebraska/backend/pkg/sessions"
+	"github.com/flatcar/nebraska/backend/pkg/sessions/memcache"
 )
 
 type copier struct{}

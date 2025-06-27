@@ -10,8 +10,8 @@ import (
 	omahaSpec "github.com/kinvolk/go-omaha/omaha"
 	"github.com/rs/zerolog"
 
-	"github.com/kinvolk/nebraska/backend/pkg/api"
-	"github.com/kinvolk/nebraska/backend/pkg/util"
+	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/util"
 )
 
 var (

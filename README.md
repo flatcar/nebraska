@@ -41,12 +41,12 @@ the [Omaha](https://code.google.com/p/omaha/) protocol, with special functionali
 
 <table>
     <tr>
-        <td width="33%"><img src="https://github.com/kinvolk/nebraska/raw/screenshots/screenshots/main.png"></td>
-        <td width="33%"><img src="https://github.com/kinvolk/nebraska/raw/screenshots/screenshots/flatcar_app.png"></td>
+        <td width="33%"><img src="https://github.com/flatcar/nebraska/raw/screenshots/screenshots/main.png"></td>
+        <td width="33%"><img src="https://github.com/flatcar/nebraska/raw/screenshots/screenshots/flatcar_app.png"></td>
     </tr>
     <tr>
-        <td width="33%"><img src="https://github.com/kinvolk/nebraska/raw/screenshots/screenshots/group_details.png"></td>
-        <td width="33%"><img src="https://github.com/kinvolk/nebraska/raw/screenshots/screenshots/instance_details.png"></td>
+        <td width="33%"><img src="https://github.com/flatcar/nebraska/raw/screenshots/screenshots/group_details.png"></td>
+        <td width="33%"><img src="https://github.com/flatcar/nebraska/raw/screenshots/screenshots/instance_details.png"></td>
     </tr>
 </table>
 

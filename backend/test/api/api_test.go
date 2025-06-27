@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/kinvolk/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api"
 )
 
 const (

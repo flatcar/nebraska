@@ -3,7 +3,7 @@ package securecookie
 import (
 	gsc "github.com/gorilla/securecookie"
 
-	"github.com/kinvolk/nebraska/backend/pkg/sessions"
+	"github.com/flatcar/nebraska/backend/pkg/sessions"
 )
 
 type codec struct {

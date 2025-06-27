@@ -6,11 +6,11 @@ import (
 	"github.com/labstack/gommon/log"
 	"github.com/rs/zerolog"
 
-	db "github.com/kinvolk/nebraska/backend/pkg/api"
-	"github.com/kinvolk/nebraska/backend/pkg/config"
-	"github.com/kinvolk/nebraska/backend/pkg/metrics"
-	"github.com/kinvolk/nebraska/backend/pkg/server"
-	"github.com/kinvolk/nebraska/backend/pkg/syncer"
+	db "github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/config"
+	"github.com/flatcar/nebraska/backend/pkg/metrics"
+	"github.com/flatcar/nebraska/backend/pkg/server"
+	"github.com/flatcar/nebraska/backend/pkg/syncer"
 )
 
 func main() {

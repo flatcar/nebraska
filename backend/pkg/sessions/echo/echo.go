@@ -3,7 +3,7 @@ package echo
 import (
 	"github.com/labstack/echo/v4"
 
-	"github.com/kinvolk/nebraska/backend/pkg/sessions"
+	"github.com/flatcar/nebraska/backend/pkg/sessions"
 )
 
 func SessionsMiddleware(s *sessions.Store, name string) echo.MiddlewareFunc {

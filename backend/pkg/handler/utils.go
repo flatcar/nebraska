@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	echosessions "github.com/kinvolk/nebraska/backend/pkg/sessions/echo"
+	echosessions "github.com/flatcar/nebraska/backend/pkg/sessions/echo"
 
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
