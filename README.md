@@ -18,7 +18,7 @@ Nebraska is an update manager for [Flatcar Container Linux](https://www.flatcar.
 ## Overview
 
 Nebraska offers an easy way to monitor and manage the rollout of updates to applications that use
-the [Omaha](https://code.google.com/p/omaha/) protocol, with special functionality for Flatcar Container Linux updates.
+the [Omaha](https://github.com/google/omaha) protocol, with special functionality for Flatcar Container Linux updates.
 
 ## Features
 
