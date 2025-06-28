@@ -1,0 +1,8 @@
+http://127.0.0.1
+http://localhost
+https://github.com/iconify/tools/blob/master/sample/parse.js
+%25PUBLIC_URL%25
+favicon.png
+
+#x.com seems to consistently only return a 400 from GHA
+https://x.com/flatcar
