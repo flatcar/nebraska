@@ -1,5 +1,5 @@
 import { createStore } from '@reduxjs/toolkit';
-import { Meta, StoryFn } from '@storybook/react';
+import { Meta, StoryFn } from '@storybook/react-vite';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router';
 
