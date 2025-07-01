@@ -1,12 +1,16 @@
-const path = require('path');
-const fs = require('fs');
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const directoryPath = path.join(__dirname, './locales/');
 const currentLocales = [];
 
 fs.readdirSync(directoryPath).forEach(file => currentLocales.push(file));
 
-module.exports = {
+export default {
   lexers: {
     default: ['JsxLexer'],
   },
