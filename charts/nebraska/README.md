@@ -9,6 +9,44 @@ $ helm repo add nebraska https://flatcar.github.io/nebraska
 $ helm install my-nebraska nebraska/nebraska
 ```
 
+## Upgrade PostgreSQL
+
+When there is a major upgrade of PostgreSQL, a manual intervention might be required with a downtime. It is possible to automate things with operators, but here's a simple example:
+
+1. Scale down Nebraska deployment:
+```
+$ kubectl scale --replicas=0 deployment/nebraska
+deployment.apps/nebraska scaled
+```
+
+2. Backup PostgreSQL data:
+```
+$ kubectl exec -ti pod/nebraska-postgresql-0 -- pg_dumpall > backup.sql
+```
+
+3. Scale down Nebraska statefulset:
+```
+$ kubectl scale --replicas=0 statefulset/nebraska-postgresql
+statefulset.apps/nebraska-postgresql scaled
+```
+
+4. Backup and remove the data from the bound volume (depending on the storage class)
+
+3. Upgrade PostgreSQL version, e.g:
+```diff
+-          image: docker.io/bitnami/postgresql:13.8.0-debian-11-r18
++          image: docker.io/bitnami/postgresql:17.5.0
+```
+
+5. Apply the changes and scale up Nebraska statefulset to its original value
+
+6. Inject the backup and assert that everything looks good in the database:
+```
+$ kubectl exec -ti pod/nebraska-postgresql-0 -- psql < backup.sql
+```
+
+7. Scale up Nebraska deployment and assert that everything is back to normal
+
 ## Parameters
 
 ### Global parameters
