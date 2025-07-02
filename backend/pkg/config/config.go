@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"net/url"
@@ -8,7 +9,6 @@ import (
 
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/providers/basicflag"
-	"github.com/pkg/errors"
 
 	"github.com/kinvolk/nebraska/backend/pkg/random"
 )
@@ -71,12 +71,12 @@ const (
 func (c *Config) Validate() error {
 	if c.HostFlatcarPackages {
 		if c.FlatcarPackagesPath == "" {
-			return errors.New("Invalid Flatcar packages path. Please ensure you provide a valid path using -flatcar-packages-path")
+			return errors.New("invalid Flatcar packages path. Please ensure you provide a valid path using -flatcar-packages-path")
 		}
 
 		tmpFile, err := os.CreateTemp(c.FlatcarPackagesPath, "")
 		if err != nil {
-			return errors.New("Invalid Flatcar packages path: " + err.Error())
+			return fmt.Errorf("invalid Flatcar packages path: %w", err)
 		}
 		defer os.Remove(tmpFile.Name())
 
@@ -88,11 +88,11 @@ func (c *Config) Validate() error {
 	switch c.AuthMode {
 	case "github":
 		if c.GhClientID == "" || c.GhClientSecret == "" || c.GhReadOnlyTeams == "" || c.GhReadWriteTeams == "" {
-			return errors.New("Invalid github configuration")
+			return errors.New("invalid github configuration")
 		}
 	case "oidc":
 		if c.OidcClientID == "" || c.OidcClientSecret == "" || c.OidcIssuerURL == "" || c.OidcAdminRoles == "" || c.OidcViewerRoles == "" {
-			return errors.New("Invalid OIDC configuration")
+			return errors.New("invalid OIDC configuration")
 		}
 	}
 
