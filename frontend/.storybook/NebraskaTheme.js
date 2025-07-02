@@ -7,6 +7,6 @@ import logoUrl from '../../docs/nebraska-logo.svg';
 export default create({
   base: 'light',
   brandTitle: 'Nebraska is an update manager for Flatcar Container Linux and Kubernetes.',
-  brandUrl: 'https://kinvolk.io/docs/nebraska/latest/development/',
+  brandUrl: 'https://flatcar.org/docs/latest/nebraska/development/',
   brandImage: logoUrl,
 });
