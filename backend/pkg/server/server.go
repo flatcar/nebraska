@@ -13,7 +13,6 @@ import (
 	"github.com/labstack/echo-contrib/prometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/labstack/gommon/log"
 	echomiddleware "github.com/oapi-codegen/echo-middleware"
 	"github.com/pkg/errors"
 
@@ -22,19 +21,19 @@ import (
 	"github.com/kinvolk/nebraska/backend/pkg/codegen"
 	"github.com/kinvolk/nebraska/backend/pkg/config"
 	"github.com/kinvolk/nebraska/backend/pkg/handler"
+	"github.com/kinvolk/nebraska/backend/pkg/logger"
 	custommiddleware "github.com/kinvolk/nebraska/backend/pkg/middleware"
 	"github.com/kinvolk/nebraska/backend/pkg/sessions"
 	echosessions "github.com/kinvolk/nebraska/backend/pkg/sessions/echo"
 	"github.com/kinvolk/nebraska/backend/pkg/sessions/memcache"
 	memcachegob "github.com/kinvolk/nebraska/backend/pkg/sessions/memcache/gob"
 	"github.com/kinvolk/nebraska/backend/pkg/sessions/securecookie"
-	"github.com/kinvolk/nebraska/backend/pkg/util"
 )
 
 const serviceName = "nebraska"
 
 var (
-	logger            = util.NewLogger("nebraska")
+	l                 = logger.New("nebraska")
 	middlewareSkipper = func(c echo.Context) bool {
 		requestPath := c.Path()
 		paths := []string{"/health", "/metrics", "/config", "/v1/update", "/flatcar/*", "/*"}
@@ -54,7 +53,9 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 	e := echo.New()
 
 	if conf.Debug {
-		e.Logger.SetLevel(log.DEBUG)
+		// SetLevel(0) means SetLevel(DEBUG)
+		// but let's avoid pulling a 'log' dependency again (different from zerolog) just for this.
+		e.Logger.SetLevel(0)
 		e.Debug = conf.Debug
 	}
 
@@ -126,7 +127,7 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 			if code == he.Code {
 				fileErr := c.File(path.Join(conf.HTTPStaticDir, "index.html"))
 				if fileErr != nil {
-					logger.Err(fileErr).Msg("Error serving index.html")
+					l.Err(fileErr).Msg("Error serving index.html")
 				}
 				return
 			}
@@ -140,7 +141,7 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 		// update once at startup
 		err = db.UpdateInstanceStats(nil, nil)
 		if err != nil {
-			logger.Err(err).Msg("Error updating instance stats")
+			l.Err(err).Msg("Error updating instance stats")
 		}
 		ticker := time.NewTicker(time.Hour)
 		defer ticker.Stop()
@@ -148,7 +149,7 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 		for range ticker.C {
 			err := db.UpdateInstanceStats(nil, nil)
 			if err != nil {
-				logger.Err(err).Msg("Error updating instance stats")
+				l.Err(err).Msg("Error updating instance stats")
 			}
 		}
 	}()

@@ -11,11 +11,11 @@ import (
 	"github.com/rs/zerolog"
 
 	"github.com/kinvolk/nebraska/backend/pkg/api"
-	"github.com/kinvolk/nebraska/backend/pkg/util"
+	"github.com/kinvolk/nebraska/backend/pkg/logger"
 )
 
 var (
-	logger = util.NewLogger("omaha")
+	l = logger.New("omaha")
 
 	initialFlatcarGroups = map[string]string{
 		// amd64
@@ -57,14 +57,14 @@ func (h *Handler) Handle(rawReq io.Reader, respWriter io.Writer, ip string) erro
 	var omahaReq *omahaSpec.Request
 
 	if err := xml.NewDecoder(rawReq).Decode(&omahaReq); err != nil {
-		logger.Warn().Msgf("Handle - malformed omaha request error %s", err.Error())
+		l.Warn().Msgf("Handle - malformed omaha request error %s", err.Error())
 		return fmt.Errorf("%s: %w", ErrMalformedRequest, err)
 	}
 	trace(omahaReq)
 
 	omahaResp, err := h.buildOmahaResponse(omahaReq, ip)
 	if err != nil {
-		logger.Warn().Msgf("Handle - error building omaha response error %s", err.Error())
+		l.Warn().Msgf("Handle - error building omaha response error %s", err.Error())
 		return ErrMalformedResponse
 	}
 	trace(omahaResp)
@@ -87,7 +87,7 @@ func getArch(os *omahaSpec.OS, appReq *omahaSpec.AppRequest) api.Arch {
 			return arch
 		}
 	}
-	logger.Debug().Msgf("getArch - unknown arch, assuming amd64 arch")
+	l.Debug().Msgf("getArch - unknown arch, assuming amd64 arch")
 	return api.ArchAMD64
 }
 
@@ -100,7 +100,7 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 
 		appID, err := h.crAPI.GetAppID(reqApp.ID)
 		if err != nil {
-			logger.Info().Str("machineId", reqApp.MachineID).Str("app", reqApp.ID).Msgf("buildOmahaResponse - no app found for %s", err.Error())
+			l.Info().Str("machineId", reqApp.MachineID).Str("app", reqApp.ID).Msgf("buildOmahaResponse - no app found for %s", err.Error())
 
 			respApp = omahaResp.AddApp(reqApp.ID, omahaSpec.AppUnknownID)
 			respApp.Status = h.getStatusMessage(err)
@@ -114,14 +114,14 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 		// but also allows the old hard-coded CoreOS group UUIDs until we now that they are not used.
 		group := reqApp.Track
 		if trackName, ok := initialFlatcarGroups[group]; ok {
-			logger.Info().Str("machineId", reqApp.MachineID).Str("uuid", group).Msgf("buildOmahaResponse - found client using a hard-coded group UUID")
+			l.Info().Str("machineId", reqApp.MachineID).Str("uuid", group).Msgf("buildOmahaResponse - found client using a hard-coded group UUID")
 			group = trackName
 		}
 		groupID, err := h.crAPI.GetGroupID(appID, group, getArch(omahaReq.OS, reqApp))
 		if err == nil {
 			group = groupID
 		} else {
-			logger.Info().Str("machineId", reqApp.MachineID).Str("track", group).Msgf("buildOmahaResponse - no group found for track and arch error %s", err.Error())
+			l.Info().Str("machineId", reqApp.MachineID).Str("track", group).Msgf("buildOmahaResponse - no group found for track and arch error %s", err.Error())
 			respApp.Status = h.getStatusMessage(err)
 			respApp.AddUpdateCheck(omahaSpec.UpdateInternalError)
 			return omahaResp, nil
@@ -129,14 +129,14 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 
 		for _, event := range reqApp.Events {
 			if err := h.processEvent(reqApp.MachineID, appID, group, event); err != nil {
-				logger.Debug().Str("machineId", reqApp.MachineID).Msgf("processEvent error %s", err.Error())
+				l.Debug().Str("machineId", reqApp.MachineID).Msgf("processEvent error %s", err.Error())
 			}
 			respApp.AddEvent()
 		}
 
 		if reqApp.Ping != nil {
 			if _, err := h.crAPI.RegisterInstance(reqApp.MachineID, reqApp.MachineAlias, ip, reqApp.Version, appID, group); err != nil {
-				logger.Debug().Str("machineId", reqApp.MachineID).Msgf("processPing error %s", err.Error())
+				l.Debug().Str("machineId", reqApp.MachineID).Msgf("processPing error %s", err.Error())
 			}
 			respApp.AddPing()
 		}
@@ -156,7 +156,7 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 }
 
 func (h *Handler) processEvent(machineID string, appID string, group string, event *omahaSpec.EventRequest) error {
-	logger.Info().Str("machineId", machineID).Str("appID", appID).Str("group", group).Str("event", event.Type.String()+"."+event.Result.String()).Str("previousVersion", event.PreviousVersion).Msgf("processEvent eventError %d", event.ErrorCode)
+	l.Info().Str("machineId", machineID).Str("appID", appID).Str("group", group).Str("event", event.Type.String()+"."+event.Result.String()).Str("previousVersion", event.PreviousVersion).Msgf("processEvent eventError %d", event.ErrorCode)
 
 	return h.crAPI.RegisterEvent(machineID, appID, group, int(event.Type), int(event.Result), event.PreviousVersion, strconv.Itoa(event.ErrorCode))
 }
@@ -190,7 +190,7 @@ func (h *Handler) getStatusMessageStr(crErr error) string {
 		return "error-updateInProgressOnInstance"
 	}
 
-	logger.Warn().Msgf("getStatusMessage error %s", crErr.Error())
+	l.Warn().Msgf("getStatusMessage error %s", crErr.Error())
 
 	return "error-failedToRetrieveUpdatePackageInfo"
 }
@@ -209,7 +209,7 @@ func (h *Handler) prepareUpdateCheck(appResp *omahaSpec.AppResponse, pkg *api.Pa
 	if pkg.Size.Valid {
 		size, err := strconv.ParseUint(pkg.Size.String, 10, 64)
 		if err != nil {
-			logger.Warn().Msgf("prepareUpdateCheck bad package size %s", err.Error())
+			l.Warn().Msgf("prepareUpdateCheck bad package size %s", err.Error())
 		} else {
 			mpkg.Size = size
 		}
@@ -226,7 +226,7 @@ func (h *Handler) prepareUpdateCheck(appResp *omahaSpec.AppResponse, pkg *api.Pa
 		if pkgFile.Size.Valid && pkgFile.Size.String != "" {
 			size, err := strconv.ParseUint(pkgFile.Size.String, 10, 64)
 			if err != nil {
-				logger.Warn().Msgf("prepareUpdateCheck bad size %s for package's extra file %s", err.Error(), pkgFile.Name.String)
+				l.Warn().Msgf("prepareUpdateCheck bad size %s for package's extra file %s", err.Error(), pkgFile.Name.String)
 			} else {
 				fpkg.Size = size
 			}
@@ -260,9 +260,9 @@ func trace(v interface{}) {
 	if zerolog.GlobalLevel() == zerolog.DebugLevel {
 		raw, err := xml.MarshalIndent(v, "", " ")
 		if err != nil {
-			logger.Error().Err(err).Msg("")
+			l.Error().Err(err).Msg("")
 			return
 		}
-		logger.Debug().Str("XML", string(raw)).Msg("Omaha trace")
+		l.Debug().Str("XML", string(raw)).Msg("Omaha trace")
 	}
 }

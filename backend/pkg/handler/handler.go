@@ -12,8 +12,8 @@ import (
 	"github.com/kinvolk/nebraska/backend/pkg/auth"
 	"github.com/kinvolk/nebraska/backend/pkg/codegen"
 	"github.com/kinvolk/nebraska/backend/pkg/config"
+	"github.com/kinvolk/nebraska/backend/pkg/logger"
 	"github.com/kinvolk/nebraska/backend/pkg/omaha"
-	"github.com/kinvolk/nebraska/backend/pkg/util"
 	"github.com/kinvolk/nebraska/backend/pkg/version"
 )
 
@@ -33,7 +33,7 @@ type Handler struct {
 var defaultPage = 1
 var defaultPerPage = 10
 
-var logger = util.NewLogger("nebraska")
+var l = logger.New("nebraska")
 
 func New(db *api.API, conf *config.Config, auth auth.Authenticator) (*Handler, error) {
 	clientConfig := &codegen.Config{
@@ -46,11 +46,11 @@ func New(db *api.API, conf *config.Config, auth auth.Authenticator) (*Handler, e
 	if conf.AppLogoPath != "" {
 		svg, err := os.ReadFile(conf.AppLogoPath)
 		if err != nil {
-			logger.Error().Err(err).Msg("Reading svg from path in config")
+			l.Error().Err(err).Msg("Reading svg from path in config")
 			return nil, err
 		}
 		if err := xml.Unmarshal(svg, &struct{}{}); err != nil {
-			logger.Error().Err(err).Msg("Invalid format for SVG")
+			l.Error().Err(err).Msg("Invalid format for SVG")
 			return nil, err
 		}
 		clientConfig.Logo = string(svg)
@@ -63,7 +63,7 @@ func New(db *api.API, conf *config.Config, auth auth.Authenticator) (*Handler, e
 	if conf.AuthMode == "oidc" {
 		url, err := url.Parse(conf.NebraskaURL)
 		if err != nil {
-			logger.Error().Err(err).Msg("Invalid nebraska-url")
+			l.Error().Err(err).Msg("Invalid nebraska-url")
 			return nil, err
 		}
 		url.Path = "/login"

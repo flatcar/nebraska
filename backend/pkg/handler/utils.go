@@ -20,12 +20,12 @@ func getTeamID(c echo.Context) string {
 func loggerWithUsername(_ zerolog.Logger, ctx echo.Context) zerolog.Logger {
 	session := echosessions.GetSession(ctx)
 	if session == nil {
-		return logger
+		return l
 	}
 
 	username := session.Get("username")
 
-	return logger.With().Str("username", username.(string)).Logger()
+	return l.With().Str("username", username.(string)).Logger()
 }
 
 func appNotFoundResponse(ctx echo.Context, appIDProductID string) error {
