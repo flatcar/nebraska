@@ -73,7 +73,7 @@
   "devDependencies": {
     "@axe-core/react": "^4.10.1",
     "@iconify/icons-mdi": "^1.2.48",
-    "@iconify/react": "^5.2.1",
+    "@iconify/react": "^6.0.0",
     "@iconify/tools": "^4.1.2",
     "@playwright/test": "1.53.1",
     "@storybook/addon-docs": "^9.0.14",
