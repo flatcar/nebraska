@@ -197,7 +197,7 @@ postgresql:
     database: nebraska
     postgresPassword: changeIt
   image:
-    tag: 13.8.0-debian-11-r18
+    tag: 17.5.0
   primary:
     persistence:
       enabled: false
