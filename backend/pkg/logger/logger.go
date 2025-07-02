@@ -1,4 +1,4 @@
-package util
+package logger
 
 import (
 	"io"
@@ -12,7 +12,7 @@ const (
 	logFormatPretty = "pretty"
 )
 
-func NewLogger(logContext string) zerolog.Logger {
+func New(logContext string) zerolog.Logger {
 	logFormat := os.Getenv("NEBRASKA_LOG_FORMAT")
 	unknownFormat := false
 

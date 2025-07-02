@@ -337,7 +337,7 @@ func (api *API) GetGroupID(appID, trackName string, arch Arch) (string, error) {
 			}
 			// Checks boths errors above.
 			if err != nil {
-				logger.Error().Err(err).Msg("GetGroupID error")
+				l.Error().Err(err).Msg("GetGroupID error")
 			} else {
 				for _, group := range groups {
 					if group.Channel != nil {
@@ -346,11 +346,11 @@ func (api *API) GetGroupID(appID, trackName string, arch Arch) (string, error) {
 						// The newest group with the track name and arch wins.
 						if otherID, ok := cachedGroups[descriptor]; ok {
 							// Log a warning for others.
-							logger.Warn().Str("group", group.ID).Str("group2", otherID).Str("track", group.Track).Msg("GetGroupID - another group already uses the same track name and architecture")
+							l.Warn().Str("group", group.ID).Str("group2", otherID).Str("track", group.Track).Msg("GetGroupID - another group already uses the same track name and architecture")
 						}
 						cachedGroups[descriptor] = group.ID
 					} else {
-						logger.Warn().Str("group", group.ID).Msg("GetGroupID - no channel found for")
+						l.Warn().Str("group", group.ID).Msg("GetGroupID - no channel found for")
 					}
 				}
 			}
@@ -681,10 +681,10 @@ func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (m
 	cachedGroupVersionCountLock.RUnlock()
 	if ok {
 		if time.Since(val.storedAt) < cachedGroupVersionCountLifespan {
-			logger.Debug().Str("cacheStatus", "HIT").Str("groupID", groupID).Str("duration", duration).Msg("GetGroupVersionCountTimeline")
+			l.Debug().Str("cacheStatus", "HIT").Str("groupID", groupID).Str("duration", duration).Msg("GetGroupVersionCountTimeline")
 			return val.data, true, nil
 		}
-		logger.Debug().Str("cacheStatus", "STALE").Str("groupID", groupID).Str("duration", duration).Msg("GetGroupVersionCountTimeline")
+		l.Debug().Str("cacheStatus", "STALE").Str("groupID", groupID).Str("duration", duration).Msg("GetGroupVersionCountTimeline")
 	}
 
 	durationString, interval, err := durationParamToPostgresTimings(durationParam(duration))
@@ -854,7 +854,7 @@ func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (m
 		defer cachedGroupVersionCountLock.Unlock()
 		val, ok := cachedGroupVersionCount[cacheKey]
 		if !ok || time.Since(val.storedAt) >= cachedGroupVersionCountLifespan {
-			logger.Debug().Str("cacheStatus", "SET").Str("groupID", groupID).Str("duration", duration).Msg("GetGroupVersionCountTimeline")
+			l.Debug().Str("cacheStatus", "SET").Str("groupID", groupID).Str("duration", duration).Msg("GetGroupVersionCountTimeline")
 			cachedGroupVersionCount[cacheKey] = groupVersionCountCache{timelineCount, time.Now()}
 		}
 	}()

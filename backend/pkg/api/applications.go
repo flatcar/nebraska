@@ -84,7 +84,7 @@ func (api *API) AddAppCloning(app *Application, sourceAppID string) (*Applicatio
 	if sourceAppID != "" {
 		sourceApp, err := api.GetApp(sourceAppID)
 		if err != nil {
-			logger.Error().Err(err).Msg("AddAppCloning - could not get source app")
+			l.Error().Err(err).Msg("AddAppCloning - could not get source app")
 			return app, nil
 		}
 
@@ -96,7 +96,7 @@ func (api *API) AddAppCloning(app *Application, sourceAppID string) (*Applicatio
 			channel.PackageID = null.String{}
 			channelCopy, err := api.AddChannel(channel)
 			if err != nil {
-				logger.Error().Err(err).Msg("AddAppCloning - could not add channel")
+				l.Error().Err(err).Msg("AddAppCloning - could not add channel")
 				return app, nil // FIXME - think about what we should return to the caller
 			}
 			channelsIDsMappings[originalChannelID] = null.StringFrom(channelCopy.ID)
@@ -110,7 +110,7 @@ func (api *API) AddAppCloning(app *Application, sourceAppID string) (*Applicatio
 			group.PolicyUpdatesEnabled = true
 			group.ID = ""
 			if _, err := api.AddGroup(group); err != nil {
-				logger.Error().Err(err).Msg("AddAppCloning - could not add group")
+				l.Error().Err(err).Msg("AddAppCloning - could not add group")
 				return app, nil // FIXME - think about what we should return to the caller
 			}
 		}
@@ -329,7 +329,7 @@ func (api *API) GetAppID(appOrProductID string) (string, error) {
 					app := Application{}
 					err := rows.StructScan(&app)
 					if err != nil {
-						logger.Warn().Err(err).Msg("Failed to read app from DB")
+						l.Warn().Err(err).Msg("Failed to read app from DB")
 					}
 
 					if prodIDPtr := app.ProductID.Ptr(); prodIDPtr != nil {
@@ -342,7 +342,7 @@ func (api *API) GetAppID(appOrProductID string) (string, error) {
 					cachedAppIDs[app.ID] = app.ID
 				}
 			} else {
-				logger.Error().Err(err).Msg("Failed to get apps")
+				l.Error().Err(err).Msg("Failed to get apps")
 			}
 
 			cachedAppsRef = cachedAppIDs

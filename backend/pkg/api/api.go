@@ -12,7 +12,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	migrate "github.com/rubenv/sql-migrate"
 
-	"github.com/kinvolk/nebraska/backend/pkg/util"
+	"github.com/kinvolk/nebraska/backend/pkg/logger"
 
 	// PostgreSQL Driver and Toolkit
 	_ "github.com/jackc/pgx/v4/stdlib"
@@ -43,7 +43,7 @@ func nowUTC() time.Time {
 }
 
 var (
-	logger = util.NewLogger("api")
+	l = logger.New("api")
 
 	// ErrNoRowsAffected indicates that no rows were affected in an update or
 	// delete database operation.
@@ -184,12 +184,12 @@ func (api *API) MigrateDown(version string) (int, error) {
 	}
 
 	levels := countMap["count"].(int64)
-	logger.Info().Msgf("migrating down %d levels", levels)
+	l.Info().Msgf("migrating down %d levels", levels)
 	count, err := migrate.ExecMax(api.db.DB, "postgres", migrations, migrate.Down, int(levels))
 	if err != nil {
 		return 0, err
 	}
-	logger.Info().Msg("successfully migrated down")
+	l.Info().Msg("successfully migrated down")
 	return count, nil
 }
 
