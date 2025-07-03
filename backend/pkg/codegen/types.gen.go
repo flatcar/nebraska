@@ -13,6 +13,11 @@ const (
 	OidcCookieAuthScopes   = "oidcCookieAuth.Scopes"
 )
 
+// Defines values for InstanceStatsType.
+const (
+	InstanceStatsTypeInstanceCount InstanceStatsType = "instance_count"
+)
+
 // Activity defines model for activity.
 type Activity struct {
 	AppID           string    `json:"app_id"`
@@ -234,6 +239,19 @@ type InstancePage struct {
 	Total     int        `json:"total"`
 }
 
+// InstanceStats defines model for instanceStats.
+type InstanceStats struct {
+	Arch      string            `json:"arch"`
+	Channel   string            `json:"channel"`
+	Count     *int              `json:"count,omitempty"`
+	Timestamp string            `json:"timestamp"`
+	Type      InstanceStatsType `json:"type"`
+	Version   string            `json:"version"`
+}
+
+// InstanceStatsType defines model for InstanceStats.Type.
+type InstanceStatsType string
+
 // InstanceStatusHistories defines model for instanceStatusHistories.
 type InstanceStatusHistories = []InstanceStatusHistory
 
@@ -392,6 +410,12 @@ type PaginatePackagesParams struct {
 	Page          *int    `form:"page,omitempty" json:"page,omitempty"`
 	Perpage       *int    `form:"perpage,omitempty" json:"perpage,omitempty"`
 	SearchVersion *string `form:"searchVersion,omitempty" json:"searchVersion,omitempty"`
+}
+
+// GetInstanceStatsParams defines parameters for GetInstanceStats.
+type GetInstanceStatsParams struct {
+	Page    *int `form:"page,omitempty" json:"page,omitempty"`
+	Perpage *int `form:"perpage,omitempty" json:"perpage,omitempty"`
 }
 
 // LoginParams defines parameters for Login.

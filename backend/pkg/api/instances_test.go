@@ -300,7 +300,7 @@ func TestUpdateInstanceStats(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
 
-	instances, err := a.GetInstanceStats()
+	instances, err := a.GetInstanceStats(1, 100)
 	assert.NoError(t, err)
 	assert.Equal(t, 0, len(instances))
 
@@ -328,7 +328,7 @@ func TestUpdateInstanceStats(t *testing.T) {
 	err = a.UpdateInstanceStats(&ts, &elapsed)
 	assert.NoError(t, err)
 
-	instances, err = a.GetInstanceStats()
+	instances, err = a.GetInstanceStats(1, 100)
 	assert.NoError(t, err)
 	assert.Equal(t, 2, len(instances))
 
@@ -357,7 +357,7 @@ func TestUpdateInstanceStats(t *testing.T) {
 	err = a.UpdateInstanceStats(&ts3, &elapsed)
 	assert.NoError(t, err)
 
-	instances, err = a.GetInstanceStats()
+	instances, err = a.GetInstanceStats(1, 100)
 	assert.NoError(t, err)
 	assert.Equal(t, 5, len(instances))
 
