@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/flatcar/go-omaha/omaha"
 	"github.com/google/uuid"
 	"github.com/jinzhu/copier"
-	"github.com/kinvolk/go-omaha/omaha"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
