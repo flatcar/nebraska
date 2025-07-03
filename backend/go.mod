@@ -14,6 +14,7 @@ require (
 	github.com/jackc/pgx/v4 v4.18.3
 	github.com/jinzhu/copier v0.4.0
 	github.com/jmoiron/sqlx v1.4.0
+	github.com/joho/godotenv v1.5.1
 	github.com/kevinburke/go-bindata v3.24.0+incompatible
 	github.com/kinvolk/go-omaha v0.0.2-0.20221206142015-1518a03b832b
 	github.com/knadh/koanf v1.5.0
