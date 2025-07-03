@@ -8,13 +8,13 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/kinvolk/nebraska/backend/pkg/api"
-	"github.com/kinvolk/nebraska/backend/pkg/auth"
-	"github.com/kinvolk/nebraska/backend/pkg/codegen"
-	"github.com/kinvolk/nebraska/backend/pkg/config"
-	"github.com/kinvolk/nebraska/backend/pkg/logger"
-	"github.com/kinvolk/nebraska/backend/pkg/omaha"
-	"github.com/kinvolk/nebraska/backend/pkg/version"
+	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/auth"
+	"github.com/flatcar/nebraska/backend/pkg/codegen"
+	"github.com/flatcar/nebraska/backend/pkg/config"
+	"github.com/flatcar/nebraska/backend/pkg/logger"
+	"github.com/flatcar/nebraska/backend/pkg/omaha"
+	"github.com/flatcar/nebraska/backend/pkg/version"
 )
 
 const (

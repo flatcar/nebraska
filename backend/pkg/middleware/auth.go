@@ -4,7 +4,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	"github.com/kinvolk/nebraska/backend/pkg/auth"
+	"github.com/flatcar/nebraska/backend/pkg/auth"
 )
 
 func NewAuthSkipper(auth string) middleware.Skipper {

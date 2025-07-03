@@ -1,4 +1,4 @@
-module github.com/kinvolk/nebraska/backend
+module github.com/flatcar/nebraska/backend
 
 go 1.23.0
 

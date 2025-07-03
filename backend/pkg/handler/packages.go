@@ -7,8 +7,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"gopkg.in/guregu/null.v4"
 
-	"github.com/kinvolk/nebraska/backend/pkg/api"
-	"github.com/kinvolk/nebraska/backend/pkg/codegen"
+	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/codegen"
 )
 
 func (h *Handler) PaginatePackages(ctx echo.Context, appIDorProductID string, params codegen.PaginatePackagesParams) error {

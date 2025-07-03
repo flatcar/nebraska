@@ -17,9 +17,9 @@ import (
 	"github.com/tidwall/gjson"
 	"golang.org/x/oauth2"
 
-	"github.com/kinvolk/nebraska/backend/pkg/codegen"
-	"github.com/kinvolk/nebraska/backend/pkg/sessions"
-	echosessions "github.com/kinvolk/nebraska/backend/pkg/sessions/echo"
+	"github.com/flatcar/nebraska/backend/pkg/codegen"
+	"github.com/flatcar/nebraska/backend/pkg/sessions"
+	echosessions "github.com/flatcar/nebraska/backend/pkg/sessions/echo"
 )
 
 const (

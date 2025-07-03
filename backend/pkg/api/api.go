@@ -12,7 +12,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	migrate "github.com/rubenv/sql-migrate"
 
-	"github.com/kinvolk/nebraska/backend/pkg/logger"
+	"github.com/flatcar/nebraska/backend/pkg/logger"
 
 	// PostgreSQL Driver and Toolkit
 	_ "github.com/jackc/pgx/v4/stdlib"

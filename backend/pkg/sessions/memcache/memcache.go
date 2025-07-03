@@ -3,8 +3,8 @@ package memcache
 import (
 	"sync"
 
-	"github.com/kinvolk/nebraska/backend/pkg/random"
-	"github.com/kinvolk/nebraska/backend/pkg/sessions"
+	"github.com/flatcar/nebraska/backend/pkg/random"
+	"github.com/flatcar/nebraska/backend/pkg/sessions"
 )
 
 // ValuesCopier is used for copying values from session to cache
