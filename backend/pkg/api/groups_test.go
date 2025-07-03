@@ -212,6 +212,12 @@ func TestVersionBreakDownEmpty(t *testing.T) {
 func TestGetVersionCountTimeline(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+
+	// Set cache lifespan to 50ms for testing and restore when done
+	cacheManager := NewTestCacheManager(a)
+	oldLifespan := cacheManager.SetCacheLifespanForTest(50 * time.Millisecond)
+	defer cacheManager.RestoreCacheLifespan(oldLifespan)
+
 	version := "4.0.0"
 	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
 	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
@@ -237,19 +243,23 @@ func TestGetVersionCountTimeline(t *testing.T) {
 	// the first time the cache is not hit
 	assert.Equal(t, false, isCache)
 
-	time.Sleep(time.Second * 10)
+	// wait a moment for the cache to be set (it's set asynchronously)
+	time.Sleep(10 * time.Millisecond)
+
+	// call again - should hit cache (within 50ms lifespan)
 	_, isCache, err = a.GetGroupVersionCountTimeline(tGroup.ID, "1h")
 	assert.NoError(t, err)
 
 	// the cache must be hit
 	assert.Equal(t, true, isCache)
 
-	time.Sleep(time.Second * 60)
+	// wait for cache to expire (100ms > 50ms lifespan)
+	time.Sleep(100 * time.Millisecond)
 
 	versionTimelineMap, isCache, err = a.GetGroupVersionCountTimeline(tGroup.ID, "1h")
 	assert.NoError(t, err)
 
-	// the cache must be stale as we wait for the timespan
+	// the cache must be stale as we waited longer than the lifespan
 	assert.Equal(t, false, isCache)
 
 	var totalInstances uint64

@@ -8,30 +8,10 @@ info:
     email: hello@kinvolk.io
     url: http://kinvolk.io
 paths:
-  /login:
-    get:
-      operationId: login
-      description: login browser flow
-      security: []
-      parameters:
-        - in: query
-          name: login_redirect_url
-          required: true
-          schema:
-            type: string
-      responses:
-        "302":
-          description: login response
-        "400":
-          description: bad request
-        "500":
-          description: internal server error
-        "501":
-          description: not implemented for non oidc auth modes
   /login/token:
     post:
       operationId: loginToken
-      description: login token flow
+      description: login token flow (deprecated - returns 501 Not Implemented for OIDC mode)
       security: []
       requestBody:
         description: payload for login token
@@ -50,33 +30,21 @@ paths:
         "500":
           description: internal server error
         "501":
-          description: not implemented for non oidc auth modes          
-  /login/cb: 
-    get:
-      operationId: loginCb
-      description: login callback
-      security: []
-      responses:
-        "200":
-          description: login cb success response
-        "400":
-          description: bad request
-        "401":
-          description: unauthorized
-        "500":
-          description: internal server error        
+          description: not implemented for OIDC auth mode (deprecated password grant)          
   /login/validate_token:
     get:
       operationId: validateToken
-      description: validate token
+      description: validate JWT access token (OIDC mode only)
       security: []
       responses:
         "200":
           description: validate token response
+        "401":
+          description: invalid or expired token
   /login/webhook:
     post:
       operationId: loginWebhook
-      description: login web hook
+      description: login webhook for GitHub auth mode only
       security: []
       parameters:
         - in: header
@@ -104,8 +72,7 @@ paths:
     get:
       operationId: getConfig
       description: get app config
-      security:
-        - githubCookieAuth: [] 
+      security: [] 
       responses:
         "200":
           description: get config response
@@ -1345,7 +1312,6 @@ components:
       type: object
       required:
         - accessManagementUrl
-        - logoutUrl
         - nebraskaVersion
         - logo
         - title
@@ -1357,10 +1323,6 @@ components:
           type: string
           x-oapi-codegen-extra-tags:
             json: "access_management_url"
-        logoutUrl:
-          type: string
-          x-oapi-codegen-extra-tags:
-            json: "logout_url"
         nebraskaVersion:
           type: string
           x-oapi-codegen-extra-tags:
@@ -1385,6 +1347,22 @@ components:
           type: string
           x-oapi-codegen-extra-tags:
             json: "auth_mode"
+        oidcIssuerUrl:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: "oidc_issuer_url"
+        oidcClientId:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: "oidc_client_id"
+        oidcScopes:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: "oidc_scopes"
+        oidcLogoutUrl:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: "oidc_logout_url"
     loginToken:
       type: object
       required:
