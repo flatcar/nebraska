@@ -42,12 +42,12 @@ To learn more about the Omaha protocol, please refer to the upstream docs [here]
 
 <table>
     <tr>
-        <td width="33%"><img src="https://github.com/kinvolk/nebraska/raw/screenshots/screenshots/main.png"></td>
-        <td width="33%"><img src="https://github.com/kinvolk/nebraska/raw/screenshots/screenshots/flatcar_app.png"></td>
+        <td width="33%"><img src="https://github.com/flatcar/nebraska/raw/screenshots/screenshots/main.png"></td>
+        <td width="33%"><img src="https://github.com/flatcar/nebraska/raw/screenshots/screenshots/flatcar_app.png"></td>
     </tr>
     <tr>
-        <td width="33%"><img src="https://github.com/kinvolk/nebraska/raw/screenshots/screenshots/group_details.png"></td>
-        <td width="33%"><img src="https://github.com/kinvolk/nebraska/raw/screenshots/screenshots/instance_details.png"></td>
+        <td width="33%"><img src="https://github.com/flatcar/nebraska/raw/screenshots/screenshots/group_details.png"></td>
+        <td width="33%"><img src="https://github.com/flatcar/nebraska/raw/screenshots/screenshots/instance_details.png"></td>
     </tr>
 </table>
 

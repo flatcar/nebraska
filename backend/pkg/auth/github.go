@@ -17,9 +17,9 @@ import (
 	"golang.org/x/oauth2"
 	githuboauth "golang.org/x/oauth2/github"
 
-	"github.com/kinvolk/nebraska/backend/pkg/random"
-	"github.com/kinvolk/nebraska/backend/pkg/sessions"
-	echosessions "github.com/kinvolk/nebraska/backend/pkg/sessions/echo"
+	"github.com/flatcar/nebraska/backend/pkg/random"
+	"github.com/flatcar/nebraska/backend/pkg/sessions"
+	echosessions "github.com/flatcar/nebraska/backend/pkg/sessions/echo"
 )
 
 type (

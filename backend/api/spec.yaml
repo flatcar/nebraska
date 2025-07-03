@@ -4,9 +4,9 @@ info:
   title: Nebraska
   description: Nebraska is an update manager.
   contact:
-    name: Kinvolk
-    email: hello@kinvolk.io
-    url: http://kinvolk.io
+    name: Flatcar Container Linux
+    email: maintainers@flatcar-linux.org 
+    url: http://flatcar.org
 paths:
   /login:
     get:

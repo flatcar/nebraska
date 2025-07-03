@@ -2,11 +2,10 @@ apiVersion: v2
 name: nebraska
 description: Nebraska is an update manager for Flatcar Container Linux.
 type: application
-home: https://github.com/kinvolk/nebraska/tree/master/deploy/helm
-icon: https://raw.githubusercontent.com/kinvolk/nebraska/master/docs/nebraska-logo.svg
+home: https://github.com/flatcar/nebraska/tree/main/deploy/helm
+icon: https://raw.githubusercontent.com/flatcar/nebraska/main/docs/nebraska-logo.svg
 keywords:
   - nebraska
-  - kinvolk
   - CoreOS
   - update manager
   - updates
@@ -14,12 +13,12 @@ keywords:
   - flatcar
   - Flatcar Container Linux
 sources:
-  - https://github.com/kinvolk/nebraska
-  - https://kinvolk.io/
+  - https://github.com/flatcar/nebraska
+  - https://flatcar.org/
 maintainers:
-  - name: kinvolk
-    url: https://kinvolk.io/
-version: 1.5.0
+  - name: flatcar
+    url: https://flatcar.org/
+version: 1.5.1
 appVersion: "2.11.0"
 
 dependencies:

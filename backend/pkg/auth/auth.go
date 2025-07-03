@@ -3,7 +3,7 @@ package auth
 import (
 	"github.com/labstack/echo/v4"
 
-	"github.com/kinvolk/nebraska/backend/pkg/logger"
+	"github.com/flatcar/nebraska/backend/pkg/logger"
 )
 
 var (
