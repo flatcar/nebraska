@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-helm: add ability to specify extra annotations and labels and extra labels/annotations for pods and pvcs([nebraska#1097](https://github.com/flatcar/nebraska/pull/1097/files))
+- helm: add ability to specify extra annotations and labels for pods, PVCs, ingress, deployments, and other resources ([nebraska#1097](https://github.com/flatcar/nebraska/pull/1097/files))
 
 ### Changed
 
