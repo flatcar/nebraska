@@ -7,7 +7,7 @@ import (
 	"io"
 	"strconv"
 
-	omahaSpec "github.com/kinvolk/go-omaha/omaha"
+	omahaSpec "github.com/flatcar/go-omaha/omaha"
 	"github.com/rs/zerolog"
 
 	"github.com/flatcar/nebraska/backend/pkg/api"

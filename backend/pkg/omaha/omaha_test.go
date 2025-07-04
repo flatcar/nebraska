@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"testing"
 
-	omahaSpec "github.com/kinvolk/go-omaha/omaha"
+	omahaSpec "github.com/flatcar/go-omaha/omaha"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/guregu/null.v4"
