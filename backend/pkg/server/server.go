@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -14,7 +15,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	echomiddleware "github.com/oapi-codegen/echo-middleware"
-	"github.com/pkg/errors"
 
 	db "github.com/flatcar/nebraska/backend/pkg/api"
 	"github.com/flatcar/nebraska/backend/pkg/auth"
@@ -180,7 +180,7 @@ func setupAuthenticator(conf config.Config, sessionStore *sessions.Store, defaul
 
 		url, err := url.Parse(conf.NebraskaURL)
 		if err != nil {
-			return nil, errors.Wrap(err, "nebraska-url is invalid, can't generate oidc callback URL")
+			return nil, fmt.Errorf("nebraska-url is invalid, can't generate oidc callback URL: %w", err)
 		}
 
 		url.Path = "/login/cb"
@@ -245,7 +245,7 @@ func nebraskaAuthenticationFunc(authMode string) func(context.Context, *openapi3
 			if err != nil {
 				_, err := input.RequestValidationInput.Request.Cookie("github")
 				if err != nil {
-					return errors.Wrap(err, "github cookie not found")
+					return fmt.Errorf("github cookie not found: %w", err)
 				}
 			}
 			return nil
@@ -258,15 +258,15 @@ func nebraskaAuthenticationFunc(authMode string) func(context.Context, *openapi3
 func validateAuthorizationToken(input *openapi3filter.AuthenticationInput) error {
 	token := input.RequestValidationInput.Request.Header.Get("Authorization")
 	if token == "" {
-		return errors.New("Bearer token not found in request")
+		return errors.New("bearer token not found in request")
 	}
 	split := strings.Split(token, " ")
 	if len(split) == 2 {
 		if split[0] != "Bearer" {
-			return errors.New("Bearer token not found in request")
+			return errors.New("bearer token not found in request")
 		}
 	} else {
-		return errors.New("Invalid Bearer token")
+		return errors.New("invalid Bearer token")
 	}
 	return nil
 }
