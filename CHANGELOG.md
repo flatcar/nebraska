@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Postgresql 17.x is now the tested and default version. For existing Kubernetes deployment, you might need to run a manual intervention (see: [charts/nebraska/README.md](https://github.com/flatcar/nebraska/blob/main/charts/nebraska/README.md#upgrade-postgresql))([nebraska#1088](https://github.com/flatcar/nebraska/pull/1088))
 - backend: updated kinvolk references to flatcar ([nebraska#1091](https://github.com/flatcar/nebraska/pull/1091/files))
+- backend: migrate from go-bindata to embed ([nebraska#1132](https://github.com/flatcar/nebraska/pull/1132))
 
 ### Bugfixes
 
