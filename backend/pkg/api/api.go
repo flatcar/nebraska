@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"embed"
 	"errors"
 	"fmt"
 	"os"
@@ -23,14 +24,12 @@ import (
 	"time"
 )
 
-// To re-generate the bindata.go file, use go-bindata from
-// github.com/kevinburke/go-bindata (a fork of the discontinued
-// go-bindata project). Run the following command from the root of the
-// repository:
-//
-//    make bindata
-
-//go:generate go-bindata -mode 0644 -ignore=\.swp -pkg=api -modtime=1 db db/migrations
+var (
+	//go:embed db/*.sql
+	sqlFolder embed.FS
+	//go:embed db/migrations/*.sql
+	migrationsFolder embed.FS
+)
 
 const (
 	defaultDbURL          = "postgres://postgres:nebraska@127.0.0.1:5432/nebraska?sslmode=disable&connect_timeout=10"
@@ -195,17 +194,34 @@ func (api *API) MigrateDown(version string) (int, error) {
 
 func migrationAssets() *migrate.AssetMigrationSource {
 	return &migrate.AssetMigrationSource{
-		Asset:    Asset,
-		AssetDir: AssetDir,
+		Asset:    AssetE,
+		AssetDir: AssetDirE,
 		Dir:      "db/migrations",
 	}
+}
+
+func AssetE(name string) ([]byte, error) {
+	return migrationsFolder.ReadFile(name)
+}
+
+func AssetDirE(name string) ([]string, error) {
+	entries, err := migrationsFolder.ReadDir("db/migrations")
+	if err != nil {
+		return nil, err
+	}
+
+	paths := []string{}
+	for _, entry := range entries {
+		paths = append(paths, entry.Name())
+	}
+	return paths, nil
 }
 
 // OptionInitDB will initialize the database during the API instance creation,
 // dropping all existing tables, which will force all migration scripts to be
 // re-executed. Use with caution, this will DESTROY ALL YOUR DATA.
 func OptionInitDB(api *API) error {
-	sqlFile, err := Asset("db/drop_all_tables.sql")
+	sqlFile, err := sqlFolder.ReadFile("db/drop_all_tables.sql")
 	if err != nil {
 		return err
 	}
@@ -239,7 +255,7 @@ func NewForTest(options ...func(*API) error) (*API, error) {
 		return nil, err
 	}
 
-	sqlFile, err := Asset("db/sample_data.sql")
+	sqlFile, err := sqlFolder.ReadFile("db/sample_data.sql")
 	if err != nil {
 		return nil, err
 	}
