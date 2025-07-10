@@ -6,21 +6,24 @@ import {
   createGroup,
   createPackage,
   deleteApplication,
-  generateSalt,
+  getUniqueTestSuffix,
 } from './helpers';
 
 test.describe('Groups', () => {
   let appName: string;
   let appId: string;
+  let testSalt: string;
 
   test.beforeEach(async ({ page }, testInfo) => {
-    const appNameSalt = generateSalt(testInfo.title);
-    appName = 'Test app' + appNameSalt;
-    appId = 'io.test.app.' + appNameSalt;
+    const appData = getUniqueTestSuffix(testInfo.title, 'Group');
+    appName = appData.name;
+    appId = appData.id;
+    testSalt = appData.salt;
 
     await page.goto('/');
     await createApplication(page, appName, appId);
 
+    await page.reload();
     await expect(page.getByRole('list')).toContainText(appName);
     await expect(page.getByRole('list')).toContainText(appId);
 
@@ -28,9 +31,10 @@ test.describe('Groups', () => {
 
     await createPackage(page, '4117.0.0');
     await page.reload();
-    await createChannel(page, 'testChannel', 'AMD64', '4117.0.0');
+    await createChannel(page, 'testChannel' + testSalt, 'AMD64', '4117.0.0');
 
     await page.goto('/');
+    await page.waitForLoadState('networkidle');
     await page.getByRole('link', { name: appName }).click();
   });
 
@@ -44,19 +48,28 @@ test.describe('Groups', () => {
   });
 
   test('should create a group', async ({ page }) => {
-    await createGroup(page, 'Test Group 1', 'testChannel(AMD64)', 'qweqwe123123');
+    await createGroup(
+      page,
+      'Test Group 1' + testSalt,
+      'testChannel' + testSalt + '(AMD64)',
+      'qweqwe123123'
+    );
 
-    await expect(page.getByTestId('list-item').getByRole('link')).toContainText('Test Group 1');
+    await expect(page.getByTestId('list-item').getByRole('link')).toContainText(
+      'Test Group 1' + testSalt
+    );
     await expect(page.getByTestId('list-item')).toContainText('qweqwe123123');
     await expect(page.getByTestId('list-item')).toContainText('Disabled');
-    await expect(page.getByTestId('list-item')).toContainText('testChannel');
+    await expect(page.getByTestId('list-item')).toContainText('testChannel' + testSalt);
     await expect(page.getByTestId('list-item')).toContainText('4117.0.0 (AMD64)');
   });
 
   test('should create a group without channel', async ({ page }) => {
-    await createGroup(page, 'Test Group 2', undefined, 'qweqwe321321');
+    await createGroup(page, 'Test Group 2' + testSalt, undefined, 'qweqwe321321');
 
-    await expect(page.getByTestId('list-item').getByRole('link')).toContainText('Test Group 2');
+    await expect(page.getByTestId('list-item').getByRole('link')).toContainText(
+      'Test Group 2' + testSalt
+    );
     await expect(page.getByTestId('list-item')).toContainText('qweqwe321321');
     await expect(page.getByTestId('list-item')).toContainText('Disabled');
     await expect(page.getByTestId('list-item')).not.toContainText('testChannel');
@@ -64,22 +77,31 @@ test.describe('Groups', () => {
   });
 
   test('should create a group without track identifier', async ({ page }) => {
-    await createGroup(page, 'Test Group 3', 'testChannel(AMD64)');
+    await createGroup(page, 'Test Group 3' + testSalt, 'testChannel' + testSalt + '(AMD64)');
 
-    await expect(page.getByTestId('list-item').getByRole('link')).toContainText('Test Group 3');
+    await expect(page.getByTestId('list-item').getByRole('link')).toContainText(
+      'Test Group 3' + testSalt
+    );
     await expect(page.getByTestId('list-item')).not.toContainText('qweqwe123123');
     await expect(page.getByTestId('list-item')).toContainText('Disabled');
-    await expect(page.getByTestId('list-item')).toContainText('testChannel');
+    await expect(page.getByTestId('list-item')).toContainText('testChannel' + testSalt);
     await expect(page.getByTestId('list-item')).toContainText('4117.0.0 (AMD64)');
   });
 
   test('should create a group and update it', async ({ page }) => {
-    await createGroup(page, 'Test Group 4', 'testChannel(AMD64)', 'qweqwe123123');
+    await createGroup(
+      page,
+      'Test Group 4' + testSalt,
+      'testChannel' + testSalt + '(AMD64)',
+      'qweqwe123123'
+    );
 
-    await expect(page.getByTestId('list-item').getByRole('link')).toContainText('Test Group 4');
+    await expect(page.getByTestId('list-item').getByRole('link')).toContainText(
+      'Test Group 4' + testSalt
+    );
     await expect(page.getByTestId('list-item')).toContainText('qweqwe123123');
     await expect(page.getByTestId('list-item')).toContainText('Disabled');
-    await expect(page.getByTestId('list-item')).toContainText('testChannel');
+    await expect(page.getByTestId('list-item')).toContainText('testChannel' + testSalt);
     await expect(page.getByTestId('list-item')).toContainText('4117.0.0 (AMD64)');
 
     await page.getByTestId('list-item').getByTestId('more-menu-open-button').click();

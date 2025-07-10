@@ -3,7 +3,7 @@ import { createContext } from 'react';
 import _ from 'underscore';
 
 import { CONFIG_STORAGE_KEY, NebraskaConfig } from '../stores/redux/features/config';
-import { getToken, setToken } from '../utils/auth';
+import { getToken } from '../utils/auth';
 import {
   Activity,
   Application,
@@ -307,13 +307,6 @@ export default class API {
         if (!response.ok) {
           throw response;
         }
-
-        // The token has been renewed, let's store it.
-        const newIdToken = response.headers.get('id_token');
-        if (!!newIdToken && getToken() !== newIdToken) {
-          console.debug('Refreshed token');
-          setToken(newIdToken);
-        }
         return response.json();
       })
       .finally(() => PubSub.publish(MAIN_PROGRESS_BAR, 'done'));
@@ -370,10 +363,6 @@ export default class API {
       .then(response => {
         if (!response.ok) {
           throw response;
-        }
-        const newIdToken = response.headers.get('id_token');
-        if (!!newIdToken && getToken() !== newIdToken) {
-          setToken(newIdToken);
         }
         return response.json();
       })

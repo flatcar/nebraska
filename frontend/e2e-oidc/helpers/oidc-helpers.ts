@@ -1,8 +1,8 @@
-import { APIRequestContext,expect, Page } from '@playwright/test';
+import { APIRequestContext, expect, Page } from '@playwright/test';
 
 import { KeycloakAPI } from './keycloak-api';
-import { TEST_USERS,TestUser } from './test-users';
-import { TokenInfo,TokenManager } from './token-manager';
+import { TEST_USERS, TestUser } from './test-users';
+import { TokenInfo, TokenManager } from './token-manager';
 
 export class OIDCHelpers {
   private _tokenManager: TokenManager;
@@ -33,7 +33,7 @@ export class OIDCHelpers {
     const response = await request.fetch(url, {
       method,
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       data: data ? JSON.stringify(data) : undefined,
@@ -42,7 +42,7 @@ export class OIDCHelpers {
     return {
       status: response.status(),
       data: response.ok() ? await response.json().catch(() => null) : null,
-      response
+      response,
     };
   }
 
@@ -50,27 +50,35 @@ export class OIDCHelpers {
    * Test API endpoint protection with various token scenarios
    */
   async testAPIProtection(request: APIRequestContext, endpoint: string) {
-    
     // Test without token
     const noTokenResponse = await request.get(endpoint);
-    expect(noTokenResponse.status()).toBe(403); // Should be forbidden without token
+    expect(noTokenResponse.status()).toBe(401);
 
     // Test with invalid token
     const invalidResult = await this.makeAuthenticatedRequest(
-      request, 'GET', endpoint, 'invalid-token'
+      request,
+      'GET',
+      endpoint,
+      'invalid-token'
     );
-    expect(invalidResult.status).toBe(401); // Should be unauthorized with invalid token
+    expect(invalidResult.status).toBe(401);
 
     // Test with malformed token
     const malformedResult = await this.makeAuthenticatedRequest(
-      request, 'GET', endpoint, 'malformed.jwt.token'
+      request,
+      'GET',
+      endpoint,
+      'malformed.jwt.token'
     );
-    expect(malformedResult.status).toBe(401); // Should be unauthorized with malformed token
+    expect(malformedResult.status).toBe(401);
 
     // Test with valid admin token
     const adminToken = await this._tokenManager.getValidToken(TEST_USERS.ADMIN);
     const adminResult = await this.makeAuthenticatedRequest(
-      request, 'GET', endpoint, adminToken.token
+      request,
+      'GET',
+      endpoint,
+      adminToken.token
     );
     expect(adminResult.status).toBe(200); // Should be OK with valid admin token
 
@@ -80,18 +88,27 @@ export class OIDCHelpers {
   /**
    * Test role-based access control
    */
-  async testRoleBasedAccess(request: APIRequestContext, endpoint: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET') {
-    
+  async testRoleBasedAccess(
+    request: APIRequestContext,
+    endpoint: string,
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET'
+  ) {
     // Test admin access
     const adminToken = await this.tokenManager.getValidToken(TEST_USERS.ADMIN);
     const adminResult = await this.makeAuthenticatedRequest(
-      request, method, endpoint, adminToken.token
+      request,
+      method,
+      endpoint,
+      adminToken.token
     );
 
     // Test viewer access
     const viewerToken = await this.tokenManager.getValidToken(TEST_USERS.VIEWER);
     const viewerResult = await this.makeAuthenticatedRequest(
-      request, method, endpoint, viewerToken.token
+      request,
+      method,
+      endpoint,
+      viewerToken.token
     );
 
     return { adminResult, viewerResult };
@@ -101,12 +118,14 @@ export class OIDCHelpers {
    * Simulate expired token scenario
    */
   async testExpiredToken(request: APIRequestContext, endpoint: string) {
-    
     const expiredToken = await this.tokenManager.getExpiredToken(TEST_USERS.VIEWER);
     const result = await this.makeAuthenticatedRequest(
-      request, 'GET', endpoint, expiredToken.token
+      request,
+      'GET',
+      endpoint,
+      expiredToken.token
     );
-    
+
     expect(result.status).toBe(401); // Should be unauthorized with expired token
     return result;
   }
@@ -117,7 +136,7 @@ export class OIDCHelpers {
   verifyTokenClaims(tokenInfo: TokenInfo, expectedUser: TestUser) {
     expect(tokenInfo.payload).toBeTruthy();
     expect(tokenInfo.payload.preferred_username).toBe(expectedUser.username);
-    
+
     // Check roles are present
     const roles = tokenInfo.payload.realm_access?.roles || [];
     for (const expectedRole of expectedUser.roles) {
@@ -131,10 +150,14 @@ export class OIDCHelpers {
   async waitForAuthenticationState(page: Page, isAuthenticated: boolean, timeout: number = 10000) {
     if (isAuthenticated) {
       // Wait for authenticated UI elements to appear
-      await expect(page.locator('[data-testid="user-menu"], .user-info, .logout-button')).toBeVisible({ timeout });
+      await expect(
+        page.locator('[data-testid="user-menu"], .user-info, .logout-button')
+      ).toBeVisible({ timeout });
     } else {
       // Wait for login form or unauthenticated state
-      await expect(page.locator('[data-testid="login-form"], .login-button, .auth-required')).toBeVisible({ timeout });
+      await expect(
+        page.locator('[data-testid="login-form"], .login-button, .auth-required')
+      ).toBeVisible({ timeout });
     }
   }
 
@@ -149,14 +172,14 @@ export class OIDCHelpers {
     // 3. Filling login form
     // 4. Handling redirect back to app
     // 5. Storing token in localStorage/sessionStorage
-    
+
     const tokenInfo = await this.tokenManager.getValidToken(user);
-    
+
     // For testing purposes, we can inject the token directly into the browser
-    await page.addInitScript((token) => {
+    await page.addInitScript(token => {
       localStorage.setItem('access_token', token);
     }, tokenInfo.token);
-    
+
     return tokenInfo;
   }
 
@@ -175,14 +198,14 @@ export class OIDCHelpers {
   /**
    * Get current authentication state from browser
    */
-  async getAuthenticationState(page: Page): Promise<{ 
-    token: string | null; 
-    isAuthenticated: boolean; 
+  async getAuthenticationState(page: Page): Promise<{
+    token: string | null;
+    isAuthenticated: boolean;
   }> {
     const token = await page.evaluate(() => localStorage.getItem('access_token'));
     return {
       token,
-      isAuthenticated: !!token
+      isAuthenticated: !!token,
     };
   }
 
@@ -193,11 +216,11 @@ export class OIDCHelpers {
     const discovery = await this.keycloakAPI.getOIDCDiscovery();
     expect(discovery).toBeTruthy();
     expect(discovery['token-service']).toContain('/protocol/openid-connect');
-    
+
     const jwks = await this.keycloakAPI.getJWKS();
     expect(jwks.keys).toBeTruthy();
     expect(jwks.keys.length).toBeGreaterThan(0);
-    
+
     return { discovery, jwks };
   }
 }

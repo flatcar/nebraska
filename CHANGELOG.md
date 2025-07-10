@@ -18,6 +18,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Fixes CVE-2025-7783 (GHSA-fjxv-7rqg-78g4): Critical vulnerability (CVSS 9.4) where form-data uses Math.random() for selecting multipart/form-data boundary values. This predictable randomness could allow attackers to inject additional parameters into requests (HTTP Parameter Pollution), potentially making arbitrary requests to internal systems. Affected versions: <2.5.4, 3.0.0-3.0.3, 4.0.0-4.0.3. Fixed in: 2.5.4, 3.0.4, 4.0.4. Updated via npm audit fix. ([#1146](https://github.com/flatcar/nebraska/pull/1146))
 - **github.com/go-viper/mapstructure/v2 → v2.3.0**  
   - Fixes GHSA-fv92-fjc5-jj9h: Prevents sensitive information leakage in error messages during type conversion failures (https://github.com/flatcar/nebraska/pull/1099)
+- **OIDC Implementation Refactor - Authorization Code Flow with PKCE** ([nebraska#642](https://github.com/flatcar/nebraska/pull/642))
+  - Tokens no longer exposed in server logs or query parameters
+  - Frontend handles OIDC flow directly with identity provider using PKCE (Proof Key for Code Exchange)
+  - In-memory token storage prevents XSS vulnerabilities
+  - Stateless backend architecture eliminates session storage related vulnerabilities
+
+### Breaking Changes
+
+- **OIDC Authentication**: Complete refactor requiring migration (see [OIDC Migration Guide](docs/oidc-migration-guide.md))
+  - **Removed configuration options**:
+    - `--oidc-client-secret` / `NEBRASKA_OIDC_CLIENT_SECRET` - OIDC now requires public client type
+    - `--oidc-valid-redirect-urls` - No longer needed with direct frontend flow
+    - `--oidc-session-secret` / `NEBRASKA_OIDC_SESSION_SECRET` - Backend is now stateless
+    - `--oidc-session-crypt-key` / `NEBRASKA_OIDC_SESSION_CRYPT_KEY` - No server-side sessions
+  - **Removed API endpoints**:
+    - `GET /login` - Frontend initiates OIDC flow directly with provider
+    - `POST /login/token` - Password grant type no longer supported
+    - `GET /login/cb` now returns 501 for OIDC mode (GitHub mode only)
+  - **Changed default scopes**: From `openid,offline_access` to `openid,profile,email`
+  - **Migration requirements**:
+    - OIDC provider must be reconfigured from confidential to public client type
+    - CORS must be enabled for Nebraska domain on OIDC provider if it is not hosted under the same domain
+    - Recommended: Enable session cookies on OIDC provider for seamless SSO re-authentication
+      - Configure SSO session duration to 8-12 hours (idle timeout) and 1-7 days (maximum lifetime) based on your security requirements
+      - **Keycloak**: Configure "SSO Session Max" and "SSO Session Idle Timeout" under Realm Settings → Sessions
+      - **Auth0**: Configure "Maximum Session Lifetime" and "Idle Session Lifetime" under Tenant Settings → Advanced → Session Expiration
+      - NOTE: Many times, these SSO session attributes are already set by default
+    - When access tokens get lost after page refresh, the OIDC provider automatically re-authenticates users if SSO session is still active (no password re-entry required)
+    - Recommended: Configure OIDC provider access token expiration to 1-8 hours (should be less than the SSO maximum session lifetime)
 
 ### Added
 
@@ -25,6 +54,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- backend: OIDC authentication refactored to use standard SPA authentication pattern with stateless JWT validation ([nebraska#642](https://github.com/flatcar/nebraska/pull/642))
+- frontend: Implements OIDC Authorization Code Flow with PKCE directly, removing backend proxy ([nebraska#642](https://github.com/flatcar/nebraska/pull/642))
+- api: Note that `oidcCookieAuth` security scheme in OpenAPI spec was never implemented and should be removed in future cleanup
 - Postgresql 17.x is now the tested and default version. For existing Kubernetes deployment, you might need to run a manual intervention (see: [charts/nebraska/README.md](https://github.com/flatcar/nebraska/blob/main/charts/nebraska/README.md#upgrade-postgresql))([nebraska#1088](https://github.com/flatcar/nebraska/pull/1088))
 - backend: updated kinvolk references to flatcar ([nebraska#1091](https://github.com/flatcar/nebraska/pull/1091/files))
 - backend: migrate from go-bindata to embed ([nebraska#1132](https://github.com/flatcar/nebraska/pull/1132))
@@ -36,44 +68,48 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [v2.11.0] - 17/06/2025
 
 ### Security
+
 - **Dependency Audit & Vulnerability Mitigation:**
   - In the pursuite of a clean `npm audit` outcome free of vulnerabilities removed legacy CRA/Webpack dependencies that relied on unmaintained libraries, posing ongoing security risks. [See the Internal / Maintenance Notes](#internal--maintenance-notes) for further details.
-- **golang.org/x/net → v0.38.0**  
+- **golang.org/x/net → v0.38.0**
   - Fixes CVE-2025-22870 and CVE-2025-22872 in the HTML tokenizer/parser (https://github.com/flatcar/nebraska/pull/1016)
-- **golang.org/x/crypto → v0.35.0**  
+- **golang.org/x/crypto → v0.35.0**
   - Patches CVE-2025-22869 in SSH server implementations to prevent DoS via untransmitted pending content (https://github.com/flatcar/nebraska/pull/1001)
 
 ### Added
+
 - **Tooling Upgrades:**
   - Migrated the build system from Webpack (CRA) to Vite to achieve faster build time and modern native ES module support.
 - Add `new_release.md` template based on Flatcar release guidelines (https://github.com/flatcar/nebraska/pull/1002)
 
 ### Changed
+
 - **TypeScript Enhancements:**
   - Simplified the `tsconfig.json` file and enabled stricter type-checking settings.
   - Addressed some newly surfaced TypeScript warnings and errors
 - Bump Helm chart versions: app → v2.10.0, charts → v1.3.0 (https://github.com/flatcar/nebraska/pull/1012)
 
 ### Internal / Maintenance Notes
-  - The legacy CRA/Webpack setup, although reliable in the early stages, has become increasingly difficult to maintain due to slow update cycles and performance inefficiencies.
-  - Transitioning to Vite and Vitest was driven by the need for a modern build and testing environment that offers faster development cycles, improved maintainability, and a cleaner security profile.
-  - Switched from Jest to Vitest to leverage a Vite-native testing environment, enhancing overall developer experience with faster test cycles.
-  - Upgraded react router to v7 (https://github.com/flatcar/nebraska/pull/1048)
-  - improved HMR
-  - Updated and standardized ESLint and Prettier configurations.
-  - Removed the deprecated `headlamp` dependency.
-  - Introduced `eslint.config.js` to centralize and simplify linting rules.
-  - Moved `index.html` from the `public/` folder to the root (`frontend/`) to better align with Vite’s optimal project structure and optimized the file for Vite usage.
-  - Reformatted and cleaned up End-to-End (E2E) test files to enhance clarity and consistency.
-  - Add badges to README for CI/status/integration (https://github.com/flatcar/nebraska/pull/993)
+
+- The legacy CRA/Webpack setup, although reliable in the early stages, has become increasingly difficult to maintain due to slow update cycles and performance inefficiencies.
+- Transitioning to Vite and Vitest was driven by the need for a modern build and testing environment that offers faster development cycles, improved maintainability, and a cleaner security profile.
+- Switched from Jest to Vitest to leverage a Vite-native testing environment, enhancing overall developer experience with faster test cycles.
+- Upgraded react router to v7 (https://github.com/flatcar/nebraska/pull/1048)
+- improved HMR
+- Updated and standardized ESLint and Prettier configurations.
+- Removed the deprecated `headlamp` dependency.
+- Introduced `eslint.config.js` to centralize and simplify linting rules.
+- Moved `index.html` from the `public/` folder to the root (`frontend/`) to better align with Vite’s optimal project structure and optimized the file for Vite usage.
+- Reformatted and cleaned up End-to-End (E2E) test files to enhance clarity and consistency.
+- Add badges to README for CI/status/integration (https://github.com/flatcar/nebraska/pull/993)
 
 ### Refactors & Improvements
+
 - **MUI Upgrade:**
   - Minor visual improvements
-  by upgrading @mui/material, @mui/system, @mui/icons-material, @mui/utils, @mui/styles, @mui/styled-engine-sc to ^7.0.0 (https://github.com/flatcar/nebraska/pull/1040/files)
+    by upgrading @mui/material, @mui/system, @mui/icons-material, @mui/utils, @mui/styles, @mui/styled-engine-sc to ^7.0.0 (https://github.com/flatcar/nebraska/pull/1040/files)
 - **Icon Management:**
   - Refactored the icon builder to utilize the new Iconify API for improved performance and maintainability.
-  
 - **General Codebase Improvements:**
   - Optimized import arrangements and removed unused parameters across multiple functions.
   - Enhanced the `package.json` scripts for development, testing, and build processes.
@@ -84,6 +120,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [v2.10.0] - 15/04/2025
 
 ### Security
+
 - **Dependency & Infrastructure Security:**
   - Upgraded Docker base images.
   - Updated critical security libraries:
@@ -96,10 +133,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Patched dependencies to mitigate potential vulnerabilities.
 
 ### Added
+
 - **Documentation & Process:**
   - Updated the Helm chart defaults to support new container image branding and released Helm chart version 1.2.0.
 
 ### Changed
+
 - **Backend Improvements:**
   - Upgraded core Go dependencies:
     - Bumped Go to version 1.23.
@@ -125,20 +164,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     - Updated other dependencies such as `github.com/stretchr/testify`, `github.com/golangci/golangci-lint`, `github.com/jmoiron/sqlx`, and several indirect dependencies (e.g., `path-to-regexp`, `express`, `tough-cookie`, `browserify-sign`, `async`, `url-parse`).
 
 ### Deprecated
+
 - Deprecated the legacy `golint` linter in favor of the actively maintained [revive](https://github.com/mgechev/revive).
 - Phasing out the old querystring package in favor of native `URLSearchParams` in frontend code.
 - Gradually deprecating outdated Formik properties in favor of newer component APIs.
 
 ### Removed
+
 - Removed deprecated Formik render props and unused translation keys to simplify the codebase.
 - Cleaned up legacy Docker Compose configurations, replacing them with the standard `docker compose` command in CI workflows.
 
 ### Fixed
+
 - **Tooling & Integration:**
   - Fixed issues with the server API code generation tool by updating `oapi-codegen` and related dependencies.
   - Adjusted CI workflows to prevent version conflicts (e.g., with `github/codeql-action` and `actions/checkout`).
 
 ### Internal / Maintenance Notes
+
 - **Testing:**
   - Integrated Playwright end-to-end tests for frontend workflows into the CI pipeline.
   - Increased test coverage.
@@ -147,5 +190,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Updated ESLint configurations and TypeScript versions for compatibility with newer libraries (e.g., React, MUI).
 - **Static Code Analysis & Cleanup:**
   - Fixed formatting issues and resolved localization warnings to declutter the development console.
----
 
+---

@@ -1,7 +1,7 @@
 # Dockerfile for OIDC testing
 # Extends the main Nebraska image with tools needed for startup script
 
-FROM backend_server:latest
+FROM backend-server:latest
 
 # Switch to root to install packages
 USER root
