@@ -11,6 +11,7 @@ import themes, { getThemeName, usePrefersColorScheme } from '../lib/themes';
 import { setConfig } from '../stores/redux/features/config';
 import { useDispatch } from '../stores/redux/hooks';
 import { useAuthRedirect } from '../utils/auth';
+import AuthCallbackHandler from './AuthCallbackHandler';
 import Footer from './Footer';
 import Header from './Header';
 import ApplicationLayout from './layouts/ApplicationLayout';
@@ -62,6 +63,7 @@ export default function Main() {
             path="/apps/:appID/groups/:groupID/instances/:instanceID"
             element={<InstanceLayout />}
           />
+          <Route path="/auth/callback" element={<AuthCallbackHandler />} />
           <Route path="/404" element={<PageNotFoundLayout />} />
           <Route path="*" element={<PageNotFoundLayout />} />
         </Routes>

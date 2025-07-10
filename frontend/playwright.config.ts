@@ -1,5 +1,7 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig } from '@playwright/test';
 import { loadEnv } from 'vite';
+
+import { chromeWithConsistentRendering } from './playwright.shared.config';
 
 
 export const ENV_DIR = './';
@@ -19,7 +21,7 @@ export default defineConfig({
   /* Run tests in parallel with limited workers to reduce contention */
   workers: undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: process.env.CI ? 'line' : 'html',
+  reporter: [['line'], ['html']],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   timeout: 50_000, 
   globalTimeout: process.env.CI ? 600_000 : undefined, // 10 minutes total for CI
@@ -45,7 +47,7 @@ export default defineConfig({
 
     {
       name: 'chrome',
-      use: { ...devices['Desktop Chrome'] },
+      use: chromeWithConsistentRendering,
       dependencies: ['setup db'],
     },
   ],

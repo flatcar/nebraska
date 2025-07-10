@@ -32,7 +32,7 @@ echo "All dependencies are ready. Starting Nebraska backend..."
 # Start Nebraska with OIDC configuration
 exec /nebraska/nebraska \
     --auth-mode=oidc \
-    --oidc-issuer-url=http://localhost:8063/realms/test \
+    --oidc-issuer-url=http://127.0.0.1:8063/realms/test \
     --oidc-client-id=nebraska-test \
     --oidc-admin-roles=test_admin \
     --oidc-viewer-roles=test_viewer \

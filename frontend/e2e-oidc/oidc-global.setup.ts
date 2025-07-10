@@ -6,18 +6,18 @@ import { OIDC_TEST_CONFIG } from './test-config';
 
 setup('setup OIDC test environment', async () => {
   console.log('Setting up OIDC test environment...');
-  
+
   // Wait for services to be fully ready first
   console.log('Waiting for services to be ready...');
-  
+
   // Wait for Nebraska backend
   const maxRetries = 30;
   let retries = 0;
   const baseUrl = OIDC_TEST_CONFIG.nebraska.baseURL;
-  
+
   while (retries < maxRetries) {
     try {
-      const response = await fetch(`${baseUrl}/api/config`);
+      const response = await fetch(`${baseUrl}/health`);
       if (response.ok) {
         console.log('Nebraska backend is ready');
         break;
@@ -25,7 +25,7 @@ setup('setup OIDC test environment', async () => {
     } catch {
       // Service not ready yet
     }
-    
+
     retries++;
     await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
   }
@@ -37,7 +37,7 @@ setup('setup OIDC test environment', async () => {
   // Wait for Keycloak
   const keycloakUrl = OIDC_TEST_CONFIG.keycloak.baseURL;
   retries = 0;
-  
+
   while (retries < maxRetries) {
     try {
       const response = await fetch(`${keycloakUrl}/realms/test`);
@@ -48,7 +48,7 @@ setup('setup OIDC test environment', async () => {
     } catch {
       // Service not ready yet
     }
-    
+
     retries++;
     await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
   }
@@ -73,7 +73,12 @@ setup('setup OIDC test environment', async () => {
     // Insert test instances for OIDC testing
     await client.query(
       'INSERT INTO public.instance (alias, created_ts, id, ip) VALUES ($1, $2, $3, $4) ON CONFLICT (id) DO NOTHING',
-      ['oidc-test-instance', '2025-01-29 15:27:00.771461+00', 'oidc-test-instance-id', '172.31.240.50']
+      [
+        'oidc-test-instance',
+        '2025-01-29 15:27:00.771461+00',
+        'oidc-test-instance-id',
+        '172.31.240.50',
+      ]
     );
 
     // Insert an instance mapping to the default test application
@@ -95,13 +100,7 @@ setup('setup OIDC test environment', async () => {
     // Insert instance stats for OIDC testing
     await client.query(
       'INSERT INTO public.instance_stats (arch, channel_name, instances, timestamp, version) VALUES ($1, $2, $3, $4, $5) ON CONFLICT DO NOTHING',
-      [
-        'AMD64',
-        'alpha',
-        1,
-        '2025-01-29 17:36:04.47415+00',
-        '4081.2.0',
-      ]
+      ['AMD64', 'alpha', 1, '2025-01-29 17:36:04.47415+00', '4081.2.0']
     );
 
     // Insert instance status history for OIDC testing
@@ -120,7 +119,6 @@ setup('setup OIDC test environment', async () => {
 
     await client.query('COMMIT');
     console.log('OIDC test data inserted successfully');
-
   } catch (error) {
     console.error('Error setting up OIDC test environment:', error);
     throw error;

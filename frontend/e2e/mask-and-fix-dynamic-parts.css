@@ -1,3 +1,11 @@
+/* Force consistent font rendering */
+* {
+  -webkit-font-smoothing: none !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-rendering: geometricPrecision !important;
+  font-kerning: none !important;
+}
+
 .MuiModal-backdrop {
   background-color: red !important;
 }

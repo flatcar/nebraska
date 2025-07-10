@@ -1,15 +1,14 @@
 import { expect, test } from '@playwright/test';
 
-import { createApplication, deleteApplication, generateSalt } from './helpers';
+import { createApplication, deleteApplication } from './helpers';
 
 test.describe('Application Item Style', () => {
   let appName: string;
   let appId: string;
 
-  test.beforeEach(async ({ page }, testInfo): Promise<void> => {
-    const appNameSalt = generateSalt(testInfo.title);
-    appName = 'Sty';
-    appId = 'io.test.style.app.' + appNameSalt;
+  test.beforeEach(async ({ page }): Promise<void> => {
+    appName = 'Style Test App';
+    appId = 'io.test.style.app.screenshot';
 
     await page.goto('/');
   });
@@ -42,7 +41,7 @@ test.describe('Application Item Style', () => {
       }
     });
 
-    await page.waitForTimeout(500);
+    await page.waitForLoadState('networkidle');
 
     await expect(appItem).toHaveScreenshot('application-item-style.png', {
       clip: {

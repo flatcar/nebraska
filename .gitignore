@@ -2,3 +2,4 @@
 *.swp
 *sublime*
 backend/__postgres_testing_volume/
+**/.distrobox
