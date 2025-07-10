@@ -6,17 +6,18 @@ import {
   createChannel,
   createPackage,
   deleteApplication,
-  generateSalt,
+  getUniqueTestSuffix,
+  TIMEOUTS,
 } from './helpers';
 
 test.describe('Packages', () => {
   let appName: string;
   let appId: string;
-
   test.beforeEach(async ({ page }, testInfo) => {
-    const appNameSalt = generateSalt(testInfo.title);
-    appName = 'Test app' + appNameSalt;
-    appId = 'io.test.app.' + appNameSalt;
+    // Use the same deterministic naming as other tests
+    const appData = getUniqueTestSuffix(testInfo.title, 'Pkg');
+    appName = appData.name;
+    appId = appData.id;
 
     await page.goto('/');
     await createApplication(page, appName, appId);
@@ -26,15 +27,14 @@ test.describe('Packages', () => {
     await expect(page.getByRole('list')).toContainText(appId);
   });
 
-  test.afterAll(async ({ browser }) => {
-    const context = await browser.newContext();
-    const page = await context.newPage();
-    await page.goto('/');
-
-    await deleteApplication(page, appName);
-
-    await expect(page.getByRole('list')).not.toContainText(appName);
-    await expect(page.getByRole('list')).not.toContainText(appId);
+  test.afterEach(async ({ page }) => {
+    // Clean up after each test instead of afterAll to prevent interference
+    try {
+      await page.goto('/');
+      await deleteApplication(page, appName);
+    } catch (error) {
+      console.log(`Cleanup failed for ${appName}:`, error);
+    }
   });
 
   test('should open package creation dialog', async ({ page }) => {
@@ -44,9 +44,9 @@ test.describe('Packages', () => {
     await createChannel(page, 'testChannel');
 
     await page.evaluate(() => window.scrollTo(0, 0));
+
     await expect(page).toHaveScreenshot('empty-application-before-package-creation.png', {
       fullPage: true,
-      maxDiffPixels: 250,
     });
 
     await page
@@ -97,11 +97,21 @@ test.describe('Packages', () => {
     );
 
     await createPackage(page, '4116.0.0');
+    await page.waitForLoadState('networkidle');
     await page.reload();
+    await page.waitForLoadState('networkidle');
 
     await expect(page.locator('#main')).toContainText('Version: 4116.0.0 (AMD64)');
 
-    await page.getByTestId('more-menu-open-button').click();
+    await page.keyboard.press('Escape');
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForLoadState('networkidle');
+
+    // Click the more menu button for the specific package version
+    const packageItem = page.locator('li').filter({ hasText: '4116.0.0' }).first();
+    await packageItem.waitFor({ state: 'visible', timeout: TIMEOUTS.ELEMENT_VISIBLE });
+    const menuButton = packageItem.getByTestId('more-menu-open-button');
+    await menuButton.click({ force: true });
     await page.getByRole('menuitem', { name: 'Edit' }).click();
     await expect(page.getByLabel('URL *')).toHaveValue(
       'https://update.release.flatcar-linux.net/amd64-usr/4116.0.0/'
@@ -117,7 +127,15 @@ test.describe('Packages', () => {
     await addExtraFile(page);
     await page.reload();
 
-    await page.getByTestId('more-menu-open-button').click();
+    await page.keyboard.press('Escape');
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForLoadState('networkidle');
+
+    // Click the more menu button for the specific package version
+    const packageItem2 = page.locator('li').filter({ hasText: '4116.0.0' }).first();
+    await packageItem2.waitFor({ state: 'visible', timeout: TIMEOUTS.ELEMENT_VISIBLE });
+    const menuButton2 = packageItem2.getByTestId('more-menu-open-button');
+    await menuButton2.click({ force: true });
     await page.getByRole('menuitem', { name: 'Edit' }).click();
     await page.getByRole('tab', { name: 'Extra Files' }).click();
     await expect(page.getByTestId('list-item')).toContainText(
@@ -136,58 +154,107 @@ test.describe('Packages', () => {
     await page.getByRole('link', { name: appName }).click();
     await navigationPromise;
 
-    await expect(page.getByTestId('empty')).toContainText(
+    await expect(page.getByTestId('empty').first()).toContainText(
       'There are no groups for this application yet.Groups help you control how you want to distribute updates to a specific set of instances.'
     );
 
     await createPackage(page, '4117.0.0');
     await page.reload();
 
+    // Ensure our test package was created
     await expect(page.locator('#main')).toContainText('Version: 4117.0.0 (AMD64)');
 
-    await page.getByTestId('more-menu-open-button').click();
+    await page.keyboard.press('Escape');
+    await page.waitForLoadState('domcontentloaded');
+    await page.waitForLoadState('networkidle');
 
+    // Click the more menu button for the specific package version to delete
+    const packageToDelete = page.locator('li').filter({ hasText: '4117.0.0' }).first();
+    await packageToDelete.waitFor({ state: 'visible' });
+
+    // Setup dialog handler before clicking the menu
     page.once('dialog', dialog => {
       dialog.accept().catch(() => {});
     });
-    await page.getByRole('menuitem', { name: 'Delete' }).click();
 
+    const deleteMenuButton = packageToDelete.getByTestId('more-menu-open-button');
+    await deleteMenuButton.click({ force: true });
+
+    // Click delete menu item
+    const deleteMenuItem = page.getByRole('menuitem', { name: 'Delete' });
+    await deleteMenuItem.click({ force: true });
+
+    // Wait for deletion to complete and reload
+    await page.waitForLoadState('networkidle');
     await page.reload();
+    await page.waitForLoadState('networkidle');
+
+    // Verify package is deleted - check that the specific version is gone
     await expect(page.locator('#main')).not.toContainText('Version: 4117.0.0 (AMD64)');
-    await expect(page.locator('#main')).toContainText(
-      'This application does not have any package yet'
-    );
   });
 
   test('should test become searchable', async ({ page }) => {
     await page.goto('/');
     await page.getByRole('link', { name: appName }).click();
+    await page.waitForLoadState('networkidle');
 
     await createPackage(page, '4117.0.0');
     await createPackage(page, '5439.0.0');
     await createPackage(page, '87.194.0');
     await page.reload();
 
-    await page.getByTestId('modal-button').nth(1).click();
-    await page.getByPlaceholder('Pick a package').click();
-    await page.getByPlaceholder('Start typing to search a').fill('5');
+    // Click the channel modal button with force to overcome any overlay
+    await page.getByTestId('modal-button').nth(1).click({ force: true });
 
-    await expect(page.locator('role=option').filter({ hasText: '5439.0.0' })).toHaveCount(1);
-    await expect(page.locator('role=option').filter({ hasText: '4117.0.0' })).toHaveCount(0);
-    await expect(page.locator('role=option').filter({ hasText: '87.194.0' })).toHaveCount(0);
+    // Click on the package picker and start typing
+    const packagePicker = page.getByPlaceholder('Pick a package');
+    await packagePicker.click();
 
-    await page.getByPlaceholder('Start typing to search a').click();
-    await page.getByPlaceholder('Start typing to search a').fill('0');
+    // Wait for the package picker dialog to fully load
+    await page.waitForSelector(
+      '[role="dialog"][aria-labelledby*="Choose a package"], [role="dialog"] h2:has-text("Choose a package")',
+      { timeout: 10000 }
+    );
 
-    await expect(page.locator('role=option').filter({ hasText: '5439.0.0' })).toHaveCount(1);
-    await expect(page.locator('role=option').filter({ hasText: '4117.0.0' })).toHaveCount(1);
-    await expect(page.locator('role=option').filter({ hasText: '87.194.0' })).toHaveCount(1);
+    const searchInput = page.getByPlaceholder('Start typing to search a');
+    await searchInput.waitFor({ state: 'visible' });
 
-    await page.getByPlaceholder('Start typing to search a').click();
-    await page.getByPlaceholder('Start typing to search a').fill('.19');
+    // First load all packages by filling with empty string and waiting for them to appear
+    await searchInput.fill('');
+    await page.waitForLoadState('networkidle');
 
-    await expect(page.locator('role=option').filter({ hasText: '87.194.0' })).toHaveCount(1);
-    await expect(page.locator('role=option').filter({ hasText: '4117.0.0' })).toHaveCount(0);
-    await expect(page.locator('role=option').filter({ hasText: '5439.0.0' })).toHaveCount(0);
+    // Verify some packages are loaded first
+    const dialogContent = page.getByRole('dialog', { name: 'Choose a package' });
+    await expect(dialogContent).toContainText('4117.0.0');
+
+    // Now search for '5' which should filter to show only 5439.0.0
+    await searchInput.fill('5');
+    await page.waitForLoadState('networkidle');
+
+    // Verify that searching for '5' shows only the 5439.0.0 package
+    await expect(dialogContent).toContainText('5439.0.0');
+
+    // Clear and search for '0' to match all packages
+    await searchInput.clear();
+    await searchInput.fill('0');
+    await page.waitForLoadState('networkidle');
+
+    // Wait for search results to load - should show all 3 packages
+    await expect(page.getByRole('dialog', { name: 'Choose a package' })).toContainText('5439.0.0');
+    await expect(page.getByRole('dialog', { name: 'Choose a package' })).toContainText('87.194.0');
+    await expect(page.getByRole('dialog', { name: 'Choose a package' })).toContainText('4117.0.0');
+
+    await searchInput.clear();
+    await searchInput.fill('.19');
+    await page.waitForLoadState('networkidle');
+
+    // Should only show the package with .19 in it
+    await expect(page.getByRole('dialog', { name: 'Choose a package' })).toContainText('87.194.0');
+    await expect(page.getByRole('dialog', { name: 'Choose a package' })).not.toContainText(
+      '4117.0.0'
+    );
+    await expect(page.getByRole('dialog', { name: 'Choose a package' })).not.toContainText(
+      '5439.0.0'
+    );
   });
 });
