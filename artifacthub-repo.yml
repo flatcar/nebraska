@@ -1,0 +1,11 @@
+# Artifact Hub repository metadata file
+# This file enables verified publisher status for the Nebraska Helm chart
+# More info: https://artifacthub.io/docs/topics/repositories/#ownership-claim
+
+repositoryID: flatcar-nebraska
+
+owners:
+  - name: Flatcar Linux Team
+    email: maintainers@flatcar-linux.org
+  - name: Ervin Racz
+    email: ervcz@users.noreply.github.com
