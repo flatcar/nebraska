@@ -2,8 +2,7 @@
 # This file enables verified publisher status for the Nebraska Helm chart
 # More info: https://artifacthub.io/docs/topics/repositories/#ownership-claim
 
-repositoryID: flatcar-nebraska
-
+repositoryID: nebraska
 owners:
   - name: Flatcar Linux Team
     email: maintainers@flatcar-linux.org
