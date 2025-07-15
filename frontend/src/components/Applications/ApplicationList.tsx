@@ -20,22 +20,23 @@ export default function ApplicationList() {
     applicationsStore().getCachedApplications ? applicationsStore().getCachedApplications() : []
   );
 
+  const onChange = React.useCallback(() => {
+    setApplications(applicationsStore().getCachedApplications());
+  }, []);
+
   React.useEffect(() => {
+    // Get initial data in case store already has applications loaded
+    const currentApplications = applicationsStore().getCachedApplications();
+    if (currentApplications) {
+      setApplications(currentApplications);
+    }
+
+    // Set up listener for future changes
     applicationsStore().addChangeListener(onChange);
     return () => {
       applicationsStore().removeChangeListener(onChange);
     };
-  }, []);
-
-  React.useEffect(() => {
-    if (applicationsStore().getCachedApplications) {
-      setApplications(applicationsStore().getCachedApplications());
-    }
-  }, [applicationsStore().getCachedApplications]);
-
-  function onChange() {
-    setApplications(applicationsStore().getCachedApplications());
-  }
+  }, [onChange]);
 
   return <ApplicationListPure applications={applications} loading={applications === null} />;
 }

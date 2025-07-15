@@ -149,6 +149,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
         clearTimeout(timeoutHandler);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [packageSearchTerm]);
 
   React.useEffect(() => {
@@ -158,6 +159,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
     }
 
     fetchPackages(packageSearchTerm, searchPage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchPage]);
 
   function loadMorePackages() {

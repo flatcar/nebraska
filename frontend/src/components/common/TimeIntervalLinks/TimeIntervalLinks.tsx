@@ -47,6 +47,7 @@ export default function TimeIntervalLinks(props: TimeIntervalLinksProps) {
         setTimeIntervals(timeIntervalsToUpdate);
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appID, groupID]);
 
   return (

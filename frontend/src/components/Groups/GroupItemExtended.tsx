@@ -84,6 +84,7 @@ function ItemExtended(props: {
     if (groupFound !== group) {
       setGroup(groupFound || null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.appID, props.groupID]);
 
   function updateGroup() {

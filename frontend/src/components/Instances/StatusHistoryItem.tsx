@@ -30,6 +30,7 @@ function StatusHistoryItem(props: StatusHistoryItemProps) {
   }>({});
   React.useEffect(() => {
     fetchStatusFromStore();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function fetchStatusFromStore() {

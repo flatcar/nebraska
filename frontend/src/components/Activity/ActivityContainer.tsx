@@ -29,6 +29,7 @@ function Container() {
     return function cleanup() {
       activityStore().removeChangeListener(onChange);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activity]);
 
   function onChange() {

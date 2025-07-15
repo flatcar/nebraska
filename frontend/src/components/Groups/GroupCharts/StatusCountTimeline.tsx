@@ -202,6 +202,7 @@ export default function StatusCountTimeline(props: StatusCountTimelineProps) {
     }
     setSelectedEntry(-1);
     getStatusTimeline(props.group);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.duration]);
 
   return (

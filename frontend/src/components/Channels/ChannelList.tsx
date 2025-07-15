@@ -110,6 +110,7 @@ export default function ChannelList(props: ChannelListProps) {
     return function cleanup() {
       applicationsStore().removeChangeListener(onStoreChange);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [application]);
 
   const channels = application ? (application.channels ? application.channels : []) : [];

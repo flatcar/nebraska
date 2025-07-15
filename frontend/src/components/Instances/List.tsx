@@ -321,6 +321,7 @@ function ListView(props: ListViewProps) {
   }
   React.useEffect(() => {
     handleInstanceFetch(searchObject);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location]);
 
   React.useEffect(() => {
@@ -338,6 +339,7 @@ function ListView(props: ListViewProps) {
         setTotalInstances(result);
       })
       .catch(err => console.error('Error loading total instances in Instances/List', err));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalInstances, searchObject]);
 
   function getInstanceCount() {
