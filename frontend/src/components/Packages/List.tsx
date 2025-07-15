@@ -2,7 +2,6 @@ import Box from '@mui/material/Box';
 import MuiList from '@mui/material/List';
 import Paper from '@mui/material/Paper';
 import TablePagination from '@mui/material/TablePagination';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
@@ -17,7 +16,11 @@ import ModalButton from '../common/ModalButton';
 import EditDialog from './EditDialog';
 import Item from './Item';
 
-function List(props: { appID: string }) {
+interface ListProps {
+  appID: string;
+}
+
+function List(props: ListProps) {
   const [application, setApplication] = React.useState(
     applicationsStore().getCachedApplication(props.appID) || null
   );
@@ -147,9 +150,5 @@ function List(props: { appID: string }) {
     </>
   );
 }
-
-List.propTypes = {
-  appID: PropTypes.string.isRequired,
-};
 
 export default List;

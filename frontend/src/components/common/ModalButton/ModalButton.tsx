@@ -1,6 +1,5 @@
 import AddIcon from '@mui/icons-material/Add';
 import { IconButton } from '@mui/material';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,7 +10,12 @@ import PackageEditDialog, {
   EditDialogProps as PackageEditDialogProps,
 } from '../../Packages/EditDialog';
 
-function ModalButton(props: { data: object; modalToOpen: string; icon?: string }) {
+interface ModalButtonProps {
+  modalToOpen: string;
+  data: { [key: string]: any };
+}
+
+function ModalButton(props: ModalButtonProps) {
   const [showModal, setShowModal] = React.useState(false);
   const { t } = useTranslation();
 
@@ -62,10 +66,5 @@ function ModalButton(props: { data: object; modalToOpen: string; icon?: string }
     </div>
   );
 }
-
-ModalButton.propTypes = {
-  modalToOpen: PropTypes.string.isRequired,
-  data: PropTypes.object,
-};
 
 export default ModalButton;
