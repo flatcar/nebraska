@@ -13,23 +13,61 @@ declare module '@mui/material/styles' {
   }
 }
 
+// Common component defaults to prevent scrollbar compensation issues
+const commonComponentDefaults = {
+  MuiSelect: {
+    defaultProps: {
+      variant: 'standard' as const,
+      MenuProps: {
+        disableScrollLock: true,
+      },
+    },
+  },
+  MuiFormControl: {
+    defaultProps: {
+      variant: 'standard' as const,
+    },
+  },
+  MuiTextField: {
+    defaultProps: {
+      variant: 'standard' as const,
+    },
+  },
+  MuiDialog: {
+    defaultProps: {
+      disableScrollLock: true,
+    },
+  },
+  MuiMenu: {
+    defaultProps: {
+      disableScrollLock: true,
+    },
+  },
+  MuiModal: {
+    defaultProps: {
+      disableScrollLock: true,
+    },
+  },
+  MuiDrawer: {
+    defaultProps: {
+      disableScrollLock: true,
+    },
+  },
+  MuiAutocomplete: {
+    defaultProps: {
+      disablePortal: true,
+      componentsProps: {
+        popper: {
+          disablePortal: true,
+        },
+      },
+    },
+  },
+};
+
 const lightTheme = createTheme({
   components: {
-    MuiSelect: {
-      defaultProps: {
-        variant: 'standard',
-      },
-    },
-    MuiFormControl: {
-      defaultProps: {
-        variant: 'standard',
-      },
-    },
-    MuiTextField: {
-      defaultProps: {
-        variant: 'standard',
-      },
-    },
+    ...commonComponentDefaults,
     MuiAppBar: {
       styleOverrides: {
         root: { '--AppBar-background': '#fff' },
@@ -83,6 +121,7 @@ const lightTheme = createTheme({
 const darkTheme = createTheme({
   ...lightTheme,
   components: {
+    ...commonComponentDefaults,
     MuiAppBar: {
       styleOverrides: {
         root: { '--AppBar-background': '#000' },

@@ -17,6 +17,8 @@ test.describe('Instances', () => {
     await page.getByRole('link', { name: 'Alpha (AMD64)' }).click();
 
     await page.evaluate(() => window.scrollTo(0, 0));
+    // Wait for chart animations to complete (1 second duration)
+    await page.waitForTimeout(1100);
     await expect(page).toHaveScreenshot('in-group-with-a-node-instance.png');
 
     await expect(page.locator('#main')).toContainText('See all instances');
