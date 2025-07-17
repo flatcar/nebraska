@@ -93,5 +93,5 @@ func main() {
 	}
 
 	// run server
-	l.Fatal().Err(server.Start(fmt.Sprintf(":%d", conf.ServerPort)))
+	l.Fatal().Err(server.Start(fmt.Sprintf(":%d", conf.ServerPort))).Msg("starting server")
 }
