@@ -40,16 +40,10 @@ To learn more about the Omaha protocol, please refer to the upstream docs [here]
 
 ## Screenshots
 
-<table>
-    <tr>
-        <td width="33%"><img src="https://github.com/flatcar/nebraska/raw/screenshots/screenshots/main.png"></td>
-        <td width="33%"><img src="https://github.com/flatcar/nebraska/raw/screenshots/screenshots/flatcar_app.png"></td>
-    </tr>
-    <tr>
-        <td width="33%"><img src="https://github.com/flatcar/nebraska/raw/screenshots/screenshots/group_details.png"></td>
-        <td width="33%"><img src="https://github.com/flatcar/nebraska/raw/screenshots/screenshots/instance_details.png"></td>
-    </tr>
-</table>
+| | |
+|---|---|
+| ![Main Screenshot](https://github.com/flatcar/nebraska/raw/screenshots/screenshots/main.png) | ![Flatcar App Screenshot](https://github.com/flatcar/nebraska/raw/screenshots/screenshots/flatcar_app.png) |
+| ![Group Details Screenshot](https://github.com/flatcar/nebraska/raw/screenshots/screenshots/group_details.png) | ![Instance Details Screenshot](https://github.com/flatcar/nebraska/raw/screenshots/screenshots/instance_details.png) |
 
 ## Issues
 
@@ -59,7 +53,7 @@ Please report any issues in [here](https://github.com/flatcar/nebraska/issues).
 
 We follow the [CNCF Code of Conduct](https://github.com/cncf/foundation/blob/main/code-of-conduct.md).
 
-Please contact [private Maintainer mailing list](maintainers@flatcar-linux.org) or the Cloud Native Foundation mediator, conduct@cncf.io, to report an issue.
+Please contact [private Maintainer mailing list](mailto:maintainers@flatcar-linux.org) or the Cloud Native Foundation mediator, conduct@cncf.io, to report an issue.
 
 ## Contributing
 
