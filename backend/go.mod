@@ -6,6 +6,7 @@ require (
 	github.com/blang/semver/v4 v4.0.0
 	github.com/coreos/go-oidc/v3 v3.14.1
 	github.com/doug-martin/goqu/v9 v9.19.0
+	github.com/flatcar/go-omaha v0.0.2-0.20250627105643-c9009b394616
 	github.com/getkin/kin-openapi v0.132.0
 	github.com/golangci/golangci-lint/v2 v2.2.2
 	github.com/google/go-github/v28 v28.1.1
@@ -14,7 +15,6 @@ require (
 	github.com/jackc/pgx/v4 v4.18.3
 	github.com/jinzhu/copier v0.4.0
 	github.com/jmoiron/sqlx v1.4.0
-	github.com/kinvolk/go-omaha v0.0.2-0.20221206142015-1518a03b832b
 	github.com/knadh/koanf v1.5.0
 	github.com/labstack/echo-contrib v0.17.4
 	github.com/labstack/echo/v4 v4.13.4
