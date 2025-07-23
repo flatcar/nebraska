@@ -19,7 +19,7 @@ import nebraskaLogo from '../icons/nebraska-logo.json';
 import themes from '../lib/themes';
 import { setUser, UserState } from '../stores/redux/features/user';
 import { useDispatch, useSelector } from '../stores/redux/hooks';
-import { clearTokens, getIdToken } from '../utils/auth';
+import { broadcastLogout, getIdToken } from '../utils/auth';
 import { getOIDCClient } from '../utils/oidc';
 
 const PREFIX = 'Header';
@@ -196,14 +196,14 @@ export default function Header() {
       const idTokenHint = getIdToken();
 
       // Clear tokens and user state
-      clearTokens();
+      broadcastLogout();
       dispatch(setUser({ authenticated: false, name: '', email: '' }));
 
       // Redirect to OIDC logout endpoint
       oidcClient.logout(logoutRedirectUrl.toString(), idTokenHint || undefined);
     } else {
       // For non-OIDC auth modes, just clear tokens and user state
-      clearTokens();
+      broadcastLogout();
       dispatch(setUser({ authenticated: false, name: '', email: '' }));
     }
   }

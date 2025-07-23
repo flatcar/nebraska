@@ -1,12 +1,12 @@
 import { jwtDecode } from 'jwt-decode';
-import React from 'react';
+import { useCallback, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
 import { setUser, UserState } from '../stores/redux/features/user';
 import { useDispatch, useSelector } from '../stores/redux/hooks';
+import { authBroadcast } from './authBroadcast';
 import { createOIDCClient, OIDCConfig } from './oidc';
 
-// In-memory token storage for better security
 let accessToken: string | null = null;
 let idToken: string | null = null;
 
@@ -27,32 +27,34 @@ export function getToken() {
   return accessToken;
 }
 
+// Export for testing purposes only
 export function clearTokens() {
   accessToken = null;
   idToken = null;
+}
+
+export function broadcastLogout() {
+  clearTokens();
+  authBroadcast.broadcastLogout();
 }
 
 export function getIdToken() {
   return idToken;
 }
 
-// Check if we have a valid token
 export function ensureValidToken(): string | null {
   if (!accessToken) {
     return null;
   }
 
-  // If token is still valid, return it
   if (isValidToken(accessToken)) {
     return accessToken;
   }
 
-  // Token is expired, clear it
-  clearTokens();
+  broadcastLogout();
   return null;
 }
 
-// PKCE helper functions
 export async function generateCodeVerifier(): Promise<string> {
   const array = new Uint8Array(32);
   crypto.getRandomValues(array);
@@ -83,7 +85,6 @@ export function isValidToken(token: string) {
 
   const decoded = jwtDecode(token) as JWT;
 
-  // Check if it's expired
   const expiration = new Date(decoded.exp * 1000);
   if (expiration < new Date()) {
     return false;
@@ -104,7 +105,6 @@ function getUserInfoFromToken(token: string) {
 
   const decoded = jwtDecode(token) as JWT;
 
-  // Try multiple claims for name in order of preference
   info.name = decoded.name || decoded.given_name || decoded.preferred_username || '';
   info.email = decoded.email || '';
 
@@ -118,7 +118,7 @@ export function useAuthRedirect() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const shouldUpdateUser = React.useCallback(
+  const shouldUpdateUser = useCallback(
     (token: string) => {
       const newInfo = getUserInfoFromToken(token);
 
@@ -133,14 +133,12 @@ export function useAuthRedirect() {
     [user]
   );
 
-  React.useEffect(() => {
-    // We only do the login dance if the auth mode is OIDC
+  useEffect(() => {
     if (config.auth_mode !== 'oidc') {
       return;
     }
 
     const initOIDC = async () => {
-      // Create OIDC configuration from config
       const configuredScopes = config.oidc_scopes || 'openid,profile,email';
       const oidcConfig: OIDCConfig = {
         issuerUrl: config.oidc_issuer_url || '',
@@ -151,23 +149,19 @@ export function useAuthRedirect() {
         audience: config.oidc_audience,
       };
 
-      // Create OIDC client
       const oidcClient = createOIDCClient(oidcConfig);
       await oidcClient.init();
 
-      // Check if this is a callback from OIDC provider
       if (oidcClient.isCallback()) {
         try {
           const tokenResponse = await oidcClient.handleCallback();
 
-          // Store access token and ID token
           setTokens({
             access_token: tokenResponse.access_token,
             expires_in: tokenResponse.expires_in,
             id_token: tokenResponse.id_token,
           });
 
-          // Get user info from userinfo endpoint
           const userInfo: UserState = { authenticated: true };
           try {
             const userInfoResponse = await oidcClient.getUserInfo(tokenResponse.access_token);
@@ -179,16 +173,13 @@ export function useAuthRedirect() {
 
           dispatch(setUser(userInfo));
 
-          // Clean up URL and redirect to the original location
           navigate(tokenResponse.returnUrl || '/', { replace: true });
           return;
         } catch (error) {
           console.error('OIDC callback error:', error);
-          // Clear stored tokens and redirect to login
-          clearTokens();
+          broadcastLogout();
           dispatch(setUser({ authenticated: false }));
 
-          // Redirect to auth error page
           const errorMessage = error instanceof Error ? error.message : 'Authentication failed';
           navigate('/auth/error', {
             replace: true,
@@ -198,18 +189,15 @@ export function useAuthRedirect() {
         }
       }
 
-      // Check if user is already authenticated
       const currentToken = ensureValidToken();
 
       if (currentToken && shouldUpdateUser(currentToken)) {
         dispatch(setUser({ authenticated: true, ...getUserInfoFromToken(currentToken) }));
         return;
       } else if (currentToken) {
-        // Token is valid but user info hasn't changed
         return;
       }
 
-      // If not authenticated and we have OIDC config, start authorization
       if (!user?.authenticated && oidcConfig.issuerUrl && oidcConfig.clientId) {
         await oidcClient.authorize();
       }
@@ -217,4 +205,16 @@ export function useAuthRedirect() {
 
     initOIDC().catch(console.error);
   }, [navigate, location, user, config, dispatch, shouldUpdateUser]);
+}
+
+export function useAuthBroadcastSync() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    return authBroadcast.onLogout(() => {
+      clearTokens();
+
+      dispatch(setUser({ authenticated: false, name: '', email: '' }));
+    });
+  }, [dispatch]);
 }
