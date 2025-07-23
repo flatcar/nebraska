@@ -19,8 +19,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/flatcar/go-omaha/omaha"
 	"github.com/google/uuid"
-	"github.com/kinvolk/go-omaha/omaha"
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/flatcar/nebraska/backend/pkg/api"
