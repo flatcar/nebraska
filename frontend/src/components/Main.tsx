@@ -10,7 +10,7 @@ import ThemeProviderNexti18n from '../i18n/ThemeProviderNexti18n';
 import themes, { getThemeName, usePrefersColorScheme } from '../lib/themes';
 import { setConfig } from '../stores/redux/features/config';
 import { useDispatch } from '../stores/redux/hooks';
-import { useAuthRedirect } from '../utils/auth';
+import { useAuthBroadcastSync, useAuthRedirect } from '../utils/auth';
 import AuthCallbackHandler from './AuthCallbackHandler';
 import Footer from './Footer';
 import Header from './Header';
@@ -47,6 +47,7 @@ export default function Main() {
   }, [dispatch]);
 
   useAuthRedirect();
+  useAuthBroadcastSync();
 
   return (
     <ThemeProviderNexti18n theme={themes[themeName]}>
