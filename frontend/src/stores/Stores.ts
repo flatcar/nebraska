@@ -15,10 +15,10 @@ interface Stores {
 }
 let stores: Stores | undefined;
 
-export function getStores(noRefresh?: boolean): Stores {
+export function getStores(): Stores {
   if (stores === undefined) {
-    const applicationsStore = new ApplicationsStore(noRefresh);
-    const activityStore = new ActivityStore(noRefresh);
+    const applicationsStore = new ApplicationsStore();
+    const activityStore = new ActivityStore();
     const groupChartStore = new GroupChartsStore();
 
     const applicationsStoreContext = createContext(applicationsStore);
@@ -37,16 +37,16 @@ export function getStores(noRefresh?: boolean): Stores {
   return stores;
 }
 
-export function applicationsStore(noRefresh?: boolean) {
-  return getStores(noRefresh).applicationsStore;
+export function applicationsStore() {
+  return getStores().applicationsStore;
 }
 
-export function activityStore(noRefresh?: boolean) {
-  return getStores(noRefresh).activityStore;
+export function activityStore() {
+  return getStores().activityStore;
 }
 
-export function groupChartStore(noRefresh?: boolean) {
-  return getStores(noRefresh).groupChartStore;
+export function groupChartStore() {
+  return getStores().groupChartStore;
 }
 
 export function groupChartStoreContext() {

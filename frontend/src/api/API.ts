@@ -1,7 +1,8 @@
 import { createContext } from 'react';
 import _ from 'underscore';
 
-import { CONFIG_STORAGE_KEY, NebraskaConfig } from '../stores/redux/features/config';
+import store from '../stores/redux/store';
+import { NebraskaConfig } from '../stores/redux/features/config';
 import { getToken } from '../utils/auth';
 import {
   Activity,
@@ -284,18 +285,11 @@ export default class API {
     return _.omit(data, valuesToRemove);
   }
 
-  // Wrappers
-
-  private static getAuthHeaders(): { headers: Record<string, string> } | never {
+  private static getAuthHeaders(): { headers: Record<string, string> } {
     const token = getToken();
-    const nebraska_config = localStorage.getItem(CONFIG_STORAGE_KEY) || '{}';
-    const config = JSON.parse(nebraska_config) || {};
+    const config = store.getState().config;
 
-    if (Object.keys(config).length > 0 && config.auth_mode === 'oidc') {
-      if (!token) {
-        // Reject immediately if OIDC is enabled but no token is available
-        throw { status: 401 };
-      }
+    if (Object.keys(config).length > 0 && config.auth_mode === 'oidc' && token) {
       return {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -305,20 +299,15 @@ export default class API {
     return { headers: {} };
   }
 
-  static getJSON(url: string) {
-    try {
-      const { headers } = this.getAuthHeaders();
-      return fetch(url, {
-        headers,
-      }).then(response => {
-        if (!response.ok) {
-          throw response;
-        }
-        return response.json();
-      });
-    } catch (error) {
-      return Promise.reject(error);
+  static async getJSON(url: string) {
+    const { headers } = this.getAuthHeaders();
+    const response = await fetch(url, {
+      headers,
+    });
+    if (!response.ok) {
+      throw response;
     }
+    return await response.json();
   }
 
   static doRequest(method: 'GET', url: string): Promise<any>;
@@ -330,48 +319,44 @@ export default class API {
   static doRequest(method: 'DELETE', url: string, data: REQUEST_DATA_TYPE): Promise<Response>;
 
   static doRequest(method: string, url: string, data: REQUEST_DATA_TYPE = '') {
-    try {
-      const { headers: authHeaders } = this.getAuthHeaders();
-      const headers: { [key: string]: string } = {
-        'Content-Type': 'application/json',
-        ...authHeaders,
+    const { headers: authHeaders } = this.getAuthHeaders();
+    const headers: { [key: string]: string } = {
+      'Content-Type': 'application/json',
+      ...authHeaders,
+    };
+    let fetchConfigObject: {
+      method: string;
+      body?: REQUEST_DATA_TYPE;
+      headers?: {
+        [prop: string]: any;
       };
-      let fetchConfigObject: {
-        method: string;
-        body?: REQUEST_DATA_TYPE;
-        headers?: {
-          [prop: string]: any;
-        };
-      } = {
-        method: 'GET',
+    } = {
+      method: 'GET',
+      headers,
+    };
+
+    if (method === 'DELETE') {
+      fetchConfigObject = {
+        method,
         headers,
       };
-
-      if (method === 'DELETE') {
+      return fetch(url, fetchConfigObject);
+    } else {
+      if (method !== 'GET') {
         fetchConfigObject = {
           method,
           headers,
+          body: data,
         };
-        return fetch(url, fetchConfigObject);
-      } else {
-        if (method !== 'GET') {
-          fetchConfigObject = {
-            method,
-            headers,
-            body: data,
-          };
-        }
       }
-
-      return fetch(url, fetchConfigObject).then(response => {
-        if (!response.ok) {
-          throw response;
-        }
-        return response.json();
-      });
-    } catch (error) {
-      return Promise.reject(error);
     }
+
+    return fetch(url, fetchConfigObject).then(response => {
+      if (!response.ok) {
+        throw response;
+      }
+      return response.json();
+    });
   }
 }
 

@@ -1,4 +1,9 @@
-import { generateCodeChallenge, generateCodeVerifier } from './auth';
+import {
+  base64ToBase64URL,
+  base64URLEncode,
+  generateCodeChallenge,
+  generateCodeVerifier,
+} from './auth';
 
 export interface OIDCConfig {
   issuerUrl: string;
@@ -49,15 +54,16 @@ export class OIDCClient {
 
     const wellKnownUrl = `${this.config.issuerUrl.replace(/\/$/, '')}/.well-known/openid-configuration`;
 
+    const errMsg = (err: any) => `Failed to load OIDC metadata: ${err}`;
     try {
       const response = await fetch(wellKnownUrl);
       if (!response.ok) {
-        throw new Error(`Failed to load OIDC metadata: ${response.status}`);
+        throw new Error(errMsg(response.status));
       }
       this.metadata = await response.json();
       this.metadataLoadedAt = Date.now();
     } catch (error) {
-      console.error('Failed to load OIDC metadata:', error);
+      console.error(errMsg(error));
       throw error;
     }
   }
@@ -242,7 +248,9 @@ export class OIDCClient {
       await this.init();
     }
 
-    if (this.metadata?.end_session_endpoint) {
+    const logoutEndpoint = this.metadata?.end_session_endpoint || this.config.logoutUrl;
+
+    if (logoutEndpoint) {
       const params = new URLSearchParams();
       if (postLogoutRedirectUri) {
         params.set('post_logout_redirect_uri', postLogoutRedirectUri);
@@ -251,19 +259,7 @@ export class OIDCClient {
         params.set('id_token_hint', idTokenHint);
       }
 
-      const logoutUrl = `${this.metadata?.end_session_endpoint}?${params}`;
-      window.location.href = logoutUrl;
-    } else if (this.config.logoutUrl) {
-      // Use configured logout URL as fallback if discovery doesn't provide end_session_endpoint
-      const params = new URLSearchParams();
-      if (postLogoutRedirectUri) {
-        params.set('post_logout_redirect_uri', postLogoutRedirectUri);
-      }
-      if (idTokenHint) {
-        params.set('id_token_hint', idTokenHint);
-      }
-
-      const logoutUrl = `${this.config.logoutUrl}?${params}`;
+      const logoutUrl = `${logoutEndpoint}?${params}`;
       window.location.href = logoutUrl;
     } else if (postLogoutRedirectUri) {
       // If no logout endpoint available, just redirect to post logout URI
@@ -274,10 +270,7 @@ export class OIDCClient {
   private generateState(): string {
     const array = new Uint8Array(16);
     crypto.getRandomValues(array);
-    const randomValue = btoa(String.fromCharCode(...array))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=/g, '');
+    const randomValue = base64URLEncode(array);
 
     // Encode the current URL and random value in the state
     const stateData = {
@@ -285,19 +278,13 @@ export class OIDCClient {
       returnUrl: window.location.pathname + window.location.search + window.location.hash,
     };
 
-    return btoa(JSON.stringify(stateData))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=/g, '');
+    return base64ToBase64URL(btoa(JSON.stringify(stateData)));
   }
 
   private generateNonce(): string {
     const array = new Uint8Array(16);
     crypto.getRandomValues(array);
-    return btoa(String.fromCharCode(...array))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=/g, '');
+    return base64URLEncode(array);
   }
 
   isCallback(): boolean {

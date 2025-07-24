@@ -23,19 +23,20 @@ function Container() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(rowsOptions[0]);
 
+  const onChange = React.useCallback(() => {
+    setActivity(getActivityEntries());
+    setPage(0);
+  }, []);
+
   React.useEffect(() => {
     activityStore().addChangeListener(onChange);
+    // Trigger initial fetch since stores don't fetch automatically
+    activityStore().getActivity();
 
     return function cleanup() {
       activityStore().removeChangeListener(onChange);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activity]);
-
-  function onChange() {
-    setActivity(getActivityEntries());
-    setPage(0);
-  }
+  }, [onChange]);
 
   function handleChangePage(
     _: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
