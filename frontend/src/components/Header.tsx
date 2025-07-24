@@ -156,14 +156,14 @@ function Appbar(props: AppbarProps) {
               </Button>
             </Box>
             {user?.authenticated && config?.auth_mode === 'oidc' && (
-              <>
+              <div>
                 <Divider />
                 <Box paddingY={1} paddingX={2} textAlign="center">
                   <Button startIcon={<LogoutOutlined />} onClick={handleLogout} fullWidth>
                     {t('header|logout')}
                   </Button>
                 </Box>
-              </>
+              </div>
             )}
           </Menu>
         )}
@@ -173,7 +173,8 @@ function Appbar(props: AppbarProps) {
 }
 
 export default function Header() {
-  const { config, user } = useSelector(state => ({ config: state.config, user: state.user }));
+  const config = useSelector(state => state.config);
+  const user = useSelector(state => state.user);
   const dispatch = useDispatch();
   const projectLogo = _.isEmpty(nebraskaLogo) ? null : nebraskaLogo;
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<HTMLButtonElement | null>(null);

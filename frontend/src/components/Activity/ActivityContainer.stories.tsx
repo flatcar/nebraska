@@ -9,8 +9,8 @@ export default {
 } as Meta;
 
 const TemplateEmpty: StoryFn<ActivityContainerProps> = args => {
-  activityStore(true).stopRefreshing();
-  activityStore(true).setActivity([]);
+  activityStore().stopRefreshing();
+  activityStore().setActivity([]);
   return (
     <MemoryRouter>
       <ActivityContainer {...args} />
@@ -24,8 +24,8 @@ export const Empty = {
 };
 
 const TemplateList: StoryFn<ActivityContainerProps> = args => {
-  activityStore(true).stopRefreshing();
-  activityStore(true).setActivity([
+  activityStore().stopRefreshing();
+  activityStore().setActivity([
     {
       id: 1,
       app_id: '',
@@ -66,8 +66,8 @@ export const List = {
 };
 
 const TemplateMultipleDays: StoryFn<ActivityContainerProps> = args => {
-  activityStore(true).stopRefreshing();
-  activityStore(true).setActivity([
+  activityStore().stopRefreshing();
+  activityStore().setActivity([
     {
       id: 1,
       app_id: '',

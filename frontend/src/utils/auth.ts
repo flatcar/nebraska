@@ -1,8 +1,8 @@
 import { jwtDecode } from 'jwt-decode';
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
-import { setUser, UserState } from '../stores/redux/features/user';
+import { setAuthLoading, setUser, UserState } from '../stores/redux/features/user';
 import { useDispatch, useSelector } from '../stores/redux/hooks';
 import { authBroadcast } from './authBroadcast';
 import { createOIDCClient, OIDCConfig } from './oidc';
@@ -55,6 +55,21 @@ export function ensureValidToken(): string | null {
   return null;
 }
 
+export function ensureValidIdToken(): string | null {
+  if (!idToken) {
+    return null;
+  }
+
+  if (isValidToken(idToken)) {
+    return idToken;
+  }
+
+  // If ID token is invalid but access token is still valid,
+  // just clear the ID token, don't logout completely
+  idToken = null;
+  return null;
+}
+
 export async function generateCodeVerifier(): Promise<string> {
   const array = new Uint8Array(32);
   crypto.getRandomValues(array);
@@ -68,9 +83,13 @@ export async function generateCodeChallenge(verifier: string): Promise<string> {
   return base64URLEncode(new Uint8Array(digest));
 }
 
-function base64URLEncode(buffer: Uint8Array): string {
-  const base64 = btoa(String.fromCharCode(...buffer));
+export function base64ToBase64URL(base64: string): string {
   return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
+export function base64URLEncode(buffer: Uint8Array): string {
+  const base64 = btoa(String.fromCharCode(...buffer));
+  return base64ToBase64URL(base64);
 }
 
 interface JWT {
@@ -111,6 +130,35 @@ function getUserInfoFromToken(token: string) {
   return info;
 }
 
+async function extractUserInfo(tokenResponse: TokenPair, oidcClient: any): Promise<UserState> {
+  let userInfo: UserState = { authenticated: true };
+
+  // First try to get info from ID token
+  if (tokenResponse.id_token) {
+    const idTokenInfo = getUserInfoFromToken(tokenResponse.id_token);
+    userInfo = { ...userInfo, ...idTokenInfo };
+  }
+
+  // Only call userinfo endpoint if we're missing data
+  if (!userInfo.name || !userInfo.email) {
+    try {
+      const userInfoResponse = await oidcClient.getUserInfo(tokenResponse.access_token);
+
+      if (!userInfo.name && userInfoResponse.name) {
+        userInfo.name = userInfoResponse.name;
+      }
+
+      if (!userInfo.email && userInfoResponse.email) {
+        userInfo.email = userInfoResponse.email;
+      }
+    } catch (error) {
+      console.warn('Failed to get user info:', error);
+    }
+  }
+
+  return userInfo;
+}
+
 export function useAuthRedirect() {
   const config = useSelector(state => state.config);
   const user = useSelector(state => state.user);
@@ -118,33 +166,22 @@ export function useAuthRedirect() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const shouldUpdateUser = useCallback(
-    (token: string) => {
-      const newInfo = getUserInfoFromToken(token);
-
-      for (const [key, value] of Object.entries(newInfo)) {
-        if (user[key] !== value) {
-          return true;
-        }
-      }
-
-      return false;
-    },
-    [user]
-  );
-
   useEffect(() => {
     if (config.auth_mode !== 'oidc') {
+      // For non-OIDC modes (noop, github), no client-side auth flow needed
+      dispatch(setAuthLoading(false));
       return;
     }
 
     const initOIDC = async () => {
       const configuredScopes = config.oidc_scopes || 'openid,profile,email';
+      const parsedScopes = configuredScopes.split(/[,\s]+/).filter((s: string) => s.trim());
+
       const oidcConfig: OIDCConfig = {
         issuerUrl: config.oidc_issuer_url || '',
         clientId: config.oidc_client_id || '',
         redirectUri: window.location.origin + '/auth/callback',
-        scopes: configuredScopes.split(',').map((s: string) => s.trim()),
+        scopes: parsedScopes,
         logoutUrl: config.oidc_logout_url,
         audience: config.oidc_audience,
       };
@@ -155,23 +192,15 @@ export function useAuthRedirect() {
       if (oidcClient.isCallback()) {
         try {
           const tokenResponse = await oidcClient.handleCallback();
-
           setTokens({
             access_token: tokenResponse.access_token,
             expires_in: tokenResponse.expires_in,
             id_token: tokenResponse.id_token,
           });
 
-          const userInfo: UserState = { authenticated: true };
-          try {
-            const userInfoResponse = await oidcClient.getUserInfo(tokenResponse.access_token);
-            userInfo.name = userInfoResponse.name || userInfoResponse.given_name || '';
-            userInfo.email = userInfoResponse.email || '';
-          } catch (error) {
-            console.warn('Failed to get user info:', error);
-          }
-
+          const userInfo = await extractUserInfo(tokenResponse, oidcClient);
           dispatch(setUser(userInfo));
+          dispatch(setAuthLoading(false));
 
           navigate(tokenResponse.returnUrl || '/', { replace: true });
           return;
@@ -179,6 +208,7 @@ export function useAuthRedirect() {
           console.error('OIDC callback error:', error);
           broadcastLogout();
           dispatch(setUser({ authenticated: false }));
+          dispatch(setAuthLoading(false));
 
           const errorMessage = error instanceof Error ? error.message : 'Authentication failed';
           navigate('/auth/error', {
@@ -189,31 +219,31 @@ export function useAuthRedirect() {
         }
       }
 
-      const currentToken = ensureValidToken();
-
-      if (currentToken && shouldUpdateUser(currentToken)) {
-        dispatch(setUser({ authenticated: true, ...getUserInfoFromToken(currentToken) }));
-        return;
-      } else if (currentToken) {
+      if (ensureValidToken()) {
+        dispatch(setAuthLoading(false));
         return;
       }
 
       if (!user?.authenticated && oidcConfig.issuerUrl && oidcConfig.clientId) {
         await oidcClient.authorize();
       }
+
+      // Set loading to false at the end - we've either handled auth or will redirect
+      dispatch(setAuthLoading(false));
     };
 
     initOIDC().catch(console.error);
-  }, [navigate, location, user, config, dispatch, shouldUpdateUser]);
+  }, [navigate, location, user, config, dispatch]);
 }
 
-export function useAuthBroadcastSync() {
+export function useLogoutSync() {
   const dispatch = useDispatch();
 
   useEffect(() => {
     return authBroadcast.onLogout(() => {
       clearTokens();
 
+      // Clear user info on logout
       dispatch(setUser({ authenticated: false, name: '', email: '' }));
     });
   }, [dispatch]);
