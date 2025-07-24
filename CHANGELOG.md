@@ -22,7 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - backend: updated kinvolk references to flatcar ([nebraska#1091](https://github.com/flatcar/nebraska/pull/1091/files))
 - backend: migrate from go-bindata to embed ([nebraska#1132](https://github.com/flatcar/nebraska/pull/1132))
 - backend: update go to v1.24 ([nebraska#1130](https://github.com/flatcar/nebraska/pull/1130/files))
-
+- updater: update go to v1.24 and remove final kinvolk references ([nebraska#1151](https://github.com/flatcar/nebraska/pull/1151/files)) 
 ### Bugfixes
 
 ## [v2.11.0] - 17/06/2025

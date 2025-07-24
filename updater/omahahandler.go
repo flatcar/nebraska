@@ -8,7 +8,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/kinvolk/go-omaha/omaha"
+	"github.com/flatcar/go-omaha/omaha"
 )
 
 // HTTPDoer interface allows the user to

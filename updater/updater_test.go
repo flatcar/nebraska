@@ -9,13 +9,13 @@ import (
 	"os"
 	"testing"
 
-	omahaSpec "github.com/kinvolk/go-omaha/omaha"
+	omahaSpec "github.com/flatcar/go-omaha/omaha"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/guregu/null.v4"
 
-	"github.com/kinvolk/nebraska/backend/pkg/api"
-	"github.com/kinvolk/nebraska/backend/pkg/omaha"
+	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/omaha"
 )
 
 const (
@@ -59,7 +59,7 @@ func newForTest(t *testing.T) *api.API {
 		log.Printf("NEBRASKA_DB_URL not set, setting to default %q\n", defaultTestDbURL)
 		_ = os.Setenv("NEBRASKA_DB_URL", defaultTestDbURL)
 	}
-	api, err := api.New(api.OptionInitDB)
+	api, err := api.NewWithMigrations(api.OptionInitDB)
 
 	require.NoError(t, err)
 	require.NotNil(t, api)

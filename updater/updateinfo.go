@@ -3,7 +3,7 @@ package updater
 import (
 	"errors"
 
-	"github.com/kinvolk/go-omaha/omaha"
+	"github.com/flatcar/go-omaha/omaha"
 )
 
 // UpdateInfo wraps helper functions and fields
