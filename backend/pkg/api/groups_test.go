@@ -214,7 +214,7 @@ func TestGetVersionCountTimeline(t *testing.T) {
 	defer a.Close()
 
 	// Set cache lifespan to 50ms for testing and restore when done
-	cacheManager := NewTestCacheManager(a)
+	cacheManager := NewTestCacheManager()
 	oldLifespan := cacheManager.SetCacheLifespanForTest(50 * time.Millisecond)
 	defer cacheManager.RestoreCacheLifespan(oldLifespan)
 

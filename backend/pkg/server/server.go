@@ -33,14 +33,7 @@ const serviceName = "nebraska"
 var (
 	l                 = logger.New("nebraska")
 	middlewareSkipper = func(c echo.Context) bool {
-		requestPath := c.Request().URL.Path
-		paths := []string{"/health", "/metrics", "/config", "/v1/update", "/flatcar/*", "/assets/*"}
-		for _, pattern := range paths {
-			if custommiddleware.MatchesPattern(pattern, requestPath) {
-				return true
-			}
-		}
-		return false
+		return custommiddleware.MatchesOneOfPatterns(c.Request().URL.Path, "/health", "/metrics", "/config", "/v1/update", "/flatcar/*", "/assets/*")
 	}
 )
 

@@ -3,13 +3,11 @@ package api
 import "time"
 
 // TestCacheManager provides test utilities for cache management in API tests
-type TestCacheManager struct {
-	api *API
-}
+type TestCacheManager struct{}
 
-// NewTestCacheManager creates a new test cache manager for the given API instance
-func NewTestCacheManager(api *API) *TestCacheManager {
-	return &TestCacheManager{api: api}
+// NewTestCacheManager creates a new test cache manager
+func NewTestCacheManager() *TestCacheManager {
+	return &TestCacheManager{}
 }
 
 // SetCacheLifespanForTest temporarily sets the cache lifespan for testing purposes.

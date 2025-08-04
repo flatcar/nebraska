@@ -12,30 +12,45 @@ import (
 	"github.com/flatcar/nebraska/backend/pkg/server"
 )
 
+type oidcTestSetup struct {
+	nebraskaServer   interface{ Shutdown(context.Context) error }
+	mockOIDCProvider interface{ Shutdown() error }
+}
+
+func startWithOIDC(t *testing.T) oidcTestSetup {
+	// establish db connection
+	db := newDBForTest(t)
+
+	// setup and run mock OIDC provider
+	mockOIDCProvider := newOIDCMockServer(t)
+	startOIDCMockServer(t, mockOIDCProvider)
+
+	// start nebraska server
+	nebraskaServer, err := server.New(conf, db)
+	require.NotNil(t, nebraskaServer)
+	require.NoError(t, err)
+
+	//nolint:errcheck
+	go nebraskaServer.Start(serverPortStr)
+
+	_, err = waitServerReady()
+	require.NoError(t, err)
+
+	return oidcTestSetup{
+		nebraskaServer:   nebraskaServer,
+		mockOIDCProvider: mockOIDCProvider,
+	}
+}
+
+func (s oidcTestSetup) shutdown() {
+	_ = s.nebraskaServer.Shutdown(context.Background())
+	_ = s.mockOIDCProvider.Shutdown()
+}
+
 func TestOIDCAuthorization(t *testing.T) {
 	t.Run("authorize_with_invalid_token", func(t *testing.T) {
-		// establish db connection
-		db := newDBForTest(t)
-
-		// setup and run mock server
-		oidcServer := newOIDCMockServer(t)
-		startOIDCMockServer(t, oidcServer)
-
-		// start nebraska server
-		server, err := server.New(conf, db)
-		require.NotNil(t, server)
-		require.NoError(t, err)
-
-		//nolint:errcheck
-		go server.Start(serverPortStr)
-
-		//nolint:errcheck
-		defer server.Shutdown(context.Background())
-		//nolint:errcheck
-		defer oidcServer.Shutdown()
-
-		_, err = waitServerReady()
-		require.NoError(t, err)
+		setup := startWithOIDC(t)
+		defer setup.shutdown()
 
 		// Try to access API with invalid token
 		req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/apps", testServerURL), nil)
@@ -53,28 +68,8 @@ func TestOIDCAuthorization(t *testing.T) {
 	})
 
 	t.Run("authorize_without_token", func(t *testing.T) {
-		// establish db connection
-		db := newDBForTest(t)
-
-		// setup and run mock server
-		oidcServer := newOIDCMockServer(t)
-		startOIDCMockServer(t, oidcServer)
-
-		// start nebraska server
-		server, err := server.New(conf, db)
-		require.NotNil(t, server)
-		require.NoError(t, err)
-
-		//nolint:errcheck
-		go server.Start(serverPortStr)
-
-		//nolint:errcheck
-		defer server.Shutdown(context.Background())
-		//nolint:errcheck
-		defer oidcServer.Shutdown()
-
-		_, err = waitServerReady()
-		require.NoError(t, err)
+		setup := startWithOIDC(t)
+		defer setup.shutdown()
 
 		// Try to access API without authorization header
 		req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/apps", testServerURL), nil)
@@ -90,28 +85,8 @@ func TestOIDCAuthorization(t *testing.T) {
 	})
 
 	t.Run("authorize_with_malformed_header", func(t *testing.T) {
-		// establish db connection
-		db := newDBForTest(t)
-
-		// setup and run mock server
-		oidcServer := newOIDCMockServer(t)
-		startOIDCMockServer(t, oidcServer)
-
-		// start nebraska server
-		server, err := server.New(conf, db)
-		require.NotNil(t, server)
-		require.NoError(t, err)
-
-		//nolint:errcheck
-		go server.Start(serverPortStr)
-
-		//nolint:errcheck
-		defer server.Shutdown(context.Background())
-		//nolint:errcheck
-		defer oidcServer.Shutdown()
-
-		_, err = waitServerReady()
-		require.NoError(t, err)
+		setup := startWithOIDC(t)
+		defer setup.shutdown()
 
 		// Try to access API with malformed authorization header
 		req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/apps", testServerURL), nil)
@@ -131,28 +106,8 @@ func TestOIDCAuthorization(t *testing.T) {
 
 func TestOIDCValidateTokenEndpoint(t *testing.T) {
 	t.Run("validate_token_without_header", func(t *testing.T) {
-		// establish db connection
-		db := newDBForTest(t)
-
-		// setup and run mock server
-		oidcServer := newOIDCMockServer(t)
-		startOIDCMockServer(t, oidcServer)
-
-		// start nebraska server
-		server, err := server.New(conf, db)
-		require.NotNil(t, server)
-		require.NoError(t, err)
-
-		//nolint:errcheck
-		go server.Start(serverPortStr)
-
-		//nolint:errcheck
-		defer server.Shutdown(context.Background())
-		//nolint:errcheck
-		defer oidcServer.Shutdown()
-
-		_, err = waitServerReady()
-		require.NoError(t, err)
+		setup := startWithOIDC(t)
+		defer setup.shutdown()
 
 		// Call validate token endpoint without Authorization header
 		req, err := http.NewRequest("GET", fmt.Sprintf("%s/login/validate_token", testServerURL), nil)
@@ -168,28 +123,8 @@ func TestOIDCValidateTokenEndpoint(t *testing.T) {
 	})
 
 	t.Run("validate_token_with_invalid_token", func(t *testing.T) {
-		// establish db connection
-		db := newDBForTest(t)
-
-		// setup and run mock server
-		oidcServer := newOIDCMockServer(t)
-		startOIDCMockServer(t, oidcServer)
-
-		// start nebraska server
-		server, err := server.New(conf, db)
-		require.NotNil(t, server)
-		require.NoError(t, err)
-
-		//nolint:errcheck
-		go server.Start(serverPortStr)
-
-		//nolint:errcheck
-		defer server.Shutdown(context.Background())
-		//nolint:errcheck
-		defer oidcServer.Shutdown()
-
-		_, err = waitServerReady()
-		require.NoError(t, err)
+		setup := startWithOIDC(t)
+		defer setup.shutdown()
 
 		// Call validate token endpoint with invalid token
 		req, err := http.NewRequest("GET", fmt.Sprintf("%s/login/validate_token", testServerURL), nil)

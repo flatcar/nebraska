@@ -14,7 +14,7 @@ Migration guide for Nebraska's secure OIDC implementation with Authorization Cod
 **Required Changes:**
 1. Change client type: **Confidential** → **Public** (SPA)
 2. Remove client secret
-3. Set redirect URI: `https://your-nebraska-domain.com/auth/callback`
+3. Set redirect URI: `https://your-domain.com/auth/callback`
 4. Enable CORS for your Nebraska domain
 
 **Provider Examples:**

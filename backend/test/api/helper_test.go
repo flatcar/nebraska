@@ -167,7 +167,7 @@ func httpDecodeResponse(resp *http.Response, response interface{}) error {
 		return xml.Unmarshal(bodyBytes, response)
 	}
 
-	return errors.New("unsupported content type")
+	return fmt.Errorf("unsupported content type %q", contentType)
 }
 
 // httpMakeRequest is a helper function for making HTTP requests with custom headers
