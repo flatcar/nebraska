@@ -136,7 +136,7 @@ func rolesFromToken(token *oidc.IDToken, rolesPath string) ([]string, error) {
 		return roles, err
 	}
 
-	result := gjson.Get(string(claimsJSON), rolesPath)
+	result := gjson.GetBytes(claimsJSON, rolesPath)
 	result.ForEach(func(_, value gjson.Result) bool {
 		roles = append(roles, value.String())
 		return true
@@ -194,7 +194,7 @@ func (oa *oidcAuth) Authorize(c echo.Context) (teamID string, replied bool) {
 
 	// If access level is empty or doesn't match role scope then return an error
 	if accessLevel == "" {
-		l.Debug().Msg("Misconfigured Roles, Can't get access level from access token")
+		l.Debug().Msg("Misconfigured roles, can't get access level from access token")
 		httpError(c, http.StatusForbidden)
 		return "", true
 	} else if accessLevel != "admin" {

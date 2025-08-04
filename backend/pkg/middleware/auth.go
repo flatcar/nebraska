@@ -9,24 +9,28 @@ import (
 	"github.com/flatcar/nebraska/backend/pkg/auth"
 )
 
+var commonPaths = []string{"/", "/health", "/v1/update", "/flatcar/*", "/assets/*", "/apps", "/apps/*", "/instances", "/instances/*", "/404"}
+
+func MatchesOneOfPatterns(path string, patterns ...string) bool {
+	for _, pattern := range patterns {
+		if MatchesPattern(pattern, path) {
+			return true
+		}
+	}
+	return false
+}
+
 func NewAuthSkipper(auth string) middleware.Skipper {
 	return func(c echo.Context) bool {
 		path := c.Request().URL.Path
+		if MatchesOneOfPatterns(path, commonPaths...) {
+			return true
+		}
 		switch auth {
 		case "oidc":
-			paths := []string{"/", "/auth/callback", "/health", "/config", "/flatcar/*", "/v1/update", "/assets/*", "/apps", "/apps/*", "/instances", "/instances/*", "/404"}
-			for _, pattern := range paths {
-				if MatchesPattern(pattern, path) {
-					return true
-				}
-			}
+			return MatchesOneOfPatterns(path, "/auth/callback", "/config")
 		case "github":
-			paths := []string{"/", "/health", "/v1/update", "/login/cb", "/login/webhook", "/flatcar/*", "/assets/*", "/apps", "/apps/*", "/instances", "/instances/*", "/404"}
-			for _, pattern := range paths {
-				if MatchesPattern(pattern, path) {
-					return true
-				}
-			}
+			return MatchesOneOfPatterns(path, "/login/cb", "/login/webhook")
 		}
 		return false
 	}

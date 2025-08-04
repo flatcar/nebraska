@@ -802,11 +802,8 @@ func makeTeamName(org, team string) string {
 	return fmt.Sprintf("%s/%s", org, team)
 }
 
-func sessionSave(_ echo.Context, session any, description string) {
-	// Type assert to session with Save method
-	if s, ok := session.(interface{ Save() error }); ok {
-		if err := s.Save(); err != nil {
-			l.Error().AnErr("error", err).Str("description", description).Msg("Failed to save session")
-		}
+func sessionSave(c echo.Context, session *sessions.Session, description string) {
+	if err := echosessions.SaveSession(c, session); err != nil {
+		l.Error().AnErr("error", err).Str("description", description).Msg("Failed to save session")
 	}
 }
