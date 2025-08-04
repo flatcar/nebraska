@@ -4,7 +4,7 @@ go 1.24.0
 
 require (
 	github.com/blang/semver/v4 v4.0.0
-	github.com/coreos/go-oidc/v3 v3.14.1
+	github.com/coreos/go-oidc/v3 v3.15.0
 	github.com/doug-martin/goqu/v9 v9.19.0
 	github.com/flatcar/go-omaha v0.0.2-0.20250627105643-c9009b394616
 	github.com/getkin/kin-openapi v0.132.0
