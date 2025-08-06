@@ -158,7 +158,7 @@ function VersionProgressBar(props: { version_breakdown: any; channel: Channel | 
         <YAxis hide dataKey="key" type="category" />
         {chartData.versions.map((version, index) => {
           const color = chartData.colors[version];
-          return <Bar key={index} dataKey={version} stackId="1" fill={color} layout="vertical" />;
+          return <Bar key={index} dataKey={version} stackId="1" fill={color} />;
         })}
       </BarChart>
     </StyledResponsiveContainer>

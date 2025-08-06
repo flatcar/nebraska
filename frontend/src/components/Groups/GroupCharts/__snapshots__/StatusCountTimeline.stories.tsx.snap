@@ -6,7 +6,25 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
     <div class="recharts-wrapper"
          style="position: relative; cursor: default; width: 500px; height: 400px;"
     >
-      <svg class="recharts-surface"
+      <div xmlns="http://www.w3.org/1999/xhtml"
+           tabindex="-1"
+           class="recharts-tooltip-wrapper"
+           style="visibility: hidden; pointer-events: none; position: absolute; top: 0px; left: 0px;"
+      >
+        <div class="custom-tooltip">
+          <div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-12jlilq-MuiPaper-root"
+               style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
+          >
+            <div class="MuiBox-root css-hpgf8j">
+              <p class="MuiTypography-root MuiTypography-body1 css-12h6qye-MuiTypography-root">
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <svg role="application"
+           tabindex="0"
+           class="recharts-surface"
            width="500"
            height="400"
            viewbox="0 0 500 400"
@@ -176,12 +194,12 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
           </g>
         </g>
         <g class="recharts-layer recharts-cartesian-axis recharts-xAxis xAxis">
-          <line orientation="bottom"
-                width="410"
+          <line stroke="#000"
                 height="30"
-                stroke="#000"
+                orientation="bottom"
                 x="60"
                 y="370"
+                width="410"
                 class="recharts-cartesian-axis-line"
                 fill="none"
                 x1="60"
@@ -192,12 +210,12 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
           </line>
           <g class="recharts-cartesian-axis-ticks">
             <g class="recharts-layer recharts-cartesian-axis-tick">
-              <line orientation="bottom"
-                    width="410"
+              <line stroke="#000"
                     height="30"
-                    stroke="#000"
+                    orientation="bottom"
                     x="60"
                     y="370"
+                    width="410"
                     class="recharts-cartesian-axis-tick-line"
                     fill="none"
                     x1="203.64794641203702"
@@ -206,10 +224,10 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
                     y2="370"
               >
               </line>
-              <text orientation="bottom"
-                    width="410"
+              <text stroke="none"
                     height="30"
-                    stroke="none"
+                    orientation="bottom"
+                    width="410"
                     x="203.64794641203702"
                     y="378"
                     class="recharts-text recharts-cartesian-axis-tick-value"
@@ -224,12 +242,12 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
               </text>
             </g>
             <g class="recharts-layer recharts-cartesian-axis-tick">
-              <line orientation="bottom"
-                    width="410"
+              <line stroke="#000"
                     height="30"
-                    stroke="#000"
+                    orientation="bottom"
                     x="60"
                     y="370"
+                    width="410"
                     class="recharts-cartesian-axis-tick-line"
                     fill="none"
                     x1="101.14794641203703"
@@ -238,10 +256,10 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
                     y2="370"
               >
               </line>
-              <text orientation="bottom"
-                    width="410"
+              <text stroke="none"
                     height="30"
-                    stroke="none"
+                    orientation="bottom"
+                    width="410"
                     x="101.14794641203703"
                     y="378"
                     class="recharts-text recharts-cartesian-axis-tick-value"
@@ -256,12 +274,12 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
               </text>
             </g>
             <g class="recharts-layer recharts-cartesian-axis-tick">
-              <line orientation="bottom"
-                    width="410"
+              <line stroke="#000"
                     height="30"
-                    stroke="#000"
+                    orientation="bottom"
                     x="60"
                     y="370"
+                    width="410"
                     class="recharts-cartesian-axis-tick-line"
                     fill="none"
                     x1="408.6479464120371"
@@ -270,10 +288,10 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
                     y2="370"
               >
               </line>
-              <text orientation="bottom"
-                    width="410"
+              <text stroke="none"
                     height="30"
-                    stroke="none"
+                    orientation="bottom"
+                    width="410"
                     x="408.6479464120371"
                     y="378"
                     class="recharts-text recharts-cartesian-axis-tick-value"
@@ -288,12 +306,12 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
               </text>
             </g>
             <g class="recharts-layer recharts-cartesian-axis-tick">
-              <line orientation="bottom"
-                    width="410"
+              <line stroke="#000"
                     height="30"
-                    stroke="#000"
+                    orientation="bottom"
                     x="60"
                     y="370"
+                    width="410"
                     class="recharts-cartesian-axis-tick-line"
                     fill="none"
                     x1="306.1479464120371"
@@ -302,10 +320,10 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
                     y2="370"
               >
               </line>
-              <text orientation="bottom"
-                    width="410"
+              <text stroke="none"
                     height="30"
-                    stroke="none"
+                    orientation="bottom"
+                    width="410"
                     x="306.1479464120371"
                     y="378"
                     class="recharts-text recharts-cartesian-axis-tick-value"
@@ -322,12 +340,12 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
           </g>
         </g>
         <g class="recharts-layer recharts-cartesian-axis recharts-yAxis yAxis">
-          <line orientation="left"
+          <line stroke="#000"
+                orientation="left"
                 width="60"
-                height="360"
-                stroke="#000"
                 x="0"
                 y="10"
+                height="360"
                 class="recharts-cartesian-axis-line"
                 fill="none"
                 x1="60"
@@ -338,12 +356,12 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
           </line>
           <g class="recharts-cartesian-axis-ticks">
             <g class="recharts-layer recharts-cartesian-axis-tick">
-              <line orientation="left"
+              <line stroke="#000"
+                    orientation="left"
                     width="60"
-                    height="360"
-                    stroke="#000"
                     x="0"
                     y="10"
+                    height="360"
                     class="recharts-cartesian-axis-tick-line"
                     fill="none"
                     x1="54"
@@ -352,10 +370,10 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
                     y2="370"
               >
               </line>
-              <text orientation="left"
+              <text stroke="none"
+                    orientation="left"
                     width="60"
                     height="360"
-                    stroke="none"
                     x="52"
                     y="370"
                     class="recharts-text recharts-cartesian-axis-tick-value"
@@ -370,12 +388,12 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
               </text>
             </g>
             <g class="recharts-layer recharts-cartesian-axis-tick">
-              <line orientation="left"
+              <line stroke="#000"
+                    orientation="left"
                     width="60"
-                    height="360"
-                    stroke="#000"
                     x="0"
                     y="10"
+                    height="360"
                     class="recharts-cartesian-axis-tick-line"
                     fill="none"
                     x1="54"
@@ -384,10 +402,10 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
                     y2="280"
               >
               </line>
-              <text orientation="left"
+              <text stroke="none"
+                    orientation="left"
                     width="60"
                     height="360"
-                    stroke="none"
                     x="52"
                     y="280"
                     class="recharts-text recharts-cartesian-axis-tick-value"
@@ -402,12 +420,12 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
               </text>
             </g>
             <g class="recharts-layer recharts-cartesian-axis-tick">
-              <line orientation="left"
+              <line stroke="#000"
+                    orientation="left"
                     width="60"
-                    height="360"
-                    stroke="#000"
                     x="0"
                     y="10"
+                    height="360"
                     class="recharts-cartesian-axis-tick-line"
                     fill="none"
                     x1="54"
@@ -416,10 +434,10 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
                     y2="190"
               >
               </line>
-              <text orientation="left"
+              <text stroke="none"
+                    orientation="left"
                     width="60"
                     height="360"
-                    stroke="none"
                     x="52"
                     y="190"
                     class="recharts-text recharts-cartesian-axis-tick-value"
@@ -434,12 +452,12 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
               </text>
             </g>
             <g class="recharts-layer recharts-cartesian-axis-tick">
-              <line orientation="left"
+              <line stroke="#000"
+                    orientation="left"
                     width="60"
-                    height="360"
-                    stroke="#000"
                     x="0"
                     y="10"
+                    height="360"
                     class="recharts-cartesian-axis-tick-line"
                     fill="none"
                     x1="54"
@@ -448,10 +466,10 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
                     y2="100"
               >
               </line>
-              <text orientation="left"
+              <text stroke="none"
+                    orientation="left"
                     width="60"
                     height="360"
-                    stroke="none"
                     x="52"
                     y="100"
                     class="recharts-text recharts-cartesian-axis-tick-value"
@@ -466,12 +484,12 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
               </text>
             </g>
             <g class="recharts-layer recharts-cartesian-axis-tick">
-              <line orientation="left"
+              <line stroke="#000"
+                    orientation="left"
                     width="60"
-                    height="360"
-                    stroke="#000"
                     x="0"
                     y="10"
+                    height="360"
                     class="recharts-cartesian-axis-tick-line"
                     fill="none"
                     x1="54"
@@ -480,10 +498,10 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
                     y2="10"
               >
               </line>
-              <text orientation="left"
+              <text stroke="none"
+                    orientation="left"
                     width="60"
                     height="360"
-                    stroke="none"
                     x="52"
                     y="10"
                     class="recharts-text recharts-cartesian-axis-tick-value"
@@ -503,20 +521,21 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
           <g class="recharts-layer">
             <path cursor="pointer"
                   fill="rgb(89, 89, 89)"
-                  width="410"
-                  height="360"
                   fill-opacity="0.6"
+                  height="360"
                   stroke="none"
+                  width="410"
+                  id="recharts-area-«r1»"
                   class="recharts-curve recharts-area-area"
                   d="M60,370L68.542,370L68.542,370L85.625,370L85.625,370L102.708,370L102.708,370L119.792,370L119.792,370L136.875,370L136.875,370L153.958,370L153.958,370L171.042,370L171.042,370L188.125,370L188.125,370L205.208,370L205.208,370L222.292,370L222.292,370L239.375,370L239.375,370L256.458,370L256.458,370L273.542,370L273.542,370L290.625,370L290.625,370L307.708,370L307.708,370L324.792,370L324.792,370L341.875,370L341.875,370L358.958,370L358.958,370L376.042,370L376.042,370L393.125,370L393.125,370L410.208,370L410.208,370L427.292,370L427.292,370L444.375,370L444.375,306.28L461.458,306.28L461.458,370L470,370L470,370L461.458,370L461.458,370L444.375,370L444.375,370L427.292,370L427.292,370L410.208,370L410.208,370L393.125,370L393.125,370L376.042,370L376.042,370L358.958,370L358.958,370L341.875,370L341.875,370L324.792,370L324.792,370L307.708,370L307.708,370L290.625,370L290.625,370L273.542,370L273.542,370L256.458,370L256.458,370L239.375,370L239.375,370L222.292,370L222.292,370L205.208,370L205.208,370L188.125,370L188.125,370L171.042,370L171.042,370L153.958,370L153.958,370L136.875,370L136.875,370L119.792,370L119.792,370L102.708,370L102.708,370L85.625,370L85.625,370L68.542,370L68.542,370L60,370Z"
             >
             </path>
-            <path stroke="rgb(89, 89, 89)"
-                  cursor="pointer"
+            <path cursor="pointer"
                   fill="none"
-                  width="410"
-                  height="360"
                   fill-opacity="0.6"
+                  height="360"
+                  stroke="rgb(89, 89, 89)"
+                  width="410"
                   class="recharts-curve recharts-area-curve"
                   d="M60,370L68.542,370L68.542,370L85.625,370L85.625,370L102.708,370L102.708,370L119.792,370L119.792,370L136.875,370L136.875,370L153.958,370L153.958,370L171.042,370L171.042,370L188.125,370L188.125,370L205.208,370L205.208,370L222.292,370L222.292,370L239.375,370L239.375,370L256.458,370L256.458,370L273.542,370L273.542,370L290.625,370L290.625,370L307.708,370L307.708,370L324.792,370L324.792,370L341.875,370L341.875,370L358.958,370L358.958,370L376.042,370L376.042,370L393.125,370L393.125,370L410.208,370L410.208,370L427.292,370L427.292,370L444.375,370L444.375,306.28L461.458,306.28L461.458,370L470,370"
             >
@@ -527,20 +546,21 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
           <g class="recharts-layer">
             <path cursor="pointer"
                   fill="#3182bd"
-                  width="410"
-                  height="360"
                   fill-opacity="0.6"
+                  height="360"
                   stroke="none"
+                  width="410"
+                  id="recharts-area-«r2»"
                   class="recharts-curve recharts-area-area"
                   d="M60,370L68.542,370L68.542,370L85.625,370L85.625,370L102.708,370L102.708,370L119.792,370L119.792,370L136.875,370L136.875,370L153.958,370L153.958,370L171.042,370L171.042,370L188.125,370L188.125,370L205.208,370L205.208,370L222.292,370L222.292,370L239.375,370L239.375,370L256.458,370L256.458,370L273.542,370L273.542,370L290.625,370L290.625,370L307.708,370L307.708,370L324.792,370L324.792,370L341.875,370L341.875,370L358.958,370L358.958,370L376.042,370L376.042,370L393.125,370L393.125,370L410.208,370L410.208,370L427.292,370L427.292,370L444.375,370L444.375,226.72L461.458,226.72L461.458,370L470,370L470,370L461.458,370L461.458,306.28L444.375,306.28L444.375,370L427.292,370L427.292,370L410.208,370L410.208,370L393.125,370L393.125,370L376.042,370L376.042,370L358.958,370L358.958,370L341.875,370L341.875,370L324.792,370L324.792,370L307.708,370L307.708,370L290.625,370L290.625,370L273.542,370L273.542,370L256.458,370L256.458,370L239.375,370L239.375,370L222.292,370L222.292,370L205.208,370L205.208,370L188.125,370L188.125,370L171.042,370L171.042,370L153.958,370L153.958,370L136.875,370L136.875,370L119.792,370L119.792,370L102.708,370L102.708,370L85.625,370L85.625,370L68.542,370L68.542,370L60,370Z"
             >
             </path>
-            <path stroke="#3182bd"
-                  cursor="pointer"
+            <path cursor="pointer"
                   fill="none"
-                  width="410"
-                  height="360"
                   fill-opacity="0.6"
+                  height="360"
+                  stroke="#3182bd"
+                  width="410"
                   class="recharts-curve recharts-area-curve"
                   d="M60,370L68.542,370L68.542,370L85.625,370L85.625,370L102.708,370L102.708,370L119.792,370L119.792,370L136.875,370L136.875,370L153.958,370L153.958,370L171.042,370L171.042,370L188.125,370L188.125,370L205.208,370L205.208,370L222.292,370L222.292,370L239.375,370L239.375,370L256.458,370L256.458,370L273.542,370L273.542,370L290.625,370L290.625,370L307.708,370L307.708,370L324.792,370L324.792,370L341.875,370L341.875,370L358.958,370L358.958,370L376.042,370L376.042,370L393.125,370L393.125,370L410.208,370L410.208,370L427.292,370L427.292,370L444.375,370L444.375,226.72L461.458,226.72L461.458,370L470,370"
             >
@@ -551,20 +571,21 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
           <g class="recharts-layer">
             <path cursor="pointer"
                   fill="rgba(164,45,36,1)"
-                  width="410"
-                  height="360"
                   fill-opacity="0.6"
+                  height="360"
                   stroke="none"
+                  width="410"
+                  id="recharts-area-«r3»"
                   class="recharts-curve recharts-area-area"
                   d="M60,370L68.542,370L68.542,370L85.625,370L85.625,370L102.708,370L102.708,370L119.792,370L119.792,370L136.875,370L136.875,370L153.958,370L153.958,370L171.042,370L171.042,370L188.125,370L188.125,370L205.208,370L205.208,370L222.292,370L222.292,370L239.375,370L239.375,370L256.458,370L256.458,370L273.542,370L273.542,370L290.625,370L290.625,370L307.708,370L307.708,370L324.792,370L324.792,370L341.875,370L341.875,370L358.958,370L358.958,370L376.042,370L376.042,370L393.125,370L393.125,370L410.208,370L410.208,370L427.292,370L427.292,370L444.375,370L444.375,222.4L461.458,222.4L461.458,370L470,370L470,370L461.458,370L461.458,226.72L444.375,226.72L444.375,370L427.292,370L427.292,370L410.208,370L410.208,370L393.125,370L393.125,370L376.042,370L376.042,370L358.958,370L358.958,370L341.875,370L341.875,370L324.792,370L324.792,370L307.708,370L307.708,370L290.625,370L290.625,370L273.542,370L273.542,370L256.458,370L256.458,370L239.375,370L239.375,370L222.292,370L222.292,370L205.208,370L205.208,370L188.125,370L188.125,370L171.042,370L171.042,370L153.958,370L153.958,370L136.875,370L136.875,370L119.792,370L119.792,370L102.708,370L102.708,370L85.625,370L85.625,370L68.542,370L68.542,370L60,370Z"
             >
             </path>
-            <path stroke="rgba(164,45,36,1)"
-                  cursor="pointer"
+            <path cursor="pointer"
                   fill="none"
-                  width="410"
-                  height="360"
                   fill-opacity="0.6"
+                  height="360"
+                  stroke="rgba(164,45,36,1)"
+                  width="410"
                   class="recharts-curve recharts-area-curve"
                   d="M60,370L68.542,370L68.542,370L85.625,370L85.625,370L102.708,370L102.708,370L119.792,370L119.792,370L136.875,370L136.875,370L153.958,370L153.958,370L171.042,370L171.042,370L188.125,370L188.125,370L205.208,370L205.208,370L222.292,370L222.292,370L239.375,370L239.375,370L256.458,370L256.458,370L273.542,370L273.542,370L290.625,370L290.625,370L307.708,370L307.708,370L324.792,370L324.792,370L341.875,370L341.875,370L358.958,370L358.958,370L376.042,370L376.042,370L393.125,370L393.125,370L410.208,370L410.208,370L427.292,370L427.292,370L444.375,370L444.375,222.4L461.458,222.4L461.458,370L470,370"
             >
@@ -575,20 +596,21 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
           <g class="recharts-layer">
             <path cursor="pointer"
                   fill="rgba(40,95,43,1)"
-                  width="410"
-                  height="360"
                   fill-opacity="0.6"
+                  height="360"
                   stroke="none"
+                  width="410"
+                  id="recharts-area-«r4»"
                   class="recharts-curve recharts-area-area"
                   d="M60,370L68.542,370L68.542,370L85.625,370L85.625,370L102.708,370L102.708,370L119.792,370L119.792,370L136.875,370L136.875,370L153.958,370L153.958,370L171.042,370L171.042,370L188.125,370L188.125,370L205.208,370L205.208,370L222.292,370L222.292,370L239.375,370L239.375,370L256.458,370L256.458,370L273.542,370L273.542,370L290.625,370L290.625,370L307.708,370L307.708,370L324.792,370L324.792,370L341.875,370L341.875,370L358.958,370L358.958,370L376.042,370L376.042,370L393.125,370L393.125,370L410.208,370L410.208,370L427.292,370L427.292,370L444.375,370L444.375,152.92L461.458,152.92L461.458,370L470,370L470,370L461.458,370L461.458,222.4L444.375,222.4L444.375,370L427.292,370L427.292,370L410.208,370L410.208,370L393.125,370L393.125,370L376.042,370L376.042,370L358.958,370L358.958,370L341.875,370L341.875,370L324.792,370L324.792,370L307.708,370L307.708,370L290.625,370L290.625,370L273.542,370L273.542,370L256.458,370L256.458,370L239.375,370L239.375,370L222.292,370L222.292,370L205.208,370L205.208,370L188.125,370L188.125,370L171.042,370L171.042,370L153.958,370L153.958,370L136.875,370L136.875,370L119.792,370L119.792,370L102.708,370L102.708,370L85.625,370L85.625,370L68.542,370L68.542,370L60,370Z"
             >
             </path>
-            <path stroke="rgba(40,95,43,1)"
-                  cursor="pointer"
+            <path cursor="pointer"
                   fill="none"
-                  width="410"
-                  height="360"
                   fill-opacity="0.6"
+                  height="360"
+                  stroke="rgba(40,95,43,1)"
+                  width="410"
                   class="recharts-curve recharts-area-curve"
                   d="M60,370L68.542,370L68.542,370L85.625,370L85.625,370L102.708,370L102.708,370L119.792,370L119.792,370L136.875,370L136.875,370L153.958,370L153.958,370L171.042,370L171.042,370L188.125,370L188.125,370L205.208,370L205.208,370L222.292,370L222.292,370L239.375,370L239.375,370L256.458,370L256.458,370L273.542,370L273.542,370L290.625,370L290.625,370L307.708,370L307.708,370L324.792,370L324.792,370L341.875,370L341.875,370L358.958,370L358.958,370L376.042,370L376.042,370L393.125,370L393.125,370L410.208,370L410.208,370L427.292,370L427.292,370L444.375,370L444.375,152.92L461.458,152.92L461.458,370L470,370"
             >
@@ -599,20 +621,21 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
           <g class="recharts-layer">
             <path cursor="pointer"
                   fill="rgba(17,40,141,1)"
-                  width="410"
-                  height="360"
                   fill-opacity="0.6"
+                  height="360"
                   stroke="none"
+                  width="410"
+                  id="recharts-area-«r5»"
                   class="recharts-curve recharts-area-area"
                   d="M60,370L68.542,370L68.542,370L85.625,370L85.625,370L102.708,370L102.708,370L119.792,370L119.792,370L136.875,370L136.875,370L153.958,370L153.958,370L171.042,370L171.042,370L188.125,370L188.125,370L205.208,370L205.208,370L222.292,370L222.292,370L239.375,370L239.375,370L256.458,370L256.458,370L273.542,370L273.542,370L290.625,370L290.625,370L307.708,370L307.708,370L324.792,370L324.792,370L341.875,370L341.875,370L358.958,370L358.958,370L376.042,370L376.042,370L393.125,370L393.125,370L410.208,370L410.208,370L427.292,370L427.292,370L444.375,370L444.375,75.52L461.458,75.52L461.458,370L470,370L470,370L461.458,370L461.458,152.92L444.375,152.92L444.375,370L427.292,370L427.292,370L410.208,370L410.208,370L393.125,370L393.125,370L376.042,370L376.042,370L358.958,370L358.958,370L341.875,370L341.875,370L324.792,370L324.792,370L307.708,370L307.708,370L290.625,370L290.625,370L273.542,370L273.542,370L256.458,370L256.458,370L239.375,370L239.375,370L222.292,370L222.292,370L205.208,370L205.208,370L188.125,370L188.125,370L171.042,370L171.042,370L153.958,370L153.958,370L136.875,370L136.875,370L119.792,370L119.792,370L102.708,370L102.708,370L85.625,370L85.625,370L68.542,370L68.542,370L60,370Z"
             >
             </path>
-            <path stroke="rgba(17,40,141,1)"
-                  cursor="pointer"
+            <path cursor="pointer"
                   fill="none"
-                  width="410"
-                  height="360"
                   fill-opacity="0.6"
+                  height="360"
+                  stroke="rgba(17,40,141,1)"
+                  width="410"
                   class="recharts-curve recharts-area-curve"
                   d="M60,370L68.542,370L68.542,370L85.625,370L85.625,370L102.708,370L102.708,370L119.792,370L119.792,370L136.875,370L136.875,370L153.958,370L153.958,370L171.042,370L171.042,370L188.125,370L188.125,370L205.208,370L205.208,370L222.292,370L222.292,370L239.375,370L239.375,370L256.458,370L256.458,370L273.542,370L273.542,370L290.625,370L290.625,370L307.708,370L307.708,370L324.792,370L324.792,370L341.875,370L341.875,370L358.958,370L358.958,370L376.042,370L376.042,370L393.125,370L393.125,370L410.208,370L410.208,370L427.292,370L427.292,370L444.375,370L444.375,75.52L461.458,75.52L461.458,370L470,370"
             >
@@ -620,21 +643,6 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
           </g>
         </g>
       </svg>
-      <div tabindex="-1"
-           class="recharts-tooltip-wrapper recharts-tooltip-wrapper-right recharts-tooltip-wrapper-bottom"
-           style="visibility: hidden; pointer-events: none; position: absolute; top: 0px; left: 0px; transform: translate(60px, 10px);"
-      >
-        <div class="custom-tooltip">
-          <div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-12jlilq-MuiPaper-root"
-               style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
-          >
-            <div class="MuiBox-root css-hpgf8j">
-              <p class="MuiTypography-root MuiTypography-body1 css-12h6qye-MuiTypography-root">
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
   <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-qc0aqs-MuiGrid-root">
