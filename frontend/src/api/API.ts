@@ -24,16 +24,7 @@ type WithCount<T> = T & {
 
 const MAIN_PROGRESS_BAR = 'main_progress_bar';
 const BASE_URL = '/api';
-type REQUEST_DATA_TYPE =
-  | string
-  | Blob
-  | ArrayBufferView
-  | ArrayBuffer
-  | FormData
-  | URLSearchParams
-  | ReadableStream<Uint8Array>
-  | null
-  | undefined;
+type REQUEST_DATA_TYPE = BodyInit | null | undefined;
 
 function isNotNullUndefinedOrEmptyString(val: any) {
   return val !== undefined && val !== null && val !== '';
