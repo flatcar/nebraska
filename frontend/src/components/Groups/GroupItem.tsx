@@ -55,6 +55,7 @@ function GroupItem({ group, handleUpdateGroup }: GroupItemProps) {
         setTotalInstances(result);
       })
       .catch(err => console.error('Error getting total instances in Group/Item', err));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

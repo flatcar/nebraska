@@ -318,6 +318,7 @@ function DetailsView(props: DetailsViewProps) {
       .catch(() => {
         setEventHistory([]);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [instance]);
 
   function updateInstance() {

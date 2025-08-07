@@ -117,6 +117,7 @@ export function usePrefersColorScheme() {
     const handler = (x: MediaQueryListEvent | MediaQueryList) => setValue(x.matches);
     mql.addListener(handler);
     return () => mql.removeListener(handler);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (DISABLE_BROWSER_THEME_PREF || typeof window.matchMedia !== 'function') {

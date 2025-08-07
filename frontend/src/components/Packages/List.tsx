@@ -58,6 +58,7 @@ function List(props: ListProps) {
     return function cleanup() {
       applicationsStore().removeChangeListener(onChange);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.appID, application]);
 
   function onCloseEditDialog() {

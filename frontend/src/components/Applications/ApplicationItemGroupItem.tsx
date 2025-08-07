@@ -24,6 +24,7 @@ function ApplicationItemGroupItem(props: { group: Group; appName: string }) {
         setTotalInstances(result);
       })
       .catch(err => console.error('Error loading total instances in Instances/List', err));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [group]);
 
   const instanceCountContent = (

@@ -39,6 +39,7 @@ function GroupList({ appID }: GroupListProps) {
     return () => {
       applicationsStore().removeChangeListener(onChange);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function onChange() {

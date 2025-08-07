@@ -148,6 +148,7 @@ function VersionProgressBar(props: { version_breakdown: any; channel: Channel | 
 
   React.useEffect(() => {
     setup(props.version_breakdown, props.channel);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.version_breakdown, props.channel]);
 
   return (

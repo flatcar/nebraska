@@ -180,6 +180,7 @@ export default function VersionCountTimeline(props: VersionCountTimelineProps) {
     return () => {
       canceled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [duration]);
 
   return (

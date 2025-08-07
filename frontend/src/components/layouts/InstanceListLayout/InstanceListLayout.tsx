@@ -34,6 +34,7 @@ export default function InstanceListLayout() {
       setApplication(app);
       setGroup(getGroupFromApplication(app));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appID, getGroupFromApplication]);
 
   React.useEffect(() => {
