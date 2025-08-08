@@ -8,8 +8,8 @@ import (
 	"net/url"
 	"sync"
 
+	"github.com/flatcar/go-omaha/omaha"
 	"github.com/google/uuid"
-	"github.com/kinvolk/go-omaha/omaha"
 )
 
 const defaultClientVersion = "go-omaha"

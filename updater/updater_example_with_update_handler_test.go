@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/kinvolk/nebraska/updater"
+	"github.com/flatcar/nebraska/updater"
 )
 
 type exampleUpdateHandler struct{}
@@ -36,7 +36,7 @@ func (e exampleUpdateHandler) ApplyUpdate(_ context.Context, _ updater.UpdateInf
 
 // ExampleUpdater_withUpdateHandler shows how to use the updater package to
 // update an application automatically using exampleUpdateHandler.
-func ExampleUpdater_withUpdateHandler() error { //nolint: govet
+func ExampleUpdater_withUpdateHandler() { //nolint: govet
 	conf := updater.Config{
 		OmahaURL:        "http://test.omahaserver.com/v1/update/",
 		AppID:           "application_id",
@@ -47,14 +47,12 @@ func ExampleUpdater_withUpdateHandler() error { //nolint: govet
 
 	appUpdater, err := updater.New(conf)
 	if err != nil {
-		return fmt.Errorf("init updater: %w", err)
+		fmt.Println(fmt.Errorf("init updater: %w", err))
 	}
 
 	ctx := context.TODO()
 
 	if err := appUpdater.TryUpdate(ctx, exampleUpdateHandler{}); err != nil {
-		return fmt.Errorf("trying update: %w", err)
+		fmt.Println(fmt.Errorf("trying update: %w", err))
 	}
-
-	return nil
 }
