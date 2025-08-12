@@ -281,11 +281,11 @@ function EditDialog(props: EditDialogProps) {
                         />
                       )}
                       <FormControl margin="dense" fullWidth>
-                        <InputLabel variant="standard">Channels Blacklist</InputLabel>
                         <Field
                           name="channelsBlacklist"
                           component={Select}
                           variant="standard"
+                          label="Channels Blacklist"
                           multiple
                           renderValue={(selected: string[]) =>
                             getChannelsNames(selected).join(' / ')
