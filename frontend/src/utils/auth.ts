@@ -188,8 +188,13 @@ export function useAuthRedirect() {
           clearTokens();
           dispatch(setUser({ authenticated: false }));
 
-          // Redirect to root to avoid being stuck on callback URL
-          navigate('/', { replace: true });
+          // Redirect to auth error page
+          const errorMessage = error instanceof Error ? error.message : 'Authentication failed';
+          navigate('/auth/error', {
+            replace: true,
+            state: { error: errorMessage },
+          });
+          return;
         }
       }
 

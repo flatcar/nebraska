@@ -28,7 +28,7 @@ func NewAuthSkipper(auth string) middleware.Skipper {
 		}
 		switch auth {
 		case "oidc":
-			return MatchesOneOfPatterns(path, "/auth/callback", "/config")
+			return MatchesOneOfPatterns(path, "/auth/callback", "/auth/error", "/config")
 		case "github":
 			return MatchesOneOfPatterns(path, "/login/cb", "/login/webhook")
 		}
