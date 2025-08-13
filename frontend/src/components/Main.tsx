@@ -15,6 +15,7 @@ import AuthCallbackHandler from './AuthCallbackHandler';
 import Footer from './Footer';
 import Header from './Header';
 import ApplicationLayout from './layouts/ApplicationLayout';
+import AuthErrorLayout from './layouts/AuthErrorLayout';
 import GroupLayout from './layouts/GroupLayout';
 import InstanceLayout from './layouts/InstanceLayout';
 import InstanceListLayout from './layouts/InstanceListLayout';
@@ -64,6 +65,7 @@ export default function Main() {
             element={<InstanceLayout />}
           />
           <Route path="/auth/callback" element={<AuthCallbackHandler />} />
+          <Route path="/auth/error" element={<AuthErrorLayout />} />
           <Route path="/404" element={<PageNotFoundLayout />} />
           <Route path="*" element={<PageNotFoundLayout />} />
         </Routes>
