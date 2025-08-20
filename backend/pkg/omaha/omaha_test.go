@@ -195,7 +195,7 @@ func TestAppUpdateForAppWithChannelAndPackageName(t *testing.T) {
 	checkOmahaResponse(t, omahaResp, tAppFlatcar.ID, omahaSpec.AppOK)
 	checkOmahaUpdateResponse(t, omahaResp, tPkgFlatcar640.Version, tFilenameFlatcar, tPkgFlatcar640.URL, omahaSpec.UpdateOK)
 	checkOmahaPingResponse(t, omahaResp, tAppFlatcar.ID, addPing)
-	checkOmahaFlatcarAction(t, flatcarAction, omahaResp.Apps[0].UpdateCheck.Manifest.Actions[0])
+	checkOmahaFlatcarAction(t, flatcarAction, omahaResp.Apps[0].UpdateCheck.Manifests[0].Actions[0])
 
 	// Send download started
 	omahaResp = doOmahaRequest(t, h, tAppFlatcar.ID, oldAppVersion, validUnregisteredMachineID, tGroup.ID, validUnregisteredIP, addPing, !updateCheck, ei(omahaSpec.EventTypeUpdateDownloadStarted, omahaSpec.EventResultSuccess, ""))
@@ -316,10 +316,11 @@ func TestMultiPackageResponse(t *testing.T) {
 	updateResp := appResp.UpdateCheck
 
 	assert.NotNil(t, updateResp)
-	assert.NotNil(t, updateResp.Manifest)
+	assert.NotNil(t, updateResp.Manifests)
+	assert.Equal(t, 1, len(updateResp.Manifests))
 
 	// The packages shipped in the response are the main one + the extras
-	packages := updateResp.Manifest.Packages
+	packages := updateResp.Manifests[0].Packages
 	assert.Equal(t, len(extraFiles)+1, len(packages))
 
 	extraFile1 := extraFiles[0]
@@ -411,9 +412,9 @@ func checkOmahaUpdateResponse(t *testing.T, omahaResp *omahaSpec.Response, expec
 	assert.NotNil(t, appResp.UpdateCheck)
 	assert.Equal(t, expectedError, appResp.UpdateCheck.Status)
 
-	if appResp.UpdateCheck.Manifest != nil {
-		assert.True(t, appResp.UpdateCheck.Manifest.Version >= expectedVersion)
-		assert.Equal(t, expectedPackageName, appResp.UpdateCheck.Manifest.Packages[0].Name)
+	if len(appResp.UpdateCheck.Manifests) > 0 {
+		assert.True(t, appResp.UpdateCheck.Manifests[0].Version >= expectedVersion)
+		assert.Equal(t, expectedPackageName, appResp.UpdateCheck.Manifests[0].Packages[0].Name)
 	}
 
 	if appResp.UpdateCheck.URLs != nil {

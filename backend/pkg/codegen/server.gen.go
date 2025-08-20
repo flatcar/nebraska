@@ -101,6 +101,15 @@ type ServerInterface interface {
 	// (PUT /api/apps/{appIDorProductID}/packages/{packageID})
 	UpdatePackage(ctx echo.Context, appIDorProductID string, packageID string) error
 
+	// (GET /api/channels/{channelID}/floors)
+	PaginateChannelFloors(ctx echo.Context, channelID string, params PaginateChannelFloorsParams) error
+
+	// (DELETE /api/channels/{channelID}/floors/{packageID})
+	RemoveChannelFloor(ctx echo.Context, channelID string, packageID string) error
+
+	// (POST /api/channels/{channelID}/floors/{packageID})
+	AddChannelFloor(ctx echo.Context, channelID string, packageID string) error
+
 	// (PUT /api/instances/{instanceID})
 	UpdateInstance(ctx echo.Context, instanceID string) error
 
@@ -1159,6 +1168,104 @@ func (w *ServerInterfaceWrapper) UpdatePackage(ctx echo.Context) error {
 	return err
 }
 
+// PaginateChannelFloors converts echo context to params.
+func (w *ServerInterfaceWrapper) PaginateChannelFloors(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "channelID" -------------
+	var channelID string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "channelID", ctx.Param("channelID"), &channelID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter channelID: %s", err))
+	}
+
+	ctx.Set(OidcBearerAuthScopes, []string{})
+
+	ctx.Set(OidcCookieAuthScopes, []string{})
+
+	ctx.Set(GithubCookieAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PaginateChannelFloorsParams
+	// ------------- Optional query parameter "page" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "page", ctx.QueryParams(), &params.Page)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter page: %s", err))
+	}
+
+	// ------------- Optional query parameter "perpage" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "perpage", ctx.QueryParams(), &params.Perpage)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter perpage: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.PaginateChannelFloors(ctx, channelID, params)
+	return err
+}
+
+// RemoveChannelFloor converts echo context to params.
+func (w *ServerInterfaceWrapper) RemoveChannelFloor(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "channelID" -------------
+	var channelID string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "channelID", ctx.Param("channelID"), &channelID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter channelID: %s", err))
+	}
+
+	// ------------- Path parameter "packageID" -------------
+	var packageID string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "packageID", ctx.Param("packageID"), &packageID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter packageID: %s", err))
+	}
+
+	ctx.Set(OidcBearerAuthScopes, []string{})
+
+	ctx.Set(OidcCookieAuthScopes, []string{})
+
+	ctx.Set(GithubCookieAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.RemoveChannelFloor(ctx, channelID, packageID)
+	return err
+}
+
+// AddChannelFloor converts echo context to params.
+func (w *ServerInterfaceWrapper) AddChannelFloor(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "channelID" -------------
+	var channelID string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "channelID", ctx.Param("channelID"), &channelID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter channelID: %s", err))
+	}
+
+	// ------------- Path parameter "packageID" -------------
+	var packageID string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "packageID", ctx.Param("packageID"), &packageID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter packageID: %s", err))
+	}
+
+	ctx.Set(OidcBearerAuthScopes, []string{})
+
+	ctx.Set(OidcCookieAuthScopes, []string{})
+
+	ctx.Set(GithubCookieAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.AddChannelFloor(ctx, channelID, packageID)
+	return err
+}
+
 // UpdateInstance converts echo context to params.
 func (w *ServerInterfaceWrapper) UpdateInstance(ctx echo.Context) error {
 	var err error
@@ -1331,6 +1438,9 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.DELETE(baseURL+"/api/apps/:appIDorProductID/packages/:packageID", wrapper.DeletePackage)
 	router.GET(baseURL+"/api/apps/:appIDorProductID/packages/:packageID", wrapper.GetPackage)
 	router.PUT(baseURL+"/api/apps/:appIDorProductID/packages/:packageID", wrapper.UpdatePackage)
+	router.GET(baseURL+"/api/channels/:channelID/floors", wrapper.PaginateChannelFloors)
+	router.DELETE(baseURL+"/api/channels/:channelID/floors/:packageID", wrapper.RemoveChannelFloor)
+	router.POST(baseURL+"/api/channels/:channelID/floors/:packageID", wrapper.AddChannelFloor)
 	router.PUT(baseURL+"/api/instances/:instanceID", wrapper.UpdateInstance)
 	router.GET(baseURL+"/config", wrapper.GetConfig)
 	router.GET(baseURL+"/health", wrapper.Health)

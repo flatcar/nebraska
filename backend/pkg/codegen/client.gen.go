@@ -192,6 +192,17 @@ type ClientInterface interface {
 
 	UpdatePackage(ctx context.Context, appIDorProductID string, packageID string, body UpdatePackageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// PaginateChannelFloors request
+	PaginateChannelFloors(ctx context.Context, channelID string, params *PaginateChannelFloorsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// RemoveChannelFloor request
+	RemoveChannelFloor(ctx context.Context, channelID string, packageID string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// AddChannelFloorWithBody request with any body
+	AddChannelFloorWithBody(ctx context.Context, channelID string, packageID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	AddChannelFloor(ctx context.Context, channelID string, packageID string, body AddChannelFloorJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// UpdateInstanceWithBody request with any body
 	UpdateInstanceWithBody(ctx context.Context, instanceID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -650,6 +661,54 @@ func (c *Client) UpdatePackageWithBody(ctx context.Context, appIDorProductID str
 
 func (c *Client) UpdatePackage(ctx context.Context, appIDorProductID string, packageID string, body UpdatePackageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdatePackageRequest(c.Server, appIDorProductID, packageID, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PaginateChannelFloors(ctx context.Context, channelID string, params *PaginateChannelFloorsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPaginateChannelFloorsRequest(c.Server, channelID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) RemoveChannelFloor(ctx context.Context, channelID string, packageID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewRemoveChannelFloorRequest(c.Server, channelID, packageID)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AddChannelFloorWithBody(ctx context.Context, channelID string, packageID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddChannelFloorRequestWithBody(c.Server, channelID, packageID, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) AddChannelFloor(ctx context.Context, channelID string, packageID string, body AddChannelFloorJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewAddChannelFloorRequest(c.Server, channelID, packageID, body)
 	if err != nil {
 		return nil, err
 	}
@@ -2542,6 +2601,173 @@ func NewUpdatePackageRequestWithBody(server string, appIDorProductID string, pac
 	return req, nil
 }
 
+// NewPaginateChannelFloorsRequest generates requests for PaginateChannelFloors
+func NewPaginateChannelFloorsRequest(server string, channelID string, params *PaginateChannelFloorsParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "channelID", runtime.ParamLocationPath, channelID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/channels/%s/floors", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Page != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "page", runtime.ParamLocationQuery, *params.Page); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Perpage != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "perpage", runtime.ParamLocationQuery, *params.Perpage); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewRemoveChannelFloorRequest generates requests for RemoveChannelFloor
+func NewRemoveChannelFloorRequest(server string, channelID string, packageID string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "channelID", runtime.ParamLocationPath, channelID)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "packageID", runtime.ParamLocationPath, packageID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/channels/%s/floors/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewAddChannelFloorRequest calls the generic AddChannelFloor builder with application/json body
+func NewAddChannelFloorRequest(server string, channelID string, packageID string, body AddChannelFloorJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewAddChannelFloorRequestWithBody(server, channelID, packageID, "application/json", bodyReader)
+}
+
+// NewAddChannelFloorRequestWithBody generates requests for AddChannelFloor with any type of body
+func NewAddChannelFloorRequestWithBody(server string, channelID string, packageID string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "channelID", runtime.ParamLocationPath, channelID)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "packageID", runtime.ParamLocationPath, packageID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/channels/%s/floors/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewUpdateInstanceRequest calls the generic UpdateInstance builder with application/json body
 func NewUpdateInstanceRequest(server string, instanceID string, body UpdateInstanceJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -2920,6 +3146,17 @@ type ClientWithResponsesInterface interface {
 	UpdatePackageWithBodyWithResponse(ctx context.Context, appIDorProductID string, packageID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdatePackageResponse, error)
 
 	UpdatePackageWithResponse(ctx context.Context, appIDorProductID string, packageID string, body UpdatePackageJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdatePackageResponse, error)
+
+	// PaginateChannelFloorsWithResponse request
+	PaginateChannelFloorsWithResponse(ctx context.Context, channelID string, params *PaginateChannelFloorsParams, reqEditors ...RequestEditorFn) (*PaginateChannelFloorsResponse, error)
+
+	// RemoveChannelFloorWithResponse request
+	RemoveChannelFloorWithResponse(ctx context.Context, channelID string, packageID string, reqEditors ...RequestEditorFn) (*RemoveChannelFloorResponse, error)
+
+	// AddChannelFloorWithBodyWithResponse request with any body
+	AddChannelFloorWithBodyWithResponse(ctx context.Context, channelID string, packageID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddChannelFloorResponse, error)
+
+	AddChannelFloorWithResponse(ctx context.Context, channelID string, packageID string, body AddChannelFloorJSONRequestBody, reqEditors ...RequestEditorFn) (*AddChannelFloorResponse, error)
 
 	// UpdateInstanceWithBodyWithResponse request with any body
 	UpdateInstanceWithBodyWithResponse(ctx context.Context, instanceID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateInstanceResponse, error)
@@ -3579,6 +3816,75 @@ func (r UpdatePackageResponse) StatusCode() int {
 	return 0
 }
 
+type PaginateChannelFloorsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		CurrentPage int32     `json:"current_page"`
+		LastPage    int32     `json:"last_page"`
+		Packages    []Package `json:"packages"`
+		TotalCount  int32     `json:"total_count"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r PaginateChannelFloorsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PaginateChannelFloorsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type RemoveChannelFloorResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r RemoveChannelFloorResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r RemoveChannelFloorResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type AddChannelFloorResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r AddChannelFloorResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r AddChannelFloorResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type UpdateInstanceResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -4054,6 +4360,41 @@ func (c *ClientWithResponses) UpdatePackageWithResponse(ctx context.Context, app
 		return nil, err
 	}
 	return ParseUpdatePackageResponse(rsp)
+}
+
+// PaginateChannelFloorsWithResponse request returning *PaginateChannelFloorsResponse
+func (c *ClientWithResponses) PaginateChannelFloorsWithResponse(ctx context.Context, channelID string, params *PaginateChannelFloorsParams, reqEditors ...RequestEditorFn) (*PaginateChannelFloorsResponse, error) {
+	rsp, err := c.PaginateChannelFloors(ctx, channelID, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePaginateChannelFloorsResponse(rsp)
+}
+
+// RemoveChannelFloorWithResponse request returning *RemoveChannelFloorResponse
+func (c *ClientWithResponses) RemoveChannelFloorWithResponse(ctx context.Context, channelID string, packageID string, reqEditors ...RequestEditorFn) (*RemoveChannelFloorResponse, error) {
+	rsp, err := c.RemoveChannelFloor(ctx, channelID, packageID, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseRemoveChannelFloorResponse(rsp)
+}
+
+// AddChannelFloorWithBodyWithResponse request with arbitrary body returning *AddChannelFloorResponse
+func (c *ClientWithResponses) AddChannelFloorWithBodyWithResponse(ctx context.Context, channelID string, packageID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddChannelFloorResponse, error) {
+	rsp, err := c.AddChannelFloorWithBody(ctx, channelID, packageID, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAddChannelFloorResponse(rsp)
+}
+
+func (c *ClientWithResponses) AddChannelFloorWithResponse(ctx context.Context, channelID string, packageID string, body AddChannelFloorJSONRequestBody, reqEditors ...RequestEditorFn) (*AddChannelFloorResponse, error) {
+	rsp, err := c.AddChannelFloor(ctx, channelID, packageID, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseAddChannelFloorResponse(rsp)
 }
 
 // UpdateInstanceWithBodyWithResponse request with arbitrary body returning *UpdateInstanceResponse
@@ -4836,6 +5177,69 @@ func ParseUpdatePackageResponse(rsp *http.Response) (*UpdatePackageResponse, err
 		}
 		response.JSON200 = &dest
 
+	}
+
+	return response, nil
+}
+
+// ParsePaginateChannelFloorsResponse parses an HTTP response from a PaginateChannelFloorsWithResponse call
+func ParsePaginateChannelFloorsResponse(rsp *http.Response) (*PaginateChannelFloorsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PaginateChannelFloorsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			CurrentPage int32     `json:"current_page"`
+			LastPage    int32     `json:"last_page"`
+			Packages    []Package `json:"packages"`
+			TotalCount  int32     `json:"total_count"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseRemoveChannelFloorResponse parses an HTTP response from a RemoveChannelFloorWithResponse call
+func ParseRemoveChannelFloorResponse(rsp *http.Response) (*RemoveChannelFloorResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &RemoveChannelFloorResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseAddChannelFloorResponse parses an HTTP response from a AddChannelFloorWithResponse call
+func ParseAddChannelFloorResponse(rsp *http.Response) (*AddChannelFloorResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &AddChannelFloorResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
 	}
 
 	return response, nil

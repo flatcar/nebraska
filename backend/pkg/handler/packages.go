@@ -223,3 +223,100 @@ type packagePage struct {
 	Count      int            `json:"count"`
 	Packages   []*api.Package `json:"packages"`
 }
+
+// Floor handlers following existing patterns
+
+// Define the response structure following existing pattern
+type floorPackagesPage struct {
+	TotalCount int            `json:"totalCount"`
+	Count      int            `json:"count"`
+	Packages   []*api.Package `json:"packages"`
+}
+
+// PaginateChannelFloors handles paginated requests for channel floor packages
+func (h *Handler) PaginateChannelFloors(ctx echo.Context, channelID string, params codegen.PaginateChannelFloorsParams) error {
+	l := loggerWithUsername(l, ctx)
+
+	if params.Page == nil {
+		params.Page = &defaultPage
+	}
+
+	if params.Perpage == nil {
+		params.Perpage = &defaultPerPage
+	}
+
+	totalCount, err := h.db.GetChannelFloorPackagesCount(channelID)
+	if err != nil {
+		l.Error().Err(err).Str("channelID", channelID).Msg("PaginateChannelFloors - getting floor packages count")
+		return ctx.NoContent(http.StatusInternalServerError)
+	}
+
+	// If no floors, return empty result immediately
+	if totalCount == 0 {
+		return ctx.JSON(http.StatusOK, floorPackagesPage{0, 0, []*api.Package{}})
+	}
+
+	// Get paginated floor packages
+	packages, err := h.db.GetChannelFloorPackagesPaginated(channelID, uint64(*params.Page), uint64(*params.Perpage))
+	if err != nil {
+		if err == sql.ErrNoRows {
+			// This shouldn't happen if count > 0, but handle gracefully
+			return ctx.JSON(http.StatusOK, floorPackagesPage{totalCount, 0, []*api.Package{}})
+		}
+		l.Error().Err(err).Str("channelID", channelID).Msg("PaginateChannelFloors - getting floor packages")
+		return ctx.NoContent(http.StatusInternalServerError)
+	}
+
+	return ctx.JSON(http.StatusOK, floorPackagesPage{totalCount, len(packages), packages})
+}
+
+// AddChannelFloor handles adding a package as a floor for a channel
+func (h *Handler) AddChannelFloor(ctx echo.Context, channelID string, packageID string) error {
+	l := loggerWithUsername(l, ctx)
+
+	var request codegen.AddChannelFloorJSONRequestBody
+	if err := ctx.Bind(&request); err != nil {
+		l.Error().Err(err).Msg("AddChannelFloor - binding request")
+		return ctx.NoContent(http.StatusBadRequest)
+	}
+
+	// Convert floor reason to null.String
+	var floorReason null.String
+	if request.FloorReason != nil {
+		floorReason = null.StringFrom(*request.FloorReason)
+	}
+
+	// Add the floor relationship
+	if err := h.db.AddChannelPackageFloor(channelID, packageID, floorReason); err != nil {
+		switch err {
+		case api.ErrInvalidPackage:
+			return ctx.NoContent(http.StatusNotFound)
+		case api.ErrArchMismatch:
+			return ctx.String(http.StatusBadRequest, "Architecture mismatch between channel and package")
+		case api.ErrInvalidApplicationOrGroup:
+			return ctx.String(http.StatusBadRequest, "Package does not belong to the same application as the channel")
+		default:
+			l.Error().Err(err).Str("channelID", channelID).Str("packageID", packageID).Msg("AddChannelFloor - adding floor")
+			return ctx.NoContent(http.StatusInternalServerError)
+		}
+	}
+
+	l.Info().Str("channelID", channelID).Str("packageID", packageID).Msg("AddChannelFloor - successfully added floor")
+	return ctx.NoContent(http.StatusOK)
+}
+
+// RemoveChannelFloor handles removing a package as a floor for a channel
+func (h *Handler) RemoveChannelFloor(ctx echo.Context, channelID string, packageID string) error {
+	l := loggerWithUsername(l, ctx)
+
+	if err := h.db.RemoveChannelPackageFloor(channelID, packageID); err != nil {
+		if err == api.ErrNoRowsAffected {
+			return ctx.NoContent(http.StatusNotFound)
+		}
+		l.Error().Err(err).Str("channelID", channelID).Str("packageID", packageID).Msg("RemoveChannelFloor - removing floor")
+		return ctx.NoContent(http.StatusInternalServerError)
+	}
+
+	l.Info().Str("channelID", channelID).Str("packageID", packageID).Msg("RemoveChannelFloor - successfully removed floor")
+	return ctx.NoContent(http.StatusOK)
+}

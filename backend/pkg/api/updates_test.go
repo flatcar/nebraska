@@ -448,3 +448,157 @@ func TestGetUpdatePackage_InstanceStatusHistory(t *testing.T) {
 	assert.Equal(t, InstanceStatusUpdateGranted, instanceStatusHistory[2].Status)
 	assert.Equal(t, tPkg.Version, instanceStatusHistory[2].Version)
 }
+
+// TestMultiStepUpdateProgression tests that instances correctly progress through floor packages
+func TestMultiStepUpdateProgression(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	// Setup with floors at 2000, 2500 and target at 3000
+	setup := setupFloors(t, a, "multistep", []string{"2000.0.0", "2500.0.0"}, "3000.0.0")
+
+	instanceID := "test-instance"
+	appID := setup.AppID
+	groupID := setup.Group.ID
+
+	// Step 1: Instance at 1000 → should get first floor (2000)
+	pkg, err := a.GetUpdatePackage(instanceID, "", "10.0.0.1", "1000.0.0", appID, groupID)
+	assert.NoError(t, err)
+	assert.Equal(t, "2000.0.0", pkg.Version, "Should get first floor")
+
+	// Verify granted version is tracked
+	instance, _ := a.GetInstance(instanceID, appID)
+	assert.Equal(t, InstanceStatusUpdateGranted, int(instance.Application.Status.Int64))
+	assert.Equal(t, "2000.0.0", instance.Application.LastUpdateVersion.String)
+
+	// Step 2: Still at 1000 (already-granted) → should get 2000 again
+	pkg, err = a.GetUpdatePackage(instanceID, "", "10.0.0.1", "1000.0.0", appID, groupID)
+	assert.NoError(t, err)
+	assert.Equal(t, "2000.0.0", pkg.Version, "Should get same floor when not updated")
+
+	// Step 3: Instance updates to 2000 → should complete
+	_, err = a.GetUpdatePackage(instanceID, "", "10.0.0.1", "2000.0.0", appID, groupID)
+	assert.Equal(t, ErrNoUpdatePackageAvailable, err, "Should complete when floor reached")
+
+	instance, _ = a.GetInstance(instanceID, appID)
+	assert.Equal(t, InstanceStatusComplete, int(instance.Application.Status.Int64))
+
+	// Step 4: Instance at 2000 → should get second floor (2500)
+	pkg, err = a.GetUpdatePackage(instanceID, "", "10.0.0.1", "2000.0.0", appID, groupID)
+	assert.NoError(t, err)
+	assert.Equal(t, "2500.0.0", pkg.Version, "Should get second floor")
+
+	// Step 5: Instance updates to 2500 → should complete
+	_, err = a.GetUpdatePackage(instanceID, "", "10.0.0.1", "2500.0.0", appID, groupID)
+	assert.Equal(t, ErrNoUpdatePackageAvailable, err)
+
+	// Step 6: Instance at 2500 → should get target (3000)
+	pkg, err = a.GetUpdatePackage(instanceID, "", "10.0.0.1", "2500.0.0", appID, groupID)
+	assert.NoError(t, err)
+	assert.Equal(t, "3000.0.0", pkg.Version, "Should get target after all floors")
+
+	// Step 7: Instance updates to 3000 → should complete
+	_, err = a.GetUpdatePackage(instanceID, "", "10.0.0.1", "3000.0.0", appID, groupID)
+	assert.Equal(t, ErrNoUpdatePackageAvailable, err, "Should complete when target reached")
+}
+
+// TestAlreadyGrantedWithoutLastUpdateVersion tests the safer fallback when LastUpdateVersion is NULL
+func TestAlreadyGrantedWithoutLastUpdateVersion(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	setup := setupFloors(t, a, "fallback", []string{"2000.0.0"}, "3000.0.0")
+	instanceID := "old-instance"
+
+	// Get initial update
+	pkg, err := a.GetUpdatePackage(instanceID, "", "10.0.0.1", "1000.0.0", setup.AppID, setup.Group.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, "2000.0.0", pkg.Version)
+
+	// Verify LastUpdateVersion is set
+	instance, _ := a.GetInstance(instanceID, setup.AppID)
+	assert.Equal(t, "2000.0.0", instance.Application.LastUpdateVersion.String)
+
+	// Simulate old instance: clear LastUpdateVersion but keep UpdateGranted status
+	_, err = a.db.Exec(`UPDATE instance_application SET last_update_version = NULL 
+		WHERE instance_id = $1 AND application_id = $2`, instanceID, setup.AppID)
+	assert.NoError(t, err)
+
+	// Call with already-granted but no LastUpdateVersion - should complete and return error
+	_, err = a.GetUpdatePackage(instanceID, "", "10.0.0.1", "1000.0.0", setup.AppID, setup.Group.ID)
+	assert.Equal(t, ErrNoUpdatePackageAvailable, err, "Should complete when LastUpdateVersion is NULL")
+
+	// Verify status is now Complete
+	instance, _ = a.GetInstance(instanceID, setup.AppID)
+	assert.Equal(t, InstanceStatusComplete, int(instance.Application.Status.Int64))
+
+	// Next call should go through normal grant path
+	pkg, err = a.GetUpdatePackage(instanceID, "", "10.0.0.1", "1000.0.0", setup.AppID, setup.Group.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, "2000.0.0", pkg.Version, "Should get floor through normal grant path")
+
+	// Verify it was properly granted this time
+	instance, _ = a.GetInstance(instanceID, setup.AppID)
+	assert.Equal(t, "2000.0.0", instance.Application.LastUpdateVersion.String)
+}
+
+// TestSafetyRulesValidation tests that floors/targets can't be blacklisted for their own channel
+func TestSafetyRulesValidation(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	// Setup floor configuration
+	setup := setupFloors(t, a, "safety-test", []string{"1000.0.0", "2000.0.0"}, "3000.0.0")
+
+	// Register an instance to test update behavior
+	_, err := a.RegisterInstance("safety-instance", "", "10.0.0.1", "500.0.0", setup.AppID, setup.Group.ID)
+	assert.NoError(t, err)
+
+	t.Run("floor_never_blacklisted_for_own_channel", func(t *testing.T) {
+		// Get update should work normally
+		pkg, err := a.GetUpdatePackage("safety-instance", "", "10.0.0.1", "500.0.0", setup.AppID, setup.Group.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, "1000.0.0", pkg.Version)
+
+		// The safety check in updates.go line 150 should never trigger because
+		// we prevent floors from being blacklisted at the API level
+		// This test verifies the constraint is properly enforced
+		floorPkg, err := a.GetPackage(setup.Floors[0].ID)
+		assert.NoError(t, err)
+		floorPkg.ChannelsBlacklist = append(floorPkg.ChannelsBlacklist, setup.Channel.ID)
+		err = a.UpdatePackage(floorPkg)
+		assert.Equal(t, ErrBlacklistingFloor, err, "API should prevent blacklisting floors")
+	})
+
+	t.Run("target_never_blacklisted_for_own_channel", func(t *testing.T) {
+		// Target should never be blacklisted for its own channel
+		targetPkg, err := a.GetPackage(setup.Target.ID)
+		assert.NoError(t, err)
+		targetPkg.ChannelsBlacklist = append(targetPkg.ChannelsBlacklist, setup.Channel.ID)
+		err = a.UpdatePackage(targetPkg)
+		assert.Equal(t, ErrBlacklistingChannel, err, "API should prevent blacklisting channel target")
+	})
+
+	t.Run("cross_channel_blacklist_allowed", func(t *testing.T) {
+		// Create another channel
+		channel2, err := a.AddChannel(&Channel{
+			Name:          "safety-test-2",
+			ApplicationID: setup.AppID,
+			Arch:          ArchAMD64,
+			PackageID:     null.StringFrom(setup.Target.ID),
+		})
+		assert.NoError(t, err)
+
+		// Should be able to blacklist floor from channel1 for channel2
+		floorPkg, err := a.GetPackage(setup.Floors[0].ID)
+		assert.NoError(t, err)
+		floorPkg.ChannelsBlacklist = append(floorPkg.ChannelsBlacklist, channel2.ID)
+		err = a.UpdatePackage(floorPkg)
+		assert.NoError(t, err, "Can blacklist package for different channel")
+
+		// Cleanup - remove from blacklist
+		floorPkg.ChannelsBlacklist = StringArray{}
+		err = a.UpdatePackage(floorPkg)
+		assert.NoError(t, err)
+	})
+}
