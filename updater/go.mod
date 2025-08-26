@@ -8,7 +8,7 @@ require (
 	github.com/flatcar/go-omaha v0.0.2-0.20250627105643-c9009b394616
 	github.com/flatcar/nebraska/backend v0.0.0-20250723094736-20104520aedc
 	github.com/google/uuid v1.6.0
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.0
 	gopkg.in/guregu/null.v4 v4.0.0
 )
 
