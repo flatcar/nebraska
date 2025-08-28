@@ -7,6 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Security
+### Added
+### Changed
+### Bugfixes
+
+## [v2.12.0] - 28/08/2025
+
+### Security
 - **form-data@4.0.3 → v4.0.4**
   - Fixes CVE-2025-7783 (GHSA-fjxv-7rqg-78g4): Critical vulnerability (CVSS 9.4) where form-data uses Math.random() for selecting multipart/form-data boundary values. This predictable randomness could allow attackers to inject additional parameters into requests (HTTP Parameter Pollution), potentially making arbitrary requests to internal systems. Affected versions: <2.5.4, 3.0.0-3.0.3, 4.0.0-4.0.3. Fixed in: 2.5.4, 3.0.4, 4.0.4. Updated via npm audit fix. ([#1146](https://github.com/flatcar/nebraska/pull/1146))
 - **github.com/go-viper/mapstructure/v2 → v2.3.0**  
@@ -22,7 +29,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - backend: updated kinvolk references to flatcar ([nebraska#1091](https://github.com/flatcar/nebraska/pull/1091/files))
 - backend: migrate from go-bindata to embed ([nebraska#1132](https://github.com/flatcar/nebraska/pull/1132))
 - backend: update go to v1.24 ([nebraska#1130](https://github.com/flatcar/nebraska/pull/1130/files))
-- updater: update go to v1.24 and remove final kinvolk references ([nebraska#1151](https://github.com/flatcar/nebraska/pull/1151/files)) 
+- updater: update go to v1.24 and remove final kinvolk references ([nebraska#1151](https://github.com/flatcar/nebraska/pull/1151/files))
+
 ### Bugfixes
 
 ## [v2.11.0] - 17/06/2025
