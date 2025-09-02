@@ -1,21 +1,35 @@
 import chevronDown from '@iconify/icons-mdi/chevron-down';
 import chevronUp from '@iconify/icons-mdi/chevron-up';
 import { InlineIcon } from '@iconify/react';
-import { Box, makeStyles } from '@material-ui/core';
-import Collapse from '@material-ui/core/Collapse';
-import IconButton from '@material-ui/core/IconButton';
-import Link from '@material-ui/core/Link';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
+import { Box } from '@mui/material';
+import Collapse from '@mui/material/Collapse';
+import IconButton from '@mui/material/IconButton';
+import Link from '@mui/material/Link';
+import { styled } from '@mui/material/styles';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 import React, { PropsWithChildren } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router';
 import semver from 'semver';
 import _ from 'underscore';
+
 import API from '../../api/API';
 import { Instance } from '../../api/apiDataTypes';
 import { makeLocaleTime } from '../../i18n/dateTime';
 import { cleanSemverVersion } from '../../utils/helpers';
 import StatusHistoryContainer from './StatusHistoryContainer';
+
+const PREFIX = 'Item';
+
+const classes = {
+  link: `${PREFIX}-link`,
+};
+
+const StyledTableRow = styled(TableRow)({
+  [`& .${classes.link}`]: {
+    color: '#1b5c91',
+  },
+});
 
 const TableLabel = function (props: PropsWithChildren<{ bgColor?: string; textColor?: string }>) {
   return (
@@ -24,12 +38,6 @@ const TableLabel = function (props: PropsWithChildren<{ bgColor?: string; textCo
     </Box>
   );
 };
-
-const useStyles = makeStyles({
-  link: {
-    color: '#1b5c91',
-  },
-});
 
 interface ItemProps {
   instance: Instance;
@@ -41,7 +49,7 @@ interface ItemProps {
 
 function Item(props: ItemProps) {
   const { instance, selected, lastVersionChannel, versionNumbers } = props;
-  const classes = useStyles();
+
   const date = instance.application.last_check_for_updates;
   const statusDescription = instance.statusInfo?.description;
   const instanceLabel = instance.statusInfo?.className ? (
@@ -101,10 +109,10 @@ function Item(props: ItemProps) {
   const instanceName = props.instance.alias || props.instance.id;
 
   return (
-    <React.Fragment>
-      <TableRow>
+    <>
+      <StyledTableRow>
         <TableCell>
-          <Link to={instancePath} component={RouterLink} className={classes.link}>
+          <Link to={instancePath} component={RouterLink} className={classes.link} underline="hover">
             {instanceName}
           </Link>
         </TableCell>
@@ -117,7 +125,7 @@ function Item(props: ItemProps) {
           <Box display="flex" justifyContent="space-between">
             <Box>{makeLocaleTime(date)}</Box>
             <Box>
-              <IconButton onClick={onToggle}>
+              <IconButton onClick={onToggle} size="large">
                 <InlineIcon
                   icon={props.selected ? chevronUp : chevronDown}
                   height="25"
@@ -129,7 +137,7 @@ function Item(props: ItemProps) {
             </Box>
           </Box>
         </TableCell>
-      </TableRow>
+      </StyledTableRow>
       <TableRow>
         <TableCell padding="none" colSpan={5}>
           <Collapse in={props.selected}>
@@ -137,7 +145,7 @@ function Item(props: ItemProps) {
           </Collapse>
         </TableCell>
       </TableRow>
-    </React.Fragment>
+    </>
   );
 }
 

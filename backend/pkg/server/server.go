@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -13,28 +14,26 @@ import (
 	"github.com/labstack/echo-contrib/prometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/labstack/gommon/log"
 	echomiddleware "github.com/oapi-codegen/echo-middleware"
-	"github.com/pkg/errors"
 
-	db "github.com/kinvolk/nebraska/backend/pkg/api"
-	"github.com/kinvolk/nebraska/backend/pkg/auth"
-	"github.com/kinvolk/nebraska/backend/pkg/codegen"
-	"github.com/kinvolk/nebraska/backend/pkg/config"
-	"github.com/kinvolk/nebraska/backend/pkg/handler"
-	custommiddleware "github.com/kinvolk/nebraska/backend/pkg/middleware"
-	"github.com/kinvolk/nebraska/backend/pkg/sessions"
-	echosessions "github.com/kinvolk/nebraska/backend/pkg/sessions/echo"
-	"github.com/kinvolk/nebraska/backend/pkg/sessions/memcache"
-	memcachegob "github.com/kinvolk/nebraska/backend/pkg/sessions/memcache/gob"
-	"github.com/kinvolk/nebraska/backend/pkg/sessions/securecookie"
-	"github.com/kinvolk/nebraska/backend/pkg/util"
+	db "github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/auth"
+	"github.com/flatcar/nebraska/backend/pkg/codegen"
+	"github.com/flatcar/nebraska/backend/pkg/config"
+	"github.com/flatcar/nebraska/backend/pkg/handler"
+	"github.com/flatcar/nebraska/backend/pkg/logger"
+	custommiddleware "github.com/flatcar/nebraska/backend/pkg/middleware"
+	"github.com/flatcar/nebraska/backend/pkg/sessions"
+	echosessions "github.com/flatcar/nebraska/backend/pkg/sessions/echo"
+	"github.com/flatcar/nebraska/backend/pkg/sessions/memcache"
+	memcachegob "github.com/flatcar/nebraska/backend/pkg/sessions/memcache/gob"
+	"github.com/flatcar/nebraska/backend/pkg/sessions/securecookie"
 )
 
 const serviceName = "nebraska"
 
 var (
-	logger            = util.NewLogger("nebraska")
+	l                 = logger.New("nebraska")
 	middlewareSkipper = func(c echo.Context) bool {
 		requestPath := c.Path()
 		paths := []string{"/health", "/metrics", "/config", "/v1/update", "/flatcar/*", "/*"}
@@ -54,13 +53,15 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 	e := echo.New()
 
 	if conf.Debug {
-		e.Logger.SetLevel(log.DEBUG)
+		// SetLevel(0) means SetLevel(DEBUG)
+		// but let's avoid pulling a 'log' dependency again (different from zerolog) just for this.
+		e.Logger.SetLevel(0)
 		e.Debug = conf.Debug
 	}
 
 	swagger, err := codegen.GetSwagger()
 	if err != nil {
-		return nil, fmt.Errorf("Swagger config error: %w", err)
+		return nil, fmt.Errorf("swagger config error: %w", err)
 	}
 
 	p := prometheus.NewPrometheus(serviceName, nil)
@@ -69,7 +70,7 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 	// setup authenticator
 	defaultTeam, err := db.GetTeam()
 	if err != nil {
-		return nil, fmt.Errorf("Cannot fetch the default teamID: %w", err)
+		return nil, fmt.Errorf("cannot fetch the default teamID: %w", err)
 	}
 
 	// setup session store
@@ -77,10 +78,10 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 
 	authenticator, err := setupAuthenticator(*conf, sessionStore, defaultTeam.ID)
 	if err != nil {
-		return nil, fmt.Errorf("Authenticator setup error: %w", err)
+		return nil, fmt.Errorf("authenticator setup error: %w", err)
 	}
 	if authenticator == nil {
-		return nil, fmt.Errorf("Invalid auth mode %s", conf.AuthMode)
+		return nil, fmt.Errorf("invalid auth mode %s", conf.AuthMode)
 	}
 
 	// setup middlewares
@@ -111,7 +112,7 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 	// setup handler
 	handlers, err := handler.New(db, conf, authenticator)
 	if err != nil {
-		return nil, fmt.Errorf("Error setting up handlers: %w", err)
+		return nil, fmt.Errorf("error setting up handlers: %w", err)
 	}
 
 	e.Static("/", conf.HTTPStaticDir)
@@ -126,7 +127,7 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 			if code == he.Code {
 				fileErr := c.File(path.Join(conf.HTTPStaticDir, "index.html"))
 				if fileErr != nil {
-					logger.Err(fileErr).Msg("Error serving index.html")
+					l.Err(fileErr).Msg("Error serving index.html")
 				}
 				return
 			}
@@ -140,7 +141,7 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 		// update once at startup
 		err = db.UpdateInstanceStats(nil, nil)
 		if err != nil {
-			logger.Err(err).Msg("Error updating instance stats")
+			l.Err(err).Msg("Error updating instance stats")
 		}
 		ticker := time.NewTicker(time.Hour)
 		defer ticker.Stop()
@@ -148,7 +149,7 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 		for range ticker.C {
 			err := db.UpdateInstanceStats(nil, nil)
 			if err != nil {
-				logger.Err(err).Msg("Error updating instance stats")
+				l.Err(err).Msg("Error updating instance stats")
 			}
 		}
 	}()
@@ -179,7 +180,7 @@ func setupAuthenticator(conf config.Config, sessionStore *sessions.Store, defaul
 
 		url, err := url.Parse(conf.NebraskaURL)
 		if err != nil {
-			return nil, errors.Wrap(err, "nebraska-url is invalid, can't generate oidc callback URL")
+			return nil, fmt.Errorf("nebraska-url is invalid, can't generate oidc callback URL: %w", err)
 		}
 
 		url.Path = "/login/cb"
@@ -229,7 +230,7 @@ func setupSessionStore(conf config.Config) *sessions.Store {
 }
 
 func nebraskaAuthenticationFunc(authMode string) func(context.Context, *openapi3filter.AuthenticationInput) error {
-	return func(ctx context.Context, input *openapi3filter.AuthenticationInput) error {
+	return func(_ context.Context, input *openapi3filter.AuthenticationInput) error {
 		switch authMode {
 		case "noop":
 			return nil
@@ -244,7 +245,7 @@ func nebraskaAuthenticationFunc(authMode string) func(context.Context, *openapi3
 			if err != nil {
 				_, err := input.RequestValidationInput.Request.Cookie("github")
 				if err != nil {
-					return errors.Wrap(err, "github cookie not found")
+					return fmt.Errorf("github cookie not found: %w", err)
 				}
 			}
 			return nil
@@ -257,15 +258,15 @@ func nebraskaAuthenticationFunc(authMode string) func(context.Context, *openapi3
 func validateAuthorizationToken(input *openapi3filter.AuthenticationInput) error {
 	token := input.RequestValidationInput.Request.Header.Get("Authorization")
 	if token == "" {
-		return errors.New("Bearer token not found in request")
+		return errors.New("bearer token not found in request")
 	}
 	split := strings.Split(token, " ")
 	if len(split) == 2 {
 		if split[0] != "Bearer" {
-			return errors.New("Bearer token not found in request")
+			return errors.New("bearer token not found in request")
 		}
 	} else {
-		return errors.New("Invalid Bearer token")
+		return errors.New("invalid Bearer token")
 	}
 	return nil
 }

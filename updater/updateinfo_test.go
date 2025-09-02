@@ -4,7 +4,7 @@ import (
 	"encoding/xml"
 	"testing"
 
-	"github.com/kinvolk/go-omaha/omaha"
+	"github.com/flatcar/go-omaha/omaha"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -16,7 +16,7 @@ const (
 	   <app appid="e96281a6-d1af-4bde-9a0a-97b76e56dc57" status="ok">
 		  <updatecheck status="ok">
 			 <urls>
-				<url codebase="https://kinvolk.io/test/response" />
+				<url codebase="https://flatcar.org/test/response" />
 			 </urls>
 			 <manifest version="2191.5.0">
 				<packages>

@@ -1,11 +1,12 @@
-import { Theme } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Chip from '@material-ui/core/Chip';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { useTheme } from '@material-ui/styles';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import Grid from '@mui/material/Grid';
+import { useTheme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 import React from 'react';
 import semver from 'semver';
+
 import { Group } from '../../../api/apiDataTypes';
 import { makeLocaleTime } from '../../../i18n/dateTime';
 import { groupChartStoreContext } from '../../../stores/Stores';
@@ -18,6 +19,7 @@ import { Duration } from './TimelineChart';
 export interface VersionCountTimelineProps {
   group: Group | null;
   duration: Duration;
+  isAnimationActive?: boolean;
 }
 
 export default function VersionCountTimeline(props: VersionCountTimelineProps) {
@@ -178,19 +180,24 @@ export default function VersionCountTimeline(props: VersionCountTimelineProps) {
     return () => {
       canceled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [duration]);
 
   return (
     <Grid container alignItems="center" spacing={2}>
-      <Grid item xs={12}>
+      <Grid size={12}>
         {timelineChartData.data.length > 0 ? (
-          <TimelineChart {...timelineChartData} onSelect={setSelectedEntry} />
+          <TimelineChart
+            {...timelineChartData}
+            onSelect={setSelectedEntry}
+            isAnimationActive={props.isAnimationActive}
+          />
         ) : (
           <Loader />
         )}
       </Grid>
-      <Grid item xs={12} container>
-        <Grid item xs={12}>
+      <Grid container size={12}>
+        <Grid size={12}>
           <Box width={500}>
             {timelineChartData.data.length > 0 ? (
               selectedEntry !== -1 ? (
@@ -214,7 +221,7 @@ export default function VersionCountTimeline(props: VersionCountTimelineProps) {
             ) : null}
           </Box>
         </Grid>
-        <Grid item xs={11}>
+        <Grid size={11}>
           {timelineChartData.data.length > 0 && (
             <SimpleTable
               emptyMessage="No data to show for this time point."

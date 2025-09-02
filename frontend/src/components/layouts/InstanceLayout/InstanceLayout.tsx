@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router';
+
 import API from '../../../api/API';
 import { Application, Instance } from '../../../api/apiDataTypes';
 import { applicationsStore } from '../../../stores/Stores';
@@ -15,14 +16,31 @@ export default function InstanceLayout() {
     groupID: string;
     instanceID: string;
   }>();
+
   const [application, setApplication] = React.useState(
-    applicationsStore().getCachedApplication(appID)
+    applicationsStore().getCachedApplication(appID || '')
   );
-  const [group, setGroup] = React.useState(getGroupFromApplication(application || null));
   const [instance, setInstance] = React.useState<Instance | null>(null);
   const { t } = useTranslation();
 
-  function onChange() {
+  const getGroupFromApplication = React.useCallback(
+    (app: Application | null) => {
+      if (!app) {
+        return null;
+      }
+      const group = app.groups.find(({ id }) => id === groupID);
+      return group || null;
+    },
+    [groupID]
+  );
+
+  const [group, setGroup] = React.useState(getGroupFromApplication(application || null));
+
+  const onChange = React.useCallback(() => {
+    if (!appID || !groupID || !instanceID) {
+      return;
+    }
+
     API.getInstance(appID, groupID, instanceID).then(instance => {
       instance.statusInfo = getInstanceStatus(
         instance.application.status,
@@ -36,17 +54,12 @@ export default function InstanceLayout() {
       setApplication(app);
       setGroup(getGroupFromApplication(app));
     }
-  }
-
-  function getGroupFromApplication(app: Application | null) {
-    if (!app) {
-      return null;
-    }
-    const group = app.groups.find(({ id }) => id === groupID);
-    return group || null;
-  }
+  }, [appID, application, getGroupFromApplication, groupID, instanceID]);
 
   React.useEffect(() => {
+    if (!appID) {
+      return;
+    }
     applicationsStore().addChangeListener(onChange);
 
     applicationsStore().getApplication(appID);
@@ -54,13 +67,18 @@ export default function InstanceLayout() {
     return function cleanup() {
       applicationsStore().removeChangeListener(onChange);
     };
-  }, []);
+  }, [appID, onChange]);
 
   const applicationName = application ? application.name : '…';
   const groupName = group ? group.name : '…';
   const instanceName = (instance && instance.alias) || instanceID;
 
   const searchParams = new URLSearchParams(window.location.search).toString();
+
+  if (!appID || !instanceName) {
+    return <Navigate to="/404" replace />;
+  }
+
   return (
     <React.Fragment>
       <SectionHeader
@@ -68,7 +86,7 @@ export default function InstanceLayout() {
         breadcrumbs={[
           {
             path: '/apps',
-            label: t('layouts|Applications'),
+            label: t('layouts|applications'),
           },
           {
             path: `/apps/${appID}`,
@@ -80,7 +98,7 @@ export default function InstanceLayout() {
           },
           {
             path: `/apps/${appID}/groups/${groupID}/instances?${searchParams}`,
-            label: t('layouts|Instances'),
+            label: t('layouts|instances'),
           },
         ]}
       />

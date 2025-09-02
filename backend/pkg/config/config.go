@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"net/url"
@@ -8,9 +9,8 @@ import (
 
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/providers/basicflag"
-	"github.com/pkg/errors"
 
-	"github.com/kinvolk/nebraska/backend/pkg/random"
+	"github.com/flatcar/nebraska/backend/pkg/random"
 )
 
 type Config struct {
@@ -71,12 +71,12 @@ const (
 func (c *Config) Validate() error {
 	if c.HostFlatcarPackages {
 		if c.FlatcarPackagesPath == "" {
-			return errors.New("Invalid Flatcar packages path. Please ensure you provide a valid path using -flatcar-packages-path")
+			return errors.New("invalid Flatcar packages path. Please ensure you provide a valid path using -flatcar-packages-path")
 		}
 
 		tmpFile, err := os.CreateTemp(c.FlatcarPackagesPath, "")
 		if err != nil {
-			return errors.New("Invalid Flatcar packages path: " + err.Error())
+			return fmt.Errorf("invalid Flatcar packages path: %w", err)
 		}
 		defer os.Remove(tmpFile.Name())
 
@@ -88,11 +88,11 @@ func (c *Config) Validate() error {
 	switch c.AuthMode {
 	case "github":
 		if c.GhClientID == "" || c.GhClientSecret == "" || c.GhReadOnlyTeams == "" || c.GhReadWriteTeams == "" {
-			return errors.New("Invalid github configuration")
+			return errors.New("invalid github configuration")
 		}
 	case "oidc":
 		if c.OidcClientID == "" || c.OidcClientSecret == "" || c.OidcIssuerURL == "" || c.OidcAdminRoles == "" || c.OidcViewerRoles == "" {
-			return errors.New("Invalid OIDC configuration")
+			return errors.New("invalid OIDC configuration")
 		}
 	}
 
@@ -129,7 +129,7 @@ func Parse() (*Config, error) {
 	f.String("oidc-admin-roles", "", "comma-separated list of accepted roles with admin access")
 	f.String("oidc-viewer-roles", "", "comma-separated list of accepted roles with viewer access")
 	f.String("oidc-roles-path", "roles", "json path in which the roles array is present in the id token")
-	f.String("oidc-scopes", "openid", "comma-separated list of scopes to be used in OIDC")
+	f.String("oidc-scopes", "openid,offline_access", "comma-separated list of scopes to be used in OIDC")
 	f.String("oidc-session-secret", "", fmt.Sprintf("Session secret used for authenticating sessions in cookies used for storing OIDC info , will be generated if none is passed; can be taken from %s env var too", oidcSessionAuthKeyEnvName))
 	f.String("oidc-session-crypt-key", "", fmt.Sprintf("Session key used for encrypting sessions in cookies used for storing OIDC info, will be generated if none is passed; can be taken from %s env var too", oidcSessionCryptKeyEnvName))
 	f.String("oidc-management-url", "", "OIDC management url for managing the account")

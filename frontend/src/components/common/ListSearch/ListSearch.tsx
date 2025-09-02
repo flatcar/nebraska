@@ -1,24 +1,30 @@
-import Input from '@material-ui/core/Input';
-import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
+import Input from '@mui/material/Input';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 
-const useStyles = makeStyles(theme => ({
-  container: {
+const PREFIX = 'ListSearch';
+
+const classes = {
+  container: `${PREFIX}-container`,
+  input: `${PREFIX}-input`,
+};
+
+const Root = styled('div')(({ theme }) => ({
+  [`&.${classes.container}`]: {
     display: 'flex',
     flexWrap: 'wrap',
   },
-  input: {
+
+  [`& .${classes.input}`]: {
     margin: theme.spacing(1),
   },
 }));
 
 export default function SearchInput(props: { [key: string]: any }) {
-  const classes = useStyles();
   const { t } = useTranslation();
 
   return (
-    <div className={classes.container}>
+    <Root className={classes.container}>
       <Input
         className={classes.input}
         inputProps={{
@@ -26,6 +32,6 @@ export default function SearchInput(props: { [key: string]: any }) {
         }}
         {...props}
       />
-    </div>
+    </Root>
   );
 }

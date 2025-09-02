@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"embed"
 	"errors"
 	"fmt"
 	"os"
@@ -12,7 +13,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	migrate "github.com/rubenv/sql-migrate"
 
-	"github.com/kinvolk/nebraska/backend/pkg/util"
+	"github.com/flatcar/nebraska/backend/pkg/logger"
 
 	// PostgreSQL Driver and Toolkit
 	_ "github.com/jackc/pgx/v4/stdlib"
@@ -23,14 +24,12 @@ import (
 	"time"
 )
 
-// To re-generate the bindata.go file, use go-bindata from
-// github.com/kevinburke/go-bindata (a fork of the discontinued
-// go-bindata project). Run the following command from the root of the
-// repository:
-//
-//    make bindata
-
-//go:generate go-bindata -mode 0644 -ignore=\.swp -pkg=api -modtime=1 db db/migrations
+var (
+	//go:embed db/*.sql
+	sqlFolder embed.FS
+	//go:embed db/migrations/*.sql
+	migrationsFolder embed.FS
+)
 
 const (
 	defaultDbURL          = "postgres://postgres:nebraska@127.0.0.1:5432/nebraska?sslmode=disable&connect_timeout=10"
@@ -43,7 +42,7 @@ func nowUTC() time.Time {
 }
 
 var (
-	logger = util.NewLogger("api")
+	l = logger.New("api")
 
 	// ErrNoRowsAffected indicates that no rows were affected in an update or
 	// delete database operation.
@@ -184,20 +183,19 @@ func (api *API) MigrateDown(version string) (int, error) {
 	}
 
 	levels := countMap["count"].(int64)
-	logger.Info().Msgf("migrating down %d levels", levels)
+	l.Info().Msgf("migrating down %d levels", levels)
 	count, err := migrate.ExecMax(api.db.DB, "postgres", migrations, migrate.Down, int(levels))
 	if err != nil {
 		return 0, err
 	}
-	logger.Info().Msg("successfully migrated down")
+	l.Info().Msg("successfully migrated down")
 	return count, nil
 }
 
-func migrationAssets() *migrate.AssetMigrationSource {
-	return &migrate.AssetMigrationSource{
-		Asset:    Asset,
-		AssetDir: AssetDir,
-		Dir:      "db/migrations",
+func migrationAssets() *migrate.EmbedFileSystemMigrationSource {
+	return &migrate.EmbedFileSystemMigrationSource{
+		FileSystem: migrationsFolder,
+		Root:       "db/migrations",
 	}
 }
 
@@ -205,7 +203,7 @@ func migrationAssets() *migrate.AssetMigrationSource {
 // dropping all existing tables, which will force all migration scripts to be
 // re-executed. Use with caution, this will DESTROY ALL YOUR DATA.
 func OptionInitDB(api *API) error {
-	sqlFile, err := Asset("db/drop_all_tables.sql")
+	sqlFile, err := sqlFolder.ReadFile("db/drop_all_tables.sql")
 	if err != nil {
 		return err
 	}
@@ -228,7 +226,7 @@ func OptionDisableUpdatesOnFailedRollout(api *API) error {
 
 // Close releases the connections to the database.
 func (api *API) Close() {
-	_ = api.db.DB.Close()
+	_ = api.db.Close()
 }
 
 // NewForTest creates a new API instance with given options and fills
@@ -239,7 +237,7 @@ func NewForTest(options ...func(*API) error) (*API, error) {
 		return nil, err
 	}
 
-	sqlFile, err := Asset("db/sample_data.sql")
+	sqlFile, err := sqlFolder.ReadFile("db/sample_data.sql")
 	if err != nil {
 		return nil, err
 	}

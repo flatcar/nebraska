@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AutoCompletePicker Closed smoke-test 1`] = `
+<div class="MuiBox-root css-0">
+  <div class="MuiFormControl-root MuiFormControl-fullWidth css-ytlejw-MuiFormControl-root">
+    <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-standard MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-standard css-10zwvn9-MuiFormLabel-root-MuiInputLabel-root"
+           data-shrink="true"
+    >
+      Package
+    </label>
+    <div class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-colorPrimary MuiInputBase-formControl Mui-readOnly MuiInputBase-readOnly css-zp593q-MuiInputBase-root-MuiInput-root">
+      <input aria-invalid="false"
+             placeholder="Pick a package"
+             readonly
+             class="MuiInputBase-input MuiInput-input Mui-readOnly MuiInputBase-readOnly css-1ri2le8-MuiInputBase-input-MuiInput-input"
+             type="text"
+             value="2261.0.0"
+      >
+    </div>
+  </div>
+</div>
+`;
+
+exports[`AutoCompletePicker Open smoke-test 1`] = `
+<div class="MuiBox-root css-0">
+  <div class="MuiFormControl-root MuiFormControl-fullWidth css-ytlejw-MuiFormControl-root">
+    <label class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-standard MuiFormLabel-colorPrimary MuiFormLabel-filled MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-standard css-10zwvn9-MuiFormLabel-root-MuiInputLabel-root"
+           data-shrink="true"
+    >
+      Package
+    </label>
+    <div class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-colorPrimary MuiInputBase-formControl Mui-readOnly MuiInputBase-readOnly css-zp593q-MuiInputBase-root-MuiInput-root">
+      <input aria-invalid="false"
+             placeholder="Pick a package"
+             readonly
+             class="MuiInputBase-input MuiInput-input Mui-readOnly MuiInputBase-readOnly css-1ri2le8-MuiInputBase-input-MuiInput-input"
+             type="text"
+             value="2261.0.0"
+      >
+    </div>
+  </div>
+</div>
+`;

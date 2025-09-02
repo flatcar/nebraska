@@ -1,9 +1,10 @@
-import Container from '@material-ui/core/Container';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
+import Container from '@mui/material/Container';
+import CssBaseline from '@mui/material/CssBaseline';
+import Link from '@mui/material/Link';
+import { visuallyHidden } from '@mui/utils';
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Routes } from 'react-router';
+
 import API from '../api/API';
 import ThemeProviderNexti18n from '../i18n/ThemeProviderNexti18n';
 import themes, { getThemeName, usePrefersColorScheme } from '../lib/themes';
@@ -19,25 +20,16 @@ import InstanceListLayout from './layouts/InstanceListLayout';
 import MainLayout from './layouts/MainLayout';
 import PageNotFoundLayout from './layouts/PageNotFoundLayout';
 
-const useStyle = makeStyles(() => ({
-  // importing visuallyHidden has typing issues at time of writing.
-  // import { visuallyHidden } from '@material-ui/utils';
-  visuallyHidden: {
-    border: 0,
-    clip: 'rect(0 0 0 0)',
-    height: '1px',
-    margin: -1,
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    whiteSpace: 'nowrap',
-    width: '1px',
-  },
-}));
+function SkipLink() {
+  return (
+    <Link href="#main" sx={visuallyHidden} underline="hover">
+      Skip to main content
+    </Link>
+  );
+}
 
 export default function Main() {
   const dispatch = useDispatch();
-  const classes = useStyle();
   // let themeName = useTypedSelector(state => state.ui.theme.name);
   let themeName = 'light';
   usePrefersColorScheme();
@@ -48,39 +40,31 @@ export default function Main() {
 
   React.useEffect(() => {
     API.getConfig().then(config => {
-      console.debug('Got config', config);
       dispatch(setConfig(config));
     });
-  }, []);
+  }, [dispatch]);
 
   useAuthRedirect();
 
   return (
     <ThemeProviderNexti18n theme={themes[themeName]}>
       <CssBaseline />
-      <Link href="#main" className={classes.visuallyHidden}>
-        Skip to main content
-      </Link>
-
+      <SkipLink />
       <Header />
-      <Container component="main" id="main">
-        <Switch>
-          <Route path="/" exact component={MainLayout} />
-          <Route path="/apps" exact component={MainLayout} />
-          <Route path="/apps/:appID" exact component={ApplicationLayout} />
-          <Route path="/apps/:appID/groups/:groupID" exact component={GroupLayout} />
-          <Route
-            path="/apps/:appID/groups/:groupID/instances"
-            exact
-            component={InstanceListLayout}
-          />
+      <Container component="main" id="main" sx={{ paddingTop: '0.52rem' }}>
+        <Routes>
+          <Route path="/" element={<MainLayout />} />
+          <Route path="/apps" element={<MainLayout />} />
+          <Route path="/apps/:appID" element={<ApplicationLayout />} />
+          <Route path="/apps/:appID/groups/:groupID" element={<GroupLayout />} />
+          <Route path="/apps/:appID/groups/:groupID/instances" element={<InstanceListLayout />} />
           <Route
             path="/apps/:appID/groups/:groupID/instances/:instanceID"
-            exact
-            component={InstanceLayout}
+            element={<InstanceLayout />}
           />
-          <Route path="*" component={PageNotFoundLayout} />
-        </Switch>
+          <Route path="/404" element={<PageNotFoundLayout />} />
+          <Route path="*" element={<PageNotFoundLayout />} />
+        </Routes>
         <Footer />
       </Container>
     </ThemeProviderNexti18n>

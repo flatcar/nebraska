@@ -1,9 +1,9 @@
-import { List } from '@material-ui/core';
-import Paper from '@material-ui/core/Paper';
-import { makeStyles } from '@material-ui/core/styles';
+import { List } from '@mui/material';
+import Paper from '@mui/material/Paper';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import _ from 'underscore';
+
 import { Application } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import Empty from '../common/EmptyContent';
@@ -13,37 +13,30 @@ import ModalButton from '../common/ModalButton';
 import ApplicationEdit from './ApplicationEdit';
 import ApplicationItem from './ApplicationItem';
 
-const useStyles = makeStyles({
-  root: {
-    '& > hr:first-child': {
-      display: 'none',
-    },
-  },
-});
-
-export interface ApplicationListProps {}
+export type ApplicationListProps = unknown;
 
 export default function ApplicationList() {
   const [applications, setApplications] = React.useState(
     applicationsStore().getCachedApplications ? applicationsStore().getCachedApplications() : []
   );
 
+  const onChange = React.useCallback(() => {
+    setApplications(applicationsStore().getCachedApplications());
+  }, []);
+
   React.useEffect(() => {
+    // Get initial data in case store already has applications loaded
+    const currentApplications = applicationsStore().getCachedApplications();
+    if (currentApplications) {
+      setApplications(currentApplications);
+    }
+
+    // Set up listener for future changes
     applicationsStore().addChangeListener(onChange);
     return () => {
       applicationsStore().removeChangeListener(onChange);
     };
-  }, []);
-
-  React.useEffect(() => {
-    if (applicationsStore().getCachedApplications) {
-      setApplications(applicationsStore().getCachedApplications());
-    }
-  }, [applicationsStore().getCachedApplications]);
-
-  function onChange() {
-    setApplications(applicationsStore().getCachedApplications());
-  }
+  }, [onChange]);
 
   return <ApplicationListPure applications={applications} loading={applications === null} />;
 }
@@ -62,7 +55,6 @@ export interface ApplicationListPureProps {
 }
 
 export function ApplicationListPure(props: ApplicationListPureProps) {
-  const classes = useStyles();
   const { t } = useTranslation();
   const [editOpen, setEditOpen] = React.useState(!!props.editOpen);
   const [editId, setEditId] = React.useState<null | string>(props.editId ? props.editId : null);
@@ -89,15 +81,15 @@ export function ApplicationListPure(props: ApplicationListPureProps) {
   } else {
     if (_.isEmpty(applications)) {
       if (searchTerm) {
-        entries = <Empty>{t('applications|No results found.')}</Empty>;
+        entries = <Empty>{t('applications|no_results_found')}</Empty>;
       } else {
         entries = (
           <Empty>
-            <Trans ns="applications">
+            <Trans t={t} ns="applications" i18nKey="noappyet">
               Oops, it looks like you have not created any application yet..
               <br />
-              <br /> Now is a great time to create your first one, just click on the plus symbol
-              above.
+              <br />
+              Now is a great time to create your first one, just click on the plus symbol above.
             </Trans>
           </Empty>
         );
@@ -124,13 +116,21 @@ export function ApplicationListPure(props: ApplicationListPureProps) {
   return (
     <>
       <ListHeader
-        title={t('applications|Applications')}
+        title={t('applications|applications')}
         actions={[
           <ModalButton modalToOpen="AddApplicationModal" data={{ applications: applications }} />,
         ]}
       />
       <Paper>
-        <List className={classes.root}>{entries}</List>
+        <List
+          sx={{
+            '& > hr:first-of-type': {
+              display: 'none',
+            },
+          }}
+        >
+          {entries}
+        </List>
         {appToUpdate && (
           <ApplicationEdit data={appToUpdate} show={editOpen} onHide={closeUpdateAppModal} />
         )}

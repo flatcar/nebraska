@@ -1,5 +1,6 @@
-import { Box, Divider } from '@material-ui/core';
+import { Box, Divider } from '@mui/material';
 import { Fragment } from 'react';
+
 import { Group } from '../../api/apiDataTypes';
 import ApplicationItemGroupItem from './ApplicationItemGroupItem';
 

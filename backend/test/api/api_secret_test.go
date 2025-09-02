@@ -7,14 +7,14 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/flatcar/go-omaha/omaha"
 	"github.com/google/uuid"
 	"github.com/jinzhu/copier"
-	"github.com/kinvolk/go-omaha/omaha"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/kinvolk/nebraska/backend/pkg/config"
-	"github.com/kinvolk/nebraska/backend/pkg/server"
+	"github.com/flatcar/nebraska/backend/pkg/config"
+	"github.com/flatcar/nebraska/backend/pkg/server"
 )
 
 const (

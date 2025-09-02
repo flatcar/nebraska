@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ColorPickerButton Closed smoke-test 1`] = `
+<div class="css-1t32mh7">
+  <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeLarge ColorPicker-iconButton css-154kngp-MuiButtonBase-root-MuiIconButton-root"
+          tabindex="0"
+          type="button"
+          data-testid="icon-button"
+  >
+    <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-1mo2r65-MuiAvatar-root">
+      <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-1yqfavt-MuiAvatar-root">
+        Beta
+      </div>
+    </div>
+  </button>
+</div>
+`;
+
+exports[`ColorPickerButton Open smoke-test 1`] = `
+<div class="css-1t32mh7">
+  <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeLarge ColorPicker-iconButton css-154kngp-MuiButtonBase-root-MuiIconButton-root"
+          tabindex="0"
+          type="button"
+          data-testid="icon-button"
+  >
+    <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-1mo2r65-MuiAvatar-root">
+      <div class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-1yqfavt-MuiAvatar-root">
+        Beta
+      </div>
+    </div>
+  </button>
+</div>
+`;

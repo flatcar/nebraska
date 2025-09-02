@@ -5,12 +5,12 @@ import (
 	"os"
 	"testing"
 
-	"github.com/kinvolk/go-omaha/omaha"
+	"github.com/flatcar/go-omaha/omaha"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/guregu/null.v4"
 
-	"github.com/kinvolk/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api"
 )
 
 const (

@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/kinvolk/nebraska/backend/pkg/sessions"
+	"github.com/flatcar/nebraska/backend/pkg/sessions"
 )
 
 func TestMain(m *testing.M) {
@@ -69,7 +69,7 @@ type testRandomStringer struct {
 	idx int
 }
 
-func (s *testRandomStringer) randomString(n int) string {
+func (s *testRandomStringer) randomString(_ int) string {
 	s.idx++
 	return "id" + strconv.Itoa(s.idx)
 }

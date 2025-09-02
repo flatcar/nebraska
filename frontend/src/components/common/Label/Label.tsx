@@ -1,8 +1,14 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 
-const useStyles = makeStyles({
-  label: {
+const PREFIX = 'Label';
+
+const classes = {
+  label: `${PREFIX}-label`,
+};
+
+const Root = styled('span')({
+  [`&.${classes.label}`]: {
     background: '#b4b4b4',
     color: '#ffffff',
     fontSize: '75%',
@@ -13,6 +19,5 @@ const useStyles = makeStyles({
 });
 
 export default function Label(props: { children: React.ReactNode }) {
-  const classes = useStyles();
-  return <span className={classes.label}>{props.children}</span>;
+  return <Root className={classes.label}>{props.children}</Root>;
 }

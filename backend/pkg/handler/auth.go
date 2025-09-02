@@ -3,10 +3,10 @@ package handler
 import (
 	"github.com/labstack/echo/v4"
 
-	"github.com/kinvolk/nebraska/backend/pkg/codegen"
+	"github.com/flatcar/nebraska/backend/pkg/codegen"
 )
 
-func (h *Handler) Login(ctx echo.Context, params codegen.LoginParams) error {
+func (h *Handler) Login(ctx echo.Context, _ codegen.LoginParams) error {
 	return h.auth.Login(ctx)
 }
 
@@ -22,6 +22,6 @@ func (h *Handler) ValidateToken(ctx echo.Context) error {
 	return h.auth.ValidateToken(ctx)
 }
 
-func (h *Handler) LoginWebhook(ctx echo.Context, params codegen.LoginWebhookParams) error {
+func (h *Handler) LoginWebhook(ctx echo.Context, _ codegen.LoginWebhookParams) error {
 	return h.auth.LoginWebhook(ctx)
 }

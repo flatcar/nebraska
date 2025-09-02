@@ -1,14 +1,17 @@
 import './i18n/config';
-import React from 'react';
+
 import { Provider } from 'react-redux';
-import { Route } from 'react-router-dom';
+import { Route, Routes } from 'react-router';
+
 import Main from './components/Main';
 import store from './stores/redux/store';
 
-var AppRoutes = function () {
+const AppRoutes = function () {
   return (
     <Provider store={store}>
-      <Route path="/" component={Main} />;
+      <Routes>
+        <Route path="*" element={<Main />} />
+      </Routes>
     </Provider>
   );
 };

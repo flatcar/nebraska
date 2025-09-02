@@ -7,8 +7,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/kinvolk/nebraska/backend/pkg/api"
-	"github.com/kinvolk/nebraska/backend/pkg/codegen"
+	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/codegen"
 )
 
 func (h *Handler) PaginateActivity(ctx echo.Context, params codegen.PaginateActivityParams) error {
@@ -52,7 +52,7 @@ func (h *Handler) PaginateActivity(ctx echo.Context, params codegen.PaginateActi
 
 	totalCount, err := h.db.GetActivityCount(teamID, p)
 	if err != nil {
-		logger.Error().Err(err).Str("teamID", teamID).Msgf("getActivity count params %v", p)
+		l.Error().Err(err).Str("teamID", teamID).Msgf("getActivity count params %v", p)
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
@@ -61,7 +61,7 @@ func (h *Handler) PaginateActivity(ctx echo.Context, params codegen.PaginateActi
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
 		}
-		logger.Error().Err(err).Str("teamID", teamID).Msgf("getActivity params %v", p)
+		l.Error().Err(err).Str("teamID", teamID).Msgf("getActivity params %v", p)
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 	return ctx.JSON(http.StatusOK, activityPage{totalCount, len(activityEntries), activityEntries})

@@ -1,4 +1,5 @@
-import { Meta } from '@storybook/react/types-6-0';
+import { Meta } from '@storybook/react-vite';
+
 import ActivityItemIcon from './ActivityItemIcon';
 
 export default {

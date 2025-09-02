@@ -3,47 +3,59 @@ package main
 import (
 	"fmt"
 
-	"github.com/labstack/gommon/log"
 	"github.com/rs/zerolog"
 
-	db "github.com/kinvolk/nebraska/backend/pkg/api"
-	"github.com/kinvolk/nebraska/backend/pkg/config"
-	"github.com/kinvolk/nebraska/backend/pkg/metrics"
-	"github.com/kinvolk/nebraska/backend/pkg/server"
-	"github.com/kinvolk/nebraska/backend/pkg/syncer"
+	db "github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/config"
+	"github.com/flatcar/nebraska/backend/pkg/logger"
+	"github.com/flatcar/nebraska/backend/pkg/metrics"
+	"github.com/flatcar/nebraska/backend/pkg/server"
+	"github.com/flatcar/nebraska/backend/pkg/syncer"
 )
+
+var l = logger.New("main")
 
 func main() {
 	// config parse
 	conf, err := config.Parse()
 	if err != nil {
-		log.Fatal("Error parsing config, err: ", err)
+		l.Fatal().
+			Err(err).
+			Msg("Error parsing config")
 	}
 
 	// validate config
 	err = conf.Validate()
 	if err != nil {
-		log.Fatal("Config is invalid, err: ", err)
+		l.Fatal().
+			Err(err).
+			Msg("Config is invalid")
 	}
 
 	if conf.RollbackDBTo != "" {
 		db, err := db.New()
 		if err != nil {
-			log.Fatal("DB connection err: ", err)
+			l.Fatal().
+				Err(err).
+				Msg("Failed to create a DB connection for migrating down")
 		}
 
 		count, err := db.MigrateDown(conf.RollbackDBTo)
 		if err != nil {
-			log.Fatal("DB migration down err: ", err)
+			l.Fatal().
+				Err(err).
+				Msg("Failed to perform DB down-migration")
 		}
-		log.Infof("DB migration down successful, migrated %d levels down", count)
+		l.Info().Msgf("DB migration down successful, migrated %d levels down", count)
 		return
 	}
 
 	// create new DB
 	db, err := db.NewWithMigrations()
 	if err != nil {
-		log.Fatal("DB connection err: ", err)
+		l.Fatal().
+			Err(err).
+			Msg("Failed to create a DB connection")
 	}
 
 	// setup logger
@@ -57,7 +69,9 @@ func main() {
 	if conf.EnableSyncer {
 		syncer, err := syncer.Setup(conf, db)
 		if err != nil {
-			log.Fatal("Syncer setup error:", err)
+			l.Fatal().
+				Err(err).
+				Msg("Failed to set up syncer")
 		}
 		go syncer.Start()
 		defer syncer.Stop()
@@ -66,14 +80,18 @@ func main() {
 	// setup and instrument metrics
 	err = metrics.RegisterAndInstrument(db)
 	if err != nil {
-		log.Fatal("Metrics register error:", err)
+		l.Fatal().
+			Err(err).
+			Msg("Failed to register metrics")
 	}
 
 	server, err := server.New(conf, db)
 	if err != nil {
-		log.Fatal("Server setup error:", err)
+		l.Fatal().
+			Err(err).
+			Msg("Failed to create a server")
 	}
 
 	// run server
-	log.Fatal(server.Start(fmt.Sprintf(":%d", conf.ServerPort)))
+	l.Fatal().Err(server.Start(fmt.Sprintf(":%d", conf.ServerPort))).Msg("starting server")
 }

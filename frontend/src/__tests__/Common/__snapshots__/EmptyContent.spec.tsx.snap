@@ -1,0 +1,17 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Empty > renders correct content 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root css-19midj6"
+  >
+    <p
+      class="MuiTypography-root MuiTypography-body1 MuiTypography-alignCenter css-11r2klu-MuiTypography-root"
+      data-testid="empty"
+      style="--Typography-textAlign: center;"
+    >
+      Some Dummy Content
+    </p>
+  </div>
+</DocumentFragment>
+`;

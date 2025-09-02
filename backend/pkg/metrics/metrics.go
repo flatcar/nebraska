@@ -7,8 +7,8 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 
-	"github.com/kinvolk/nebraska/backend/pkg/api"
-	"github.com/kinvolk/nebraska/backend/pkg/util"
+	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/logger"
 )
 
 const (
@@ -64,7 +64,7 @@ var (
 		},
 	)
 
-	logger = util.NewLogger("nebraska")
+	l = logger.New("nebraska")
 )
 
 // registerNebraskaMetrics registers the application metrics collector with the DefaultRegistrer.
@@ -97,7 +97,7 @@ func getMetricsRefreshInterval() time.Duration {
 
 	refreshInterval, err := time.ParseDuration(refreshIntervalEnvValue)
 	if err != nil || refreshInterval <= 0 {
-		logger.Warn().Str("value", refreshIntervalEnvValue).Msg("invalid NEBRASKA_METRICS_UPDATE_INTERVAL, it must be acceptable by time.ParseDuration and positive value")
+		l.Warn().Str("value", refreshIntervalEnvValue).Msg("invalid NEBRASKA_METRICS_UPDATE_INTERVAL, it must be acceptable by time.ParseDuration and positive value")
 		return defaultMetricsUpdateInterval
 	}
 	return refreshInterval
@@ -120,7 +120,7 @@ func RegisterAndInstrument(api *api.API) error {
 			<-metricsTicker.C
 			err := calculateMetrics(api)
 			if err != nil {
-				logger.Error().Err(err).Msg("registerAndInstrumentMetrics updating the metrics")
+				l.Error().Err(err).Msg("registerAndInstrumentMetrics updating the metrics")
 			}
 		}
 	}()

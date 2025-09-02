@@ -1,0 +1,198 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Card DescriptionLabel smoke-test 1`] = `
+<div class="MuiBox-root css-1yuhvjn">
+  <span class="MuiTypography-root MuiTypography-body1 css-1cs8bct-MuiTypography-root">
+    Description Label
+  </span>
+</div>
+`;
+
+exports[`Card FeatureLabel smoke-test 1`] = `
+<span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+  Feature Label
+</span>
+`;
+
+exports[`Card Header smoke-test 1`] = `
+<div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-rk1ovi-MuiGrid-root">
+  <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-1 css-1h67b43-MuiGrid-root">
+    <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
+      <h2 class="MuiTypography-root MuiTypography-h2 css-wqt949-MuiTypography-root">
+        <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-nlfr05-MuiTypography-root-MuiLink-root"
+           href="/apps/123"
+           data-discover="true"
+        >
+          Flatcar
+        </a>
+      </h2>
+    </div>
+    <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
+      <div class="MuiBox-root css-1yq8yj7">
+        <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap css-1i0hvgs-MuiTypography-root"
+           arial-label="group-id"
+        >
+          a cardTrack
+        </p>
+      </div>
+      <div class="MuiBox-root css-1yuhvjn">
+        <span class="MuiTypography-root MuiTypography-body1 css-1cs8bct-MuiTypography-root">
+          Card Header description
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+    CardHeader children
+  </div>
+</div>
+<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light css-e5zbmt-MuiDivider-root">
+`;
+
+exports[`Card HeaderWithCardId smoke-test 1`] = `
+<div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-rk1ovi-MuiGrid-root">
+  <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-1 css-1h67b43-MuiGrid-root">
+    <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
+      <p class="MuiTypography-root MuiTypography-body1 css-8yrgva-MuiTypography-root">
+      </p>
+    </div>
+    <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
+      <div class="MuiBox-root css-1yq8yj7">
+        <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap css-1i0hvgs-MuiTypography-root"
+           arial-label="group-id"
+        >
+          a cardId
+        </p>
+      </div>
+      <div class="MuiBox-root css-1yuhvjn">
+        <span class="MuiTypography-root MuiTypography-body1 css-1cs8bct-MuiTypography-root">
+          Card Header With cardId description
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light css-e5zbmt-MuiDivider-root">
+`;
+
+exports[`Card HeaderWithCardTrack smoke-test 1`] = `
+<div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-rk1ovi-MuiGrid-root">
+  <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-1 css-1h67b43-MuiGrid-root">
+    <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
+      <p class="MuiTypography-root MuiTypography-body1 css-8yrgva-MuiTypography-root">
+      </p>
+    </div>
+    <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
+      <div class="MuiBox-root css-1yq8yj7">
+        <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap css-1i0hvgs-MuiTypography-root"
+           arial-label="group-id"
+        >
+          a cardTrack
+        </p>
+      </div>
+      <div class="MuiBox-root css-1yuhvjn">
+        <span class="MuiTypography-root MuiTypography-body1 css-1cs8bct-MuiTypography-root">
+          Card Header With cardTrack description
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light css-e5zbmt-MuiDivider-root">
+`;
+
+exports[`Card HeaderWithChildren smoke-test 1`] = `
+<div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-rk1ovi-MuiGrid-root">
+  <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-1 css-1h67b43-MuiGrid-root">
+    <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
+      <p class="MuiTypography-root MuiTypography-body1 css-8yrgva-MuiTypography-root">
+      </p>
+    </div>
+    <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
+      <div class="MuiBox-root css-1yq8yj7">
+        <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap css-1i0hvgs-MuiTypography-root"
+           arial-label="group-id"
+        >
+        </p>
+      </div>
+      <div class="MuiBox-root css-1yuhvjn">
+        <span class="MuiTypography-root MuiTypography-body1 css-1cs8bct-MuiTypography-root">
+          Card Header With Children description
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+    CardHeader children
+  </div>
+</div>
+<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light css-e5zbmt-MuiDivider-root">
+`;
+
+exports[`Card HeaderWithDescription smoke-test 1`] = `
+<div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-rk1ovi-MuiGrid-root">
+  <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-1 css-1h67b43-MuiGrid-root">
+    <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
+      <p class="MuiTypography-root MuiTypography-body1 css-8yrgva-MuiTypography-root">
+      </p>
+    </div>
+    <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
+      <div class="MuiBox-root css-1yq8yj7">
+        <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap css-1i0hvgs-MuiTypography-root"
+           arial-label="group-id"
+        >
+        </p>
+      </div>
+      <div class="MuiBox-root css-1yuhvjn">
+        <span class="MuiTypography-root MuiTypography-body1 css-1cs8bct-MuiTypography-root">
+          Card Header description
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light css-e5zbmt-MuiDivider-root">
+`;
+
+exports[`Card HeaderWithLink smoke-test 1`] = `
+<div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-rk1ovi-MuiGrid-root">
+  <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-1 css-1h67b43-MuiGrid-root">
+    <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
+      <h2 class="MuiTypography-root MuiTypography-h2 css-wqt949-MuiTypography-root">
+        <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-nlfr05-MuiTypography-root-MuiLink-root"
+           href="/apps/123"
+           data-discover="true"
+        >
+          Flatcar
+        </a>
+      </h2>
+    </div>
+    <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
+      <div class="MuiBox-root css-1yq8yj7">
+        <p class="MuiTypography-root MuiTypography-body1 MuiTypography-noWrap css-1i0hvgs-MuiTypography-root"
+           arial-label="group-id"
+        >
+        </p>
+      </div>
+      <div class="MuiBox-root css-1yuhvjn">
+        <span class="MuiTypography-root MuiTypography-body1 css-1cs8bct-MuiTypography-root">
+          Card Header With Link description
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light css-e5zbmt-MuiDivider-root">
+`;
+
+exports[`Card Label smoke-test 1`] = `
+<span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
+  Label
+</span>
+`;
+
+exports[`Card LabelWithStyles smoke-test 1`] = `
+<span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
+  Label
+</span>
+`;

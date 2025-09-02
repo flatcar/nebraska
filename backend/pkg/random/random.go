@@ -7,7 +7,7 @@ import (
 
 // This is so we can replace it for testing with something
 // deterministic.
-var randRead func([]byte) (int, error) = rand.Read
+var randRead = rand.Read
 
 // Data returns a slice with n random bytes.
 func Data(n int) []byte {

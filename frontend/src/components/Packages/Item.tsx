@@ -1,17 +1,16 @@
 import cancelIcon from '@iconify/icons-mdi/cancel';
 import cubeOutline from '@iconify/icons-mdi/cube-outline';
 import { InlineIcon } from '@iconify/react';
-import Grid from '@material-ui/core/Grid';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
-import makeStyles from '@material-ui/styles/makeStyles';
-import PropTypes from 'prop-types';
-import React from 'react';
+import Grid from '@mui/material/Grid';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
+
 import { Channel, Package } from '../../api/apiDataTypes';
 import { makeLocaleTime } from '../../i18n/dateTime';
 import flatcarIcon from '../../icons/flatcar-logo.json';
@@ -21,23 +20,30 @@ import ChannelAvatar from '../Channels/ChannelAvatar';
 import Label from '../common/Label';
 import MoreMenu from '../common/MoreMenu';
 
-//@todo visit this again
-//@ts-ignore
-const useStyles = makeStyles({
-  packageName: {
+const PREFIX = 'Item';
+
+const classes = {
+  packageName: `${PREFIX}-packageName`,
+  subtitle: `${PREFIX}-subtitle`,
+  packageIcon: `${PREFIX}-packageIcon`,
+  channelLabel: `${PREFIX}-channelLabel`,
+};
+
+const StyledListItem = styled(ListItem)({
+  [`& .${classes.packageName}`]: {
     fontSize: '1.1em',
   },
-  subtitle: {
+  [`& .${classes.subtitle}`]: {
     fontSize: '.9em',
     textTransform: 'uppercase',
     fontWeight: 300,
     paddingRight: '.05em',
     color: '#595959',
   },
-  packageIcon: {
+  [`& .${classes.packageIcon}`]: {
     minWidth: '40px',
   },
-  channelLabel: {
+  [`& .${classes.channelLabel}`]: {
     marginRight: '5px',
   },
 });
@@ -49,12 +55,13 @@ const containerIcons: {
   other: { icon: cubeOutline, name: 'Other' },
 };
 
-function Item(props: {
+interface ItemProps {
   packageItem: Package;
   channels: Channel[];
-  handleUpdatePackage: (pkgId: string) => void;
-}) {
-  const classes = useStyles();
+  handleUpdatePackage(pkgId: string): void;
+}
+
+function Item(props: ItemProps) {
   const { t } = useTranslation();
 
   const type = props.packageItem.type || 1;
@@ -70,7 +77,7 @@ function Item(props: {
   }
 
   function deletePackage() {
-    const confirmationText = t('packages|Are you sure you want to delete this package?');
+    const confirmationText = t('packages|confirm_delete_package');
     if (window.confirm(confirmationText)) {
       applicationsStore().deletePackage(
         props.packageItem.application_id,
@@ -86,17 +93,17 @@ function Item(props: {
   function makeItemSecondaryInfo() {
     return (
       <Grid container direction="column">
-        <Grid item>
+        <Grid>
           <Typography component="span" className={classes.subtitle}>
-            {t('packages|Version:')}
+            {`${t('packages|version')}:`}
           </Typography>
           &nbsp;
           {`${cleanSemverVersion(props.packageItem.version)} (${ARCHES[props.packageItem.arch]})`}
         </Grid>
         {processedChannels.length > 0 && (
-          <Grid item>
+          <Grid>
             <Typography component="span" className={classes.subtitle}>
-              {t('packages|Channels:')}
+              {`${t('packages|channels')}:`}
             </Typography>
             &nbsp;
             {processedChannels.map((channel, i) => {
@@ -110,9 +117,9 @@ function Item(props: {
             })}
           </Grid>
         )}
-        <Grid item>
+        <Grid>
           <Typography component="span" className={classes.subtitle}>
-            {t('packages|Released:')}
+            {`${t('packages|released')}:`}
           </Typography>
           &nbsp;
           {makeLocaleTime(props.packageItem.created_ts, {
@@ -121,7 +128,7 @@ function Item(props: {
           })}
         </Grid>
         {props.packageItem.channels_blacklist && (
-          <Grid item>
+          <Grid>
             {props.packageItem.channels_blacklist && (
               <Label>
                 <InlineIcon icon={cancelIcon} width="10" height="10" /> {blacklistInfo}
@@ -134,7 +141,7 @@ function Item(props: {
   }
 
   return (
-    <ListItem dense alignItems="flex-start">
+    <StyledListItem dense alignItems="flex-start">
       <ListItemIcon className={classes.packageIcon}>
         <InlineIcon icon={item.icon} width="35" height="35" />
       </ListItemIcon>
@@ -147,19 +154,13 @@ function Item(props: {
       <ListItemSecondaryAction>
         <MoreMenu
           options={[
-            { label: t('frequent|Edit'), action: updatePackage },
-            { label: t('frequent|Delete'), action: deletePackage },
+            { label: t('frequent|edit'), action: updatePackage },
+            { label: t('frequent|delete'), action: deletePackage },
           ]}
         />
       </ListItemSecondaryAction>
-    </ListItem>
+    </StyledListItem>
   );
 }
-
-Item.propTypes = {
-  packageItem: PropTypes.object.isRequired,
-  channels: PropTypes.array,
-  handleUpdatePackage: PropTypes.func.isRequired,
-};
 
 export default Item;

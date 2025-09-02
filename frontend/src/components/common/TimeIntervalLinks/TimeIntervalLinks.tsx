@@ -1,18 +1,26 @@
-import { Box, Grid, Link, makeStyles, Typography } from '@material-ui/core';
+import { Box, Grid, Link, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import React from 'react';
+
 import API from '../../../api/API';
 import { timeIntervalsDefault } from '../../../utils/helpers';
 
-const useStyles = makeStyles(() => ({
-  title: {
+const PREFIX = 'TimeIntervalLinks';
+
+const classes = {
+  title: `${PREFIX}-title`,
+};
+
+const StyledGrid = styled(Grid)(() => ({
+  [`& .${classes.title}`]: {
     fontSize: '1rem',
   },
 }));
 
 interface TimeIntervalLinksProps {
   selectedInterval: string;
-  appID: string;
-  groupID: string;
+  appID?: string;
+  groupID?: string;
   intervalChangeHandler: (value: any) => any;
 }
 
@@ -20,7 +28,6 @@ export default function TimeIntervalLinks(props: TimeIntervalLinksProps) {
   const { selectedInterval, intervalChangeHandler } = props;
   const [timeIntervals, setTimeIntervals] = React.useState(timeIntervalsDefault);
   const { appID, groupID } = props;
-  const classes = useStyles();
 
   React.useEffect(() => {
     if (appID && groupID) {
@@ -40,13 +47,14 @@ export default function TimeIntervalLinks(props: TimeIntervalLinksProps) {
         setTimeIntervals(timeIntervalsToUpdate);
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appID, groupID]);
 
   return (
-    <Grid container spacing={1}>
+    <StyledGrid container spacing={1}>
       {timeIntervals.map((link, index) => (
         <React.Fragment key={link.queryValue}>
-          <Grid item>
+          <Grid>
             <Link
               underline="none"
               component="button"
@@ -55,8 +63,8 @@ export default function TimeIntervalLinks(props: TimeIntervalLinksProps) {
                 link.disabled
                   ? 'textSecondary'
                   : link.queryValue === selectedInterval
-                  ? 'inherit'
-                  : 'primary'
+                    ? 'inherit'
+                    : 'primary'
               }
               style={{
                 color: !link.disabled && link.queryValue !== selectedInterval ? '#1b5c91' : '',
@@ -66,12 +74,12 @@ export default function TimeIntervalLinks(props: TimeIntervalLinksProps) {
             </Link>
           </Grid>
           {index < timeIntervals.length - 1 && (
-            <Grid item>
+            <Grid>
               <Box color="text.disabled">{'.'}</Box>
             </Grid>
           )}
         </React.Fragment>
       ))}
-    </Grid>
+    </StyledGrid>
   );
 }

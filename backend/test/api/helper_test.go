@@ -13,7 +13,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/kinvolk/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api"
 )
 
 // newDBForTest is a helper function that
@@ -144,7 +144,7 @@ func waitServerReady(serverURL string) (bool, error) {
 			continue
 		}
 
-		if (http.StatusOK == resp.StatusCode) && ("OK" == string(bodyBytes)) {
+		if (http.StatusOK == resp.StatusCode) && (string(bodyBytes) == "OK") {
 			return true, nil
 		}
 	}

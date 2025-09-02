@@ -1,11 +1,12 @@
-import { Box, makeStyles } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import MuiList from '@material-ui/core/List';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import Typography from '@material-ui/core/Typography';
+import { Box } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import MuiList from '@mui/material/List';
+import ListSubheader from '@mui/material/ListSubheader';
+import Typography from '@mui/material/Typography';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
+
 import API from '../../api/API';
 import { Channel, Package } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
@@ -17,17 +18,8 @@ import SectionPaper from '../common/SectionPaper';
 import ChannelEdit from './ChannelEdit';
 import ChannelItem from './ChannelItem';
 
-const useStyles = makeStyles({
-  root: {
-    '& > hr:first-child': {
-      display: 'none',
-    },
-  },
-});
-
 function Channels(props: { channels: null | Channel[]; onEdit: (channelId: string) => void }) {
   const { channels, onEdit } = props;
-  const classes = useStyles();
   const { t } = useTranslation();
 
   const channelsPerArch = (function () {
@@ -50,7 +42,7 @@ function Channels(props: { channels: null | Channel[]; onEdit: (channelId: strin
   );
 
   if (noChannels) {
-    return <Empty>{t('channels|No channels created for this application yet')}</Empty>;
+    return <Empty>{t('channels|no_channels_created')}</Empty>;
   }
 
   return (
@@ -60,7 +52,11 @@ function Channels(props: { channels: null | Channel[]; onEdit: (channelId: strin
           key={arch}
           subheader={<ListSubheader disableSticky>{ARCHES[parseInt(arch)]}</ListSubheader>}
           dense
-          className={classes.root}
+          sx={{
+            '& > hr:first-of-type': {
+              display: 'none',
+            },
+          }}
         >
           {channels.map(channel => (
             <ChannelItem
@@ -114,10 +110,11 @@ export default function ChannelList(props: ChannelListProps) {
     return function cleanup() {
       applicationsStore().removeChangeListener(onStoreChange);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [application]);
 
   const channels = application ? (application.channels ? application.channels : []) : [];
-  const loading = (application ? application.channels === null : true) || packages === null;
+  const loading = !application || packages === null;
 
   return (
     <ChannelListPure
@@ -161,11 +158,11 @@ export function ChannelListPure(props: ChannelListPureProps) {
   return (
     <Box mt={2}>
       <Box mb={2}>
-        <Grid container alignItems="center" justify="space-between">
-          <Grid item>
-            <Typography variant="h1">{t('channels|Channels')}</Typography>
+        <Grid container alignItems="center" justifyContent="space-between">
+          <Grid>
+            <Typography variant="h1">{t('channels|channels')}</Typography>
           </Grid>
-          <Grid item>
+          <Grid>
             <ModalButton
               modalToOpen="AddChannelModal"
               data={{

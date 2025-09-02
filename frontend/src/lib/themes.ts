@@ -1,10 +1,10 @@
-import green from '@material-ui/core/colors/green';
-import { createMuiTheme, Theme } from '@material-ui/core/styles';
+import { green } from '@mui/material/colors';
+import { createTheme, Theme } from '@mui/material/styles';
 import React from 'react';
 
 const DISABLE_BROWSER_THEME_PREF = true;
 
-declare module '@material-ui/core/styles/createPalette' {
+declare module '@mui/material/styles' {
   interface Palette {
     titleColor: '#000000';
     lightSilverShade: '#F0F0F0';
@@ -13,19 +13,47 @@ declare module '@material-ui/core/styles/createPalette' {
   }
 }
 
-const lightTheme = createMuiTheme({
+const lightTheme = createTheme({
+  components: {
+    MuiSelect: {
+      defaultProps: {
+        variant: 'standard',
+      },
+    },
+    MuiFormControl: {
+      defaultProps: {
+        variant: 'standard',
+      },
+    },
+    MuiTextField: {
+      defaultProps: {
+        variant: 'standard',
+      },
+    },
+    MuiAppBar: {
+      styleOverrides: {
+        root: { '--AppBar-background': '#fff' },
+      },
+    },
+  },
   palette: {
+    background: {
+      default: '#FAFAFA',
+    },
     primary: {
       contrastText: '#fff',
-      main: process.env.REACT_APP_PRIMARY_COLOR ? process.env.REACT_APP_PRIMARY_COLOR : '#2C98F0',
+      main: import.meta.env.VITE_PRIMARY_COLOR ? import.meta.env.VITE_PRIMARY_COLOR : '#2C98F0',
     },
     success: {
-      main: green['500'],
+      main: green['800'],
       ...green,
     },
   },
   typography: {
     fontFamily: 'Overpass, sans-serif',
+    body1: {
+      fontSize: '0.875rem',
+    },
     h1: {
       fontSize: '1.875rem',
       fontWeight: 900,
@@ -52,10 +80,17 @@ const lightTheme = createMuiTheme({
   },
 });
 
-const darkTheme = createMuiTheme({
+const darkTheme = createTheme({
   ...lightTheme,
+  components: {
+    MuiAppBar: {
+      styleOverrides: {
+        root: { '--AppBar-background': '#000' },
+      },
+    },
+  },
   palette: {
-    type: 'dark',
+    mode: 'dark',
     primary: {
       contrastText: '#fff',
       main: '#000',
@@ -75,10 +110,6 @@ const themesConf: ThemesConf = {
 export default themesConf;
 
 export function usePrefersColorScheme() {
-  if (DISABLE_BROWSER_THEME_PREF || typeof window.matchMedia !== 'function') {
-    return 'light';
-  }
-
   const mql = window.matchMedia('(prefers-color-scheme: dark)');
   const [value, setValue] = React.useState(mql.matches);
 
@@ -86,7 +117,12 @@ export function usePrefersColorScheme() {
     const handler = (x: MediaQueryListEvent | MediaQueryList) => setValue(x.matches);
     mql.addListener(handler);
     return () => mql.removeListener(handler);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (DISABLE_BROWSER_THEME_PREF || typeof window.matchMedia !== 'function') {
+    return 'light';
+  }
 
   return value;
 }

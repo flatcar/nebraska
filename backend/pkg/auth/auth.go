@@ -3,11 +3,11 @@ package auth
 import (
 	"github.com/labstack/echo/v4"
 
-	"github.com/kinvolk/nebraska/backend/pkg/util"
+	"github.com/flatcar/nebraska/backend/pkg/logger"
 )
 
 var (
-	logger = util.NewLogger("auth")
+	l = logger.New("auth")
 )
 
 // Authenticator provides a way to authenticate a user sending an HTTP

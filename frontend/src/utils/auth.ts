@@ -1,6 +1,7 @@
-import jwt_decode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import React from 'react';
-import { useHistory } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
+
 import { setUser, UserState } from '../stores/redux/features/user';
 import { useDispatch, useSelector } from '../stores/redux/hooks';
 
@@ -24,7 +25,7 @@ export function isValidToken(token: string) {
     return false;
   }
 
-  const decoded = jwt_decode(token) as JWT;
+  const decoded = jwtDecode(token) as JWT;
 
   // Check if it's expired
   const expiration = new Date(decoded.exp * 1000);
@@ -45,7 +46,7 @@ function getUserInfoFromToken(token: string) {
     return info;
   }
 
-  const decoded = jwt_decode(token) as JWT;
+  const decoded = jwtDecode(token) as JWT;
 
   info.name = decoded.given_name || '';
   info.email = decoded.email || '';
@@ -57,33 +58,37 @@ export function useAuthRedirect() {
   const config = useSelector(state => state.config);
   const user = useSelector(state => state.user);
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  function shouldUpdateUser(token: string) {
-    const newInfo = getUserInfoFromToken(token);
+  const shouldUpdateUser = React.useCallback(
+    (token: string) => {
+      const newInfo = getUserInfoFromToken(token);
 
-    for (const [key, value] of Object.entries(newInfo)) {
-      if (user[key] !== value) {
-        return true;
+      for (const [key, value] of Object.entries(newInfo)) {
+        if (user[key] !== value) {
+          return true;
+        }
       }
-    }
 
-    return false;
-  }
+      return false;
+    },
+    [user]
+  );
 
   React.useEffect(() => {
-    const params = new URLSearchParams(history.location.search);
+    const params = new URLSearchParams(location.search);
     // We only do the login dance if the auth mode is OIDC
     if (config.auth_mode !== 'oidc') {
       return;
     }
 
     const token = params.get('id_token');
-    if (!!token) {
+    if (token) {
       setToken(token);
       // Discard the URL search params
       dispatch(setUser({ authenticated: true }));
-      history.push(history.location.pathname);
+      navigate(location.pathname);
       return;
     }
 
@@ -94,12 +99,12 @@ export function useAuthRedirect() {
     }
 
     if ((!isValidToken(currentToken) || !user?.authenticated) && !!config.login_url) {
-      var login_redirect_url = new URL(window.location.href);
+      const login_redirect_url = new URL(window.location.href);
       if (login_redirect_url.pathname === '/login') {
         login_redirect_url.pathname = '/';
       }
       window.location.href =
         config.login_url + '?login_redirect_url=' + login_redirect_url.toString();
     }
-  }, [history, user, config]);
+  }, [navigate, location, user, config, dispatch, shouldUpdateUser]);
 }

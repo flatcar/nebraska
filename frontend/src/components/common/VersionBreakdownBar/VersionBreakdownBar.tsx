@@ -1,27 +1,35 @@
-import Paper from '@material-ui/core/Paper';
-import { makeStyles, Theme } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import { useTheme } from '@material-ui/styles';
+import Paper from '@mui/material/Paper';
+import { styled } from '@mui/material/styles';
+import { Theme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+
 import { Channel } from '../../../api/apiDataTypes';
 import { cleanSemverVersion, makeColorsForVersions } from '../../../utils/helpers';
 
-const useStyles = makeStyles({
-  noBorder: {
-    border: 'none',
-  },
-});
+const PREFIX = 'VersionProgressBar';
 
-const useChartStyle = makeStyles(theme => ({
-  chart: {
+const classes = {
+  chart: `${PREFIX}-chart`,
+  container: `${PREFIX}-container`,
+};
+
+const BorderlessTableCell = styled(TableCell)(() => ({
+  border: 'none',
+}));
+
+const StyledResponsiveContainer = styled(ResponsiveContainer)(({ theme }) => ({
+  [`& .${classes.chart}`]: {
     zIndex: theme.zIndex.drawer,
   },
-  container: {
+
+  [`&.${classes.container}`]: {
     marginLeft: 'auto',
     marginRight: 'auto',
   },
@@ -36,7 +44,6 @@ function VersionsTooltip(props: {
     };
   };
 }) {
-  const classes = useStyles();
   const { data, versions, colors } = props.versionsData;
 
   return (
@@ -49,10 +56,10 @@ function VersionsTooltip(props: {
               const value = data[version].toFixed(1);
               return (
                 <TableRow key={version}>
-                  <TableCell className={classes.noBorder}>
+                  <BorderlessTableCell>
                     <span style={{ color: color, fontWeight: 'bold' }}>{version}</span>
-                  </TableCell>
-                  <TableCell className={classes.noBorder}>{value} %</TableCell>
+                  </BorderlessTableCell>
+                  <BorderlessTableCell>{value} %</BorderlessTableCell>
                 </TableRow>
               );
             })}
@@ -64,11 +71,10 @@ function VersionsTooltip(props: {
 }
 
 function VersionProgressBar(props: { version_breakdown: any; channel: Channel | null }) {
-  const classes = useChartStyle();
   const theme = useTheme();
   const { t } = useTranslation();
   let lastVersionChannel: string | null = '';
-  const otherVersionLabel = t('common|Other');
+  const otherVersionLabel = t('common|other_option');
   const [chartData, setChartData] = React.useState<{
     data: any;
     versions: string[];
@@ -142,20 +148,21 @@ function VersionProgressBar(props: { version_breakdown: any; channel: Channel | 
 
   React.useEffect(() => {
     setup(props.version_breakdown, props.channel);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.version_breakdown, props.channel]);
 
   return (
-    <ResponsiveContainer width="95%" height={30} className={classes.container}>
+    <StyledResponsiveContainer width="95%" height={30} className={classes.container}>
       <BarChart layout="vertical" maxBarSize={10} data={[chartData.data]} className={classes.chart}>
         <Tooltip content={<VersionsTooltip versionsData={chartData} />} />
         <XAxis hide type="number" />
         <YAxis hide dataKey="key" type="category" />
         {chartData.versions.map((version, index) => {
           const color = chartData.colors[version];
-          return <Bar key={index} dataKey={version} stackId="1" fill={color} layout="vertical" />;
+          return <Bar key={index} dataKey={version} stackId="1" fill={color} />;
         })}
       </BarChart>
-    </ResponsiveContainer>
+    </StyledResponsiveContainer>
   );
 }
 

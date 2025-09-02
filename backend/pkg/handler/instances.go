@@ -6,10 +6,10 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/kinvolk/nebraska/backend/pkg/codegen"
+	"github.com/flatcar/nebraska/backend/pkg/codegen"
 )
 
-func (h *Handler) GetInstance(ctx echo.Context, appIDorProductID string, groupID string, instanceID string) error {
+func (h *Handler) GetInstance(ctx echo.Context, appIDorProductID string, _ string, instanceID string) error {
 	appID, err := h.db.GetAppID(appIDorProductID)
 	if err != nil {
 		return appNotFoundResponse(ctx, appIDorProductID)
@@ -20,7 +20,7 @@ func (h *Handler) GetInstance(ctx echo.Context, appIDorProductID string, groupID
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
 		}
-		logger.Error().Err(err).Str("appID", appID).Str("instanceID", instanceID).Msg("getInstance - getting instance")
+		l.Error().Err(err).Str("appID", appID).Str("instanceID", instanceID).Msg("getInstance - getting instance")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 	return ctx.JSON(http.StatusOK, instance)
@@ -41,7 +41,7 @@ func (h *Handler) GetInstanceStatusHistory(ctx echo.Context, appIDorProductID st
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
 		}
-		logger.Error().Err(err).Str("appID", appID).Str("groupID", groupID).Str("instanceID", instanceID).Msgf("getInstanceStatusHistory - getting status history limit %d", params.Limit)
+		l.Error().Err(err).Str("appID", appID).Str("groupID", groupID).Str("instanceID", instanceID).Msgf("getInstanceStatusHistory - getting status history limit %d", params.Limit)
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
@@ -49,7 +49,7 @@ func (h *Handler) GetInstanceStatusHistory(ctx echo.Context, appIDorProductID st
 }
 
 func (h *Handler) UpdateInstance(ctx echo.Context, instanceID string) error {
-	logger := loggerWithUsername(logger, ctx)
+	l := loggerWithUsername(l, ctx)
 
 	var request codegen.UpdateInstanceConfig
 
@@ -60,11 +60,11 @@ func (h *Handler) UpdateInstance(ctx echo.Context, instanceID string) error {
 
 	instance, err := h.db.UpdateInstance(instanceID, request.Alias)
 	if err != nil {
-		logger.Error().Err(err).Str("instance", instanceID).Msgf("updateInstance - updating params %s", request.Alias)
+		l.Error().Err(err).Str("instance", instanceID).Msgf("updateInstance - updating params %s", request.Alias)
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	logger.Info().Msgf("updateInstance - successfully updated instance %q alias to %q", instanceID, instance.Alias)
+	l.Info().Msgf("updateInstance - successfully updated instance %q alias to %q", instanceID, instance.Alias)
 
 	return ctx.JSON(http.StatusOK, instance)
 }

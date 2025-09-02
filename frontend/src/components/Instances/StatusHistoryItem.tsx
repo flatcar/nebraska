@@ -1,7 +1,8 @@
-import { Box } from '@material-ui/core';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
+import { Box } from '@mui/material';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 import React from 'react';
+
 import { InstanceStatusHistory } from '../../api/apiDataTypes';
 import { makeLocaleTime } from '../../i18n/dateTime';
 import {
@@ -29,6 +30,7 @@ function StatusHistoryItem(props: StatusHistoryItemProps) {
   }>({});
   React.useEffect(() => {
     fetchStatusFromStore();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function fetchStatusFromStore() {

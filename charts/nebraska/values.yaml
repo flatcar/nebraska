@@ -35,6 +35,8 @@ config:
     # nebraskaURL: http://flatcar.example.com
     persistence:
       enabled: false
+      labels: {}
+      annotations: {}
       storageClass:
       accessModes:
         - ReadWriteOnce
@@ -121,6 +123,7 @@ strategy:
   #   maxUnavailable: 25%
 
 podAnnotations: {}
+podLabels: {}
 
 podSecurityContext:
   runAsUser: 65534
@@ -188,6 +191,9 @@ readinessProbe:
     path: /
     port: http
 
+extraLabels: {}
+extraAnnotations: {}
+
 # Configuration values for the postgresql dependency.
 # ... for more options see https://github.com/bitnami/charts/tree/master/bitnami/postgresql
 postgresql:
@@ -197,7 +203,7 @@ postgresql:
     database: nebraska
     postgresPassword: changeIt
   image:
-    tag: 13.8.0-debian-11-r18
+    tag: 17.5.0
   primary:
     persistence:
       enabled: false

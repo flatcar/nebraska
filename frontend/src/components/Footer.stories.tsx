@@ -1,7 +1,8 @@
 import { createStore } from '@reduxjs/toolkit';
-import { Meta, Story } from '@storybook/react/types-6-0';
+import { Meta, StoryFn } from '@storybook/react-vite';
 import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router';
+
 import FooterComponent from './Footer';
 
 export default {
@@ -19,9 +20,9 @@ export default {
   ],
 } as Meta;
 
-const Template: Story = args => {
-  // eslint-disable-next-line no-unused-vars
-  const store = createStore((state = { config: {} }, action) => state, {
+const Template: StoryFn = args => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const store = createStore((state = { config: {} }, _action) => state, {
     config: {
       ...args,
     },
@@ -33,14 +34,20 @@ const Template: Story = args => {
   );
 };
 
-export const FooterNoOverride = Template.bind({});
-FooterNoOverride.args = {
-  title: '',
-  nebraska_version: '',
+export const FooterNoOverride = {
+  render: Template,
+
+  args: {
+    title: '',
+    nebraska_version: '',
+  },
 };
 
-export const FooterOverride = Template.bind({});
-FooterOverride.args = {
-  title: 'Some Pro Update Service',
-  nebraska_version: '1.2.3',
+export const FooterOverride = {
+  render: Template,
+
+  args: {
+    title: 'Some Pro Update Service',
+    nebraska_version: '1.2.3',
+  },
 };

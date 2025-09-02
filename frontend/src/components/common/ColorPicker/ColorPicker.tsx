@@ -1,15 +1,19 @@
-import IconButton from '@material-ui/core/IconButton';
-import Popover from '@material-ui/core/Popover';
-import { makeStyles } from '@material-ui/styles';
+import IconButton from '@mui/material/IconButton';
+import Popover from '@mui/material/Popover';
+import { styled } from '@mui/material/styles';
 import React from 'react';
 import { TwitterPicker } from 'react-color';
+
 import ChannelAvatar from '../../Channels/ChannelAvatar';
 
-// @todo: This needs to become a FormControl so we can display it in a similar
-// style as the other form controls.
+const PREFIX = 'ColorPicker';
 
-const useStyles = makeStyles({
-  iconButton: {
+const classes = {
+  iconButton: `${PREFIX}-iconButton`,
+};
+
+const Root = styled('div')({
+  [`& .${classes.iconButton}`]: {
     padding: '0',
   },
 });
@@ -25,7 +29,6 @@ export interface ColorPickerProps {
 }
 
 export default function ColorPicker(props: ColorPickerProps) {
-  const classes = useStyles();
   const [channelColor, setChannelColor] = React.useState(props.color);
   const [displayColorPicker, setDisplayColorPicker] = React.useState(props.initialOpen);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -47,11 +50,12 @@ export default function ColorPicker(props: ColorPickerProps) {
   }
 
   return (
-    <div>
+    <Root>
       <IconButton
         className={classes.iconButton}
         onClick={handleColorButtonClick}
         data-testid="icon-button"
+        size="large"
       >
         {props.children ? (
           <ChannelAvatar color={channelColor}>{props.children}</ChannelAvatar>
@@ -81,6 +85,6 @@ export default function ColorPicker(props: ColorPickerProps) {
           />
         </Popover>
       )}
-    </div>
+    </Root>
   );
 }

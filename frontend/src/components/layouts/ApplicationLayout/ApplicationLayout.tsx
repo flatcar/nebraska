@@ -1,8 +1,9 @@
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router';
 import _ from 'underscore';
+
 import { applicationsStore } from '../../../stores/Stores';
 import ChannelList from '../../Channels/ChannelList';
 import SectionHeader from '../../common/SectionHeader/SectionHeader';
@@ -34,6 +35,10 @@ function ApplicationLayout() {
     appName = application.name;
   }
 
+  if (!appID) {
+    return <Navigate to="/404" replace />;
+  }
+
   return (
     <div>
       <SectionHeader
@@ -41,20 +46,30 @@ function ApplicationLayout() {
         breadcrumbs={[
           {
             path: '/apps',
-            label: t('layouts|Applications'),
+            label: t('layouts|applications'),
           },
         ]}
       />
-      <Grid container spacing={1} justify="space-between">
-        <Grid item xs={12} sm={8}>
+      <Grid container spacing={1} justifyContent="space-between">
+        <Grid
+          size={{
+            xs: 12,
+            sm: 8,
+          }}
+        >
           <GroupList appID={appID} />
         </Grid>
-        <Grid item xs={12} sm={4}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 4,
+          }}
+        >
           <Grid container direction="column" alignItems="stretch" spacing={2}>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <ChannelList appID={appID} />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <PackagesList appID={appID} />
             </Grid>
           </Grid>

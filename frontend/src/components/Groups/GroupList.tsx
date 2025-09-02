@@ -1,9 +1,9 @@
-import MuiList from '@material-ui/core/List';
-import Paper from '@material-ui/core/Paper';
-import { makeStyles } from '@material-ui/core/styles';
+import MuiList from '@mui/material/List';
+import Paper from '@mui/material/Paper';
 import React from 'react';
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import _ from 'underscore';
+
 import { Channel, Group } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import Empty from '../common/EmptyContent';
@@ -13,20 +13,12 @@ import ModalButton from '../common/ModalButton';
 import GroupEditDialog from './GroupEditDialog';
 import GroupItem from './GroupItem';
 
-const useStyles = makeStyles(() => ({
-  root: {
-    '& > hr:first-child': {
-      display: 'none',
-    },
-  },
-}));
-
 export interface GroupListProps {
   appID: string;
 }
 
 function GroupList({ appID }: GroupListProps) {
-  const classes = useStyles();
+  const { t } = useTranslation();
   const [application, setApplication] = React.useState(
     applicationsStore().getCachedApplication(appID)
   );
@@ -37,7 +29,7 @@ function GroupList({ appID }: GroupListProps) {
     setUpdateGroupModalVisible(false);
   }
 
-  function openUpdateGroupModal(appID: string, groupID: string) {
+  function openUpdateGroupModal(_: string, groupID: string) {
     setUpdateGroupModalVisible(true);
     setUpdateGroupIDModal(groupID);
   }
@@ -47,6 +39,7 @@ function GroupList({ appID }: GroupListProps) {
     return () => {
       applicationsStore().removeChangeListener(onChange);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function onChange() {
@@ -64,7 +57,7 @@ function GroupList({ appID }: GroupListProps) {
     if (_.isEmpty(groups)) {
       entries = (
         <Empty>
-          <Trans ns="Groups">
+          <Trans t={t} ns="groups" i18nKey="no_groups_yet">
             There are no groups for this application yet.
             <br />
             <br />
@@ -99,7 +92,6 @@ function GroupList({ appID }: GroupListProps) {
         title="Groups"
         actions={[
           <ModalButton
-            icon="plus"
             modalToOpen="AddGroupModal"
             data={{
               channels: channels,
@@ -109,7 +101,15 @@ function GroupList({ appID }: GroupListProps) {
         ]}
       />
       <Paper>
-        <MuiList className={classes.root}>{entries}</MuiList>
+        <MuiList
+          sx={{
+            '& > hr:first-of-type': {
+              display: 'none',
+            },
+          }}
+        >
+          {entries}
+        </MuiList>
         {groupToUpdate && (
           <GroupEditDialog
             data={{ group: groupToUpdate, channels: channels, appID: appID }}

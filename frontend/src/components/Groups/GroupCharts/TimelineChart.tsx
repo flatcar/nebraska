@@ -1,7 +1,8 @@
-import Box from '@material-ui/core/Box';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 import { Area, AreaChart, AreaProps, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
+
 import { getMinuteDifference, makeLocaleTime } from '../../../i18n/dateTime';
 
 export interface Duration {
@@ -31,6 +32,7 @@ export interface TimelineChartProps {
   onSelect: (activeLabel: any) => void;
   colors: any;
   keys: string[];
+  isAnimationActive?: boolean;
 }
 
 export default function TimelineChart(props: TimelineChartProps) {
@@ -145,6 +147,7 @@ export default function TimelineChart(props: TimelineChartProps) {
       <YAxis stroke="#000" />
       {props.keys.map((key: string, i: number) => (
         <Area
+          isAnimationActive={props.isAnimationActive}
           type={interpolation}
           key={i}
           dataKey={key}

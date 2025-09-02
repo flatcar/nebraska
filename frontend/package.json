@@ -1,95 +1,117 @@
 {
   "name": "Nebraska",
+  "description": "Nebraska is an update manager for Flatcar Container Linux.",
+  "private": true,
   "version": "0.1.0",
   "license": {
     "type": "Apache-2.0",
     "url": "http://www.apache.org/licenses/LICENSE-2.0"
   },
-  "description": "Nebraska is an update manager for Flatcar Container Linux.",
-  "author": "Kinvolk GmbH <oss@kinvolk.io>",
-  "repository": "https://github.com/kinvolk/nebraska",
-  "private": true,
+  "repository": "https://github.com/flatcar/nebraska",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint . && prettier --config package.json --check src/ e2e/",
+    "format": "prettier --config package.json --write src/ e2e/",
+    "i18n": "npx --no-install i18next ./src/**/ts* ./src/**/**/*.ts* ./src/**/**/**/*.ts* -c ./src/i18n/i18next-parser.config.js",
+    "lint:fix": "eslint . --fix",
+    "preview": "vite preview",
+    "test": "cross-env TEST_TZ=true vitest --silent",
+    "test:coverage": "cross-env TEST_TZ=true vitest --silent --coverage --environment=jsdom --reporter=default --coverage.dir=coverage/report",
+    "build-storybook:ci": "cross-env NODE_ENV=test storybook build --quiet",
+    "serve-storybook:ci": "npm exec -- http-server storybook-static --port 6006 --silent",
+    "test-storybook:ci": "npx wait-on tcp:127.0.0.1:6006 && cross-env NODE_ENV=test TZ=UTC test-storybook",
+    "build-storybook": "storybook build",
+    "storybook": "storybook dev -p 6006",
+    "tsc": "tsc",
+    "build-icons": "node tools/build-icons.js ./src/img ./src/icons && npm run format"
+  },
   "dependencies": {
-    "@material-ui/core": "^4.7.2",
-    "@material-ui/icons": "^4.5.1",
-    "@reduxjs/toolkit": "^1.6.0",
-    "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^12.0.0",
-    "@types/dompurify": "^2.2.1",
-    "@types/node": "^14.17.4",
-    "@types/pubsub-js": "^1.8.2",
-    "@types/react": "^17.0.13",
-    "@types/react-color": "^3.0.4",
-    "@types/react-dom": "^17.0.8",
-    "@types/react-window": "^1.8.2",
-    "@types/semver": "^7.3.6",
-    "@types/yup": "^0.29.12",
-    "cross-env": "^7.0.3",
-    "dompurify": "^2.2.9",
-    "downshift": "^6.1.3",
-    "formik": "^2.2.9",
-    "formik-material-ui": "^3.0.1",
-    "i18next": "^20.3.2",
-    "i18next-browser-languagedetector": "^6.1.2",
-    "jwt-decode": "^3.1.2",
-    "moment-timezone": "^0.5.38",
-    "prop-types": "^15.7.2",
-    "pubsub-js": "^1.9.3",
-    "react": "^17.0.2",
-    "react-color": "^2.17.3",
-    "react-dom": "^17.0.2",
-    "react-i18next": "^11.11.0",
-    "react-redux": "^7.2.4",
-    "react-router-dom": "^5.1.2",
-    "react-scripts": "^4.0.0",
-    "react-window": "^1.8.5",
-    "recharts": "^2.0.9",
-    "semver": "^7.3.5",
-    "typescript": "^4.3.5",
-    "underscore": "^1.13.1",
-    "yup": "^0.32.9"
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^7.1.0",
+    "@mui/material": "^7.1.0",
+    "@mui/styled-engine-sc": "^7.1.0",
+    "@mui/styles": "^6.5.0",
+    "@mui/system": "^7.1.0",
+    "@mui/utils": "^7.1.0",
+    "@reduxjs/toolkit": "^2.8.2",
+    "@types/dompurify": "^3.2.0",
+    "@types/node": "^24.3.0",
+    "@types/pubsub-js": "^1.8.6",
+    "@types/react-color": "^3.0.13",
+    "@types/react-window": "^1.8.8",
+    "@types/semver": "^7.7.0",
+    "@types/yup": "^0.32.0",
+    "cross-env": "^10.0.0",
+    "dompurify": "^3.2.6",
+    "downshift": "^9.0.10",
+    "eventemitter3": "^5.0.1",
+    "formik": "^2.4.6",
+    "formik-mui": "^4.0.0",
+    "i18next": "^25.4.2",
+    "i18next-browser-languagedetector": "^8.0.4",
+    "jwt-decode": "^4.0.0",
+    "moment-timezone": "^0.6.0",
+    "prop-types": "^15.8.1",
+    "pubsub-js": "^1.9.5",
+    "react": "19.1.1",
+    "react-color": "^2.19.3",
+    "react-dom": "19.1.1",
+    "react-i18next": "^15.7.2",
+    "react-redux": "^9.2.0",
+    "react-router": "^7.8.2",
+    "react-window": "^1.8.11",
+    "recharts": "^3.1.0",
+    "semver": "^7.7.1",
+    "underscore": "^1.13.7",
+    "yup": "^1.7.0"
   },
   "devDependencies": {
-    "@axe-core/react": "^4.2.2",
-    "@iconify/icons-mdi": "^1.0.112",
-    "@iconify/react": "^1.1.3",
-    "@iconify/tools": "^1.3.9",
-    "@kinvolk/eslint-config": "^0.5.0",
-    "@storybook/addon-actions": "6.5.13",
-    "@storybook/addon-essentials": "^6.5.13",
-    "@storybook/addon-links": "6.5.13",
-    "@storybook/addon-storyshots": "^6.5.13",
-    "@storybook/node-logger": "6.5.13",
-    "@storybook/preset-create-react-app": "^3.2.0",
-    "@storybook/react": "^6.5.13",
-    "@types/react-router-dom": "^5.1.7",
-    "@types/underscore": "^1.11.3",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-jsx-a11y": "^6.4.1",
-    "eslint-plugin-react": "^7.24.0",
-    "eslint-plugin-react-hooks": "^4.2.0",
-    "eslint-plugin-simple-import-sort": "^7.0.0",
-    "eslint-plugin-unused-imports": "^1.1.2",
-    "http-proxy-middleware": "^2.0.1",
-    "husky": "^4.3.8",
-    "i18next-parser": "^4.2.0",
-    "lint-staged": "^10.5.4",
-    "prettier": "^2.3.2"
-  },
-  "scripts": {
-    "build-icons": "node tools/build-icons.js ./src/img ./src/icons && npm run format",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "cross-env TEST_TZ=true react-scripts test --silent",
-    "test:coverage": "cross-env TEST_TZ=true react-scripts test --silent --watchAll=false --env=jsdom --coverage  --reporters=default --coverageDirectory=coverage/report",
-    "eject": "react-scripts eject",
-    "lint": "eslint -c package.json 'src/**/*.{js,jsx,ts,tsx}' && prettier --config package.json --check src/",
-    "format": "prettier --config package.json --write src/",
-    "lint:fix": "eslint -c package.json --fix 'src/**/*.{js,jsx,ts,tsx}'",
-    "i18n": "npx --no-install i18next ./src/**/ts* ./src/**/**/*.ts* ./src/**/**/**/*.ts* -c ./src/i18n/i18next-parser.config.js",
-    "tsc": "tsc",
-    "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public"
+    "@axe-core/react": "^4.10.1",
+    "@iconify/icons-mdi": "^1.2.48",
+    "@iconify/react": "^6.0.0",
+    "@iconify/tools": "^4.1.2",
+    "@playwright/test": "1.55.0",
+    "@storybook/addon-docs": "^9.1.3",
+    "@storybook/addon-links": "^9.1.3",
+    "@storybook/react-vite": "^9.1.3",
+    "@storybook/test-runner": "^0.24.0-next.1",
+    "@testing-library/react": "^16.3.0",
+    "@types/glob": "^9.0.0",
+    "@types/pg": "^8.15.5",
+    "@types/react": "19.1.11",
+    "@types/react-dom": "19.1.7",
+    "@types/react-router-dom": "^5.3.3",
+    "@types/underscore": "^1.13.0",
+    "@typescript-eslint/eslint-plugin": "^8.40.0",
+    "@typescript-eslint/parser": "^8.40.0",
+    "@vitejs/plugin-react": "^5.0.1",
+    "@vitest/coverage-istanbul": "^3.1.4",
+    "eslint": "^9.34.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
+    "eslint-plugin-storybook": "^9.1.3",
+    "eslint-plugin-unused-imports": "^4.2.0",
+    "globals": "^16.3.0",
+    "http-server": "^14.1.1",
+    "husky": "^9.1.7",
+    "i18next-parser": "^9.3.0",
+    "jsdom": "^26.0.0",
+    "lint-staged": "^16.1.5",
+    "pg": "^8.14.1",
+    "playwright": "1.55.0",
+    "prettier": "^3.6.2",
+    "storybook": "^9.0.14",
+    "typescript": "~5.9.2",
+    "typescript-eslint": "^8.40.0",
+    "vite": "^7.1.3",
+    "vitest": "^3.2.3"
   },
   "browserslist": {
     "production": [
@@ -114,43 +136,26 @@
     ],
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --config package.json --write"
+    ],
+    "e2e/**/*.{js,jsx,ts,tsx}": [
+      "eslint -c package.json --fix"
+    ],
+    "e2e/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "prettier --config package.json --write"
     ]
   },
-  "eslintConfig": {
-    "extends": [
-      "@kinvolk",
-      "prettier",
-      "plugin:jsx-a11y/recommended"
-    ],
-    "overrides": [
-      {
-        "files": [
-          "**/*.stories.*"
-        ],
-        "rules": {
-          "import/no-anonymous-default-export": "off"
-        }
-      }
-    ]
+  "prettier": {
+    "arrowParens": "avoid",
+    "singleQuote": true,
+    "semi": true,
+    "printWidth": 100,
+    "trailingComma": "es5"
   },
-  "prettier": "@kinvolk/eslint-config/prettier-config",
-  "jest": {
-    "collectCoverageFrom": [
-      "src/**/*.{js,jsx,ts,tsx}",
-      "!<rootDir>/node_modules/",
-      "!<rootDir>/build/",
-      "!src/**/*.stories*.{js,jsx,ts,tsx}"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "statements": 34.95,
-        "branches": 26.19,
-        "functions": 30.35,
-        "lines": 35.26
+  "overrides": {
+    "i18next-parser": {
+      "engines": {
+        "node": "^18.0.0 || ^20.0.0 || ^22.0.0 || ^24.0.0"
       }
-    },
-    "coverageReporters": [
-      "text"
-    ]
+    }
   }
 }

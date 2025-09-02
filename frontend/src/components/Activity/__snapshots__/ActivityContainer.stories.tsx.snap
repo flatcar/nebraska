@@ -1,0 +1,505 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`activity/ActivityContainer Empty smoke-test 1`] = `
+<div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row ListHeader-sectionHeader css-1j57vrs-MuiGrid-root">
+  <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+    <div class="MuiBox-root css-2rlxtj">
+      <h1 class="MuiTypography-root MuiTypography-h1 css-12oqc8p-MuiTypography-root">
+        Activity
+      </h1>
+    </div>
+  </div>
+</div>
+<div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-12jlilq-MuiPaper-root"
+     style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
+>
+  <div class="MuiBox-root css-1kbmarl">
+    <div class="MuiBox-root css-19midj6">
+      <p class="MuiTypography-root MuiTypography-body1 MuiTypography-alignCenter css-12k2fzb-MuiTypography-root"
+         data-testid="empty"
+         style="--Typography-textAlign: center;"
+      >
+        No activity found for the last week.
+        <br>
+        <br>
+        You will see here important events related to the rollout of your updates. Stay tuned!
+      </p>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`activity/ActivityContainer List smoke-test 1`] = `
+<div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row ListHeader-sectionHeader css-1j57vrs-MuiGrid-root">
+  <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+    <div class="MuiBox-root css-2rlxtj">
+      <h1 class="MuiTypography-root MuiTypography-h1 css-12oqc8p-MuiTypography-root">
+        Activity
+      </h1>
+    </div>
+  </div>
+</div>
+<div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-12jlilq-MuiPaper-root"
+     style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
+>
+  <div class="MuiBox-root css-1kbmarl">
+    <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-column css-mm5x4a-MuiGrid-root">
+      <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+        <p class="MuiTypography-root MuiTypography-body1 css-1c4wxug-MuiTypography-root">
+          Wednesday, May 13, 2020
+        </p>
+        <ul class="MuiList-root MuiList-padding css-b7dj7n-MuiList-root">
+          <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart css-kd2s28-MuiListItem-root">
+            <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-tqvfrr-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-10 css-r13beu-MuiGrid-root">
+                <div class="MuiBox-root css-geek62">
+                  <div class="MuiBox-root css-12z0wuy">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         xmlns:xlink="http://www.w3.org/1999/xlink"
+                         aria-hidden="true"
+                         role="img"
+                         width="30px"
+                         height="30px"
+                         viewbox="0 0 24 24"
+                         style="color: rgb(0, 211, 255);"
+                    >
+                      <path fill="currentColor"
+                            d="M11 15h2v2h-2v-2m0-8h2v6h-2V7m1-5C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 18a8 8 0 0 1-8-8a8 8 0 0 1 8-8a8 8 0 0 1 8 8a8 8 0 0 1-8 8Z"
+                      >
+                      </path>
+                    </svg>
+                  </div>
+                  <div class="MuiBox-root css-0">
+                    <p class="MuiTypography-root MuiTypography-body1 css-10o1zsr-MuiTypography-root">
+                      ABC
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-2 css-15bfe7d-MuiGrid-root">
+                <p class="MuiTypography-root MuiTypography-body1 css-1nwggdl-MuiTypography-root">
+                  02:56 PM
+                </p>
+              </div>
+              <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+                Channel beta is now pointing to version 0.0.0
+              </div>
+            </div>
+          </li>
+          <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart css-kd2s28-MuiListItem-root">
+            <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-tqvfrr-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-10 css-r13beu-MuiGrid-root">
+                <div class="MuiBox-root css-geek62">
+                  <div class="MuiBox-root css-12z0wuy">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         xmlns:xlink="http://www.w3.org/1999/xlink"
+                         aria-hidden="true"
+                         role="img"
+                         width="30px"
+                         height="30px"
+                         viewbox="0 0 24 24"
+                         style="color: rgb(0, 211, 255);"
+                    >
+                      <path fill="currentColor"
+                            d="M11 15h2v2h-2v-2m0-8h2v6h-2V7m1-5C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 18a8 8 0 0 1-8-8a8 8 0 0 1 8-8a8 8 0 0 1 8 8a8 8 0 0 1-8 8Z"
+                      >
+                      </path>
+                    </svg>
+                  </div>
+                  <div class="MuiBox-root css-0">
+                    <p class="MuiTypography-root MuiTypography-body1 css-10o1zsr-MuiTypography-root">
+                      DEF
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-2 css-15bfe7d-MuiGrid-root">
+                <p class="MuiTypography-root MuiTypography-body1 css-1nwggdl-MuiTypography-root">
+                  02:55 PM
+                </p>
+              </div>
+              <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+                Channel beta is now pointing to version 0.0.0
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+        <div class="MuiTablePagination-root css-7mt0f-MuiTablePagination-root">
+          <div class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular MuiTablePagination-toolbar css-1594vo9-MuiToolbar-root-MuiTablePagination-toolbar">
+            <div class="MuiTablePagination-spacer css-1wtxofq-MuiTablePagination-spacer">
+            </div>
+            <p id="«r3»"
+               class="MuiTablePagination-selectLabel css-1dl7m68-MuiTablePagination-selectLabel"
+            >
+              Rows per page:
+            </p>
+            <div class="MuiInputBase-root MuiInputBase-colorPrimary MuiTablePagination-select MuiSelect-root MuiTablePagination-input css-88pk78-MuiInputBase-root-MuiTablePagination-select">
+              <div tabindex="0"
+                   role="combobox"
+                   aria-expanded="false"
+                   aria-haspopup="listbox"
+                   aria-labelledby="«r3» «r2»"
+                   id="«r2»"
+                   class="MuiSelect-select MuiTablePagination-select MuiSelect-standard MuiInputBase-input css-18zjd9i-MuiNativeSelect-root-MuiSelect-select-MuiInputBase-input"
+              >
+                5
+              </div>
+              <input aria-invalid="false"
+                     aria-hidden="true"
+                     tabindex="-1"
+                     class="MuiSelect-nativeInput css-j0riat-MuiSelect-nativeInput"
+                     value="5"
+              >
+              <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiTablePagination-selectIcon MuiSelect-iconStandard css-ug7h84-MuiSvgIcon-root-MuiNativeSelect-root-MuiSelect-icon"
+                   focusable="false"
+                   aria-hidden="true"
+                   viewbox="0 0 24 24"
+                   data-testid="ArrowDropDownIcon"
+              >
+                <path d="M7 10l5 5 5-5z">
+                </path>
+              </svg>
+            </div>
+            <p class="MuiTablePagination-displayedRows css-z6ezh0-MuiTablePagination-displayedRows">
+              1–2 of 2
+            </p>
+            <div class="MuiTablePaginationActions-root MuiTablePagination-actions css-sjsoon-MuiTablePaginationActions-root">
+              <button class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-colorInherit MuiIconButton-sizeMedium css-h7cjts-MuiButtonBase-root-MuiIconButton-root"
+                      tabindex="-1"
+                      type="button"
+                      disabled
+                      aria-label="previous page"
+                      title="Go to previous page"
+              >
+                <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+                     focusable="false"
+                     aria-hidden="true"
+                     viewbox="0 0 24 24"
+                     data-testid="KeyboardArrowLeftIcon"
+                >
+                  <path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z">
+                  </path>
+                </svg>
+              </button>
+              <button class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-colorInherit MuiIconButton-sizeMedium css-h7cjts-MuiButtonBase-root-MuiIconButton-root"
+                      tabindex="-1"
+                      type="button"
+                      disabled
+                      aria-label="next page"
+                      title="Go to next page"
+              >
+                <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+                     focusable="false"
+                     aria-hidden="true"
+                     viewbox="0 0 24 24"
+                     data-testid="KeyboardArrowRightIcon"
+                >
+                  <path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z">
+                  </path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`activity/ActivityContainer MultipleDays smoke-test 1`] = `
+<div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row ListHeader-sectionHeader css-1j57vrs-MuiGrid-root">
+  <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+    <div class="MuiBox-root css-2rlxtj">
+      <h1 class="MuiTypography-root MuiTypography-h1 css-12oqc8p-MuiTypography-root">
+        Activity
+      </h1>
+    </div>
+  </div>
+</div>
+<div class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-12jlilq-MuiPaper-root"
+     style="--Paper-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);"
+>
+  <div class="MuiBox-root css-1kbmarl">
+    <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-column css-mm5x4a-MuiGrid-root">
+      <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+        <p class="MuiTypography-root MuiTypography-body1 css-1c4wxug-MuiTypography-root">
+          Wednesday, May 13, 2020
+        </p>
+        <ul class="MuiList-root MuiList-padding css-b7dj7n-MuiList-root">
+          <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart css-kd2s28-MuiListItem-root">
+            <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-tqvfrr-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-10 css-r13beu-MuiGrid-root">
+                <div class="MuiBox-root css-geek62">
+                  <div class="MuiBox-root css-12z0wuy">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         xmlns:xlink="http://www.w3.org/1999/xlink"
+                         aria-hidden="true"
+                         role="img"
+                         width="30px"
+                         height="30px"
+                         viewbox="0 0 24 24"
+                         style="color: rgb(0, 211, 255);"
+                    >
+                      <path fill="currentColor"
+                            d="M11 15h2v2h-2v-2m0-8h2v6h-2V7m1-5C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 18a8 8 0 0 1-8-8a8 8 0 0 1 8-8a8 8 0 0 1 8 8a8 8 0 0 1-8 8Z"
+                      >
+                      </path>
+                    </svg>
+                  </div>
+                  <div class="MuiBox-root css-0">
+                    <p class="MuiTypography-root MuiTypography-body1 css-10o1zsr-MuiTypography-root">
+                      ABC
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-2 css-15bfe7d-MuiGrid-root">
+                <p class="MuiTypography-root MuiTypography-body1 css-1nwggdl-MuiTypography-root">
+                  02:56 PM
+                </p>
+              </div>
+              <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+                Channel beta is now pointing to version 0.0.0
+              </div>
+            </div>
+          </li>
+          <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart css-kd2s28-MuiListItem-root">
+            <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-tqvfrr-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-10 css-r13beu-MuiGrid-root">
+                <div class="MuiBox-root css-geek62">
+                  <div class="MuiBox-root css-12z0wuy">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         xmlns:xlink="http://www.w3.org/1999/xlink"
+                         aria-hidden="true"
+                         role="img"
+                         width="30px"
+                         height="30px"
+                         viewbox="0 0 24 24"
+                         style="color: rgb(0, 211, 255);"
+                    >
+                      <path fill="currentColor"
+                            d="M11 15h2v2h-2v-2m0-8h2v6h-2V7m1-5C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2m0 18a8 8 0 0 1-8-8a8 8 0 0 1 8-8a8 8 0 0 1 8 8a8 8 0 0 1-8 8Z"
+                      >
+                      </path>
+                    </svg>
+                  </div>
+                  <div class="MuiBox-root css-0">
+                    <p class="MuiTypography-root MuiTypography-body1 css-10o1zsr-MuiTypography-root">
+                      DEF
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-2 css-15bfe7d-MuiGrid-root">
+                <p class="MuiTypography-root MuiTypography-body1 css-1nwggdl-MuiTypography-root">
+                  02:55 PM
+                </p>
+              </div>
+              <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+                Channel beta is now pointing to version 0.0.0
+              </div>
+            </div>
+          </li>
+        </ul>
+        <p class="MuiTypography-root MuiTypography-body1 css-1c4wxug-MuiTypography-root">
+          Thursday, May 14, 2020
+        </p>
+        <ul class="MuiList-root MuiList-padding css-b7dj7n-MuiList-root">
+          <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart css-kd2s28-MuiListItem-root">
+            <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-tqvfrr-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-10 css-r13beu-MuiGrid-root">
+                <div class="MuiBox-root css-geek62">
+                  <div class="MuiBox-root css-12z0wuy">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         xmlns:xlink="http://www.w3.org/1999/xlink"
+                         aria-hidden="true"
+                         role="img"
+                         width="30px"
+                         height="30px"
+                         viewbox="0 0 24 24"
+                         style="color: rgb(34, 187, 0);"
+                    >
+                      <path fill="currentColor"
+                            d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10s10-4.5 10-10S17.5 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4l8-8l-1.41-1.42Z"
+                      >
+                      </path>
+                    </svg>
+                  </div>
+                  <div class="MuiBox-root css-0">
+                    <p class="MuiTypography-root MuiTypography-body1 css-10o1zsr-MuiTypography-root">
+                      DEB
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-2 css-15bfe7d-MuiGrid-root">
+                <p class="MuiTypography-root MuiTypography-body1 css-1nwggdl-MuiTypography-root">
+                  02:56 PM
+                </p>
+              </div>
+              <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+                Channel beta is now pointing to version 0.0.1
+              </div>
+            </div>
+          </li>
+          <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart css-kd2s28-MuiListItem-root">
+            <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-tqvfrr-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-10 css-r13beu-MuiGrid-root">
+                <div class="MuiBox-root css-geek62">
+                  <div class="MuiBox-root css-12z0wuy">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         xmlns:xlink="http://www.w3.org/1999/xlink"
+                         aria-hidden="true"
+                         role="img"
+                         width="30px"
+                         height="30px"
+                         viewbox="0 0 24 24"
+                         style="color: rgb(255, 85, 0);"
+                    >
+                      <path fill="currentColor"
+                            d="M12 2L1 21h22M12 6l7.53 13H4.47M11 10v4h2v-4m-2 6v2h2v-2"
+                      >
+                      </path>
+                    </svg>
+                  </div>
+                  <div class="MuiBox-root css-0">
+                    <p class="MuiTypography-root MuiTypography-body1 css-10o1zsr-MuiTypography-root">
+                      DOF
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-2 css-15bfe7d-MuiGrid-root">
+                <p class="MuiTypography-root MuiTypography-body1 css-1nwggdl-MuiTypography-root">
+                  02:55 PM
+                </p>
+              </div>
+              <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+                Channel beta is now pointing to version 0.0.1
+              </div>
+            </div>
+          </li>
+          <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart css-kd2s28-MuiListItem-root">
+            <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-tqvfrr-MuiGrid-root">
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-10 css-r13beu-MuiGrid-root">
+                <div class="MuiBox-root css-geek62">
+                  <div class="MuiBox-root css-12z0wuy">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         xmlns:xlink="http://www.w3.org/1999/xlink"
+                         aria-hidden="true"
+                         role="img"
+                         width="30px"
+                         height="30px"
+                         viewbox="0 0 24 24"
+                         style="color: rgb(34, 187, 0);"
+                    >
+                      <path fill="currentColor"
+                            d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10s10-4.5 10-10S17.5 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8m4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4l8-8l-1.41-1.42Z"
+                      >
+                      </path>
+                    </svg>
+                  </div>
+                  <div class="MuiBox-root css-0">
+                    <p class="MuiTypography-root MuiTypography-body1 css-10o1zsr-MuiTypography-root">
+                      DAL
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-2 css-15bfe7d-MuiGrid-root">
+                <p class="MuiTypography-root MuiTypography-body1 css-1nwggdl-MuiTypography-root">
+                  02:56 PM
+                </p>
+              </div>
+              <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+                Channel alpha is now pointing to version 0.0.1
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
+        <div class="MuiTablePagination-root css-7mt0f-MuiTablePagination-root">
+          <div class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular MuiTablePagination-toolbar css-1594vo9-MuiToolbar-root-MuiTablePagination-toolbar">
+            <div class="MuiTablePagination-spacer css-1wtxofq-MuiTablePagination-spacer">
+            </div>
+            <p id="«r9»"
+               class="MuiTablePagination-selectLabel css-1dl7m68-MuiTablePagination-selectLabel"
+            >
+              Rows per page:
+            </p>
+            <div class="MuiInputBase-root MuiInputBase-colorPrimary MuiTablePagination-select MuiSelect-root MuiTablePagination-input css-88pk78-MuiInputBase-root-MuiTablePagination-select">
+              <div tabindex="0"
+                   role="combobox"
+                   aria-expanded="false"
+                   aria-haspopup="listbox"
+                   aria-labelledby="«r9» «r8»"
+                   id="«r8»"
+                   class="MuiSelect-select MuiTablePagination-select MuiSelect-standard MuiInputBase-input css-18zjd9i-MuiNativeSelect-root-MuiSelect-select-MuiInputBase-input"
+              >
+                5
+              </div>
+              <input aria-invalid="false"
+                     aria-hidden="true"
+                     tabindex="-1"
+                     class="MuiSelect-nativeInput css-j0riat-MuiSelect-nativeInput"
+                     value="5"
+              >
+              <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiTablePagination-selectIcon MuiSelect-iconStandard css-ug7h84-MuiSvgIcon-root-MuiNativeSelect-root-MuiSelect-icon"
+                   focusable="false"
+                   aria-hidden="true"
+                   viewbox="0 0 24 24"
+                   data-testid="ArrowDropDownIcon"
+              >
+                <path d="M7 10l5 5 5-5z">
+                </path>
+              </svg>
+            </div>
+            <p class="MuiTablePagination-displayedRows css-z6ezh0-MuiTablePagination-displayedRows">
+              1–5 of 6
+            </p>
+            <div class="MuiTablePaginationActions-root MuiTablePagination-actions css-sjsoon-MuiTablePaginationActions-root">
+              <button class="MuiButtonBase-root Mui-disabled MuiIconButton-root Mui-disabled MuiIconButton-colorInherit MuiIconButton-sizeMedium css-h7cjts-MuiButtonBase-root-MuiIconButton-root"
+                      tabindex="-1"
+                      type="button"
+                      disabled
+                      aria-label="previous page"
+                      title="Go to previous page"
+              >
+                <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+                     focusable="false"
+                     aria-hidden="true"
+                     viewbox="0 0 24 24"
+                     data-testid="KeyboardArrowLeftIcon"
+                >
+                  <path d="M15.41 16.09l-4.58-4.59 4.58-4.59L14 5.5l-6 6 6 6z">
+                  </path>
+                </svg>
+              </button>
+              <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorInherit MuiIconButton-sizeMedium css-h7cjts-MuiButtonBase-root-MuiIconButton-root"
+                      tabindex="0"
+                      type="button"
+                      aria-label="next page"
+                      title="Go to next page"
+              >
+                <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+                     focusable="false"
+                     aria-hidden="true"
+                     viewbox="0 0 24 24"
+                     data-testid="KeyboardArrowRightIcon"
+                >
+                  <path d="M8.59 16.34l4.58-4.59-4.58-4.59L10 5.75l6 6-6 6z">
+                  </path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

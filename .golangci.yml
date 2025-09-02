@@ -1,20 +1,36 @@
+version: "2"
 run:
-  issues-exit-code: 1 #Default
-  tests: true #Default
-
+  issues-exit-code: 1
+  tests: true
 linters:
   enable:
-    - gofmt
+    - revive
     - whitespace
+    - errcheck
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofmt
     - goimports
-    - golint
-
-linters-settings:
-  errcheck:
-    ignore: github.com/rs/zerolog:Error|Warn|Debug
-
-  gofmt:
-    simplify: true
-
-  goimports:
-    local-prefixes: github.com/kinvolk/nebraska
+  settings:
+    gofmt:
+      simplify: true
+    goimports:
+      local-prefixes:
+        - github.com/flatcar/nebraska
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

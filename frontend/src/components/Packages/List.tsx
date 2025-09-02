@@ -1,11 +1,11 @@
-import Box from '@material-ui/core/Box';
-import MuiList from '@material-ui/core/List';
-import Paper from '@material-ui/core/Paper';
-import TablePagination from '@material-ui/core/TablePagination';
-import PropTypes from 'prop-types';
+import Box from '@mui/material/Box';
+import MuiList from '@mui/material/List';
+import Paper from '@mui/material/Paper';
+import TablePagination from '@mui/material/TablePagination';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
+
 import API from '../../api/API';
 import { Package } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
@@ -16,7 +16,11 @@ import ModalButton from '../common/ModalButton';
 import EditDialog from './EditDialog';
 import Item from './Item';
 
-function List(props: { appID: string }) {
+interface ListProps {
+  appID: string;
+}
+
+function List(props: ListProps) {
   const [application, setApplication] = React.useState(
     applicationsStore().getCachedApplication(props.appID) || null
   );
@@ -56,6 +60,7 @@ function List(props: { appID: string }) {
     return function cleanup() {
       applicationsStore().removeChangeListener(onChange);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.appID, application]);
 
   function onCloseEditDialog() {
@@ -70,7 +75,7 @@ function List(props: { appID: string }) {
   }
 
   function handleChangePage(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
+    _event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
     newPage: number
   ) {
     setPage(newPage);
@@ -79,7 +84,7 @@ function List(props: { appID: string }) {
   return (
     <>
       <ListHeader
-        title={t('packages|Packages')}
+        title={t('packages|packages')}
         actions={
           application
             ? [
@@ -131,12 +136,12 @@ function List(props: { appID: string }) {
                   rowsPerPage={rowsPerPage}
                   page={page}
                   backIconButtonProps={{
-                    'aria-label': t('frequent|previous page'),
+                    'aria-label': t('frequent|previous_page'),
                   }}
                   nextIconButtonProps={{
-                    'aria-label': t('frequent|next page'),
+                    'aria-label': t('frequent|next_page'),
                   }}
-                  onChangePage={handleChangePage}
+                  onPageChange={handleChangePage}
                 />
               </React.Fragment>
             )
@@ -148,9 +153,5 @@ function List(props: { appID: string }) {
     </>
   );
 }
-
-List.propTypes = {
-  appID: PropTypes.string.isRequired,
-};
 
 export default List;

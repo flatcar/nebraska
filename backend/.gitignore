@@ -1,6 +1,5 @@
 bin
 coverage.out
-tools/go-bindata
 tools/golangci-lint
 tools/swag
 tools/oapi-codegen

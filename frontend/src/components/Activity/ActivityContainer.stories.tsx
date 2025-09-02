@@ -1,5 +1,6 @@
-import { Meta, Story } from '@storybook/react/types-6-0';
-import { MemoryRouter } from 'react-router-dom';
+import { Meta, StoryFn } from '@storybook/react-vite';
+import { MemoryRouter } from 'react-router';
+
 import { activityStore } from '../../stores/Stores';
 import ActivityContainer, { ActivityContainerProps } from './ActivityContainer';
 
@@ -7,7 +8,7 @@ export default {
   title: 'activity/ActivityContainer',
 } as Meta;
 
-const TemplateEmpty: Story<ActivityContainerProps> = args => {
+const TemplateEmpty: StoryFn<ActivityContainerProps> = args => {
   activityStore(true).stopRefreshing();
   activityStore(true).setActivity([]);
   return (
@@ -17,10 +18,12 @@ const TemplateEmpty: Story<ActivityContainerProps> = args => {
   );
 };
 
-export const Empty = TemplateEmpty.bind({});
-Empty.args = {};
+export const Empty = {
+  render: TemplateEmpty,
+  args: {},
+};
 
-const TemplateList: Story<ActivityContainerProps> = args => {
+const TemplateList: StoryFn<ActivityContainerProps> = args => {
   activityStore(true).stopRefreshing();
   activityStore(true).setActivity([
     {
@@ -57,10 +60,12 @@ const TemplateList: Story<ActivityContainerProps> = args => {
   );
 };
 
-export const List = TemplateList.bind({});
-List.args = {};
+export const List = {
+  render: TemplateList,
+  args: {},
+};
 
-const TemplateMultipleDays: Story<ActivityContainerProps> = args => {
+const TemplateMultipleDays: StoryFn<ActivityContainerProps> = args => {
   activityStore(true).stopRefreshing();
   activityStore(true).setActivity([
     {
@@ -149,5 +154,7 @@ const TemplateMultipleDays: Story<ActivityContainerProps> = args => {
   );
 };
 
-export const MultipleDays = TemplateMultipleDays.bind({});
-MultipleDays.args = {};
+export const MultipleDays = {
+  render: TemplateMultipleDays,
+  args: {},
+};

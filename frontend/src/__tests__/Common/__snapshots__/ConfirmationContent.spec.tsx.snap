@@ -1,0 +1,28 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Confirmation Content > should render Confirmation Content correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="popover-content"
+    data="[object Object]"
+  >
+    Are you sure… ?
+    <p
+      class="button-group"
+    >
+      <button
+        class="confirm-dialog-btn-abord"
+        type="button"
+      >
+        No
+      </button>
+      <button
+        class="confirm-dialog-btn-confirm"
+        type="button"
+      >
+        Yes
+      </button>
+    </p>
+  </div>
+</DocumentFragment>
+`;

@@ -1,8 +1,8 @@
-import { IconButton, makeStyles } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
-import PropTypes from 'prop-types';
+import AddIcon from '@mui/icons-material/Add';
+import { IconButton } from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+
 import ApplicationEdit from '../../Applications/ApplicationEdit';
 import ChannelEdit from '../../Channels/ChannelEdit';
 import GroupEditDialog from '../../Groups/GroupEditDialog/GroupEditDialog';
@@ -10,15 +10,13 @@ import PackageEditDialog, {
   EditDialogProps as PackageEditDialogProps,
 } from '../../Packages/EditDialog';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    color: theme.palette.titleColor,
-  },
-}));
+interface ModalButtonProps {
+  modalToOpen: string;
+  data: { [key: string]: any };
+}
 
-function ModalButton(props: { data: object; modalToOpen: string; icon?: string }) {
+function ModalButton(props: ModalButtonProps) {
   const [showModal, setShowModal] = React.useState(false);
-  const classes = useStyles();
   const { t } = useTranslation();
 
   function close() {
@@ -58,20 +56,15 @@ function ModalButton(props: { data: object; modalToOpen: string; icon?: string }
     <div>
       <IconButton
         size="small"
-        aria-label={t('frequent|add')}
+        aria-label={t('frequent|add_lower')}
         onClick={open}
         data-testid="modal-button"
       >
-        <AddIcon fontSize="large" className={classes.root} />
+        <AddIcon fontSize="large" sx={{ color: theme => theme.palette.titleColor }} />
       </IconButton>
       {modal}
     </div>
   );
 }
-
-ModalButton.propTypes = {
-  modalToOpen: PropTypes.string.isRequired,
-  data: PropTypes.object,
-};
 
 export default ModalButton;

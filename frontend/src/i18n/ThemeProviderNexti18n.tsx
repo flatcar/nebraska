@@ -1,7 +1,12 @@
-import { deDE, enUS, esES, hiIN, ptPT } from '@material-ui/core/locale';
-import { createMuiTheme, Theme, ThemeProvider } from '@material-ui/core/styles';
+import { deDE, enUS, esES, hiIN, ptPT } from '@mui/material/locale';
+import { createTheme, StyledEngineProvider, Theme, ThemeProvider } from '@mui/material/styles';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+
+declare module '@mui/material/styles' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  interface DefaultTheme extends Theme {}
+}
 
 function getLocale(locale: string): typeof enUS {
   const LOCALES = {
@@ -19,7 +24,7 @@ function getLocale(locale: string): typeof enUS {
 /** Like a ThemeProvider but uses reacti18next for the language selection
  *  Because Material UI is localized as well.
  */
-const ThemeProviderNexti18n: React.FunctionComponent<{ theme: Theme }> = props => {
+const ThemeProviderNexti18n: React.FC<React.PropsWithChildren<{ theme: Theme }>> = props => {
   const { i18n } = useTranslation();
   const [lang, setLang] = useState(i18n.language);
 
@@ -39,9 +44,13 @@ const ThemeProviderNexti18n: React.FunctionComponent<{ theme: Theme }> = props =
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const theme = createMuiTheme(props.theme, getLocale(lang));
+  const theme = createTheme(props.theme, getLocale(lang));
 
-  return <ThemeProvider theme={theme}>{props.children}</ThemeProvider>;
+  return (
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>{props.children}</ThemeProvider>
+    </StyledEngineProvider>
+  );
 };
 
 export default ThemeProviderNexti18n;

@@ -1,7 +1,8 @@
-import Link from '@material-ui/core/Link';
+import Link from '@mui/material/Link';
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router';
 import _ from 'underscore';
+
 import API from '../api/API';
 import { Activity } from '../api/apiDataTypes';
 import { toLocaleDateString } from '../i18n/dateTime';
@@ -134,7 +135,7 @@ class ActivityStore extends Store {
         description: (
           <React.Fragment>
             Instance{' '}
-            <Link component={RouterLink} to={instancePath}>
+            <Link component={RouterLink} to={instancePath} underline="hover">
               {entry.instance_id}
             </Link>{' '}
             reported an error while processing update to version {entry.version}

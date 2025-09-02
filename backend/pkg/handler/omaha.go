@@ -15,7 +15,7 @@ func (h *Handler) Omaha(ctx echo.Context) error {
 	ctx.Response().Writer.Header().Set("Content-Type", "text/xml")
 	ctx.Request().Body = http.MaxBytesReader(ctx.Response().Writer, ctx.Request().Body, UpdateMaxRequestSize)
 	if err := h.omahaHandler.Handle(ctx.Request().Body, responseBuffer, getRequestIP(ctx.Request())); err != nil {
-		logger.Error().Err(err).Msg("process omaha request")
+		l.Error().Err(err).Msg("process omaha request")
 		if uerr := errors.Unwrap(err); uerr != nil && uerr.Error() == "http: request body too large" {
 			return ctx.NoContent(http.StatusBadRequest)
 		}

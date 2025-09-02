@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
+
 import { Application, Group } from '../../../api/apiDataTypes';
 import { applicationsStore } from '../../../stores/Stores';
 import Loader from '../../common/Loader';
@@ -10,36 +11,44 @@ import List from '../../Instances/List';
 export default function InstanceListLayout() {
   const { appID, groupID } = useParams<{ appID: string; groupID: string }>();
   const [application, setApplication] = React.useState(
-    applicationsStore().getCachedApplication(appID)
+    applicationsStore().getCachedApplication(appID || '')
   );
+  const getGroupFromApplication = React.useCallback(
+    (app: Application | null) => {
+      if (!app) {
+        return null;
+      }
+      const group = app.groups.find(({ id }) => id === groupID);
+      return group || null;
+    },
+    [groupID]
+  );
+
   const [group, setGroup] = React.useState<Group | null>(getGroupFromApplication(application));
   const { t } = useTranslation();
 
-  function onChange() {
+  const onChange = React.useCallback(() => {
     const apps = applicationsStore().getCachedApplications() || [];
     const app = apps.find(({ id }) => id === appID) || null;
     if (app !== application) {
       setApplication(app);
       setGroup(getGroupFromApplication(app));
     }
-  }
-
-  function getGroupFromApplication(app: Application | null) {
-    if (!app) {
-      return null;
-    }
-    const group = app.groups.find(({ id }) => id === groupID);
-    return group || null;
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appID, getGroupFromApplication]);
 
   React.useEffect(() => {
+    if (!appID) {
+      return;
+    }
+
     applicationsStore().addChangeListener(onChange);
     applicationsStore().getApplication(appID);
 
     return function cleanup() {
       applicationsStore().removeChangeListener(onChange);
     };
-  }, []);
+  }, [appID, onChange]);
 
   const applicationName = application ? application.name : '…';
   const groupName = group ? group.name : '…';
@@ -47,11 +56,11 @@ export default function InstanceListLayout() {
   return (
     <React.Fragment>
       <SectionHeader
-        title={t('layouts|Instances')}
+        title={t('layouts|instances')}
         breadcrumbs={[
           {
             path: '/apps',
-            label: t('layouts|Applications'),
+            label: t('layouts|applications'),
           },
           {
             path: `/apps/${appID}`,

@@ -1,35 +1,31 @@
-import { ListItemText } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import ListItem from '@material-ui/core/ListItem';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Downshift, { GetLabelPropsOptions } from 'downshift';
+import { ListItemText } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import FormControl from '@mui/material/FormControl';
+import Input from '@mui/material/Input';
+import InputLabel, { InputLabelProps } from '@mui/material/InputLabel';
+import ListItemButton from '@mui/material/ListItemButton';
+import TextField from '@mui/material/TextField';
+import Downshift from 'downshift';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FixedSizeList, ListOnItemsRenderedProps } from 'react-window';
 
 interface RenderInputProps {
-  classes: {
-    inputRoot: string;
-    inputInput: string;
-  };
   ref?: React.Ref<any>;
   fullWidth: boolean;
   autoFocus: boolean;
   label: string;
   placeholder: string;
-  InputLabelProps: (options?: GetLabelPropsOptions | undefined) => void;
+  InputLabelProps: InputLabelProps;
   InputProps: {
-    onBlur: () => void;
-    onChange: React.ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
-    onFocus: () => void;
+    onBlur?: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+    onChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
+    onFocus?: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   };
   inputProps: object;
   variant: 'outlined';
@@ -37,17 +33,25 @@ interface RenderInputProps {
 }
 
 function renderInput(inputProps: RenderInputProps) {
-  const { InputProps, classes, ref, onKeyDown, ...other } = inputProps;
+  const { InputProps, ref, onKeyDown, ...other } = inputProps;
 
   return (
     <TextField
-      InputProps={{
-        inputRef: ref,
-        classes: {
-          root: classes.inputRoot,
-          input: classes.inputInput,
+      sx={{
+        marginTop: '0.6em',
+      }}
+      slotProps={{
+        input: {
+          inputRef: ref,
+          sx: {
+            flexWrap: 'wrap',
+            '& input': {
+              width: 'auto',
+              flexGrow: 1,
+            },
+          },
+          ...InputProps,
         },
-        ...InputProps,
       }}
       onKeyDown={onKeyDown}
       {...other}
@@ -65,7 +69,7 @@ interface RenderSuggestionProps {
     secondary: string;
   };
   style?: object;
-  getSecondaryLabel?: () => {};
+  getSecondaryLabel?: () => object;
 }
 
 function renderSuggestion(suggestionProps: RenderSuggestionProps) {
@@ -73,9 +77,9 @@ function renderSuggestion(suggestionProps: RenderSuggestionProps) {
   const isSelected = (selectedItem || '').indexOf(suggestion.primary) > -1;
 
   return (
-    <ListItem {...itemProps} button key={suggestion.primary} selected={isSelected} style={style}>
+    <ListItemButton {...itemProps} key={suggestion.primary} selected={isSelected} style={style}>
       <ListItemText primary={suggestion.primary} secondary={suggestion.secondary} />
-    </ListItem>
+    </ListItemButton>
   );
 }
 
@@ -101,23 +105,6 @@ function filterSuggestions(
     return suggestion.primary.toLowerCase().includes(inputValue);
   });
 }
-
-const useStyles = makeStyles({
-  container: {
-    flexGrow: 1,
-    position: 'relative',
-  },
-  inputRoot: {
-    flexWrap: 'wrap',
-  },
-  inputInput: {
-    width: 'auto',
-    flexGrow: 1,
-  },
-  pickerButtonInput: {
-    cursor: 'pointer',
-  },
-});
 
 interface LazyListProps {
   options: RenderSuggestionProps['suggestion'][];
@@ -186,7 +173,6 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
   const [currentValue, setCurrentValue] = React.useState(props.defaultValue);
   const { onBottomScrolled } = props;
   const { t } = useTranslation();
-  const classes = useStyles();
 
   function onInputChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     props.onValueChanged(event.target.value);
@@ -206,15 +192,21 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
   }
 
   return (
-    <div>
+    <Box>
       <FormControl fullWidth>
-        <InputLabel shrink>{props.label}</InputLabel>
+        <InputLabel variant="standard" shrink>
+          {props.label}
+        </InputLabel>
         <Input
           onClick={() => {
             setShowPicker(true);
           }}
-          inputProps={{
-            className: classes.pickerButtonInput,
+          slotProps={{
+            input: {
+              sx: {
+                cursor: 'pointer',
+              },
+            },
           }}
           value={currentValue}
           placeholder={props.placeholder}
@@ -224,29 +216,40 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
       <Dialog open={showPicker || false}>
         <DialogTitle>{props.dialogTitle}</DialogTitle>
         <DialogContent>
-          <Downshift id="downshift-options">
+          <Downshift
+            id="downshift-options"
+            onChange={selectedItem => {
+              if (selectedItem) {
+                setSelectedValue(selectedItem);
+              }
+            }}
+          >
             {({
               getInputProps,
               getItemProps,
               getLabelProps,
+              getRootProps,
               highlightedIndex,
               inputValue,
               selectedItem,
             }) => {
-              setSelectedValue(selectedItem);
-
-              const { onBlur, onFocus, ...inputProps } = getInputProps();
+              const { onBlur, ...inputProps } = getInputProps();
 
               return (
-                <div className={classes.container}>
+                <Box
+                  {...getRootProps()}
+                  sx={{
+                    flexGrow: 1,
+                    position: 'relative',
+                  }}
+                >
                   {renderInput({
                     fullWidth: true,
                     autoFocus: true,
-                    classes,
                     label: props.label,
                     placeholder: props.pickerPlaceholder,
                     InputLabelProps: getLabelProps(),
-                    InputProps: { onBlur, onChange: onInputChange, onFocus },
+                    InputProps: { onBlur, onChange: onInputChange },
                     inputProps,
                     variant: 'outlined',
                     onKeyDown: handleEscape,
@@ -263,7 +266,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
                     itemSize={50}
                     onItemsRendered={onItemsRendered}
                   />
-                </div>
+                </Box>
               );
             }}
           </Downshift>
@@ -278,7 +281,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
             }}
             color="primary"
           >
-            {t('frequent|Cancel')}
+            {t('frequent|cancel')}
           </Button>
           <Button
             onClick={() => {
@@ -288,10 +291,10 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
             }}
             color="primary"
           >
-            {t('frequent|Select')}
+            {t('frequent|select')}
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </Box>
   );
 }

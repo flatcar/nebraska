@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	echosessions "github.com/kinvolk/nebraska/backend/pkg/sessions/echo"
+	echosessions "github.com/flatcar/nebraska/backend/pkg/sessions/echo"
 
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
@@ -17,15 +17,15 @@ func getTeamID(c echo.Context) string {
 	return ""
 }
 
-func loggerWithUsername(l zerolog.Logger, ctx echo.Context) zerolog.Logger {
+func loggerWithUsername(_ zerolog.Logger, ctx echo.Context) zerolog.Logger {
 	session := echosessions.GetSession(ctx)
 	if session == nil {
-		return logger
+		return l
 	}
 
 	username := session.Get("username")
 
-	return logger.With().Str("username", username.(string)).Logger()
+	return l.With().Str("username", username.(string)).Logger()
 }
 
 func appNotFoundResponse(ctx echo.Context, appIDProductID string) error {

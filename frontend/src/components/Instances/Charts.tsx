@@ -1,30 +1,16 @@
 import { IconifyIcon, InlineIcon } from '@iconify/react';
-import { Theme } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles, useTheme } from '@material-ui/styles';
+import Grid from '@mui/material/Grid';
+import { useTheme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Cell, Label, Pie, PieChart } from 'recharts';
+
 import Empty from '../common/EmptyContent';
 import LightTooltip from '../common/LightTooltip';
 import Loader from '../common/Loader';
 import { InstanceCountLabel } from './Common';
 import makeStatusDefs from './StatusDefs';
-
-interface DoughnutLabelProps {
-  color: string;
-  labelSize: string;
-}
-
-const useStyles = makeStyles((theme: Theme) => ({
-  doughnutLabel: ({ color, labelSize }: DoughnutLabelProps) => ({
-    fontSize: labelSize,
-    color: color || theme.palette.text.secondary,
-    display: 'inline',
-    boxShadow: 'none',
-  }),
-}));
 
 interface ProgressData {
   value: number;
@@ -55,8 +41,7 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
   const [activeIndex, setActiveIndex] = React.useState(-1);
   const iconSize = '1.1rem';
 
-  const classes = useStyles({ color: color, labelSize: iconSize });
-  const theme = useTheme<Theme>();
+  const theme = useTheme();
 
   const pieSize = width > height ? height : width;
   const radius = pieSize * 0.45;
@@ -96,8 +81,8 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
   });
 
   return (
-    <Grid container direction="column" justify="center" alignItems="center">
-      <Grid item>
+    <Grid container direction="column" justifyContent="center" alignItems="center">
+      <Grid>
         <PieChart width={width} height={height}>
           <Pie
             data={dataSet}
@@ -142,13 +127,13 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
           </Pie>
         </PieChart>
       </Grid>
-      <Grid item container alignItems="center" justify="center" spacing={1}>
+      <Grid container alignItems="center" justifyContent="center" spacing={1}>
         {icon && (
-          <Grid item>
+          <Grid>
             <InlineIcon icon={icon} color={color} width={iconSize} height={iconSize} />
           </Grid>
         )}
-        <Grid item>
+        <Grid>
           <LightTooltip title={getTooltipText() || mainTooltipText} open={showTooltip}>
             <Typography
               onMouseOver={() => {
@@ -157,7 +142,12 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
               onMouseOut={() => {
                 setShowTooltip(false);
               }}
-              className={classes.doughnutLabel}
+              sx={{
+                fontSize: iconSize,
+                color: theme => color || theme.palette.text.secondary,
+                display: 'inline',
+                boxShadow: 'none',
+              }}
             >
               {label}
             </Typography>
@@ -188,7 +178,7 @@ interface InstanceStatusCount {
 }
 
 export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
-  const theme = useTheme<Theme>();
+  const theme = useTheme();
   const statusDefs = makeStatusDefs(theme);
   const { t } = useTranslation();
 
@@ -205,8 +195,8 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
     {
       status: 'InstanceStatusOther',
       count: [
-        { key: 'onhold', label: t('instances|InstanceStatusOnHold') },
-        { key: 'undefined', label: t('instances|InstanceStatusUndefined') },
+        { key: 'onhold', label: t('instances|instance_status_on_hold') },
+        { key: 'undefined', label: t('instances|instance_status_undefined') },
       ],
     },
     {
@@ -216,8 +206,8 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
     {
       status: 'InstanceStatusDownloading',
       count: [
-        { key: 'downloading', label: t('instances|InstanceStatusDownloading') },
-        { key: 'update_granted', label: t('instances|InstanceStatusUpdateGranted') },
+        { key: 'downloading', label: t('instances|instance_status_downloading') },
+        { key: 'update_granted', label: t('instances|instance_status_update_granted') },
       ],
     },
     {
@@ -227,7 +217,7 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
   ];
 
   statusDefs['InstanceStatusOther'] = { ...statusDefs['InstanceStatusUndefined'] };
-  statusDefs['InstanceStatusOther'].label = t('instances|Other');
+  statusDefs['InstanceStatusOther'].label = t('instances|other');
 
   const totalInstances = instanceStats ? instanceStats.total : 0;
 
@@ -236,11 +226,11 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
   }
 
   return totalInstances > 0 ? (
-    <Grid container justify="space-between" alignItems="center">
-      <Grid item xs={4}>
+    <Grid container justifyContent="space-between" alignItems="center">
+      <Grid size={4}>
         <InstanceCountLabel countText={totalInstances} href={href} />
       </Grid>
-      <Grid item container justify="space-between" xs={8}>
+      <Grid container justifyContent="space-between" size={8}>
         {instanceStateCount.map(({ status, count }, i) => {
           // Sort the data entries so the smaller amounts are shown first.
           count.sort((obj1, obj2) => {
@@ -252,7 +242,7 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
           });
 
           return (
-            <Grid item key={i}>
+            <Grid key={i}>
               <ProgressDoughnut
                 data={count.map(({ key, label = status }) => {
                   const statusLabel = statusDefs[label].label;
@@ -276,7 +266,7 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
     </Grid>
   ) : (
     <Empty>
-      <Trans ns="instances">
+      <Trans t={t} ns="instances" i18nKey="noinstances">
         No instances have registered with this group for the past {period}.
         <br />
         <br />

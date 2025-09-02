@@ -111,7 +111,7 @@ func (api *API) AddPackage(pkg *Package) (*Package, error) {
 	}
 	defer func() {
 		if err := tx.Rollback(); err != nil && err != sql.ErrTxDone {
-			logger.Error().Err(err).Msg("AddPackage - could not roll back")
+			l.Error().Err(err).Msg("AddPackage - could not roll back")
 		}
 	}()
 
@@ -197,7 +197,7 @@ func (api *API) UpdatePackage(pkg *Package) error {
 	}
 	defer func() {
 		if err := tx.Rollback(); err != nil && err != sql.ErrTxDone {
-			logger.Error().Err(err).Msg("UpdatePackage - could not roll back")
+			l.Error().Err(err).Msg("UpdatePackage - could not roll back")
 		}
 	}()
 	query, _, err := goqu.Update("package").
@@ -298,7 +298,7 @@ func (api *API) GetPackage(pkgID string) (*Package, error) {
 func (api *API) GetPackageByVersionAndArch(appID, version string, arch Arch) (*Package, error) {
 	var pkg Package
 	if !isValidSemver(version) {
-		return nil, fmt.Errorf("Error GetPackageByVersionAndArch version %s is not valid", version)
+		return nil, fmt.Errorf("error GetPackageByVersionAndArch version %s is not valid", version)
 	}
 	query, _, err := api.packagesQuery().
 		Where(goqu.C("application_id").Eq(appID), goqu.C("arch").Eq(arch), goqu.C("version").Eq(version)).

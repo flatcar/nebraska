@@ -3,8 +3,8 @@ package memcache
 import (
 	"sync"
 
-	"github.com/kinvolk/nebraska/backend/pkg/random"
-	"github.com/kinvolk/nebraska/backend/pkg/sessions"
+	"github.com/flatcar/nebraska/backend/pkg/random"
+	"github.com/flatcar/nebraska/backend/pkg/sessions"
 )
 
 // ValuesCopier is used for copying values from session to cache
@@ -50,7 +50,7 @@ func (m *memCache) GetSessionUse(session sessions.SessionExt) {
 
 // GetSessionUseByID is a part of sessions.Cache interface.
 func (m *memCache) GetSessionUseByID(builder sessions.SessionBuilder, id, name string) *sessions.Session {
-	var session *sessions.Session = nil
+	var session *sessions.Session
 	m.mutateSessionInfo(id, func(info *sessionInfo) {
 		if info.destroy {
 			return

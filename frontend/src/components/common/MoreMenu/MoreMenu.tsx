@@ -1,7 +1,7 @@
-import IconButton from '@material-ui/core/IconButton';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import IconButton from '@mui/material/IconButton';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -38,10 +38,11 @@ export default function MoreMenu(props: MoreMenuProps) {
         edge="end"
         aria-controls={menuId}
         aria-haspopup="true"
-        aria-label={t('common|Open menu')}
+        aria-label={t('common|open_menu')}
         onClick={handleClick}
         data-testid="more-menu-open-button"
         {...props.iconButtonProps}
+        size="large"
       >
         <MoreVertIcon />
       </IconButton>

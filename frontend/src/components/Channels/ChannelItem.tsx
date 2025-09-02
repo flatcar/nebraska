@@ -1,21 +1,16 @@
-import { Box, Grid, makeStyles, Tooltip, useTheme } from '@material-ui/core';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import ScheduleIcon from '@material-ui/icons/Schedule';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import { Box, Grid, Tooltip, useTheme } from '@mui/material';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
 import { useTranslation } from 'react-i18next';
+
 import { Channel } from '../../api/apiDataTypes';
 import { makeLocaleTime } from '../../i18n/dateTime';
 import { applicationsStore } from '../../stores/Stores';
 import { ARCHES, cleanSemverVersion } from '../../utils/helpers';
 import MoreMenu from '../common/MoreMenu';
 import ChannelAvatar from './ChannelAvatar';
-
-const useStyles = makeStyles({
-  root: {
-    margin: '0px',
-  },
-});
 
 export interface ChannelItemProps {
   channel: Channel;
@@ -29,16 +24,15 @@ export interface ChannelItemProps {
 
 export default function ChannelItem(props: ChannelItemProps) {
   const theme = useTheme();
-  const classes = useStyles();
   const { t } = useTranslation();
   const { channel, showArch = true, isAppView = false, onChannelUpdate = null, ...others } = props;
   const name = channel.name;
   const version = channel.package
     ? cleanSemverVersion(channel.package.version)
-    : t('channels|No package');
+    : t('channels|no_package');
 
   function deleteChannel() {
-    const confirmationText = t('channels|Are you sure you want to delete this channel?');
+    const confirmationText = t('channels|confirm_delete_channel');
     if (window.confirm(confirmationText)) {
       applicationsStore().deleteChannel(channel.application_id, channel.id);
     }
@@ -72,7 +66,7 @@ export default function ChannelItem(props: ChannelItemProps) {
           <Box pl={2}>
             <Box display="flex">
               <Box>
-                <Tooltip title={t('channels|Release date') || ''}>
+                <Tooltip title={t('channels|release_date') || ''}>
                   <ScheduleIcon fontSize="small" />
                 </Tooltip>
               </Box>
@@ -91,14 +85,14 @@ export default function ChannelItem(props: ChannelItemProps) {
   return (
     <ListItem component="div" {...others}>
       <Grid container spacing={2}>
-        <Grid item>
+        <Grid>
           {isAppView ? (
             <ChannelAvatar color={channel.color} size={theme.spacing(1)} />
           ) : (
             <ChannelAvatar color={channel.color}>{name[0]}</ChannelAvatar>
           )}
         </Grid>
-        <Grid item>
+        <Grid>
           <ListItemText
             primary={
               <Box display="flex" alignItems="center">
@@ -108,7 +102,9 @@ export default function ChannelItem(props: ChannelItemProps) {
               </Box>
             }
             secondary={getSecondaryText()}
-            className={classes.root}
+            sx={{
+              margin: '0px',
+            }}
             disableTypography
           />
         </Grid>
@@ -117,8 +113,8 @@ export default function ChannelItem(props: ChannelItemProps) {
         <ListItemSecondaryAction>
           <MoreMenu
             options={[
-              { label: t('frequent|Edit'), action: updateChannel },
-              { label: t('frequent|Delete'), action: deleteChannel },
+              { label: t('frequent|edit'), action: updateChannel },
+              { label: t('frequent|delete'), action: deleteChannel },
             ]}
           />
         </ListItemSecondaryAction>

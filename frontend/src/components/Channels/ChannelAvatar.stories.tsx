@@ -1,4 +1,5 @@
-import { Meta } from '@storybook/react/types-6-0';
+import { Meta } from '@storybook/react-vite';
+
 import ChannelAvatar from './ChannelAvatar';
 
 export default {

@@ -1,27 +1,16 @@
-import { Box } from '@material-ui/core';
-import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
-import LayersOutlinedIcon from '@material-ui/icons/LayersOutlined';
+import LayersOutlinedIcon from '@mui/icons-material/LayersOutlined';
+import { Box } from '@mui/material';
+import Link from '@mui/material/Link';
 import React from 'react';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router';
+
 import { APIContext } from '../../api/API';
 import { Group } from '../../api/apiDataTypes';
 import ChannelItem from '../Channels/ChannelItem';
 
-const useStyles = makeStyles({
-  groupLink: {
-    fontSize: '1rem',
-    color: '#1b5c91',
-  },
-  instanceLink: {
-    color: '#1b5c91',
-  },
-});
-
 function ApplicationItemGroupItem(props: { group: Group; appName: string }) {
-  const classes = useStyles();
   const { group } = props;
   const [totalInstances, setTotalInstances] = React.useState(-1);
   const { t } = useTranslation();
@@ -35,6 +24,7 @@ function ApplicationItemGroupItem(props: { group: Group; appName: string }) {
         setTotalInstances(result);
       })
       .catch(err => console.error('Error loading total instances in Instances/List', err));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [group]);
 
   const instanceCountContent = (
@@ -50,9 +40,13 @@ function ApplicationItemGroupItem(props: { group: Group; appName: string }) {
       <Box display="flex" p={1}>
         <Box width="40%">
           <Link
-            className={classes.groupLink}
+            sx={{
+              fontSize: '1rem',
+              color: '#1b5c91',
+            }}
             to={{ pathname: `/apps/${props.group.application_id}/groups/${props.group.id}` }}
             component={RouterLink}
+            underline="hover"
           >
             {props.group.name}
           </Link>
@@ -65,7 +59,10 @@ function ApplicationItemGroupItem(props: { group: Group; appName: string }) {
                 search: 'period=1d',
               }}
               component={RouterLink}
-              className={classes.instanceLink}
+              sx={{
+                color: '#1b5c91',
+              }}
+              underline="hover"
             >
               {instanceCountContent}
             </Link>

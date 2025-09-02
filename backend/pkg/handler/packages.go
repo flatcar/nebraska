@@ -7,8 +7,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"gopkg.in/guregu/null.v4"
 
-	"github.com/kinvolk/nebraska/backend/pkg/api"
-	"github.com/kinvolk/nebraska/backend/pkg/codegen"
+	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/codegen"
 )
 
 func (h *Handler) PaginatePackages(ctx echo.Context, appIDorProductID string, params codegen.PaginatePackagesParams) error {
@@ -26,7 +26,7 @@ func (h *Handler) PaginatePackages(ctx echo.Context, appIDorProductID string, pa
 
 	totalCount, err := h.db.GetPackagesCount(appID, params.SearchVersion)
 	if err != nil {
-		logger.Error().Err(err).Str("appID", appID).Msg("getPackages count - encoding packages")
+		l.Error().Err(err).Str("appID", appID).Msg("getPackages count - encoding packages")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 	pkgs, err := h.db.GetPackages(appID, uint64(*params.Page), uint64(*params.Perpage), params.SearchVersion)
@@ -34,7 +34,7 @@ func (h *Handler) PaginatePackages(ctx echo.Context, appIDorProductID string, pa
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
 		}
-		logger.Error().Err(err).Str("appID", appID).Msg("getPackages - encoding packages")
+		l.Error().Err(err).Str("appID", appID).Msg("getPackages - encoding packages")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
@@ -42,7 +42,7 @@ func (h *Handler) PaginatePackages(ctx echo.Context, appIDorProductID string, pa
 }
 
 func (h *Handler) CreatePackage(ctx echo.Context, appIDorProductID string) error {
-	logger := loggerWithUsername(logger, ctx)
+	l := loggerWithUsername(l, ctx)
 
 	appID, err := h.db.GetAppID(appIDorProductID)
 	if err != nil {
@@ -53,7 +53,7 @@ func (h *Handler) CreatePackage(ctx echo.Context, appIDorProductID string) error
 
 	err = ctx.Bind(&request)
 	if err != nil {
-		logger.Error().Err(err).Msg("addPackage - decoding payload")
+		l.Error().Err(err).Msg("addPackage - decoding payload")
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
@@ -61,28 +61,28 @@ func (h *Handler) CreatePackage(ctx echo.Context, appIDorProductID string) error
 
 	pkg, err = h.db.AddPackage(pkg)
 	if err != nil {
-		logger.Error().Err(err).Msgf("addPackage - adding package %v", request)
+		l.Error().Err(err).Msgf("addPackage - adding package %v", request)
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
 	pkg, err = h.db.GetPackage(pkg.ID)
 	if err != nil {
-		logger.Error().Err(err).Str("packageID", pkg.ID).Msg("addPackage - getting added package")
+		l.Error().Err(err).Str("packageID", pkg.ID).Msg("addPackage - getting added package")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	logger.Info().Msgf("addPackage - successfully added package %+v", pkg)
+	l.Info().Msgf("addPackage - successfully added package %+v", pkg)
 
 	return ctx.JSON(http.StatusOK, pkg)
 }
 
-func (h *Handler) GetPackage(ctx echo.Context, appIDorProductID string, packageID string) error {
+func (h *Handler) GetPackage(ctx echo.Context, _ string, packageID string) error {
 	pkg, err := h.db.GetPackage(packageID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
 		}
-		logger.Error().Err(err).Str("packageID", packageID).Msg("getPackage - getting package")
+		l.Error().Err(err).Str("packageID", packageID).Msg("getPackage - getting package")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
@@ -90,7 +90,7 @@ func (h *Handler) GetPackage(ctx echo.Context, appIDorProductID string, packageI
 }
 
 func (h *Handler) UpdatePackage(ctx echo.Context, appIDorProductID string, packageID string) error {
-	logger := loggerWithUsername(logger, ctx)
+	l := loggerWithUsername(l, ctx)
 
 	appID, err := h.db.GetAppID(appIDorProductID)
 	if err != nil {
@@ -101,7 +101,7 @@ func (h *Handler) UpdatePackage(ctx echo.Context, appIDorProductID string, packa
 
 	err = ctx.Bind(&request)
 	if err != nil {
-		logger.Error().Err(err).Msg("updatePackage - decoding payload")
+		l.Error().Err(err).Msg("updatePackage - decoding payload")
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
@@ -112,43 +112,43 @@ func (h *Handler) UpdatePackage(ctx echo.Context, appIDorProductID string, packa
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
 		}
-		logger.Error().Err(err).Str("packageID", packageID).Msg("updatePackage - getting old package to update")
+		l.Error().Err(err).Str("packageID", packageID).Msg("updatePackage - getting old package to update")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
 	err = h.db.UpdatePackage(pkg)
 	if err != nil {
-		logger.Error().Err(err).Msgf("updatePackage - updating package %+v", request)
+		l.Error().Err(err).Msgf("updatePackage - updating package %+v", request)
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
 	pkg, err = h.db.GetPackage(packageID)
 	if err != nil {
-		logger.Error().Err(err).Str("packageID", packageID).Msg("updatePackage - getting old package to update")
+		l.Error().Err(err).Str("packageID", packageID).Msg("updatePackage - getting old package to update")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	logger.Info().Msgf("updatePackage - successfully updated package %+v -> %+v", oldPkg, pkg)
+	l.Info().Msgf("updatePackage - successfully updated package %+v -> %+v", oldPkg, pkg)
 
 	return ctx.JSON(http.StatusOK, pkg)
 }
 
-func (h *Handler) DeletePackage(ctx echo.Context, appIDorProductID string, packageID string) error {
-	logger := loggerWithUsername(logger, ctx)
+func (h *Handler) DeletePackage(ctx echo.Context, _ string, packageID string) error {
+	l := loggerWithUsername(l, ctx)
 
 	pkg, err := h.db.GetPackage(packageID)
 	if err != nil {
-		logger.Error().Err(err).Str("packageID", packageID).Msg("deletePackage - getting package to delete")
+		l.Error().Err(err).Str("packageID", packageID).Msg("deletePackage - getting package to delete")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
 	err = h.db.DeletePackage(packageID)
 	if err != nil {
-		logger.Error().Err(err).Str("packageID", packageID).Msg("deletePackage")
+		l.Error().Err(err).Str("packageID", packageID).Msg("deletePackage")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	logger.Info().Msgf("deletePackage - successfully deleted package %+v", pkg)
+	l.Info().Msgf("deletePackage - successfully deleted package %+v", pkg)
 
 	return ctx.NoContent(http.StatusNoContent)
 }

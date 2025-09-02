@@ -3,6 +3,5 @@
 package tools
 
 import (
-	_ "github.com/golangci/golangci-lint/cmd/golangci-lint"
-	_ "github.com/kevinburke/go-bindata"
+        _ "github.com/golangci/golangci-lint/v2/cmd/golangci-lint"
 )

@@ -1,8 +1,9 @@
-import { Box, Divider, Typography } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import ScheduleIcon from '@material-ui/icons/Schedule';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import { Box, Divider, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+
 import { Group } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../common/Card/Card';
@@ -10,11 +11,18 @@ import ListItem from '../common/ListItem';
 import MoreMenu from '../common/MoreMenu';
 import ApplicationItemGroupsList from './ApplicationItemGroupsList';
 
-const useStyles = makeStyles({
-  root: {
+const PREFIX = 'ApplicationItem';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  itemSection: `${PREFIX}-itemSection`,
+};
+
+const StyledListItem = styled(ListItem)({
+  [`&.${classes.root}`]: {
     padding: '0px 8px',
   },
-  itemSection: {
+  [`& .${classes.itemSection}`]: {
     padding: '0 1em',
   },
 });
@@ -30,54 +38,53 @@ export interface ApplicationItemProps {
 }
 
 export default function ApplicationItem(props: ApplicationItemProps) {
-  const classes = useStyles();
   const { t } = useTranslation();
   const { description, groups, numberOfInstances, id, productId, name } = props;
 
   return (
-    <ListItem className={classes.root}>
-      <Grid container>
-        <Grid item xs={12}>
+    <StyledListItem className={classes.root}>
+      <Grid container sx={{ width: '100%' }}>
+        <Grid size={12}>
           <CardHeader
             cardMainLinkLabel={name}
             cardMainLinkPath={{ pathname: `/apps/${id}` }}
             cardId={id}
             cardTrack={productId}
-            cardDescription={description || t('applications|No description provided')}
+            cardDescription={description || t('applications|description_none_provided')}
           >
             <MoreMenu
               options={[
                 {
-                  label: t('frequent|Edit'),
+                  label: t('frequent|edit'),
                   action: () => props.onUpdate(id),
                 },
                 {
-                  label: t('frequent|Delete'),
+                  label: t('frequent|delete'),
                   action: () => {
-                    window.confirm(
-                      t('applications|Are you sure you want to delete this application?')
-                    )
-                      ? applicationsStore().deleteApplication(id)
-                      : null;
+                    if (window.confirm(t('applications|confirm_delete_application'))) {
+                      applicationsStore().deleteApplication(id);
+                    }
                   },
                 },
               ]}
             />
           </CardHeader>
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <Grid container className={classes.itemSection} spacing={0}>
-            <Grid item xs={4}>
+            <Grid size={4}>
               <Box mt={2}>
-                <CardFeatureLabel>{t('applications|INSTANCES')}</CardFeatureLabel>
+                <CardFeatureLabel>{t('applications|instances_title')}</CardFeatureLabel>
                 <CardLabel>
                   <Typography variant="h5">
-                    {numberOfInstances || t('applications|None')}
+                    {numberOfInstances || t('applications|none')}
                   </Typography>
                   <Box display="flex" my={1}>
                     <ScheduleIcon color="disabled" />
                     <Box pl={1} color="text.disabled">
-                      <Typography variant="subtitle1">{t('applications|last 24 hours')}</Typography>
+                      <Typography variant="subtitle1">
+                        {t('applications|time_last_24_hours')}
+                      </Typography>
                     </Box>
                   </Box>
                 </CardLabel>
@@ -86,12 +93,12 @@ export default function ApplicationItem(props: ApplicationItemProps) {
             <Box width="1%">
               <Divider orientation="vertical" variant="fullWidth" />
             </Box>
-            <Grid item xs={7}>
+            <Grid size={7}>
               <Box mt={2} p={1}>
-                <CardFeatureLabel>{t('frequent|Groups')}</CardFeatureLabel>
+                <CardFeatureLabel>{t('frequent|groups')}</CardFeatureLabel>
                 <Box display="inline-block" pl={2}>
                   <CardLabel>
-                    {groups?.length === 0 ? t('applications|None') : groups?.length}
+                    {groups?.length === 0 ? t('applications|none') : groups?.length}
                   </CardLabel>
                 </Box>
                 <ApplicationItemGroupsList groups={groups} appID={id} appName={name} />
@@ -100,6 +107,6 @@ export default function ApplicationItem(props: ApplicationItemProps) {
           </Grid>
         </Grid>
       </Grid>
-    </ListItem>
+    </StyledListItem>
   );
 }

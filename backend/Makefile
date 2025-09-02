@@ -1,7 +1,18 @@
 GO111MODULE=on
 export GO111MODULE
 
-TAG := `git describe --tags --always --exclude 'nebraska-helm*'`
+BASE_TAG := $(shell git describe --tags --always --exclude 'nebraska-helm*' 2>/dev/null)
+
+# We work only with one staging tag as per the one staging environment for Nebraska.
+# Appending the short hash code helps checking the new deployments by
+# asserting the version label in the footer that the hash changed.
+TAG := $(shell \
+    if [ "$(BASE_TAG)" = "staging" ]; then \
+        echo "staging-$$(git rev-parse --short HEAD)"; \
+    else \
+        echo "$(BASE_TAG)"; \
+    fi)
+
 SHELL = /bin/bash
 DOCKER_CMD ?= "docker"
 DOCKER_REPO ?= "ghcr.io/flatcar"
@@ -18,7 +29,7 @@ ifeq ($(VERSION),)
 	endif
 endif
 
-LDFLAGS := "-w -X github.com/kinvolk/nebraska/backend/pkg/version.Version=$(VERSION) -extldflags \"-static\""
+LDFLAGS := "-w -X github.com/flatcar/nebraska/backend/pkg/version.Version=$(VERSION) -extldflags \"-static\""
 .PHONY: all
 all: codegen run-generators code-checks build
 
@@ -62,6 +73,7 @@ test-clean-work-tree-backend:
 	  echo 'Working tree of backend code is not clean'; \
 	  echo; \
 	  git status; \
+	  git diff; \
 	  exit 1; \
 	fi
 
@@ -71,11 +83,8 @@ tools: bin/initdb
 bin/initdb:
 	go build -o bin/initdb ./cmd/initdb
 
-tools/go-bindata: go.mod go.sum
-	env GOBIN=$(CURDIR)/tools/ go install github.com/kevinburke/go-bindata/go-bindata@v3.24.0
-
 tools/golangci-lint: go.mod go.sum
-	env GOBIN=$(CURDIR)/tools/ go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.2
+	env GOBIN=$(CURDIR)/tools/ go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.2.1
 
 tools/swag:
 	env GOBIN=$(CURDIR)/tools/ go install github.com/swaggo/swag/cmd/swag@v1.8.10
@@ -84,7 +93,7 @@ tools/swag:
 ci: build test-clean-work-tree-backend check-backend-with-container
 
 .PHONY: run-generators
-run-generators: tools/go-bindata
+run-generators:
 	PATH="$(abspath tools):$${PATH}" go generate ./...
 
 bin/nebraska: run-generators

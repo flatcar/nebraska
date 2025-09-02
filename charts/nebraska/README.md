@@ -9,6 +9,44 @@ $ helm repo add nebraska https://flatcar.github.io/nebraska
 $ helm install my-nebraska nebraska/nebraska
 ```
 
+## Upgrade PostgreSQL
+
+When there is a major upgrade of PostgreSQL, a manual intervention might be required with a downtime. It is possible to automate things with operators, but here's a simple example:
+
+1. Scale down Nebraska deployment:
+```
+$ kubectl scale --replicas=0 deployment/nebraska
+deployment.apps/nebraska scaled
+```
+
+2. Backup PostgreSQL data:
+```
+$ kubectl exec -ti pod/nebraska-postgresql-0 -- pg_dumpall > backup.sql
+```
+
+3. Scale down Nebraska statefulset:
+```
+$ kubectl scale --replicas=0 statefulset/nebraska-postgresql
+statefulset.apps/nebraska-postgresql scaled
+```
+
+4. Backup and remove the data from the bound volume (depending on the storage class)
+
+3. Upgrade PostgreSQL version, e.g:
+```diff
+-          image: docker.io/bitnami/postgresql:13.8.0-debian-11-r18
++          image: docker.io/bitnami/postgresql:17.5.0
+```
+
+5. Apply the changes and scale up Nebraska statefulset to its original value
+
+6. Inject the backup and assert that everything looks good in the database:
+```
+$ kubectl exec -ti pod/nebraska-postgresql-0 -- psql < backup.sql
+```
+
+7. Scale up Nebraska deployment and assert that everything is back to normal
+
 ## Parameters
 
 ### Global parameters
@@ -37,6 +75,9 @@ $ helm install my-nebraska nebraska/nebraska
 | `strategy.rollingUpdate.maxSurge`       | The maximum number of pods that can be scheduled above the desired number of pods (Only applies when `strategy.type` is `RollingUpdate`) | `nil`                                 |
 | `strategy.rollingUpdate.maxUnavailable` | The maximum number of pods that can be unavailable during the update (Only applies when `strategy.type` is `RollingUpdate`)              | `nil`                                 |
 | `podAnnotations`                        | Annotations for pods                                                                                                                     | `nil`                                 |
+| `podLabels`                             | Labels for pods                             |                                                                                            | `nil`                                 |
+| `extraLabels`                           | Additional labels that will be applied to all objects |                                                                                  | `nil`                                 |
+| `extraAnnotations`                      | Additional annotations that will be applied to all objects |                                                                             | `nil`                                 |
 | `podSecurityContext`                    | Holds pod-level security attributes and common container settings                                                                        | Check `values.yaml` file              |
 | `securityContext`                       | Security options the container should run with                                                                                           | `nil`                                 |
 | `service.type`                          | Kubernetes Service type                                                                                                                  | `ClusterIP`                           |
@@ -71,6 +112,8 @@ $ helm install my-nebraska nebraska/nebraska
 | `config.hostFlatcarPackages.packagesPath`             | Path where Flatcar packages files should be stored                                                                                   | `/mnt/packages`                                                         |
 | `config.hostFlatcarPackages.nebraskaURL`              | Nebraska URL (`http://host:port`)                                                                                                    | `nil` (defaults to first ingress host)                                  |
 | `config.hostFlatcarPackages.persistence.enabled`      | Enable persistence using PVC                                                                                                         | `false`                                                                 |
+| `config.hostFlatcarPackages.persistence.labels        | Additional labels to be applied to the PVC                                |                                                          | `nil`                                                                   |
+| `config.hostFlatcarPackages.persistence.annotations   | Additional annotations to be applied to the PVC                           |                                                          | `nil`                                                                   |
 | `config.hostFlatcarPackages.persistence.storageClass` | PVC Storage Class for PostgreSQL volume                                                                                              | `nil`                                                                   |
 | `config.hostFlatcarPackages.persistence.accessModes`  | PVC Access Mode for PostgreSQL volume                                                                                                | `["ReadWriteOnce"]`                                                     |
 | `config.hostFlatcarPackages.persistence.size`         | PVC Storage Request for PostgreSQL volume                                                                                            | `10Gi`                                                                  |

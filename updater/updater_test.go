@@ -9,13 +9,13 @@ import (
 	"os"
 	"testing"
 
-	omahaSpec "github.com/kinvolk/go-omaha/omaha"
+	omahaSpec "github.com/flatcar/go-omaha/omaha"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/guregu/null.v4"
 
-	"github.com/kinvolk/nebraska/backend/pkg/api"
-	"github.com/kinvolk/nebraska/backend/pkg/omaha"
+	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/omaha"
 )
 
 const (
@@ -32,7 +32,7 @@ func newTestHandler(api *api.API) *testOmahaHandler {
 	}
 }
 
-func (h *testOmahaHandler) Handle(ctx context.Context, url string, req *omahaSpec.Request) (*omahaSpec.Response, error) {
+func (h *testOmahaHandler) Handle(_ context.Context, _ string, req *omahaSpec.Request) (*omahaSpec.Response, error) {
 	requestBuf := bytes.NewBuffer(nil)
 	encoder := xml.NewEncoder(requestBuf)
 	err := encoder.Encode(req)
@@ -59,7 +59,7 @@ func newForTest(t *testing.T) *api.API {
 		log.Printf("NEBRASKA_DB_URL not set, setting to default %q\n", defaultTestDbURL)
 		_ = os.Setenv("NEBRASKA_DB_URL", defaultTestDbURL)
 	}
-	api, err := api.New(api.OptionInitDB)
+	api, err := api.NewWithMigrations(api.OptionInitDB)
 
 	require.NoError(t, err)
 	require.NotNil(t, api)
@@ -152,11 +152,11 @@ type updateTestHandler struct {
 	applyUpdateResult error
 }
 
-func (u updateTestHandler) FetchUpdate(ctx context.Context, info UpdateInfo) error {
+func (u updateTestHandler) FetchUpdate(_ context.Context, _ UpdateInfo) error {
 	return u.fetchUpdateResult
 }
 
-func (u updateTestHandler) ApplyUpdate(ctx context.Context, info UpdateInfo) error {
+func (u updateTestHandler) ApplyUpdate(_ context.Context, _ UpdateInfo) error {
 	return u.applyUpdateResult
 }
 
