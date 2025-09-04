@@ -101,6 +101,9 @@ type ServerInterface interface {
 	// (PUT /api/apps/{appIDorProductID}/packages/{packageID})
 	UpdatePackage(ctx echo.Context, appIDorProductID string, packageID string) error
 
+	// (GET /api/apps/{appIDorProductID}/packages/{packageID}/floor-channels)
+	GetPackageFloorChannels(ctx echo.Context, appIDorProductID string, packageID string) error
+
 	// (GET /api/channels/{channelID}/floors)
 	PaginateChannelFloors(ctx echo.Context, channelID string, params PaginateChannelFloorsParams) error
 
@@ -1168,6 +1171,36 @@ func (w *ServerInterfaceWrapper) UpdatePackage(ctx echo.Context) error {
 	return err
 }
 
+// GetPackageFloorChannels converts echo context to params.
+func (w *ServerInterfaceWrapper) GetPackageFloorChannels(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "appIDorProductID", ctx.Param("appIDorProductID"), &appIDorProductID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
+	}
+
+	// ------------- Path parameter "packageID" -------------
+	var packageID string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "packageID", ctx.Param("packageID"), &packageID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter packageID: %s", err))
+	}
+
+	ctx.Set(OidcBearerAuthScopes, []string{})
+
+	ctx.Set(OidcCookieAuthScopes, []string{})
+
+	ctx.Set(GithubCookieAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetPackageFloorChannels(ctx, appIDorProductID, packageID)
+	return err
+}
+
 // PaginateChannelFloors converts echo context to params.
 func (w *ServerInterfaceWrapper) PaginateChannelFloors(ctx echo.Context) error {
 	var err error
@@ -1438,6 +1471,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.DELETE(baseURL+"/api/apps/:appIDorProductID/packages/:packageID", wrapper.DeletePackage)
 	router.GET(baseURL+"/api/apps/:appIDorProductID/packages/:packageID", wrapper.GetPackage)
 	router.PUT(baseURL+"/api/apps/:appIDorProductID/packages/:packageID", wrapper.UpdatePackage)
+	router.GET(baseURL+"/api/apps/:appIDorProductID/packages/:packageID/floor-channels", wrapper.GetPackageFloorChannels)
 	router.GET(baseURL+"/api/channels/:channelID/floors", wrapper.PaginateChannelFloors)
 	router.DELETE(baseURL+"/api/channels/:channelID/floors/:packageID", wrapper.RemoveChannelFloor)
 	router.POST(baseURL+"/api/channels/:channelID/floors/:packageID", wrapper.AddChannelFloor)

@@ -982,6 +982,49 @@ paths:
           description: Package not found response
         "500":
           description: Delete package error response
+  /api/apps/{appIDorProductID}/packages/{packageID}/floor-channels:
+    get:
+      description: get all channels where a package is marked as a floor
+      operationId: getPackageFloorChannels
+      security:
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
+      parameters:
+        - in: path
+          name: appIDorProductID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: packageID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Get Package Floor Channels success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  channels:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        channel:
+                          $ref: "#/components/schemas/channel"
+                        floor_reason:
+                          type: string
+                          nullable: true
+                  count:
+                    type: integer
+        "404":
+          description: Package not found
+        "500":
+          description: Internal server error
   /api/apps/{appIDorProductID}/groups/{groupID}/instances:
     get:
       description: get instances of a group given its groupID and appID

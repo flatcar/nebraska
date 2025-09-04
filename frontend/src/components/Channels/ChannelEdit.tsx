@@ -1,4 +1,8 @@
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -7,11 +11,18 @@ import DialogTitle from '@mui/material/DialogTitle';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
 import MuiSelect, { SelectChangeEvent } from '@mui/material/Select';
 import { styled } from '@mui/material/styles';
-import { Field, Form, Formik } from 'formik';
+import MuiTextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import { Field, Form, Formik, FormikHelpers, FormikProps } from 'formik';
 import { TextField } from 'formik-mui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +31,7 @@ import * as Yup from 'yup';
 import API from '../../api/API';
 import { Channel, Package } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
-import { ARCHES } from '../../utils/helpers';
+import { ARCHES, cleanSemverVersion } from '../../utils/helpers';
 import AutoCompletePicker from '../common/AutoCompletePicker';
 import ColorPicker from '../common/ColorPicker';
 
@@ -38,14 +49,27 @@ const StyledDialog = styled(Dialog)({
 
 const PackagesPerPage = 15;
 
+interface ChannelFormValues {
+  name: string;
+  package?: string;
+}
+
+interface FormStatus {
+  statusMessage?: string;
+}
+
 export interface ChannelEditProps {
-  data: any;
+  data: {
+    applicationID: string;
+    channel?: Channel;
+    packages?: Package[];
+  };
   create?: boolean;
   show: boolean;
   onHide: () => void;
 }
 
-export default function ChannelEdit(props: ChannelEditProps) {
+function ChannelEdit(props: ChannelEditProps) {
   const { t } = useTranslation();
   const defaultColor = '';
   const [channelColor, setChannelColor] = React.useState(defaultColor);
@@ -60,13 +84,75 @@ export default function ChannelEdit(props: ChannelEditProps) {
   const inputSearchTimeout = 250; // ms
   const [packageSearchTerm, setPackageSearchTerm] = React.useState<string>('');
   const [searchPage, setSearchPage] = React.useState<number>(0);
+  const [floorPackages, setFloorPackages] = React.useState<Package[]>([]);
+  const [loadingFloors, setLoadingFloors] = React.useState(false);
+  const [showAddFloorDialog, setShowAddFloorDialog] = React.useState(false);
+  const [selectedFloorPackage, setSelectedFloorPackage] = React.useState<string>('');
+  const [floorReason, setFloorReason] = React.useState<string>('');
 
   React.useEffect(() => {
     setArch(props.data.channel ? props.data.channel.arch : defaultArch);
     setChannelColor(props.data.channel ? props.data.channel.color : defaultColor);
   }, [props.data]);
 
-  function handleSubmit(values: { [key: string]: any }, actions: { [key: string]: any }) {
+  // Fetch floor packages when showing an existing channel
+  React.useEffect(() => {
+    if (!isCreation && props.data.channel?.id && props.show) {
+      setLoadingFloors(true);
+      API.getChannelFloors(props.data.channel.id)
+        .then(({ packages }) => {
+          setFloorPackages(packages || []);
+        })
+        .catch(e => {
+          console.error('Failed to get floor packages: ', e);
+          setFloorPackages([]);
+        })
+        .finally(() => {
+          setLoadingFloors(false);
+        });
+    } else if (!props.show) {
+      setFloorPackages([]);
+      setSelectedFloorPackage('');
+      setFloorReason('');
+      setShowAddFloorDialog(false);
+    }
+  }, [props.data.channel?.id, isCreation, props.show]);
+
+  async function deleteFloorPackage(packageID: string) {
+    if (window.confirm(t('channels|confirm_delete_floor'))) {
+      try {
+        await applicationsStore().deleteChannelFloor(props.data.channel!.id, packageID);
+        setFloorPackages(prev => prev.filter(p => p.id !== packageID));
+      } catch (err) {
+        console.error('Failed to delete floor package:', err);
+      }
+    }
+  }
+
+  async function handleAddFloor() {
+    if (!selectedFloorPackage) return;
+
+    try {
+      await applicationsStore().addChannelFloor(
+        props.data.channel!.id,
+        selectedFloorPackage,
+        floorReason || undefined
+      );
+
+      const pkg = packages.packages.find(p => p.id === selectedFloorPackage);
+      if (pkg) {
+        setFloorPackages(prev => [...prev, { ...pkg, floor_reason: floorReason }]);
+      }
+
+      setShowAddFloorDialog(false);
+      setSelectedFloorPackage('');
+      setFloorReason('');
+    } catch (err) {
+      console.error('Failed to add floor package:', err);
+    }
+  }
+
+  function handleSubmit(values: ChannelFormValues, actions: FormikHelpers<ChannelFormValues>) {
     const data: {
       name: string;
       arch: number;
@@ -90,7 +176,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
     if (isCreation) {
       channelFunctionCall = applicationsStore().createChannel(data as Channel);
     } else {
-      data['id'] = props.data.channel.id;
+      data['id'] = props.data.channel!.id;
       channelFunctionCall = applicationsStore().updateChannel(data as Channel);
     }
 
@@ -168,9 +254,14 @@ export default function ChannelEdit(props: ChannelEditProps) {
     }
   }
 
-  //@todo add better types
-  //@ts-expect-error as type mismatch
-  function renderForm({ values, status, setFieldValue, isSubmitting }) {
+  function renderForm({
+    values,
+    status,
+    setFieldValue,
+    isSubmitting,
+  }: FormikProps<ChannelFormValues> & {
+    status?: FormStatus;
+  }) {
     return (
       <Form data-testid="channel-edit-form">
         <DialogContent>
@@ -186,7 +277,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
           >
             <Grid>
               <ColorPicker color={channelColor} onColorPicked={color => setChannelColor(color.hex)}>
-                {values.name ? values.name[0] : ''}
+                <>{values.name ? values.name[0] : ''}</>
               </ColorPicker>
             </Grid>
             <Grid container alignItems="flex-start" spacing={2}>
@@ -265,6 +356,54 @@ export default function ChannelEdit(props: ChannelEditProps) {
             }}
             onBottomScrolled={loadMorePackages}
           />
+          {!isCreation && (
+            <Box mt={2}>
+              <Box display="flex" alignItems="center" justifyContent="space-between">
+                <Typography variant="subtitle2" color="textSecondary">
+                  {t('channels|floor_packages')} ({floorPackages.length})
+                </Typography>
+                <Button
+                  size="small"
+                  startIcon={<AddIcon />}
+                  onClick={() => setShowAddFloorDialog(true)}
+                  aria-label="Add floor package to this channel"
+                >
+                  {t('channels|add_floor')}
+                </Button>
+              </Box>
+              <Typography variant="caption" color="textSecondary" display="block" gutterBottom>
+                {t('channels|floor_packages_help')}
+              </Typography>
+              {loadingFloors ? (
+                <CircularProgress size={20} />
+              ) : floorPackages.length > 0 ? (
+                <List dense>
+                  {floorPackages.map(pkg => (
+                    <ListItem key={pkg.id}>
+                      <ListItemText
+                        primary={cleanSemverVersion(pkg.version)}
+                        secondary={pkg.floor_reason || t('channels|no_reason_specified')}
+                      />
+                      <ListItemSecondaryAction>
+                        <IconButton
+                          edge="end"
+                          aria-label={`Remove floor package ${cleanSemverVersion(pkg.version)}`}
+                          onClick={() => deleteFloorPackage(pkg.id!)}
+                          size="small"
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                  ))}
+                </List>
+              ) : (
+                <Typography variant="body2" color="textSecondary">
+                  {t('channels|no_floor_packages')}
+                </Typography>
+              )}
+            </Box>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => props.onHide()} color="primary">
@@ -285,28 +424,102 @@ export default function ChannelEdit(props: ChannelEditProps) {
       .required('Required'),
   });
 
-  let initialValues = {};
+  let initialValues: Partial<ChannelFormValues> = {
+    name: '',
+    package: '',
+  };
   if (!isCreation) {
     initialValues = {
-      name: props.data.channel.name,
-      package: props.data.channel.package_id ? props.data.channel.package_id : '',
+      name: props.data.channel?.name || '',
+      package: props.data.channel?.package_id || '',
     };
   }
 
   return (
-    <StyledDialog
-      open={props.show}
-      onClose={() => props.onHide()}
-      aria-labelledby="form-dialog-title"
-    >
-      <DialogTitle>
-        {isCreation ? t('channels|add_new_channel') : t('channels|edit_channel')}
-      </DialogTitle>
-      <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={validation}>
-        {/* @todo add better types */}
-        {/* @ts-expect-error as type mismatch */}
-        {renderForm}
-      </Formik>
-    </StyledDialog>
+    <>
+      <StyledDialog
+        open={props.show}
+        onClose={() => props.onHide()}
+        aria-labelledby="form-dialog-title"
+      >
+        <DialogTitle>
+          {isCreation ? t('channels|add_new_channel') : t('channels|edit_channel')}
+        </DialogTitle>
+        <Formik<ChannelFormValues>
+          initialValues={initialValues as ChannelFormValues}
+          onSubmit={handleSubmit}
+          validationSchema={validation}
+        >
+          {renderForm}
+        </Formik>
+      </StyledDialog>
+
+      {/* Add Floor Package Dialog */}
+      <Dialog
+        open={showAddFloorDialog}
+        onClose={() => setShowAddFloorDialog(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>{t('channels|add_floor_package')}</DialogTitle>
+        <DialogContent>
+          <FormControl fullWidth margin="dense">
+            <InputLabel variant="standard" id="floor-package-select-label">
+              {t('frequent|package')}
+            </InputLabel>
+            <MuiSelect
+              variant="standard"
+              labelId="floor-package-select-label"
+              value={selectedFloorPackage}
+              aria-label="Select package to mark as floor"
+              aria-describedby="floor-package-select-helper"
+              onChange={(e: SelectChangeEvent) => setSelectedFloorPackage(e.target.value)}
+            >
+              {packages.packages
+                .filter(
+                  (pkg: Package) => pkg.arch === arch && !floorPackages.some(fp => fp.id === pkg.id)
+                )
+                .map((pkg: Package) => (
+                  <MenuItem key={pkg.id} value={pkg.id}>
+                    {pkg.version}
+                  </MenuItem>
+                ))}
+            </MuiSelect>
+            <FormHelperText id="floor-package-select-helper">
+              {t('channels|select_package_floor')}
+            </FormHelperText>
+          </FormControl>
+          <MuiTextField
+            fullWidth
+            margin="dense"
+            variant="standard"
+            label={t('channels|floor_reason')}
+            value={floorReason}
+            onChange={e => setFloorReason(e.target.value)}
+            aria-label="Floor reason explanation"
+            aria-describedby="floor-reason-dialog-helper"
+            helperText={
+              <span id="floor-reason-dialog-helper">{t('channels|floor_reason_help')}</span>
+            }
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setShowAddFloorDialog(false);
+              setSelectedFloorPackage('');
+              setFloorReason('');
+            }}
+          >
+            {t('frequent|cancel')}
+          </Button>
+          <Button onClick={handleAddFloor} color="primary" disabled={!selectedFloorPackage}>
+            {t('frequent|add')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }
+
+export default ChannelEdit;

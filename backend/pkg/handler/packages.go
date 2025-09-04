@@ -242,7 +242,10 @@ func (h *Handler) PaginateChannelFloors(ctx echo.Context, channelID string, para
 	}
 
 	if params.Perpage == nil {
-		params.Perpage = &defaultPerPage
+		// Use a larger default for floor packages since they're typically a small set
+		// and we want to show all of them in the UI
+		defaultFloorPerPage := 100
+		params.Perpage = &defaultFloorPerPage
 	}
 
 	totalCount, err := h.db.GetChannelFloorPackagesCount(channelID)
@@ -319,4 +322,36 @@ func (h *Handler) RemoveChannelFloor(ctx echo.Context, channelID string, package
 
 	l.Info().Str("channelID", channelID).Str("packageID", packageID).Msg("RemoveChannelFloor - successfully removed floor")
 	return ctx.NoContent(http.StatusOK)
+}
+
+// GetPackageFloorChannels handles requests for channels where a package is a floor
+func (h *Handler) GetPackageFloorChannels(ctx echo.Context, _ string, packageID string) error {
+	l := loggerWithUsername(l, ctx)
+
+	// First verify the package exists
+	_, err := h.db.GetPackage(packageID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return ctx.NoContent(http.StatusNotFound)
+		}
+		l.Error().Err(err).Str("packageID", packageID).Msg("GetPackageFloorChannels - getting package")
+		return ctx.NoContent(http.StatusInternalServerError)
+	}
+
+	channelInfos, err := h.db.GetPackageFloorChannels(packageID)
+	if err != nil {
+		l.Error().Err(err).Str("packageID", packageID).Msg("GetPackageFloorChannels - getting floor channels")
+		return ctx.NoContent(http.StatusInternalServerError)
+	}
+
+	// Response structure matching the frontend expectations
+	type response struct {
+		Channels []api.ChannelFloorInfo `json:"channels"`
+		Count    int                    `json:"count"`
+	}
+
+	return ctx.JSON(http.StatusOK, response{
+		Channels: channelInfos,
+		Count:    len(channelInfos),
+	})
 }

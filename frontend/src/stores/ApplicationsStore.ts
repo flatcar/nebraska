@@ -287,6 +287,26 @@ class ApplicationsStore extends Store {
     const updatedpackage = packageItem;
     this.getAndUpdatePackages(updatedpackage.application_id);
   }
+
+  // Floor packages management
+
+  async addChannelFloor(channelID: string, packageID: string, floorReason?: string): Promise<void> {
+    await API.addChannelFloor(channelID, packageID, floorReason);
+    // Find app that contains this channel
+    const app = this.applications.find(app => app.channels?.some(ch => ch.id === channelID));
+    if (app) {
+      this.getAndUpdateApplication(app.id);
+    }
+  }
+
+  async deleteChannelFloor(channelID: string, packageID: string): Promise<void> {
+    await API.deleteChannelFloor(channelID, packageID);
+    // Find app that contains this channel
+    const app = this.applications.find(app => app.channels?.some(ch => ch.id === channelID));
+    if (app) {
+      this.getAndUpdateApplication(app.id);
+    }
+  }
 }
 
 export default ApplicationsStore;

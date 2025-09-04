@@ -323,3 +323,78 @@ func (api *API) GetChannelFloorPackagesPaginated(channelID string, page, perPage
 
 	return api.getPackagesFromQuery(query)
 }
+
+// ChannelFloorInfo contains a channel and its floor reason for a specific package
+type ChannelFloorInfo struct {
+	Channel     *Channel    `json:"channel"`
+	FloorReason null.String `json:"floor_reason"`
+}
+
+// GetPackageFloorChannels returns all channels where a package is marked as a floor
+func (api *API) GetPackageFloorChannels(packageID string) ([]ChannelFloorInfo, error) {
+	// Use a temporary struct that embeds Channel and adds floor_reason
+	type channelWithFloor struct {
+		Channel
+		FloorReason null.String `db:"floor_reason"`
+	}
+
+	query, _, err := goqu.From(goqu.T("channel").As("c")).
+		Join(goqu.T("channel_package_floors").As("cpf"), goqu.On(
+			goqu.C("id").Table("c").Eq(goqu.C("channel_id").Table("cpf")),
+		)).
+		Select(
+			goqu.C("id").Table("c"),
+			goqu.C("name").Table("c"),
+			goqu.C("color").Table("c"),
+			goqu.C("created_ts").Table("c"),
+			goqu.C("application_id").Table("c"),
+			goqu.C("package_id").Table("c"),
+			goqu.C("arch").Table("c"),
+			goqu.C("floor_reason").Table("cpf"),
+		).
+		Where(goqu.C("package_id").Table("cpf").Eq(packageID)).
+		Order(goqu.C("name").Table("c").Asc()).
+		ToSQL()
+
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := api.db.Queryx(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var result []ChannelFloorInfo
+	for rows.Next() {
+		var chWithFloor channelWithFloor
+		if err := rows.StructScan(&chWithFloor); err != nil {
+			return nil, err
+		}
+
+		// Load the package that the channel points to (if any) - same as getChannelsFromQuery
+		if chWithFloor.PackageID.Valid {
+			pkg, err := api.getPackage(chWithFloor.PackageID)
+			switch err {
+			case nil:
+				chWithFloor.Package = pkg
+			case sql.ErrNoRows:
+				chWithFloor.Package = nil
+			default:
+				return nil, err
+			}
+		}
+
+		result = append(result, ChannelFloorInfo{
+			Channel:     &chWithFloor.Channel,
+			FloorReason: chWithFloor.FloorReason,
+		})
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}

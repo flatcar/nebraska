@@ -43,7 +43,7 @@ function ModalButton(props: ModalButtonProps) {
       modal = <GroupEditDialog {...options} />;
       break;
     case 'AddChannelModal':
-      modal = <ChannelEdit {...options} />;
+      modal = <ChannelEdit {...options} data={props.data as any} />;
       break;
     case 'AddPackageModal':
       modal = <PackageEditDialog {...(options as PackageEditDialogProps)} />;

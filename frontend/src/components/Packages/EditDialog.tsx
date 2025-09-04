@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import Dialog from '@mui/material/Dialog';
@@ -14,13 +14,15 @@ import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
 import MuiSelect, { SelectChangeEvent } from '@mui/material/Select';
 import { styled } from '@mui/material/styles';
-import { Field, Form, Formik } from 'formik';
+import MuiTextField from '@mui/material/TextField';
+import { Field, Form, Formik, FormikHelpers, FormikProps } from 'formik';
 import { Select, TextField } from 'formik-mui';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 
-import { Channel, Package } from '../../api/apiDataTypes';
+import API from '../../api/API';
+import { Channel, File, Package } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import { ARCHES } from '../../utils/helpers';
 import { REGEX_SEMVER } from '../../utils/regex';
@@ -34,6 +36,10 @@ const classes = {
   dialog: `${PREFIX}-dialog`,
 };
 
+// Package type constants - must match backend pkg/api/packages.go
+const PACKAGE_TYPE_FLATCAR = 1; // Flatcar Linux OS update package
+const PACKAGE_TYPE_OTHER = 4; // Generic/other package type
+
 const StyledDialog = styled(Dialog)({
   [`& .${classes.topSelect}`]: {
     width: '10rem',
@@ -42,6 +48,22 @@ const StyledDialog = styled(Dialog)({
     height: 'calc(100% - 64px)',
   },
 });
+
+interface PackageFormValues {
+  url: string;
+  filename: string;
+  description: string;
+  version: string;
+  size: number | string;
+  hash: string;
+  flatcarHash?: string;
+  channelsBlacklist: string[];
+  filesList: File[];
+}
+
+interface FormStatus {
+  statusMessage?: string;
+}
 
 export interface EditDialogProps {
   create?: boolean;
@@ -55,21 +77,60 @@ export interface EditDialogProps {
 }
 
 function EditDialog(props: EditDialogProps) {
-  const [flatcarType, otherType] = [1, 4];
   const [packageType, setPackageType] = React.useState(
-    props.data.package ? props.data.package.type : flatcarType
+    props.data.package ? props.data.package.type : PACKAGE_TYPE_FLATCAR
   );
   const [arch, setArch] = React.useState(props.data.package ? props.data.package.arch : 1);
   const { t } = useTranslation();
   const isCreation = Boolean(props.create);
   const [isAddingFiles, setIsAddingFiles] = React.useState(false);
+  const [packageFloorChannels, setPackageFloorChannels] = React.useState<string[]>([]);
+  const [floorReason, setFloorReason] = React.useState<string>('');
+  const [loadingFloors, setLoadingFloors] = React.useState(false);
+  const [initialFloorChannels, setInitialFloorChannels] = React.useState<string[]>([]);
+
+  React.useEffect(() => {
+    if (!isCreation && props.data.package?.id && props.data.appID && props.show) {
+      setLoadingFloors(true);
+      setPackageFloorChannels([]);
+      setFloorReason('');
+
+      const packageId = props.data.package.id;
+      const loadFloorChannels = async () => {
+        try {
+          const response = await API.getPackageFloorChannels(props.data.appID, packageId);
+
+          if (response.channels && response.channels.length > 0) {
+            const channelIds = response.channels.map(item => item.channel.id);
+            const firstReason =
+              response.channels.find(item => item.floor_reason)?.floor_reason || '';
+
+            setPackageFloorChannels(channelIds);
+            setInitialFloorChannels(channelIds);
+            setFloorReason(firstReason);
+          }
+        } catch (e) {
+          console.error('Failed to load floor channels:', e);
+        } finally {
+          setLoadingFloors(false);
+        }
+      };
+
+      loadFloorChannels();
+    } else if (!props.show) {
+      setPackageFloorChannels([]);
+      setInitialFloorChannels([]);
+      setFloorReason('');
+      setLoadingFloors(false);
+    }
+  }, [props.data.package?.id, props.data.appID, props.show, isCreation]);
 
   function getFlatcarActionHash() {
     return props.data.package.flatcar_action ? props.data.package.flatcar_action.sha256 : '';
   }
 
   function isFlatcarType(_type: number) {
-    return _type === flatcarType;
+    return _type === PACKAGE_TYPE_FLATCAR;
   }
 
   function getChannelsNames(channelIds: string[]) {
@@ -89,8 +150,7 @@ function EditDialog(props: EditDialogProps) {
     setArch(event.target.value as number);
   }
 
-  //@ts-expect-error as not interface was created for these types
-  function handleSubmit(values, actions) {
+  function handleSubmit(values: PackageFormValues, actions: FormikHelpers<PackageFormValues>) {
     const data: Partial<Package> = {
       arch: typeof arch === 'string' ? parseInt(arch) : arch,
       filename: values.filename,
@@ -118,7 +178,35 @@ function EditDialog(props: EditDialogProps) {
     }
 
     pkgFunc
-      .then(() => {
+      .then(async () => {
+        if (!isCreation && props.data.package?.id) {
+          const packageId = props.data.package.id;
+          const added = packageFloorChannels.filter(id => !initialFloorChannels.includes(id));
+          const removed = initialFloorChannels.filter(id => !packageFloorChannels.includes(id));
+
+          if (added.length > 0 || removed.length > 0) {
+            try {
+              await Promise.all([
+                ...added.map(channelId =>
+                  applicationsStore().addChannelFloor(
+                    channelId,
+                    packageId,
+                    floorReason || undefined
+                  )
+                ),
+                ...removed.map(channelId =>
+                  applicationsStore().deleteChannelFloor(channelId, packageId)
+                ),
+              ]);
+            } catch (err) {
+              console.error('Failed to save floor channel changes:', err);
+              actions.setStatus({
+                statusMessage: t('packages|floor_changes_failed'),
+              });
+            }
+          }
+        }
+
         props.onHide();
         actions.setSubmitting(false);
       })
@@ -136,9 +224,14 @@ function EditDialog(props: EditDialogProps) {
     props.onHide();
   }
 
-  //@todo add better types
-  //@ts-expect-error as no type was created for these params
-  function renderForm({ values, status, isSubmitting, setValues }) {
+  function renderForm({
+    values,
+    status,
+    isSubmitting,
+    setValues,
+  }: FormikProps<PackageFormValues> & {
+    status?: FormStatus;
+  }) {
     const channels = props.data.channels ? props.data.channels : [];
     return (
       <Form data-testid="package-edit-form">
@@ -155,10 +248,10 @@ function EditDialog(props: EditDialogProps) {
                   value={packageType}
                   onChange={handlePackageTypeChange}
                 >
-                  <MenuItem value={otherType} key="other">
+                  <MenuItem value={PACKAGE_TYPE_OTHER} key="other">
                     {t('packages|other')}
                   </MenuItem>
-                  <MenuItem value={flatcarType} key="flatcar">
+                  <MenuItem value={PACKAGE_TYPE_FLATCAR} key="flatcar">
                     {t('packages|flatcar')}
                   </MenuItem>
                 </MuiSelect>
@@ -293,21 +386,21 @@ function EditDialog(props: EditDialogProps) {
                         >
                           {channels
                             .filter((channelItem: Channel) => channelItem.arch === arch)
-                            .map((packageItem: Channel) => {
-                              const label = packageItem.name;
+                            .map((channelItem: Channel) => {
+                              const label = channelItem.name;
                               const isDisabled =
                                 (!isCreation &&
-                                  packageItem.package &&
-                                  props.data.package.version === packageItem.package.version) ||
+                                  channelItem.package &&
+                                  props.data.package.version === channelItem.package.version) ||
                                 false;
                               return (
                                 <MenuItem
-                                  value={packageItem.id}
+                                  value={channelItem.id}
                                   disabled={isDisabled}
-                                  key={packageItem.id}
+                                  key={channelItem.id}
                                 >
                                   <Checkbox
-                                    checked={values.channelsBlacklist.indexOf(packageItem.id) > -1}
+                                    checked={values.channelsBlacklist.indexOf(channelItem.id) > -1}
                                   />
                                   <ListItemText
                                     primary={label}
@@ -325,6 +418,92 @@ function EditDialog(props: EditDialogProps) {
                           Showing only channels with the same architecture ({ARCHES[arch]}).
                         </FormHelperText>
                       </FormControl>
+                      {!isCreation && (
+                        <>
+                          <FormControl margin="dense" fullWidth>
+                            <InputLabel variant="standard" id="floor-channels-label">
+                              Floor Channels
+                            </InputLabel>
+                            <MuiSelect<string[]>
+                              variant="standard"
+                              labelId="floor-channels-label"
+                              multiple
+                              value={packageFloorChannels}
+                              aria-label="Select floor channels for this package"
+                              aria-describedby="floor-channels-helper"
+                              onChange={e => {
+                                const newValue = (
+                                  typeof e.target.value === 'string'
+                                    ? e.target.value.split(',')
+                                    : e.target.value
+                                ) as string[];
+
+                                setPackageFloorChannels(newValue);
+
+                                if (newValue.length === 0) {
+                                  setFloorReason('');
+                                }
+                              }}
+                              renderValue={(selected: string[]) => {
+                                if (selected.length === 0) {
+                                  return <em>None</em>;
+                                }
+                                return getChannelsNames(selected).join(', ');
+                              }}
+                              disabled={loadingFloors}
+                            >
+                              {channels
+                                .filter((channelItem: Channel) => channelItem.arch === arch)
+                                .map((channelItem: Channel) => {
+                                  const isCurrentTarget =
+                                    channelItem.package?.version === props.data.package.version;
+                                  return (
+                                    <MenuItem key={channelItem.id} value={channelItem.id}>
+                                      <Checkbox
+                                        checked={packageFloorChannels.includes(channelItem.id)}
+                                      />
+                                      <ListItemText
+                                        primary={channelItem.name}
+                                        secondary={
+                                          isCurrentTarget
+                                            ? t('packages|channel_currently_pointing_here')
+                                            : null
+                                        }
+                                      />
+                                    </MenuItem>
+                                  );
+                                })}
+                            </MuiSelect>
+                            <FormHelperText id="floor-channels-helper">
+                              Floor packages are mandatory intermediate versions for specified
+                              channels.
+                              <br />
+                              Showing only channels with the same architecture ({ARCHES[arch]}).
+                            </FormHelperText>
+                          </FormControl>
+                          <MuiTextField
+                            variant="standard"
+                            margin="dense"
+                            label={t('packages|floor_reason')}
+                            type="text"
+                            disabled={packageFloorChannels.length === 0}
+                            value={floorReason}
+                            aria-label="Floor reason explanation"
+                            aria-describedby="floor-reason-helper"
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                              setFloorReason(e.target.value);
+                            }}
+                            helperText={
+                              <span id="floor-reason-helper">
+                                {packageFloorChannels.length === 0
+                                  ? t('packages|select_floor_channels_first')
+                                  : t('packages|floor_reason_help')}
+                              </span>
+                            }
+                            fullWidth
+                          />
+                        </>
+                      )}
                     </>
                   ),
                 },
@@ -384,7 +563,17 @@ function EditDialog(props: EditDialogProps) {
       .required(t('frequent|required')),
   });
 
-  let initialValues: { [key: string]: any } = { channelsBlacklist: [] };
+  let initialValues: Partial<PackageFormValues> = {
+    url: '',
+    filename: '',
+    description: '',
+    version: '',
+    size: '',
+    hash: '',
+    channelsBlacklist: [],
+    filesList: [],
+  };
+
   if (!isCreation) {
     const maxFlatcarHashChars = 64;
     validation['flatcarHash'] = Yup.string()
@@ -393,19 +582,17 @@ function EditDialog(props: EditDialogProps) {
 
     initialValues = {
       url: props.data.package.url,
-      filename: props.data.package.filename,
-      description: props.data.package.description,
+      filename: props.data.package.filename || '',
+      description: props.data.package.description || '',
       version: props.data.package.version,
-      size: props.data.package.size,
-      hash: props.data.package.hash,
-      channelsBlacklist: props.data.package.channels_blacklist
-        ? props.data.package.channels_blacklist
-        : [],
-      filesList: props.data.package.extra_files,
+      size: props.data.package.size || '',
+      hash: props.data.package.hash || '',
+      channelsBlacklist: props.data.package.channels_blacklist || [],
+      filesList: props.data.package.extra_files || [],
     };
 
     if (isFlatcarType(packageType)) {
-      initialValues['flatcarHash'] = getFlatcarActionHash();
+      initialValues.flatcarHash = getFlatcarActionHash();
     }
   }
 
@@ -419,9 +606,11 @@ function EditDialog(props: EditDialogProps) {
       <DialogTitle>
         {isCreation ? t('packages|add_package') : t('packages|edit_package')}
       </DialogTitle>
-      <Formik initialValues={initialValues} onSubmit={handleSubmit} validationSchema={validation}>
-        {/* @todo add better types for renderForm */}
-        {/* @ts-expect-error as no interface was created/defined */}
+      <Formik<PackageFormValues>
+        initialValues={initialValues as PackageFormValues}
+        onSubmit={handleSubmit}
+        validationSchema={validation}
+      >
         {renderForm}
       </Formik>
     </StyledDialog>

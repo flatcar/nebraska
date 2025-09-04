@@ -192,6 +192,9 @@ type ClientInterface interface {
 
 	UpdatePackage(ctx context.Context, appIDorProductID string, packageID string, body UpdatePackageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetPackageFloorChannels request
+	GetPackageFloorChannels(ctx context.Context, appIDorProductID string, packageID string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// PaginateChannelFloors request
 	PaginateChannelFloors(ctx context.Context, channelID string, params *PaginateChannelFloorsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -661,6 +664,18 @@ func (c *Client) UpdatePackageWithBody(ctx context.Context, appIDorProductID str
 
 func (c *Client) UpdatePackage(ctx context.Context, appIDorProductID string, packageID string, body UpdatePackageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdatePackageRequest(c.Server, appIDorProductID, packageID, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetPackageFloorChannels(ctx context.Context, appIDorProductID string, packageID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetPackageFloorChannelsRequest(c.Server, appIDorProductID, packageID)
 	if err != nil {
 		return nil, err
 	}
@@ -2601,6 +2616,47 @@ func NewUpdatePackageRequestWithBody(server string, appIDorProductID string, pac
 	return req, nil
 }
 
+// NewGetPackageFloorChannelsRequest generates requests for GetPackageFloorChannels
+func NewGetPackageFloorChannelsRequest(server string, appIDorProductID string, packageID string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "packageID", runtime.ParamLocationPath, packageID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/apps/%s/packages/%s/floor-channels", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewPaginateChannelFloorsRequest generates requests for PaginateChannelFloors
 func NewPaginateChannelFloorsRequest(server string, channelID string, params *PaginateChannelFloorsParams) (*http.Request, error) {
 	var err error
@@ -3146,6 +3202,9 @@ type ClientWithResponsesInterface interface {
 	UpdatePackageWithBodyWithResponse(ctx context.Context, appIDorProductID string, packageID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdatePackageResponse, error)
 
 	UpdatePackageWithResponse(ctx context.Context, appIDorProductID string, packageID string, body UpdatePackageJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdatePackageResponse, error)
+
+	// GetPackageFloorChannelsWithResponse request
+	GetPackageFloorChannelsWithResponse(ctx context.Context, appIDorProductID string, packageID string, reqEditors ...RequestEditorFn) (*GetPackageFloorChannelsResponse, error)
 
 	// PaginateChannelFloorsWithResponse request
 	PaginateChannelFloorsWithResponse(ctx context.Context, channelID string, params *PaginateChannelFloorsParams, reqEditors ...RequestEditorFn) (*PaginateChannelFloorsResponse, error)
@@ -3816,6 +3875,34 @@ func (r UpdatePackageResponse) StatusCode() int {
 	return 0
 }
 
+type GetPackageFloorChannelsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Channels *[]struct {
+			Channel     *Channel `db:"channel" json:"channel,omitempty"`
+			FloorReason *string  `json:"floor_reason"`
+		} `json:"channels,omitempty"`
+		Count *int `json:"count,omitempty"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r GetPackageFloorChannelsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetPackageFloorChannelsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type PaginateChannelFloorsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -4360,6 +4447,15 @@ func (c *ClientWithResponses) UpdatePackageWithResponse(ctx context.Context, app
 		return nil, err
 	}
 	return ParseUpdatePackageResponse(rsp)
+}
+
+// GetPackageFloorChannelsWithResponse request returning *GetPackageFloorChannelsResponse
+func (c *ClientWithResponses) GetPackageFloorChannelsWithResponse(ctx context.Context, appIDorProductID string, packageID string, reqEditors ...RequestEditorFn) (*GetPackageFloorChannelsResponse, error) {
+	rsp, err := c.GetPackageFloorChannels(ctx, appIDorProductID, packageID, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetPackageFloorChannelsResponse(rsp)
 }
 
 // PaginateChannelFloorsWithResponse request returning *PaginateChannelFloorsResponse
@@ -5172,6 +5268,38 @@ func ParseUpdatePackageResponse(rsp *http.Response) (*UpdatePackageResponse, err
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest Package
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetPackageFloorChannelsResponse parses an HTTP response from a GetPackageFloorChannelsWithResponse call
+func ParseGetPackageFloorChannelsResponse(rsp *http.Response) (*GetPackageFloorChannelsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetPackageFloorChannelsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Channels *[]struct {
+				Channel     *Channel `db:"channel" json:"channel,omitempty"`
+				FloorReason *string  `json:"floor_reason"`
+			} `json:"channels,omitempty"`
+			Count *int `json:"count,omitempty"`
+		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
