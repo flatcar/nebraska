@@ -282,10 +282,11 @@ class ApplicationsStore extends Store {
     this.getAndUpdatePackages(applicationID);
   }
 
-  async updatePackage(data: Partial<Package>): Promise<void> {
+  async updatePackage(data: Partial<Package>): Promise<Package> {
     const packageItem = await API.updatePackage(data);
     const updatedpackage = packageItem;
     this.getAndUpdatePackages(updatedpackage.application_id);
+    return updatedpackage;
   }
 
   // Floor packages management

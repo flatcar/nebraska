@@ -52,6 +52,14 @@ function List(props: ListProps) {
     setPackageToUpdate(null);
   }
 
+  function handlePackageUpdated(updatedPackage: Package) {
+    // Update the specific package in our local list
+    setPackages(prevPackages => {
+      if (!prevPackages) return prevPackages;
+      return prevPackages.map(pkg => (pkg.id === updatedPackage.id ? updatedPackage : pkg));
+    });
+  }
+
   function openEditDialog(packageID: string) {
     const pkg = application?.packages?.items.find(({ id }) => id === packageID) || null;
     if (pkg !== packageToUpdate) {
@@ -116,6 +124,7 @@ function List(props: ListProps) {
                     }}
                     show={Boolean(packageToUpdate)}
                     onHide={onCloseEditDialog}
+                    onPackageUpdated={handlePackageUpdated}
                   />
                 )}
                 <TablePagination

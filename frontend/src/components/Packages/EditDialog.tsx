@@ -74,6 +74,7 @@ export interface EditDialogProps {
   };
   show: boolean;
   onHide: () => void;
+  onPackageUpdated?: (updatedPackage: Package) => void;
 }
 
 function EditDialog(props: EditDialogProps) {
@@ -170,7 +171,7 @@ function EditDialog(props: EditDialogProps) {
       data.flatcar_action = { sha256: values.flatcarHash };
     }
 
-    let pkgFunc: Promise<void>;
+    let pkgFunc: Promise<void | Package>;
     if (isCreation) {
       pkgFunc = applicationsStore().createPackage(data);
     } else {
@@ -178,7 +179,7 @@ function EditDialog(props: EditDialogProps) {
     }
 
     pkgFunc
-      .then(async () => {
+      .then(async updatedPackage => {
         if (!isCreation && props.data.package?.id) {
           const packageId = props.data.package.id;
           const removed = initialFloorChannels.filter(id => !packageFloorChannels.includes(id));
@@ -208,6 +209,11 @@ function EditDialog(props: EditDialogProps) {
               });
             }
           }
+        }
+
+        // Call the callback with updated package data if provided
+        if (!isCreation && updatedPackage && props.onPackageUpdated) {
+          props.onPackageUpdated(updatedPackage as Package);
         }
 
         props.onHide();
