@@ -180,11 +180,11 @@ export default class API {
     );
   }
 
-  static async addChannelFloor(channelID: string, packageID: string, floorReason?: string) {
+  static async setChannelFloor(channelID: string, packageID: string, floorReason?: string) {
     const data = floorReason ? JSON.stringify({ floor_reason: floorReason }) : '{}';
     try {
       return await API.doRequest(
-        'POST',
+        'PUT',
         `${BASE_URL}/channels/${channelID}/floors/${packageID}`,
         data
       );

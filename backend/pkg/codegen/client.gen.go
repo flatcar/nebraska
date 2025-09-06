@@ -201,10 +201,10 @@ type ClientInterface interface {
 	// RemoveChannelFloor request
 	RemoveChannelFloor(ctx context.Context, channelID string, packageID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// AddChannelFloorWithBody request with any body
-	AddChannelFloorWithBody(ctx context.Context, channelID string, packageID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	// SetChannelFloorWithBody request with any body
+	SetChannelFloorWithBody(ctx context.Context, channelID string, packageID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	AddChannelFloor(ctx context.Context, channelID string, packageID string, body AddChannelFloorJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	SetChannelFloor(ctx context.Context, channelID string, packageID string, body SetChannelFloorJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// UpdateInstanceWithBody request with any body
 	UpdateInstanceWithBody(ctx context.Context, instanceID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -710,8 +710,8 @@ func (c *Client) RemoveChannelFloor(ctx context.Context, channelID string, packa
 	return c.Client.Do(req)
 }
 
-func (c *Client) AddChannelFloorWithBody(ctx context.Context, channelID string, packageID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewAddChannelFloorRequestWithBody(c.Server, channelID, packageID, contentType, body)
+func (c *Client) SetChannelFloorWithBody(ctx context.Context, channelID string, packageID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSetChannelFloorRequestWithBody(c.Server, channelID, packageID, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -722,8 +722,8 @@ func (c *Client) AddChannelFloorWithBody(ctx context.Context, channelID string, 
 	return c.Client.Do(req)
 }
 
-func (c *Client) AddChannelFloor(ctx context.Context, channelID string, packageID string, body AddChannelFloorJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewAddChannelFloorRequest(c.Server, channelID, packageID, body)
+func (c *Client) SetChannelFloor(ctx context.Context, channelID string, packageID string, body SetChannelFloorJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewSetChannelFloorRequest(c.Server, channelID, packageID, body)
 	if err != nil {
 		return nil, err
 	}
@@ -2770,19 +2770,19 @@ func NewRemoveChannelFloorRequest(server string, channelID string, packageID str
 	return req, nil
 }
 
-// NewAddChannelFloorRequest calls the generic AddChannelFloor builder with application/json body
-func NewAddChannelFloorRequest(server string, channelID string, packageID string, body AddChannelFloorJSONRequestBody) (*http.Request, error) {
+// NewSetChannelFloorRequest calls the generic SetChannelFloor builder with application/json body
+func NewSetChannelFloorRequest(server string, channelID string, packageID string, body SetChannelFloorJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewAddChannelFloorRequestWithBody(server, channelID, packageID, "application/json", bodyReader)
+	return NewSetChannelFloorRequestWithBody(server, channelID, packageID, "application/json", bodyReader)
 }
 
-// NewAddChannelFloorRequestWithBody generates requests for AddChannelFloor with any type of body
-func NewAddChannelFloorRequestWithBody(server string, channelID string, packageID string, contentType string, body io.Reader) (*http.Request, error) {
+// NewSetChannelFloorRequestWithBody generates requests for SetChannelFloor with any type of body
+func NewSetChannelFloorRequestWithBody(server string, channelID string, packageID string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -2814,7 +2814,7 @@ func NewAddChannelFloorRequestWithBody(server string, channelID string, packageI
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", queryURL.String(), body)
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
@@ -3212,10 +3212,10 @@ type ClientWithResponsesInterface interface {
 	// RemoveChannelFloorWithResponse request
 	RemoveChannelFloorWithResponse(ctx context.Context, channelID string, packageID string, reqEditors ...RequestEditorFn) (*RemoveChannelFloorResponse, error)
 
-	// AddChannelFloorWithBodyWithResponse request with any body
-	AddChannelFloorWithBodyWithResponse(ctx context.Context, channelID string, packageID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddChannelFloorResponse, error)
+	// SetChannelFloorWithBodyWithResponse request with any body
+	SetChannelFloorWithBodyWithResponse(ctx context.Context, channelID string, packageID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SetChannelFloorResponse, error)
 
-	AddChannelFloorWithResponse(ctx context.Context, channelID string, packageID string, body AddChannelFloorJSONRequestBody, reqEditors ...RequestEditorFn) (*AddChannelFloorResponse, error)
+	SetChannelFloorWithResponse(ctx context.Context, channelID string, packageID string, body SetChannelFloorJSONRequestBody, reqEditors ...RequestEditorFn) (*SetChannelFloorResponse, error)
 
 	// UpdateInstanceWithBodyWithResponse request with any body
 	UpdateInstanceWithBodyWithResponse(ctx context.Context, instanceID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateInstanceResponse, error)
@@ -3951,13 +3951,13 @@ func (r RemoveChannelFloorResponse) StatusCode() int {
 	return 0
 }
 
-type AddChannelFloorResponse struct {
+type SetChannelFloorResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 }
 
 // Status returns HTTPResponse.Status
-func (r AddChannelFloorResponse) Status() string {
+func (r SetChannelFloorResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
 	}
@@ -3965,7 +3965,7 @@ func (r AddChannelFloorResponse) Status() string {
 }
 
 // StatusCode returns HTTPResponse.StatusCode
-func (r AddChannelFloorResponse) StatusCode() int {
+func (r SetChannelFloorResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -4476,21 +4476,21 @@ func (c *ClientWithResponses) RemoveChannelFloorWithResponse(ctx context.Context
 	return ParseRemoveChannelFloorResponse(rsp)
 }
 
-// AddChannelFloorWithBodyWithResponse request with arbitrary body returning *AddChannelFloorResponse
-func (c *ClientWithResponses) AddChannelFloorWithBodyWithResponse(ctx context.Context, channelID string, packageID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AddChannelFloorResponse, error) {
-	rsp, err := c.AddChannelFloorWithBody(ctx, channelID, packageID, contentType, body, reqEditors...)
+// SetChannelFloorWithBodyWithResponse request with arbitrary body returning *SetChannelFloorResponse
+func (c *ClientWithResponses) SetChannelFloorWithBodyWithResponse(ctx context.Context, channelID string, packageID string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SetChannelFloorResponse, error) {
+	rsp, err := c.SetChannelFloorWithBody(ctx, channelID, packageID, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseAddChannelFloorResponse(rsp)
+	return ParseSetChannelFloorResponse(rsp)
 }
 
-func (c *ClientWithResponses) AddChannelFloorWithResponse(ctx context.Context, channelID string, packageID string, body AddChannelFloorJSONRequestBody, reqEditors ...RequestEditorFn) (*AddChannelFloorResponse, error) {
-	rsp, err := c.AddChannelFloor(ctx, channelID, packageID, body, reqEditors...)
+func (c *ClientWithResponses) SetChannelFloorWithResponse(ctx context.Context, channelID string, packageID string, body SetChannelFloorJSONRequestBody, reqEditors ...RequestEditorFn) (*SetChannelFloorResponse, error) {
+	rsp, err := c.SetChannelFloor(ctx, channelID, packageID, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	return ParseAddChannelFloorResponse(rsp)
+	return ParseSetChannelFloorResponse(rsp)
 }
 
 // UpdateInstanceWithBodyWithResponse request with arbitrary body returning *UpdateInstanceResponse
@@ -5357,15 +5357,15 @@ func ParseRemoveChannelFloorResponse(rsp *http.Response) (*RemoveChannelFloorRes
 	return response, nil
 }
 
-// ParseAddChannelFloorResponse parses an HTTP response from a AddChannelFloorWithResponse call
-func ParseAddChannelFloorResponse(rsp *http.Response) (*AddChannelFloorResponse, error) {
+// ParseSetChannelFloorResponse parses an HTTP response from a SetChannelFloorWithResponse call
+func ParseSetChannelFloorResponse(rsp *http.Response) (*SetChannelFloorResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
 
-	response := &AddChannelFloorResponse{
+	response := &SetChannelFloorResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}

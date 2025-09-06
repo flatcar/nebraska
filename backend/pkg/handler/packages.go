@@ -273,13 +273,13 @@ func (h *Handler) PaginateChannelFloors(ctx echo.Context, channelID string, para
 	return ctx.JSON(http.StatusOK, floorPackagesPage{totalCount, len(packages), packages})
 }
 
-// AddChannelFloor handles adding a package as a floor for a channel
-func (h *Handler) AddChannelFloor(ctx echo.Context, channelID string, packageID string) error {
+// SetChannelFloor handles creating or updating a floor package relationship (idempotent)
+func (h *Handler) SetChannelFloor(ctx echo.Context, channelID string, packageID string) error {
 	l := loggerWithUsername(l, ctx)
 
-	var request codegen.AddChannelFloorJSONRequestBody
+	var request codegen.SetChannelFloorJSONRequestBody
 	if err := ctx.Bind(&request); err != nil {
-		l.Error().Err(err).Msg("AddChannelFloor - binding request")
+		l.Error().Err(err).Msg("SetChannelFloor - binding request")
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
@@ -289,7 +289,7 @@ func (h *Handler) AddChannelFloor(ctx echo.Context, channelID string, packageID 
 		floorReason = null.StringFrom(*request.FloorReason)
 	}
 
-	// Add the floor relationship
+	// Use AddChannelPackageFloor which already handles upsert via ON CONFLICT
 	if err := h.db.AddChannelPackageFloor(channelID, packageID, floorReason); err != nil {
 		switch err {
 		case api.ErrInvalidPackage:
@@ -299,13 +299,20 @@ func (h *Handler) AddChannelFloor(ctx echo.Context, channelID string, packageID 
 		case api.ErrInvalidApplicationOrGroup:
 			return ctx.String(http.StatusBadRequest, "Package does not belong to the same application as the channel")
 		default:
-			l.Error().Err(err).Str("channelID", channelID).Str("packageID", packageID).Msg("AddChannelFloor - adding floor")
+			l.Error().Err(err).Str("channelID", channelID).Str("packageID", packageID).Msg("SetChannelFloor - setting floor")
 			return ctx.NoContent(http.StatusInternalServerError)
 		}
 	}
 
-	l.Info().Str("channelID", channelID).Str("packageID", packageID).Msg("AddChannelFloor - successfully added floor")
-	return ctx.NoContent(http.StatusOK)
+	l.Info().Str("channelID", channelID).Str("packageID", packageID).Msg("SetChannelFloor - successfully set floor")
+
+	// Return JSON response
+	response := map[string]interface{}{
+		"channel_id": channelID,
+		"package_id": packageID,
+		"status":     "ok",
+	}
+	return ctx.JSON(http.StatusOK, response)
 }
 
 // RemoveChannelFloor handles removing a package as a floor for a channel
@@ -321,7 +328,7 @@ func (h *Handler) RemoveChannelFloor(ctx echo.Context, channelID string, package
 	}
 
 	l.Info().Str("channelID", channelID).Str("packageID", packageID).Msg("RemoveChannelFloor - successfully removed floor")
-	return ctx.NoContent(http.StatusOK)
+	return ctx.NoContent(http.StatusNoContent)
 }
 
 // GetPackageFloorChannels handles requests for channels where a package is a floor

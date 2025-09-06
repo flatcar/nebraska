@@ -71,6 +71,25 @@ export interface ChannelEditProps {
 
 function ChannelEdit(props: ChannelEditProps) {
   const { t } = useTranslation();
+
+  // Helper to format packages for AutoCompletePicker suggestions
+  const formatPackageSuggestions = React.useCallback(
+    (packages: Package[]) => {
+      return packages.map(pkg => {
+        const date = new Date(pkg.created_ts);
+        return {
+          primary: pkg.version,
+          secondary: t('channels|created', { date }),
+        };
+      });
+    },
+    [t]
+  );
+
+  // Helper to find package by version
+  const findPackageByVersion = React.useCallback((packages: Package[], version: string) => {
+    return packages.find(pkg => pkg.version === version);
+  }, []);
   const defaultColor = '';
   const [channelColor, setChannelColor] = React.useState(defaultColor);
   const [packages, setPackages] = React.useState<{ total: number; packages: Package[] }>({
@@ -80,15 +99,25 @@ function ChannelEdit(props: ChannelEditProps) {
   const defaultArch = 1;
   const [arch, setArch] = React.useState(defaultArch);
   const isCreation = Boolean(props.create);
-  const { channel } = props.data;
   const inputSearchTimeout = 250; // ms
   const [packageSearchTerm, setPackageSearchTerm] = React.useState<string>('');
   const [searchPage, setSearchPage] = React.useState<number>(0);
   const [floorPackages, setFloorPackages] = React.useState<Package[]>([]);
   const [loadingFloors, setLoadingFloors] = React.useState(false);
   const [showAddFloorDialog, setShowAddFloorDialog] = React.useState(false);
-  const [selectedFloorPackage, setSelectedFloorPackage] = React.useState<string>('');
+  const [selectedFloorPackage, setSelectedFloorPackage] = React.useState<Package | null>(null);
   const [floorReason, setFloorReason] = React.useState<string>('');
+
+  // Memoize filtered packages to avoid repeated filtering in render
+  const packagesForArch = React.useMemo(
+    () => packages.packages.filter((pkg: Package) => pkg.arch === arch),
+    [packages.packages, arch]
+  );
+
+  const availableFloorPackages = React.useMemo(
+    () => packagesForArch.filter(pkg => !floorPackages.some(fp => fp.id === pkg.id)),
+    [packagesForArch, floorPackages]
+  );
 
   React.useEffect(() => {
     setArch(props.data.channel ? props.data.channel.arch : defaultArch);
@@ -111,44 +140,51 @@ function ChannelEdit(props: ChannelEditProps) {
           setLoadingFloors(false);
         });
     } else if (!props.show) {
+      // Reset all state when dialog closes
       setFloorPackages([]);
-      setSelectedFloorPackage('');
+      setSelectedFloorPackage(null);
       setFloorReason('');
       setShowAddFloorDialog(false);
+      // Also clear search state
+      setPackageSearchTerm('');
+      setSearchPage(0);
     }
   }, [props.data.channel?.id, isCreation, props.show]);
 
   async function deleteFloorPackage(packageID: string) {
+    if (!props.data.channel?.id) return;
+
     if (window.confirm(t('channels|confirm_delete_floor'))) {
       try {
-        await applicationsStore().deleteChannelFloor(props.data.channel!.id, packageID);
+        await applicationsStore().deleteChannelFloor(props.data.channel.id, packageID);
         setFloorPackages(prev => prev.filter(p => p.id !== packageID));
       } catch (err) {
         console.error('Failed to delete floor package:', err);
+        alert(t('channels|failed_to_delete_floor'));
       }
     }
   }
 
   async function handleAddFloor() {
-    if (!selectedFloorPackage) return;
+    if (!selectedFloorPackage || !selectedFloorPackage.id) return;
+    if (!props.data.channel?.id) return;
 
     try {
-      await applicationsStore().addChannelFloor(
-        props.data.channel!.id,
-        selectedFloorPackage,
+      await applicationsStore().setChannelFloor(
+        props.data.channel.id,
+        selectedFloorPackage.id,
         floorReason || undefined
       );
 
-      const pkg = packages.packages.find(p => p.id === selectedFloorPackage);
-      if (pkg) {
-        setFloorPackages(prev => [...prev, { ...pkg, floor_reason: floorReason }]);
-      }
+      const packageWithReason = { ...selectedFloorPackage, floor_reason: floorReason };
+      setFloorPackages(prev => [...prev, packageWithReason]);
 
       setShowAddFloorDialog(false);
-      setSelectedFloorPackage('');
+      setSelectedFloorPackage(null);
       setFloorReason('');
     } catch (err) {
       console.error('Failed to add floor package:', err);
+      alert(t('channels|failed_to_add_floor'));
     }
   }
 
@@ -156,7 +192,7 @@ function ChannelEdit(props: ChannelEditProps) {
     const data: {
       name: string;
       arch: number;
-      color: any;
+      color: string;
       application_id: string;
       package_id?: string;
       id?: string;
@@ -213,6 +249,9 @@ function ChannelEdit(props: ChannelEditProps) {
   }
 
   React.useEffect(() => {
+    // Don't fetch if dialog is not shown
+    if (!props.show) return;
+
     let timeoutHandler: NodeJS.Timeout;
     function searchOnTimeout(term: string) {
       if (timeoutHandler !== undefined) {
@@ -236,9 +275,12 @@ function ChannelEdit(props: ChannelEditProps) {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [packageSearchTerm]);
+  }, [packageSearchTerm, props.show]);
 
   React.useEffect(() => {
+    // Don't fetch if dialog is not shown
+    if (!props.show) return;
+
     if (searchPage === 0) {
       // This is handled by the term search.
       return;
@@ -246,7 +288,7 @@ function ChannelEdit(props: ChannelEditProps) {
 
     fetchPackages(packageSearchTerm, searchPage);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchPage]);
+  }, [searchPage, props.show]);
 
   function loadMorePackages() {
     if ((searchPage + 1) * PackagesPerPage < packages.total) {
@@ -329,28 +371,21 @@ function ChannelEdit(props: ChannelEditProps) {
             })}
             fullWidth
             onSelect={(packageVersion: string) => {
-              const selectedPackage = packages.packages
-                .filter((packageItem: Package) => packageItem.arch === arch)
-                .filter((packageItem: Package) => packageItem.version === packageVersion);
-              if (selectedPackage.length) {
-                setFieldValue('package', selectedPackage[0].id);
+              const selectedPackage = findPackageByVersion(packagesForArch, packageVersion);
+              if (selectedPackage) {
+                setFieldValue('package', selectedPackage.id);
               }
             }}
-            suggestions={packages.packages
-              .filter((packageItem: Package) => packageItem.arch === arch)
-              .map((packageItem: Package) => {
-                const date = new Date(packageItem.created_ts);
-                return {
-                  primary: packageItem.version,
-                  secondary: t('channels|created', { date: date }),
-                };
-              })}
+            suggestions={formatPackageSuggestions(packagesForArch)}
             placeholder={t('channels|pick_package')}
             pickerPlaceholder={t('channels|search_package_prompt')}
-            data={packages.packages.filter((packageItem: Package) => packageItem.arch === arch)}
             dialogTitle={t('channels|choose_package')}
-            defaultValue={channel && channel.package ? channel.package.version : ''}
-            onValueChanged={(term: string | null) => {
+            defaultValue={
+              props.data.channel && props.data.channel.package
+                ? props.data.channel.package.version
+                : ''
+            }
+            onValueChanged={(term?: string | null) => {
               setPackageSearchTerm(term || '');
               setSearchPage(0);
             }}
@@ -388,7 +423,7 @@ function ChannelEdit(props: ChannelEditProps) {
                         <IconButton
                           edge="end"
                           aria-label={`Remove floor package ${cleanSemverVersion(pkg.version)}`}
-                          onClick={() => deleteFloorPackage(pkg.id!)}
+                          onClick={() => pkg.id && deleteFloorPackage(pkg.id)}
                           size="small"
                         >
                           <DeleteIcon fontSize="small" />
@@ -439,7 +474,12 @@ function ChannelEdit(props: ChannelEditProps) {
     <>
       <StyledDialog
         open={props.show}
-        onClose={() => props.onHide()}
+        onClose={() => {
+          // Clear search state when closing dialog
+          setPackageSearchTerm('');
+          setSearchPage(0);
+          props.onHide();
+        }}
         aria-labelledby="form-dialog-title"
       >
         <DialogTitle>
@@ -457,38 +497,38 @@ function ChannelEdit(props: ChannelEditProps) {
       {/* Add Floor Package Dialog */}
       <Dialog
         open={showAddFloorDialog}
-        onClose={() => setShowAddFloorDialog(false)}
+        onClose={() => {
+          setShowAddFloorDialog(false);
+          setSelectedFloorPackage(null);
+          setFloorReason('');
+        }}
         maxWidth="sm"
         fullWidth
       >
         <DialogTitle>{t('channels|add_floor_package')}</DialogTitle>
         <DialogContent>
-          <FormControl fullWidth margin="dense">
-            <InputLabel variant="standard" id="floor-package-select-label">
-              {t('frequent|package')}
-            </InputLabel>
-            <MuiSelect
-              variant="standard"
-              labelId="floor-package-select-label"
-              value={selectedFloorPackage}
-              aria-label="Select package to mark as floor"
-              aria-describedby="floor-package-select-helper"
-              onChange={(e: SelectChangeEvent) => setSelectedFloorPackage(e.target.value)}
-            >
-              {packages.packages
-                .filter(
-                  (pkg: Package) => pkg.arch === arch && !floorPackages.some(fp => fp.id === pkg.id)
-                )
-                .map((pkg: Package) => (
-                  <MenuItem key={pkg.id} value={pkg.id}>
-                    {pkg.version}
-                  </MenuItem>
-                ))}
-            </MuiSelect>
-            <FormHelperText id="floor-package-select-helper">
-              {t('channels|select_package_floor')}
-            </FormHelperText>
-          </FormControl>
+          <AutoCompletePicker
+            label={t('frequent|package')}
+            defaultValue=""
+            onSelect={(packageVersion: string) => {
+              const selectedPackage = findPackageByVersion(availableFloorPackages, packageVersion);
+              if (selectedPackage) {
+                setSelectedFloorPackage(selectedPackage);
+              }
+            }}
+            suggestions={formatPackageSuggestions(availableFloorPackages)}
+            placeholder={t('channels|pick_package')}
+            pickerPlaceholder={t('channels|search_package_prompt')}
+            dialogTitle={t('channels|choose_floor_package')}
+            onValueChanged={(term?: string | null) => {
+              setPackageSearchTerm(term || '');
+              setSearchPage(0);
+            }}
+            onBottomScrolled={loadMorePackages}
+          />
+          <FormHelperText>
+            {t('channels|showing_only_for_architecture', { arch: ARCHES[arch] })}
+          </FormHelperText>
           <MuiTextField
             fullWidth
             margin="dense"
@@ -504,15 +544,7 @@ function ChannelEdit(props: ChannelEditProps) {
           />
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={() => {
-              setShowAddFloorDialog(false);
-              setSelectedFloorPackage('');
-              setFloorReason('');
-            }}
-          >
-            {t('frequent|cancel')}
-          </Button>
+          <Button onClick={() => setShowAddFloorDialog(false)}>{t('frequent|cancel')}</Button>
           <Button onClick={handleAddFloor} color="primary" disabled={!selectedFloorPackage}>
             {t('frequent|add')}
           </Button>

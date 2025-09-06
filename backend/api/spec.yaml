@@ -758,9 +758,9 @@ paths:
         "500":
           description: Get channel floors error response
   /api/channels/{channelID}/floors/{packageID}:
-    post:
-      description: add package as floor for a channel
-      operationId: addChannelFloor
+    put:
+      description: Create or update a floor package relationship (idempotent operation)
+      operationId: setChannelFloor
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -791,11 +791,13 @@ paths:
                   example: "Security fix for CVE-2024-1234"
       responses:
         "200":
-          description: Add channel floor success response
+          description: Floor package relationship created or updated successfully
         "400":
           description: Invalid request (architecture mismatch, wrong application, etc.)
+        "404":
+          description: Channel or package not found
         "500":
-          description: Add channel floor error response
+          description: Set channel floor error response
     delete:
       description: remove package as floor for a channel
       operationId: removeChannelFloor

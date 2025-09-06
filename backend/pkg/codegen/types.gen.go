@@ -411,8 +411,8 @@ type PaginateChannelFloorsParams struct {
 	Perpage *int `form:"perpage,omitempty" json:"perpage,omitempty"`
 }
 
-// AddChannelFloorJSONBody defines parameters for AddChannelFloor.
-type AddChannelFloorJSONBody struct {
+// SetChannelFloorJSONBody defines parameters for SetChannelFloor.
+type SetChannelFloorJSONBody struct {
 	// FloorReason Optional reason for marking this package as a floor (e.g., "Security fix", "Critical update")
 	FloorReason *string `json:"floor_reason"`
 }
@@ -447,8 +447,8 @@ type CreatePackageJSONRequestBody = PackageConfig
 // UpdatePackageJSONRequestBody defines body for UpdatePackage for application/json ContentType.
 type UpdatePackageJSONRequestBody = PackageConfig
 
-// AddChannelFloorJSONRequestBody defines body for AddChannelFloor for application/json ContentType.
-type AddChannelFloorJSONRequestBody AddChannelFloorJSONBody
+// SetChannelFloorJSONRequestBody defines body for SetChannelFloor for application/json ContentType.
+type SetChannelFloorJSONRequestBody SetChannelFloorJSONBody
 
 // UpdateInstanceJSONRequestBody defines body for UpdateInstance for application/json ContentType.
 type UpdateInstanceJSONRequestBody = UpdateInstanceConfig

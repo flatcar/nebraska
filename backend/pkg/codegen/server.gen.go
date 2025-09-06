@@ -110,8 +110,8 @@ type ServerInterface interface {
 	// (DELETE /api/channels/{channelID}/floors/{packageID})
 	RemoveChannelFloor(ctx echo.Context, channelID string, packageID string) error
 
-	// (POST /api/channels/{channelID}/floors/{packageID})
-	AddChannelFloor(ctx echo.Context, channelID string, packageID string) error
+	// (PUT /api/channels/{channelID}/floors/{packageID})
+	SetChannelFloor(ctx echo.Context, channelID string, packageID string) error
 
 	// (PUT /api/instances/{instanceID})
 	UpdateInstance(ctx echo.Context, instanceID string) error
@@ -1269,8 +1269,8 @@ func (w *ServerInterfaceWrapper) RemoveChannelFloor(ctx echo.Context) error {
 	return err
 }
 
-// AddChannelFloor converts echo context to params.
-func (w *ServerInterfaceWrapper) AddChannelFloor(ctx echo.Context) error {
+// SetChannelFloor converts echo context to params.
+func (w *ServerInterfaceWrapper) SetChannelFloor(ctx echo.Context) error {
 	var err error
 	// ------------- Path parameter "channelID" -------------
 	var channelID string
@@ -1295,7 +1295,7 @@ func (w *ServerInterfaceWrapper) AddChannelFloor(ctx echo.Context) error {
 	ctx.Set(GithubCookieAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.AddChannelFloor(ctx, channelID, packageID)
+	err = w.Handler.SetChannelFloor(ctx, channelID, packageID)
 	return err
 }
 
@@ -1474,7 +1474,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/api/apps/:appIDorProductID/packages/:packageID/floor-channels", wrapper.GetPackageFloorChannels)
 	router.GET(baseURL+"/api/channels/:channelID/floors", wrapper.PaginateChannelFloors)
 	router.DELETE(baseURL+"/api/channels/:channelID/floors/:packageID", wrapper.RemoveChannelFloor)
-	router.POST(baseURL+"/api/channels/:channelID/floors/:packageID", wrapper.AddChannelFloor)
+	router.PUT(baseURL+"/api/channels/:channelID/floors/:packageID", wrapper.SetChannelFloor)
 	router.PUT(baseURL+"/api/instances/:instanceID", wrapper.UpdateInstance)
 	router.GET(baseURL+"/config", wrapper.GetConfig)
 	router.GET(baseURL+"/health", wrapper.Health)

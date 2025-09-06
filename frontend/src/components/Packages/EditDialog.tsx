@@ -181,19 +181,22 @@ function EditDialog(props: EditDialogProps) {
       .then(async () => {
         if (!isCreation && props.data.package?.id) {
           const packageId = props.data.package.id;
-          const added = packageFloorChannels.filter(id => !initialFloorChannels.includes(id));
           const removed = initialFloorChannels.filter(id => !packageFloorChannels.includes(id));
 
-          if (added.length > 0 || removed.length > 0) {
+          // Update floor packages if any are selected or need to be removed
+          if (packageFloorChannels.length > 0 || removed.length > 0) {
             try {
               await Promise.all([
-                ...added.map(channelId =>
-                  applicationsStore().addChannelFloor(
+                // Use setChannelFloor (PUT) for all selected channels
+                // This handles both new additions and reason updates
+                ...packageFloorChannels.map(channelId =>
+                  applicationsStore().setChannelFloor(
                     channelId,
                     packageId,
                     floorReason || undefined
                   )
                 ),
+                // Remove deselected channels
                 ...removed.map(channelId =>
                   applicationsStore().deleteChannelFloor(channelId, packageId)
                 ),

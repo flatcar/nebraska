@@ -290,8 +290,8 @@ class ApplicationsStore extends Store {
 
   // Floor packages management
 
-  async addChannelFloor(channelID: string, packageID: string, floorReason?: string): Promise<void> {
-    await API.addChannelFloor(channelID, packageID, floorReason);
+  async setChannelFloor(channelID: string, packageID: string, floorReason?: string): Promise<void> {
+    await API.setChannelFloor(channelID, packageID, floorReason);
     // Find app that contains this channel
     const app = this.applications.find(app => app.channels?.some(ch => ch.id === channelID));
     if (app) {
