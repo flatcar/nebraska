@@ -24,7 +24,8 @@ func TestFloorUpdateScenarios(t *testing.T) {
 		req.OS.Platform = "CoreOS"
 		req.OS.ServicePack = "linux"
 		req.OS.Arch = "x64"
-		req.InstallSource = "scheduler" // Marks as syncer
+		req.Version = "CoreOSUpdateEngine-0.1.0.0"
+		req.InstallSource = "scheduler"
 		app := req.AddApp(flatcarAppID, version)
 		app.MachineID = "syncer-" + version
 		app.Track = group
@@ -194,7 +195,8 @@ func TestLegacySyncerBlockedWithFloors(t *testing.T) {
 		req.OS.Platform = "CoreOS"
 		req.OS.ServicePack = "linux"
 		req.OS.Arch = "x64"
-		req.InstallSource = "scheduler" // Marks as syncer
+		req.Version = "CoreOSUpdateEngine-0.1.0.0"
+		req.InstallSource = "scheduler"
 		app := req.AddApp(flatcarAppID, version)
 		app.MachineID = "legacy-syncer-" + version
 		app.Track = group.ID
@@ -245,6 +247,7 @@ func TestLegacySyncerBlockedWithFloors(t *testing.T) {
 		req.OS.Platform = "CoreOS"
 		req.OS.ServicePack = "linux"
 		req.OS.Arch = "x64"
+		req.Version = "CoreOSUpdateEngine-0.1.0.0"
 		req.InstallSource = "scheduler"
 		app := req.AddApp(flatcarAppID, "500.0.0")
 		app.MachineID = "modern-syncer"

@@ -110,8 +110,22 @@ function ChannelEdit(props: ChannelEditProps) {
 
   // Memoize filtered packages to avoid repeated filtering in render
   const packagesForArch = React.useMemo(
-    () => packages.packages.filter((pkg: Package) => pkg.arch === arch),
-    [packages.packages, arch]
+    () =>
+      packages.packages.filter((pkg: Package) => {
+        // Filter by architecture
+        if (pkg.arch !== arch) return false;
+
+        // Filter out packages that have this channel blacklisted
+        // (only for existing channels, not for new channel creation)
+        if (!isCreation && props.data.channel?.id && pkg.channels_blacklist) {
+          if (pkg.channels_blacklist.includes(props.data.channel.id)) {
+            return false;
+          }
+        }
+
+        return true;
+      }),
+    [packages.packages, arch, isCreation, props.data.channel?.id]
   );
 
   const availableFloorPackages = React.useMemo(

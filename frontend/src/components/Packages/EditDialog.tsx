@@ -466,17 +466,28 @@ function EditDialog(props: EditDialogProps) {
                                 .map((channelItem: Channel) => {
                                   const isCurrentTarget =
                                     channelItem.package?.version === props.data.package.version;
+                                  const isBlacklisted = values.channelsBlacklist.includes(
+                                    channelItem.id
+                                  );
+
                                   return (
-                                    <MenuItem key={channelItem.id} value={channelItem.id}>
+                                    <MenuItem
+                                      key={channelItem.id}
+                                      value={channelItem.id}
+                                      disabled={isBlacklisted}
+                                    >
                                       <Checkbox
                                         checked={packageFloorChannels.includes(channelItem.id)}
+                                        disabled={isBlacklisted}
                                       />
                                       <ListItemText
                                         primary={channelItem.name}
                                         secondary={
-                                          isCurrentTarget
-                                            ? t('packages|channel_currently_pointing_here')
-                                            : null
+                                          isBlacklisted
+                                            ? t('packages|channel_is_blacklisted')
+                                            : isCurrentTarget
+                                              ? t('packages|channel_currently_pointing_here')
+                                              : null
                                         }
                                       />
                                     </MenuItem>

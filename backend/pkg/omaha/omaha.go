@@ -93,9 +93,15 @@ func getArch(os *omahaSpec.OS, appReq *omahaSpec.AppRequest) api.Arch {
 
 // isSyncerClient detects if the client is a Nebraska syncer based on request characteristics
 func isSyncerClient(req *omahaSpec.Request) bool {
-	// Nebraska syncers identify themselves with InstallSource = "scheduler"
-	// Regular Flatcar clients use InstallSource = "ondemandupdate" or other values
-	return req.InstallSource == "scheduler"
+	// Nebraska syncers must have BOTH:
+	// 1. The exact hardcoded request version "CoreOSUpdateEngine-0.1.0.0"
+	// 2. InstallSource set to "scheduler"
+	// Regular Flatcar clients use version strings like "update_engine-0.4.2" and different install sources
+	if req.InstallSource == "scheduler" &&
+		req.Version == "CoreOSUpdateEngine-0.1.0.0" {
+		return true
+	}
+	return false
 }
 
 func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*omahaSpec.Response, error) {

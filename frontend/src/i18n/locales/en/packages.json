@@ -6,6 +6,7 @@
   "immutable_warning": "Cannot be changed once created.",
   "channels": "Channels",
   "channel_currently_pointing_here": "Currently pointing to this package",
+  "channel_is_blacklisted": "Blacklisted - cannot be used as floor",
   "description": "Description",
   "edit_file": "Edit File",
   "edit_package": "Edit Package",
