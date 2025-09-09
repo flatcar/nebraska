@@ -18,7 +18,7 @@ func TestFloorUpdateScenarios(t *testing.T) {
 	h := NewHandler(a)
 
 	// Helper for syncer requests
-	syncerRequest := func(h *Handler, version, group string, multiPkgOK bool) *omahaSpec.Response {
+	syncerRequest := func(h *Handler, version, group string, multiManifestOK bool) *omahaSpec.Response {
 		req := omahaSpec.NewRequest()
 		req.OS.Version = "3"
 		req.OS.Platform = "CoreOS"
@@ -30,7 +30,7 @@ func TestFloorUpdateScenarios(t *testing.T) {
 		app.MachineID = "syncer-" + version
 		app.Track = group
 		app.AddUpdateCheck()
-		app.MultiPackageOK = multiPkgOK
+		app.MultiManifestOK = multiManifestOK
 
 		buf := bytes.NewBuffer(nil)
 		err := xml.NewEncoder(buf).Encode(req)
@@ -179,7 +179,7 @@ func TestFloorUpdateScenarios(t *testing.T) {
 	})
 }
 
-// TestLegacySyncerBlockedWithFloors tests that legacy syncers without MultiPackageOK are blocked when floors exist
+// TestLegacySyncerBlockedWithFloors tests that legacy syncers without MultiManifestOK are blocked when floors exist
 func TestLegacySyncerBlockedWithFloors(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
@@ -188,7 +188,7 @@ func TestLegacySyncerBlockedWithFloors(t *testing.T) {
 	// Setup floor configuration
 	group, _ := setupOmahaFloorTest(t, a, "legacy-syncer", []string{"1000.0.0", "2000.0.0"}, "3000.0.0")
 
-	// Helper for syncer request without MultiPackageOK
+	// Helper for syncer request without MultiManifestOK
 	legacySyncerRequest := func(version string) *omahaSpec.Response {
 		req := omahaSpec.NewRequest()
 		req.OS.Version = "3"
@@ -201,7 +201,7 @@ func TestLegacySyncerBlockedWithFloors(t *testing.T) {
 		app.MachineID = "legacy-syncer-" + version
 		app.Track = group.ID
 		app.AddUpdateCheck()
-		app.MultiPackageOK = false // Legacy syncer without multi-package support
+		app.MultiManifestOK = false // Legacy syncer without multi-manifest support
 
 		buf := bytes.NewBuffer(nil)
 		err := xml.NewEncoder(buf).Encode(req)
@@ -240,8 +240,8 @@ func TestLegacySyncerBlockedWithFloors(t *testing.T) {
 		assert.Empty(t, resp.Apps[0].UpdateCheck.Manifests)
 	})
 
-	t.Run("modern_syncer_with_multipackage_gets_update", func(t *testing.T) {
-		// Modern syncer with MultiPackageOK=true at same version
+	t.Run("modern_syncer_with_multimanifest_gets_update", func(t *testing.T) {
+		// Modern syncer with MultiManifestOK=true at same version
 		req := omahaSpec.NewRequest()
 		req.OS.Version = "3"
 		req.OS.Platform = "CoreOS"
@@ -253,7 +253,7 @@ func TestLegacySyncerBlockedWithFloors(t *testing.T) {
 		app.MachineID = "modern-syncer"
 		app.Track = group.ID
 		app.AddUpdateCheck()
-		app.MultiPackageOK = true // Modern syncer with multi-package support
+		app.MultiManifestOK = true // Modern syncer with multi-manifest support
 
 		buf := bytes.NewBuffer(nil)
 		err := xml.NewEncoder(buf).Encode(req)

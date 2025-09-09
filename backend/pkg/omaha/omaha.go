@@ -174,7 +174,7 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 					continue
 				}
 
-				// Critical safety rule: old syncers without MultiPackageOK cannot skip floors
+				// Critical safety rule: old syncers without MultiManifestOK cannot skip floors
 				// Check if ANY package is a floor (including the target which might also be a floor)
 				hasFloors := false
 				for _, pkg := range packages {
@@ -184,16 +184,16 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 					}
 				}
 
-				if hasFloors && !reqApp.MultiPackageOK {
+				if hasFloors && !reqApp.MultiManifestOK {
 					l.Warn().Str("instanceID", reqApp.MachineID).
 						Int("packageCount", len(packages)).
-						Msg("Syncer without multi-package support blocked due to floor requirements")
+						Msg("Syncer without multi-manifest support blocked due to floor requirements")
 					respApp.AddUpdateCheck(omahaSpec.NoUpdate)
 					continue
 				}
 
-				// Either multi-package capable syncer or no floors exist
-				h.prepareMultiPackageUpdateCheck(respApp, packages)
+				// Either multi-manifest capable syncer or no floors exist
+				h.prepareMultiManifestUpdateCheck(respApp, packages)
 			} else {
 				// Regular client - get single package
 				pkg, err := h.crAPI.GetUpdatePackage(reqApp.MachineID, reqApp.MachineAlias, ip, reqApp.Version, appID, group)
@@ -337,9 +337,9 @@ func (h *Handler) prepareUpdateCheck(appResp *omahaSpec.AppResponse, pkg *api.Pa
 	updateCheck.AddURL(pkg.URL)
 }
 
-// prepareMultiPackageUpdateCheck creates a response with multiple manifests
+// prepareMultiManifestUpdateCheck creates a response with multiple manifests
 // Each package gets one manifest with appropriate floor/target metadata based on its properties
-func (h *Handler) prepareMultiPackageUpdateCheck(appResp *omahaSpec.AppResponse, packages []*api.Package) {
+func (h *Handler) prepareMultiManifestUpdateCheck(appResp *omahaSpec.AppResponse, packages []*api.Package) {
 	if len(packages) == 0 {
 		appResp.AddUpdateCheck(omahaSpec.NoUpdate)
 		return

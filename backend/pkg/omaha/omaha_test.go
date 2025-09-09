@@ -273,7 +273,7 @@ func TestProductIDBasedRequest(t *testing.T) {
 	checkOmahaResponse(t, omahaResp, *tApp.ProductID.Ptr(), omahaSpec.AppOK)
 }
 
-func TestMultiPackageResponse(t *testing.T) {
+func TestMultiManifestResponse(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
 	h := NewHandler(a)

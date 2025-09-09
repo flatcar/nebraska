@@ -241,7 +241,7 @@ func (s *Syncer) doOmahaRequest(descriptor channelDescriptor, currentVersion str
 	app.MachineID = s.machinesIDs[descriptor]
 	app.BootID = s.bootIDs[descriptor]
 	app.Track = descriptor.name
-	app.MultiPackageOK = true
+	app.MultiManifestOK = true
 
 	payload, err := xml.Marshal(req)
 	if err != nil {

@@ -22,8 +22,8 @@ Flatcar requires mandatory intermediate versions (floors) when updating across m
 - NULL `last_update_version` triggers completion to force fresh grant cycle
 
 #### Syncers (Nebraska instances)
-- **Modern syncers with `multi_package_ok=true`**: Receive all packages (floors + target) in one response
-- **Legacy syncers without `multi_package_ok`**: Blocked with `NoUpdate` response when floors exist
+- **Modern syncers with `multi_manifest_ok=true`**: Receive all packages (floors + target) in one response
+- **Legacy syncers without `multi_manifest_ok`**: Blocked with `NoUpdate` response when floors exist
 - Syncers identified by `InstallSource="scheduler"` in Omaha request
 
 #### Target Detection (Syncer-specific)
@@ -43,7 +43,7 @@ For multi-manifest responses, syncers use this priority:
 1. **Atomic Floor Operations**: Floor marking failures abort entire update
 2. **Package Verification**: Existing packages verified for hash/size match before reuse
 3. **Download Cleanup**: Failed downloads cleaned up to prevent orphaned files
-4. **Legacy Syncer Safety**: Syncers without multi-package support blocked when floors exist
+4. **Legacy Syncer Safety**: Syncers without multi-manifest support blocked when floors exist
 
 ### API Endpoints
 
@@ -76,7 +76,7 @@ For multi-manifest responses, syncers use this priority:
 Enhanced go-omaha library with:
 - Multi-manifest support (`Manifests` array replacing single `Manifest`)
 - Floor attributes (`IsFloor`, `FloorReason`, `IsTarget`)
-- `MultiPackageOK` capability flag for syncers
+- `MultiManifestOK` capability flag for syncers
 
 ## References
 - [Flatcar Discussion #1831](https://github.com/flatcar/Flatcar/discussions/1831)
