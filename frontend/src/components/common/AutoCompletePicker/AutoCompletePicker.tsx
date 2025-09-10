@@ -13,7 +13,7 @@ import TextField from '@mui/material/TextField';
 import Downshift from 'downshift';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { FixedSizeList, ListOnItemsRenderedProps } from 'react-window';
+import { List } from 'react-window';
 
 interface RenderInputProps {
   ref?: React.Ref<any>;
@@ -74,7 +74,7 @@ interface RenderSuggestionProps {
 
 function renderSuggestion(suggestionProps: RenderSuggestionProps) {
   const { suggestion, style, itemProps, selectedItem } = suggestionProps;
-  const isSelected = (selectedItem || '').indexOf(suggestion.primary) > -1;
+  const isSelected = selectedItem === suggestion.primary;
 
   return (
     <ListItemButton {...itemProps} key={suggestion.primary} selected={isSelected} style={style}>
@@ -112,36 +112,67 @@ interface LazyListProps {
   height: number;
   itemSize: number;
   width: number;
-  onItemsRendered: (args: ListOnItemsRenderedProps) => any;
+  onBottomScrolled?: () => void;
+}
+
+function RowComponent(props: {
+  index: number;
+  style: React.CSSProperties;
+  suggestions: any[];
+  getItemProps: any;
+  highlightedIndex: any;
+  selectedItem: any;
+}) {
+  const { index, style, suggestions, getItemProps, highlightedIndex, selectedItem } = props;
+  const suggestion = suggestions[index];
+  return renderSuggestion({
+    suggestion,
+    style,
+    itemProps: getItemProps({ item: suggestion.primary }),
+    index,
+    highlightedIndex,
+    selectedItem,
+  });
+}
+
+function createOnItemsRendered(onBottomScrolled?: () => void) {
+  return function onItemsRendered(args: {
+    visibleStartIndex: number;
+    visibleStopIndex: number;
+    overscanStartIndex: number;
+    overscanStopIndex: number;
+  }) {
+    const { overscanStopIndex, visibleStopIndex } = args;
+    if (onBottomScrolled && overscanStopIndex === visibleStopIndex) {
+      onBottomScrolled();
+    }
+  };
 }
 
 function LazyList(props: LazyListProps) {
-  const { options, itemData, onItemsRendered, ...others } = props;
+  const { options, itemData, height, itemSize, width, onBottomScrolled } = props;
 
-  itemData['suggestions'] = options;
-
-  function Row(props: { index: number; style: object; data: any }) {
-    const { index, style, data } = props;
-    const suggestion = data.suggestions[index];
-    const getItemProps = data.getItemProps;
-    data['index'] = index;
-    return renderSuggestion({
-      suggestion,
-      style,
-      itemProps: getItemProps({ item: suggestion.primary }),
-      ...data,
-    });
-  }
+  const rowProps = { ...itemData, suggestions: options };
+  const onItemsRendered = createOnItemsRendered(onBottomScrolled);
 
   return (
-    <FixedSizeList
-      itemCount={options.length}
-      itemData={itemData}
-      onItemsRendered={onItemsRendered}
-      {...others}
-    >
-      {Row}
-    </FixedSizeList>
+    <List
+      rowCount={options.length}
+      rowHeight={itemSize}
+      rowComponent={RowComponent}
+      rowProps={rowProps}
+      onRowsRendered={(visibleRows, allRows) => {
+        onItemsRendered({
+          visibleStartIndex: visibleRows.startIndex,
+          visibleStopIndex: visibleRows.stopIndex,
+          overscanStartIndex: allRows.startIndex,
+          overscanStopIndex: allRows.stopIndex,
+        });
+      }}
+      style={{ height, width }}
+      role="listbox"
+      aria-label="Autocomplete options"
+    />
   );
 }
 
@@ -176,13 +207,6 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
 
   function onInputChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     props.onValueChanged(event.target.value);
-  }
-
-  function onItemsRendered(args: ListOnItemsRenderedProps) {
-    const { overscanStopIndex, visibleStopIndex } = args;
-    if (!!onBottomScrolled && overscanStopIndex === visibleStopIndex) {
-      onBottomScrolled();
-    }
   }
 
   function handleEscape(event: React.KeyboardEvent<HTMLDivElement>) {
@@ -264,7 +288,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
                     height={400}
                     width={400}
                     itemSize={50}
-                    onItemsRendered={onItemsRendered}
+                    onBottomScrolled={onBottomScrolled}
                   />
                 </Box>
               );

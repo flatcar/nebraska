@@ -14,7 +14,7 @@ import Downshift from 'downshift';
 import moment from 'moment-timezone';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { FixedSizeList } from 'react-window';
+import { List } from 'react-window';
 
 const suggestions = moment.tz.names().map(timezone => {
   return {
@@ -80,7 +80,7 @@ interface RenderSuggestionProps {
 
 function renderSuggestion(suggestionProps: RenderSuggestionProps) {
   const { suggestion, style, itemProps, selectedItem } = suggestionProps;
-  const isSelected = (selectedItem || '').indexOf(suggestion.label) > -1;
+  const isSelected = selectedItem === suggestion.label;
 
   function getUtcLabel(utcDiff: number) {
     return 'UTC ' + (utcDiff >= 0 ? '+' : '-') + Math.abs(utcDiff);
@@ -109,12 +109,6 @@ function getSuggestions(value: string | null, selectedItem: string) {
 }
 
 interface LazyListProps {
-  options: string[];
-  itemData: any;
-}
-
-interface LazyListProps {
-  //@ts-expect-error as type mismatch
   options: RenderSuggestionProps['suggestion'][];
   itemData: any;
   height: number;
@@ -123,27 +117,40 @@ interface LazyListProps {
 }
 
 function LazyList(props: LazyListProps) {
-  const { options, itemData, ...others } = props;
+  const { options, itemData, height, itemSize, width } = props;
 
-  itemData['suggestions'] = options;
+  const rowProps = { ...itemData, suggestions: options };
 
-  function Row(props: { index: number; style: object; data: any }) {
-    const { index, style, data } = props;
-    const suggestion = data.suggestions[index];
-    const getItemProps = data.getItemProps;
-    data['index'] = index;
+  function RowComponent(props: {
+    index: number;
+    style: React.CSSProperties;
+    suggestions: any[];
+    getItemProps: any;
+    highlightedIndex: any;
+    selectedItem: any;
+  }) {
+    const { index, style, suggestions, getItemProps, highlightedIndex, selectedItem } = props;
+    const suggestion = suggestions[index];
     return renderSuggestion({
       suggestion,
       style,
       itemProps: getItemProps({ item: suggestion.label }),
-      ...data,
+      index,
+      highlightedIndex,
+      selectedItem,
     });
   }
 
   return (
-    <FixedSizeList itemCount={options.length} itemData={itemData} {...others}>
-      {Row}
-    </FixedSizeList>
+    <List
+      rowCount={options.length}
+      rowHeight={itemSize}
+      rowComponent={RowComponent}
+      rowProps={rowProps}
+      style={{ height, width }}
+      role="listbox"
+      aria-label="Timezone options"
+    />
   );
 }
 
@@ -235,8 +242,6 @@ export default function TimzonePicker(props: {
                     variant: 'outlined',
                   })}
                   <LazyList
-                    //@todo add better types
-                    //@ts-expect-error as type mismatch
                     options={getSuggestions(inputValue, selectedItem)}
                     itemData={{
                       getItemProps,
