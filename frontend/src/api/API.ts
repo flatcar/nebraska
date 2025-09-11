@@ -1,8 +1,8 @@
 import { createContext } from 'react';
 import _ from 'underscore';
 
-import store from '../stores/redux/store';
 import { NebraskaConfig } from '../stores/redux/features/config';
+import store from '../stores/redux/store';
 import { getToken } from '../utils/auth';
 import {
   Activity,
