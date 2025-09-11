@@ -7,7 +7,7 @@ require (
 	github.com/coreos/go-oidc/v3 v3.15.0
 	github.com/doug-martin/goqu/v9 v9.19.0
 	github.com/flatcar/go-omaha v0.0.2-0.20250627105643-c9009b394616
-	github.com/getkin/kin-openapi v0.132.0
+	github.com/getkin/kin-openapi v0.133.0
 	github.com/golangci/golangci-lint/v2 v2.4.0
 	github.com/google/go-github/v28 v28.1.1
 	github.com/google/uuid v1.6.0
@@ -236,6 +236,7 @@ require (
 	github.com/uudashr/iface v1.4.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
+	github.com/woodsbury/decimal128 v1.3.0 // indirect
 	github.com/xen0n/gosmopolitan v1.3.0 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	github.com/yagipy/maintidx v1.0.0 // indirect
