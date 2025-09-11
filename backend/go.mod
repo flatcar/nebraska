@@ -28,7 +28,7 @@ require (
 	github.com/ryanuber/go-glob v1.0.0
 	github.com/stretchr/testify v1.11.0
 	github.com/tidwall/gjson v1.18.0
-	golang.org/x/oauth2 v0.30.0
+	golang.org/x/oauth2 v0.31.0
 	golang.org/x/sync v0.16.0
 	gopkg.in/guregu/null.v4 v4.0.0
 )
