@@ -7,5 +7,5 @@ favicon.png
 #x.com seems to consistently only return a 400 from GHA
 https://x.com/flatcar
 
-# robotstxt.org times out in CI
+# www.robotstxt.org appears to timeout from GitHub Actions
 https://www.robotstxt.org/robotstxt.html
