@@ -1,7 +1,14 @@
 import { jwtDecode as jwt_decode } from 'jwt-decode';
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
-import { getToken, isValidToken, setToken } from '../../utils/auth';
+import {
+  clearTokens,
+  generateCodeChallenge,
+  generateCodeVerifier,
+  getToken,
+  isValidToken,
+  setTokens,
+} from '../../utils/auth';
 
 vi.mock('jwt-decode', () => ({
   jwtDecode: vi.fn(),
@@ -9,26 +16,49 @@ vi.mock('jwt-decode', () => ({
 
 describe('Auth Utility Functions', () => {
   beforeEach(() => {
-    localStorage.clear();
+    // Clear memory storage
+    clearTokens();
     vi.clearAllMocks();
   });
 
-  describe('setToken', () => {
-    it('should store the token in localStorage', () => {
-      const token = 'test-token';
-      setToken(token);
-      expect(localStorage.getItem('token')).toBe(token);
-    });
-  });
-
   describe('getToken', () => {
-    it('should retrieve the token from localStorage', () => {
-      const token = 'test-token';
-      localStorage.setItem('token', token);
-      expect(getToken()).toBe(token);
+    it('should retrieve the token from memory', () => {
+      setTokens({ access_token: 'test-token' });
+      expect(getToken()).toBe('test-token');
     });
 
     it('should return null if no token is stored', () => {
+      expect(getToken()).toBeNull();
+    });
+  });
+
+  describe('setTokens', () => {
+    it('should store both access and refresh tokens', () => {
+      const tokens = {
+        access_token: 'access-token',
+        expires_in: 3600,
+      };
+      setTokens(tokens);
+      expect(getToken()).toBe('access-token');
+    });
+
+    it('should store access token without refresh token', () => {
+      const tokens = {
+        access_token: 'access-token',
+        expires_in: 3600,
+      };
+      setTokens(tokens);
+      expect(getToken()).toBe('access-token');
+    });
+  });
+
+  describe('clearTokens', () => {
+    it('should clear both access and refresh tokens', () => {
+      setTokens({
+        access_token: 'access-token',
+        expires_in: 3600,
+      });
+      clearTokens();
       expect(getToken()).toBeNull();
     });
   });
@@ -48,6 +78,29 @@ describe('Auth Utility Functions', () => {
       const validToken = 'valid-token';
       (jwt_decode as Mock).mockReturnValue({ exp: Math.floor(Date.now() / 1000) + 3600 });
       expect(isValidToken(validToken)).toBe(true);
+    });
+  });
+
+  describe('PKCE functions', () => {
+    describe('generateCodeVerifier', () => {
+      it('should generate a code verifier of proper length', async () => {
+        const verifier = await generateCodeVerifier();
+        expect(verifier).toBeTruthy();
+        expect(verifier.length).toBeGreaterThanOrEqual(43);
+        expect(verifier.length).toBeLessThanOrEqual(128);
+        // Should be URL-safe base64 (no +, /, or =)
+        expect(verifier).not.toMatch(/[+/=]/);
+      });
+    });
+
+    describe('generateCodeChallenge', () => {
+      it('should generate a valid code challenge from verifier', async () => {
+        const verifier = await generateCodeVerifier();
+        const challenge = await generateCodeChallenge(verifier);
+        expect(challenge).toBeTruthy();
+        // Should be URL-safe base64 (no +, /, or =)
+        expect(challenge).not.toMatch(/[+/=]/);
+      });
     });
   });
 });

@@ -1,9 +1,9 @@
-import PubSub from 'pubsub-js';
 import { createContext } from 'react';
 import _ from 'underscore';
 
-import { CONFIG_STORAGE_KEY, NebraskaConfig } from '../stores/redux/features/config';
-import { getToken, setToken } from '../utils/auth';
+import { NebraskaConfig } from '../stores/redux/features/config';
+import store from '../stores/redux/store';
+import { getToken } from '../utils/auth';
 import {
   Activity,
   Application,
@@ -22,7 +22,6 @@ type WithCount<T> = T & {
   totalCount: number;
 };
 
-const MAIN_PROGRESS_BAR = 'main_progress_bar';
 const BASE_URL = '/api';
 type REQUEST_DATA_TYPE = BodyInit | null | undefined;
 
@@ -286,37 +285,29 @@ export default class API {
     return _.omit(data, valuesToRemove);
   }
 
-  // Wrappers
-
-  static getJSON(url: string) {
-    PubSub.publish(MAIN_PROGRESS_BAR, 'add');
+  private static getAuthHeaders(): { headers: Record<string, string> } {
     const token = getToken();
-    let headers = {};
-    const nebraska_config = localStorage.getItem(CONFIG_STORAGE_KEY) || '{}';
-    const config = JSON.parse(nebraska_config) || {};
+    const config = store.getState().config;
 
-    if (Object.keys(config).length > 0 && config.auth_mode === 'oidc') {
-      headers = {
-        Authorization: `Bearer ${token}`,
+    if (Object.keys(config).length > 0 && config.auth_mode === 'oidc' && token) {
+      return {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       };
     }
-    return fetch(url, {
-      headers,
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw response;
-        }
+    return { headers: {} };
+  }
 
-        // The token has been renewed, let's store it.
-        const newIdToken = response.headers.get('id_token');
-        if (!!newIdToken && getToken() !== newIdToken) {
-          console.debug('Refreshed token');
-          setToken(newIdToken);
-        }
-        return response.json();
-      })
-      .finally(() => PubSub.publish(MAIN_PROGRESS_BAR, 'done'));
+  static async getJSON(url: string) {
+    const { headers } = this.getAuthHeaders();
+    const response = await fetch(url, {
+      headers,
+    });
+    if (!response.ok) {
+      throw response;
+    }
+    return await response.json();
   }
 
   static doRequest(method: 'GET', url: string): Promise<any>;
@@ -328,17 +319,11 @@ export default class API {
   static doRequest(method: 'DELETE', url: string, data: REQUEST_DATA_TYPE): Promise<Response>;
 
   static doRequest(method: string, url: string, data: REQUEST_DATA_TYPE = '') {
-    const token = getToken();
-    PubSub.publish(MAIN_PROGRESS_BAR, 'add');
-    const nebraska_config = localStorage.getItem(CONFIG_STORAGE_KEY) || '{}';
-    const config = JSON.parse(nebraska_config) || {};
+    const { headers: authHeaders } = this.getAuthHeaders();
     const headers: { [key: string]: string } = {
       'Content-Type': 'application/json',
+      ...authHeaders,
     };
-
-    if (Object.keys(config).length > 0 && config.auth_mode === 'oidc') {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
     let fetchConfigObject: {
       method: string;
       body?: REQUEST_DATA_TYPE;
@@ -355,7 +340,7 @@ export default class API {
         method,
         headers,
       };
-      return fetch(url, fetchConfigObject).finally(() => PubSub.publish(MAIN_PROGRESS_BAR, 'done'));
+      return fetch(url, fetchConfigObject);
     } else {
       if (method !== 'GET') {
         fetchConfigObject = {
@@ -366,18 +351,12 @@ export default class API {
       }
     }
 
-    return fetch(url, fetchConfigObject)
-      .then(response => {
-        if (!response.ok) {
-          throw response;
-        }
-        const newIdToken = response.headers.get('id_token');
-        if (!!newIdToken && getToken() !== newIdToken) {
-          setToken(newIdToken);
-        }
-        return response.json();
-      })
-      .finally(() => PubSub.publish(MAIN_PROGRESS_BAR, 'done'));
+    return fetch(url, fetchConfigObject).then(response => {
+      if (!response.ok) {
+        throw response;
+      }
+      return response.json();
+    });
   }
 }
 

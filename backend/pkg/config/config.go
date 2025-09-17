@@ -41,31 +41,25 @@ type Config struct {
 	GhReadOnlyTeams   string `koanf:"gh-ro-teams"`
 	GhEnterpriseURL   string `koanf:"gh-enterprise-url"`
 
-	OidcClientID          string `koanf:"oidc-client-id"`
-	OidcClientSecret      string `koanf:"oidc-client-secret"`
-	OidcIssuerURL         string `koanf:"oidc-issuer-url"`
-	OidcValidRedirectURLs string `koanf:"oidc-valid-redirect-urls"`
-	OidcAdminRoles        string `koanf:"oidc-admin-roles"`
-	OidcViewerRoles       string `koanf:"oidc-viewer-roles"`
-	OidcRolesPath         string `koanf:"oidc-roles-path"`
-	OidcScopes            string `koanf:"oidc-scopes"`
-	OidcSessionAuthKey    string `koanf:"oidc-session-secret"`
-	OidcSessionCryptKey   string `koanf:"oidc-session-crypt_key"`
-	OidcManagementURL     string `koanf:"oidc-management-url"`
-	OidcLogutURL          string `koanf:"oidc-logout-url"`
+	OidcClientID      string `koanf:"oidc-client-id"`
+	OidcIssuerURL     string `koanf:"oidc-issuer-url"`
+	OidcAdminRoles    string `koanf:"oidc-admin-roles"`
+	OidcViewerRoles   string `koanf:"oidc-viewer-roles"`
+	OidcRolesPath     string `koanf:"oidc-roles-path"`
+	OidcScopes        string `koanf:"oidc-scopes"`
+	OidcManagementURL string `koanf:"oidc-management-url"`
+	OidcLogoutURL     string `koanf:"oidc-logout-url"`
+	OidcAudience      string `koanf:"oidc-audience"`
 }
 
 const (
-	oidcClientIDEnvName        = "NEBRASKA_OIDC_CLIENT_ID"
-	oidcClientSecretEnvName    = "NEBRASKA_OIDC_CLIENT_SECRET"
-	oidcSessionAuthKeyEnvName  = "NEBRASKA_OIDC_SESSION_SECRET"
-	oidcSessionCryptKeyEnvName = "NEBRASKA_OIDC_SESSION_CRYPT_KEY"
-	ghClientIDEnvName          = "NEBRASKA_GITHUB_OAUTH_CLIENT_ID"
-	ghClientSecretEnvName      = "NEBRASKA_GITHUB_OAUTH_CLIENT_SECRET"
-	ghSessionAuthKeyEnvName    = "NEBRASKA_GITHUB_SESSION_SECRET"
-	ghSessionCryptKeyEnvName   = "NEBRASKA_GITHUB_SESSION_CRYPT_KEY"
-	ghWebhookSecretEnvName     = "NEBRASKA_GITHUB_WEBHOOK_SECRET"
-	ghEnterpriseURLEnvName     = "NEBRASKA_GITHUB_ENTERPRISE_URL"
+	oidcClientIDEnvName      = "NEBRASKA_OIDC_CLIENT_ID"
+	ghClientIDEnvName        = "NEBRASKA_GITHUB_OAUTH_CLIENT_ID"
+	ghClientSecretEnvName    = "NEBRASKA_GITHUB_OAUTH_CLIENT_SECRET"
+	ghSessionAuthKeyEnvName  = "NEBRASKA_GITHUB_SESSION_SECRET"
+	ghSessionCryptKeyEnvName = "NEBRASKA_GITHUB_SESSION_CRYPT_KEY"
+	ghWebhookSecretEnvName   = "NEBRASKA_GITHUB_WEBHOOK_SECRET"
+	ghEnterpriseURLEnvName   = "NEBRASKA_GITHUB_ENTERPRISE_URL"
 )
 
 func (c *Config) Validate() error {
@@ -91,7 +85,7 @@ func (c *Config) Validate() error {
 			return errors.New("invalid github configuration")
 		}
 	case "oidc":
-		if c.OidcClientID == "" || c.OidcClientSecret == "" || c.OidcIssuerURL == "" || c.OidcAdminRoles == "" || c.OidcViewerRoles == "" {
+		if c.OidcClientID == "" || c.OidcIssuerURL == "" || c.OidcAdminRoles == "" || c.OidcViewerRoles == "" {
 			return errors.New("invalid OIDC configuration")
 		}
 	}
@@ -123,17 +117,14 @@ func Parse() (*Config, error) {
 	f.String("gh-enterprise-url", "", fmt.Sprintf("base URL of the enterprise instance if using GHE; can be taken from %s env var too", ghEnterpriseURLEnvName))
 
 	f.String("oidc-client-id", "", fmt.Sprintf("OIDC client ID used for authentication;can be taken from %s env var too", oidcClientIDEnvName))
-	f.String("oidc-client-secret", "", fmt.Sprintf("OIDC client Secret used for authentication; can be taken from %s env var too", oidcClientSecretEnvName))
 	f.String("oidc-issuer-url", "", "OIDC issuer URL used for authentication")
-	f.String("oidc-valid-redirect-urls", "", "OIDC valid Redirect URLs; accepts comma separated values and supports wildcards (*), for example http://nebraska.example.io/*. If not set defaults to <nebraska-url>/*")
 	f.String("oidc-admin-roles", "", "comma-separated list of accepted roles with admin access")
 	f.String("oidc-viewer-roles", "", "comma-separated list of accepted roles with viewer access")
 	f.String("oidc-roles-path", "roles", "json path in which the roles array is present in the id token")
-	f.String("oidc-scopes", "openid,offline_access", "comma-separated list of scopes to be used in OIDC")
-	f.String("oidc-session-secret", "", fmt.Sprintf("Session secret used for authenticating sessions in cookies used for storing OIDC info , will be generated if none is passed; can be taken from %s env var too", oidcSessionAuthKeyEnvName))
-	f.String("oidc-session-crypt-key", "", fmt.Sprintf("Session key used for encrypting sessions in cookies used for storing OIDC info, will be generated if none is passed; can be taken from %s env var too", oidcSessionCryptKeyEnvName))
+	f.String("oidc-scopes", "openid,profile,email", "comma-separated list of scopes to be used in OIDC")
 	f.String("oidc-management-url", "", "OIDC management url for managing the account")
-	f.String("oidc-logout-url", "", "URL to logout the user from current session")
+	f.String("oidc-logout-url", "", "OIDC logout URL (optional fallback when end_session_endpoint is not available in discovery)")
+	f.String("oidc-audience", "", "OIDC audience parameter for the access token")
 	f.String("sync-update-url", "https://public.update.flatcar-linux.net/v1/update/", "Flatcar update URL to sync from")
 	f.String("sync-interval", "1h", "Sync check interval (the minimum depends on the number of channels to sync, e.g., 8m for 8 channels incl. different architectures)")
 	f.String("client-logo", "", "Client app logo, should be a path to svg file")
@@ -164,16 +155,6 @@ func Parse() (*Config, error) {
 	switch config.AuthMode {
 	case "oidc":
 		config.OidcClientID = getPotentialOrEnv(config.OidcClientID, oidcClientIDEnvName)
-		config.OidcClientSecret = getPotentialOrEnv(config.OidcClientSecret, oidcClientSecretEnvName)
-		config.OidcSessionAuthKey = getPotentialOrEnv(config.OidcSessionAuthKey, oidcSessionAuthKeyEnvName)
-		config.OidcSessionCryptKey = getPotentialOrEnv(config.OidcSessionCryptKey, oidcSessionCryptKeyEnvName)
-
-		if config.OidcSessionAuthKey == "" {
-			config.OidcSessionAuthKey = string(random.Data(32))
-		}
-		if config.OidcSessionCryptKey == "" {
-			config.OidcSessionCryptKey = string(random.Data(32))
-		}
 
 	case "github":
 		config.GhClientID = getPotentialOrEnv(config.GhClientID, ghClientIDEnvName)

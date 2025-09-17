@@ -21,6 +21,10 @@ func TestConfig(t *testing.T) {
 		assert.Equal(t, "noop", rMap["auth_mode"])
 		assert.Equal(t, "", rMap["access_management_url"])
 		assert.Equal(t, "", rMap["login_url"])
-		assert.Equal(t, "", rMap["logout_url"])
+		// OIDC fields should be present but null/empty for noop auth mode
+		assert.Nil(t, rMap["oidc_logout_url"])
+		assert.Nil(t, rMap["oidc_client_id"])
+		assert.Nil(t, rMap["oidc_issuer_url"])
+		assert.Nil(t, rMap["oidc_scopes"])
 	})
 }

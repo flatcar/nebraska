@@ -19,6 +19,13 @@
     "preview": "vite preview",
     "test": "cross-env TEST_TZ=true vitest --silent",
     "test:coverage": "cross-env TEST_TZ=true vitest --silent --coverage --environment=jsdom --reporter=default --coverage.dir=coverage/report",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:oidc": "playwright test --config=playwright.oidc.config.ts",
+    "test:oidc:ui": "playwright test --config=playwright.oidc.config.ts --ui",
+    "test:oidc:headed": "playwright test --config=playwright.oidc.config.ts --headed",
+    "test:oidc:debug": "playwright test --config=playwright.oidc.config.ts --debug",
     "build-storybook:ci": "cross-env NODE_ENV=test storybook build --quiet",
     "serve-storybook:ci": "npm exec -- http-server storybook-static --port 6006 --silent",
     "test-storybook:ci": "npx wait-on tcp:127.0.0.1:6006 && cross-env NODE_ENV=test TZ=UTC test-storybook",
@@ -39,7 +46,6 @@
     "@reduxjs/toolkit": "^2.8.2",
     "@types/dompurify": "^3.2.0",
     "@types/node": "^24.3.0",
-    "@types/pubsub-js": "^1.8.6",
     "@types/react-color": "^3.0.13",
     "@types/react-window": "^1.8.8",
     "@types/semver": "^7.7.0",
@@ -55,7 +61,6 @@
     "jwt-decode": "^4.0.0",
     "moment-timezone": "^0.6.0",
     "prop-types": "^15.8.1",
-    "pubsub-js": "^1.9.5",
     "react": "19.1.1",
     "react-color": "^2.19.3",
     "react-dom": "19.1.1",
@@ -141,6 +146,12 @@
       "eslint -c package.json --fix"
     ],
     "e2e/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "prettier --config package.json --write"
+    ],
+    "e2e-oidc/**/*.{js,jsx,ts,tsx}": [
+      "eslint -c package.json --fix"
+    ],
+    "e2e-oidc/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --config package.json --write"
     ]
   },

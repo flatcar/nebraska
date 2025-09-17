@@ -33,6 +33,8 @@ export default function ApplicationList() {
 
     // Set up listener for future changes
     applicationsStore().addChangeListener(onChange);
+    // Trigger initial fetch since stores don't fetch automatically
+    applicationsStore().getApplications();
     return () => {
       applicationsStore().removeChangeListener(onChange);
     };

@@ -1,0 +1,31 @@
+/* Force consistent font rendering */
+* {
+  -webkit-font-smoothing: none !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  text-rendering: geometricPrecision !important;
+  font-kerning: none !important;
+}
+
+/* Mask dynamic parts specific to OIDC testing */
+
+/* Hide dynamic timestamps and IDs that change between test runs */
+[data-testid='instance-last-update'],
+[data-testid='instance-id'],
+.timestamp,
+.instance-id {
+  color: transparent !important;
+}
+
+/* Hide OIDC-specific dynamic content */
+.token-display,
+.user-info,
+[data-testid='auth-token'] {
+  visibility: hidden !important;
+}
+
+/* Mask any dynamic auth-related content */
+.auth-status,
+.token-expires {
+  background: #f0f0f0 !important;
+  color: transparent !important;
+}

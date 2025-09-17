@@ -69,7 +69,17 @@ func New(db *api.API, conf *config.Config, auth auth.Authenticator) (*Handler, e
 		url.Path = "/login"
 		clientConfig.LoginUrl = url.String()
 		clientConfig.AccessManagementUrl = conf.OidcManagementURL
-		clientConfig.LogoutUrl = conf.OidcLogutURL
+
+		// Populate OIDC-specific configuration for frontend
+		clientConfig.OidcIssuerUrl = &conf.OidcIssuerURL
+		clientConfig.OidcClientId = &conf.OidcClientID
+		clientConfig.OidcScopes = &conf.OidcScopes
+		if conf.OidcLogoutURL != "" {
+			clientConfig.OidcLogoutUrl = &conf.OidcLogoutURL
+		}
+		if conf.OidcAudience != "" {
+			clientConfig.OidcAudience = &conf.OidcAudience
+		}
 	}
 
 	return &Handler{db, omaha.NewHandler(db), conf, clientConfig, auth}, nil

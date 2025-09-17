@@ -24,18 +24,10 @@ interface ActivityEntrySeverity {
 class ActivityStore extends Store {
   activity: { [key: string]: Activity[] } | null;
   interval: null | number;
-  constructor(noRefresh?: boolean) {
+  constructor() {
     super();
     this.activity = null;
-
-    if (noRefresh) {
-      this.interval = null;
-    } else {
-      this.getActivity();
-      this.interval = window.setInterval(() => {
-        this.getActivity();
-      }, 60 * 1000);
-    }
+    this.interval = null;
   }
 
   stopRefreshing() {
@@ -54,6 +46,13 @@ class ActivityStore extends Store {
   }
 
   getActivity() {
+    // Start the refresh interval on first call if not already running
+    if (!this.interval) {
+      this.interval = window.setInterval(() => {
+        this.getActivity();
+      }, 60 * 1000);
+    }
+
     API.getActivity()
       .then(response => {
         this.setActivity(response.totalCount === 0 ? [] : response.activities);

@@ -15,27 +15,52 @@ import ActivityList from './ActivityList';
 
 export type ActivityContainerProps = any;
 
-function Container() {
-  const { t } = useTranslation();
+function getActivityEntries() {
+  const activityObj = activityStore().getCachedActivity();
+  if (_.isNull(activityObj)) {
+    return null;
+  }
 
+  let entries: Activity[] = [];
+
+  Object.values(activityObj).forEach(value => {
+    entries = entries.concat(value);
+  });
+
+  return entries;
+}
+
+function Container() {
   const [activity, setActivity] = React.useState(getActivityEntries());
-  const rowsOptions = [5, 10, 50];
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(rowsOptions[0]);
+
+  const onChange = React.useCallback(() => {
+    setActivity(getActivityEntries());
+  }, []);
 
   React.useEffect(() => {
     activityStore().addChangeListener(onChange);
+    // Trigger initial fetch since stores don't fetch automatically
+    activityStore().getActivity();
 
     return function cleanup() {
       activityStore().removeChangeListener(onChange);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activity]);
+  }, [onChange]);
 
-  function onChange() {
-    setActivity(getActivityEntries());
-    setPage(0);
-  }
+  return <ActivityContainerPure activity={activity} />;
+}
+
+export interface ActivityContainerPureProps {
+  activity: Activity[] | null;
+}
+
+export function ActivityContainerPure(props: ActivityContainerPureProps) {
+  const { activity } = props;
+  const { t } = useTranslation();
+
+  const rowsOptions = [5, 10, 50];
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(rowsOptions[0]);
 
   function handleChangePage(
     _: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
@@ -73,21 +98,6 @@ function Container() {
       entriesPerTime[timestamp] = entriesPerTime[timestamp].concat(entry);
     }
     return entriesPerTime;
-  }
-
-  function getActivityEntries() {
-    const activityObj = activityStore().getCachedActivity();
-    if (_.isNull(activityObj)) {
-      return null;
-    }
-
-    let entries: Activity[] = [];
-
-    Object.values(activityObj).forEach(value => {
-      entries = entries.concat(value);
-    });
-
-    return entries;
   }
 
   return (

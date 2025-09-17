@@ -1,11 +1,11 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig } from '@playwright/test';
 import { loadEnv } from 'vite';
+
+import { chromeWithConsistentRendering } from './playwright.shared.config';
 
 
 export const ENV_DIR = './';
 Object.assign(process.env, loadEnv('', ENV_DIR));
-
-console.log('CI=', process.env.CI);
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -18,12 +18,13 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  /* Run tests in parallel with limited workers to reduce contention */
+  workers: undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: [['line'], ['html']],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
-  timeout: 120_000,
+  timeout: 50_000, 
+  globalTimeout: process.env.CI ? 600_000 : undefined, // 10 minutes total for CI
   use: {
     baseURL: process.env.CI ? 'http://127.0.0.1:8002' : 'http://localhost:3000',
 
@@ -45,19 +46,24 @@ export default defineConfig({
     },
 
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      name: 'chrome',
+      use: chromeWithConsistentRendering,
       dependencies: ['setup db'],
     },
   ],
 
   /* Run your local dev server before starting the tests */
   webServer: process.env.CI ? {
-    command: 'cd ../backend && docker compose -f docker-compose.test.yaml up && docker ps -a',
-    url: 'http://127.0.0.1:8002', // Replace with the URL of your service
+    command: 'cd ../backend && docker compose -f docker-compose.test.yaml up --build --force-recreate && docker ps -a',
+    url: 'http://127.0.0.1:8002',
     reuseExistingServer: false,
     timeout: 200_000,
-  } : undefined,
+  } : {
+    command: 'npm run dev',
+    url: 'http://localhost:3000',
+    reuseExistingServer: true,
+    timeout: 120_000,
+  },
   expect: {
     toHaveScreenshot: {
       stylePath: './e2e/mask-and-fix-dynamic-parts.css',

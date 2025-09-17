@@ -9,19 +9,10 @@ import store from './redux/store';
 class ApplicationsStore extends Store {
   applications: Application[];
   interval: null | number;
-  constructor(noRefresh?: boolean) {
+  constructor() {
     super();
     this.applications = [];
-
-    if (noRefresh) {
-      this.interval = null;
-    } else {
-      this.getApplications();
-
-      this.interval = window.setInterval(() => {
-        this.getApplications();
-      }, 60 * 1000);
-    }
+    this.interval = null;
   }
 
   // Applications
@@ -39,6 +30,13 @@ class ApplicationsStore extends Store {
   }
 
   getApplications() {
+    // Start the refresh interval on first call if not already running
+    if (!this.interval) {
+      this.interval = window.setInterval(() => {
+        this.getApplications();
+      }, 60 * 1000);
+    }
+
     API.getApplications()
       .then(response => {
         this.applications = response.applications;
