@@ -27,12 +27,7 @@ interface ProgressDoughnutProps {
   data: ProgressData[];
 }
 
-interface RechartsPieData {
-  x: number;
-  y: number;
-  color: string;
-  description?: string;
-}
+type RechartsPieData = Record<string, unknown>;
 
 function ProgressDoughnut(props: ProgressDoughnutProps) {
   const { label, data, width = 100, height = 100, color = '#afafaf', icon } = props;
@@ -70,7 +65,7 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
   const percentage = Math.max(totalFilled, 0.5);
 
   function getTooltipText() {
-    return hoverData ? hoverData.description : null;
+    return hoverData ? (hoverData.description as string) : null;
   }
   const mainTooltipText = data.map(({ description }) => description).join('\n');
 
@@ -118,7 +113,7 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
               return (
                 <Cell
                   key={`cell-${index}`}
-                  fill={entry.color}
+                  fill={entry.color as string}
                   stroke={activeIndex === index ? theme.palette.primary.light : '#fff'}
                   strokeWidth={activeIndex === index ? 2 : 0}
                 />
