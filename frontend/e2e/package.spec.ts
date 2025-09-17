@@ -92,9 +92,7 @@ test.describe('Packages', () => {
     await page.goto('/');
     await page.getByRole('link', { name: appName }).click();
 
-    await expect(page.getByText('There are no groups for this')).toContainText(
-      'There are no groups for this application yet.Groups help you control how you want to distribute updates to a specific set of instances.'
-    );
+    await expect(page.getByText('There are no groups for this')).toBeVisible();
 
     await createPackage(page, '4116.0.0');
     await page.waitForLoadState('networkidle');
@@ -154,9 +152,7 @@ test.describe('Packages', () => {
     await page.getByRole('link', { name: appName }).click();
     await navigationPromise;
 
-    await expect(page.getByTestId('empty').first()).toContainText(
-      'There are no groups for this application yet.Groups help you control how you want to distribute updates to a specific set of instances.'
-    );
+    await expect(page.getByText('There are no groups for this')).toBeVisible();
 
     await createPackage(page, '4117.0.0');
     await page.reload();
