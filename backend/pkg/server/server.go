@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"path"
@@ -110,7 +111,7 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 	e.Use(echomiddleware.OapiRequestValidatorWithOptions(
 		swagger,
 		&echomiddleware.Options{Options: openapi3filter.Options{
-			AuthenticationFunc: nebraskaAuthenticationFunc()},
+			AuthenticationFunc: nebraskaAuthenticationFunc(conf.AuthMode)},
 			Skipper: middlewareSkipper,
 		}))
 
@@ -212,10 +213,41 @@ func setupSessionStore(conf config.Config) *sessions.Store {
 	return nil
 }
 
-func nebraskaAuthenticationFunc() func(context.Context, *openapi3filter.AuthenticationInput) error {
-	return func(_ context.Context, _ *openapi3filter.AuthenticationInput) error {
-		// Skip authentication - handled by custom auth middleware
-		// This eliminates redundant authentication checks
+func nebraskaAuthenticationFunc(authMode string) func(context.Context, *openapi3filter.AuthenticationInput) error {
+	return func(_ context.Context, input *openapi3filter.AuthenticationInput) error {
+		switch authMode {
+		case "noop":
+			return nil
+		case "oidc":
+			// redundant to check as we use an oidc library to validate the token
+			return nil
+		case "github":
+			err := validateAuthorizationToken(input)
+			if err != nil {
+				_, err := input.RequestValidationInput.Request.Cookie("github")
+				if err != nil {
+					return fmt.Errorf("github cookie not found: %w", err)
+				}
+			}
+			return nil
+		}
 		return nil
 	}
+}
+
+// check if Authorization Header is present and valid
+func validateAuthorizationToken(input *openapi3filter.AuthenticationInput) error {
+	token := input.RequestValidationInput.Request.Header.Get("Authorization")
+	if token == "" {
+		return errors.New("bearer token not found in request")
+	}
+	split := strings.Split(token, " ")
+	if len(split) == 2 {
+		if split[0] != "Bearer" {
+			return errors.New("bearer token not found in request")
+		}
+	} else {
+		return errors.New("invalid Bearer token")
+	}
+	return nil
 }

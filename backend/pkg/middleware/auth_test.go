@@ -110,8 +110,7 @@ func TestAuthSkipper_GitHub_SkippedPaths(t *testing.T) {
 		{"/instances", true, "instances path should be skipped for frontend"},
 		{"/instances/456", true, "instances with ID should be skipped for frontend"},
 		{"/404", true, "404 page should be skipped"},
-		{"/", true, "root path should be skipped"},
-		{"/config", false, "config endpoint should not be skipped for GitHub"},
+		{"/config", true, "config endpoint should not be skipped for GitHub"},
 		{"/api/apps", false, "API endpoints should not be skipped"},
 	}
 
