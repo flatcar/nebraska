@@ -67,5 +67,5 @@ test-oidc-ci:
 .PHONY: ci
 ci: install-ci lint test install-playwright test-storybook-ci test-playwright-ci test-oidc-ci tsc build 
 
-node_modules:
+node_modules: package-lock.json package.json
 	npm install
