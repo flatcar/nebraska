@@ -6,7 +6,7 @@ watch: run
 
 .PHONY: run
 run: node_modules
-	npm start
+	npm run dev
 
 .PHONY: install
 install: node_modules
