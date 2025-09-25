@@ -14,7 +14,7 @@ import (
 func createMultiManifestUpdateWithReasons() *omaha.UpdateResponse {
 	update := createMultiManifestUpdate("1000.0.0", "2000.0.0", "3000.0.0")
 	// Set specific floor reasons for testing
-	update.Manifests[0].FloorReason = "Security fix"
+	update.Manifests[0].FloorReason = "Filesystem support for usr dir"
 	update.Manifests[1].FloorReason = "Critical update"
 	return update
 }
@@ -54,7 +54,7 @@ func TestSyncer_MultiManifestWithExistingPackage(t *testing.T) {
 	require.NoError(t, err)
 	assert.Len(t, floors, 2)
 	assert.Equal(t, "1000.0.0", floors[0].Version)
-	assert.Equal(t, "Security fix", floors[0].FloorReason.String)
+	assert.Equal(t, "Filesystem support for usr dir", floors[0].FloorReason.String)
 }
 
 // TestSyncer_PackageVerificationErrors tests hash/size mismatch detection
@@ -154,7 +154,7 @@ func TestSyncer_TargetAsFloor(t *testing.T) {
 				Packages:    []*omaha.Package{{Name: "flatcar-1000.0.0.gz", SHA1: "hash1000", Size: 1000}},
 				Actions:     []*omaha.Action{{Event: "postinstall", SHA256: "dGVzdHNoYTI1Ng=="}},
 				IsFloor:     true,
-				FloorReason: "Security update",
+				FloorReason: "Critical bootloader update",
 			},
 			{
 				Version:     "2000.0.0",
@@ -177,7 +177,7 @@ func TestSyncer_TargetAsFloor(t *testing.T) {
 	require.NoError(t, err)
 	assert.Len(t, floors, 2)
 	assert.Equal(t, "1000.0.0", floors[0].Version)
-	assert.Equal(t, "Security update", floors[0].FloorReason.String)
+	assert.Equal(t, "Critical bootloader update", floors[0].FloorReason.String)
 	assert.Equal(t, "2000.0.0", floors[1].Version)
 	assert.Equal(t, "Critical mandatory version", floors[1].FloorReason.String)
 
@@ -313,7 +313,7 @@ func TestSyncer_ExplicitTargetPriority(t *testing.T) {
 				Packages:    []*omaha.Package{{Name: "flatcar-1000.0.0.gz", SHA1: "hash1000", Size: 1000}},
 				Actions:     []*omaha.Action{{Event: "postinstall", SHA256: "dGVzdHNoYTI1Ng=="}},
 				IsFloor:     true,
-				FloorReason: "Security fix",
+				FloorReason: "Filesystem support for usr dir",
 			},
 			{
 				Version:  "2000.0.0",

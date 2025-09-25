@@ -413,7 +413,7 @@ type PaginateChannelFloorsParams struct {
 
 // SetChannelFloorJSONBody defines parameters for SetChannelFloor.
 type SetChannelFloorJSONBody struct {
-	// FloorReason Optional reason for marking this package as a floor (e.g., "Security fix", "Critical update")
+	// FloorReason Optional reason for marking this package as a floor (e.g., "Introduces needed filesystem support to handle new updates after this version")
 	FloorReason *string `json:"floor_reason"`
 }
 

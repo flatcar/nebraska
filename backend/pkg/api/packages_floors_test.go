@@ -19,7 +19,7 @@ func TestFloorOperations(t *testing.T) {
 
 	// Update floor reason for first floor
 	assert.NoError(t, a.RemoveChannelPackageFloor(setup.Channel.ID, setup.Floors[0].ID))
-	assert.NoError(t, a.AddChannelPackageFloor(setup.Channel.ID, setup.Floors[0].ID, null.StringFrom("Security fix")))
+	assert.NoError(t, a.AddChannelPackageFloor(setup.Channel.ID, setup.Floors[0].ID, null.StringFrom("Filesystem upgrade")))
 
 	// Test wrong arch
 	tTeam, err := a.AddTeam(&Team{Name: "test_team_arch"})
@@ -41,7 +41,7 @@ func TestFloorOperations(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, floors, 2)
 	assert.Equal(t, "1000.0.0", floors[0].Version)
-	assert.Equal(t, "Security fix", floors[0].FloorReason.String)
+	assert.Equal(t, "Filesystem upgrade", floors[0].FloorReason.String)
 	assert.True(t, floors[0].IsFloor)
 
 	// Test required floors between versions
@@ -163,7 +163,7 @@ func TestFloorReason(t *testing.T) {
 	assert.Equal(t, reason, floors[0].FloorReason.String)
 
 	// Update reason (UPSERT)
-	newReason := "Updated: Security fix"
+	newReason := "Updated: Filesystem upgrade"
 	err = a.AddChannelPackageFloor(channel.ID, pkg.ID, null.StringFrom(newReason))
 	assert.NoError(t, err)
 
@@ -208,7 +208,7 @@ func TestTargetAsFloor(t *testing.T) {
 
 	// Mark the target as ALSO being a floor (critical version)
 	err := a.AddChannelPackageFloor(setup.Channel.ID, setup.Target.ID,
-		null.StringFrom("Critical security update - mandatory"))
+		null.StringFrom("Filesystem support for usr dir - mandatory"))
 	assert.NoError(t, err)
 
 	// Verify target is marked as floor
@@ -216,7 +216,7 @@ func TestTargetAsFloor(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Len(t, floors, 3) // All three are floors now
 	assert.Equal(t, "3000.0.0", floors[2].Version)
-	assert.Equal(t, "Critical security update - mandatory", floors[2].FloorReason.String)
+	assert.Equal(t, "Filesystem support for usr dir - mandatory", floors[2].FloorReason.String)
 
 	// Test required floors for different client versions
 	testCases := map[string]struct {

@@ -53,11 +53,7 @@ function List(props: ListProps) {
   }
 
   function handlePackageUpdated(updatedPackage: Package) {
-    // Update the specific package in our local list
-    setPackages(prevPackages => {
-      if (!prevPackages) return prevPackages;
-      return prevPackages.map(pkg => (pkg.id === updatedPackage.id ? updatedPackage : pkg));
-    });
+    applicationsStore().updatePackage(updatedPackage);
   }
 
   function openEditDialog(packageID: string) {
@@ -87,14 +83,14 @@ function List(props: ListProps) {
         actions={
           application
             ? [
-                <ModalButton
-                  modalToOpen="AddPackageModal"
-                  data={{
-                    channels: application.channels || [],
-                    appID: props.appID,
-                  }}
-                />,
-              ]
+              <ModalButton
+                modalToOpen="AddPackageModal"
+                data={{
+                  channels: application.channels || [],
+                  appID: props.appID,
+                }}
+              />,
+            ]
             : []
         }
       />
