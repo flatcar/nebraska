@@ -786,9 +786,9 @@ paths:
                 floor_reason:
                   type: string
                   nullable: true
-                  description: Optional reason for marking this package as a floor (e.g., "Security fix", "Critical update")
+                  description: Optional reason for marking this package as a floor (e.g., "Introduces needed filesystem support to handle new updates after this version")
                   maxLength: 500
-                  example: "Security fix for CVE-2024-1234"
+                  example: "Introduces btrfs support in update-engine to handle new updates after this version"
       responses:
         "200":
           description: Floor package relationship created or updated successfully
@@ -1665,7 +1665,7 @@ components:
           nullable: true
           description: Optional reason for marking this package as a floor
           maxLength: 500
-          example: "Security fix for CVE-2024-1234"
+          example: "Introduces needed filesystem support to handle new updates after this version"
         created_ts:
           type: string
           format: date-time
