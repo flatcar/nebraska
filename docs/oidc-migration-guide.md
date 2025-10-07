@@ -20,23 +20,32 @@ Migration guide for Nebraska's secure OIDC implementation with Authorization Cod
 **Provider Examples:**
 - **Keycloak:** 
   - Change "Access Type" to "public"
+  - Authentication flow should be set to standard
   - Add to "Valid Redirect URIs": `https://your-domain.com/auth/callback`
   - Set "Web Origins": `https://your-domain.com`
+  - Set "Post logout redirect URI": `https://your-domain.com/`
 - **Auth0:** 
   - Change Application Type to "Single Page Application"  
   - Add to "Allowed Callback URLs": `https://your-domain.com/auth/callback`
   - Add to "Allowed Web Origins": `https://your-domain.com`
+  - Add "Allowed Logout URLs": `http://localhost:8000/`
   - **Important:** Disable "Implicit" grant type, keep only "Authorization Code"
   - Create an API in Auth0 Dashboard → APIs → Create API
     - Set an identifier (e.g., `https://nebraska-api` - doesn't need to be a real URL)
     - Use this identifier as the audience parameter in Nebraska config
 - **Okta:** 
-  - Change to "SPA" application type
+  - Change to "SPA" application type. Grant type should be Authorization Code.
   - Add to "Sign-in redirect URIs": `https://your-domain.com/auth/callback`
   - Add to "Trusted Origins": `https://your-domain.com`
+  - Sign-out redirect URIs: `http://localhost:8000`
+  - Set CORS under Trusted Origins
 - **Azure AD:**
   - Set Platform to "Single-page application"
-  - Add to "Redirect URIs": `https://your-domain.com/auth/callback`  
+  - Add to "Redirect URIs": `https://your-domain.com/auth/callback`
+  - Ensure the redirect URI is set correctly
+  - Under Implicit grant and hybrid flows, ensure both checkboxes are unchecked
+  - Configure Logout URL: http://localhost:8000
+  - For CORS, go to Expose an API
 
 ### 2. Nebraska Configuration
 
@@ -76,6 +85,8 @@ For optimal user experience:
 - **Note**: Since tokens are stored in-memory, when they expire after a page refresh, the OIDC provider automatically re-authenticates users if the SSO session is still active (no password re-entry required)
 
 ### 5. Troubleshooting
+
+Visit the updated Nebraska documentation at `https://www.flatcar.org/docs/latest` 
 
 | Issue | Solution |
 |-------|----------|
