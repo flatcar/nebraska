@@ -8,6 +8,9 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: flatcar/nebraska
 
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Build Container Image
