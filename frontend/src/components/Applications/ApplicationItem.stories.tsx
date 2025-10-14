@@ -12,15 +12,15 @@ export default {
   },
 } as Meta;
 
+class APIMock extends API {
+  static getInstancesCount(): Promise<number> {
+    return new Promise(resolve => resolve(20));
+  }
+}
+
 const Template: StoryFn<ApplicationItemProps> = (
   args: JSX.IntrinsicAttributes & ApplicationItemProps
 ) => {
-  class APIMock extends API {
-    static getInstancesCount(): Promise<number> {
-      return new Promise(resolve => resolve(20));
-    }
-  }
-
   return (
     <APIContext.Provider value={APIMock}>
       <MemoryRouter>

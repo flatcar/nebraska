@@ -41,20 +41,17 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
   const pieSize = width > height ? height : width;
   const radius = pieSize * 0.45;
 
-  let totalFilled = 0;
-  let valuesSum = 0;
+  // Ensure that the minimum value displayed is 0.5 if the original value
+  // is 0, or 1.5 otherwise. This ensures the user is able to see the bits
+  // related to this value in the charts.
+  const percentageValue = (value: number) => Math.max(value * 100, value === 0 ? 0.5 : 1.5);
+
+  const totalFilled = data.reduce((acc, { value }) => acc + percentageValue(value), 0);
+  const valuesSum = data.reduce((acc, { value }) => acc + value * 100, 0);
   const dataSet: RechartsPieData[] = data.map(({ value, color, description }, i) => {
-    // Ensure that the minimum value displayed is 0.5 if the original value
-    // is 0, or 1.5 otherwise. This ensures the user is able to see the bits
-    // related to this value in the charts.
-    const percentageValue = Math.max(value * 100, value === 0 ? 0.5 : 1.5);
-
-    totalFilled += percentageValue;
-    valuesSum += value * 100;
-
     return {
       x: i,
-      y: percentageValue,
+      y: percentageValue(value),
       color: color,
       description: description,
     };

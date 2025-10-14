@@ -44,16 +44,16 @@ const statusTimelineData = {
   '2021-11-08T10:35:28.823161+01:00': { '1': {}, '2': {}, '3': {}, '6': {}, '7': {} },
 };
 
+class GroupChartsStoreMock extends GroupChartsStore {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getGroupStatusCountTimeline(_appID: string, _groupID: string, _duration: string) {
+    return statusTimelineData;
+  }
+}
+
 const Template: StoryFn<StatusCountTimelineProps> = (
   args: JSX.IntrinsicAttributes & StatusCountTimelineProps
 ) => {
-  class GroupChartsStoreMock extends GroupChartsStore {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async getGroupStatusCountTimeline(_appID: string, _groupID: string, _duration: string) {
-      return statusTimelineData;
-    }
-  }
-
   const ChartStoreContext = groupChartStoreContext();
 
   return (
