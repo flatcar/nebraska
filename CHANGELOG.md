@@ -4,20 +4,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v2.13.0] - [Unreleased]
 
 ### Security
-### Added
-### Changed
-### Bugfixes
-
-## [v2.12.0] - 28/08/2025
-
-### Security
-- **form-data@4.0.3 → v4.0.4**
-  - Fixes CVE-2025-7783 (GHSA-fjxv-7rqg-78g4): Critical vulnerability (CVSS 9.4) where form-data uses Math.random() for selecting multipart/form-data boundary values. This predictable randomness could allow attackers to inject additional parameters into requests (HTTP Parameter Pollution), potentially making arbitrary requests to internal systems. Affected versions: <2.5.4, 3.0.0-3.0.3, 4.0.0-4.0.3. Fixed in: 2.5.4, 3.0.4, 4.0.4. Updated via npm audit fix. ([#1146](https://github.com/flatcar/nebraska/pull/1146))
-- **github.com/go-viper/mapstructure/v2 → v2.3.0**  
-  - Fixes GHSA-fv92-fjc5-jj9h: Prevents sensitive information leakage in error messages during type conversion failures (https://github.com/flatcar/nebraska/pull/1099)
 - **OIDC Implementation Refactor - Authorization Code Flow with PKCE** ([nebraska#642](https://github.com/flatcar/nebraska/pull/642))
   - Tokens no longer exposed in server logs or query parameters
   - Frontend handles OIDC flow directly with identity provider using PKCE (Proof Key for Code Exchange)
@@ -25,7 +14,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Stateless backend architecture eliminates session storage related vulnerabilities
 
 ### Breaking Changes
-
 - **OIDC Authentication**: Complete refactor requiring migration (see [OIDC Migration Guide](docs/oidc-migration-guide.md))
   - **Removed configuration options**:
     - `--oidc-client-secret` / `NEBRASKA_OIDC_CLIENT_SECRET` - OIDC now requires public client type
@@ -48,16 +36,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     - When access tokens get lost after page refresh, the OIDC provider automatically re-authenticates users if SSO session is still active (no password re-entry required)
     - Recommended: Configure OIDC provider access token expiration to 1-8 hours (should be less than the SSO maximum session lifetime)
 
+### Changed
+
+- helm/postgresql: temporarily overwrite PostgreSQL subchart images to the Bitnami Legacy registry (`bitnamilegacy/*`) to restore Helm chart deployments after Bitnami Docker Hub deprecations. This is a short-term workaround only; Bitnami Legacy images are archived and will not receive security updates.
+- backend: OIDC authentication refactored to use standard SPA authentication pattern with stateless JWT validation ([nebraska#642](https://github.com/flatcar/nebraska/pull/642))
+- frontend: Implements OIDC Authorization Code Flow with PKCE directly, removing backend proxy ([nebraska#642](https://github.com/flatcar/nebraska/pull/642))
+- api: Note that `oidcCookieAuth` security scheme in OpenAPI spec was never implemented and should be removed in future cleanup
+
+### Bugfixes
+
+## [v2.12.0] - 28/08/2025
+
+### Security
+- **form-data@4.0.3 → v4.0.4**
+  - Fixes CVE-2025-7783 (GHSA-fjxv-7rqg-78g4): Critical vulnerability (CVSS 9.4) where form-data uses Math.random() for selecting multipart/form-data boundary values. This predictable randomness could allow attackers to inject additional parameters into requests (HTTP Parameter Pollution), potentially making arbitrary requests to internal systems. Affected versions: <2.5.4, 3.0.0-3.0.3, 4.0.0-4.0.3. Fixed in: 2.5.4, 3.0.4, 4.0.4. Updated via npm audit fix. ([#1146](https://github.com/flatcar/nebraska/pull/1146))
+- **github.com/go-viper/mapstructure/v2 → v2.3.0**  
+  - Fixes GHSA-fv92-fjc5-jj9h: Prevents sensitive information leakage in error messages during type conversion failures (https://github.com/flatcar/nebraska/pull/1099)
+
+### Breaking Changes
+
+- Postgresql 17.x is now the tested and default version. For existing Kubernetes deployment, you might need to run a manual intervention (see: [charts/nebraska/README.md](https://github.com/flatcar/nebraska/blob/main/charts/nebraska/README.md#upgrade-postgresql))([nebraska#1088](https://github.com/flatcar/nebraska/pull/1088))
+
 ### Added
 
 - helm: add ability to specify extra annotations and labels for pods, PVCs, ingress, deployments, and other resources ([nebraska#1097](https://github.com/flatcar/nebraska/pull/1097/files))
 
 ### Changed
 
-- backend: OIDC authentication refactored to use standard SPA authentication pattern with stateless JWT validation ([nebraska#642](https://github.com/flatcar/nebraska/pull/642))
-- frontend: Implements OIDC Authorization Code Flow with PKCE directly, removing backend proxy ([nebraska#642](https://github.com/flatcar/nebraska/pull/642))
-- api: Note that `oidcCookieAuth` security scheme in OpenAPI spec was never implemented and should be removed in future cleanup
-- Postgresql 17.x is now the tested and default version. For existing Kubernetes deployment, you might need to run a manual intervention (see: [charts/nebraska/README.md](https://github.com/flatcar/nebraska/blob/main/charts/nebraska/README.md#upgrade-postgresql))([nebraska#1088](https://github.com/flatcar/nebraska/pull/1088))
 - backend: updated kinvolk references to flatcar ([nebraska#1091](https://github.com/flatcar/nebraska/pull/1091/files))
 - backend: migrate from go-bindata to embed ([nebraska#1132](https://github.com/flatcar/nebraska/pull/1132))
 - backend: update go to v1.24 ([nebraska#1130](https://github.com/flatcar/nebraska/pull/1130/files))

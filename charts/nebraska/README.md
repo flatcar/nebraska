@@ -35,7 +35,7 @@ statefulset.apps/nebraska-postgresql scaled
 3. Upgrade PostgreSQL version, e.g:
 ```diff
 -          image: docker.io/bitnami/postgresql:13.8.0-debian-11-r18
-+          image: docker.io/bitnami/postgresql:17.5.0
++          image: docker.io/bitnamilegacy/postgresql:17.5.0
 ```
 
 5. Apply the changes and scale up Nebraska statefulset to its original value

@@ -203,6 +203,8 @@ postgresql:
     database: nebraska
     postgresPassword: changeIt
   image:
+    registry: docker.io
+    repository: bitnamilegacy/postgresql
     tag: 17.5.0
   primary:
     persistence:
