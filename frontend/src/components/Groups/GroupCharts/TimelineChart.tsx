@@ -37,9 +37,6 @@ export interface TimelineChartProps {
 
 export default function TimelineChart(props: TimelineChartProps) {
   const { width = 500, height = 400, interpolation = 'monotone' } = props;
-  let ticks: {
-    [key: string]: string;
-  } = {};
 
   function getTickValues() {
     const DAY = 24 * 60;
@@ -55,8 +52,7 @@ export default function TimelineChart(props: TimelineChartProps) {
     // We remove 1 element since that's "0 hours"
     const dimension = props.data.length - 1;
 
-    // Reset the ticks for the chart
-    ticks = {};
+    const ticks: Record<string, string> = {};
 
     if (lengthMinutes === 7 * DAY) {
       tickCount = 7;
@@ -118,6 +114,8 @@ export default function TimelineChart(props: TimelineChartProps) {
     return ticks;
   }
 
+  const ticks = getTickValues();
+
   return (
     <AreaChart
       width={width}
@@ -138,7 +136,7 @@ export default function TimelineChart(props: TimelineChartProps) {
         type="number"
         interval={0}
         domain={[0, 'dataMax']}
-        ticks={Object.keys(getTickValues())}
+        ticks={Object.keys(ticks)}
         tickFormatter={(index: string) => {
           return ticks[index];
         }}

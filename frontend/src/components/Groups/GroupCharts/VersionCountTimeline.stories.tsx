@@ -37,14 +37,14 @@ const versionCountTimeline = {
   '2021-11-08T10:35:28.827204+01:00': { '0.0.0': 61, '2191.5.0': 152 },
 };
 
-const Template: StoryFn<VersionCountTimelineProps> = args => {
-  class GroupChartsStoreMock extends GroupChartsStore {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async getGroupVersionCountTimeline(_appID: string, _groupID: string, _duration: string) {
-      return versionCountTimeline;
-    }
+class GroupChartsStoreMock extends GroupChartsStore {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async getGroupVersionCountTimeline(_appID: string, _groupID: string, _duration: string) {
+    return versionCountTimeline;
   }
+}
 
+const Template: StoryFn<VersionCountTimelineProps> = args => {
   const ChartStoreContext = groupChartStoreContext();
 
   return (

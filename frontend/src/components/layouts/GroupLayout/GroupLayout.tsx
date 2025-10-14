@@ -17,6 +17,10 @@ function GroupLayout() {
   const [updateGroupModalVisible, setUpdateGroupModalVisible] = React.useState(false);
   const { t } = useTranslation();
 
+  function onChange() {
+    setApplications(applicationsStore().getCachedApplications() || []);
+  }
+
   React.useEffect(() => {
     if (!appID) {
       return;
@@ -27,10 +31,6 @@ function GroupLayout() {
       applicationsStore().removeChangeListener(onChange);
     };
   }, [appID]);
-
-  function onChange() {
-    setApplications(applicationsStore().getCachedApplications() || []);
-  }
 
   function openUpdateGroupModal() {
     setUpdateGroupModalVisible(true);
