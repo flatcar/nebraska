@@ -1,21 +1,34 @@
 import _ from 'underscore';
 
 import API from '../api/API';
-import { Application, Channel, Group, Package } from '../api/apiDataTypes';
+import { Application, Channel, Group, Package, Packages } from '../api/apiDataTypes';
 import Store from './BaseStore';
 import { setUser } from './redux/features/user';
 import store from './redux/store';
 
+type PackageQueryParams = { page: number; perPage: number };
+
 class ApplicationsStore extends Store {
   applications: Application[];
+  packageQueryParams: PackageQueryParams;
   interval: null | number;
   constructor() {
     super();
     this.applications = [];
     this.interval = null;
+    this.packageQueryParams = { page: 0, perPage: 10 };
   }
 
   // Applications
+
+  getPackageQueryParams() {
+    return this.packageQueryParams;
+  }
+
+  setPackageQueryParams(params: PackageQueryParams, applicationID: string) {
+    this.packageQueryParams = params;
+    this.getAndUpdatePackages(applicationID);
+  }
 
   getCachedApplications() {
     return this.applications;
@@ -72,9 +85,11 @@ class ApplicationsStore extends Store {
     });
   }
 
-  getCachedPackages(applicationID: string) {
-    const app = _.findWhere(this.applications as _.Collection<any>, { id: applicationID });
-    const packages = app ? app.packages : [];
+  getCachedPackages(applicationID: string): Packages {
+    const app: Application = _.findWhere(this.applications as _.Collection<any>, {
+      id: applicationID,
+    });
+    const packages = app?.packages ?? { totalCount: 0, items: [] };
     return packages;
   }
 
@@ -110,14 +125,37 @@ class ApplicationsStore extends Store {
     this.emitChange();
   }
 
+  getAndUpdatePackages(applicationID: string) {
+    const index = _.findIndex(this.applications as _.List<any>, { id: applicationID });
+    const setPackages = (totalCount: number, items: Package[]) => {
+      this.applications[index] = {
+        ...this.applications[index],
+        packages: { totalCount, items },
+      };
+    };
+    const pkgsQueryParams = {
+      perpage: this.packageQueryParams.perPage,
+      page: this.packageQueryParams.page + 1,
+    };
+    API.getPackages(applicationID, '', pkgsQueryParams)
+      .then(result => {
+        if (_.isNull(result.packages)) {
+          setPackages(0, []);
+        }
+        setPackages(result.totalCount, result.packages);
+        this.emitChange();
+      })
+      .catch(err => {
+        console.error('Error getting the packages: ', err);
+      });
+  }
+
   getAndUpdateApplication(applicationID: string) {
+    const index = _.findIndex(this.applications as _.List<any>, { id: applicationID });
     API.getApplication(applicationID).then(application => {
       const applicationItem = application;
-      const index = _.findIndex(this.applications as _.List<any>, { id: applicationID });
-      if (this.applications) {
-        this.applications[index] = applicationItem;
-        this.emitChange();
-      }
+      this.applications[index] = applicationItem;
+      this.emitChange();
     });
   }
 
@@ -228,21 +266,26 @@ class ApplicationsStore extends Store {
 
   // Packages
 
+  setPackageTablePage(applicationID: string, page: number) {
+    this.packageQueryParams.page = page;
+    this.getAndUpdatePackages(applicationID);
+  }
+
   async createPackage(data: Partial<Package>): Promise<void> {
     const packageItem = await API.createPackage(data);
     const newpackage = packageItem;
-    this.getAndUpdateApplication(newpackage.application_id);
+    this.getAndUpdatePackages(newpackage.application_id);
   }
 
   async deletePackage(applicationID: string, packageID: string): Promise<void> {
     await API.deletePackage(applicationID, packageID);
-    this.getAndUpdateApplication(applicationID);
+    this.getAndUpdatePackages(applicationID);
   }
 
   async updatePackage(data: Partial<Package>): Promise<void> {
     const packageItem = await API.updatePackage(data);
     const updatedpackage = packageItem;
-    this.getAndUpdateApplication(updatedpackage.application_id);
+    this.getAndUpdatePackages(updatedpackage.application_id);
   }
 }
 

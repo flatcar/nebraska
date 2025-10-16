@@ -4,9 +4,7 @@ import Paper from '@mui/material/Paper';
 import TablePagination from '@mui/material/TablePagination';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import _ from 'underscore';
 
-import API from '../../api/API';
 import { Package } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import Empty from '../common/EmptyContent';
@@ -24,11 +22,9 @@ function List(props: ListProps) {
   const [application, setApplication] = React.useState(
     applicationsStore().getCachedApplication(props.appID) || null
   );
-  const [packages, setPackages] = React.useState<Package[] | null>(null);
   const [packageToUpdate, setPackageToUpdate] = React.useState<Package | null>(null);
-  const rowsPerPage = 10;
-  const [page, setPage] = React.useState(0);
   const { t } = useTranslation();
+  const packageQueryParams = applicationsStore().getPackageQueryParams();
 
   function onChange() {
     setApplication(applicationsStore().getCachedApplication(props.appID));
@@ -36,23 +32,14 @@ function List(props: ListProps) {
 
   React.useEffect(() => {
     applicationsStore().addChangeListener(onChange);
-    if (!packages) {
-      // @todo: Request the pagination according to the page configuration in the table below.
-      API.getPackages(props.appID, '', { perpage: 1000 })
-        .then(result => {
-          if (_.isNull(result.packages)) {
-            setPackages([]);
-            return;
-          }
-          setPackages(result.packages);
-        })
-        .catch(err => {
-          console.error('Error getting the packages in the Packages/List: ', err);
-        });
-    }
 
     if (application === null) {
       applicationsStore().getApplication(props.appID);
+    }
+
+    //eslint-disable-next-line eqeqeq
+    if (application?.packages == null) {
+      applicationsStore().getAndUpdatePackages(props.appID);
     }
 
     return function cleanup() {
@@ -66,7 +53,7 @@ function List(props: ListProps) {
   }
 
   function openEditDialog(packageID: string) {
-    const pkg = packages?.find(({ id }) => id === packageID) || null;
+    const pkg = application?.packages?.items.find(({ id }) => id === packageID) || null;
     if (pkg !== packageToUpdate) {
       setPackageToUpdate(pkg);
     }
@@ -76,8 +63,14 @@ function List(props: ListProps) {
     _event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
     newPage: number
   ) {
-    setPage(newPage);
+    applicationsStore().setPackageQueryParams(
+      { ...packageQueryParams, page: newPage },
+      props.appID
+    );
   }
+
+  //eslint-disable-next-line eqeqeq
+  const packagesLoading = application?.packages == null;
 
   return (
     <>
@@ -99,22 +92,20 @@ function List(props: ListProps) {
       />
       <Paper>
         <Box padding="1em">
-          {application && !_.isNull(packages) ? (
-            _.isEmpty(packages) ? (
+          {!packagesLoading ? (
+            application?.packages?.totalCount === 0 ? (
               <Empty>This application does not have any package yet</Empty>
             ) : (
               <React.Fragment>
                 <MuiList>
-                  {packages
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map(packageItem => (
-                      <Item
-                        key={'packageItemID_' + packageItem.id}
-                        packageItem={packageItem}
-                        channels={application.channels}
-                        handleUpdatePackage={openEditDialog}
-                      />
-                    ))}
+                  {application?.packages?.items.map(packageItem => (
+                    <Item
+                      key={'packageItemID_' + packageItem.id}
+                      packageItem={packageItem}
+                      channels={application.channels}
+                      handleUpdatePackage={openEditDialog}
+                    />
+                  ))}
                 </MuiList>
                 {packageToUpdate && (
                   <EditDialog
@@ -130,9 +121,9 @@ function List(props: ListProps) {
                 <TablePagination
                   rowsPerPageOptions={[]}
                   component="div"
-                  count={packages.length}
-                  rowsPerPage={rowsPerPage}
-                  page={page}
+                  count={application.packages?.totalCount || 0}
+                  rowsPerPage={packageQueryParams.perPage}
+                  page={packageQueryParams.page}
                   backIconButtonProps={{
                     'aria-label': t('frequent|previous_page'),
                   }}

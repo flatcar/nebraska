@@ -7,8 +7,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
 
-import API from '../../api/API';
-import { Channel, Package } from '../../api/apiDataTypes';
+import { Channel } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import { ARCHES } from '../../utils/helpers';
 import Empty from '../common/EmptyContent';
@@ -80,7 +79,6 @@ export default function ChannelList(props: ChannelListProps) {
   const [application, setApplication] = React.useState(
     applicationsStore().getCachedApplication(appID)
   );
-  const [packages, setPackages] = React.useState<null | Package[]>(null);
 
   function onStoreChange() {
     setApplication(applicationsStore().getCachedApplication(appID));
@@ -92,45 +90,23 @@ export default function ChannelList(props: ChannelListProps) {
     // In case the application was not yet cached, we fetch it here
     if (application === null) {
       applicationsStore().getApplication(props.appID);
-    } else {
-      // Fetch packages
-      API.getPackages(application.id)
-        .then(result => {
-          if (_.isNull(result.packages)) {
-            setPackages([]);
-          } else {
-            setPackages(result.packages);
-          }
-        })
-        .catch(err => {
-          console.error('Error getting the packages for the channel: ', err);
-        });
     }
 
     return function cleanup() {
       applicationsStore().removeChangeListener(onStoreChange);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [application]);
+  }, [props.appID, application]);
 
-  const channels = application ? (application.channels ? application.channels : []) : [];
-  const loading = !application || packages === null;
+  const channels = application?.channels ?? [];
+  const loading = !application;
 
-  return (
-    <ChannelListPure
-      channels={channels}
-      appID={appID}
-      packages={packages ? packages : []}
-      loading={loading}
-    />
-  );
+  return <ChannelListPure channels={channels} appID={appID} loading={loading} />;
 }
 
 export interface ChannelListPureProps {
   /** Application ID for these channels. */
   appID: string;
-  /** The Packages to choose from when adding or editing a channel. */
-  packages: Package[];
   /** The channels to list. */
   channels: Channel[];
   /** If we are waiting on channels or packages data. */
@@ -140,7 +116,7 @@ export interface ChannelListPureProps {
 export function ChannelListPure(props: ChannelListPureProps) {
   const [channelToEdit, setChannelToEdit] = React.useState<null | Channel>(null);
   const { t } = useTranslation();
-  const { packages, appID, channels, loading } = props;
+  const { appID, channels, loading } = props;
 
   function onChannelEditOpen(channelID: string) {
     const channelToUpdate =
@@ -166,7 +142,6 @@ export function ChannelListPure(props: ChannelListPureProps) {
             <ModalButton
               modalToOpen="AddChannelModal"
               data={{
-                packages: packages,
                 applicationID: appID,
               }}
             />
@@ -177,7 +152,7 @@ export function ChannelListPure(props: ChannelListPureProps) {
         {loading ? <Loader /> : <Channels channels={channels} onEdit={onChannelEditOpen} />}
         {channelToEdit && (
           <ChannelEdit
-            data={{ packages: packages, applicationID: appID, channel: channelToEdit }}
+            data={{ applicationID: appID, channel: channelToEdit }}
             show={channelToEdit !== null}
             onHide={onChannelEditClose}
           />

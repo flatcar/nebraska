@@ -19,6 +19,7 @@ func (h *Handler) PaginatePackages(ctx echo.Context, appIDorProductID string, pa
 	if params.Perpage == nil {
 		params.Perpage = &defaultPerPage
 	}
+
 	appID, err := h.db.GetAppID(appIDorProductID)
 	if err != nil {
 		return appNotFoundResponse(ctx, appIDorProductID)
