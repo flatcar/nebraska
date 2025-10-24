@@ -6,12 +6,15 @@ vi.mock('../../stores/Stores', () => ({
     getApplication: vi.fn(),
     addChangeListener: vi.fn(),
     removeChangeListener: vi.fn(),
+    getPackageQueryParams: vi.fn(),
+    getAndUpdatePackages: vi.fn(),
   })),
 }));
 
 vi.mock('../../api/API', async () => ({
   ...(await vi.importActual('../../api/API')),
-  getPackages: vi.fn().mockResolvedValue({ packages: [] }),
+  getPackages: vi.fn().mockResolvedValue({ packages: [], totalCount: 0 }),
+  getApplication: vi.fn().mockResolvedValue({}),
 }));
 
 import '../../i18n/config.ts';

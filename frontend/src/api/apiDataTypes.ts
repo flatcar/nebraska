@@ -73,6 +73,8 @@ export interface FlatcarAction {
   package_id?: string;
 }
 
+export type Packages = { totalCount: number; items: Package[] };
+
 export interface Application {
   id: string;
   name: string;
@@ -82,7 +84,7 @@ export interface Application {
   team_id: string;
   groups: Group[];
   channels: Channel[];
-  packages: Package[];
+  packages: Packages | null | undefined;
   instances: {
     count: number;
   };

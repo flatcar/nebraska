@@ -51,7 +51,7 @@ export default function ChannelEdit(props: ChannelEditProps) {
   const [channelColor, setChannelColor] = React.useState(defaultColor);
   const [packages, setPackages] = React.useState<{ total: number; packages: Package[] }>({
     packages: [],
-    total: props.data.packages ? -1 : 0,
+    total: 0,
   });
   const defaultArch = 1;
   const [arch, setArch] = React.useState(defaultArch);

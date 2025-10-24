@@ -353,6 +353,7 @@ func (api *API) GetPackages(appID string, page, perPage uint64, searchVersion *s
 	if err != nil {
 		return nil, err
 	}
+
 	return api.getPackagesFromQuery(queryString)
 }
 
