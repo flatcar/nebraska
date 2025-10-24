@@ -3,7 +3,9 @@
 exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
 <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-2 css-mwb7rv-MuiGrid-root">
   <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
-    <div class="recharts-wrapper"
+    <div width="500"
+         height="400"
+         class="recharts-wrapper"
          style="position: relative; cursor: default; width: 500px; height: 400px;"
     >
       <div xmlns="http://www.w3.org/1999/xhtml"
@@ -28,7 +30,7 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
            width="500"
            height="400"
            viewbox="0 0 500 400"
-           style="width: 100%; height: 100%;"
+           style="width: 100%; height: 100%; display: block;"
       >
         <title>
         </title>
