@@ -12,6 +12,7 @@ import * as Yup from 'yup';
 
 import { Application } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
+import { REGEX_REVERSE_DOMAIN_ID } from '../../utils/regex';
 
 export interface ApplicationEditProps {
   create?: any;
@@ -152,10 +153,7 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
       // * All characters must be alphanumeric, or a dash.
       // Each segment must start with a letter.
       // Each segment must not end with a dash.
-      .matches(
-        /^[a-zA-Z]+([a-zA-Z0-9-]*[a-zA-Z0-9])*(\.[a-zA-Z]+([a-zA-Z0-9-]*[a-zA-Z0-9])*)+$/,
-        t('common|reverse_domain_id_error')
-      )
+      .matches(REGEX_REVERSE_DOMAIN_ID, t('common|reverse_domain_id_error'))
       .nullable(),
     description: Yup.string().max(
       maxDescChars,
