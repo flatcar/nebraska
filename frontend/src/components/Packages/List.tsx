@@ -52,6 +52,10 @@ function List(props: ListProps) {
     setPackageToUpdate(null);
   }
 
+  function handlePackageUpdated(updatedPackage: Package) {
+    applicationsStore().updatePackage(updatedPackage);
+  }
+
   function openEditDialog(packageID: string) {
     const pkg = application?.packages?.items.find(({ id }) => id === packageID) || null;
     if (pkg !== packageToUpdate) {
@@ -79,14 +83,14 @@ function List(props: ListProps) {
         actions={
           application
             ? [
-                <ModalButton
-                  modalToOpen="AddPackageModal"
-                  data={{
-                    channels: application.channels || [],
-                    appID: props.appID,
-                  }}
-                />,
-              ]
+              <ModalButton
+                modalToOpen="AddPackageModal"
+                data={{
+                  channels: application.channels || [],
+                  appID: props.appID,
+                }}
+              />,
+            ]
             : []
         }
       />
@@ -116,6 +120,7 @@ function List(props: ListProps) {
                     }}
                     show={Boolean(packageToUpdate)}
                     onHide={onCloseEditDialog}
+                    onPackageUpdated={handlePackageUpdated}
                   />
                 )}
                 <TablePagination

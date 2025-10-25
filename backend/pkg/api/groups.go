@@ -531,6 +531,12 @@ func (api *API) groupsQuery() *goqu.SelectDataset {
 // GetGroupVersionBreakdown returns a version breakdown of all instances running on a given group.
 func (api *API) GetGroupVersionBreakdown(groupID string) ([]*VersionBreakdownEntry, error) {
 	var entryList []*VersionBreakdownEntry
+
+	semverExpr, err := semverToIntArray("version")
+	if err != nil {
+		return nil, err
+	}
+
 	query := fmt.Sprintf(`
 	SELECT version, count(*) as instances, (count(*) * 100.0 / total) as percentage
 	FROM instance_application, (
@@ -540,8 +546,8 @@ func (api *API) GetGroupVersionBreakdown(groupID string) ([]*VersionBreakdownEnt
 		) totals
 	WHERE group_id=$1 AND last_check_for_updates > now() at time zone 'utc' - interval '%[1]s' AND %[2]s
 	GROUP BY version, total
-	ORDER BY regexp_matches(version, '(\d+)\.(\d+)\.(\d+)')::int[] DESC
-	`, validityInterval, ignoreFakeInstanceCondition("instance_id"))
+	ORDER BY %[3]s DESC
+	`, validityInterval, ignoreFakeInstanceCondition("instance_id"), semverExpr)
 	rows, err := api.db.Queryx(query, groupID)
 	if err != nil {
 		return nil, err

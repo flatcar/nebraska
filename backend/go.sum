@@ -182,8 +182,8 @@ github.com/fatih/structtag v1.2.0 h1:/OdNE99OxoI/PqaW/SuSK9uxxT3f/tcSZgon/ssNSx4
 github.com/fatih/structtag v1.2.0/go.mod h1:mBJUNpUnHmRKrKlQQlmCrh5PuhftFbNv8Ys4/aAZl94=
 github.com/firefart/nonamedreturns v1.0.6 h1:vmiBcKV/3EqKY3ZiPxCINmpS431OcE1S47AQUwhrg8E=
 github.com/firefart/nonamedreturns v1.0.6/go.mod h1:R8NisJnSIpvPWheCq0mNRXJok6D8h7fagJTF8EMEwCo=
-github.com/flatcar/go-omaha v0.0.2-0.20250627105643-c9009b394616 h1:GoRpDC9BhywYEagH2R+8q1eohih9u6ndXSGXvvSaSlI=
-github.com/flatcar/go-omaha v0.0.2-0.20250627105643-c9009b394616/go.mod h1:ntSHoD5lo8beYqjwPd98MPFaVOFtQ7ezRcnvMvnPwkw=
+github.com/flatcar/go-omaha v0.0.2-0.20251014063321-4998849bd39c h1:Zv3WUF6IfhWr0jA2xseIdFFPTNUeI0pUew8ikP6LLOA=
+github.com/flatcar/go-omaha v0.0.2-0.20251014063321-4998849bd39c/go.mod h1:ntSHoD5lo8beYqjwPd98MPFaVOFtQ7ezRcnvMvnPwkw=
 github.com/frankban/quicktest v1.14.3 h1:FJKSZTDHjyhriyC81FLQ0LY93eSai0ZyR/ZIkd3ZUKE=
 github.com/frankban/quicktest v1.14.3/go.mod h1:mgiwOwqx65TmIk1wJ6Q7wvnVMocbUorkibMOrVTHZps=
 github.com/fsnotify/fsnotify v1.4.9/go.mod h1:znqG4EE+3YCdAaPaxE2ZRY/06pZUdp0tY4IgpuI1SZQ=

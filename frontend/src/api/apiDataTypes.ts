@@ -56,6 +56,8 @@ export interface Package {
   flatcar_action?: null | FlatcarAction;
   arch: Arch;
   extra_files: File[];
+  is_floor?: boolean;
+  floor_reason?: string | null;
 }
 
 export interface FlatcarAction {

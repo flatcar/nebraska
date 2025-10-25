@@ -223,3 +223,142 @@ type packagePage struct {
 	Count      int            `json:"count"`
 	Packages   []*api.Package `json:"packages"`
 }
+
+// Floor handlers following existing patterns
+
+// Define the response structure following existing pattern
+type floorPackagesPage struct {
+	TotalCount int            `json:"totalCount"`
+	Count      int            `json:"count"`
+	Packages   []*api.Package `json:"packages"`
+}
+
+// PaginateChannelFloors handles paginated requests for channel floor packages
+func (h *Handler) PaginateChannelFloors(ctx echo.Context, channelID string, params codegen.PaginateChannelFloorsParams) error {
+	l := loggerWithUsername(l, ctx)
+
+	if params.Page == nil {
+		params.Page = &defaultPage
+	}
+
+	if params.Perpage == nil {
+		// Use a larger default for floor packages since they're typically a small set
+		// and we want to show all of them in the UI
+		defaultFloorPerPage := 100
+		params.Perpage = &defaultFloorPerPage
+	}
+
+	totalCount, err := h.db.GetChannelFloorPackagesCount(channelID)
+	if err != nil {
+		l.Error().Err(err).Str("channelID", channelID).Msg("PaginateChannelFloors - getting floor packages count")
+		return ctx.NoContent(http.StatusInternalServerError)
+	}
+
+	// If no floors, return empty result immediately
+	if totalCount == 0 {
+		return ctx.JSON(http.StatusOK, floorPackagesPage{0, 0, []*api.Package{}})
+	}
+
+	// Get paginated floor packages
+	packages, err := h.db.GetChannelFloorPackagesPaginated(channelID, uint64(*params.Page), uint64(*params.Perpage))
+	if err != nil {
+		if err == sql.ErrNoRows {
+			// This shouldn't happen if count > 0, but handle gracefully
+			return ctx.JSON(http.StatusOK, floorPackagesPage{totalCount, 0, []*api.Package{}})
+		}
+		l.Error().Err(err).Str("channelID", channelID).Msg("PaginateChannelFloors - getting floor packages")
+		return ctx.NoContent(http.StatusInternalServerError)
+	}
+
+	return ctx.JSON(http.StatusOK, floorPackagesPage{totalCount, len(packages), packages})
+}
+
+// SetChannelFloor handles creating or updating a floor package relationship (idempotent)
+func (h *Handler) SetChannelFloor(ctx echo.Context, channelID string, packageID string) error {
+	l := loggerWithUsername(l, ctx)
+
+	var request codegen.SetChannelFloorJSONRequestBody
+	if err := ctx.Bind(&request); err != nil {
+		l.Error().Err(err).Msg("SetChannelFloor - binding request")
+		return ctx.NoContent(http.StatusBadRequest)
+	}
+
+	// Convert floor reason to null.String
+	var floorReason null.String
+	if request.FloorReason != nil {
+		floorReason = null.StringFrom(*request.FloorReason)
+	}
+
+	// Use AddChannelPackageFloor which already handles upsert via ON CONFLICT
+	if err := h.db.AddChannelPackageFloor(channelID, packageID, floorReason); err != nil {
+		switch err {
+		case api.ErrInvalidPackage:
+			return ctx.NoContent(http.StatusNotFound)
+		case api.ErrArchMismatch:
+			return ctx.String(http.StatusBadRequest, "Architecture mismatch between channel and package")
+		case api.ErrInvalidApplicationOrGroup:
+			return ctx.String(http.StatusBadRequest, "Package does not belong to the same application as the channel")
+		default:
+			l.Error().Err(err).Str("channelID", channelID).Str("packageID", packageID).Msg("SetChannelFloor - setting floor")
+			return ctx.NoContent(http.StatusInternalServerError)
+		}
+	}
+
+	l.Info().Str("channelID", channelID).Str("packageID", packageID).Msg("SetChannelFloor - successfully set floor")
+
+	// Return JSON response
+	response := map[string]interface{}{
+		"channel_id": channelID,
+		"package_id": packageID,
+		"status":     "ok",
+	}
+	return ctx.JSON(http.StatusOK, response)
+}
+
+// RemoveChannelFloor handles removing a package as a floor for a channel
+func (h *Handler) RemoveChannelFloor(ctx echo.Context, channelID string, packageID string) error {
+	l := loggerWithUsername(l, ctx)
+
+	if err := h.db.RemoveChannelPackageFloor(channelID, packageID); err != nil {
+		if err == api.ErrNoRowsAffected {
+			return ctx.NoContent(http.StatusNotFound)
+		}
+		l.Error().Err(err).Str("channelID", channelID).Str("packageID", packageID).Msg("RemoveChannelFloor - removing floor")
+		return ctx.NoContent(http.StatusInternalServerError)
+	}
+
+	l.Info().Str("channelID", channelID).Str("packageID", packageID).Msg("RemoveChannelFloor - successfully removed floor")
+	return ctx.NoContent(http.StatusNoContent)
+}
+
+// GetPackageFloorChannels handles requests for channels where a package is a floor
+func (h *Handler) GetPackageFloorChannels(ctx echo.Context, _ string, packageID string) error {
+	l := loggerWithUsername(l, ctx)
+
+	// First verify the package exists
+	_, err := h.db.GetPackage(packageID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return ctx.NoContent(http.StatusNotFound)
+		}
+		l.Error().Err(err).Str("packageID", packageID).Msg("GetPackageFloorChannels - getting package")
+		return ctx.NoContent(http.StatusInternalServerError)
+	}
+
+	channelInfos, err := h.db.GetPackageFloorChannels(packageID)
+	if err != nil {
+		l.Error().Err(err).Str("packageID", packageID).Msg("GetPackageFloorChannels - getting floor channels")
+		return ctx.NoContent(http.StatusInternalServerError)
+	}
+
+	// Response structure matching the frontend expectations
+	type response struct {
+		Channels []api.ChannelFloorInfo `json:"channels"`
+		Count    int                    `json:"count"`
+	}
+
+	return ctx.JSON(http.StatusOK, response{
+		Channels: channelInfos,
+		Count:    len(channelInfos),
+	})
+}

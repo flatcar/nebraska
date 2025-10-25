@@ -705,6 +705,124 @@ paths:
           description: Delete channel success response
         "500":
           description: Delete channel error response
+  /api/channels/{channelID}/floors:
+    get:
+      description: paginate floor packages of a channel
+      operationId: paginateChannelFloors
+      security:
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
+      parameters:
+        - in: path
+          name: channelID
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: false
+        - in: query
+          name: perpage
+          schema:
+            type: integer
+          required: false
+      responses:
+        "200":
+          description: Paginate channel floors success response
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - packages
+                  - current_page
+                  - last_page
+                  - total_count
+                properties:
+                  packages:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/package"
+                  current_page:
+                    type: integer
+                    format: int32
+                  last_page:
+                    type: integer
+                    format: int32
+                  total_count:
+                    type: integer
+                    format: int32
+        "500":
+          description: Get channel floors error response
+  /api/channels/{channelID}/floors/{packageID}:
+    put:
+      description: Create or update a floor package relationship (idempotent operation)
+      operationId: setChannelFloor
+      security:
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
+      parameters:
+        - in: path
+          name: channelID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: packageID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                floor_reason:
+                  type: string
+                  nullable: true
+                  description: Optional reason for marking this package as a floor (e.g., "Introduces needed filesystem support to handle new updates after this version")
+                  maxLength: 500
+                  example: "Introduces btrfs support in update-engine to handle new updates after this version"
+      responses:
+        "200":
+          description: Floor package relationship created or updated successfully
+        "400":
+          description: Invalid request (architecture mismatch, wrong application, etc.)
+        "404":
+          description: Channel or package not found
+        "500":
+          description: Set channel floor error response
+    delete:
+      description: remove package as floor for a channel
+      operationId: removeChannelFloor
+      security:
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
+      parameters:
+        - in: path
+          name: channelID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: packageID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Remove channel floor success response
+        "404":
+          description: Floor relationship not found
+        "500":
+          description: Remove channel floor error response
   /api/apps/{appIDorProductID}/packages:
     get:
       description: paginate packages of an app
@@ -866,6 +984,49 @@ paths:
           description: Package not found response
         "500":
           description: Delete package error response
+  /api/apps/{appIDorProductID}/packages/{packageID}/floor-channels:
+    get:
+      description: get all channels where a package is marked as a floor
+      operationId: getPackageFloorChannels
+      security:
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
+      parameters:
+        - in: path
+          name: appIDorProductID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: packageID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Get Package Floor Channels success response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  channels:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        channel:
+                          $ref: "#/components/schemas/channel"
+                        floor_reason:
+                          type: string
+                          nullable: true
+                  count:
+                    type: integer
+        "404":
+          description: Package not found
+        "500":
+          description: Internal server error
   /api/apps/{appIDorProductID}/groups/{groupID}/instances:
     get:
       description: get instances of a group given its groupID and appID
@@ -1475,6 +1636,39 @@ components:
           $ref: "#/components/schemas/flatcarAction"
         arch:
           $ref: "#/components/schemas/arch"
+        isFloor:
+          type: boolean
+          description: Indicates if this package is a floor version for the current context
+          x-oapi-codegen-extra-tags:
+            json: is_floor,omitempty
+        floorReason:
+          type: string
+          nullable: true
+          description: Reason why this package is marked as a floor version
+          maxLength: 500
+          x-oapi-codegen-extra-tags:
+            json: floor_reason
+
+    channelPackageFloor:
+      type: object
+      required:
+        - channel_id
+        - package_id
+        - created_ts
+      properties:
+        channel_id:
+          type: string
+        package_id:
+          type: string
+        floor_reason:
+          type: string
+          nullable: true
+          description: Optional reason for marking this package as a floor
+          maxLength: 500
+          example: "Introduces needed filesystem support to handle new updates after this version"
+        created_ts:
+          type: string
+          format: date-time
 
     arch:
       type: integer

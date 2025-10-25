@@ -147,24 +147,26 @@ func createOmahaUpdate() *omaha.UpdateResponse {
 		URLs: []*omaha.URL{
 			{CodeBase: "https://example.com"},
 		},
-		Manifest: &omaha.Manifest{
-			Version: "1.2.3",
-			Packages: []*omaha.Package{
-				{
-					Name: "updatepayload.tgz",
-					SHA1: "00000000000000000",
+		Manifests: []*omaha.Manifest{
+			{
+				Version: "1.2.3",
+				Packages: []*omaha.Package{
+					{
+						Name: "updatepayload.tgz",
+						SHA1: "00000000000000000",
+					},
+					{
+						Name: "extra-file1.tgz",
+						SHA1: "00000000000000001",
+					},
+					{
+						Name: "extra-file2.tgz",
+						SHA1: "00000000000000002",
+					},
 				},
-				{
-					Name: "extra-file1.tgz",
-					SHA1: "00000000000000001",
+				Actions: []*omaha.Action{
+					{Event: "postinstall", SHA256: "dGVzdHNoYTI1Ng=="},
 				},
-				{
-					Name: "extra-file2.tgz",
-					SHA1: "00000000000000002",
-				},
-			},
-			Actions: []*omaha.Action{
-				{},
 			},
 		},
 	}
@@ -215,9 +217,10 @@ func TestSyncer_GetPackage(t *testing.T) {
 	tGroup, err = a.GetGroup(tGroup.ID)
 	require.NoError(t, err)
 
-	assert.Equal(t, update.Manifest.Version, tGroup.Channel.Package.Version)
+	assert.Equal(t, 1, len(update.Manifests))
+	assert.Equal(t, update.Manifests[0].Version, tGroup.Channel.Package.Version)
 	assert.Equal(t, update.URLs[0].CodeBase, tGroup.Channel.Package.URL)
-	assert.Equal(t, update.Manifest.Packages[0].Name, tGroup.Channel.Package.Filename.String)
+	assert.Equal(t, update.Manifests[0].Packages[0].Name, tGroup.Channel.Package.Filename.String)
 }
 
 func TestSyncer_GetMultiFilePackage(t *testing.T) {
@@ -246,12 +249,13 @@ func TestSyncer_GetMultiFilePackage(t *testing.T) {
 	tGroup, err = a.GetGroup(tGroup.ID)
 	require.NoError(t, err)
 
-	assert.Equal(t, update.Manifest.Version, tGroup.Channel.Package.Version)
+	assert.Equal(t, 1, len(update.Manifests))
+	assert.Equal(t, update.Manifests[0].Version, tGroup.Channel.Package.Version)
 	assert.Equal(t, update.URLs[0].CodeBase, tGroup.Channel.Package.URL)
-	assert.Equal(t, update.Manifest.Packages[0].Name, tGroup.Channel.Package.Filename.String)
-	assert.Equal(t, len(update.Manifest.Packages), len(tGroup.Channel.Package.ExtraFiles)+1)
-	assert.Equal(t, update.Manifest.Packages[1].Name, tGroup.Channel.Package.ExtraFiles[0].Name.String)
-	assert.Equal(t, update.Manifest.Packages[2].Name, tGroup.Channel.Package.ExtraFiles[1].Name.String)
+	assert.Equal(t, update.Manifests[0].Packages[0].Name, tGroup.Channel.Package.Filename.String)
+	assert.Equal(t, len(update.Manifests[0].Packages), len(tGroup.Channel.Package.ExtraFiles)+1)
+	assert.Equal(t, update.Manifests[0].Packages[1].Name, tGroup.Channel.Package.ExtraFiles[0].Name.String)
+	assert.Equal(t, update.Manifests[0].Packages[2].Name, tGroup.Channel.Package.ExtraFiles[1].Name.String)
 }
 
 func TestSyncer_GetPackageWithDiffURL(t *testing.T) {
@@ -283,9 +287,10 @@ func TestSyncer_GetPackageWithDiffURL(t *testing.T) {
 	tGroup, err = a.GetGroup(tGroup.ID)
 	require.NoError(t, err)
 
-	assert.Equal(t, update.Manifest.Version, tGroup.Channel.Package.Version)
+	assert.Equal(t, 1, len(update.Manifests))
+	assert.Equal(t, update.Manifests[0].Version, tGroup.Channel.Package.Version)
 	assert.Equal(t, conf.PackagesURL, tGroup.Channel.Package.URL)
-	assert.Equal(t, update.Manifest.Packages[0].Name, tGroup.Channel.Package.Filename.String)
+	assert.Equal(t, update.Manifests[0].Packages[0].Name, tGroup.Channel.Package.Filename.String)
 }
 
 func TestSyncer_GetPackageWithGeneratedURL(t *testing.T) {
@@ -318,7 +323,8 @@ func TestSyncer_GetPackageWithGeneratedURL(t *testing.T) {
 	tGroup, err = a.GetGroup(tGroup.ID)
 	require.NoError(t, err)
 
-	assert.Equal(t, update.Manifest.Version, tGroup.Channel.Package.Version)
+	assert.Equal(t, 1, len(update.Manifests))
+	assert.Equal(t, update.Manifests[0].Version, tGroup.Channel.Package.Version)
 	assert.Equal(t, baseURL+getArchString(tChannel.Arch)+"/"+tGroup.Channel.Package.Version, tGroup.Channel.Package.URL)
-	assert.Equal(t, update.Manifest.Packages[0].Name, tGroup.Channel.Package.Filename.String)
+	assert.Equal(t, update.Manifests[0].Packages[0].Name, tGroup.Channel.Package.Filename.String)
 }

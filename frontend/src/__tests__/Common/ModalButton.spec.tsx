@@ -41,7 +41,7 @@ describe('Modal Button', () => {
         (
         <ThemeProvider theme={theme}>
           <MemoryRouter initialEntries={['/app/123']}>
-            <ModalButton data={{}} modalToOpen="AddChannelModal" />
+            <ModalButton data={{ applicationID: 'test-app-123' }} modalToOpen="AddChannelModal" />
           </MemoryRouter>
         </ThemeProvider>
         )
