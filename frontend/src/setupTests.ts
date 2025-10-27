@@ -6,8 +6,10 @@ import { vi } from 'vitest';
 vi.mock('@mui/utils/useId', () => vi.fn().mockReturnValue('mui-test-id'));
 
 // Mock ResizeObserver for react-window v2
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
+class ResizeObserver {
+  observe = vi.fn();
+  unobserve = vi.fn();
+  disconnect = vi.fn();
+}
+
+global.ResizeObserver = ResizeObserver;
