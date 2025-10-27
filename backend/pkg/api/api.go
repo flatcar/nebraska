@@ -70,6 +70,10 @@ type API struct {
 	// disableUpdatesOnFailedRollout defines wether to disable updates
 	// after a first rollout attempt failed (ResultFailed)
 	disableUpdatesOnFailedRollout bool
+
+	// maxFloorsPerResponse defines the maximum number of floor versions
+	// to return in a single update response to syncers
+	maxFloorsPerResponse int
 }
 
 // New creates a new API instance, creates the underlying db connection.
@@ -115,6 +119,14 @@ func New(options ...func(*API) error) (*API, error) {
 	api.db.SetMaxOpenConns(maxOpenConns)
 	api.db.SetMaxIdleConns(maxIdleConns)
 	api.db.SetConnMaxLifetime(time.Duration(connMaxLifetime) * time.Second)
+
+	// Load max floors per response configuration
+	maxFloorsPerResponse, err := strconv.Atoi(os.Getenv("NEBRASKA_MAX_FLOORS_PER_RESPONSE"))
+	if err != nil || maxFloorsPerResponse <= 0 {
+		api.maxFloorsPerResponse = 5
+	} else {
+		api.maxFloorsPerResponse = maxFloorsPerResponse
+	}
 
 	for _, option := range options {
 		err := option(api)

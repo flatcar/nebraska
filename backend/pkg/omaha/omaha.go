@@ -91,6 +91,19 @@ func getArch(os *omahaSpec.OS, appReq *omahaSpec.AppRequest) api.Arch {
 	return api.ArchAMD64
 }
 
+// isSyncerClient detects if the client is a Nebraska syncer based on request characteristics
+func isSyncerClient(req *omahaSpec.Request) bool {
+	// Nebraska syncers must have BOTH:
+	// 1. The exact hardcoded request version "CoreOSUpdateEngine-0.1.0.0"
+	// 2. InstallSource set to "scheduler"
+	// Regular Flatcar clients use version strings like "update_engine-0.4.2" and different install sources
+	if req.InstallSource == "scheduler" &&
+		req.Version == "CoreOSUpdateEngine-0.1.0.0" {
+		return true
+	}
+	return false
+}
+
 func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*omahaSpec.Response, error) {
 	omahaResp := omahaSpec.NewResponse()
 	omahaResp.Server = "nebraska"
@@ -142,11 +155,59 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 		}
 
 		if reqApp.UpdateCheck != nil {
-			pkg, err := h.crAPI.GetUpdatePackage(reqApp.MachineID, reqApp.MachineAlias, ip, reqApp.Version, appID, group)
-			if err != nil && err != api.ErrNoUpdatePackageAvailable {
-				respApp.Status = h.getStatusMessage(err)
-				respApp.AddUpdateCheck(omahaSpec.UpdateInternalError)
+			if isSyncerClient(omahaReq) {
+				// Syncer - get all packages
+				packages, err := h.crAPI.GetUpdatePackagesForSyncer(reqApp.MachineID, reqApp.MachineAlias, ip, reqApp.Version, appID, group)
+				if err != nil {
+					if err == api.ErrNoUpdatePackageAvailable || err == api.ErrUpdateGrantFailed {
+						respApp.AddUpdateCheck(omahaSpec.NoUpdate)
+					} else {
+						respApp.Status = h.getStatusMessage(err)
+						respApp.AddUpdateCheck(omahaSpec.UpdateInternalError)
+					}
+					continue
+				}
+
+				// Check if we got any packages
+				if len(packages) == 0 {
+					respApp.AddUpdateCheck(omahaSpec.NoUpdate)
+					continue
+				}
+
+				// Critical safety rule: old syncers without MultiManifestOK cannot skip floors
+				// Check if ANY package is a floor (including the target which might also be a floor)
+				hasFloors := false
+				for _, pkg := range packages {
+					if pkg.IsFloor {
+						hasFloors = true
+						break
+					}
+				}
+
+				if hasFloors && !reqApp.MultiManifestOK {
+					l.Warn().Str("instanceID", reqApp.MachineID).
+						Int("packageCount", len(packages)).
+						Msg("Syncer without multi-manifest support blocked due to floor requirements")
+					respApp.AddUpdateCheck(omahaSpec.NoUpdate)
+					continue
+				}
+
+				// Either multi-manifest capable syncer or no floors exist
+				h.prepareMultiManifestUpdateCheck(respApp, packages)
 			} else {
+				// Regular client - get single package
+				pkg, err := h.crAPI.GetUpdatePackage(reqApp.MachineID, reqApp.MachineAlias, ip, reqApp.Version, appID, group)
+				if err != nil {
+					if err == api.ErrNoUpdatePackageAvailable || err == api.ErrUpdateGrantFailed {
+						respApp.AddUpdateCheck(omahaSpec.NoUpdate)
+					} else {
+						respApp.Status = h.getStatusMessage(err)
+						respApp.AddUpdateCheck(omahaSpec.UpdateInternalError)
+					}
+					continue
+				}
+
+				// Single package response
 				h.prepareUpdateCheck(respApp, pkg)
 			}
 		}
@@ -195,27 +256,22 @@ func (h *Handler) getStatusMessageStr(crErr error) string {
 	return "error-failedToRetrieveUpdatePackageInfo"
 }
 
-func (h *Handler) prepareUpdateCheck(appResp *omahaSpec.AppResponse, pkg *api.Package) {
-	if pkg == nil {
-		appResp.AddUpdateCheck(omahaSpec.NoUpdate)
-		return
-	}
-
-	// Create a manifest, but do not add it to UpdateCheck until it's successful
-	manifest := &omahaSpec.Manifest{Version: pkg.Version}
+// addPackageToManifest adds a package and its extra files to the manifest
+func (h *Handler) addPackageToManifest(manifest *omahaSpec.Manifest, pkg *api.Package) {
 	mpkg := manifest.AddPackage()
 	mpkg.Name = pkg.Filename.String
 	mpkg.SHA1 = pkg.Hash.String
 	if pkg.Size.Valid {
 		size, err := strconv.ParseUint(pkg.Size.String, 10, 64)
 		if err != nil {
-			l.Warn().Msgf("prepareUpdateCheck bad package size %s", err.Error())
+			l.Warn().Msgf("addPackageToManifest bad package size %s", err.Error())
 		} else {
 			mpkg.Size = size
 		}
 	}
 	mpkg.Required = true
 
+	// Add extra files
 	for _, pkgFile := range pkg.ExtraFiles {
 		fpkg := manifest.AddPackage()
 		fpkg.Name = pkgFile.Name.String
@@ -226,34 +282,101 @@ func (h *Handler) prepareUpdateCheck(appResp *omahaSpec.AppResponse, pkg *api.Pa
 		if pkgFile.Size.Valid && pkgFile.Size.String != "" {
 			size, err := strconv.ParseUint(pkgFile.Size.String, 10, 64)
 			if err != nil {
-				l.Warn().Msgf("prepareUpdateCheck bad size %s for package's extra file %s", err.Error(), pkgFile.Name.String)
+				l.Warn().Msgf("addPackageToManifest bad size %s for extra file %s", err.Error(), pkgFile.Name.String)
 			} else {
 				fpkg.Size = size
 			}
 		}
 	}
+}
 
-	switch pkg.Type {
-	case api.PkgTypeFlatcar:
-		cra, err := h.crAPI.GetFlatcarAction(pkg.ID)
-		if err != nil {
-			appResp.AddUpdateCheck(omahaSpec.UpdateInternalError)
-			return
-		}
-		a := manifest.AddAction(cra.Event)
-		a.DisplayVersion = cra.ChromeOSVersion
-		a.SHA256 = cra.Sha256
-		a.NeedsAdmin = cra.NeedsAdmin
-		a.IsDeltaPayload = cra.IsDelta
-		a.DisablePayloadBackoff = cra.DisablePayloadBackoff
-		a.MetadataSignatureRsa = cra.MetadataSignatureRsa
-		a.MetadataSize = cra.MetadataSize
-		a.Deadline = cra.Deadline
+// addFlatcarActionToManifest adds Flatcar-specific action to manifest if applicable
+func (h *Handler) addFlatcarActionToManifest(manifest *omahaSpec.Manifest, pkg *api.Package) error {
+	if pkg.Type != api.PkgTypeFlatcar {
+		return nil
+	}
+
+	cra, err := h.crAPI.GetFlatcarAction(pkg.ID)
+	if err != nil {
+		return err
+	}
+
+	a := manifest.AddAction(cra.Event)
+	a.DisplayVersion = cra.ChromeOSVersion
+	a.SHA256 = cra.Sha256
+	a.NeedsAdmin = cra.NeedsAdmin
+	a.IsDeltaPayload = cra.IsDelta
+	a.DisablePayloadBackoff = cra.DisablePayloadBackoff
+	a.MetadataSignatureRsa = cra.MetadataSignatureRsa
+	a.MetadataSize = cra.MetadataSize
+	a.Deadline = cra.Deadline
+
+	return nil
+}
+
+func (h *Handler) prepareUpdateCheck(appResp *omahaSpec.AppResponse, pkg *api.Package) {
+	if pkg == nil {
+		appResp.AddUpdateCheck(omahaSpec.NoUpdate)
+		return
+	}
+
+	manifest := &omahaSpec.Manifest{Version: pkg.Version}
+
+	// Add package and its files
+	h.addPackageToManifest(manifest, pkg)
+
+	// Add Flatcar action if applicable
+	if err := h.addFlatcarActionToManifest(manifest, pkg); err != nil {
+		appResp.AddUpdateCheck(omahaSpec.UpdateInternalError)
+		return
 	}
 
 	updateCheck := appResp.AddUpdateCheck(omahaSpec.UpdateOK)
-	updateCheck.Manifest = manifest
+	updateCheck.AddManifest(manifest.Version)
+	updateCheck.Manifests[0] = manifest
 	updateCheck.AddURL(pkg.URL)
+}
+
+// prepareMultiManifestUpdateCheck creates a response with multiple manifests
+// Each package gets one manifest with appropriate floor/target metadata based on its properties
+func (h *Handler) prepareMultiManifestUpdateCheck(appResp *omahaSpec.AppResponse, packages []*api.Package) {
+	if len(packages) == 0 {
+		appResp.AddUpdateCheck(omahaSpec.NoUpdate)
+		return
+	}
+
+	// The last package in the array is the target (by convention from GetUpdatePackagesForSyncer)
+	targetPkg := packages[len(packages)-1]
+
+	updateCheck := appResp.AddUpdateCheck(omahaSpec.UpdateOK)
+	updateCheck.AddURL(targetPkg.URL)
+
+	// Create manifest for each package with appropriate flags
+	for i, pkg := range packages {
+		manifest := updateCheck.AddManifest(pkg.Version)
+
+		// Set IsFloor if package has floor metadata
+		if pkg.IsFloor {
+			manifest.IsFloor = true
+			if pkg.FloorReason.Valid {
+				manifest.FloorReason = pkg.FloorReason.String
+			} else {
+				manifest.FloorReason = "Required intermediate version"
+			}
+		}
+
+		// Set IsTarget if this is the last package (the target)
+		// Note: A package can have both IsFloor and IsTarget flags
+		if i == len(packages)-1 {
+			manifest.IsTarget = true
+		}
+
+		h.addPackageToManifest(manifest, pkg)
+		if err := h.addFlatcarActionToManifest(manifest, pkg); err != nil {
+			appResp.UpdateCheck.Status = omahaSpec.UpdateInternalError
+			return
+		}
+	}
 }
 
 func trace(v interface{}) {

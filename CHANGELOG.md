@@ -8,13 +8,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Security
 ### Added
+
+- **Multi-Step Updates with Floor Packages:** Added support for mandatory intermediate update versions (floor packages) that clients must install before reaching the target version. This enables safe migration paths for breaking changes by ensuring clients update through specific versions in order. Floor packages can be configured per channel with optional reasons and are architecture-specific. ([#1195](https://github.com/flatcar/nebraska/pull/1195))
+
 ### Changed
-### Removed
+
+- **Package Management UI Improvements:**
+  - Replaced POST with idempotent PUT operation for floor package management
+  - Package list UI now updates immediately after blacklist changes
+  - Channel edit dialog filters out blacklisted packages from selection
+  - Floor package selection prevents choosing blacklisted packages with clear visual feedback
+
 ### Bugfixes
+
+- Fixed package blacklist changes not appearing in UI immediately after save
 
 ## [v2.13.0] - 21/10/2025
 
 ### Security
+
 - **OIDC Implementation Refactor - Authorization Code Flow with PKCE** ([nebraska#642](https://github.com/flatcar/nebraska/pull/642))
   - Tokens no longer exposed in server logs or query parameters
   - Frontend handles OIDC flow directly with identity provider using PKCE (Proof Key for Code Exchange)
@@ -22,6 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Stateless backend architecture eliminates session storage related vulnerabilities
 
 ### Breaking Changes
+
 - **OIDC Authentication**: Complete refactor requiring migration (see [OIDC Migration Guide](docs/oidc-migration-guide.md))
   - **Removed configuration options**:
     - `--oidc-client-secret` / `NEBRASKA_OIDC_CLIENT_SECRET` - OIDC now requires public client type
@@ -54,9 +67,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [v2.12.0] - 28/08/2025
 
 ### Security
+
 - **form-data@4.0.3 → v4.0.4**
   - Fixes CVE-2025-7783 (GHSA-fjxv-7rqg-78g4): Critical vulnerability (CVSS 9.4) where form-data uses Math.random() for selecting multipart/form-data boundary values. This predictable randomness could allow attackers to inject additional parameters into requests (HTTP Parameter Pollution), potentially making arbitrary requests to internal systems. Affected versions: <2.5.4, 3.0.0-3.0.3, 4.0.0-4.0.3. Fixed in: 2.5.4, 3.0.4, 4.0.4. Updated via npm audit fix. ([#1146](https://github.com/flatcar/nebraska/pull/1146))
-- **github.com/go-viper/mapstructure/v2 → v2.3.0**  
+- **github.com/go-viper/mapstructure/v2 → v2.3.0**
   - Fixes GHSA-fv92-fjc5-jj9h: Prevents sensitive information leakage in error messages during type conversion failures (https://github.com/flatcar/nebraska/pull/1099)
 
 ### Breaking Changes

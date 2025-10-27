@@ -205,13 +205,11 @@ func (s *Syncer) checkForUpdates() error {
 		if err != nil {
 			return err
 		}
-		if update != nil && update.Status == "ok" {
-			l.Debug().Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Str("currentVersion", currentVersion).Str("availableVersion", update.Manifest.Version).Send()
+		if update != nil && update.Status == "ok" && len(update.Manifests) > 0 {
+			// processUpdate handles version tracking internally when appropriate
 			if err := s.processUpdate(descriptor, update); err != nil {
 				return err
 			}
-			s.versions[descriptor] = update.Manifest.Version
-			s.bootIDs[descriptor] = "{" + uuid.New().String() + "}"
 		} else {
 			l.Debug().Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Str("currentVersion", currentVersion).Msgf("checkForUpdates, no update available updateStatus %v", update.Status)
 		}
@@ -243,6 +241,7 @@ func (s *Syncer) doOmahaRequest(descriptor channelDescriptor, currentVersion str
 	app.MachineID = s.machinesIDs[descriptor]
 	app.BootID = s.bootIDs[descriptor]
 	app.Track = descriptor.name
+	app.MultiManifestOK = true
 
 	payload, err := xml.Marshal(req)
 	if err != nil {
@@ -276,107 +275,41 @@ func (s *Syncer) doOmahaRequest(descriptor channelDescriptor, currentVersion str
 }
 
 // processUpdate is in charge of creating packages in the Flatcar application in
-// Nebraska and updating the appropriate channel to point to the new channel.
+// Nebraska and updating the appropriate channel to point to the new package.
 func (s *Syncer) processUpdate(descriptor channelDescriptor, update *omaha.UpdateResponse) error {
-	// Create new package and action for Flatcar application in Nebraska if
-	// needed (package may already exist and we just need to update the channel
-	// reference to it)
-	pkg, err := s.api.GetPackageByVersionAndArch(flatcarAppID, update.Manifest.Version, descriptor.arch)
-	if err != nil {
-		url := update.URLs[0].CodeBase
-		filename := update.Manifest.Packages[0].Name
-
-		// Allow to override the URL if needed.
-		if s.packagesURL != "" {
-			url = strings.ReplaceAll(s.packagesURL, "{{VERSION}}", update.Manifest.Version)
-			url = strings.ReplaceAll(url, "{{ARCH}}", getArchString(descriptor.arch))
-		}
-
-		var extraFiles []api.File
-		if len(update.Manifest.Packages) > 1 {
-			extraFiles = make([]api.File, len(update.Manifest.Packages)-1)
-			for i := 1; i < len(update.Manifest.Packages); i++ {
-				omahaPkg := update.Manifest.Packages[i]
-				size := strconv.FormatUint(omahaPkg.Size, 10)
-				extraFiles[i-1] = api.File{
-					Name:    null.StringFrom(omahaPkg.Name),
-					Size:    null.StringFrom(size),
-					Hash:    null.StringFrom(omahaPkg.SHA1),
-					Hash256: null.StringFrom(omahaPkg.SHA256),
-				}
-			}
-		}
-
-		if s.hostPackages {
-			filename = fmt.Sprintf("flatcar-%s-%s.gz", getArchString(descriptor.arch), update.Manifest.Version)
-			base16sha256 := ""
-			if update.Manifest.Actions[0].SHA256 != "" {
-				binsha256, err := base64.StdEncoding.DecodeString(update.Manifest.Actions[0].SHA256)
-				if err != nil {
-					l.Error().Err(err).Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Msg("processUpdate, converting sha256")
-					return err
-				}
-				base16sha256 = hex.EncodeToString(binsha256)
-			}
-			if err := s.downloadPackage(update, update.Manifest.Packages[0].Name, update.Manifest.Packages[0].SHA1, base16sha256, filename); err != nil {
-				l.Error().Err(err).Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Msg("processUpdate, downloading package")
-				return err
-			}
-
-			for i := range extraFiles {
-				fileInfo := &extraFiles[i]
-				downloadName := fmt.Sprintf("extrafile-%s-%s-%s", getArchString(descriptor.arch), update.Manifest.Version, fileInfo.Name.String)
-				if err := s.downloadPackage(update, fileInfo.Name.String, fileInfo.Hash.String, fileInfo.Hash256.String, downloadName); err != nil {
-					l.Error().Err(err).Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Msgf("processUpdate, downloading package %s", fileInfo.Name.String)
-					return err
-				}
-				fileInfo.Name = null.StringFrom(downloadName)
-			}
-		}
-
-		pkg = &api.Package{
-			Type:          api.PkgTypeFlatcar,
-			URL:           url,
-			Version:       update.Manifest.Version,
-			Filename:      null.StringFrom(filename),
-			Size:          null.StringFrom(strconv.FormatUint(update.Manifest.Packages[0].Size, 10)),
-			Hash:          null.StringFrom(update.Manifest.Packages[0].SHA1),
-			ApplicationID: flatcarAppID,
-			Arch:          descriptor.arch,
-			ExtraFiles:    extraFiles,
-		}
-		if _, err = s.api.AddPackage(pkg); err != nil {
-			l.Error().Err(err).Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Msg("processUpdate, adding package")
-			return err
-		}
-
-		flatcarAction := &api.FlatcarAction{
-			Event:                 update.Manifest.Actions[0].Event,
-			ChromeOSVersion:       update.Manifest.Actions[0].DisplayVersion,
-			Sha256:                update.Manifest.Actions[0].SHA256,
-			NeedsAdmin:            update.Manifest.Actions[0].NeedsAdmin,
-			IsDelta:               update.Manifest.Actions[0].IsDeltaPayload,
-			DisablePayloadBackoff: update.Manifest.Actions[0].DisablePayloadBackoff,
-			MetadataSignatureRsa:  update.Manifest.Actions[0].MetadataSignatureRsa,
-			MetadataSize:          update.Manifest.Actions[0].MetadataSize,
-			Deadline:              update.Manifest.Actions[0].Deadline,
-			PackageID:             pkg.ID,
-		}
-		if _, err = s.api.AddFlatcarAction(flatcarAction); err != nil {
-			l.Error().Err(err).Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Msgf("processUpdate, adding flatcar action")
-			return err
-		}
+	if len(update.Manifests) == 0 {
+		return fmt.Errorf("no manifests in update response")
 	}
 
-	// Update channel to point to the package with the new version
-	channel, err := s.api.GetChannel(s.channelsIDs[descriptor])
+	// Dispatch to appropriate handler based on manifest count
+	if len(update.Manifests) > 1 {
+		return s.processMultiManifestUpdate(descriptor, update)
+	}
+
+	return s.processSingleManifestUpdate(descriptor, update)
+}
+
+// processSingleManifestUpdate handles the traditional single-manifest response
+func (s *Syncer) processSingleManifestUpdate(descriptor channelDescriptor, update *omaha.UpdateResponse) error {
+	manifest := update.Manifests[0]
+
+	// Get or create the package
+	pkg, err := s.getOrCreatePackage(descriptor, manifest, update)
 	if err != nil {
-		l.Error().Err(err).Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Msg("processUpdate, getting channel to update")
+		l.Error().Err(err).
+			Str("channel", descriptor.name).
+			Str("arch", descriptor.arch.String()).
+			Str("version", manifest.Version).
+			Msg("processSingleManifestUpdate - failed to process package")
 		return err
 	}
-	channel.PackageID = null.StringFrom(pkg.ID)
-	if err = s.api.UpdateChannel(channel); err != nil {
-		l.Error().Err(err).Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Msg("processUpdate, updating")
+
+	// Update channel to point to the package
+	if err := s.updateChannelToPackage(descriptor, pkg); err != nil {
+		l.Error().Err(err).
+			Str("channel", descriptor.name).
+			Str("arch", descriptor.arch.String()).
+			Msg("processSingleManifestUpdate - failed to update channel")
 		return err
 	}
 
@@ -385,6 +318,404 @@ func (s *Syncer) processUpdate(descriptor channelDescriptor, update *omaha.Updat
 
 func getArchString(arch api.Arch) string {
 	return strings.TrimSuffix(arch.CoreosString(), "-usr")
+}
+
+// cleanupDownloadedFiles removes downloaded files from disk, used for error recovery
+func (s *Syncer) cleanupDownloadedFiles(filenames []string) {
+	for _, filename := range filenames {
+		if filename == "" {
+			continue
+		}
+		filePath := filepath.Join(s.packagesPath, filename)
+		if err := os.Remove(filePath); err != nil && !os.IsNotExist(err) {
+			l.Error().Err(err).Str("file", filePath).Msg("Failed to cleanup downloaded file")
+		}
+	}
+}
+
+// getOrCreatePackage checks if a package exists or creates a new one
+func (s *Syncer) getOrCreatePackage(
+	descriptor channelDescriptor,
+	manifest *omaha.Manifest,
+	update *omaha.UpdateResponse,
+) (*api.Package, error) {
+	version := manifest.Version
+
+	// Check if package already exists
+	pkg, err := s.api.GetPackageByVersionAndArch(flatcarAppID, version, descriptor.arch)
+	if err == nil && pkg != nil {
+		// Package exists - verify integrity if it's from multi-manifest
+		if len(update.Manifests) > 1 {
+			if err := s.verifyPackageIntegrity(pkg, manifest); err != nil {
+				return nil, err
+			}
+		}
+		return pkg, nil
+	}
+
+	// Package doesn't exist - create it
+	return s.createPackage(descriptor, manifest, update)
+}
+
+// verifyPackageIntegrity verifies that an existing package matches manifest data
+func (s *Syncer) verifyPackageIntegrity(pkg *api.Package, manifest *omaha.Manifest) error {
+	if len(manifest.Packages) == 0 {
+		return fmt.Errorf("manifest has no packages")
+	}
+	omahaPkg := manifest.Packages[0]
+
+	// Verify SHA1 hash
+	if pkg.Hash.String != omahaPkg.SHA1 {
+		return fmt.Errorf("package %s hash mismatch: expected %s, got %s",
+			pkg.Version, omahaPkg.SHA1, pkg.Hash.String)
+	}
+
+	// Verify size
+	expectedSize := strconv.FormatUint(omahaPkg.Size, 10)
+	if pkg.Size.String != expectedSize {
+		return fmt.Errorf("package %s size mismatch: expected %s, got %s",
+			pkg.Version, expectedSize, pkg.Size.String)
+	}
+
+	// Verify FlatcarAction exists if manifest has actions
+	if len(manifest.Actions) > 0 && pkg.FlatcarAction == nil {
+		return fmt.Errorf("package %s missing FlatcarAction", pkg.Version)
+	}
+
+	return nil
+}
+
+// createPackage creates a new package from manifest data
+func (s *Syncer) createPackage(
+	descriptor channelDescriptor,
+	manifest *omaha.Manifest,
+	update *omaha.UpdateResponse,
+) (*api.Package, error) {
+	version := manifest.Version
+	if len(manifest.Packages) == 0 {
+		return nil, fmt.Errorf("manifest %s has no packages", version)
+	}
+	omahaPkg := manifest.Packages[0]
+
+	// Process extra files
+	extraFiles, err := s.processExtraFiles(manifest, update, descriptor, version)
+	if err != nil {
+		return nil, err
+	}
+
+	// Determine URL and filename
+	url := update.URLs[0].CodeBase
+	filename := omahaPkg.Name
+
+	// Allow URL override
+	if s.packagesURL != "" {
+		url = strings.ReplaceAll(s.packagesURL, "{{VERSION}}", version)
+		url = strings.ReplaceAll(url, "{{ARCH}}", getArchString(descriptor.arch))
+	}
+
+	// Handle package download if hosting is enabled
+	if s.hostPackages {
+		filename = fmt.Sprintf("flatcar-%s-%s.gz", getArchString(descriptor.arch), version)
+		if err := s.downloadPackagePayload(manifest, update, omahaPkg, filename); err != nil {
+			// Clean up already downloaded extra files on main package failure
+			extraFileNames := []string{}
+			for _, file := range extraFiles {
+				if file.Name.Valid && file.Name.String != "" {
+					extraFileNames = append(extraFileNames, file.Name.String)
+				}
+			}
+			s.cleanupDownloadedFiles(extraFileNames)
+			return nil, err
+		}
+	}
+
+	// Build package object
+	pkg := &api.Package{
+		Type:          api.PkgTypeFlatcar,
+		URL:           url,
+		Version:       version,
+		Filename:      null.StringFrom(filename),
+		Size:          null.StringFrom(strconv.FormatUint(omahaPkg.Size, 10)),
+		Hash:          null.StringFrom(omahaPkg.SHA1),
+		ApplicationID: flatcarAppID,
+		Arch:          descriptor.arch,
+		ExtraFiles:    extraFiles,
+	}
+
+	// Add FlatcarAction if present
+	if len(manifest.Actions) > 0 {
+		pkg.FlatcarAction = s.buildFlatcarAction(manifest.Actions[0])
+	}
+
+	// Create package in database
+	pkg, err = s.api.AddPackageWithMetadata(pkg)
+	if err != nil {
+		// Clean up downloaded files if DB operation failed
+		if s.hostPackages {
+			filesToClean := []string{filename}
+			for _, file := range extraFiles {
+				if file.Name.Valid && file.Name.String != "" {
+					filesToClean = append(filesToClean, file.Name.String)
+				}
+			}
+			s.cleanupDownloadedFiles(filesToClean)
+		}
+		return nil, err
+	}
+
+	return pkg, nil
+}
+
+// downloadPackagePayload downloads package with SHA256 handling
+func (s *Syncer) downloadPackagePayload(
+	manifest *omaha.Manifest,
+	update *omaha.UpdateResponse,
+	omahaPkg *omaha.Package,
+	filename string,
+) error {
+	base16sha256 := ""
+	// Get SHA256 from action if available
+	if len(manifest.Actions) > 0 && manifest.Actions[0].SHA256 != "" {
+		binsha256, err := base64.StdEncoding.DecodeString(manifest.Actions[0].SHA256)
+		if err != nil {
+			l.Error().Err(err).Str("version", manifest.Version).Msg("converting sha256")
+			return err
+		}
+		base16sha256 = hex.EncodeToString(binsha256)
+	}
+
+	return s.downloadPackage(update, omahaPkg.Name, omahaPkg.SHA1, base16sha256, filename)
+}
+
+// buildFlatcarAction creates a FlatcarAction from Omaha action data
+func (s *Syncer) buildFlatcarAction(action *omaha.Action) *api.FlatcarAction {
+	return &api.FlatcarAction{
+		Event:                 action.Event,
+		ChromeOSVersion:       action.DisplayVersion,
+		Sha256:                action.SHA256,
+		NeedsAdmin:            action.NeedsAdmin,
+		IsDelta:               action.IsDeltaPayload,
+		DisablePayloadBackoff: action.DisablePayloadBackoff,
+		MetadataSignatureRsa:  action.MetadataSignatureRsa,
+		MetadataSize:          action.MetadataSize,
+		Deadline:              action.Deadline,
+		// PackageID will be set by AddPackage
+	}
+}
+
+// updateChannelToPackage updates a channel to point to a specific package
+func (s *Syncer) updateChannelToPackage(
+	descriptor channelDescriptor,
+	pkg *api.Package,
+) error {
+	channel, err := s.api.GetChannel(s.channelsIDs[descriptor])
+	if err != nil {
+		return fmt.Errorf("getting channel: %w", err)
+	}
+
+	channel.PackageID = null.StringFrom(pkg.ID)
+	if err = s.api.UpdateChannel(channel); err != nil {
+		return fmt.Errorf("updating channel: %w", err)
+	}
+
+	// Update tracking
+	s.versions[descriptor] = pkg.Version
+	s.bootIDs[descriptor] = "{" + uuid.New().String() + "}"
+
+	l.Debug().
+		Str("channel", descriptor.name).
+		Str("arch", descriptor.arch.String()).
+		Str("newVersion", pkg.Version).
+		Msg("Updated channel to new version")
+
+	return nil
+}
+
+// markPackageAsFloor marks a package as a floor for a specific channel
+func (s *Syncer) markPackageAsFloor(descriptor channelDescriptor, pkg *api.Package, manifest *omaha.Manifest) error {
+	if pkg == nil || !manifest.IsFloor {
+		return nil
+	}
+
+	channelID := s.channelsIDs[descriptor]
+	floorReason := null.StringFrom(manifest.FloorReason)
+	if floorReason.String == "" {
+		floorReason = null.StringFrom("Synced from upstream Flatcar channel")
+	}
+
+	if err := s.api.AddChannelPackageFloor(channelID, pkg.ID, floorReason); err != nil {
+		l.Error().Err(err).
+			Str("version", pkg.Version).
+			Str("channel", descriptor.name).
+			Str("arch", descriptor.arch.String()).
+			Msg("markPackageAsFloor - failed to mark package as floor")
+		return err
+	}
+
+	l.Debug().
+		Str("version", pkg.Version).
+		Str("channel", descriptor.name).
+		Str("arch", descriptor.arch.String()).
+		Msg("markPackageAsFloor - marked package as floor")
+	return nil
+}
+
+// processMultiManifestUpdate handles multi-manifest responses with floor versions.
+//
+// Multi-step update requirements:
+// 1. A manifest can be marked as floor (is_floor=true), target (is_target=true), or BOTH
+// 2. Floor marking is based solely on manifest metadata (is_floor flag), NOT on version comparison
+// 3. All-floors responses are valid - floors are processed but channel remains unchanged
+// 4. Any floor marking failure must abort the entire update process to maintain consistency
+//
+// Target detection priority:
+// 1. Explicit: manifest with is_target="true" attribute
+// 2. Implicit: last manifest that is NOT a floor (backward compatibility with old upstreams)
+// 3. None: all manifests are floors (valid case - no channel update needed)
+//
+// Edge cases handled:
+// - All manifests are floors: Process floors successfully, don't update channel
+// - Package is both floor AND target: Mark as floor AND set as channel target
+// - No manifests have explicit flags: Last manifest becomes target (legacy behavior)
+// - Package already exists: Verify integrity and still process floor marking
+//
+// Example scenarios:
+// 1. [floor, floor, target] → marks 2 floors, updates channel to target
+// 2. [floor, floor+target] → marks 2 floors, updates channel to 2nd (which is both)
+// 3. [floor, floor, floor] → marks 3 floors, channel stays at current version
+// 4. [manifest, manifest] (no flags) → last becomes target (backward compatibility)
+func (s *Syncer) processMultiManifestUpdate(descriptor channelDescriptor, update *omaha.UpdateResponse) error {
+	if len(update.Manifests) == 0 {
+		return fmt.Errorf("no manifests in update response")
+	}
+
+	// Find the target manifest - this determines which package the channel will point to.
+	// Note: targetVersion may remain empty if all manifests are floors (valid scenario)
+	var targetManifest *omaha.Manifest
+	var targetVersion string
+	var targetPkg *api.Package
+
+	// Priority 1: Check if any manifest is explicitly marked as target (is_target="true")
+	// This is the preferred way for upstreams to indicate the target version
+	for _, m := range update.Manifests {
+		if m.IsTarget {
+			targetManifest = m
+			targetVersion = m.Version
+			break
+		}
+	}
+
+	// Priority 2: If no explicit target, assume last non-floor is target
+	// This maintains backward compatibility with older upstreams that don't set is_target
+	// We iterate backwards to find the last manifest that isn't marked as a floor
+	if targetManifest == nil {
+		for i := len(update.Manifests) - 1; i >= 0; i-- {
+			if !update.Manifests[i].IsFloor {
+				targetManifest = update.Manifests[i]
+				targetVersion = targetManifest.Version
+				break
+			}
+		}
+	}
+	// If still no target found, all manifests are floors - targetVersion remains empty
+
+	// Process each manifest in the response
+	for _, manifest := range update.Manifests {
+		version := manifest.Version
+
+		// Get or create the package
+		pkg, err := s.getOrCreatePackage(descriptor, manifest, update)
+		if err != nil {
+			l.Error().Err(err).
+				Str("version", version).
+				Str("channel", descriptor.name).
+				Str("arch", descriptor.arch.String()).
+				Msg("processMultiManifestUpdate - failed to process package")
+			return fmt.Errorf("failed to process package %s: %w", version, err)
+		}
+
+		// Mark as floor if manifest indicates it
+		// IMPORTANT: Floor marking is based on manifest.IsFloor, NOT on version comparison
+		// A package can be BOTH a floor AND the target
+		if manifest.IsFloor {
+			if err := s.markPackageAsFloor(descriptor, pkg, manifest); err != nil {
+				return fmt.Errorf("failed to mark package %s as floor: %w", version, err)
+			}
+		}
+
+		// Track target package if this is the target
+		// Note: This is independent of floor marking - a package can be both
+		if targetVersion != "" && version == targetVersion {
+			targetPkg = pkg
+		}
+	}
+
+	if targetPkg == nil {
+		// All manifests were floors with no target package identified.
+		// This is a VALID scenario where upstream wants to establish mandatory floors
+		// without changing the current channel target yet (target may come later).
+		// We've successfully processed and marked all floors, but there's no new
+		// version to point the channel to, so it remains at its current version.
+		l.Info().
+			Str("channel", descriptor.name).
+			Str("arch", descriptor.arch.String()).
+			Int("floors_processed", len(update.Manifests)).
+			Msg("processMultiManifestUpdate - all manifests are floors, channel remains at current version")
+		return nil // Success - floors processed, just no channel update
+	}
+
+	// Update channel to point to the target package
+	// This only happens if we found a target (either explicit via is_target="true"
+	// or implicit as the last non-floor manifest)
+	if err := s.updateChannelToPackage(descriptor, targetPkg); err != nil {
+		l.Error().Err(err).
+			Str("channel", descriptor.name).
+			Str("arch", descriptor.arch.String()).
+			Msg("processMultiManifestUpdate - failed to update channel")
+		return err
+	}
+
+	return nil
+}
+
+// processExtraFiles handles extra files (signatures, metadata) from a manifest
+// Returns the extra files array and downloads them if hosting is enabled
+func (s *Syncer) processExtraFiles(manifest *omaha.Manifest, update *omaha.UpdateResponse, descriptor channelDescriptor, version string) ([]api.File, error) {
+	var extraFiles []api.File
+
+	if len(manifest.Packages) > 1 {
+		extraFiles = make([]api.File, len(manifest.Packages)-1)
+		for i := 1; i < len(manifest.Packages); i++ {
+			omahaPkg := manifest.Packages[i]
+			size := strconv.FormatUint(omahaPkg.Size, 10)
+			extraFiles[i-1] = api.File{
+				Name:    null.StringFrom(omahaPkg.Name),
+				Size:    null.StringFrom(size),
+				Hash:    null.StringFrom(omahaPkg.SHA1),
+				Hash256: null.StringFrom(omahaPkg.SHA256),
+			}
+		}
+
+		// Download extra files if hosting is enabled
+		if s.hostPackages {
+			downloadedFiles := []string{}
+			for i := range extraFiles {
+				fileInfo := &extraFiles[i]
+				downloadName := fmt.Sprintf("extrafile-%s-%s-%s", getArchString(descriptor.arch), version, fileInfo.Name.String)
+				if err := s.downloadPackage(update, fileInfo.Name.String, fileInfo.Hash.String, fileInfo.Hash256.String, downloadName); err != nil {
+					// Clean up any extra files we already downloaded
+					s.cleanupDownloadedFiles(downloadedFiles)
+					l.Error().Err(err).Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).
+						Msgf("processExtraFiles - downloading package %s", fileInfo.Name.String)
+					return nil, err
+				}
+				fileInfo.Name = null.StringFrom(downloadName)
+				downloadedFiles = append(downloadedFiles, downloadName)
+			}
+		}
+	}
+
+	return extraFiles, nil
 }
 
 // downloadPackage downloads and verifies the package payload referenced in the

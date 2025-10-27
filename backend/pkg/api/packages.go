@@ -31,6 +31,14 @@ var (
 	// ErrBlacklistingChannel error indicates that the channel the package is
 	// trying to blacklist is already pointing to the package.
 	ErrBlacklistingChannel = errors.New("nebraska: channel trying to blacklist is already pointing to the package")
+
+	// ErrPackageIsFloor error indicates that the package cannot be deleted
+	// because it is marked as a floor version for one or more channels.
+	ErrPackageIsFloor = errors.New("nebraska: cannot delete package marked as floor version")
+
+	// ErrBlacklistingFloor error indicates that the package cannot be blacklisted
+	// because it is marked as a floor version for the channel.
+	ErrBlacklistingFloor = errors.New("nebraska: cannot blacklist package marked as floor version for this channel")
 )
 
 type File struct {
@@ -63,6 +71,18 @@ type Package struct {
 	FlatcarAction     *FlatcarAction `db:"flatcar_action" json:"flatcar_action"`
 	Arch              Arch           `db:"arch" json:"arch"`
 	ExtraFiles        []File         `db:"extra_files" json:"extra_files"`
+
+	// Floor metadata (populated when querying floor packages)
+	IsFloor     bool        `db:"is_floor" json:"is_floor,omitempty"`
+	FloorReason null.String `db:"floor_reason" json:"floor_reason"`
+}
+
+// ChannelPackageFloor represents a floor package for a specific channel
+type ChannelPackageFloor struct {
+	ChannelID   string      `db:"channel_id" json:"channel_id"`
+	PackageID   string      `db:"package_id" json:"package_id"`
+	FloorReason null.String `db:"floor_reason" json:"floor_reason"`
+	CreatedTs   time.Time   `db:"created_ts" json:"created_ts"`
 }
 
 // checkMatchingArch returns an error if the arch does not match the channels
@@ -92,28 +112,19 @@ func (api *API) checkMatchingArch(channelIDs StringArray, arch Arch) error {
 	return nil
 }
 
-// AddPackage registers the provided package.
-func (api *API) AddPackage(pkg *Package) (*Package, error) {
+// addPackage contains the common logic for adding a package.
+// It handles validation, package insertion, blacklist, and files within a transaction.
+// The caller is responsible for handling FlatcarAction and committing the transaction.
+func (api *API) addPackage(pkg *Package, tx *sqlx.Tx) error {
 	if !isValidSemver(pkg.Version) {
-		return nil, ErrInvalidSemver
+		return ErrInvalidSemver
 	}
 	if !pkg.Arch.IsValid() {
-		return nil, ErrInvalidArch
+		return ErrInvalidArch
 	}
-	err := api.checkMatchingArch(pkg.ChannelsBlacklist, pkg.Arch)
-	if err != nil {
-		return nil, err
+	if err := api.checkMatchingArch(pkg.ChannelsBlacklist, pkg.Arch); err != nil {
+		return err
 	}
-
-	tx, err := api.db.Beginx()
-	if err != nil {
-		return nil, err
-	}
-	defer func() {
-		if err := tx.Rollback(); err != nil && err != sql.ErrTxDone {
-			l.Error().Err(err).Msg("AddPackage - could not roll back")
-		}
-	}()
 
 	query, _, err := goqu.Insert("package").
 		Cols("type", "filename", "description", "size", "hash", "url", "version", "application_id", "arch").
@@ -131,12 +142,12 @@ func (api *API) AddPackage(pkg *Package) (*Package, error) {
 		Returning(goqu.T("package").All()).
 		ToSQL()
 	if err != nil {
-		return nil, err
+		return err
 	}
-	err = tx.QueryRowx(query).StructScan(pkg)
-	if err != nil {
-		return nil, err
+	if err = tx.QueryRowx(query).StructScan(pkg); err != nil {
+		return err
 	}
+
 	if len(pkg.ChannelsBlacklist) > 0 {
 		for _, channelID := range pkg.ChannelsBlacklist {
 			query, _, err := goqu.Insert("package_channel_blacklist").
@@ -144,20 +155,39 @@ func (api *API) AddPackage(pkg *Package) (*Package, error) {
 				Vals(goqu.Vals{pkg.ID, channelID}).
 				ToSQL()
 			if err != nil {
-				return nil, err
+				return err
 			}
-			_, err = tx.Exec(query)
-
-			if err != nil {
-				return nil, err
+			if _, err = tx.Exec(query); err != nil {
+				return err
 			}
 		}
 	}
 
 	if err = api.updatePackageFiles(tx, pkg, nil); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// AddPackage registers the provided package for manual/UI creation.
+// For Flatcar packages, only minimal FlatcarAction data (sha256) is required.
+func (api *API) AddPackage(pkg *Package) (*Package, error) {
+	tx, err := api.db.Beginx()
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if err := tx.Rollback(); err != nil && err != sql.ErrTxDone {
+			l.Error().Err(err).Msg("AddPackage - could not roll back")
+		}
+	}()
+
+	if err := api.addPackage(pkg, tx); err != nil {
 		return nil, err
 	}
 
+	// For manual packages creation only, insert minimal FlatcarAction (sha256 only)
 	if pkg.Type == PkgTypeFlatcar && pkg.FlatcarAction != nil {
 		query, _, err := goqu.Insert("flatcar_action").
 			Cols("package_id", "sha256").
@@ -168,15 +198,72 @@ func (api *API) AddPackage(pkg *Package) (*Package, error) {
 			return nil, err
 		}
 		flatcarAction := &FlatcarAction{}
-		err = tx.QueryRowx(query).StructScan(flatcarAction)
-		switch err {
-		case nil:
-			pkg.FlatcarAction = flatcarAction
-		case sql.ErrNoRows:
-			pkg.FlatcarAction = nil
-		default:
+		if err = tx.QueryRowx(query).StructScan(flatcarAction); err != nil {
 			return nil, err
 		}
+		pkg.FlatcarAction = flatcarAction
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+	return pkg, nil
+}
+
+// AddPackageWithMetadata registers a package with complete FlatcarAction metadata.
+// This is typically used by automated systems (like syncer) that have full update metadata.
+// For Flatcar packages, all critical FlatcarAction fields must be provided.
+func (api *API) AddPackageWithMetadata(pkg *Package) (*Package, error) {
+	if pkg.Type == PkgTypeFlatcar {
+		if pkg.FlatcarAction == nil {
+			return nil, fmt.Errorf("flatcar packages require FlatcarAction metadata")
+		}
+		if pkg.FlatcarAction.Event == "" || pkg.FlatcarAction.Sha256 == "" {
+			return nil, fmt.Errorf("FlatcarAction must have Event and Sha256 fields")
+		}
+	}
+
+	tx, err := api.db.Beginx()
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if err := tx.Rollback(); err != nil && err != sql.ErrTxDone {
+			l.Error().Err(err).Msg("AddPackageWithCompleteMetadata - could not roll back")
+		}
+	}()
+
+	if err := api.addPackage(pkg, tx); err != nil {
+		return nil, err
+	}
+
+	if pkg.Type == PkgTypeFlatcar && pkg.FlatcarAction != nil {
+		query, _, err := goqu.Insert("flatcar_action").
+			Cols("package_id", "event", "chromeos_version", "sha256", "needs_admin",
+				"is_delta", "disable_payload_backoff", "metadata_signature_rsa",
+				"metadata_size", "deadline").
+			Vals(goqu.Vals{
+				pkg.ID,
+				pkg.FlatcarAction.Event,
+				pkg.FlatcarAction.ChromeOSVersion,
+				pkg.FlatcarAction.Sha256,
+				pkg.FlatcarAction.NeedsAdmin,
+				pkg.FlatcarAction.IsDelta,
+				pkg.FlatcarAction.DisablePayloadBackoff,
+				pkg.FlatcarAction.MetadataSignatureRsa,
+				pkg.FlatcarAction.MetadataSize,
+				pkg.FlatcarAction.Deadline,
+			}).
+			Returning(goqu.T("flatcar_action").All()).
+			ToSQL()
+		if err != nil {
+			return nil, err
+		}
+		flatcarAction := &FlatcarAction{}
+		if err = tx.QueryRowx(query).StructScan(flatcarAction); err != nil {
+			return nil, err
+		}
+		pkg.FlatcarAction = flatcarAction
 	}
 
 	if err := tx.Commit(); err != nil {
@@ -266,22 +353,48 @@ func (api *API) UpdatePackage(pkg *Package) error {
 }
 
 // DeletePackage removes the package identified by the id provided.
+// It will fail if the package is marked as a floor for any channel.
 func (api *API) DeletePackage(pkgID string) error {
+	// Use a single query that checks for floor status and deletes in one operation
 	query, _, err := goqu.Delete("package").
-		Where(goqu.C("id").Eq(pkgID)).
+		Where(goqu.And(
+			goqu.C("id").Eq(pkgID),
+			// Check that package is not a floor in any channel
+			goqu.L("NOT EXISTS (SELECT 1 FROM channel_package_floors WHERE package_id = package.id)"),
+		)).
 		ToSQL()
 	if err != nil {
 		return err
 	}
+
 	result, err := api.db.Exec(query)
 	if err != nil {
 		return err
 	}
+
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
 		return err
 	}
+
 	if rowsAffected == 0 {
+		// Check if package exists and if it's a floor
+		var exists bool
+		var isFloor bool
+		err = api.db.QueryRow(`
+			SELECT 
+				EXISTS(SELECT 1 FROM package WHERE id = $1),
+				EXISTS(SELECT 1 FROM channel_package_floors WHERE package_id = $1)
+		`, pkgID).Scan(&exists, &isFloor)
+		if err != nil {
+			return err
+		}
+		if !exists {
+			return ErrNoRowsAffected
+		}
+		if isFloor {
+			return ErrPackageIsFloor
+		}
 		return ErrNoRowsAffected
 	}
 
@@ -364,31 +477,12 @@ func (api *API) getPackagesFromQuery(query string) ([]*Package, error) {
 		return nil, err
 	}
 	defer rows.Close()
-	for rows.Next() {
-		var err error
-		var flatcarAction *FlatcarAction
-		pkg := Package{}
 
+	// Load all packages
+	for rows.Next() {
+		pkg := Package{}
 		err = rows.StructScan(&pkg)
 		if err != nil {
-			return nil, err
-		}
-		flatcarAction, err = api.getFlatcarAction(pkg.ID)
-		switch err {
-		case nil:
-			pkg.FlatcarAction = flatcarAction
-		case sql.ErrNoRows:
-			pkg.FlatcarAction = nil
-		default:
-			return nil, err
-		}
-		extraFiles, err := api.getExtraFiles(pkg.ID)
-		switch err {
-		case nil:
-			pkg.ExtraFiles = extraFiles
-		case sql.ErrNoRows:
-			pkg.ExtraFiles = nil
-		default:
 			return nil, err
 		}
 		pkgs = append(pkgs, &pkg)
@@ -397,7 +491,78 @@ func (api *API) getPackagesFromQuery(query string) ([]*Package, error) {
 		return nil, err
 	}
 
-	return pkgs, nil
+	if len(pkgs) == 0 {
+		return pkgs, nil
+	}
+
+	// Use loadPackageExtras to batch load extra files and actions
+	return api.loadPackageExtras(pkgs)
+}
+
+// loadPackageExtras loads extra files and flatcar actions for packages efficiently
+func (api *API) loadPackageExtras(packages []*Package) ([]*Package, error) {
+	if len(packages) == 0 {
+		return packages, nil
+	}
+
+	// Collect package IDs
+	pkgIDs := make([]string, len(packages))
+	for i, pkg := range packages {
+		pkgIDs[i] = pkg.ID
+	}
+
+	// Load extra files
+	query, _, err := goqu.From("package_file").
+		Where(goqu.C("package_id").In(pkgIDs)).
+		Order(goqu.C("package_id").Asc(), goqu.C("id").Asc()).
+		ToSQL()
+	if err != nil {
+		return nil, err
+	}
+
+	var files []File
+	if err := api.db.Select(&files, query); err != nil {
+		return nil, err
+	}
+
+	filesByPkg := make(map[string][]File)
+	for _, file := range files {
+		filesByPkg[file.PackageID] = append(filesByPkg[file.PackageID], file)
+	}
+
+	// Load Flatcar actions
+	query, _, err = goqu.From("flatcar_action").
+		Where(goqu.C("package_id").In(pkgIDs)).
+		ToSQL()
+	if err != nil {
+		return nil, err
+	}
+
+	var actions []FlatcarAction
+	if err := api.db.Select(&actions, query); err != nil && err != sql.ErrNoRows {
+		return nil, err
+	}
+
+	actionsByPkg := make(map[string]*FlatcarAction)
+	for i := range actions {
+		actionsByPkg[actions[i].PackageID] = &actions[i]
+	}
+
+	// Assign files and actions to packages
+	for _, pkg := range packages {
+		if files, ok := filesByPkg[pkg.ID]; ok {
+			pkg.ExtraFiles = files
+		} else {
+			pkg.ExtraFiles = nil
+		}
+		if action, ok := actionsByPkg[pkg.ID]; ok {
+			pkg.FlatcarAction = action
+		} else {
+			pkg.FlatcarAction = nil
+		}
+	}
+
+	return packages, nil
 }
 
 // packagesQuery returns a SelectDataset prepared to return all packages.
@@ -405,11 +570,19 @@ func (api *API) getPackagesFromQuery(query string) ([]*Package, error) {
 // by a specific package id, all packages that belong to a given application,
 // specify how to query the rows or their destination.
 func (api *API) packagesQuery() *goqu.SelectDataset {
+	// Note: semverToIntArray error handling is deferred to when ToSQL() is called
+	// since goqu.SelectDataset doesn't support immediate error returns
+	semverExpr, err := semverToIntArray("version")
+	if err != nil {
+		// Return an invalid query that will fail when ToSQL() is called
+		return goqu.From("invalid_table_error_" + err.Error())
+	}
+
 	query := goqu.From(goqu.L("package LEFT JOIN package_channel_blacklist pcb ON package.id = pcb.package_id")).
 		Select(goqu.L(`package.*,
 	    array_agg(pcb.channel_id) FILTER (WHERE pcb.channel_id IS NOT NULL) as channels_blacklist
 	    `)).
-		GroupBy("package.id").Order(goqu.L("regexp_matches(version, '(\\d+)\\.(\\d+)\\.(\\d+)')::int[]").Desc())
+		GroupBy("package.id").Order(goqu.L(semverExpr).Desc())
 	return query
 }
 func (api *API) getFlatcarActionQuery(packageID string) *goqu.SelectDataset {
@@ -518,6 +691,14 @@ func (api *API) updatePackageBlacklistedChannels(tx *sqlx.Tx, pkg *Package, oldP
 		}
 		if channel.PackageID.String == pkg.ID {
 			return ErrBlacklistingChannel
+		}
+		// Check if package is a floor for this channel
+		isFloor, err := api.isPackageFloorForChannel(pkg.ID, channelID)
+		if err != nil {
+			return err
+		}
+		if isFloor {
+			return ErrBlacklistingFloor
 		}
 		query, _, err := goqu.Insert("package_channel_blacklist").
 			Cols("package_id", "channel_id").

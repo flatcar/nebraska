@@ -274,12 +274,18 @@ type Package struct {
 	ExtraFiles        *ExtraFiles    `json:"extra_files"`
 	Filename          string         `json:"filename"`
 	FlatcarAction     *FlatcarAction `json:"flatcar_action"`
-	Hash              string         `json:"hash"`
-	Id                string         `json:"id"`
-	Size              string         `json:"size"`
-	Type              int            `json:"type"`
-	Url               string         `json:"url"`
-	Version           string         `json:"version"`
+
+	// FloorReason Reason why this package is marked as a floor version
+	FloorReason *string `json:"floor_reason"`
+	Hash        string  `json:"hash"`
+	Id          string  `json:"id"`
+
+	// IsFloor Indicates if this package is a floor version for the current context
+	IsFloor *bool  `json:"is_floor,omitempty"`
+	Size    string `json:"size"`
+	Type    int    `json:"type"`
+	Url     string `json:"url"`
+	Version string `json:"version"`
 }
 
 // PackageConfig defines model for packageConfig.
@@ -399,6 +405,18 @@ type PaginatePackagesParams struct {
 	SearchVersion *string `form:"searchVersion,omitempty" json:"searchVersion,omitempty"`
 }
 
+// PaginateChannelFloorsParams defines parameters for PaginateChannelFloors.
+type PaginateChannelFloorsParams struct {
+	Page    *int `form:"page,omitempty" json:"page,omitempty"`
+	Perpage *int `form:"perpage,omitempty" json:"perpage,omitempty"`
+}
+
+// SetChannelFloorJSONBody defines parameters for SetChannelFloor.
+type SetChannelFloorJSONBody struct {
+	// FloorReason Optional reason for marking this package as a floor (e.g., "Introduces needed filesystem support to handle new updates after this version")
+	FloorReason *string `json:"floor_reason"`
+}
+
 // LoginWebhookParams defines parameters for LoginWebhook.
 type LoginWebhookParams struct {
 	XHubSignature string `json:"X-Hub-Signature"`
@@ -428,6 +446,9 @@ type CreatePackageJSONRequestBody = PackageConfig
 
 // UpdatePackageJSONRequestBody defines body for UpdatePackage for application/json ContentType.
 type UpdatePackageJSONRequestBody = PackageConfig
+
+// SetChannelFloorJSONRequestBody defines body for SetChannelFloor for application/json ContentType.
+type SetChannelFloorJSONRequestBody SetChannelFloorJSONBody
 
 // UpdateInstanceJSONRequestBody defines body for UpdateInstance for application/json ContentType.
 type UpdateInstanceJSONRequestBody = UpdateInstanceConfig

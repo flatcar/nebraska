@@ -136,6 +136,14 @@ function Item(props: ItemProps) {
             )}
           </Grid>
         )}
+        {props.packageItem.is_floor && (
+          <Grid>
+            <Label>
+              <InlineIcon icon={cubeOutline} width="10" height="10" />{' '}
+              {t('packages|floor_package', { defaultValue: 'Floor Package' })}
+            </Label>
+          </Grid>
+        )}
       </Grid>
     );
   }

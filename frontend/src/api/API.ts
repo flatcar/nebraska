@@ -30,62 +30,58 @@ function isNotNullUndefinedOrEmptyString(val: any) {
 }
 
 export default class API {
-  // Applications
-
   static getApplications(): Promise<WithCount<{ applications: Application[] }>> {
-    return API.getJSON(BASE_URL + '/apps');
+    return API.getJSON(`${BASE_URL}/apps`);
   }
 
   static getApplication(applicationID: string): Promise<Application> {
-    return API.getJSON(BASE_URL + '/apps/' + applicationID);
+    return API.getJSON(`${BASE_URL}/apps/${applicationID}`);
   }
 
   static deleteApplication(applicationID: string) {
-    const url = BASE_URL + '/apps/' + applicationID;
-
-    return API.doRequest('DELETE', url, '');
+    return API.doRequest('DELETE', `${BASE_URL}/apps/${applicationID}`, '');
   }
 
   static createApplication(
     applicationData: Pick<Application, 'name' | 'description' | 'product_id'>,
     clonedFromAppID: string
   ): Promise<Application> {
-    let url = BASE_URL + '/apps';
-    if (clonedFromAppID) {
-      url += '?clone_from=' + clonedFromAppID;
-    }
-
+    const url = clonedFromAppID
+      ? `${BASE_URL}/apps?clone_from=${clonedFromAppID}`
+      : `${BASE_URL}/apps`;
     return API.doRequest('POST', url, JSON.stringify(applicationData));
   }
 
   static updateApplication(applicationData: Application): Promise<Application> {
-    const url = BASE_URL + '/apps/' + applicationData.id;
-
-    return API.doRequest('PUT', url, JSON.stringify(applicationData));
+    return API.doRequest(
+      'PUT',
+      `${BASE_URL}/apps/${applicationData.id}`,
+      JSON.stringify(applicationData)
+    );
   }
 
-  // Groups
-
   static getGroup(applicationID: string, groupID: string): Promise<Group> {
-    return API.getJSON(BASE_URL + '/apps/' + applicationID + '/groups/' + groupID);
+    return API.getJSON(`${BASE_URL}/apps/${applicationID}/groups/${groupID}`);
   }
 
   static deleteGroup(applicationID: string, groupID: string) {
-    const url = BASE_URL + '/apps/' + applicationID + '/groups/' + groupID;
-
-    return API.doRequest('DELETE', url, '');
+    return API.doRequest('DELETE', `${BASE_URL}/apps/${applicationID}/groups/${groupID}`, '');
   }
 
   static createGroup(groupData: Group): Promise<Group> {
-    const url = BASE_URL + '/apps/' + groupData.application_id + '/groups';
-
-    return API.doRequest('POST', url, JSON.stringify(groupData));
+    return API.doRequest(
+      'POST',
+      `${BASE_URL}/apps/${groupData.application_id}/groups`,
+      JSON.stringify(groupData)
+    );
   }
 
   static updateGroup(groupData: Group): Promise<Group> {
-    const url = BASE_URL + '/apps/' + groupData.application_id + '/groups/' + groupData.id;
-
-    return API.doRequest('PUT', url, JSON.stringify(groupData));
+    return API.doRequest(
+      'PUT',
+      `${BASE_URL}/apps/${groupData.application_id}/groups/${groupData.id}`,
+      JSON.stringify(groupData)
+    );
   }
 
   static getGroupVersionCountTimeline(applicationID: string, groupID: string, duration: string) {
@@ -110,34 +106,31 @@ export default class API {
     applicationID: string,
     groupID: string
   ): Promise<VersionBreakdownEntry[]> {
-    return API.getJSON(
-      BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/version_breakdown'
-    );
+    return API.getJSON(`${BASE_URL}/apps/${applicationID}/groups/${groupID}/version_breakdown`);
   }
 
-  // Channels
-
   static deleteChannel(applicationID: string, channelID: string) {
-    const url = BASE_URL + '/apps/' + applicationID + '/channels/' + channelID;
-
-    return API.doRequest('DELETE', url, '');
+    return API.doRequest('DELETE', `${BASE_URL}/apps/${applicationID}/channels/${channelID}`, '');
   }
 
   static createChannel(channelData: Channel): Promise<Channel> {
-    const url = BASE_URL + '/apps/' + channelData.application_id + '/channels';
-
-    return API.doRequest('POST', url, JSON.stringify(channelData));
+    return API.doRequest(
+      'POST',
+      `${BASE_URL}/apps/${channelData.application_id}/channels`,
+      JSON.stringify(channelData)
+    );
   }
 
   static updateChannel(channelData: Channel): Promise<Channel> {
     const keysToRemove = ['id', 'created_ts', 'package'];
     const processedChannel = API.removeKeysFromObject(channelData, keysToRemove);
-    const url = BASE_URL + '/apps/' + channelData.application_id + '/channels/' + channelData.id;
-
-    return API.doRequest('PUT', url, JSON.stringify(processedChannel));
+    return API.doRequest(
+      'PUT',
+      `${BASE_URL}/apps/${channelData.application_id}/channels/${channelData.id}`,
+      JSON.stringify(processedChannel)
+    );
   }
 
-  // Packages
   static getPackages(
     applicationID: string,
     searchTerm?: string,
@@ -166,26 +159,74 @@ export default class API {
   }
 
   static deletePackage(applicationID: string, packageID: string) {
-    const url = BASE_URL + '/apps/' + applicationID + '/packages/' + packageID;
-
-    return API.doRequest('DELETE', url, '');
+    return API.doRequest('DELETE', `${BASE_URL}/apps/${applicationID}/packages/${packageID}`, '');
   }
 
   static createPackage(packageData: Partial<Package>): Promise<Package> {
-    const url = BASE_URL + '/apps/' + packageData.application_id + '/packages';
-
-    return API.doRequest('POST', url, JSON.stringify(packageData));
+    return API.doRequest(
+      'POST',
+      `${BASE_URL}/apps/${packageData.application_id}/packages`,
+      JSON.stringify(packageData)
+    );
   }
 
   static updatePackage(packageData: Partial<Package>): Promise<Package> {
     const keysToRemove = ['id', 'created_ts', 'package'];
     const processedPackage = API.removeKeysFromObject(packageData, keysToRemove);
-    const url = BASE_URL + '/apps/' + packageData.application_id + '/packages/' + packageData.id;
-
-    return API.doRequest('PUT', url, JSON.stringify(processedPackage));
+    return API.doRequest(
+      'PUT',
+      `${BASE_URL}/apps/${packageData.application_id}/packages/${packageData.id}`,
+      JSON.stringify(processedPackage)
+    );
   }
 
-  // Instances
+  static async setChannelFloor(channelID: string, packageID: string, floorReason?: string) {
+    const data = floorReason ? JSON.stringify({ floor_reason: floorReason }) : '{}';
+    try {
+      return await API.doRequest(
+        'PUT',
+        `${BASE_URL}/channels/${channelID}/floors/${packageID}`,
+        data
+      );
+    } catch (error) {
+      // Handle empty response (204 No Content) or other success with no body
+      if (error instanceof Response && (error.status === 204 || error.status === 201)) {
+        return {};
+      }
+      throw error;
+    }
+  }
+
+  static async deleteChannelFloor(channelID: string, packageID: string) {
+    return API.doRequest('DELETE', `${BASE_URL}/channels/${channelID}/floors/${packageID}`, '');
+  }
+
+  static getChannelFloors(
+    channelID: string,
+    queryOptions: { page?: number; perpage?: number } = {}
+  ): Promise<WithCount<{ packages: Package[] }>> {
+    // Backend defaults to 100 items for floor packages which should be sufficient
+    const params = new URLSearchParams();
+    if (queryOptions.page !== undefined) {
+      params.append('page', String(queryOptions.page));
+    }
+    if (queryOptions.perpage !== undefined) {
+      params.append('perpage', String(queryOptions.perpage));
+    }
+    const queryStr = params.toString();
+    const url = `${BASE_URL}/channels/${channelID}/floors${queryStr ? '?' + queryStr : ''}`;
+    return API.getJSON(url);
+  }
+
+  static getPackageFloorChannels(
+    applicationID: string,
+    packageID: string
+  ): Promise<{
+    channels: Array<{ channel: Channel; floor_reason: string | null }>;
+    count: number;
+  }> {
+    return API.getJSON(`${BASE_URL}/apps/${applicationID}/packages/${packageID}/floor-channels`);
+  }
 
   static getInstances(
     applicationID: string,
@@ -194,19 +235,14 @@ export default class API {
       [key: string]: any;
     } = {}
   ): Promise<Instances> {
-    let url = BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/instances';
-
     const params = new URLSearchParams();
-
     Object.keys(queryOptions).forEach(key => {
       if (isNotNullUndefinedOrEmptyString(queryOptions[key])) {
         params.append(key, queryOptions[key]);
       }
     });
-
     const queryStr = params.toString();
-    url += queryStr ? '?' + queryStr : '';
-
+    const url = `${BASE_URL}/apps/${applicationID}/groups/${groupID}/instances${queryStr ? '?' + queryStr : ''}`;
     return API.getJSON(url);
   }
 
@@ -215,10 +251,10 @@ export default class API {
     groupID: string,
     duration: string
   ): Promise<number> {
-    const url = `${BASE_URL}/apps/${applicationID}/groups/${groupID}/instancescount?duration=${duration}`;
-
     return new Promise(resolve =>
-      API.getJSON(url).then((response: { count: number }) => resolve(response.count))
+      API.getJSON(
+        `${BASE_URL}/apps/${applicationID}/groups/${groupID}/instancescount?duration=${duration}`
+      ).then((response: { count: number }) => resolve(response.count))
     );
   }
 
@@ -227,10 +263,9 @@ export default class API {
     groupID: string,
     instanceID: string
   ): Promise<Instance> {
-    const url =
-      BASE_URL + '/apps/' + applicationID + '/groups/' + groupID + '/instances/' + instanceID;
-
-    return API.getJSON(url);
+    return API.getJSON(
+      `${BASE_URL}/apps/${applicationID}/groups/${groupID}/instances/${instanceID}`
+    );
   }
 
   static getInstanceStatusHistory(
@@ -238,45 +273,26 @@ export default class API {
     groupID: string,
     instanceID: string
   ): Promise<InstanceStatusHistory[]> {
-    const url =
-      BASE_URL +
-      '/apps/' +
-      applicationID +
-      '/groups/' +
-      groupID +
-      '/instances/' +
-      instanceID +
-      '/status_history';
-
-    return API.getJSON(url);
+    return API.getJSON(
+      `${BASE_URL}/apps/${applicationID}/groups/${groupID}/instances/${instanceID}/status_history`
+    );
   }
 
   static updateInstance(instanceID: string, alias: REQUEST_DATA_TYPE): Promise<Instance> {
-    const url = BASE_URL + '/instances/' + instanceID;
-    const params = JSON.stringify({ alias });
-    return API.doRequest('PUT', url, params);
+    return API.doRequest('PUT', `${BASE_URL}/instances/${instanceID}`, JSON.stringify({ alias }));
   }
-
-  // Activity
 
   static getActivity(): Promise<WithCount<{ activities: Activity[] }>> {
     const currentDate = new Date();
     const now = currentDate.toISOString();
     currentDate.setDate(currentDate.getDate() - 7);
     const weekAgo = currentDate.toISOString();
-    const query = '?start=' + weekAgo + '&end=' + now;
-    const url = BASE_URL + '/activity' + query;
-
-    return API.getJSON(url);
+    return API.getJSON(`${BASE_URL}/activity?start=${weekAgo}&end=${now}`);
   }
-
-  // Config
 
   static getConfig(): Promise<NebraskaConfig> {
     return API.doRequest('GET', '/config');
   }
-
-  // Helpers
 
   static removeKeysFromObject(
     data: Package | Application | Group | FlatcarAction | Channel | Partial<Package>,
