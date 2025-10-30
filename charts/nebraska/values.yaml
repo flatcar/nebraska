@@ -58,6 +58,7 @@ config:
       scopes:
       sessionAuthKey:
       sessionCryptKey:
+      skipTlsVerify:
     github:
       clientID:
       clientSecret:
