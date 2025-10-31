@@ -2,12 +2,13 @@ package auth
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
-
 	"slices"
+	"strings"
+	"time"
 
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/labstack/echo/v4"
@@ -20,6 +21,7 @@ type OIDCAuthConfig struct {
 	AdminRoles    []string
 	ViewerRoles   []string
 	RolesPath     string
+	SkipTLSVerify bool
 }
 
 type oidcAuth struct {
@@ -34,6 +36,21 @@ type oidcAuth struct {
 
 func NewOIDCAuthenticator(config *OIDCAuthConfig) (Authenticator, error) {
 	ctx := context.Background()
+	if config.SkipTLSVerify {
+		transport := &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+		}
+
+		// --- 2. Create an HTTP client using the custom transport ---
+		client := &http.Client{
+			Transport: transport,
+			Timeout:   10 * time.Second, // Optional: set a timeout
+		}
+
+		ctx = oidc.ClientContext(ctx, client)
+	}
 
 	// setup oidc provider
 	provider, err := oidc.NewProvider(ctx, config.IssuerURL)
