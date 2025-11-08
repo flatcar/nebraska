@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`activity/ActivityItemIcon Default smoke-test 1`] = `
 <svg xmlns="http://www.w3.org/2000/svg"

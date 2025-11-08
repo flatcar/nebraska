@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`activity/ActivityContainer Empty smoke-test 1`] = `
 <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row ListHeader-sectionHeader css-1j57vrs-MuiGrid-root">

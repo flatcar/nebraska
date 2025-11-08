@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`applications/ApplicationItem Application smoke-test 1`] = `
 <li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider ApplicationItem-root css-12bropj-MuiListItem-root"

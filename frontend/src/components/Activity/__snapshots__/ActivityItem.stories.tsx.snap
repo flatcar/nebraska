@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`activity/ActivityItem ActivityChannelPackageUpdated smoke-test 1`] = `
 <li class="MuiListItem-root MuiListItem-padding MuiListItem-alignItemsFlexStart css-kd2s28-MuiListItem-root">
