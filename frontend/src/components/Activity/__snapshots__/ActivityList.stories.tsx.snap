@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`activity/ActivityList BetaList smoke-test 1`] = `
 <p class="MuiTypography-root MuiTypography-body1 css-1c4wxug-MuiTypography-root">

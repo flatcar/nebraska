@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`groups/GroupItem Group smoke-test 1`] = `
 <li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider css-ndb4kr-MuiListItem-root"
