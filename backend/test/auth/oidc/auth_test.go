@@ -22,18 +22,19 @@ const (
 var serverPortStr = fmt.Sprintf(":%d", serverPort)
 
 var conf = &config.Config{
-	EnableSyncer:    true,
-	NebraskaURL:     testServerURL,
-	HTTPLog:         true,
-	AuthMode:        "oidc",
-	Debug:           true,
-	ServerPort:      serverPort,
-	OidcClientID:    clientID,
-	OidcIssuerURL:   issuerURL,
-	OidcAdminRoles:  "nebraska-admin",
-	OidcViewerRoles: "nebraska-member",
-	OidcRolesPath:   "groups",
-	OidcScopes:      "openid,profile,email,groups",
+	EnableSyncer:      true,
+	NebraskaURL:       testServerURL,
+	HTTPLog:           true,
+	AuthMode:          "oidc",
+	Debug:             true,
+	ServerPort:        serverPort,
+	OidcClientID:      clientID,
+	OidcIssuerURL:     issuerURL,
+	OidcAdminRoles:    "nebraska-admin",
+	OidcViewerRoles:   "nebraska-member",
+	OidcRolesPath:     "groups",
+	OidcScopes:        "openid,profile,email,groups",
+	OidcSkipTLSVerify: true,
 }
 
 func TestMain(m *testing.M) {

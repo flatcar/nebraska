@@ -50,6 +50,7 @@ type Config struct {
 	OidcManagementURL string `koanf:"oidc-management-url"`
 	OidcLogoutURL     string `koanf:"oidc-logout-url"`
 	OidcAudience      string `koanf:"oidc-audience"`
+	OidcSkipTLSVerify bool   `koanf:"oidc-skip-tls-verify"`
 }
 
 const (
@@ -122,6 +123,7 @@ func Parse() (*Config, error) {
 	f.String("oidc-viewer-roles", "", "comma-separated list of accepted roles with viewer access")
 	f.String("oidc-roles-path", "roles", "json path in which the roles array is present in the id token")
 	f.String("oidc-scopes", "openid,profile,email", "comma-separated list of scopes to be used in OIDC")
+	f.Bool("oidc-skip-tls-verify", false, "setting InsecureSkipVerify to true disables all certificate validation, including hostname checking. This is useful for testing purposes, but should not be used in production.")
 	f.String("oidc-management-url", "", "OIDC management url for managing the account")
 	f.String("oidc-logout-url", "", "OIDC logout URL (optional fallback when end_session_endpoint is not available in discovery)")
 	f.String("oidc-audience", "", "OIDC audience parameter for the access token")
