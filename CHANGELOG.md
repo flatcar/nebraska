@@ -12,7 +12,67 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removed
 ### Bugfixes
 
-## [v2.13.0] - 21/10/2025
+## [3.0.0] - 28/11/2025
+
+### Semantic Versioning Correction
+
+**This release corrects a versioning mistake in v2.13.0.** Version 2.13.0 contained breaking changes to OIDC authentication that should have triggered a major version bump per [Semantic Versioning](https://semver.org) principles.
+
+**This release contains functionally identical code to v2.13.0.** The only difference is the corrected version number and this documentation update.
+
+#### What this means for you:
+
+- **If you're currently on v2.13.0:** You have already completed the necessary OIDC migration. Updating to 3.0.0 is optional and only corrects the version label. No additional migration or configuration changes are required.
+
+- **If you're on v2.12.0 or earlier:** Upgrade to v3.0.0 and follow the [OIDC Migration Guide](docs/oidc-migration-guide.md). The migration requirements are identical to those documented for v2.13.0.
+
+- **For new deployments:** Use v3.0.0 (not v2.13.0).
+
+We apologize for this versioning mistake and have updated our release process to prevent similar issues in the future.
+
+### Security
+
+- **OIDC Implementation Refactor - Authorization Code Flow with PKCE** ([nebraska#642](https://github.com/flatcar/nebraska/pull/642))
+  - Tokens no longer exposed in server logs or query parameters
+  - Frontend handles OIDC flow directly with identity provider using PKCE (Proof Key for Code Exchange)
+  - In-memory token storage prevents XSS vulnerabilities
+  - Stateless backend architecture eliminates session storage related vulnerabilities
+
+### Breaking Changes
+
+- **OIDC Authentication**: Complete refactor requiring migration (see [OIDC Migration Guide](docs/oidc-migration-guide.md))
+  - **Removed configuration options**:
+    - `--oidc-client-secret` / `NEBRASKA_OIDC_CLIENT_SECRET` - OIDC now requires public client type
+    - `--oidc-valid-redirect-urls` - No longer needed with direct frontend flow
+    - `--oidc-session-secret` / `NEBRASKA_OIDC_SESSION_SECRET` - Backend is now stateless
+    - `--oidc-session-crypt-key` / `NEBRASKA_OIDC_SESSION_CRYPT_KEY` - No server-side sessions
+  - **Removed API endpoints**:
+    - `GET /login` - Frontend initiates OIDC flow directly with provider
+    - `POST /login/token` - Password grant type no longer supported
+    - `GET /login/cb` now returns 501 for OIDC mode (GitHub mode only)
+  - **Changed default scopes**: From `openid,offline_access` to `openid,profile,email`
+  - **Migration requirements**:
+    - OIDC provider must be reconfigured from confidential to public client type
+    - CORS must be enabled for Nebraska domain on OIDC provider if it is not hosted under the same domain
+    - Recommended: Enable session cookies on OIDC provider for seamless SSO re-authentication
+      - Configure SSO session duration to 8-12 hours (idle timeout) and 1-7 days (maximum lifetime) based on your security requirements
+      - **Keycloak**: Configure "SSO Session Max" and "SSO Session Idle Timeout" under Realm Settings → Sessions
+      - **Auth0**: Configure "Maximum Session Lifetime" and "Idle Session Lifetime" under Tenant Settings → Advanced → Session Expiration
+      - NOTE: Many times, these SSO session attributes are already set by default
+    - When access tokens get lost after page refresh, the OIDC provider automatically re-authenticates users if SSO session is still active (no password re-entry required)
+    - Recommended: Configure OIDC provider access token expiration to 1-8 hours (should be less than the SSO maximum session lifetime)
+
+### Changed
+
+- helm/postgresql: temporarily overwrite PostgreSQL subchart images to the Bitnami Legacy registry (`bitnamilegacy/*`) to restore Helm chart deployments after Bitnami Docker Hub deprecations. This is a short-term workaround only; Bitnami Legacy images are archived and will not receive security updates.
+- backend: OIDC authentication refactored to use standard SPA authentication pattern with stateless JWT validation ([nebraska#642](https://github.com/flatcar/nebraska/pull/642))
+- frontend: Implements OIDC Authorization Code Flow with PKCE directly, removing backend proxy ([nebraska#642](https://github.com/flatcar/nebraska/pull/642))
+- api: Note that `oidcCookieAuth` security scheme in OpenAPI spec was never implemented and should be removed in future cleanup
+
+
+## [v2.13.0] - 21/10/2025 - INCORRECTLY VERSIONED - USE v3.0.0 INSTEAD
+
+**VERSIONING NOTICE:** This release was published with breaking changes as a minor version, which violates semantic versioning. The functionally identical v3.0.0 release corrects this with the proper major version bump. **For new deployments, use v3.0.0 instead.** Existing v2.13.0 users may upgrade to v3.0.0 to align with correct versioning, but no code or configuration changes are required.
 
 ### Security
 - **OIDC Implementation Refactor - Authorization Code Flow with PKCE** ([nebraska#642](https://github.com/flatcar/nebraska/pull/642))
