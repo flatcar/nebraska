@@ -24,7 +24,7 @@ require (
 	github.com/oauth2-proxy/mockoidc v0.0.0-20240214162133-caebfff84d25
 	github.com/prometheus/client_golang v1.23.2
 	github.com/rs/zerolog v1.34.0
-	github.com/rubenv/sql-migrate v1.8.0
+	github.com/rubenv/sql-migrate v1.8.1
 	github.com/stretchr/testify v1.11.1
 	github.com/tidwall/gjson v1.18.0
 	golang.org/x/oauth2 v0.33.0
