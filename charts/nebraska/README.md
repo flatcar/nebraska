@@ -9,6 +9,58 @@ $ helm repo add nebraska https://flatcar.github.io/nebraska
 $ helm install my-nebraska nebraska/nebraska
 ```
 
+## Upgrading to 2.0.0
+
+**Breaking Changes for OIDC Users**
+
+Helm chart version 2.0.0 (app version 3.0.0) includes breaking changes to OIDC authentication. If you are using OIDC authentication, you **must** migrate your configuration.
+
+### What Changed
+
+The OIDC implementation has been refactored to use Authorization Code Flow with PKCE for improved security. The backend is now stateless and the frontend handles OIDC authentication directly.
+
+**Removed Configuration Options:**
+- `config.auth.oidc.clientSecret` - No longer needed (public client)
+- `config.auth.oidc.validRedirectURLs` - Frontend handles redirects
+- `config.auth.oidc.sessionAuthKey` - Backend is stateless
+- `config.auth.oidc.sessionCryptKey` - Backend is stateless
+
+**Added Configuration Options:**
+- `config.auth.oidc.audience` - Optional, required for Auth0
+
+**All Other Options Remain:** `clientID`, `issuerURL`, `managementURL`, `logoutURL`, `adminRoles`, `viewerRoles`, `rolesPath`, `scopes`
+
+### Migration Steps
+
+1. **Update your OIDC provider configuration:**
+   - Change client type from "Confidential" to "Public" (SPA)
+   - Remove client secret
+   - Update redirect URI to: `https://your-domain.com/auth/callback`
+   - Enable CORS for your Nebraska domain
+
+2. **Update your helm values:**
+   ```yaml
+   config:
+     auth:
+       mode: oidc
+       oidc:
+         clientID: "your-public-client-id"
+         issuerURL: "https://your-oidc-provider.com"
+         adminRoles: "nebraska-admin"
+         viewerRoles: "nebraska-viewer"
+         # Remove: clientSecret, validRedirectURLs, sessionAuthKey, sessionCryptKey
+         # Optional: audience (required for Auth0)
+   ```
+
+3. **Upgrade the helm chart:**
+   ```bash
+   helm upgrade my-nebraska nebraska/nebraska --version 2.0.0
+   ```
+
+**For detailed migration instructions, see the [OIDC Migration Guide](https://github.com/flatcar/nebraska/blob/main/docs/oidc-migration-guide.md).**
+
+**Note:** If you are using `mode: noop` (default) or `mode: github`, no changes are required.
+
 ## Upgrade PostgreSQL
 
 When there is a major upgrade of PostgreSQL, a manual intervention might be required with a downtime. It is possible to automate things with operators, but here's a simple example:
@@ -127,19 +179,16 @@ $ kubectl exec -ti pod/nebraska-postgresql-0 -- psql < backup.sql
 | `config.auth.github.readWriteTeams`                   | comma-separated list of read-write GitHub teams in the org/team format                                                               | `nil`                                                                   |
 | `config.auth.github.readOnlyTeams`                    | comma-separated list of read-only GitHub teams in the org/team format                                                                | `nil`                                                                   |
 | `config.auth.github.enterpriseURL`                    | Base URL of the enterprise instance if using GHE                                                                                     | `nil`    |
-| `config.auth.oidc.clientID`                           | OIDC client ID used for authentication  | `nil`  |
-| `config.auth.oidc.clientSecret`                       | OIDC client Secret used for authentication | `nil`  |
+| `config.auth.oidc.clientID`                           | OIDC client ID used for authentication (public client)  | `nil`  |
 | `config.auth.oidc.existingSecret`                      | existingSecret will mount a given secret to the container. Be sure to match the expected keys in [deployment.yaml](./templates/deployment.yaml). |`nil`                                                                               |                                                                   |
 | `config.auth.oidc.issuerURL`                          | OIDC issuer URL used for authentication | `nil`  |
-| `config.auth.oidc.validRedirectURLs`                  | comma-separated list of valid Redirect URLs  | `nil`  |
 | `config.auth.oidc.managementURL`                      | OIDC management url for managing the account  | `nil`  |
 | `config.auth.oidc.logoutURL`                          | URL to logout the user from current session  | `nil`  |
 | `config.auth.oidc.adminRoles`                         | comma-separated list of accepted roles with admin access | `nil`  |
 | `config.auth.oidc.viewerRoles`                        | comma-separated list of accepted roles with viewer access | `nil`  |
 | `config.auth.oidc.rolesPath`                          | json path in which the roles array is present in the id token  | `nil`  |
 | `config.auth.oidc.scopes`                             | comma-separated list of scopes to be used in OIDC | `nil`  |
-| `config.auth.oidc.sessionAuthKey`                     | Session secret used for authenticating sessions in cookies to store OIDC info , will be generated if none is passed | `nil`  |
-| `config.auth.oidc.sessionCryptKey`                    | Session key used for encrypting sessions in cookies to store OIDC info, will be generated if none is passed | `nil`                                    |
+| `config.auth.oidc.audience`                           | OIDC audience (required for Auth0, optional for others) | `nil`  |
 | `config.database.host`                                | The host name of the database server                                                                                                 | `""` (use postgresql from Bitnami subchart)                             |
 | `config.database.port`                                | The port number the database server is listening on                                                                                  | `5432`                                                                  |
 | `config.database.sslMode`                             | The mode of the database connection                                                                                                  | `disable`                                                               |
