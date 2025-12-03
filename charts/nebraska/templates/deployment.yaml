@@ -107,9 +107,6 @@ spec:
               {{- with .Values.config.auth.oidc.issuerURL }}
             - "-oidc-issuer-url={{ . }}"
               {{- end }}
-              {{- with .Values.config.auth.oidc.validRedirectURLs }}
-            - "-oidc-valid-redirect-urls={{ . }}"
-              {{- end }}
               {{- with .Values.config.auth.oidc.managementURL }}
             - "-oidc-management-url={{ . }}"
               {{- end }}
@@ -127,6 +124,9 @@ spec:
               {{- end }}
               {{- with .Values.config.auth.oidc.scopes }}
             - "-oidc-scopes={{ . }}"
+              {{- end }}
+              {{- with .Values.config.auth.oidc.audience }}
+            - "-oidc-audience={{ . }}"
               {{- end }}
             {{- end }}
 
@@ -199,29 +199,6 @@ spec:
                   name: {{ .Values.config.auth.oidc.existingSecret }}
                   {{- end }}
                   key: oidcClientID
-            - name: "NEBRASKA_OIDC_CLIENT_SECRET"
-              valueFrom:
-                secretKeyRef:
-                  {{- if not .Values.config.auth.oidc.existingSecret }}
-                  name: {{ include "nebraska.fullname" . }}
-                  {{- else }}
-                  name: {{ .Values.config.auth.oidc.existingSecret }}
-                  {{- end }}
-                  key: oidcClientSecret
-            {{- if .Values.config.auth.oidc.sessionAuthKey }}
-            - name: "NEBRASKA_OIDC_SESSION_SECRET"
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "nebraska.fullname" . }}
-                  key: oidcSessionAuthKey
-            {{- end }}
-            {{- if .Values.config.auth.oidc.sessionCryptKey }}
-            - name: "NEBRASKA_OIDC_SESSION_CRYPT_KEY"
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "nebraska.fullname" . }}
-                  key: oidcSessionCryptKey
-            {{- end }}
             {{- end }}
             {{- range $key, $value := .Values.extraEnvVars }}
             - name: {{ $key }}

@@ -18,8 +18,8 @@ sources:
 maintainers:
   - name: flatcar
     url: https://flatcar.org/
-version: 1.7.0
-appVersion: "2.13.0"
+version: 2.0.0
+appVersion: "3.0.0"
 
 dependencies:
   - name: postgresql
