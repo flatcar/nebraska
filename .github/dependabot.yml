@@ -4,8 +4,12 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: weekly
+      interval: "weekly"
       day: "monday"
+    groups:
+      github-actions-dependencies:
+        patterns:
+          - "*"
 
   - package-ecosystem: "npm"
     directory: "/frontend"
