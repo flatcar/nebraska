@@ -18,5 +18,5 @@ jobs:
       with:
         fail: true
         lycheeVersion: v0.19.1
-        args: --verbose --no-progress './**/*.js' './**/*.ts' './**/*.jsx' './**/*.tsx' './**/*.md' './**/*.mkd' './**/*.mdx' './**/*.mdown' './**/*.mdwn' './**/*.mkdn' './**/*.mkdown' './**/*.markdown' './**/*.html' './**/*.htm' './**/*.txt'
+        args: --verbose --no-progress -r 20 './**/*.js' './**/*.ts' './**/*.jsx' './**/*.tsx' './**/*.md' './**/*.mkd' './**/*.mdx' './**/*.mdown' './**/*.mdwn' './**/*.mkdn' './**/*.mkdown' './**/*.markdown' './**/*.html' './**/*.htm' './**/*.txt'
 
