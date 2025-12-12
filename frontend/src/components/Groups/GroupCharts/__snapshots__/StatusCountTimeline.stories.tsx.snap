@@ -36,7 +36,9 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
         </title>
         <desc>
         </desc>
-        <g id="recharts-zindex--100-_r_1_">
+        <g tabindex="-1"
+           id="recharts-zindex--100-_r_1_"
+        >
           <g class="recharts-cartesian-grid">
             <g class="recharts-cartesian-grid-horizontal">
               <line stroke-dasharray="3 3"
@@ -187,7 +189,9 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
             </g>
           </g>
         </g>
-        <g id="recharts-zindex--50-_r_2_">
+        <g tabindex="-1"
+           id="recharts-zindex--50-_r_2_"
+        >
         </g>
         <defs>
           <clipPath id="recharts1-clip">
@@ -199,7 +203,9 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
             </rect>
           </clipPath>
         </defs>
-        <g id="recharts-zindex-100-_r_8_">
+        <g tabindex="-1"
+           id="recharts-zindex-100-_r_8_"
+        >
           <g class="recharts-layer recharts-area">
             <g class="recharts-layer">
               <g class="recharts-layer"
@@ -207,6 +213,7 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
               >
                 <g class="recharts-layer">
                   <path cursor="pointer"
+                        stroke-width="1"
                         fill="rgb(89, 89, 89)"
                         fill-opacity="0.6"
                         height="360"
@@ -218,6 +225,7 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
                   >
                   </path>
                   <path cursor="pointer"
+                        stroke-width="1"
                         fill="none"
                         fill-opacity="0.6"
                         height="360"
@@ -238,6 +246,7 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
               >
                 <g class="recharts-layer">
                   <path cursor="pointer"
+                        stroke-width="1"
                         fill="#3182bd"
                         fill-opacity="0.6"
                         height="360"
@@ -249,6 +258,7 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
                   >
                   </path>
                   <path cursor="pointer"
+                        stroke-width="1"
                         fill="none"
                         fill-opacity="0.6"
                         height="360"
@@ -269,6 +279,7 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
               >
                 <g class="recharts-layer">
                   <path cursor="pointer"
+                        stroke-width="1"
                         fill="rgba(164,45,36,1)"
                         fill-opacity="0.6"
                         height="360"
@@ -280,6 +291,7 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
                   >
                   </path>
                   <path cursor="pointer"
+                        stroke-width="1"
                         fill="none"
                         fill-opacity="0.6"
                         height="360"
@@ -300,6 +312,7 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
               >
                 <g class="recharts-layer">
                   <path cursor="pointer"
+                        stroke-width="1"
                         fill="rgba(40,95,43,1)"
                         fill-opacity="0.6"
                         height="360"
@@ -311,6 +324,7 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
                   >
                   </path>
                   <path cursor="pointer"
+                        stroke-width="1"
                         fill="none"
                         fill-opacity="0.6"
                         height="360"
@@ -331,6 +345,7 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
               >
                 <g class="recharts-layer">
                   <path cursor="pointer"
+                        stroke-width="1"
                         fill="rgba(17,40,141,1)"
                         fill-opacity="0.6"
                         height="360"
@@ -342,6 +357,7 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
                   >
                   </path>
                   <path cursor="pointer"
+                        stroke-width="1"
                         fill="none"
                         fill-opacity="0.6"
                         height="360"
@@ -356,18 +372,26 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
             </g>
           </g>
         </g>
-        <g id="recharts-zindex-200-_r_9_">
+        <g tabindex="-1"
+           id="recharts-zindex-200-_r_9_"
+        >
         </g>
-        <g id="recharts-zindex-300-_r_a_">
+        <g tabindex="-1"
+           id="recharts-zindex-300-_r_a_"
+        >
         </g>
-        <g id="recharts-zindex-400-_r_b_">
+        <g tabindex="-1"
+           id="recharts-zindex-400-_r_b_"
+        >
         </g>
-        <g id="recharts-zindex-500-_r_c_">
+        <g tabindex="-1"
+           id="recharts-zindex-500-_r_c_"
+        >
           <g class="recharts-layer recharts-cartesian-axis recharts-xAxis xAxis">
             <line stroke="#000"
+                  angle="0"
                   height="30"
                   orientation="bottom"
-                  angle="0"
                   x="60"
                   y="370"
                   width="410"
@@ -383,9 +407,9 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
               <g class="recharts-cartesian-axis-tick-lines recharts-xAxis-tick-lines">
                 <g class="recharts-layer recharts-cartesian-axis-tick">
                   <line stroke="#000"
+                        angle="0"
                         height="30"
                         orientation="bottom"
-                        angle="0"
                         x="60"
                         y="370"
                         width="410"
@@ -400,9 +424,9 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
                 </g>
                 <g class="recharts-layer recharts-cartesian-axis-tick">
                   <line stroke="#000"
+                        angle="0"
                         height="30"
                         orientation="bottom"
-                        angle="0"
                         x="60"
                         y="370"
                         width="410"
@@ -417,9 +441,9 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
                 </g>
                 <g class="recharts-layer recharts-cartesian-axis-tick">
                   <line stroke="#000"
+                        angle="0"
                         height="30"
                         orientation="bottom"
-                        angle="0"
                         x="60"
                         y="370"
                         width="410"
@@ -434,9 +458,9 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
                 </g>
                 <g class="recharts-layer recharts-cartesian-axis-tick">
                   <line stroke="#000"
+                        angle="0"
                         height="30"
                         orientation="bottom"
-                        angle="0"
                         x="60"
                         y="370"
                         width="410"
@@ -454,9 +478,9 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
           </g>
           <g class="recharts-layer recharts-cartesian-axis recharts-yAxis yAxis">
             <line stroke="#000"
+                  angle="0"
                   orientation="left"
                   width="60"
-                  angle="0"
                   x="0"
                   y="10"
                   height="360"
@@ -472,9 +496,9 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
               <g class="recharts-cartesian-axis-tick-lines recharts-yAxis-tick-lines">
                 <g class="recharts-layer recharts-cartesian-axis-tick">
                   <line stroke="#000"
+                        angle="0"
                         orientation="left"
                         width="60"
-                        angle="0"
                         x="0"
                         y="10"
                         height="360"
@@ -489,9 +513,9 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
                 </g>
                 <g class="recharts-layer recharts-cartesian-axis-tick">
                   <line stroke="#000"
+                        angle="0"
                         orientation="left"
                         width="60"
-                        angle="0"
                         x="0"
                         y="10"
                         height="360"
@@ -506,9 +530,9 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
                 </g>
                 <g class="recharts-layer recharts-cartesian-axis-tick">
                   <line stroke="#000"
+                        angle="0"
                         orientation="left"
                         width="60"
-                        angle="0"
                         x="0"
                         y="10"
                         height="360"
@@ -523,9 +547,9 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
                 </g>
                 <g class="recharts-layer recharts-cartesian-axis-tick">
                   <line stroke="#000"
+                        angle="0"
                         orientation="left"
                         width="60"
-                        angle="0"
                         x="0"
                         y="10"
                         height="360"
@@ -540,9 +564,9 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
                 </g>
                 <g class="recharts-layer recharts-cartesian-axis-tick">
                   <line stroke="#000"
+                        angle="0"
                         orientation="left"
                         width="60"
-                        angle="0"
                         x="0"
                         y="10"
                         height="360"
@@ -559,15 +583,25 @@ exports[`groups/StatusCountTimeline Timeline smoke-test 1`] = `
             </g>
           </g>
         </g>
-        <g id="recharts-zindex-600-_r_d_">
+        <g tabindex="-1"
+           id="recharts-zindex-600-_r_d_"
+        >
         </g>
-        <g id="recharts-zindex-1000-_r_e_">
+        <g tabindex="-1"
+           id="recharts-zindex-1000-_r_e_"
+        >
         </g>
-        <g id="recharts-zindex-1100-_r_f_">
+        <g tabindex="-1"
+           id="recharts-zindex-1100-_r_f_"
+        >
         </g>
-        <g id="recharts-zindex-1200-_r_g_">
+        <g tabindex="-1"
+           id="recharts-zindex-1200-_r_g_"
+        >
         </g>
-        <g id="recharts-zindex-2000-_r_h_">
+        <g tabindex="-1"
+           id="recharts-zindex-2000-_r_h_"
+        >
           <g class="recharts-cartesian-axis-tick-labels recharts-xAxis-tick-labels">
             <g class="recharts-layer recharts-cartesian-axis-tick-label">
               <text stroke="none"

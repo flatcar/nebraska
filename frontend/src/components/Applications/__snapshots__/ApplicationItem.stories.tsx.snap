@@ -111,7 +111,7 @@ exports[`applications/ApplicationItem Application smoke-test 1`] = `
               <div class="MuiBox-root css-1ckupud">
                 <div class="MuiBox-root css-126n10b">
                   <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-lv5yp2-MuiTypography-root-MuiLink-root"
-                     href="/apps//groups/xxx-xxx-1"
+                     href="/apps/groups/xxx-xxx-1"
                      data-discover="true"
                   >
                     First group
@@ -119,7 +119,7 @@ exports[`applications/ApplicationItem Application smoke-test 1`] = `
                 </div>
                 <div class="MuiBox-root css-qiye2o">
                   <a class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-1mxnekj-MuiTypography-root-MuiLink-root"
-                     href="/apps//groups/xxx-xxx-1/instances?period=1d"
+                     href="/apps/groups/xxx-xxx-1/instances?period=1d"
                      data-discover="true"
                   >
                     <div class="MuiBox-root css-k008qs">

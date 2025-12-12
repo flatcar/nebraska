@@ -20,7 +20,7 @@ import LoadingPage from './LoadingPage';
 
 function SkipLink() {
   return (
-    <Link href="#main" sx={visuallyHidden} underline="hover">
+    <Link href="#main" style={visuallyHidden} underline="hover">
       Skip to main content
     </Link>
   );
