@@ -93,7 +93,7 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 	e.Use(middleware.CORS())
 	e.Use(middleware.GzipWithConfig(middleware.GzipConfig{Skipper: middlewareSkipper}))
 	if conf.HTTPLog {
-		e.Use(middleware.Logger())
+		e.Use(middleware.RequestLogger())
 	}
 	if sessionStore != nil {
 		e.Use(echosessions.SessionsMiddleware(sessionStore, conf.AuthMode))
