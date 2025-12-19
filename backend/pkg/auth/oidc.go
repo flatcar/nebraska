@@ -10,6 +10,9 @@ import (
 	"slices"
 
 	"github.com/coreos/go-oidc/v3/oidc"
+	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/oauth2"
+
 	"github.com/labstack/echo/v4"
 	"github.com/tidwall/gjson"
 )
@@ -20,6 +23,7 @@ type OIDCAuthConfig struct {
 	AdminRoles    []string
 	ViewerRoles   []string
 	RolesPath     string
+	UseUserInfo   bool
 }
 
 type oidcAuth struct {
@@ -30,6 +34,7 @@ type oidcAuth struct {
 	adminRoles    []string
 	viewerRoles   []string
 	rolesPath     string
+	useUserInfo   bool
 }
 
 func NewOIDCAuthenticator(config *OIDCAuthConfig) (Authenticator, error) {
@@ -58,6 +63,7 @@ func NewOIDCAuthenticator(config *OIDCAuthConfig) (Authenticator, error) {
 		adminRoles:    config.AdminRoles,
 		viewerRoles:   config.ViewerRoles,
 		rolesPath:     config.RolesPath,
+		useUserInfo:   config.UseUserInfo,
 	}
 
 	return oidcAuthenticator, nil
@@ -145,6 +151,35 @@ func rolesFromToken(token *oidc.IDToken, rolesPath string) ([]string, error) {
 	return roles, nil
 }
 
+// rolesFromUserInfo calls the OIDC providers userinfo endpoint to get user roles
+func (oa *oidcAuth) rolesFromUserInfo(ctx context.Context, rawToken string, rolesPath string) ([]string, error) {
+	roles := []string{}
+
+	userInfo, err := oa.provider.UserInfo(ctx, oauth2.StaticTokenSource(&oauth2.Token{
+		AccessToken: rawToken,
+		TokenType:   "Bearer", // The UserInfo endpoint requires a bearer token as per RFC6750
+	}))
+	if err != nil {
+		return roles, fmt.Errorf("error loading userinfo: %v", err)
+	}
+
+	var claims jwt.MapClaims
+	err = userInfo.Claims(&claims)
+	if err != nil {
+		return roles, fmt.Errorf("failed to decode userinfo claims: %v", err)
+	}
+
+	groups := claims[rolesPath]
+	if groups == nil {
+		return roles, fmt.Errorf("userinfo does not contain roles/groups on key '%s'", rolesPath)
+	}
+	for _, v := range groups.([]any) {
+		roles = append(roles, v.(string))
+	}
+
+	return roles, nil
+}
+
 // determineAccessLevel determines user access level based on roles
 func (oa *oidcAuth) determineAccessLevel(roles []string) string {
 	accessLevel := ""
@@ -182,12 +217,23 @@ func (oa *oidcAuth) Authorize(c echo.Context) (teamID string, replied bool) {
 		return "", true
 	}
 
-	// Extract roles from access token claims
-	roles, err := rolesFromToken(accessToken, oa.rolesPath)
-	if err != nil {
-		l.Error().Str("request_id", requestID).AnErr("error", err).Msg("Can't extract roles from access token")
-		httpError(c, http.StatusInternalServerError)
-		return "", true
+	roles := []string{}
+	if oa.useUserInfo {
+		// Extract roles from UserInfo endpoint
+		roles, err = oa.rolesFromUserInfo(ctx, token, oa.rolesPath)
+		if err != nil {
+			l.Error().Str("request_id", requestID).AnErr("error", err).Msg("Can't extract roles from userinfo")
+			httpError(c, http.StatusInternalServerError)
+			return "", true
+		}
+	} else {
+		// Extract roles from access token claims
+		roles, err = rolesFromToken(accessToken, oa.rolesPath)
+		if err != nil {
+			l.Error().Str("request_id", requestID).AnErr("error", err).Msg("Can't extract roles from access token")
+			httpError(c, http.StatusInternalServerError)
+			return "", true
+		}
 	}
 
 	accessLevel := oa.determineAccessLevel(roles)
