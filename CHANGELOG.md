@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - **Multi-Step Updates with Floor Packages:** Added support for mandatory intermediate update versions (floor packages) that clients must install before reaching the target version. This enables safe migration paths for breaking changes by ensuring clients update through specific versions in order. Floor packages can be configured per channel with optional reasons and are architecture-specific. ([#1195](https://github.com/flatcar/nebraska/pull/1195))
+- **Nebraska backend is able to use OIDC userinfo endpoint:** Some OIDC providers do not return group membership inside the access token. The Nebraska frontend passes this access token via the header `Authorization: Bearer <token>` to the backend which can then (optionally) call the OIDC provider's userinfo endpoint to gather group membership. ([#1279](https://github.com/flatcar/nebraska/pull/1279))
 
 ### Changed
 
