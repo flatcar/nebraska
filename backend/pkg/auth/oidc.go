@@ -10,11 +10,9 @@ import (
 	"slices"
 
 	"github.com/coreos/go-oidc/v3/oidc"
-	"github.com/golang-jwt/jwt/v5"
-	"golang.org/x/oauth2"
-
 	"github.com/labstack/echo/v4"
 	"github.com/tidwall/gjson"
+	"golang.org/x/oauth2"
 )
 
 type OIDCAuthConfig struct {
@@ -143,6 +141,9 @@ func rolesFromToken(token *oidc.IDToken, rolesPath string) ([]string, error) {
 	}
 
 	result := gjson.GetBytes(claimsJSON, rolesPath)
+	if !result.Exists() {
+		return roles, fmt.Errorf("token does not contain roles at path '%s'", rolesPath)
+	}
 	result.ForEach(func(_, value gjson.Result) bool {
 		roles = append(roles, value.String())
 		return true
@@ -154,28 +155,36 @@ func rolesFromToken(token *oidc.IDToken, rolesPath string) ([]string, error) {
 // rolesFromUserInfo calls the OIDC providers userinfo endpoint to get user roles
 func (oa *oidcAuth) rolesFromUserInfo(ctx context.Context, rawToken string, rolesPath string) ([]string, error) {
 	roles := []string{}
+	if rolesPath == "" {
+		return roles, nil
+	}
 
 	userInfo, err := oa.provider.UserInfo(ctx, oauth2.StaticTokenSource(&oauth2.Token{
 		AccessToken: rawToken,
-		TokenType:   "Bearer", // The UserInfo endpoint requires a bearer token as per RFC6750
+		TokenType:   "Bearer",
 	}))
 	if err != nil {
-		return roles, fmt.Errorf("error loading userinfo: %v", err)
+		return roles, fmt.Errorf("error loading userinfo: %w", err)
 	}
 
-	var claims jwt.MapClaims
-	err = userInfo.Claims(&claims)
+	var claims map[string]any
+	if err := userInfo.Claims(&claims); err != nil {
+		return roles, fmt.Errorf("failed to decode userinfo claims: %w", err)
+	}
+
+	claimsJSON, err := json.Marshal(claims)
 	if err != nil {
-		return roles, fmt.Errorf("failed to decode userinfo claims: %v", err)
+		return roles, fmt.Errorf("failed to marshal userinfo claims: %w", err)
 	}
 
-	groups := claims[rolesPath]
-	if groups == nil {
-		return roles, fmt.Errorf("userinfo does not contain roles/groups on key '%s'", rolesPath)
+	result := gjson.GetBytes(claimsJSON, rolesPath)
+	if !result.Exists() {
+		return roles, fmt.Errorf("userinfo does not contain roles at path '%s'", rolesPath)
 	}
-	for _, v := range groups.([]any) {
-		roles = append(roles, v.(string))
-	}
+	result.ForEach(func(_, value gjson.Result) bool {
+		roles = append(roles, value.String())
+		return true
+	})
 
 	return roles, nil
 }
@@ -217,7 +226,7 @@ func (oa *oidcAuth) Authorize(c echo.Context) (teamID string, replied bool) {
 		return "", true
 	}
 
-	roles := []string{}
+	var roles []string
 	if oa.useUserInfo {
 		// Extract roles from UserInfo endpoint
 		roles, err = oa.rolesFromUserInfo(ctx, token, oa.rolesPath)
@@ -240,7 +249,14 @@ func (oa *oidcAuth) Authorize(c echo.Context) (teamID string, replied bool) {
 
 	// If access level is empty or doesn't match role scope then return an error
 	if accessLevel == "" {
-		l.Debug().Msg("Misconfigured roles, can't get access level from access token")
+		l.Debug().
+			Str("request_id", requestID).
+			Strs("roles_found", roles).
+			Str("roles_path", oa.rolesPath).
+			Strs("admin_roles", oa.adminRoles).
+			Strs("viewer_roles", oa.viewerRoles).
+			Bool("use_userinfo", oa.useUserInfo).
+			Msg("User roles do not match any configured admin or viewer roles")
 		httpError(c, http.StatusForbidden)
 		return "", true
 	} else if accessLevel != "admin" {

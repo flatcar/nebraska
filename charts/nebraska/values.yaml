@@ -55,6 +55,8 @@ config:
       rolesPath:
       scopes:
       audience:
+      # Use OIDC UserInfo endpoint for role extraction (for providers that don't include roles in access token)
+      useUserInfo: false
     github:
       clientID:
       clientSecret:
