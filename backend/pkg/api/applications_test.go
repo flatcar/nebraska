@@ -158,7 +158,7 @@ func TestGetApp(t *testing.T) {
 	assert.NoError(t, err)
 	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID})
 	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
-	_, _ = a.RegisterInstance(uuid.New().String(), "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
+	_, _ = a.RegisterInstance(uuid.New().String(), "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID, "", "")
 
 	app, err := a.GetApp(tApp.ID)
 	assert.NoError(t, err)
@@ -290,8 +290,8 @@ func TestGetAppsFiltered(t *testing.T) {
 	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	realInstanceID := uuid.New().String()
 	fakeInstanceID := "{" + uuid.New().String() + "}"
-	_, _ = a.RegisterInstance(realInstanceID, "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
-	_, _ = a.RegisterInstance(fakeInstanceID, "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
+	_, _ = a.RegisterInstance(realInstanceID, "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID, "", "")
+	_, _ = a.RegisterInstance(fakeInstanceID, "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID, "", "")
 
 	// should ignore fake instance in Instances count
 	apps, err := a.GetApps(tTeam.ID, 1, 10)

@@ -62,8 +62,8 @@ var (
 // GetUpdatePackage returns an update package for the instance/application
 // provided. The instance details and the application it's running will be
 // registered in Nebraska (or updated if it's already registered).
-func (api *API) GetUpdatePackage(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID string) (*Package, error) {
-	instance, err := api.RegisterInstance(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID)
+func (api *API) GetUpdatePackage(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID, instanceOEM, instanceOEMVersion string) (*Package, error) {
+	instance, err := api.RegisterInstance(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID, instanceOEM, instanceOEMVersion)
 	if err != nil {
 		l.Error().Err(err).Msg("GetUpdatePackage - could not register instance")
 		return nil, ErrRegisterInstanceFailed
@@ -190,8 +190,8 @@ func (api *API) GetUpdatePackage(instanceID, instanceAlias, instanceIP, instance
 }
 
 // GetUpdatePackagesForSyncer returns all packages (floors + target) for a syncer client
-func (api *API) GetUpdatePackagesForSyncer(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID string) ([]*Package, error) {
-	instance, err := api.RegisterInstance(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID)
+func (api *API) GetUpdatePackagesForSyncer(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID, instanceOEM, instanceOEMVersion string) ([]*Package, error) {
+	instance, err := api.RegisterInstance(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID, instanceOEM, instanceOEMVersion)
 	if err != nil {
 		l.Error().Err(err).Msg("GetUpdatePackagesForSyncer - could not register instance")
 		return nil, ErrRegisterInstanceFailed

@@ -187,12 +187,12 @@ func TestFloorRolloutPolicy(t *testing.T) {
 	assert.NoError(t, err)
 
 	// First client gets floor
-	pkg1, err := a.GetUpdatePackage("i1", "", "10.0.0.1", "1000.0.0", setup.AppID, group.ID)
+	pkg1, err := a.GetUpdatePackage("i1", "", "10.0.0.1", "1000.0.0", setup.AppID, group.ID, "", "")
 	assert.NoError(t, err)
 	assert.Equal(t, "2000.0.0", pkg1.Version)
 
 	// Second client blocked by policy
-	_, err = a.GetUpdatePackage("i2", "", "10.0.0.2", "1000.0.0", setup.AppID, group.ID)
+	_, err = a.GetUpdatePackage("i2", "", "10.0.0.2", "1000.0.0", setup.AppID, group.ID, "", "")
 	assert.Equal(t, ErrMaxUpdatesPerPeriodLimitReached, err)
 }
 
@@ -245,11 +245,11 @@ func TestTargetAsFloor(t *testing.T) {
 	}
 
 	// Test that regular client gets the appropriate update
-	pkg, err := a.GetUpdatePackage("i1", "", "10.0.0.1", "500.0.0", setup.AppID, setup.Group.ID)
+	pkg, err := a.GetUpdatePackage("i1", "", "10.0.0.1", "500.0.0", setup.AppID, setup.Group.ID, "", "")
 	assert.NoError(t, err)
 	assert.Equal(t, "1000.0.0", pkg.Version) // Gets first floor
 
-	pkg, err = a.GetUpdatePackage("i2", "", "10.0.0.2", "2500.0.0", setup.AppID, setup.Group.ID)
+	pkg, err = a.GetUpdatePackage("i2", "", "10.0.0.2", "2500.0.0", setup.AppID, setup.Group.ID, "", "")
 	assert.NoError(t, err)
 	assert.Equal(t, "3000.0.0", pkg.Version) // Gets target-floor directly
 }
