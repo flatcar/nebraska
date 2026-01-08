@@ -57,6 +57,8 @@ const (
 type Instance struct {
 	ID          string              `db:"id" json:"id"`
 	IP          string              `db:"ip" json:"ip"`
+	OEM         string              `db:"oem" json:"oem,omitempty"`
+	OEMVersion  string              `db:"oem_version" json:"oem_version,omitempty"`
 	CreatedTs   time.Time           `db:"created_ts" json:"created_ts"`
 	Application InstanceApplication `db:"application" json:"application,omitempty"`
 	Alias       string              `db:"alias" json:"alias,omitempty"`
@@ -161,7 +163,7 @@ func sanitizeSortFilterParams(sortFilter string) string {
 }
 
 // RegisterInstance registers an instance into Nebraska.
-func (api *API) RegisterInstance(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID string) (*Instance, error) {
+func (api *API) RegisterInstance(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID, instanceOEM, instanceOEMVersion string) (*Instance, error) {
 	if !isValidSemver(instanceVersion) {
 		return nil, ErrInvalidSemver
 	}
@@ -183,8 +185,15 @@ func (api *API) RegisterInstance(instanceID, instanceAlias, instanceIP, instance
 		if instanceAlias == "" {
 			instanceAlias = instance.Alias
 		}
-		// The instance exists, so we just update it if its IP or Alias changed
-		updateInstance = instance.IP != instanceIP || instance.Alias != instanceAlias
+		// Give precedence to existing OEM values over omitted or empty fields
+		if instanceOEM == "" {
+			instanceOEM = instance.OEM
+		}
+		if instanceOEMVersion == "" {
+			instanceOEMVersion = instance.OEMVersion
+		}
+		// The instance exists, so we just update it if its IP, Alias, OEM or OEMVersion changed
+		updateInstance = instance.IP != instanceIP || instance.Alias != instanceAlias || instance.OEM != instanceOEM || instance.OEMVersion != instanceOEMVersion
 
 		recent := nowUTC().Add(-5 * time.Minute)
 
@@ -200,9 +209,9 @@ func (api *API) RegisterInstance(instanceID, instanceAlias, instanceIP, instance
 	}
 
 	upsertInstance, _, err := goqu.Insert("instance").
-		Cols("id", "ip", "alias").
-		Vals(goqu.Vals{instanceID, instanceIP, instanceAlias}).
-		OnConflict(goqu.DoUpdate("id", goqu.Record{"id": instanceID, "ip": instanceIP, "alias": instanceAlias})).
+		Cols("id", "ip", "alias", "oem", "oem_version").
+		Vals(goqu.Vals{instanceID, instanceIP, instanceAlias, instanceOEM, instanceOEMVersion}).
+		OnConflict(goqu.DoUpdate("id", goqu.Record{"id": instanceID, "ip": instanceIP, "alias": instanceAlias, "oem": instanceOEM, "oem_version": instanceOEMVersion})).
 		ToSQL()
 	if err != nil {
 		return nil, err
