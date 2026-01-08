@@ -25,47 +25,53 @@ func TestRegisterInstance(t *testing.T) {
 
 	instanceID := uuid.New().String()
 
-	_, err := a.RegisterInstance("", "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
+	_, err := a.RegisterInstance("", "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID, "", "")
 	assert.Error(t, err, "Using empty string as instance id.")
 
-	_, err = a.RegisterInstance(instanceID, "", "invalidIP", "1.0.0", tApp.ID, tGroup.ID)
+	_, err = a.RegisterInstance(instanceID, "", "invalidIP", "1.0.0", tApp.ID, tGroup.ID, "", "")
 	assert.Error(t, err, "Using an invalid instance ip.")
 
-	_, err = a.RegisterInstance(instanceID, "", "10.0.0.1", "1.0.0", "invalidAppID", tGroup.ID)
+	_, err = a.RegisterInstance(instanceID, "", "10.0.0.1", "1.0.0", "invalidAppID", tGroup.ID, "", "")
 	assert.Error(t, err, "Using an invalid application id.")
 
-	_, err = a.RegisterInstance(instanceID, "", "10.0.0.1", "1.0.0", tApp.ID, "invalidGroupID")
+	_, err = a.RegisterInstance(instanceID, "", "10.0.0.1", "1.0.0", tApp.ID, "invalidGroupID", "", "")
 	assert.Error(t, err, "Using an invalid group id.")
 
-	_, err = a.RegisterInstance(instanceID, "", "10.0.0.1", "", tApp.ID, "invalidGroupID")
+	_, err = a.RegisterInstance(instanceID, "", "10.0.0.1", "", tApp.ID, "invalidGroupID", "", "")
 	assert.Error(t, err, "Using an empty instance version.")
 
-	_, err = a.RegisterInstance(instanceID, "", "10.0.0.1", "aaa1.0.0", tApp.ID, "invalidGroupID")
+	_, err = a.RegisterInstance(instanceID, "", "10.0.0.1", "aaa1.0.0", tApp.ID, "invalidGroupID", "", "")
 	assert.Equal(t, ErrInvalidSemver, err, "Using an invalid instance version.")
 
-	_, err = a.RegisterInstance(instanceID, "", "10.0.0.1", "1.0.0", tApp.ID, tGroup2.ID)
+	_, err = a.RegisterInstance(instanceID, "", "10.0.0.1", "1.0.0", tApp.ID, tGroup2.ID, "", "")
 	assert.Equal(t, ErrInvalidApplicationOrGroup, err, "The group provided doesn't belong to the application provided.")
 
-	instance, err := a.RegisterInstance(instanceID, "myalias", "10.0.0.1", "1.0.0", "{"+tApp.ID+"}", "{"+tGroup.ID+"}")
+	instance, err := a.RegisterInstance(instanceID, "myalias", "10.0.0.1", "1.0.0", "{"+tApp.ID+"}", "{"+tGroup.ID+"}", "azure", "2.9.1.1-r1")
 	assert.NoError(t, err)
 	assert.Equal(t, instanceID, instance.ID)
 	assert.Equal(t, "myalias", instance.Alias)
 	assert.Equal(t, "10.0.0.1", instance.IP)
+	assert.Equal(t, "azure", instance.OEM)
+	assert.Equal(t, "2.9.1.1-r1", instance.OEMVersion)
 
-	instance, err = a.RegisterInstance(instanceID, "mynewalias", "10.0.0.2", "1.0.2", tApp.ID, tGroup.ID)
+	instance, err = a.RegisterInstance(instanceID, "mynewalias", "10.0.0.2", "1.0.2", tApp.ID, tGroup.ID, "", "")
 	assert.NoError(t, err, "Registering an already registered instance with some updates, that's fine.")
 	assert.Equal(t, "mynewalias", instance.Alias)
 	assert.Equal(t, "10.0.0.2", instance.IP)
 	assert.Equal(t, "1.0.2", instance.Application.Version)
+	assert.Equal(t, "azure", instance.OEM, "OEM should be preserved when not provided")
+	assert.Equal(t, "2.9.1.1-r1", instance.OEMVersion, "OEMVersion should be preserved when not provided")
 
-	_, err = a.RegisterInstance(instanceID, "", "10.0.0.2", "1.0.2", tApp2.ID, tGroup.ID)
+	_, err = a.RegisterInstance(instanceID, "", "10.0.0.2", "1.0.2", tApp2.ID, tGroup.ID, "", "")
 	assert.Error(t, err, "Application id cannot be updated.")
 
-	instance, err = a.RegisterInstance(instanceID, "", "10.0.0.3", "1.0.3", tApp.ID, tGroup3.ID)
+	instance, err = a.RegisterInstance(instanceID, "", "10.0.0.3", "1.0.3", tApp.ID, tGroup3.ID, "gcp", "3.0.0")
 	assert.NoError(t, err, "Registering an already registered instance using a different group, that's fine.")
 	assert.Equal(t, "10.0.0.3", instance.IP)
 	assert.Equal(t, "1.0.3", instance.Application.Version)
 	assert.Equal(t, null.StringFrom(tGroup3.ID), instance.Application.GroupID)
+	assert.Equal(t, "gcp", instance.OEM, "OEM should be updated when provided")
+	assert.Equal(t, "3.0.0", instance.OEMVersion, "OEMVersion should be updated when provided")
 }
 
 func TestGetInstance(t *testing.T) {
@@ -77,7 +83,7 @@ func TestGetInstance(t *testing.T) {
 	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
 	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
 	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
-	tInstance, _ := a.RegisterInstance(uuid.New().String(), "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
+	tInstance, _ := a.RegisterInstance(uuid.New().String(), "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID, "", "")
 
 	_, err := a.GetInstance(uuid.New().String(), tApp.ID)
 	assert.Error(t, err, "Using non existent instance id.")
@@ -106,9 +112,9 @@ func TestGetInstances(t *testing.T) {
 	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
 	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	tGroup2, _ := a.AddGroup(&Group{Name: "group2", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
-	tInstance, _ := a.RegisterInstance(uuid.New().String(), "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
-	_, _ = a.RegisterInstance(uuid.New().String(), "", "10.0.0.2", "1.0.1", tApp.ID, tGroup.ID)
-	_, _ = a.RegisterInstance(uuid.New().String(), "", "10.0.0.3", "1.0.2", tApp.ID, tGroup2.ID)
+	tInstance, _ := a.RegisterInstance(uuid.New().String(), "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID, "", "")
+	_, _ = a.RegisterInstance(uuid.New().String(), "", "10.0.0.2", "1.0.1", tApp.ID, tGroup.ID, "", "")
+	_, _ = a.RegisterInstance(uuid.New().String(), "", "10.0.0.3", "1.0.2", tApp.ID, tGroup2.ID, "", "")
 
 	result, err := a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Version: "1.0.0", Page: 1, PerPage: 10}, testDuration)
 	assert.NoError(t, err)
@@ -162,7 +168,7 @@ func TestGetInstances(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 0, len(result.Instances))
 
-	_, _ = a.GetUpdatePackage(tInstance.ID, "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
+	_, _ = a.GetUpdatePackage(tInstance.ID, "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID, "", "")
 	_ = a.RegisterEvent(tInstance.ID, tApp.ID, tGroup.ID, EventUpdateComplete, ResultSuccessReboot, "", "")
 
 	result, err = a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Status: InstanceStatusComplete, Page: 1, PerPage: 10}, testDuration)
@@ -191,12 +197,12 @@ func TestGetInstancesSearch(t *testing.T) {
 	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
 	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
 	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
-	tInstance, _ := a.RegisterInstance(uuid.New().String(), "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
-	_, _ = a.RegisterInstance(uuid.New().String(), "", "10.0.0.2", "1.0.1", tApp.ID, tGroup.ID)
-	_, _ = a.RegisterInstance(uuid.New().String(), "", "10.0.0.3", "1.0.2", tApp.ID, tGroup.ID)
+	tInstance, _ := a.RegisterInstance(uuid.New().String(), "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID, "", "")
+	_, _ = a.RegisterInstance(uuid.New().String(), "", "10.0.0.2", "1.0.1", tApp.ID, tGroup.ID, "", "")
+	_, _ = a.RegisterInstance(uuid.New().String(), "", "10.0.0.3", "1.0.2", tApp.ID, tGroup.ID, "", "")
 
 	instanceAlias := "instance_alias"
-	_, _ = a.RegisterInstance(uuid.New().String(), instanceAlias, "10.0.0.4", "1.0.4", tApp.ID, tGroup.ID)
+	_, _ = a.RegisterInstance(uuid.New().String(), instanceAlias, "10.0.0.4", "1.0.4", tApp.ID, tGroup.ID, "", "")
 
 	result, err := a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Page: 1, PerPage: 10, SearchFilter: "All", SearchValue: tInstance.ID}, testDuration)
 	assert.NoError(t, err)
@@ -232,7 +238,7 @@ func TestGetInstancesFiltered(t *testing.T) {
 	instanceID4 := "8d180b2a07344406af029a4f86bd1ee3"
 	for idx, id := range []string{instanceID1, instanceID2, instanceID3, instanceID4} {
 		ip := fmt.Sprintf("10.0.0.%d", idx+1)
-		_, _ = a.RegisterInstance(id, "", ip, "1.0.0", tApp.ID, tGroup.ID)
+		_, _ = a.RegisterInstance(id, "", ip, "1.0.0", tApp.ID, tGroup.ID, "", "")
 	}
 
 	result, err := a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Version: "1.0.0", Page: 1, PerPage: 10}, testDuration)
@@ -264,7 +270,7 @@ func TestGetInstanceStatusHistory(t *testing.T) {
 	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
 	newInstance1ID := uuid.New().String()
-	tInstance, _ := a.RegisterInstance(newInstance1ID, "analias", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
+	tInstance, _ := a.RegisterInstance(newInstance1ID, "analias", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID, "", "")
 	assert.Equal(t, tInstance.Alias, "analias")
 
 	instance, err := a.GetInstance(tInstance.ID, tApp.ID)
@@ -312,14 +318,14 @@ func TestUpdateInstanceStats(t *testing.T) {
 	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: ArchAMD64})
 	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID), Arch: ArchAMD64})
 	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
-	tInstance1, _ := a.RegisterInstance(uuid.New().String(), "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
-	tInstance2, _ := a.RegisterInstance(uuid.New().String(), "", "10.0.0.2", "1.0.0", tApp.ID, tGroup.ID)
-	_, _ = a.RegisterInstance(uuid.New().String(), "", "10.0.0.3", "1.0.1", tApp.ID, tGroup.ID)
+	tInstance1, _ := a.RegisterInstance(uuid.New().String(), "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID, "", "")
+	tInstance2, _ := a.RegisterInstance(uuid.New().String(), "", "10.0.0.2", "1.0.0", tApp.ID, tGroup.ID, "", "")
+	_, _ = a.RegisterInstance(uuid.New().String(), "", "10.0.0.3", "1.0.1", tApp.ID, tGroup.ID, "", "")
 
-	_, err = a.GetUpdatePackage(tInstance1.ID, "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
+	_, err = a.GetUpdatePackage(tInstance1.ID, "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID, "", "")
 	assert.NoError(t, err)
 
-	_, err = a.GetUpdatePackage(tInstance2.ID, "", "10.0.0.2", "1.0.1", tApp.ID, tGroup.ID)
+	_, err = a.GetUpdatePackage(tInstance2.ID, "", "10.0.0.2", "1.0.1", tApp.ID, tGroup.ID, "", "")
 	assert.NoError(t, err)
 
 	ts := time.Now().UTC()
@@ -343,13 +349,13 @@ func TestUpdateInstanceStats(t *testing.T) {
 	// Next test case: Switch tInstance1 and tInstance2 versions to workaround the 5-minutes-rate-limiting of the check-in time and add new instance
 	ts2 := time.Now().UTC()
 
-	_, err = a.GetUpdatePackage(tInstance1.ID, "", "10.0.0.1", "1.0.3", tApp.ID, tGroup.ID)
+	_, err = a.GetUpdatePackage(tInstance1.ID, "", "10.0.0.1", "1.0.3", tApp.ID, tGroup.ID, "", "")
 	assert.NoError(t, err)
 
-	_, err = a.GetUpdatePackage(tInstance2.ID, "", "10.0.0.2", "1.0.4", tApp.ID, tGroup.ID)
+	_, err = a.GetUpdatePackage(tInstance2.ID, "", "10.0.0.2", "1.0.4", tApp.ID, tGroup.ID, "", "")
 	assert.NoError(t, err)
 
-	_, _ = a.RegisterInstance(uuid.New().String(), "", "10.0.0.4", "1.0.5", tApp.ID, tGroup.ID)
+	_, _ = a.RegisterInstance(uuid.New().String(), "", "10.0.0.4", "1.0.5", tApp.ID, tGroup.ID, "", "")
 
 	ts3 := time.Now().UTC()
 	elapsed = ts3.Sub(ts2)
@@ -381,7 +387,7 @@ func TestUpdateInstanceStatsNoArch(t *testing.T) {
 	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
 	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
 	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
-	_, _ = a.RegisterInstance(uuid.New().String(), "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
+	_, _ = a.RegisterInstance(uuid.New().String(), "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID, "", "")
 
 	ts := time.Now().UTC()
 	// Use large duration to have some test coverage for durationToInterval
