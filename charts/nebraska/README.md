@@ -27,6 +27,7 @@ The OIDC implementation has been refactored to use Authorization Code Flow with 
 
 **Added Configuration Options:**
 - `config.auth.oidc.audience` - Optional, required for Auth0
+- `config.auth.oidc.useUserInfo` - Use UserInfo endpoint for role extraction (for providers that don't include roles in access token)
 
 **All Other Options Remain:** `clientID`, `issuerURL`, `managementURL`, `logoutURL`, `adminRoles`, `viewerRoles`, `rolesPath`, `scopes`
 
@@ -189,6 +190,7 @@ $ kubectl exec -ti pod/nebraska-postgresql-0 -- psql < backup.sql
 | `config.auth.oidc.rolesPath`                          | json path in which the roles array is present in the id token  | `nil`  |
 | `config.auth.oidc.scopes`                             | comma-separated list of scopes to be used in OIDC | `nil`  |
 | `config.auth.oidc.audience`                           | OIDC audience (required for Auth0, optional for others) | `nil`  |
+| `config.auth.oidc.useUserInfo`                        | Use UserInfo endpoint for role extraction (for providers that don't include roles in access token) | `false`  |
 | `config.database.host`                                | The host name of the database server                                                                                                 | `""` (use postgresql from Bitnami subchart)                             |
 | `config.database.port`                                | The port number the database server is listening on                                                                                  | `5432`                                                                  |
 | `config.database.sslMode`                             | The mode of the database connection                                                                                                  | `disable`                                                               |
