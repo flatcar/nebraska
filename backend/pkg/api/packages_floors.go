@@ -226,13 +226,16 @@ const (
 	DefaultMaxFloorsPerResponse = 5
 )
 
-// GetRequiredChannelFloors returns floor packages between instance and target versions for a channel
-func (api *API) GetRequiredChannelFloors(channel *Channel, instanceVersion string) ([]*Package, error) {
+// GetRequiredChannelFloorsWithLimit returns floor packages between instance and target versions,
+// along with a boolean indicating if more floors remain beyond the limit.
+// This uses LIMIT+1 approach: query for limit+1 rows, if we get more than limit, there are more.
+// This is more efficient than a separate COUNT query.
+func (api *API) GetRequiredChannelFloorsWithLimit(channel *Channel, instanceVersion string) ([]*Package, bool, error) {
 	if channel == nil || channel.Package == nil {
-		return nil, ErrNoPackageFound
+		return nil, false, ErrNoPackageFound
 	}
 	if instanceVersion == "" {
-		return nil, fmt.Errorf("instance version cannot be empty")
+		return nil, false, fmt.Errorf("instance version cannot be empty")
 	}
 
 	targetVersion := channel.Package.Version
@@ -245,19 +248,20 @@ func (api *API) GetRequiredChannelFloors(channel *Channel, instanceVersion strin
 	// No blacklist check needed for floors
 	gtExpr, err := versionCompareExpr("p.version", ">", instanceVersion)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 
 	lteExpr, err := versionCompareExpr("p.version", "<=", targetVersion)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 
 	semverExpr, err := semverToIntArray("p.version")
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 
+	// Query for LIMIT+1 to detect if more floors exist
 	query, _, err := goqu.From(goqu.L(`
 		package p
 		JOIN channel_package_floors cpf ON p.id = cpf.package_id
@@ -273,14 +277,26 @@ func (api *API) GetRequiredChannelFloors(channel *Channel, instanceVersion strin
 			lteExpr,
 		)).
 		Order(goqu.L(semverExpr).Asc()).
-		Limit(uint(maxFloorsPerResponse)).
+		Limit(uint(maxFloorsPerResponse + 1)).
 		ToSQL()
 
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 
-	return api.getPackagesFromQuery(query)
+	floors, err := api.getPackagesFromQuery(query)
+	if err != nil {
+		return nil, false, err
+	}
+
+	// If we got more than the limit, there are more floors remaining
+	if len(floors) > maxFloorsPerResponse {
+		// Return only up to the limit, indicate more remain
+		return floors[:maxFloorsPerResponse], true, nil
+	}
+
+	// All floors returned
+	return floors, false, nil
 }
 
 // GetChannelFloorPackagesCount returns the count of floor packages for a channel

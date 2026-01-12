@@ -382,7 +382,7 @@ func (api *API) DeletePackage(pkgID string) error {
 		var exists bool
 		var isFloor bool
 		err = api.db.QueryRow(`
-			SELECT 
+			SELECT
 				EXISTS(SELECT 1 FROM package WHERE id = $1),
 				EXISTS(SELECT 1 FROM channel_package_floors WHERE package_id = $1)
 		`, pkgID).Scan(&exists, &isFloor)
