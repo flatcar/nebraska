@@ -156,8 +156,9 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 
 		if reqApp.UpdateCheck != nil {
 			if isSyncerClient(omahaReq) {
-				// Syncer - get all packages
-				packages, err := h.crAPI.GetUpdatePackagesForSyncer(reqApp.MachineID, reqApp.MachineAlias, ip, reqApp.Version, appID, group, reqApp.OEM, reqApp.OEMVersion)
+				// Syncer - get floors and target separately
+				// target is nil when more floors remain beyond NEBRASKA_MAX_FLOORS_PER_RESPONSE limit
+				floors, target, err := h.crAPI.GetUpdatePackagesForSyncer(reqApp.MachineID, reqApp.MachineAlias, ip, reqApp.Version, appID, group, reqApp.OEM, reqApp.OEMVersion)
 				if err != nil {
 					if err == api.ErrNoUpdatePackageAvailable || err == api.ErrUpdateGrantFailed {
 						respApp.AddUpdateCheck(omahaSpec.NoUpdate)
@@ -168,32 +169,23 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 					continue
 				}
 
-				// Check if we got any packages
-				if len(packages) == 0 {
+				// Check if we got anything to send
+				if len(floors) == 0 && target == nil {
 					respApp.AddUpdateCheck(omahaSpec.NoUpdate)
 					continue
 				}
 
 				// Critical safety rule: old syncers without MultiManifestOK cannot skip floors
-				// Check if ANY package is a floor (including the target which might also be a floor)
-				hasFloors := false
-				for _, pkg := range packages {
-					if pkg.IsFloor {
-						hasFloors = true
-						break
-					}
-				}
-
-				if hasFloors && !reqApp.MultiManifestOK {
+				if len(floors) > 0 && !reqApp.MultiManifestOK {
 					l.Warn().Str("instanceID", reqApp.MachineID).
-						Int("packageCount", len(packages)).
+						Int("floorCount", len(floors)).
 						Msg("Syncer without multi-manifest support blocked due to floor requirements")
 					respApp.AddUpdateCheck(omahaSpec.NoUpdate)
 					continue
 				}
 
 				// Either multi-manifest capable syncer or no floors exist
-				h.prepareMultiManifestUpdateCheck(respApp, packages)
+				h.prepareMultiManifestUpdateCheck(respApp, floors, target)
 			} else {
 				// Regular client - get single package
 				pkg, err := h.crAPI.GetUpdatePackage(reqApp.MachineID, reqApp.MachineAlias, ip, reqApp.Version, appID, group, reqApp.OEM, reqApp.OEMVersion)
@@ -337,25 +329,35 @@ func (h *Handler) prepareUpdateCheck(appResp *omahaSpec.AppResponse, pkg *api.Pa
 	updateCheck.AddURL(pkg.URL)
 }
 
-// prepareMultiManifestUpdateCheck creates a response with multiple manifests
-// Each package gets one manifest with appropriate floor/target metadata based on its properties
-func (h *Handler) prepareMultiManifestUpdateCheck(appResp *omahaSpec.AppResponse, packages []*api.Package) {
-	if len(packages) == 0 {
+// prepareMultiManifestUpdateCheck creates a response with multiple manifests.
+// When target is nil, more floors remain and syncer should request again.
+func (h *Handler) prepareMultiManifestUpdateCheck(appResp *omahaSpec.AppResponse, floors []*api.Package, target *api.Package) {
+	if len(floors) == 0 && target == nil {
 		appResp.AddUpdateCheck(omahaSpec.NoUpdate)
 		return
 	}
 
-	// The last package in the array is the target (by convention from GetUpdatePackagesForSyncer)
-	targetPkg := packages[len(packages)-1]
+	targetAlreadyInFloors := target != nil && len(floors) > 0 && floors[len(floors)-1].ID == target.ID
+
+	var packages []*api.Package
+	packages = append(packages, floors...)
+	if target != nil && !targetAlreadyInFloors {
+		packages = append(packages, target)
+	}
+
+	var codeBase string
+	if target != nil {
+		codeBase = target.URL
+	} else {
+		codeBase = packages[len(packages)-1].URL
+	}
 
 	updateCheck := appResp.AddUpdateCheck(omahaSpec.UpdateOK)
-	updateCheck.AddURL(targetPkg.URL)
+	updateCheck.AddURL(codeBase)
 
-	// Create manifest for each package with appropriate flags
-	for i, pkg := range packages {
+	for _, pkg := range packages {
 		manifest := updateCheck.AddManifest(pkg.Version)
 
-		// Set IsFloor if package has floor metadata
 		if pkg.IsFloor {
 			manifest.IsFloor = true
 			if pkg.FloorReason.Valid {
@@ -365,9 +367,8 @@ func (h *Handler) prepareMultiManifestUpdateCheck(appResp *omahaSpec.AppResponse
 			}
 		}
 
-		// Set IsTarget if this is the last package (the target)
-		// Note: A package can have both IsFloor and IsTarget flags
-		if i == len(packages)-1 {
+		isTarget := target != nil && pkg.ID == target.ID
+		if isTarget {
 			manifest.IsTarget = true
 		}
 

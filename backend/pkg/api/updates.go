@@ -116,12 +116,15 @@ func (api *API) GetUpdatePackage(instanceID, instanceAlias, instanceIP, instance
 
 			// Instance hasn't reached granted version yet - return what's next to install
 			// This will be the first floor/target above current instance version
-			packages, err := api.getPackagesWithFloorsForUpdate(group, instanceVersion)
+			floors, target, err := api.getPackagesWithFloorsForUpdate(group, instanceVersion)
 			if err != nil {
 				return nil, err
 			}
-			// packages[0] should be the granted version since instance < granted
-			return packages[0], nil
+			// Return first floor if any, otherwise target
+			if len(floors) > 0 {
+				return floors[0], nil
+			}
+			return target, nil
 		}
 
 		// No granted version tracked (old instances) - safer fallback
@@ -141,15 +144,22 @@ func (api *API) GetUpdatePackage(instanceID, instanceAlias, instanceIP, instance
 		return nil, ErrNoUpdatePackageAvailable
 	}
 
-	packages, err := api.getPackagesWithFloorsForUpdate(group, instanceVersion)
+	floors, target, err := api.getPackagesWithFloorsForUpdate(group, instanceVersion)
 	if err != nil {
 		return nil, err
+	}
+
+	// Determine the next package to return (first floor or target)
+	var nextPkg *Package
+	if len(floors) > 0 {
+		nextPkg = floors[0]
+	} else {
+		nextPkg = target
 	}
 
 	// Safety check: verify the next package isn't blacklisted for this channel
 	// This should never happen (floors/targets can't be blacklisted for their own channel)
 	// but we check anyway for data consistency
-	nextPkg := packages[0]
 	if slices.Contains(nextPkg.ChannelsBlacklist, group.Channel.ID) {
 		l.Error().Str("package", nextPkg.Version).Str("channel", group.Channel.ID).
 			Msg("Package is blacklisted for its own channel - data inconsistency!")
@@ -161,7 +171,7 @@ func (api *API) GetUpdatePackage(instanceID, instanceAlias, instanceIP, instance
 	}
 
 	// Grant the update using the version we're actually returning
-	version := packages[0].Version
+	version := nextPkg.Version
 	if err := api.grantUpdate(instance, version); err != nil {
 		l.Error().Err(err).Str("version", version).Str("instance", instance.ID).Msg("GetUpdatePackage - grantUpdate error")
 		return nil, ErrUpdateGrantFailed
@@ -186,79 +196,99 @@ func (api *API) GetUpdatePackage(instanceID, instanceAlias, instanceIP, instance
 		}
 	}
 
-	return packages[0], nil
+	return nextPkg, nil
 }
 
-// GetUpdatePackagesForSyncer returns all packages (floors + target) for a syncer client
-func (api *API) GetUpdatePackagesForSyncer(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID, instanceOEM, instanceOEMVersion string) ([]*Package, error) {
+// GetUpdatePackagesForSyncer returns floor packages and target for a syncer client.
+// Returns:
+//   - floors: Required floor packages (may be empty)
+//   - target: The target package, or nil if more floors remain beyond the limit
+//   - error: Any error that occurred
+//
+// When target is nil, the syncer should request again with the highest floor version.
+// When target is not nil, all required floors have been sent and the channel can be updated.
+func (api *API) GetUpdatePackagesForSyncer(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID, instanceOEM, instanceOEMVersion string) ([]*Package, *Package, error) {
 	instance, err := api.RegisterInstance(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID, instanceOEM, instanceOEMVersion)
 	if err != nil {
 		l.Error().Err(err).Msg("GetUpdatePackagesForSyncer - could not register instance")
-		return nil, ErrRegisterInstanceFailed
+		return nil, nil, ErrRegisterInstanceFailed
 	}
 
 	if instance.Application.Status.Valid {
 		switch int(instance.Application.Status.Int64) {
 		case InstanceStatusDownloading, InstanceStatusDownloaded, InstanceStatusInstalled:
-			return nil, ErrUpdateInProgressOnInstance
+			return nil, nil, ErrUpdateInProgressOnInstance
 		}
 	}
 
 	group, err := api.GetGroup(groupID)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if group.Channel == nil || group.Channel.Package == nil {
 		if err := api.newGroupActivityEntry(activityPackageNotFound, activityWarning, "0.0.0", appID, groupID); err != nil {
 			l.Error().Err(err).Msg("GetUpdatePackagesForSyncer - could not add new group activity entry")
 		}
-		return nil, ErrNoPackageFound
+		return nil, nil, ErrNoPackageFound
 	}
 
 	// Check if update is needed
 	instanceSemver, _ := semver.Make(instanceVersion)
 	packageSemver, _ := semver.Make(group.Channel.Package.Version)
 	if !instanceSemver.LT(packageSemver) {
-		return nil, ErrNoUpdatePackageAvailable
+		return nil, nil, ErrNoUpdatePackageAvailable
 	}
 
-	packages, err := api.getPackagesWithFloorsForUpdate(group, instanceVersion)
+	floors, target, err := api.getPackagesWithFloorsForUpdate(group, instanceVersion)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Safety check: verify no packages are blacklisted for this channel
 	// Syncers need all packages, so if any is blacklisted we can't send a valid manifest
 	// This should never happen (floors/targets can't be blacklisted for their own channel)
 	// but we check anyway for data consistency
-	for _, pkg := range packages {
+	for _, pkg := range floors {
 		if slices.Contains(pkg.ChannelsBlacklist, group.Channel.ID) {
 			l.Error().Str("package", pkg.Version).Str("channel", group.Channel.ID).
 				Msg("Package is blacklisted for its own channel - data inconsistency!")
-			return nil, ErrNoUpdatePackageAvailable
+			return nil, nil, ErrNoUpdatePackageAvailable
 		}
+	}
+	if target != nil && slices.Contains(target.ChannelsBlacklist, group.Channel.ID) {
+		l.Error().Str("package", target.Version).Str("channel", group.Channel.ID).
+			Msg("Package is blacklisted for its own channel - data inconsistency!")
+		return nil, nil, ErrNoUpdatePackageAvailable
 	}
 
 	if err := api.enforceRolloutPolicy(instance, group); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	// Grant the update using target version
-	targetVersion := packages[len(packages)-1].Version
-	if err := api.grantUpdate(instance, targetVersion); err != nil {
-		l.Error().Err(err).Str("version", targetVersion).Str("instance", instance.ID).Msg("GetUpdatePackagesForSyncer - grantUpdate error")
-		return nil, ErrUpdateGrantFailed
+	// Grant the update using the highest version we're returning
+	// (last floor if no target, or target if present)
+	var grantVersion string
+	if target != nil {
+		grantVersion = target.Version
+	} else if len(floors) > 0 {
+		grantVersion = floors[len(floors)-1].Version
+	} else {
+		return nil, nil, ErrNoUpdatePackageAvailable
+	}
+	if err := api.grantUpdate(instance, grantVersion); err != nil {
+		l.Error().Err(err).Str("version", grantVersion).Str("instance", instance.ID).Msg("GetUpdatePackagesForSyncer - grantUpdate error")
+		return nil, nil, ErrUpdateGrantFailed
 	}
 
 	// Record activity
 	if !api.hasRecentActivity(activityRolloutStarted, ActivityQueryParams{
 		Severity: activityInfo,
 		AppID:    appID,
-		Version:  targetVersion,
+		Version:  grantVersion,
 		GroupID:  groupID,
 	}) {
-		if err := api.newGroupActivityEntry(activityRolloutStarted, activityInfo, targetVersion, appID, groupID); err != nil {
+		if err := api.newGroupActivityEntry(activityRolloutStarted, activityInfo, grantVersion, appID, groupID); err != nil {
 			l.Error().Err(err).Msg("GetUpdatePackagesForSyncer - could not add new group activity entry")
 		}
 	}
@@ -270,7 +300,7 @@ func (api *API) GetUpdatePackagesForSyncer(instanceID, instanceAlias, instanceIP
 		}
 	}
 
-	return packages, nil
+	return floors, target, nil
 }
 
 // enforceRolloutPolicy validates if an update should be provided to the
@@ -355,29 +385,50 @@ func inOfficeHoursNow(tz string) bool {
 	return true
 }
 
-// getPackagesWithFloorsForUpdate returns floors + target for the given group and instance version
-// This is a helper method extracted from the UpdateHandler logic
-func (api *API) getPackagesWithFloorsForUpdate(group *Group, instanceVersion string) ([]*Package, error) {
+// getPackagesWithFloorsForUpdate returns floors and target for the given group and instance version.
+// This is a helper method extracted from the UpdateHandler logic.
+//
+// Returns:
+//   - floors: Required floor packages between instance version and target (may be empty)
+//   - target: The target package, or nil if more floors remain beyond the limit
+//
+// IMPORTANT: When there are more floors remaining than NEBRASKA_MAX_FLOORS_PER_RESPONSE,
+// target will be nil. This signals that the syncer should request again with the highest
+// floor version to get remaining floors.
+func (api *API) getPackagesWithFloorsForUpdate(group *Group, instanceVersion string) (floors []*Package, target *Package, err error) {
 	if group.Channel == nil || group.Channel.Package == nil {
-		return nil, ErrNoPackageFound
+		return nil, nil, ErrNoPackageFound
 	}
 
-	// Get required floors using the channel
-	requiredFloors, err := api.GetRequiredChannelFloors(
+	// Get required floors using LIMIT+1 to detect if more floors remain
+	// This is more efficient than a separate COUNT query
+	requiredFloors, hasMoreFloors, err := api.GetRequiredChannelFloorsWithLimit(
 		group.Channel,
 		instanceVersion,
 	)
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	targetPkg := group.Channel.Package
+
 	// Check if target is already included (when target is also a floor)
-	if len(requiredFloors) > 0 && requiredFloors[len(requiredFloors)-1].ID == targetPkg.ID {
-		return requiredFloors, nil
+	var lastFloor *Package
+	if len(requiredFloors) > 0 {
+		lastFloor = requiredFloors[len(requiredFloors)-1]
+	}
+	targetIsLastFloor := lastFloor != nil && lastFloor.ID == targetPkg.ID
+	if targetIsLastFloor {
+		return requiredFloors, lastFloor, nil
 	}
 
-	// Append target if not already included
-	return append(requiredFloors, targetPkg), nil
+	// If more floors remain, don't include target yet
+	// Syncer will request again with highest floor version
+	if hasMoreFloors {
+		return requiredFloors, nil, nil
+	}
+
+	// All floors sent (or no floors) - include target
+	return requiredFloors, targetPkg, nil
 }

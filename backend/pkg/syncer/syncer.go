@@ -619,6 +619,9 @@ func (s *Syncer) processMultiManifestUpdate(descriptor channelDescriptor, update
 	}
 	// If still no target found, all manifests are floors - targetVersion remains empty
 
+	// Track highest floor version for version reporting when no target is present
+	var highestFloorVersion string
+
 	// Process each manifest in the response
 	for _, manifest := range update.Manifests {
 		version := manifest.Version
@@ -641,6 +644,8 @@ func (s *Syncer) processMultiManifestUpdate(descriptor channelDescriptor, update
 			if err := s.markPackageAsFloor(descriptor, pkg, manifest); err != nil {
 				return fmt.Errorf("failed to mark package %s as floor: %w", version, err)
 			}
+			// Track highest floor version (manifests are ordered ascending)
+			highestFloorVersion = version
 		}
 
 		// Track target package if this is the target
@@ -653,15 +658,20 @@ func (s *Syncer) processMultiManifestUpdate(descriptor channelDescriptor, update
 	if targetPkg == nil {
 		// All manifests were floors with no target package identified.
 		// This is a VALID scenario where upstream wants to establish mandatory floors
-		// without changing the current channel target yet (target may come later).
-		// We've successfully processed and marked all floors, but there's no new
-		// version to point the channel to, so it remains at its current version.
+		// without changing the current channel target yet (more floors may remain).
+		// We update the tracked version to the highest floor so the next sync request
+		// will fetch remaining floors.
+		if highestFloorVersion != "" {
+			s.versions[descriptor] = highestFloorVersion
+			s.bootIDs[descriptor] = "{" + uuid.New().String() + "}"
+		}
 		l.Info().
 			Str("channel", descriptor.name).
 			Str("arch", descriptor.arch.String()).
 			Int("floors_processed", len(update.Manifests)).
-			Msg("processMultiManifestUpdate - all manifests are floors, channel remains at current version")
-		return nil // Success - floors processed, just no channel update
+			Str("highestFloor", highestFloorVersion).
+			Msg("processMultiManifestUpdate - all manifests are floors, tracking highest floor for next sync")
+		return nil // Success - floors processed, channel not updated yet
 	}
 
 	// Update channel to point to the target package
