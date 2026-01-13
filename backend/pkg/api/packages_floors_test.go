@@ -55,7 +55,7 @@ func TestFloorOperations(t *testing.T) {
 	for instance, expected := range testCases {
 		ch, err := a.GetChannel(setup.Channel.ID)
 		assert.NoError(t, err)
-		floors, err := a.GetRequiredChannelFloors(ch, instance)
+		floors, _, err := a.GetRequiredChannelFloorsWithLimit(ch, instance)
 		assert.NoError(t, err)
 		assert.Len(t, floors, expected, "instance %s", instance)
 	}
@@ -84,9 +84,10 @@ func TestFloorMaxLimit(t *testing.T) {
 	// Should only get 3 floors due to limit
 	ch, err := a.GetChannel(setup.Channel.ID)
 	assert.NoError(t, err)
-	floors, err := a.GetRequiredChannelFloors(ch, "0.0.0")
+	floors, hasMore, err := a.GetRequiredChannelFloorsWithLimit(ch, "0.0.0")
 	assert.NoError(t, err)
 	assert.Len(t, floors, 3)
+	assert.True(t, hasMore, "Should indicate more floors remain beyond limit")
 }
 
 // TestFloorPagination tests paginated floor retrieval
@@ -133,7 +134,7 @@ func TestNonStandardVersions(t *testing.T) {
 	for instance, expected := range testCases {
 		ch, err := a.GetChannel(setup.Channel.ID)
 		assert.NoError(t, err)
-		floors, err := a.GetRequiredChannelFloors(ch, instance)
+		floors, _, err := a.GetRequiredChannelFloorsWithLimit(ch, instance)
 		assert.NoError(t, err)
 		assert.Len(t, floors, expected, "instance %s", instance)
 	}
@@ -232,7 +233,7 @@ func TestTargetAsFloor(t *testing.T) {
 	for instance, expected := range testCases {
 		ch, err := a.GetChannel(setup.Channel.ID)
 		assert.NoError(t, err)
-		floors, err := a.GetRequiredChannelFloors(ch, instance)
+		floors, _, err := a.GetRequiredChannelFloorsWithLimit(ch, instance)
 		assert.NoError(t, err)
 		assert.Len(t, floors, expected.expectedCount, "instance %s", instance)
 		if expected.expectedCount > 0 {
