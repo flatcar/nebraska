@@ -121,11 +121,11 @@ func TestGroupStatusTimeline(t *testing.T) {
 
 		// create instance for app[0]
 		instanceID := uuid.New()
-		instanceDB, err := db.RegisterInstance(instanceID.String(), "alias", "0.0.0.0", "0.0.1", app.ID, app.Groups[0].ID)
+		instanceDB, err := db.RegisterInstance(instanceID.String(), "alias", "0.0.0.0", "0.0.1", app.ID, app.Groups[0].ID, "", "")
 		require.NoError(t, err)
 
 		// GetUpdatePackage
-		_, err = db.GetUpdatePackage(instanceDB.ID, instanceDB.Alias, instanceDB.IP, instanceDB.Application.Version, app.ID, app.Groups[0].ID)
+		_, err = db.GetUpdatePackage(instanceDB.ID, instanceDB.Alias, instanceDB.IP, instanceDB.Application.Version, app.ID, app.Groups[0].ID, "", "")
 		require.NoError(t, err)
 
 		// create event for instance
