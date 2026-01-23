@@ -1,6 +1,7 @@
 package syncer
 
 import (
+	"os"
 	"testing"
 
 	"github.com/flatcar/go-omaha/omaha"
@@ -415,4 +416,156 @@ func TestSyncer_EmptyManifestError(t *testing.T) {
 	err := syncer.processMultiManifestUpdate(desc, update)
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "no manifests")
+}
+
+// TestSyncer_FloorLimitVersionTracking tests that when there are more floors than
+// NEBRASKA_MAX_FLOORS_PER_RESPONSE, the syncer correctly syncs ALL floors across
+// multiple sync rounds.
+//
+// When there are more floors remaining beyond the limit, the server
+// sends ONLY floors (no target). This way:
+// - Syncer processes floors and updates channel to highest floor
+// - Syncer tracks highest floor version for next request
+// - Next request fetches remaining floors
+// - Only when all floors are sent does the server include the target
+//
+// Scenario with limit=2 and 5 floors:
+// - Round 1: syncer at 0.0.0 -> server sends floors 1,2 (no target, more floors remain)
+// - Round 2: syncer at 2000.0.0 -> server sends floors 3,4 (no target, more floors remain)
+// - Round 3: syncer at 4000.0.0 -> server sends floor 5 + target (all floors sent)
+func TestSyncer_FloorLimitVersionTracking(t *testing.T) {
+	// Set a low limit to test pagination behavior
+	oldMax := os.Getenv("NEBRASKA_MAX_FLOORS_PER_RESPONSE")
+	defer os.Setenv("NEBRASKA_MAX_FLOORS_PER_RESPONSE", oldMax)
+	os.Setenv("NEBRASKA_MAX_FLOORS_PER_RESPONSE", "2")
+
+	syncer := newForTest(t, &Config{})
+	a := syncer.api
+	t.Cleanup(func() { a.Close() })
+
+	tGroup := setupFlatcarAppStableGroup(t, a)
+	tChannel := tGroup.Channel
+	require.NoError(t, syncer.initialize())
+
+	desc := channelDescriptor{name: tChannel.Name, arch: tChannel.Arch}
+
+	// Round 1: Server sends only floors (no target) because more floors remain
+	// This simulates what upstream Nebraska would send when there are 5 floors but limit is 2
+	round1 := &omaha.UpdateResponse{
+		Status: "ok",
+		URLs:   []*omaha.URL{{CodeBase: "https://example.com"}},
+		Manifests: []*omaha.Manifest{
+			{
+				Version:     "1000.0.0",
+				Packages:    []*omaha.Package{{Name: "flatcar-1000.0.0.gz", SHA1: "hash1000", Size: 1000}},
+				Actions:     []*omaha.Action{{Event: "postinstall", SHA256: "dGVzdHNoYTI1Ng=="}},
+				IsFloor:     true,
+				FloorReason: "Floor 1",
+			},
+			{
+				Version:     "2000.0.0",
+				Packages:    []*omaha.Package{{Name: "flatcar-2000.0.0.gz", SHA1: "hash2000", Size: 2000}},
+				Actions:     []*omaha.Action{{Event: "postinstall", SHA256: "dGVzdHNoYTI1Ng=="}},
+				IsFloor:     true,
+				FloorReason: "Floor 2",
+			},
+			// NO TARGET - more floors remain
+		},
+	}
+
+	// Process round 1
+	err := syncer.processMultiManifestUpdate(desc, round1)
+	require.NoError(t, err)
+
+	// After round 1: syncer should track highest floor (2000.0.0)
+	// Channel should NOT be updated (no target in response)
+	trackedVersion := syncer.versions[desc]
+	t.Logf("After round 1, syncer tracked version: %s", trackedVersion)
+
+	// Verify floors 1 and 2 were synced
+	floors, err := a.GetChannelFloorPackages(tChannel.ID)
+	require.NoError(t, err)
+	assert.Len(t, floors, 2, "Should have 2 floors after round 1")
+
+	// Round 2: Server sends next batch of floors (still no target, more remain)
+	round2 := &omaha.UpdateResponse{
+		Status: "ok",
+		URLs:   []*omaha.URL{{CodeBase: "https://example.com"}},
+		Manifests: []*omaha.Manifest{
+			{
+				Version:     "3000.0.0",
+				Packages:    []*omaha.Package{{Name: "flatcar-3000.0.0.gz", SHA1: "hash3000", Size: 3000}},
+				Actions:     []*omaha.Action{{Event: "postinstall", SHA256: "dGVzdHNoYTI1Ng=="}},
+				IsFloor:     true,
+				FloorReason: "Floor 3",
+			},
+			{
+				Version:     "4000.0.0",
+				Packages:    []*omaha.Package{{Name: "flatcar-4000.0.0.gz", SHA1: "hash4000", Size: 4000}},
+				Actions:     []*omaha.Action{{Event: "postinstall", SHA256: "dGVzdHNoYTI1Ng=="}},
+				IsFloor:     true,
+				FloorReason: "Floor 4",
+			},
+			// NO TARGET - more floors remain
+		},
+	}
+
+	// Process round 2
+	err = syncer.processMultiManifestUpdate(desc, round2)
+	require.NoError(t, err)
+
+	// Verify floors 3 and 4 were synced
+	floors, err = a.GetChannelFloorPackages(tChannel.ID)
+	require.NoError(t, err)
+	assert.Len(t, floors, 4, "Should have 4 floors after round 2")
+
+	// Round 3: Server sends last floor + target (all floors now sent)
+	round3 := &omaha.UpdateResponse{
+		Status: "ok",
+		URLs:   []*omaha.URL{{CodeBase: "https://example.com"}},
+		Manifests: []*omaha.Manifest{
+			{
+				Version:     "5000.0.0",
+				Packages:    []*omaha.Package{{Name: "flatcar-5000.0.0.gz", SHA1: "hash5000", Size: 5000}},
+				Actions:     []*omaha.Action{{Event: "postinstall", SHA256: "dGVzdHNoYTI1Ng=="}},
+				IsFloor:     true,
+				FloorReason: "Floor 5",
+			},
+			{
+				Version:  "6000.0.0",
+				Packages: []*omaha.Package{{Name: "flatcar-6000.0.0.gz", SHA1: "hash6000", Size: 6000}},
+				Actions:  []*omaha.Action{{Event: "postinstall", SHA256: "dGVzdHNoYTI1Ng=="}},
+				IsTarget: true,
+			},
+		},
+	}
+
+	// Process round 3
+	err = syncer.processMultiManifestUpdate(desc, round3)
+	require.NoError(t, err)
+
+	// Final verification: ALL 5 floors should be synced
+	floors, err = a.GetChannelFloorPackages(tChannel.ID)
+	require.NoError(t, err)
+	assert.Len(t, floors, 5, "All 5 floors should be synced after 3 rounds")
+
+	// Verify floor versions
+	floorVersions := make([]string, len(floors))
+	for i, f := range floors {
+		floorVersions[i] = f.Version
+	}
+	assert.Contains(t, floorVersions, "1000.0.0", "Floor 1 should be synced")
+	assert.Contains(t, floorVersions, "2000.0.0", "Floor 2 should be synced")
+	assert.Contains(t, floorVersions, "3000.0.0", "Floor 3 should be synced")
+	assert.Contains(t, floorVersions, "4000.0.0", "Floor 4 should be synced")
+	assert.Contains(t, floorVersions, "5000.0.0", "Floor 5 should be synced")
+
+	// Verify channel now points to target (only after all floors sent)
+	updatedChannel, err := a.GetChannel(tChannel.ID)
+	require.NoError(t, err)
+	assert.Equal(t, "6000.0.0", updatedChannel.Package.Version, "Channel should point to target after all floors synced")
+
+	// Verify syncer now tracks target version (ready for next sync cycle)
+	finalVersion := syncer.versions[desc]
+	assert.Equal(t, "6000.0.0", finalVersion, "Syncer should track target after all floors synced")
 }
