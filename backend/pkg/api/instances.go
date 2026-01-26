@@ -55,13 +55,13 @@ const (
 // Instance represents an instance running one or more applications for which
 // Nebraska can provide updates.
 type Instance struct {
-	ID          string              `db:"id" json:"id"`
-	IP          string              `db:"ip" json:"ip"`
-	OEM         string              `db:"oem" json:"oem,omitempty"`
-	OEMVersion  string              `db:"oem_version" json:"oem_version,omitempty"`
-	CreatedTs   time.Time           `db:"created_ts" json:"created_ts"`
-	Application InstanceApplication `db:"application" json:"application,omitempty"`
-	Alias       string              `db:"alias" json:"alias,omitempty"`
+	ID           string              `db:"id" json:"id"`
+	IP           string              `db:"ip" json:"ip"`
+	OEM          string              `db:"oem" json:"oem,omitempty"`
+	AlephVersion string              `db:"aleph_version" json:"aleph_version,omitempty"`
+	CreatedTs    time.Time           `db:"created_ts" json:"created_ts"`
+	Application  InstanceApplication `db:"application" json:"application,omitempty"`
+	Alias        string              `db:"alias" json:"alias,omitempty"`
 }
 type InstancesWithTotal struct {
 	TotalInstances uint64      `json:"total"`
@@ -163,7 +163,7 @@ func sanitizeSortFilterParams(sortFilter string) string {
 }
 
 // RegisterInstance registers an instance into Nebraska.
-func (api *API) RegisterInstance(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID, instanceOEM, instanceOEMVersion string) (*Instance, error) {
+func (api *API) RegisterInstance(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID, instanceOEM, instanceAlephVersion string) (*Instance, error) {
 	if !isValidSemver(instanceVersion) {
 		return nil, ErrInvalidSemver
 	}
@@ -189,11 +189,11 @@ func (api *API) RegisterInstance(instanceID, instanceAlias, instanceIP, instance
 		if instanceOEM == "" {
 			instanceOEM = instance.OEM
 		}
-		if instanceOEMVersion == "" {
-			instanceOEMVersion = instance.OEMVersion
+		if instanceAlephVersion == "" {
+			instanceAlephVersion = instance.AlephVersion
 		}
-		// The instance exists, so we just update it if its IP, Alias, OEM or OEMVersion changed
-		updateInstance = instance.IP != instanceIP || instance.Alias != instanceAlias || instance.OEM != instanceOEM || instance.OEMVersion != instanceOEMVersion
+		// The instance exists, so we just update it if its IP, Alias, OEM or AlephVersion changed
+		updateInstance = instance.IP != instanceIP || instance.Alias != instanceAlias || instance.OEM != instanceOEM || instance.AlephVersion != instanceAlephVersion
 
 		recent := nowUTC().Add(-5 * time.Minute)
 
@@ -209,9 +209,9 @@ func (api *API) RegisterInstance(instanceID, instanceAlias, instanceIP, instance
 	}
 
 	upsertInstance, _, err := goqu.Insert("instance").
-		Cols("id", "ip", "alias", "oem", "oem_version").
-		Vals(goqu.Vals{instanceID, instanceIP, instanceAlias, instanceOEM, instanceOEMVersion}).
-		OnConflict(goqu.DoUpdate("id", goqu.Record{"id": instanceID, "ip": instanceIP, "alias": instanceAlias, "oem": instanceOEM, "oem_version": instanceOEMVersion})).
+		Cols("id", "ip", "alias", "oem", "aleph_version").
+		Vals(goqu.Vals{instanceID, instanceIP, instanceAlias, instanceOEM, instanceAlephVersion}).
+		OnConflict(goqu.DoUpdate("id", goqu.Record{"id": instanceID, "ip": instanceIP, "alias": instanceAlias, "oem": instanceOEM, "aleph_version": instanceAlephVersion})).
 		ToSQL()
 	if err != nil {
 		return nil, err
