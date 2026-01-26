@@ -52,7 +52,7 @@ func TestRegisterInstance(t *testing.T) {
 	assert.Equal(t, "myalias", instance.Alias)
 	assert.Equal(t, "10.0.0.1", instance.IP)
 	assert.Equal(t, "azure", instance.OEM)
-	assert.Equal(t, "2.9.1.1-r1", instance.OEMVersion)
+	assert.Equal(t, "2.9.1.1-r1", instance.AlephVersion)
 
 	instance, err = a.RegisterInstance(instanceID, "mynewalias", "10.0.0.2", "1.0.2", tApp.ID, tGroup.ID, "", "")
 	assert.NoError(t, err, "Registering an already registered instance with some updates, that's fine.")
@@ -60,7 +60,7 @@ func TestRegisterInstance(t *testing.T) {
 	assert.Equal(t, "10.0.0.2", instance.IP)
 	assert.Equal(t, "1.0.2", instance.Application.Version)
 	assert.Equal(t, "azure", instance.OEM, "OEM should be preserved when not provided")
-	assert.Equal(t, "2.9.1.1-r1", instance.OEMVersion, "OEMVersion should be preserved when not provided")
+	assert.Equal(t, "2.9.1.1-r1", instance.AlephVersion, "AlephVersion should be preserved when not provided")
 
 	_, err = a.RegisterInstance(instanceID, "", "10.0.0.2", "1.0.2", tApp2.ID, tGroup.ID, "", "")
 	assert.Error(t, err, "Application id cannot be updated.")
@@ -71,7 +71,7 @@ func TestRegisterInstance(t *testing.T) {
 	assert.Equal(t, "1.0.3", instance.Application.Version)
 	assert.Equal(t, null.StringFrom(tGroup3.ID), instance.Application.GroupID)
 	assert.Equal(t, "gcp", instance.OEM, "OEM should be updated when provided")
-	assert.Equal(t, "3.0.0", instance.OEMVersion, "OEMVersion should be updated when provided")
+	assert.Equal(t, "3.0.0", instance.AlephVersion, "AlephVersion should be updated when provided")
 }
 
 func TestGetInstance(t *testing.T) {
