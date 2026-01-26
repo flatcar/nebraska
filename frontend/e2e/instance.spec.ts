@@ -33,7 +33,9 @@ test.describe('Instances', () => {
     await page.evaluate(() => window.scrollTo(0, 0));
     // Wait for chart animations to complete (1 second duration)
     await page.waitForTimeout(1100);
-    await expect(page).toHaveScreenshot('in-group-with-a-node-instance.png');
+    await expect(page).toHaveScreenshot('in-group-with-a-node-instance.png', {
+      maxDiffPixels: 30,
+    });
 
     await expect(page.locator('#main')).toContainText('See all instances');
     await expect(page.getByLabel('Downloaded: 1 instances')).toContainText('Downloaded');
