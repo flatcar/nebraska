@@ -147,8 +147,17 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 			respApp.AddEvent()
 		}
 
+		inst := api.Instance{
+			ID:           reqApp.MachineID,
+			Alias:        reqApp.MachineAlias,
+			IP:           ip,
+			OEM:          reqApp.OEM,
+			AlephVersion: reqApp.AlephVersion,
+		}
+		instApp := api.NewInstanceApplication(appID, group, reqApp.Version)
+
 		if reqApp.Ping != nil {
-			if _, err := h.crAPI.RegisterInstance(reqApp.MachineID, reqApp.MachineAlias, ip, reqApp.Version, appID, group, reqApp.OEM, reqApp.OEMVersion); err != nil {
+			if _, err := h.crAPI.RegisterInstance(inst, instApp); err != nil {
 				l.Debug().Str("machineId", reqApp.MachineID).Msgf("processPing error %s", err.Error())
 			}
 			respApp.AddPing()
@@ -157,7 +166,7 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 		if reqApp.UpdateCheck != nil {
 			if isSyncerClient(omahaReq) {
 				// Syncer - get all packages
-				packages, err := h.crAPI.GetUpdatePackagesForSyncer(reqApp.MachineID, reqApp.MachineAlias, ip, reqApp.Version, appID, group, reqApp.OEM, reqApp.OEMVersion)
+				packages, err := h.crAPI.GetUpdatePackagesForSyncer(inst, instApp)
 				if err != nil {
 					if err == api.ErrNoUpdatePackageAvailable || err == api.ErrUpdateGrantFailed {
 						respApp.AddUpdateCheck(omahaSpec.NoUpdate)
@@ -196,7 +205,7 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 				h.prepareMultiManifestUpdateCheck(respApp, packages)
 			} else {
 				// Regular client - get single package
-				pkg, err := h.crAPI.GetUpdatePackage(reqApp.MachineID, reqApp.MachineAlias, ip, reqApp.Version, appID, group, reqApp.OEM, reqApp.OEMVersion)
+				pkg, err := h.crAPI.GetUpdatePackage(inst, instApp)
 				if err != nil {
 					if err == api.ErrNoUpdatePackageAvailable || err == api.ErrUpdateGrantFailed {
 						respApp.AddUpdateCheck(omahaSpec.NoUpdate)

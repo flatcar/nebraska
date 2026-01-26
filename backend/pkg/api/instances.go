@@ -55,13 +55,13 @@ const (
 // Instance represents an instance running one or more applications for which
 // Nebraska can provide updates.
 type Instance struct {
-	ID          string              `db:"id" json:"id"`
-	IP          string              `db:"ip" json:"ip"`
-	OEM         string              `db:"oem" json:"oem,omitempty"`
-	OEMVersion  string              `db:"oem_version" json:"oem_version,omitempty"`
-	CreatedTs   time.Time           `db:"created_ts" json:"created_ts"`
-	Application InstanceApplication `db:"application" json:"application,omitempty"`
-	Alias       string              `db:"alias" json:"alias,omitempty"`
+	ID           string              `db:"id" json:"id"`
+	IP           string              `db:"ip" json:"ip"`
+	OEM          string              `db:"oem" json:"oem,omitempty"`
+	AlephVersion string              `db:"aleph_version" json:"aleph_version,omitempty"`
+	CreatedTs    time.Time           `db:"created_ts" json:"created_ts"`
+	Application  InstanceApplication `db:"application" json:"application,omitempty"`
+	Alias        string              `db:"alias" json:"alias,omitempty"`
 }
 type InstancesWithTotal struct {
 	TotalInstances uint64      `json:"total"`
@@ -82,6 +82,11 @@ type InstanceApplication struct {
 	LastUpdateGrantedTs null.Time   `db:"last_update_granted_ts" json:"last_update_granted_ts"`
 	LastUpdateVersion   null.String `db:"last_update_version" json:"last_update_version"`
 	UpdateInProgress    bool        `db:"update_in_progress" json:"update_in_progress"`
+}
+
+// NewInstanceApplication creates an InstanceApplication with the fields used for registration.
+func NewInstanceApplication(appID, groupID, version string) InstanceApplication {
+	return InstanceApplication{ApplicationID: appID, GroupID: null.StringFrom(groupID), Version: version}
 }
 
 // InstanceStatusHistoryEntry represents an entry in the instance status
@@ -163,14 +168,22 @@ func sanitizeSortFilterParams(sortFilter string) string {
 }
 
 // RegisterInstance registers an instance into Nebraska.
-func (api *API) RegisterInstance(instanceID, instanceAlias, instanceIP, instanceVersion, appID, groupID, instanceOEM, instanceOEMVersion string) (*Instance, error) {
-	if !isValidSemver(instanceVersion) {
+func (api *API) RegisterInstance(inst Instance, instApp InstanceApplication) (*Instance, error) {
+	if !isValidSemver(instApp.Version) {
 		return nil, ErrInvalidSemver
 	}
+
+	appID := instApp.ApplicationID
+	groupID := instApp.GroupID.String
+
 	var err error
 	if appID, groupID, err = api.validateApplicationAndGroup(appID, groupID); err != nil {
 		return nil, err
 	}
+
+	instanceAlias := inst.Alias
+	instanceOEM := inst.OEM
+	instanceAlephVersion := inst.AlephVersion
 
 	// We want to avoid having to create an unneeded DB transaction, so we check whether it
 	// is necessary (we need it when writing into the two tables, instance and
@@ -179,7 +192,7 @@ func (api *API) RegisterInstance(instanceID, instanceAlias, instanceIP, instance
 	updateInstance := true
 	updateInstanceApplication := true
 
-	instance, err := api.GetInstance(instanceID, appID)
+	instance, err := api.GetInstance(inst.ID, appID)
 	if err == nil {
 		// Give precedence to an existing alias over an omitted or empty alias field
 		if instanceAlias == "" {
@@ -189,18 +202,18 @@ func (api *API) RegisterInstance(instanceID, instanceAlias, instanceIP, instance
 		if instanceOEM == "" {
 			instanceOEM = instance.OEM
 		}
-		if instanceOEMVersion == "" {
-			instanceOEMVersion = instance.OEMVersion
+		if instanceAlephVersion == "" {
+			instanceAlephVersion = instance.AlephVersion
 		}
-		// The instance exists, so we just update it if its IP, Alias, OEM or OEMVersion changed
-		updateInstance = instance.IP != instanceIP || instance.Alias != instanceAlias || instance.OEM != instanceOEM || instance.OEMVersion != instanceOEMVersion
+		// The instance exists, so we just update it if its IP, Alias, OEM or AlephVersion changed
+		updateInstance = instance.IP != inst.IP || instance.Alias != instanceAlias || instance.OEM != instanceOEM || instance.AlephVersion != instanceAlephVersion
 
 		recent := nowUTC().Add(-5 * time.Minute)
 
 		// And we only update the instance_application if the latest registry is outdated or
 		// older than what we establish as recent.
 		updateInstanceApplication = instance.Application.LastCheckForUpdates.UTC().Before(recent) ||
-			instance.Application.Version != instanceVersion || instance.Application.GroupID.String != groupID
+			instance.Application.Version != instApp.Version || instance.Application.GroupID.String != groupID
 
 		// Skip updating anything unnecessary
 		if !updateInstance && !updateInstanceApplication {
@@ -209,9 +222,9 @@ func (api *API) RegisterInstance(instanceID, instanceAlias, instanceIP, instance
 	}
 
 	upsertInstance, _, err := goqu.Insert("instance").
-		Cols("id", "ip", "alias", "oem", "oem_version").
-		Vals(goqu.Vals{instanceID, instanceIP, instanceAlias, instanceOEM, instanceOEMVersion}).
-		OnConflict(goqu.DoUpdate("id", goqu.Record{"id": instanceID, "ip": instanceIP, "alias": instanceAlias, "oem": instanceOEM, "oem_version": instanceOEMVersion})).
+		Cols("id", "ip", "alias", "oem", "aleph_version").
+		Vals(goqu.Vals{inst.ID, inst.IP, instanceAlias, instanceOEM, instanceAlephVersion}).
+		OnConflict(goqu.DoUpdate("id", goqu.Record{"id": inst.ID, "ip": inst.IP, "alias": instanceAlias, "oem": instanceOEM, "aleph_version": instanceAlephVersion})).
 		ToSQL()
 	if err != nil {
 		return nil, err
@@ -219,8 +232,8 @@ func (api *API) RegisterInstance(instanceID, instanceAlias, instanceIP, instance
 
 	upsertInstanceApplication, _, err := goqu.Insert("instance_application").
 		Cols("instance_id", "application_id", "group_id", "version", "last_check_for_updates").
-		Vals(goqu.Vals{instanceID, appID, groupID, instanceVersion, nowUTC()}).
-		OnConflict(goqu.DoUpdate("ON CONSTRAINT instance_application_pkey", goqu.Record{"group_id": groupID, "version": instanceVersion, "last_check_for_updates": nowUTC()})).
+		Vals(goqu.Vals{inst.ID, appID, groupID, instApp.Version, nowUTC()}).
+		OnConflict(goqu.DoUpdate("ON CONSTRAINT instance_application_pkey", goqu.Record{"group_id": groupID, "version": instApp.Version, "last_check_for_updates": nowUTC()})).
 		ToSQL()
 	if err != nil {
 		return nil, err
@@ -278,7 +291,7 @@ func (api *API) RegisterInstance(instanceID, instanceAlias, instanceIP, instance
 	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
-	return api.GetInstance(instanceID, appID)
+	return api.GetInstance(inst.ID, appID)
 }
 
 // GetInstance returns the instance identified by the id provided.
