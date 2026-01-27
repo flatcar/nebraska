@@ -10,7 +10,9 @@ import (
 	"time"
 
 	"github.com/getkin/kin-openapi/openapi3filter"
-	"github.com/labstack/echo-contrib/prometheus"
+
+	"github.com/labstack/echo-contrib/echoprometheus"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	echomiddleware "github.com/oapi-codegen/echo-middleware"
@@ -56,8 +58,8 @@ func New(conf *config.Config, db *db.API) (*echo.Echo, error) {
 		return nil, fmt.Errorf("swagger config error: %w", err)
 	}
 
-	p := prometheus.NewPrometheus(serviceName, nil)
-	p.Use(e)
+	e.Use(echoprometheus.NewMiddleware(serviceName))
+	e.GET("/metrics", echoprometheus.NewHandler())
 
 	// setup authenticator
 	defaultTeam, err := db.GetTeam()
