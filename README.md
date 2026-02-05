@@ -15,6 +15,10 @@ Nebraska is an update manager for [Flatcar Container Linux](https://www.flatcar.
 
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/flatcar/nebraska/badge)](https://scorecard.dev/viewer/?uri=github.com/flatcar/nebraska)
 
+## Requirements
+
+- **PostgreSQL 14 or newer** (PostgreSQL 17.x recommended)
+
 ## Overview
 
 Nebraska offers an easy way to monitor and manage the rollout of updates to applications that use
