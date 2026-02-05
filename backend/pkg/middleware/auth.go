@@ -9,7 +9,7 @@ import (
 	"github.com/flatcar/nebraska/backend/pkg/auth"
 )
 
-var commonPaths = []string{"/health", "/config", "/v1/update", "/flatcar/*", "/assets/*", "/apps", "/apps/*", "/instances", "/instances/*", "/404"}
+var commonPaths = []string{"/health", "/config", "/v1/update", "/flatcar/*", "/assets/*", "/apps", "/apps/*", "/instances", "/instances/*", "/404", "/metrics"}
 
 func MatchesOneOfPatterns(path string, patterns ...string) bool {
 	for _, pattern := range patterns {
