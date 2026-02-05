@@ -8,10 +8,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Security
 
+### Breaking Changes
+
+- **PostgreSQL 14+ is now a hard requirement.** Nebraska connects through `pgx/v5`, which [supports only the PostgreSQL major releases still maintained upstream](https://github.com/jackc/pgx#supported-go-and-postgresql-versions), currently 14 and newer.
+
+  **Operators running PostgreSQL 13 or older must upgrade their database before upgrading Nebraska.** PostgreSQL 17.x is recommended. See the [Upgrade PostgreSQL](https://github.com/flatcar/nebraska/tree/main/charts/nebraska#upgrade-postgresql) migration guide for step-by-step instructions.
+- **Cascaded Nebraska syncers must run this release or newer to consume channels where floor packages are configured;** older syncers receive `NoUpdate`. Does not affect regular Flatcar clients.
+
 ### Added
 
 - **Pluggable database password provider:** The database password can now be supplied by Go code through the `api.DBPasswordProvider` interface instead of being carried in `NEBRASKA_DB_URL`. It is consulted before every physical connection, so credentials that expire, such as cloud IAM tokens, are picked up without a restart.
-- **Custom CA Certificate for TLS:** Added `--ca-file` flag to trust additional CA certificates for TLS verification (e.g., internal CA, Let's Encrypt staging). Applies to the OIDC provider client and the syncer. Supports multiple PEM-encoded certs, additive to system CAs. Also exposed as `config.caFile` in the Helm chart.
+- **Custom CA Certificate for TLS:** Added `--ca-file` flag to trust additional CA certificates for TLS verification (e.g., internal CA, Let's Encrypt staging). Applies to the OIDC provider client and the syncer. Supports multiple PEM-encoded certs, additive to system CAs. Also exposed as `config.caFile` in the Helm chart. ([#1370](https://github.com/flatcar/nebraska/pull/1370))
 - **OEM Attribute Capture:** Instances now store OEM and Aleph version information from Omaha update requests. ([#1286](https://github.com/flatcar/nebraska/pull/1286))
 - **Multi-Step Updates with Floor Packages:** Added support for mandatory intermediate update versions (floor packages) that clients must install before reaching the target version. This enables safe migration paths for breaking changes by ensuring clients update through specific versions in order. Floor packages can be configured per channel with optional reasons and are architecture-specific. ([#1195](https://github.com/flatcar/nebraska/pull/1195))
 - **Optional least-privilege database roles:** `NEBRASKA_MIGRATIONS_DB_URL` runs schema migrations over a separate, short-lived connection, so the serving connection no longer has to own the schema. Both connections must point at the same database in the same cluster. When it is set and names a different user than `NEBRASKA_DB_URL`, Nebraska grants the admin and runtime table privileges to two `NOLOGIN` roles named after the database, `nebraska_admin_<database>` and `nebraska_runtime_<database>`, and adds the serving user to the admin role. Those two roles are created if they do not already exist, which needs `CREATE ROLE` on the migrations role. Groundwork for the distributed topology described in [RFC #1375](https://github.com/flatcar/nebraska/issues/1375); the runtime role is provisioned but not yet selected, so nothing is restricted in this release. Deployments that do not set `NEBRASKA_MIGRATIONS_DB_URL` are unaffected: no roles are created and no table privileges change. ([#1575](https://github.com/flatcar/nebraska/pull/1575))
@@ -25,10 +32,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Package list UI now updates immediately after blacklist changes
   - Channel edit dialog filters out blacklisted packages from selection
   - Floor package selection prevents choosing blacklisted packages with clear visual feedback
+- Improved reverse domain ID validation regex to eliminate inefficient nested quantifiers flagged by CodeQL, and extracted it into a shared constant with tests. ([#1222](https://github.com/flatcar/nebraska/pull/1222))
 ### Removed
 ### Bugfixes
 
 - Fixed package blacklist changes not appearing in UI immediately after save
+- Fixed instance statistics query that returned incorrect group dashboard counts. ([#1356](https://github.com/flatcar/nebraska/pull/1356), thanks to Thilo Fromm)
 
 ## [4.0.0] - 02/09/2026
 
