@@ -84,7 +84,7 @@ bin/initdb:
 	go build -o bin/initdb ./cmd/initdb
 
 tools/golangci-lint: go.mod go.sum
-	env GOBIN=$(CURDIR)/tools/ go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.2.1
+	env GOBIN=$(CURDIR)/tools/ go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.9.0
 
 tools/swag:
 	env GOBIN=$(CURDIR)/tools/ go install github.com/swaggo/swag/cmd/swag@v1.8.10
