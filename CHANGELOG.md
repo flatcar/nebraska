@@ -6,7 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
-### Security
+## [4.0.0] - 05/02/2026
+
+### Breaking Changes
+
+- **PostgreSQL 14+ is now a hard requirement:** The `lib/pq` driver has been updated to v1.11.1, which only supports PostgreSQL 14 and newer. Previously, PostgreSQL 17.x was the "tested and default" version, but older versions (e.g., PostgreSQL 13) may have still worked. With this update, **operators running PostgreSQL 13 or older must upgrade their database before upgrading Nebraska**. ([#1300](https://github.com/flatcar/nebraska/pull/1300))
+
 ### Added
 
 - **Multi-Step Updates with Floor Packages:** Added support for mandatory intermediate update versions (floor packages) that clients must install before reaching the target version. This enables safe migration paths for breaking changes by ensuring clients update through specific versions in order. Floor packages can be configured per channel with optional reasons and are architecture-specific. ([#1195](https://github.com/flatcar/nebraska/pull/1195))
@@ -20,7 +25,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Channel edit dialog filters out blacklisted packages from selection
   - Floor package selection prevents choosing blacklisted packages with clear visual feedback
 
-### Removed
 ### Bugfixes
 
 - Fixed package blacklist changes not appearing in UI immediately after save

@@ -64,6 +64,8 @@ The OIDC implementation has been refactored to use Authorization Code Flow with 
 
 ## Upgrade PostgreSQL
 
+> **⚠️ Important:** Nebraska requires **PostgreSQL 14 or newer**. PostgreSQL 17.x is recommended. If you are running PostgreSQL 13 or older, you must upgrade your database before upgrading Nebraska to v4.0.0 or later.
+
 When there is a major upgrade of PostgreSQL, a manual intervention might be required with a downtime. It is possible to automate things with operators, but here's a simple example:
 
 1. Scale down Nebraska deployment:
