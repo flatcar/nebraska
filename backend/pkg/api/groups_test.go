@@ -168,9 +168,9 @@ func TestGetGroupsFiltered(t *testing.T) {
 	realInstanceID := uuid.New().String()
 	fakeInstanceID1 := "{" + uuid.New().String() + "}"
 	fakeInstanceID2 := "{" + uuid.New().String() + "}"
-	_, _ = a.RegisterInstance(realInstanceID, "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
-	_, _ = a.RegisterInstance(fakeInstanceID1, "", "10.0.0.1", "2.0.0", tApp.ID, tGroup.ID)
-	_, _ = a.RegisterInstance(fakeInstanceID2, "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID)
+	_, _ = a.RegisterInstance(realInstanceID, "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID, "", "")
+	_, _ = a.RegisterInstance(fakeInstanceID1, "", "10.0.0.1", "2.0.0", tApp.ID, tGroup.ID, "", "")
+	_, _ = a.RegisterInstance(fakeInstanceID2, "", "10.0.0.1", "1.0.0", tApp.ID, tGroup.ID, "", "")
 
 	groups, err := a.GetGroups(tApp.ID, 0, 0)
 	assert.NoError(t, err)
@@ -226,7 +226,7 @@ func TestGetVersionCountTimeline(t *testing.T) {
 	tGroup, _ := a.AddGroup(&Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	instanceID := uuid.New().String()
 
-	_, _ = a.RegisterInstance(instanceID, "", "10.0.0.1", version, tApp.ID, tGroup.ID)
+	_, _ = a.RegisterInstance(instanceID, "", "10.0.0.1", version, tApp.ID, tGroup.ID, "", "")
 
 	instance, err := a.GetInstance(instanceID, tApp.ID)
 	assert.NoError(t, err)
@@ -304,14 +304,14 @@ func TestGetStatusCountTimeline(t *testing.T) {
 	instanceID1 := uuid.New().String()
 	instanceID2 := uuid.New().String()
 
-	_, _ = a.RegisterInstance(instanceID1, "", "10.0.0.1", version, tApp.ID, tGroup.ID)
+	_, _ = a.RegisterInstance(instanceID1, "", "10.0.0.1", version, tApp.ID, tGroup.ID, "", "")
 
 	instance1, err := a.GetInstance(instanceID1, tApp.ID)
 	assert.NoError(t, err)
 
 	_ = a.grantUpdate(instance1, version)
 	_ = a.updateInstanceStatus(instanceID1, tApp.ID, InstanceStatusComplete)
-	_, _ = a.RegisterInstance(instanceID2, "", "10.0.0.2", version, tApp.ID, tGroup.ID)
+	_, _ = a.RegisterInstance(instanceID2, "", "10.0.0.2", version, tApp.ID, tGroup.ID, "", "")
 
 	instance2, err := a.GetInstance(instanceID2, tApp.ID)
 	assert.NoError(t, err)
