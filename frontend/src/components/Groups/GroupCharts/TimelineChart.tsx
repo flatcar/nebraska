@@ -27,7 +27,7 @@ function TimelineTooltip(props: { label?: string; data: any }) {
 export interface TimelineChartProps {
   width?: number;
   height?: number;
-  interpolation?: AreaProps['type'];
+  interpolation?: AreaProps<any, any>['type'];
   data: any;
   onSelect: (activeLabel: any) => void;
   colors: any;
