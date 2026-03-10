@@ -109,7 +109,7 @@ exports[`groups/GroupItem Group smoke-test 1`] = `
                 </div>
               </div>
               <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
-                <div class="MuiListItemText-root MuiListItemText-multiline css-1fnxsti-MuiListItemText-root">
+                <div class="MuiListItemText-root MuiListItemText-multiline css-14i6ovm-MuiListItemText-root">
                   <div class="MuiBox-root css-70qvj9">
                     <div class="MuiBox-root css-1xsd608">
                       stable
@@ -299,7 +299,7 @@ exports[`groups/GroupItem Loading smoke-test 1`] = `
                 </div>
               </div>
               <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
-                <div class="MuiListItemText-root MuiListItemText-multiline css-1fnxsti-MuiListItemText-root">
+                <div class="MuiListItemText-root MuiListItemText-multiline css-14i6ovm-MuiListItemText-root">
                   <div class="MuiBox-root css-70qvj9">
                     <div class="MuiBox-root css-1xsd608">
                       stable
