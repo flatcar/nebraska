@@ -36,7 +36,9 @@ exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
         </title>
         <desc>
         </desc>
-        <g tabindex="-1">
+        <g tabindex="-1"
+           class="recharts-zIndex-layer_-100"
+        >
           <g class="recharts-cartesian-grid">
             <g class="recharts-cartesian-grid-horizontal">
               <line stroke-dasharray="3 3"
@@ -187,7 +189,9 @@ exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
             </g>
           </g>
         </g>
-        <g tabindex="-1">
+        <g tabindex="-1"
+           class="recharts-zIndex-layer_-50"
+        >
         </g>
         <defs>
           <clipPath id="recharts1-clip">
@@ -199,7 +203,9 @@ exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
             </rect>
           </clipPath>
         </defs>
-        <g tabindex="-1">
+        <g tabindex="-1"
+           class="recharts-zIndex-layer_100"
+        >
           <g class="recharts-layer recharts-area">
             <g class="recharts-layer">
               <g class="recharts-layer"
@@ -267,13 +273,21 @@ exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
             </g>
           </g>
         </g>
-        <g tabindex="-1">
+        <g tabindex="-1"
+           class="recharts-zIndex-layer_200"
+        >
         </g>
-        <g tabindex="-1">
+        <g tabindex="-1"
+           class="recharts-zIndex-layer_300"
+        >
         </g>
-        <g tabindex="-1">
+        <g tabindex="-1"
+           class="recharts-zIndex-layer_400"
+        >
         </g>
-        <g tabindex="-1">
+        <g tabindex="-1"
+           class="recharts-zIndex-layer_500"
+        >
           <g class="recharts-layer recharts-cartesian-axis recharts-xAxis xAxis">
             <line stroke="#000"
                   angle="0"
@@ -470,15 +484,25 @@ exports[`groups/VersionCountTimeline Timeline smoke-test 1`] = `
             </g>
           </g>
         </g>
-        <g tabindex="-1">
+        <g tabindex="-1"
+           class="recharts-zIndex-layer_600"
+        >
         </g>
-        <g tabindex="-1">
+        <g tabindex="-1"
+           class="recharts-zIndex-layer_1000"
+        >
         </g>
-        <g tabindex="-1">
+        <g tabindex="-1"
+           class="recharts-zIndex-layer_1100"
+        >
         </g>
-        <g tabindex="-1">
+        <g tabindex="-1"
+           class="recharts-zIndex-layer_1200"
+        >
         </g>
-        <g tabindex="-1">
+        <g tabindex="-1"
+           class="recharts-zIndex-layer_2000"
+        >
           <g class="recharts-cartesian-axis-tick-labels recharts-xAxis-tick-labels">
             <g class="recharts-layer recharts-cartesian-axis-tick-label">
               <text stroke="none"
