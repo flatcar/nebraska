@@ -27,11 +27,16 @@ interface ProgressDoughnutProps {
   data: ProgressData[];
 }
 
-type RechartsPieData = Record<string, unknown>;
+interface PieDataEntry {
+  x: number;
+  y: number;
+  color: string;
+  description?: string;
+}
 
 function ProgressDoughnut(props: ProgressDoughnutProps) {
   const { label, data, width = 100, height = 100, color = '#afafaf', icon } = props;
-  const [hoverData, setHoverData] = React.useState<RechartsPieData | null>(null);
+  const [hoverData, setHoverData] = React.useState<PieDataEntry | null>(null);
   const [showTooltip, setShowTooltip] = React.useState(false);
   const [activeIndex, setActiveIndex] = React.useState(-1);
   const iconSize = '1.1rem';
@@ -48,7 +53,7 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
 
   const totalFilled = data.reduce((acc, { value }) => acc + percentageValue(value), 0);
   const valuesSum = data.reduce((acc, { value }) => acc + value * 100, 0);
-  const dataSet: RechartsPieData[] = data.map(({ value, color, description }, i) => {
+  const dataSet: PieDataEntry[] = data.map(({ value, color, description }, i) => {
     return {
       x: i,
       y: percentageValue(value),
@@ -62,7 +67,7 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
   const percentage = Math.max(totalFilled, 0.5);
 
   function getTooltipText() {
-    return hoverData ? (hoverData.description as string) : null;
+    return hoverData?.description ?? null;
   }
   const mainTooltipText = data.map(({ description }) => description).join('\n');
 
@@ -88,13 +93,13 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
             innerRadius={radius * 0.8}
             animationDuration={1000}
             animationEasing={'ease-in-out'}
-            onMouseOver={(dataum, index) => {
+            onMouseOver={(_datum, index) => {
               if (!showTooltip) {
-                setHoverData(dataum);
+                setHoverData(dataSet[index]);
                 setShowTooltip(true);
                 // Highlight the bit on hover, if it's not
                 // the remaining percentage.
-                if (dataum.x !== 'remain') {
+                if (index < dataSet.length - 1) {
                   setActiveIndex(index);
                 }
               }

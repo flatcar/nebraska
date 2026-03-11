@@ -47,7 +47,7 @@ exports[`channels/ChannelList FullList smoke-test 1`] = `
               </div>
             </div>
             <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
-              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline css-1fnxsti-MuiListItemText-root">
+              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline css-14i6ovm-MuiListItemText-root">
                 <div class="MuiBox-root css-70qvj9">
                   <div class="MuiBox-root css-1xsd608">
                     alpha
@@ -116,7 +116,7 @@ exports[`channels/ChannelList FullList smoke-test 1`] = `
               </div>
             </div>
             <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
-              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline css-1fnxsti-MuiListItemText-root">
+              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline css-14i6ovm-MuiListItemText-root">
                 <div class="MuiBox-root css-70qvj9">
                   <div class="MuiBox-root css-1xsd608">
                     beta
@@ -185,7 +185,7 @@ exports[`channels/ChannelList FullList smoke-test 1`] = `
               </div>
             </div>
             <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
-              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline css-1fnxsti-MuiListItemText-root">
+              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline css-14i6ovm-MuiListItemText-root">
                 <div class="MuiBox-root css-70qvj9">
                   <div class="MuiBox-root css-1xsd608">
                     edge
@@ -254,7 +254,7 @@ exports[`channels/ChannelList FullList smoke-test 1`] = `
               </div>
             </div>
             <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
-              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline css-1fnxsti-MuiListItemText-root">
+              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline css-14i6ovm-MuiListItemText-root">
                 <div class="MuiBox-root css-70qvj9">
                   <div class="MuiBox-root css-1xsd608">
                     stable
@@ -328,7 +328,7 @@ exports[`channels/ChannelList FullList smoke-test 1`] = `
               </div>
             </div>
             <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
-              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline css-1fnxsti-MuiListItemText-root">
+              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline css-14i6ovm-MuiListItemText-root">
                 <div class="MuiBox-root css-70qvj9">
                   <div class="MuiBox-root css-1xsd608">
                     alpha
@@ -375,7 +375,7 @@ exports[`channels/ChannelList FullList smoke-test 1`] = `
               </div>
             </div>
             <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
-              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline css-1fnxsti-MuiListItemText-root">
+              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline css-14i6ovm-MuiListItemText-root">
                 <div class="MuiBox-root css-70qvj9">
                   <div class="MuiBox-root css-1xsd608">
                     beta
@@ -422,7 +422,7 @@ exports[`channels/ChannelList FullList smoke-test 1`] = `
               </div>
             </div>
             <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
-              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline css-1fnxsti-MuiListItemText-root">
+              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline css-14i6ovm-MuiListItemText-root">
                 <div class="MuiBox-root css-70qvj9">
                   <div class="MuiBox-root css-1xsd608">
                     edge
@@ -469,7 +469,7 @@ exports[`channels/ChannelList FullList smoke-test 1`] = `
               </div>
             </div>
             <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
-              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline css-1fnxsti-MuiListItemText-root">
+              <div class="MuiListItemText-root MuiListItemText-dense MuiListItemText-multiline css-14i6ovm-MuiListItemText-root">
                 <div class="MuiBox-root css-70qvj9">
                   <div class="MuiBox-root css-1xsd608">
                     stable
