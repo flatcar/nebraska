@@ -20,7 +20,7 @@ require (
 	github.com/labstack/echo/v4 v4.15.1
 	github.com/lib/pq v1.11.2
 	github.com/oapi-codegen/echo-middleware v1.0.2
-	github.com/oapi-codegen/runtime v1.2.0
+	github.com/oapi-codegen/runtime v1.3.0
 	github.com/oauth2-proxy/mockoidc v0.0.0-20240214162133-caebfff84d25
 	github.com/prometheus/client_golang v1.23.2
 	github.com/rs/zerolog v1.34.0
