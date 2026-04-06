@@ -25,7 +25,7 @@ export default defineConfig({
         functions: 21.09,
         statements: 23.57,
         branches: 17,
-      }
+      },
     },
   },
   plugins: [react()],
