@@ -41,20 +41,7 @@ i18next
     // nonExplicitSupportedLngs: true,
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
-      format: function (value, format, lng) {
-        // https://www.i18next.com/translation-function/formatting
-        if (format === 'number') return new Intl.NumberFormat(lng).format(value);
-        if (format === 'date')
-          return new Intl.DateTimeFormat(lng, {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-          }).format(value);
-
-        return value;
-      },
     },
-    returnEmptyString: false,
     // https://react.i18next.com/latest/i18next-instance
     // https://www.i18next.com/overview/configuration-options
     react: {
@@ -64,5 +51,18 @@ i18next
     nsSeparator: '|',
     keySeparator: false,
   });
+
+// https://www.i18next.com/translation-function/formatting
+i18next.services.formatter?.add('number', (value, lng) => {
+  return new Intl.NumberFormat(lng).format(value);
+});
+
+i18next.services.formatter?.add('date', (value, lng) => {
+  return new Intl.DateTimeFormat(lng, {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(value);
+});
 
 export default i18next;
