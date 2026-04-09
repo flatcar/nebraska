@@ -48,8 +48,8 @@ const (
 )
 
 const (
-	validityInterval postgresDuration = "1 days"
-	defaultInterval  time.Duration    = 2 * time.Hour
+	validityInterval     postgresDuration = "1 days"
+	defaultStatsInterval time.Duration    = 24 * time.Hour
 )
 
 // Instance represents an instance running one or more applications for which
@@ -646,11 +646,17 @@ func (api *API) instanceStatusHistoryQuery(instanceID, appID, groupID string, li
 
 // GetDefaultInterval returns the default interval used for instance stats queries.
 func (api *API) GetDefaultInterval() time.Duration {
-	return defaultInterval
+	return defaultStatsInterval
 }
 
-// instanceStatsQuery returns a SelectDataset prepared to return all instances
-// that have been checked in during a given duration from a given time.
+// instanceStatsQuery returns a SelectDataset to estimate the active fleet size at a given point in time.
+// It answers "how many instances were part of the active fleet on day X",
+// not "how many instances specifically checked in on day X".
+//
+// Since last_check_for_updates gets overwritten on every check-in, we cannot determine
+// whether an instance was active on a specific past day. Instead, we count instances that:
+//  1. existed at the time (created_ts <= timestamp)
+//  2. are still alive (last_check_for_updates > timestamp - duration)
 func (api *API) instanceStatsQuery(t *time.Time, duration *time.Duration) *goqu.SelectDataset {
 	if t == nil {
 		now := time.Now().UTC()
@@ -658,7 +664,7 @@ func (api *API) instanceStatsQuery(t *time.Time, duration *time.Duration) *goqu.
 	}
 
 	if duration == nil {
-		d := defaultInterval
+		d := defaultStatsInterval
 		duration = &d
 	}
 
@@ -710,12 +716,14 @@ func (api *API) instanceStatsQuery(t *time.Time, duration *time.Duration) *goqu.
 				Else("").
 				As("arch"),
 			goqu.C("version").As("version"),
-			goqu.COUNT("*").As("instances")).
+			goqu.COUNT("*").As("instances")).Distinct().
 		Join(goqu.T("groups"), goqu.On(goqu.C("group_id").Eq(goqu.T("groups").Col("id")))).
 		Join(goqu.T("channel"), goqu.On(goqu.T("groups").Col("channel_id").Eq(goqu.T("channel").Col("id")))).
+		Join(goqu.T("instance"), goqu.On(goqu.T("instance_application").Col("instance_id").Eq(goqu.T("instance").Col("id")))).
 		Where(
 			goqu.C("last_check_for_updates").Gt(timestampMinusDuration),
-			goqu.C("last_check_for_updates").Lte(timestamp)).
+			goqu.L(ignoreFakeInstanceCondition("instance_id")),
+			goqu.T("instance").Col("created_ts").Lte(timestamp)).
 		GroupBy(timestamp,
 			goqu.T("channel").Col("name"),
 			goqu.T("channel").Col("arch"),
