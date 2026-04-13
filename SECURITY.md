@@ -1,7 +1,15 @@
-# Flatcar Nebraska Security
+# Security Policy
 
-Nebraska is the update server for Flatcar Container Linux.
+The Flatcar project takes security seriously. We appreciate your efforts to responsibly disclose your findings.
 
-Instructions on interacting with the Flatcar Security Team can be found in the main Flatcar repository [here](https://github.com/flatcar/Flatcar/blob/main/SECURITY.md).
+For our full security policy, supported versions, and how to report a vulnerability, please see the [main Flatcar Security Policy](https://github.com/flatcar/Flatcar/blob/main/SECURITY.md).
 
-For any immediate concerns, please contact the security team via [security@flatcar-linux.org](mailto:security@flatcar-linux.org). 
+**Please do not open public issues for security vulnerabilities.**
+
+---
+
+## Repository-Specific Security Notes
+
+Any security considerations specific to this repository will be listed here.
+
+<!-- Add repo-specific security notes below this line -->
