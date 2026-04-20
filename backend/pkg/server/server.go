@@ -194,6 +194,7 @@ func setupAuthenticator(conf config.Config, sessionStore *sessions.Store, defaul
 			ViewerRoles:   strings.Split(conf.OidcViewerRoles, ","),
 			RolesPath:     conf.OidcRolesPath,
 			UseUserInfo:   conf.OidcUseUserInfo,
+			CAFile:        conf.OidcCAFile,
 		}
 		return auth.NewOIDCAuthenticator(oidcAuthConfig)
 	}

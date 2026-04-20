@@ -64,7 +64,21 @@ Migration guide for Nebraska's secure OIDC implementation with Authorization Cod
 --oidc-management-url=https://your-idp.com # Account management URL
 --oidc-logout-url=https://your-idp.com/logout # Fallback logout URL
 --oidc-audience=https://nebraska-api       # Required for Auth0 (use your API identifier)
+--oidc-ca-file=/path/to/ca.pem            # Custom CA cert for OIDC provider TLS (see below)
 ```
+
+### Custom CA Certificates
+
+If your OIDC provider uses a certificate signed by a non-system CA (e.g., internal CA, Let's Encrypt staging), you can provide a custom CA certificate file:
+
+```bash
+--oidc-ca-file=/path/to/ca-bundle.pem
+```
+
+- The file should contain one or more PEM-encoded CA certificates
+- Custom CAs are **added** to the system CA pool (system-trusted CAs remain trusted)
+- Only affects the OIDC HTTP client (discovery, JWKS, UserInfo), not the rest of Nebraska
+- If the file is unreadable or contains no valid PEM certificates, Nebraska fails at startup with a clear error
 
 ### 3. Verification
 
@@ -96,6 +110,7 @@ Visit the updated Nebraska documentation at `https://www.flatcar.org/docs/latest
 | User has no access | Verify user roles match configured roles |
 | Frequent re-authentication | Increase access token expiration time in OIDC provider |
 | JWT decode error (Auth0) | Ensure audience is set and Implicit grant is disabled |
+| x509: certificate signed by unknown authority | Use `--oidc-ca-file` to trust your OIDC provider's CA certificate |
 
 **Debug JWT claims:**
 ```bash

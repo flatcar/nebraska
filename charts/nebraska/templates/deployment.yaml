@@ -131,6 +131,9 @@ spec:
               {{- if .Values.config.auth.oidc.useUserInfo }}
             - "-oidc-use-userinfo"
               {{- end }}
+              {{- with .Values.config.auth.oidc.caFile }}
+            - "-oidc-ca-file={{ . }}"
+              {{- end }}
             {{- end }}
 
             {{- /* --- Extra Args --- */ -}}

@@ -2,12 +2,14 @@ package auth
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
-
+	"os"
 	"slices"
+	"strings"
 
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/labstack/echo/v4"
@@ -22,6 +24,7 @@ type OIDCAuthConfig struct {
 	ViewerRoles   []string
 	RolesPath     string
 	UseUserInfo   bool
+	CAFile        string
 }
 
 type oidcAuth struct {
@@ -33,10 +36,38 @@ type oidcAuth struct {
 	viewerRoles   []string
 	rolesPath     string
 	useUserInfo   bool
+	httpClient    *http.Client
 }
 
 func NewOIDCAuthenticator(config *OIDCAuthConfig) (Authenticator, error) {
 	ctx := context.Background()
+
+	var httpClient *http.Client
+	if config.CAFile != "" {
+		pool, err := x509.SystemCertPool()
+		if err != nil {
+			return nil, fmt.Errorf("error loading system CA pool: %w", err)
+		}
+
+		caCert, err := os.ReadFile(config.CAFile)
+		if err != nil {
+			return nil, fmt.Errorf("error reading oidc-ca-file %q: %w", config.CAFile, err)
+		}
+
+		if !pool.AppendCertsFromPEM(caCert) {
+			return nil, fmt.Errorf("oidc-ca-file %q contains no valid PEM certificates", config.CAFile)
+		}
+
+		transport := http.DefaultTransport.(*http.Transport).Clone()
+		transport.TLSClientConfig = &tls.Config{
+			RootCAs: pool,
+		}
+
+		httpClient = &http.Client{
+			Transport: transport,
+		}
+		ctx = oidc.ClientContext(ctx, httpClient)
+	}
 
 	// setup oidc provider
 	provider, err := oidc.NewProvider(ctx, config.IssuerURL)
@@ -62,6 +93,7 @@ func NewOIDCAuthenticator(config *OIDCAuthConfig) (Authenticator, error) {
 		viewerRoles:   config.ViewerRoles,
 		rolesPath:     config.RolesPath,
 		useUserInfo:   config.UseUserInfo,
+		httpClient:    httpClient,
 	}
 
 	return oidcAuthenticator, nil
@@ -157,6 +189,10 @@ func (oa *oidcAuth) rolesFromUserInfo(ctx context.Context, rawToken string, role
 	roles := []string{}
 	if rolesPath == "" {
 		return roles, nil
+	}
+
+	if oa.httpClient != nil {
+		ctx = oidc.ClientContext(ctx, oa.httpClient)
 	}
 
 	userInfo, err := oa.provider.UserInfo(ctx, oauth2.StaticTokenSource(&oauth2.Token{

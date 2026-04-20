@@ -57,6 +57,9 @@ config:
       audience:
       # Use OIDC UserInfo endpoint for role extraction (for providers that don't include roles in access token)
       useUserInfo: false
+      # Path to a PEM-encoded CA certificate file to trust for OIDC provider TLS verification
+      # (additive to system CAs, supports multiple certs in one file)
+      caFile:
     github:
       clientID:
       clientSecret:
