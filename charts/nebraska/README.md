@@ -28,7 +28,7 @@ The OIDC implementation has been refactored to use Authorization Code Flow with 
 **Added Configuration Options:**
 - `config.auth.oidc.audience` - Optional, required for Auth0
 - `config.auth.oidc.useUserInfo` - Use UserInfo endpoint for role extraction (for providers that don't include roles in access token)
-- `config.auth.oidc.caFile` - Path to a PEM-encoded CA certificate file to trust for OIDC provider TLS verification
+- `config.caFile` - Path to a PEM-encoded CA certificate file to trust for TLS verification
 
 **All Other Options Remain:** `clientID`, `issuerURL`, `managementURL`, `logoutURL`, `adminRoles`, `viewerRoles`, `rolesPath`, `scopes`
 
@@ -171,6 +171,7 @@ $ kubectl exec -ti pod/nebraska-postgresql-0 -- psql < backup.sql
 | `config.hostFlatcarPackages.persistence.storageClass` | PVC Storage Class for PostgreSQL volume                                                                                              | `nil`                                                                   |
 | `config.hostFlatcarPackages.persistence.accessModes`  | PVC Access Mode for PostgreSQL volume                                                                                                | `["ReadWriteOnce"]`                                                     |
 | `config.hostFlatcarPackages.persistence.size`         | PVC Storage Request for PostgreSQL volume                                                                                            | `10Gi`                                                                  |
+| `config.caFile`                                       | Path to a PEM-encoded CA certificate file to trust for TLS verification (additive to system CAs, used for OIDC and syncer) | `nil`  |
 | `config.auth.mode`                                    | Authentication mode, available modes: `noop`, `github`, `oidc`                                                                               | `noop`                                                                  |
 | `config.auth.github.clientID`                         | GitHub client ID used for authentication                                                                                             | `nil`                                                                   |
 | `config.auth.github.clientSecret`                     | GitHub client secret used for authentication                                                                                         | `nil`                                                                   |
@@ -192,7 +193,6 @@ $ kubectl exec -ti pod/nebraska-postgresql-0 -- psql < backup.sql
 | `config.auth.oidc.scopes`                             | comma-separated list of scopes to be used in OIDC | `nil`  |
 | `config.auth.oidc.audience`                           | OIDC audience (required for Auth0, optional for others) | `nil`  |
 | `config.auth.oidc.useUserInfo`                        | Use UserInfo endpoint for role extraction (for providers that don't include roles in access token) | `false`  |
-| `config.auth.oidc.caFile`                             | Path to a PEM-encoded CA certificate file to trust for OIDC provider TLS verification (additive to system CAs) | `nil`  |
 | `config.database.host`                                | The host name of the database server                                                                                                 | `""` (use postgresql from Bitnami subchart)                             |
 | `config.database.port`                                | The port number the database server is listening on                                                                                  | `5432`                                                                  |
 | `config.database.sslMode`                             | The mode of the database connection                                                                                                  | `disable`                                                               |

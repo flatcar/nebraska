@@ -66,6 +66,9 @@ spec:
             {{- if .Values.config.app.httpStaticDir }}
             - "-http-static-dir={{ .Values.config.app.httpStaticDir }}"
             {{- end }}
+            {{- with .Values.config.caFile }}
+            - "-ca-file={{ . }}"
+            {{- end }}
 
             {{- /* --- Syncer settings --- */}}
             {{- if .Values.config.syncer.enabled }}
@@ -131,9 +134,7 @@ spec:
               {{- if .Values.config.auth.oidc.useUserInfo }}
             - "-oidc-use-userinfo"
               {{- end }}
-              {{- with .Values.config.auth.oidc.caFile }}
-            - "-oidc-ca-file={{ . }}"
-              {{- end }}
+
             {{- end }}
 
             {{- /* --- Extra Args --- */ -}}

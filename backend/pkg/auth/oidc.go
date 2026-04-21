@@ -2,12 +2,9 @@ package auth
 
 import (
 	"context"
-	"crypto/tls"
-	"crypto/x509"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"slices"
 	"strings"
 
@@ -24,7 +21,7 @@ type OIDCAuthConfig struct {
 	ViewerRoles   []string
 	RolesPath     string
 	UseUserInfo   bool
-	CAFile        string
+	HTTPClient    *http.Client
 }
 
 type oidcAuth struct {
@@ -42,31 +39,8 @@ type oidcAuth struct {
 func NewOIDCAuthenticator(config *OIDCAuthConfig) (Authenticator, error) {
 	ctx := context.Background()
 
-	var httpClient *http.Client
-	if config.CAFile != "" {
-		pool, err := x509.SystemCertPool()
-		if err != nil {
-			return nil, fmt.Errorf("error loading system CA pool: %w", err)
-		}
-
-		caCert, err := os.ReadFile(config.CAFile)
-		if err != nil {
-			return nil, fmt.Errorf("error reading oidc-ca-file %q: %w", config.CAFile, err)
-		}
-
-		if !pool.AppendCertsFromPEM(caCert) {
-			return nil, fmt.Errorf("oidc-ca-file %q contains no valid PEM certificates", config.CAFile)
-		}
-
-		transport := http.DefaultTransport.(*http.Transport).Clone()
-		transport.TLSClientConfig = &tls.Config{
-			RootCAs: pool,
-		}
-
-		httpClient = &http.Client{
-			Transport: transport,
-		}
-		ctx = oidc.ClientContext(ctx, httpClient)
+	if config.HTTPClient != nil {
+		ctx = oidc.ClientContext(ctx, config.HTTPClient)
 	}
 
 	// setup oidc provider
@@ -93,7 +67,7 @@ func NewOIDCAuthenticator(config *OIDCAuthConfig) (Authenticator, error) {
 		viewerRoles:   config.ViewerRoles,
 		rolesPath:     config.RolesPath,
 		useUserInfo:   config.UseUserInfo,
-		httpClient:    httpClient,
+		httpClient:    config.HTTPClient,
 	}
 
 	return oidcAuthenticator, nil
