@@ -7,7 +7,7 @@ require (
 	github.com/coreos/go-oidc/v3 v3.18.0
 	github.com/doug-martin/goqu/v9 v9.19.0
 	github.com/flatcar/go-omaha v0.0.2-0.20251014063321-4998849bd39c
-	github.com/getkin/kin-openapi v0.134.0
+	github.com/getkin/kin-openapi v0.135.0
 	github.com/golangci/golangci-lint/v2 v2.11.4
 	github.com/google/go-github/v28 v28.1.1
 	github.com/google/uuid v1.6.0
@@ -188,8 +188,8 @@ require (
 	github.com/nishanths/exhaustive v0.12.0 // indirect
 	github.com/nishanths/predeclared v0.2.2 // indirect
 	github.com/nunnatsa/ginkgolinter v0.23.0 // indirect
-	github.com/oasdiff/yaml v0.0.0-20260313112342-a3ea61cb4d4c // indirect
-	github.com/oasdiff/yaml3 v0.0.0-20260224194419-61cd415a242b // indirect
+	github.com/oasdiff/yaml v0.0.9 // indirect
+	github.com/oasdiff/yaml3 v0.0.9 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/perimeterx/marshmallow v1.1.5 // indirect
