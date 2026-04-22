@@ -27,6 +27,7 @@ import (
 	"github.com/flatcar/nebraska/backend/pkg/sessions/memcache"
 	memcachegob "github.com/flatcar/nebraska/backend/pkg/sessions/memcache/gob"
 	"github.com/flatcar/nebraska/backend/pkg/sessions/securecookie"
+	"github.com/flatcar/nebraska/backend/pkg/tlsutil"
 )
 
 const serviceName = "nebraska"
@@ -194,6 +195,7 @@ func setupAuthenticator(conf config.Config, sessionStore *sessions.Store, defaul
 			ViewerRoles:   strings.Split(conf.OidcViewerRoles, ","),
 			RolesPath:     conf.OidcRolesPath,
 			UseUserInfo:   conf.OidcUseUserInfo,
+			HTTPClient:    tlsutil.NewHTTPClient(conf.CACertPool),
 		}
 		return auth.NewOIDCAuthenticator(oidcAuthConfig)
 	}

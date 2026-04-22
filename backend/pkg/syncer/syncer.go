@@ -26,6 +26,7 @@ import (
 	"github.com/flatcar/nebraska/backend/pkg/api"
 	"github.com/flatcar/nebraska/backend/pkg/config"
 	"github.com/flatcar/nebraska/backend/pkg/logger"
+	"github.com/flatcar/nebraska/backend/pkg/tlsutil"
 )
 
 const (
@@ -74,6 +75,7 @@ type Config struct {
 	PackagesURL       string
 	FlatcarUpdatesURL string
 	CheckFrequency    time.Duration
+	HTTPClient        *http.Client
 }
 
 // Setup creates a new syncer from config and db connection, and returns it.
@@ -82,6 +84,8 @@ func Setup(conf *config.Config, db *api.API) (*Syncer, error) {
 	if err != nil {
 		return nil, fmt.Errorf("invalid Check Frequency value: %w", err)
 	}
+
+	httpClient := tlsutil.NewHTTPClient(conf.CACertPool)
 
 	if conf.SyncerPkgsURL == "" && conf.HostFlatcarPackages {
 		conf.SyncerPkgsURL = conf.NebraskaURL + "/flatcar/"
@@ -94,6 +98,7 @@ func Setup(conf *config.Config, db *api.API) (*Syncer, error) {
 		PackagesURL:       conf.SyncerPkgsURL,
 		FlatcarUpdatesURL: conf.FlatcarUpdatesURL,
 		CheckFrequency:    checkFrequency,
+		HTTPClient:        httpClient,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("error setting up syncer: %w", err)
@@ -125,7 +130,11 @@ func New(conf *Config) (*Syncer, error) {
 		bootIDs:           make(map[channelDescriptor]string, 8),
 		channelsIDs:       make(map[channelDescriptor]string, 8),
 		versions:          make(map[channelDescriptor]string, 8),
-		httpClient:        &http.Client{},
+		httpClient:        conf.HTTPClient,
+	}
+
+	if s.httpClient == nil {
+		s.httpClient = &http.Client{}
 	}
 
 	if err := s.initialize(); err != nil {
@@ -736,7 +745,7 @@ func (s *Syncer) downloadPackage(update *omaha.UpdateResponse, pkgName, sha1Base
 	updateURL.Path = path.Join(updateURL.Path, pkgName)
 
 	pkgURL := updateURL.String()
-	resp, err := http.Get(pkgURL)
+	resp, err := s.httpClient.Get(pkgURL)
 	if err != nil {
 		return err
 	}

@@ -5,9 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
-
 	"slices"
+	"strings"
 
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/labstack/echo/v4"
@@ -22,6 +21,7 @@ type OIDCAuthConfig struct {
 	ViewerRoles   []string
 	RolesPath     string
 	UseUserInfo   bool
+	HTTPClient    *http.Client
 }
 
 type oidcAuth struct {
@@ -33,10 +33,15 @@ type oidcAuth struct {
 	viewerRoles   []string
 	rolesPath     string
 	useUserInfo   bool
+	httpClient    *http.Client
 }
 
 func NewOIDCAuthenticator(config *OIDCAuthConfig) (Authenticator, error) {
 	ctx := context.Background()
+
+	if config.HTTPClient != nil {
+		ctx = oidc.ClientContext(ctx, config.HTTPClient)
+	}
 
 	// setup oidc provider
 	provider, err := oidc.NewProvider(ctx, config.IssuerURL)
@@ -62,6 +67,7 @@ func NewOIDCAuthenticator(config *OIDCAuthConfig) (Authenticator, error) {
 		viewerRoles:   config.ViewerRoles,
 		rolesPath:     config.RolesPath,
 		useUserInfo:   config.UseUserInfo,
+		httpClient:    config.HTTPClient,
 	}
 
 	return oidcAuthenticator, nil
@@ -157,6 +163,10 @@ func (oa *oidcAuth) rolesFromUserInfo(ctx context.Context, rawToken string, role
 	roles := []string{}
 	if rolesPath == "" {
 		return roles, nil
+	}
+
+	if oa.httpClient != nil {
+		ctx = oidc.ClientContext(ctx, oa.httpClient)
 	}
 
 	userInfo, err := oa.provider.UserInfo(ctx, oauth2.StaticTokenSource(&oauth2.Token{

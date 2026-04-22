@@ -11,6 +11,7 @@ import (
 	"github.com/flatcar/nebraska/backend/pkg/metrics"
 	"github.com/flatcar/nebraska/backend/pkg/server"
 	"github.com/flatcar/nebraska/backend/pkg/syncer"
+	"github.com/flatcar/nebraska/backend/pkg/tlsutil"
 )
 
 var l = logger.New("main")
@@ -31,6 +32,14 @@ func main() {
 			Err(err).
 			Msg("Config is invalid")
 	}
+
+	caPool, err := tlsutil.LoadCAPool(conf.CAFile)
+	if err != nil {
+		l.Fatal().
+			Err(err).
+			Msg("Failed to load CA certificates")
+	}
+	conf.CACertPool = caPool
 
 	if conf.RollbackDBTo != "" {
 		db, err := db.New()

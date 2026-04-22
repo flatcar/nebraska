@@ -1,6 +1,7 @@
 package config
 
 import (
+	"crypto/x509"
 	"errors"
 	"flag"
 	"fmt"
@@ -51,6 +52,8 @@ type Config struct {
 	OidcLogoutURL     string `koanf:"oidc-logout-url"`
 	OidcAudience      string `koanf:"oidc-audience"`
 	OidcUseUserInfo   bool   `koanf:"oidc-use-userinfo"`
+	CAFile            string `koanf:"ca-file"`
+	CACertPool        *x509.CertPool
 }
 
 const (
@@ -91,6 +94,12 @@ func (c *Config) Validate() error {
 		}
 	}
 
+	if c.CAFile != "" {
+		if _, err := os.Stat(c.CAFile); err != nil {
+			return fmt.Errorf("invalid ca-file: %w", err)
+		}
+	}
+
 	return nil
 }
 
@@ -127,6 +136,7 @@ func Parse() (*Config, error) {
 	f.String("oidc-logout-url", "", "OIDC logout URL (optional fallback when end_session_endpoint is not available in discovery)")
 	f.String("oidc-audience", "", "OIDC audience parameter for the access token")
 	f.Bool("oidc-use-userinfo", false, "Use OIDC UserInfo endpoint for role extraction (for providers that don't include roles in access token)")
+	f.String("ca-file", "", "path to a PEM-encoded CA certificate file to trust for TLS verification (additive to system CAs, supports multiple certs in one file)")
 	f.String("sync-update-url", "https://public.update.flatcar-linux.net/v1/update/", "Flatcar update URL to sync from")
 	f.String("sync-interval", "1h", "Sync check interval (the minimum depends on the number of channels to sync, e.g., 8m for 8 channels incl. different architectures)")
 	f.String("client-logo", "", "Client app logo, should be a path to svg file")
