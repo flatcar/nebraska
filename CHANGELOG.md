@@ -7,6 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Security
+
+## [4.0.0]
+
+### Breaking Changes
+
+- **PostgreSQL 14+ is now a hard requirement:** The `lib/pq` driver has been updated to v1.11.2, which only supports PostgreSQL 14 and newer. Previously, PostgreSQL 17.x was the "tested and default" version, but older versions (e.g., PostgreSQL 13) may have still worked. With this update, **operators running PostgreSQL 13 or older must upgrade their database before upgrading Nebraska**. See the [Upgrade PostgreSQL](https://github.com/flatcar/nebraska/tree/main/charts/nebraska#upgrade-postgresql) migration guide for step-by-step instructions. ([#1300](https://github.com/flatcar/nebraska/pull/1300))
+
 ### Added
 
 - **Custom CA Certificate for TLS:** Added `--ca-file` flag to trust additional CA certificates for TLS verification (e.g., internal CA, Let's Encrypt staging). Applies to the OIDC provider client and the syncer. Supports multiple PEM-encoded certs, additive to system CAs. Also exposed as `config.caFile` in the Helm chart.
@@ -20,6 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Package list UI now updates immediately after blacklist changes
   - Channel edit dialog filters out blacklisted packages from selection
   - Floor package selection prevents choosing blacklisted packages with clear visual feedback
+- Improved reverse domain ID validation regex to eliminate inefficient nested quantifiers flagged by CodeQL, and extracted it into a shared constant with tests. ([#1222](https://github.com/flatcar/nebraska/pull/1222))
 
 ### Removed
 ### Bugfixes
