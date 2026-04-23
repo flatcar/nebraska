@@ -48,7 +48,7 @@ export default function Tabs(props: TabsProps) {
       setTabIndex(false);
       return;
     }
-     
+
     setTabIndex(defaultIndex);
   }, [defaultIndex]);
 

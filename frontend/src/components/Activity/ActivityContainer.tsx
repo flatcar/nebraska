@@ -104,9 +104,11 @@ export function ActivityContainerPure(props: ActivityContainerPureProps) {
     <>
       <ListHeader title={t('activity|activity')} />
       <Paper>
-        <Box sx={{
-          padding: '1em'
-        }}>
+        <Box
+          sx={{
+            padding: '1em',
+          }}
+        >
           {_.isNull(activity) ? (
             <Loader />
           ) : _.isEmpty(activity) ? (
@@ -144,10 +146,8 @@ export function ActivityContainerPure(props: ActivityContainerPureProps) {
                       sx: { fontSize: '.85em' },
                     },
                   }}
-                  getItemAriaLabel={(type) =>
-                    type === 'previous'
-                      ? t('activity|previous_page')
-                      : t('activity|next_page')
+                  getItemAriaLabel={type =>
+                    type === 'previous' ? t('activity|previous_page') : t('activity|next_page')
                   }
                   rowsPerPageOptions={rowsOptions}
                   component="div"

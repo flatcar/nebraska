@@ -48,8 +48,9 @@ export default function SectionHeader(props: SectionHeaderProps) {
           flexShrink: 1,
           marginTop: theme => theme.spacing(1),
           marginBottom: theme => theme.spacing(1),
-          display: 'inline-block'
-        }}>
+          display: 'inline-block',
+        }}
+      >
         <Grid>
           <StyledBreadcrumbs
             aria-label={t('common|breadcrumbs_label').toString()}

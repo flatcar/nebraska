@@ -32,9 +32,11 @@ export interface CardDescriptionLabelProps {
 
 export function CardDescriptionLabel(props: CardDescriptionLabelProps) {
   return (
-    <Box sx={{
-      mt: 2
-    }}>
+    <Box
+      sx={{
+        mt: 2,
+      }}
+    >
       <Typography
         component="span"
         sx={{
@@ -85,15 +87,17 @@ export function CardHeader(props: CardHeaderProps) {
         sx={{
           justifyContent: 'space-between',
           padding: '1rem',
-          flexWrap: 'nowrap'
-        }}>
+          flexWrap: 'nowrap',
+        }}
+      >
         <Grid
           container
           spacing={1}
           sx={{
             alignItems: 'center',
-            justifyContent: 'space-between'
-          }}>
+            justifyContent: 'space-between',
+          }}
+        >
           <Grid size={12}>
             {props.cardMainLinkPath ? (
               <Typography variant="h2">
@@ -126,8 +130,9 @@ export function CardHeader(props: CardHeaderProps) {
               sx={{
                 bgcolor: theme.palette.lightSilverShade,
                 px: 1,
-                display: 'inline-block'
-              }}>
+                display: 'inline-block',
+              }}
+            >
               <Typography
                 sx={{
                   color: theme => theme.palette.text.secondary,

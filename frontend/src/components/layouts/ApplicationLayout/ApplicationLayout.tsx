@@ -52,9 +52,13 @@ function ApplicationLayout() {
           },
         ]}
       />
-      <Grid container spacing={1} sx={{
-        justifyContent: 'space-between'
-      }}>
+      <Grid
+        container
+        spacing={1}
+        sx={{
+          justifyContent: 'space-between',
+        }}
+      >
         <Grid
           size={{
             xs: 12,
@@ -69,9 +73,13 @@ function ApplicationLayout() {
             sm: 4,
           }}
         >
-          <Stack direction="column" spacing={2} sx={{
-            alignItems: 'stretch'
-          }}>
+          <Stack
+            direction="column"
+            spacing={2}
+            sx={{
+              alignItems: 'stretch',
+            }}
+          >
             <Box>
               <ChannelList appID={appID} />
             </Box>

@@ -126,9 +126,13 @@ export function PureGroupItem({
             />
           </CardHeader>
         </Grid>
-        <Grid container size={12} sx={{
-          justifyContent: 'space-between'
-        }}>
+        <Grid
+          container
+          size={12}
+          sx={{
+            justifyContent: 'space-between',
+          }}
+        >
           <Stack direction="column" sx={{ padding: '1em', flex: '0 0 auto', width: '33.33%' }}>
             <Box>
               <CardFeatureLabel>{t('groups|instances')}</CardFeatureLabel>
@@ -147,14 +151,16 @@ export function PureGroupItem({
                 <Box
                   sx={{
                     display: 'flex',
-                    mr: 2
-                  }}>
+                    mr: 2,
+                  }}
+                >
                   <ScheduleIcon color="disabled" />
                   <Box
                     sx={{
                       pl: 1,
-                      color: 'text.disabled'
-                    }}>
+                      color: 'text.disabled',
+                    }}
+                  >
                     <Typography
                       sx={{
                         color: 'rgba(0,0,0,0.6)',
@@ -169,9 +175,11 @@ export function PureGroupItem({
               </Box>
             </Box>
           </Stack>
-          <Box sx={{
-            width: '1%'
-          }}>
+          <Box
+            sx={{
+              width: '1%',
+            }}
+          >
             <Divider orientation="vertical" variant="fullWidth" />
           </Box>
           <Stack direction="column" sx={{ padding: '1em', flex: '0 0 auto', width: '58.33%' }}>
@@ -183,12 +191,15 @@ export function PureGroupItem({
               <Box
                 sx={{
                   p: 1,
-                  mb: 1
-                }}>
+                  mb: 1,
+                }}
+              >
                 <CardLabel>
-                  <Box sx={{
-                    display: 'flex'
-                  }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                    }}
+                  >
                     {group.policy_updates_enabled ? (
                       <>
                         <Box>{t('frequent|enabled')}</Box>
@@ -216,8 +227,9 @@ export function PureGroupItem({
               <Box
                 sx={{
                   p: 1,
-                  mb: 1
-                }}>
+                  mb: 1,
+                }}
+              >
                 <CardLabel>{formatUpdateLimits(t, group)}</CardLabel>
               </Box>
             </Box>

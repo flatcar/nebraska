@@ -10,8 +10,9 @@ function MainLayout() {
       spacing={2}
       sx={{
         justifyContent: 'center',
-        alignItems: 'flex-start'
-      }}>
+        alignItems: 'flex-start',
+      }}
+    >
       <Grid
         size={{
           xs: 12,

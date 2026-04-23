@@ -336,16 +336,21 @@ function ChannelEdit(props: ChannelEditProps) {
             wrap="nowrap"
             sx={{
               justifyContent: 'space-between',
-              alignItems: 'center'
-            }}>
+              alignItems: 'center',
+            }}
+          >
             <Grid>
               <ColorPicker color={channelColor} onColorPicked={color => setChannelColor(color.hex)}>
                 <>{values.name ? values.name[0] : ''}</>
               </ColorPicker>
             </Grid>
-            <Grid container spacing={2} sx={{
-              alignItems: 'flex-start'
-            }}>
+            <Grid
+              container
+              spacing={2}
+              sx={{
+                alignItems: 'flex-start',
+              }}
+            >
               <Grid className={classes.nameField}>
                 <Field
                   name="name"
@@ -415,15 +420,18 @@ function ChannelEdit(props: ChannelEditProps) {
             onBottomScrolled={loadMorePackages}
           />
           {!isCreation && (
-            <Box sx={{
-              mt: 2
-            }}>
+            <Box
+              sx={{
+                mt: 2,
+              }}
+            >
               <Box
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'space-between'
-                }}>
+                  justifyContent: 'space-between',
+                }}
+              >
                 <Typography variant="subtitle2" color="text.secondary">
                   {t('channels|floor_packages')} ({floorPackages.length})
                 </Typography>
@@ -436,9 +444,14 @@ function ChannelEdit(props: ChannelEditProps) {
                   {t('channels|add_floor')}
                 </Button>
               </Box>
-              <Typography variant="caption" color="text.secondary" gutterBottom sx={{
-                display: 'block'
-              }}>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                gutterBottom
+                sx={{
+                  display: 'block',
+                }}
+              >
                 {t('channels|floor_packages_help')}
               </Typography>
               {loadingFloors ? (

@@ -166,8 +166,9 @@ function ItemExtended(props: {
         container
         sx={{
           alignItems: 'stretch',
-          justifyContent: 'space-between'
-        }}>
+          justifyContent: 'space-between',
+        }}
+      >
         <Grid size={12}>
           <CardHeader
             cardMainLinkLabel={group ? group.name : '…'}
@@ -189,18 +190,25 @@ function ItemExtended(props: {
           <Grid container>
             {group && (
               <Grid size={12}>
-                <Box sx={{
-                  p: 2
-                }}>
-                  <Stack direction="column" sx={{
-                    justifyContent: 'space-between'
-                  }}>
+                <Box
+                  sx={{
+                    p: 2,
+                  }}
+                >
+                  <Stack
+                    direction="column"
+                    sx={{
+                      justifyContent: 'space-between',
+                    }}
+                  >
                     <Box>
                       <CardFeatureLabel>{t('groups|channel')}</CardFeatureLabel>
                       {_.isEmpty(group.channel) ? (
-                        <Box sx={{
-                          my: 1
-                        }}>
+                        <Box
+                          sx={{
+                            my: 1,
+                          }}
+                        >
                           <CardLabel>{t('groups|channel_none_assigned')}</CardLabel>
                         </Box>
                       ) : (
@@ -209,19 +217,25 @@ function ItemExtended(props: {
                     </Box>
                     <Box>
                       <CardFeatureLabel>{t('frequent|updates')}</CardFeatureLabel>
-                      <Box sx={{
-                        my: 1
-                      }}>
+                      <Box
+                        sx={{
+                          my: 1,
+                        }}
+                      >
                         <CardLabel>
-                          <Box sx={{
-                            display: 'flex'
-                          }}>
+                          <Box
+                            sx={{
+                              display: 'flex',
+                            }}
+                          >
                             {group.policy_updates_enabled ? (
                               <>
                                 <Box>{t('frequent|enabled')}</Box>
-                                <Box sx={{
-                                  pl: 1
-                                }}>
+                                <Box
+                                  sx={{
+                                    pl: 1,
+                                  }}
+                                >
                                   <CheckIcon className={classes.success} fontSize="small" />
                                 </Box>
                               </>
@@ -239,9 +253,11 @@ function ItemExtended(props: {
                     </Box>
                     <Box>
                       <CardFeatureLabel>{t('groups|office_hours_only')}</CardFeatureLabel>
-                      <Box sx={{
-                        my: 1
-                      }}>
+                      <Box
+                        sx={{
+                          my: 1,
+                        }}
+                      >
                         <CardLabel>
                           {group.policy_office_hours ? t('frequent|yes') : t('frequent|no')}
                         </CardLabel>
@@ -249,9 +265,11 @@ function ItemExtended(props: {
                     </Box>
                     <Box>
                       <CardFeatureLabel>{t('groups|safe_mode')}</CardFeatureLabel>
-                      <Box sx={{
-                        my: 1
-                      }}>
+                      <Box
+                        sx={{
+                          my: 1,
+                        }}
+                      >
                         <CardLabel>
                           {group.policy_safe_mode ? t('frequent|yes') : t('frequent|no')}
                         </CardLabel>
@@ -259,17 +277,21 @@ function ItemExtended(props: {
                     </Box>
                     <Box>
                       <CardFeatureLabel>{t('groups|updates_policy')}</CardFeatureLabel>
-                      <Box sx={{
-                        my: 1
-                      }}>
+                      <Box
+                        sx={{
+                          my: 1,
+                        }}
+                      >
                         <CardLabel>{formatUpdateLimits(t, group)}</CardLabel>
                       </Box>
                     </Box>
                     <Box>
                       <CardFeatureLabel>{t('groups|updates_timeout')}</CardFeatureLabel>
-                      <Box sx={{
-                        my: 1
-                      }}>
+                      <Box
+                        sx={{
+                          my: 1,
+                        }}
+                      >
                         <CardLabel>{group.policy_update_timeout}</CardLabel>
                       </Box>
                     </Box>
@@ -286,8 +308,9 @@ function ItemExtended(props: {
           <Box
             sx={{
               mt: 1,
-              ml: -3
-            }}>
+              ml: -3,
+            }}
+          >
             {group && (
               <>
                 <Grid
@@ -295,22 +318,26 @@ function ItemExtended(props: {
                   spacing={2}
                   sx={{
                     alignItems: 'center',
-                    justifyContent: 'space-between'
-                  }}>
+                    justifyContent: 'space-between',
+                  }}
+                >
                   <Grid>
                     <Box
                       sx={{
                         color: theme.palette.greyShadeColor,
                         fontSize: 18,
-                        fontWeight: 700
-                      }}>
+                        fontWeight: 700,
+                      }}
+                    >
                       {t('groups|update_progress')}
                     </Box>
                   </Grid>
                   <Grid>
-                    <Box sx={{
-                      m: 2
-                    }}>
+                    <Box
+                      sx={{
+                        m: 2,
+                      }}
+                    >
                       <TimeIntervalLinks
                         intervalChangeHandler={duration =>
                           setDurationToURL('stats_period', duration.queryValue)
@@ -322,9 +349,11 @@ function ItemExtended(props: {
                     </Box>
                   </Grid>
                 </Grid>
-                <Box sx={{
-                  padding: '1em'
-                }}>
+                <Box
+                  sx={{
+                    padding: '1em',
+                  }}
+                >
                   <InstanceStatusArea
                     instanceStats={instancesStats}
                     period={updateProgressChartDuration.displayValue}
@@ -353,20 +382,23 @@ function ItemExtended(props: {
                 container
                 sx={{
                   alignItems: 'center',
-                  justifyContent: 'space-between'
-                }}>
+                  justifyContent: 'space-between',
+                }}
+              >
                 <Grid>
                   <Box
                     sx={{
                       pl: 4,
-                      pt: 4
-                    }}>
+                      pt: 4,
+                    }}
+                  >
                     <Box
                       sx={{
                         fontSize: 18,
                         fontWeight: 700,
-                        color: theme.palette.greyShadeColor
-                      }}>
+                        color: theme.palette.greyShadeColor,
+                      }}
+                    >
                       {t('groups|version_breakdown')}
                     </Box>
                   </Box>
@@ -375,8 +407,9 @@ function ItemExtended(props: {
                   <Box
                     sx={{
                       pt: 4,
-                      pr: 2
-                    }}>
+                      pr: 2,
+                    }}
+                  >
                     <TimeIntervalLinks
                       intervalChangeHandler={duration =>
                         setDurationToURL('version_timeline_period', duration.queryValue)
@@ -388,15 +421,19 @@ function ItemExtended(props: {
                   </Box>
                 </Grid>
               </Grid>
-              <Box sx={{
-                padding: '2em'
-              }}>
+              <Box
+                sx={{
+                  padding: '2em',
+                }}
+              >
                 <VersionCountTimeline group={group} duration={versionChartSelectedDuration} />
               </Box>
             </Stack>
-            <Box sx={{
-              width: '1%'
-            }}>
+            <Box
+              sx={{
+                width: '1%',
+              }}
+            >
               <Divider orientation="vertical" />
             </Box>
             <Stack
@@ -409,8 +446,9 @@ function ItemExtended(props: {
                 container
                 sx={{
                   alignItems: 'center',
-                  justifyContent: 'space-between'
-                }}>
+                  justifyContent: 'space-between',
+                }}
+              >
                 <Grid>
                   <Box
                     sx={{
@@ -418,8 +456,9 @@ function ItemExtended(props: {
                       color: theme.palette.greyShadeColor,
                       fontSize: 18,
                       fontWeight: 700,
-                      pt: 4
-                    }}>
+                      pt: 4,
+                    }}
+                  >
                     {t('groups|status_breakdown')}
                   </Box>
                 </Grid>
@@ -427,8 +466,9 @@ function ItemExtended(props: {
                   <Box
                     sx={{
                       pt: 4,
-                      pr: 2
-                    }}>
+                      pr: 2,
+                    }}
+                  >
                     <TimeIntervalLinks
                       intervalChangeHandler={duration =>
                         setDurationToURL('status_timeline_period', duration.queryValue)
@@ -440,9 +480,11 @@ function ItemExtended(props: {
                   </Box>
                 </Grid>
               </Grid>
-              <Box sx={{
-                padding: '2em'
-              }}>
+              <Box
+                sx={{
+                  padding: '2em',
+                }}
+              >
                 <StatusCountTimeline group={group} duration={statusChartDuration} />
               </Box>
             </Stack>

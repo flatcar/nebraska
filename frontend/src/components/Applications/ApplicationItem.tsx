@@ -73,9 +73,11 @@ export default function ApplicationItem(props: ApplicationItemProps) {
         <Grid size={12}>
           <Grid container className={classes.itemSection} spacing={0}>
             <Grid size={4}>
-              <Box sx={{
-                mt: 2
-              }}>
+              <Box
+                sx={{
+                  mt: 2,
+                }}
+              >
                 <CardFeatureLabel>{t('applications|instances_title')}</CardFeatureLabel>
                 <CardLabel>
                   <Typography variant="h5">
@@ -84,14 +86,16 @@ export default function ApplicationItem(props: ApplicationItemProps) {
                   <Box
                     sx={{
                       display: 'flex',
-                      my: 1
-                    }}>
+                      my: 1,
+                    }}
+                  >
                     <ScheduleIcon color="disabled" />
                     <Box
                       sx={{
                         pl: 1,
-                        color: 'text.disabled'
-                      }}>
+                        color: 'text.disabled',
+                      }}
+                    >
                       <Typography variant="subtitle1">
                         {t('applications|time_last_24_hours')}
                       </Typography>
@@ -100,23 +104,27 @@ export default function ApplicationItem(props: ApplicationItemProps) {
                 </CardLabel>
               </Box>
             </Grid>
-            <Box sx={{
-              width: '1%'
-            }}>
+            <Box
+              sx={{
+                width: '1%',
+              }}
+            >
               <Divider orientation="vertical" variant="fullWidth" />
             </Box>
             <Grid size={7}>
               <Box
                 sx={{
                   mt: 2,
-                  p: 1
-                }}>
+                  p: 1,
+                }}
+              >
                 <CardFeatureLabel>{t('frequent|groups')}</CardFeatureLabel>
                 <Box
                   sx={{
                     display: 'inline-block',
-                    pl: 2
-                  }}>
+                    pl: 2,
+                  }}
+                >
                   <CardLabel>
                     {groups?.length === 0 ? t('applications|none') : groups?.length}
                   </CardLabel>

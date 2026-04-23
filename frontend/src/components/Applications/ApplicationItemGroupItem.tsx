@@ -28,13 +28,19 @@ function ApplicationItemGroupItem(props: { group: Group; appName: string }) {
   }, [group]);
 
   const instanceCountContent = (
-    <Box sx={{
-      display: 'flex'
-    }}>
+    <Box
+      sx={{
+        display: 'flex',
+      }}
+    >
       <LayersOutlinedIcon />
-      <Box sx={{
-        px: 0.5
-      }}>{totalInstances}</Box>
+      <Box
+        sx={{
+          px: 0.5,
+        }}
+      >
+        {totalInstances}
+      </Box>
       {t('applications|instances')}
     </Box>
   );
@@ -44,11 +50,14 @@ function ApplicationItemGroupItem(props: { group: Group; appName: string }) {
       <Box
         sx={{
           display: 'flex',
-          p: 1
-        }}>
-        <Box sx={{
-          width: '40%'
-        }}>
+          p: 1,
+        }}
+      >
+        <Box
+          sx={{
+            width: '40%',
+          }}
+        >
           <Link
             sx={{
               fontSize: '1rem',
@@ -64,8 +73,9 @@ function ApplicationItemGroupItem(props: { group: Group; appName: string }) {
         <Box
           sx={{
             display: 'flex',
-            width: '50%'
-          }}>
+            width: '50%',
+          }}
+        >
           {totalInstances > 0 ? (
             <Link
               to={{

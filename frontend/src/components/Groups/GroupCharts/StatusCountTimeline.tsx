@@ -207,9 +207,13 @@ export default function StatusCountTimeline(props: StatusCountTimelineProps) {
   }, [props.duration]);
 
   return (
-    <Grid container spacing={2} sx={{
-      alignItems: 'center'
-    }}>
+    <Grid
+      container
+      spacing={2}
+      sx={{
+        alignItems: 'center',
+      }}
+    >
       <Grid size={12}>
         {timelineChartData.data.length > 0 ? (
           <TimelineChart
@@ -224,9 +228,11 @@ export default function StatusCountTimeline(props: StatusCountTimelineProps) {
       </Grid>
       <Grid container size={12}>
         <Grid size={12}>
-          <Box sx={{
-            width: 500
-          }}>
+          <Box
+            sx={{
+              width: 500,
+            }}
+          >
             {timelineChartData.data.length > 0 ? (
               selectedEntry !== -1 ? (
                 <React.Fragment>

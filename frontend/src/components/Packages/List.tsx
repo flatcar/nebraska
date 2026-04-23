@@ -95,9 +95,11 @@ function List(props: ListProps) {
         }
       />
       <Paper>
-        <Box sx={{
-          padding: '1em'
-        }}>
+        <Box
+          sx={{
+            padding: '1em',
+          }}
+        >
           {!packagesLoading ? (
             application?.packages?.totalCount === 0 ? (
               <Empty>This application does not have any package yet</Empty>
@@ -131,10 +133,8 @@ function List(props: ListProps) {
                   count={application.packages?.totalCount || 0}
                   rowsPerPage={packageQueryParams.perPage}
                   page={packageQueryParams.page}
-                  getItemAriaLabel={(type) =>
-                    type === 'previous'
-                      ? t('frequent|previous_page')
-                      : t('frequent|next_page')
+                  getItemAriaLabel={type =>
+                    type === 'previous' ? t('frequent|previous_page') : t('frequent|next_page')
                   }
                   onPageChange={handleChangePage}
                 />

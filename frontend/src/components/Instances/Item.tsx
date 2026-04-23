@@ -39,8 +39,9 @@ const TableLabel = function (props: PropsWithChildren<{ bgColor?: string; textCo
         color: props.textColor,
         display: 'inline-block',
         py: 1,
-        px: 2
-      }}>
+        px: 2,
+      }}
+    >
       {props.children}
     </Box>
   );
@@ -132,8 +133,9 @@ function Item(props: ItemProps) {
           <Box
             sx={{
               display: 'flex',
-              justifyContent: 'space-between'
-            }}>
+              justifyContent: 'space-between',
+            }}
+          >
             <Box>{makeLocaleTime(date)}</Box>
             <Box>
               <IconButton onClick={onToggle} size="large">

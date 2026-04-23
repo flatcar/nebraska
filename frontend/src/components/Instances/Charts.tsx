@@ -84,8 +84,9 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
       direction="column"
       sx={{
         justifyContent: 'center',
-        alignItems: 'center'
-      }}>
+        alignItems: 'center',
+      }}
+    >
       <Box>
         <PieChart width={width} height={height}>
           <Pie
@@ -136,8 +137,9 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
         spacing={1}
         sx={{
           alignItems: 'center',
-          justifyContent: 'center'
-        }}>
+          justifyContent: 'center',
+        }}
+      >
         {icon && (
           <Grid>
             <InlineIcon icon={icon} color={color} width={iconSize} height={iconSize} />
@@ -240,14 +242,19 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
       container
       sx={{
         justifyContent: 'space-between',
-        alignItems: 'center'
-      }}>
+        alignItems: 'center',
+      }}
+    >
       <Grid size={4}>
         <InstanceCountLabel countText={totalInstances} href={href} />
       </Grid>
-      <Grid container size={8} sx={{
-        justifyContent: 'space-between'
-      }}>
+      <Grid
+        container
+        size={8}
+        sx={{
+          justifyContent: 'space-between',
+        }}
+      >
         {instanceStateCount.map(({ status, count }, i) => {
           // Sort the data entries so the smaller amounts are shown first.
           count.sort((obj1, obj2) => {

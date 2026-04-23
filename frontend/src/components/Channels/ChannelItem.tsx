@@ -63,24 +63,31 @@ export default function ChannelItem(props: ChannelItemProps) {
       <Box
         sx={{
           display: 'flex',
-          ml: 1
-        }}>
+          ml: 1,
+        }}
+      >
         <Box>{text}</Box>
         {date && (
-          <Box sx={{
-            pl: 2
-          }}>
-            <Box sx={{
-              display: 'flex'
-            }}>
+          <Box
+            sx={{
+              pl: 2,
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+              }}
+            >
               <Box>
                 <Tooltip title={t('channels|release_date') || ''}>
                   <ScheduleIcon fontSize="small" />
                 </Tooltip>
               </Box>
-              <Box sx={{
-                pl: 1
-              }}>
+              <Box
+                sx={{
+                  pl: 1,
+                }}
+              >
                 {makeLocaleTime(date, {
                   showTime: false,
                   dateFormat: { year: 'numeric', month: '2-digit', day: '2-digit' },
@@ -108,13 +115,15 @@ export default function ChannelItem(props: ChannelItemProps) {
               <Box
                 sx={{
                   display: 'flex',
-                  alignItems: 'center'
-                }}>
+                  alignItems: 'center',
+                }}
+              >
                 <Box
                   sx={{
                     pl: 1,
-                    display: 'inline-block'
-                  }}>
+                    display: 'inline-block',
+                  }}
+                >
                   {name}
                 </Box>
               </Box>

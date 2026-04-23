@@ -144,8 +144,9 @@ function Appbar(props: AppbarProps) {
                 sx={{
                   paddingY: 2,
                   paddingX: 2,
-                  textAlign: 'center'
-                }}>
+                  textAlign: 'center',
+                }}
+              >
                 {user?.name && <Typography className={classes.userName}>{user.name}</Typography>}
                 {user?.email && <Typography className={classes.email}>{user.email}</Typography>}
               </Box>
@@ -154,8 +155,9 @@ function Appbar(props: AppbarProps) {
               sx={{
                 paddingY: 1,
                 paddingX: 2,
-                textAlign: 'center'
-              }}>
+                textAlign: 'center',
+              }}
+            >
               <Button
                 component="a"
                 startIcon={<CreateOutlined />}
@@ -172,8 +174,9 @@ function Appbar(props: AppbarProps) {
                   sx={{
                     paddingY: 1,
                     paddingX: 2,
-                    textAlign: 'center'
-                  }}>
+                    textAlign: 'center',
+                  }}
+                >
                   <Button startIcon={<LogoutOutlined />} onClick={handleLogout} fullWidth>
                     {t('header|logout')}
                   </Button>

@@ -252,9 +252,11 @@ export default function FileList(props: FileListProps) {
           edit
         />
       ) : (
-        <Box sx={{
-          textAlign: 'center'
-        }}>
+        <Box
+          sx={{
+            textAlign: 'center',
+          }}
+        >
           <IconButton
             title={t('packages|add_file')}
             disabled={isEditing()}

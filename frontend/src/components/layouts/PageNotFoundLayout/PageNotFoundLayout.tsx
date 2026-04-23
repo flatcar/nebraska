@@ -15,8 +15,9 @@ export default function PageNotFoundLayout() {
       style={{ minHeight: '100vh', textAlign: 'center' }}
       sx={{
         alignItems: 'center',
-        justifyContent: 'center'
-      }}>
+        justifyContent: 'center',
+      }}
+    >
       <Box sx={{ width: '50%' }}>
         <img src={pageNotFoundGraphic} alt="page not found 404" style={{ maxWidth: '100%' }} />
         <Typography variant="h1" style={{ fontSize: '1.875rem' }}>

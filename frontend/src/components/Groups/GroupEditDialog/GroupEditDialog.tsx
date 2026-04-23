@@ -127,9 +127,11 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
           {status && status.statusMessage && (
             <DialogContentText color="error">{status.statusMessage}</DialogContentText>
           )}
-          <Box sx={{
-            py: 1
-          }}>
+          <Box
+            sx={{
+              py: 1,
+            }}
+          >
             <Tabs
               value={groupEditActiveTab}
               onChange={onEditGroupTabChange}
@@ -156,9 +158,12 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>
-            <Box component="span" sx={{
-              color: theme.palette.greyShadeColor
-            }}>
+            <Box
+              component="span"
+              sx={{
+                color: theme.palette.greyShadeColor,
+              }}
+            >
               {t('frequent|cancel')}
             </Box>
           </Button>
@@ -170,8 +175,9 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
                 bgcolor: '#000',
                 width: '100%',
                 px: 1.5,
-                py: 1
-              }}>
+                py: 1,
+              }}
+            >
               {isCreation ? t('frequent|add_lower') : t('frequent|save')}
             </Box>
           </Button>

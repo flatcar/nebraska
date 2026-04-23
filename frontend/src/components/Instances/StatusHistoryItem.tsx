@@ -36,8 +36,9 @@ function StatusHistoryItem(props: StatusHistoryItemProps) {
         p: 1,
         bgcolor: bgColor,
         color: textColor,
-        textAlign: 'center'
-      }}>
+        textAlign: 'center',
+      }}
+    >
       {statusString}
     </Box>
   ) : (

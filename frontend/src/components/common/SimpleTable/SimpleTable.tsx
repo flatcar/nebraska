@@ -83,10 +83,8 @@ export default function SimpleTable(props: SimpleTableProps) {
           count={props.instances.length}
           rowsPerPage={rowsPerPage}
           page={page}
-          getItemAriaLabel={(type) =>
-            type === 'previous'
-              ? t('frequent|previous_page')
-              : t('frequent|next_page')
+          getItemAriaLabel={type =>
+            type === 'previous' ? t('frequent|previous_page') : t('frequent|next_page')
           }
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}

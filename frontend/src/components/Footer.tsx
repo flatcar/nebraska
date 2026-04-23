@@ -9,8 +9,9 @@ function Footer() {
     <Box
       sx={{
         mt: 1,
-        color: 'text.secondary'
-      }}>
+        color: 'text.secondary',
+      }}
+    >
       {`${title || 'Nebraska'} ${nebraska_version}`}
     </Box>
   );
