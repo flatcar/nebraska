@@ -92,6 +92,7 @@ function EditDialog(props: EditDialogProps) {
 
   React.useEffect(() => {
     if (!isCreation && props.data.package?.id && props.data.appID && props.show) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoadingFloors(true);
       setPackageFloorChannels([]);
       setFloorReason('');
@@ -248,7 +249,9 @@ function EditDialog(props: EditDialogProps) {
           {status && status.statusMessage && (
             <DialogContentText color="error">{status.statusMessage}</DialogContentText>
           )}
-          <Grid container justifyContent="space-between">
+          <Grid container sx={{
+            justifyContent: 'space-between'
+          }}>
             <Grid>
               <FormControl margin="dense" className={classes.topSelect}>
                 <InputLabel variant="standard">Type</InputLabel>
@@ -288,7 +291,9 @@ function EditDialog(props: EditDialogProps) {
               </FormControl>
             </Grid>
           </Grid>
-          <Box maxHeight="calc(100% - 100px)">
+          <Box sx={{
+            maxHeight: 'calc(100% - 100px)'
+          }}>
             <Tabs
               tabProps={{ centered: true, variant: 'standard' }}
               tabs={[
@@ -326,7 +331,9 @@ function EditDialog(props: EditDialogProps) {
                         required
                         fullWidth
                       />
-                      <Grid container justifyContent="space-between" spacing={4}>
+                      <Grid container spacing={4} sx={{
+                        justifyContent: 'space-between'
+                      }}>
                         <Grid size={6}>
                           <Field
                             name="version"

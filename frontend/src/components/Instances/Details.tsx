@@ -97,12 +97,13 @@ function StatusLabel(props: StatusLabelProps) {
           }}
         >
           <Box
-            bgcolor={status?.bgColor}
-            color={status?.textColor}
-            p={0.8}
-            display="inline-block"
-            mr={1}
-          >
+            sx={{
+              bgcolor: status?.bgColor,
+              color: status?.textColor,
+              p: 0.8,
+              display: 'inline-block',
+              mr: 1
+            }}>
             {label}
           </Box>
           <InlineIcon
@@ -336,12 +337,21 @@ function DetailsView(props: DetailsViewProps) {
     <>
       <ListHeader title={t('instances|instance_information')} />
       <StyledPaper>
-        <Box p={2}>
+        <Box sx={{
+          p: 2
+        }}>
           <Grid container spacing={1}>
             <Grid size={12}>
-              <Grid container justifyContent="space-between">
+              <Grid container sx={{
+                justifyContent: 'space-between'
+              }}>
                 <Grid>
-                  <Box fontWeight={700} fontSize={30} color={theme.palette.greyShadeColor}>
+                  <Box
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: 30,
+                      color: theme.palette.greyShadeColor
+                    }}>
                     {instance.alias || instance.id}
                   </Box>
                 </Grid>
@@ -362,7 +372,9 @@ function DetailsView(props: DetailsViewProps) {
                 md: 'grow',
               }}
             >
-              <Box mt={2}>
+              <Box sx={{
+                mt: 2
+              }}>
                 {application && group && instance && (
                   <Grid container>
                     <Grid container size={12}>
@@ -370,20 +382,28 @@ function DetailsView(props: DetailsViewProps) {
                         {hasAlias && (
                           <Grid size={12}>
                             <CardFeatureLabel>{t('instances|id')}</CardFeatureLabel>&nbsp;
-                            <Box mt={1} mb={1}>
+                            <Box
+                              sx={{
+                                mt: 1,
+                                mb: 1
+                              }}>
                               <CardLabel>{instance.id}</CardLabel>
                             </Box>
                           </Grid>
                         )}
                         <Grid size={6}>
                           <CardFeatureLabel>{t('instances|ip')}</CardFeatureLabel>
-                          <Box mt={1}>
+                          <Box sx={{
+                            mt: 1
+                          }}>
                             <CardLabel>{instance.ip}</CardLabel>
                           </Box>
                         </Grid>
                         <Grid size={6}>
                           <CardFeatureLabel>{t('instances|version')}</CardFeatureLabel>
-                          <Box mt={1}>
+                          <Box sx={{
+                            mt: 1
+                          }}>
                             <CardLabel>{instance.application.version}</CardLabel>
                           </Box>
                         </Grid>
@@ -395,13 +415,17 @@ function DetailsView(props: DetailsViewProps) {
                       <Grid container size={12}>
                         <Grid size={6}>
                           <CardFeatureLabel>{t('instances|status')}</CardFeatureLabel>
-                          <Box mt={1}>
+                          <Box sx={{
+                            mt: 1
+                          }}>
                             <StatusLabel status={instance.statusInfo} />
                           </Box>
                         </Grid>
                         <Grid size={6}>
                           <CardFeatureLabel>{t('instances|last_update_check')}</CardFeatureLabel>
-                          <Box mt={1}>
+                          <Box sx={{
+                            mt: 1
+                          }}>
                             <CardLabel>
                               {makeLocaleTime(instance.application.last_check_for_updates)}
                             </CardLabel>
@@ -415,7 +439,9 @@ function DetailsView(props: DetailsViewProps) {
                       <Grid container size={12}>
                         <Grid size={6}>
                           <CardFeatureLabel>{t('instances|application')}</CardFeatureLabel>
-                          <Box mt={1}>
+                          <Box sx={{
+                            mt: 1
+                          }}>
                             <Link
                               className={classes.link}
                               to={`/apps/${application.id}`}
@@ -428,7 +454,9 @@ function DetailsView(props: DetailsViewProps) {
                         </Grid>
                         <Grid size={6}>
                           <CardFeatureLabel>{t('instances|group')}</CardFeatureLabel>
-                          <Box mt={1}>
+                          <Box sx={{
+                            mt: 1
+                          }}>
                             <Link
                               className={classes.link}
                               to={`/apps/${application.id}/groups/${group.id}`}
@@ -442,7 +470,9 @@ function DetailsView(props: DetailsViewProps) {
                       </Grid>
 
                       <Grid size={12}>
-                        <Box mt={2}>
+                        <Box sx={{
+                          mt: 2
+                        }}>
                           <CardFeatureLabel>{t('instances|channel')}</CardFeatureLabel>&nbsp;
                           {group.channel ? (
                             <ChannelItem channel={group.channel} />
@@ -456,7 +486,9 @@ function DetailsView(props: DetailsViewProps) {
                 )}
               </Box>
             </Grid>
-            <Box width="1%">
+            <Box sx={{
+              width: '1%'
+            }}>
               <Divider orientation="vertical" variant="fullWidth" />
             </Box>
             <Grid
@@ -464,10 +496,18 @@ function DetailsView(props: DetailsViewProps) {
                 md: 'grow',
               }}
             >
-              <Box mt={2} fontSize={18} fontWeight={700} color={theme.palette.greyShadeColor}>
+              <Box
+                sx={{
+                  mt: 2,
+                  fontSize: 18,
+                  fontWeight: 700,
+                  color: theme.palette.greyShadeColor
+                }}>
                 {t('instances|event_timeline')}
                 {eventHistory ? (
-                  <Box padding="1em">
+                  <Box sx={{
+                    padding: '1em'
+                  }}>
                     <div className={classes.timelineContainer}>
                       <EventTable events={eventHistory} />
                     </div>

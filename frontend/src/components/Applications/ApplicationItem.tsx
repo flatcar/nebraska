@@ -73,15 +73,25 @@ export default function ApplicationItem(props: ApplicationItemProps) {
         <Grid size={12}>
           <Grid container className={classes.itemSection} spacing={0}>
             <Grid size={4}>
-              <Box mt={2}>
+              <Box sx={{
+                mt: 2
+              }}>
                 <CardFeatureLabel>{t('applications|instances_title')}</CardFeatureLabel>
                 <CardLabel>
                   <Typography variant="h5">
                     {numberOfInstances || t('applications|none')}
                   </Typography>
-                  <Box display="flex" my={1}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      my: 1
+                    }}>
                     <ScheduleIcon color="disabled" />
-                    <Box pl={1} color="text.disabled">
+                    <Box
+                      sx={{
+                        pl: 1,
+                        color: 'text.disabled'
+                      }}>
                       <Typography variant="subtitle1">
                         {t('applications|time_last_24_hours')}
                       </Typography>
@@ -90,13 +100,23 @@ export default function ApplicationItem(props: ApplicationItemProps) {
                 </CardLabel>
               </Box>
             </Grid>
-            <Box width="1%">
+            <Box sx={{
+              width: '1%'
+            }}>
               <Divider orientation="vertical" variant="fullWidth" />
             </Box>
             <Grid size={7}>
-              <Box mt={2} p={1}>
+              <Box
+                sx={{
+                  mt: 2,
+                  p: 1
+                }}>
                 <CardFeatureLabel>{t('frequent|groups')}</CardFeatureLabel>
-                <Box display="inline-block" pl={2}>
+                <Box
+                  sx={{
+                    display: 'inline-block',
+                    pl: 2
+                  }}>
                   <CardLabel>
                     {groups?.length === 0 ? t('applications|none') : groups?.length}
                   </CardLabel>

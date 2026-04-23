@@ -75,7 +75,9 @@ export default function TimeIntervalLinks(props: TimeIntervalLinksProps) {
           </Grid>
           {index < timeIntervals.length - 1 && (
             <Grid>
-              <Box color="text.disabled">{'.'}</Box>
+              <Box sx={{
+                color: 'text.disabled'
+              }}>{'.'}</Box>
             </Grid>
           )}
         </React.Fragment>

@@ -4,8 +4,10 @@ import React from 'react';
 
 export default function Empty(props: { children: React.ReactNode }) {
   return (
-    <Box padding={2}>
-      <Typography color="textSecondary" align="center" data-testid="empty">
+    <Box sx={{
+      padding: 2
+    }}>
+      <Typography color="text.secondary" align="center" data-testid="empty">
         {props.children}
       </Typography>
     </Box>

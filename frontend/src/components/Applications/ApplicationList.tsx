@@ -28,6 +28,7 @@ export default function ApplicationList() {
     // Get initial data in case store already has applications loaded
     const currentApplications = applicationsStore().getCachedApplications();
     if (currentApplications) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setApplications(currentApplications);
     }
 

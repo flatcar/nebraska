@@ -1,11 +1,12 @@
 import cancelIcon from '@iconify/icons-mdi/cancel';
 import cubeOutline from '@iconify/icons-mdi/cube-outline';
 import { InlineIcon } from '@iconify/react';
-import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
+import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { useTranslation } from 'react-i18next';
@@ -92,16 +93,16 @@ function Item(props: ItemProps) {
 
   function makeItemSecondaryInfo() {
     return (
-      <Grid container direction="column">
-        <Grid>
+      <Stack direction="column">
+        <Box>
           <Typography component="span" className={classes.subtitle}>
             {`${t('packages|version')}:`}
           </Typography>
           &nbsp;
           {`${cleanSemverVersion(props.packageItem.version)} (${ARCHES[props.packageItem.arch]})`}
-        </Grid>
+        </Box>
         {processedChannels.length > 0 && (
-          <Grid>
+          <Box>
             <Typography component="span" className={classes.subtitle}>
               {`${t('packages|channels')}:`}
             </Typography>
@@ -115,9 +116,9 @@ function Item(props: ItemProps) {
                 </span>
               );
             })}
-          </Grid>
+          </Box>
         )}
-        <Grid>
+        <Box>
           <Typography component="span" className={classes.subtitle}>
             {`${t('packages|released')}:`}
           </Typography>
@@ -126,25 +127,25 @@ function Item(props: ItemProps) {
             showTime: false,
             dateFormat: { year: 'numeric', month: 'numeric', day: 'numeric' },
           })}
-        </Grid>
+        </Box>
         {props.packageItem.channels_blacklist && (
-          <Grid>
+          <Box>
             {props.packageItem.channels_blacklist && (
               <Label>
                 <InlineIcon icon={cancelIcon} width="10" height="10" /> {blacklistInfo}
               </Label>
             )}
-          </Grid>
+          </Box>
         )}
         {props.packageItem.is_floor && (
-          <Grid>
+          <Box>
             <Label>
               <InlineIcon icon={cubeOutline} width="10" height="10" />{' '}
               {t('packages|floor_package', { defaultValue: 'Floor Package' })}
             </Label>
-          </Grid>
+          </Box>
         )}
-      </Grid>
+      </Stack>
     );
   }
 
@@ -155,7 +156,7 @@ function Item(props: ItemProps) {
       </ListItemIcon>
       <ListItemText
         disableTypography
-        primaryTypographyProps={{ className: classes.packageName }}
+        slotProps={{ primary: { className: classes.packageName } }}
         primary={<Typography>{item.name}</Typography>}
         secondary={makeItemSecondaryInfo()}
       />

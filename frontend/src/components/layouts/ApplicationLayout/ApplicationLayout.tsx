@@ -1,4 +1,6 @@
+import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useParams } from 'react-router';
@@ -50,7 +52,9 @@ function ApplicationLayout() {
           },
         ]}
       />
-      <Grid container spacing={1} justifyContent="space-between">
+      <Grid container spacing={1} sx={{
+        justifyContent: 'space-between'
+      }}>
         <Grid
           size={{
             xs: 12,
@@ -65,14 +69,16 @@ function ApplicationLayout() {
             sm: 4,
           }}
         >
-          <Grid container direction="column" alignItems="stretch" spacing={2}>
-            <Grid size={12}>
+          <Stack direction="column" spacing={2} sx={{
+            alignItems: 'stretch'
+          }}>
+            <Box>
               <ChannelList appID={appID} />
-            </Grid>
-            <Grid size={12}>
+            </Box>
+            <Box>
               <PackagesList appID={appID} />
-            </Grid>
-          </Grid>
+            </Box>
+          </Stack>
         </Grid>
       </Grid>
     </div>

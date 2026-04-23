@@ -184,7 +184,9 @@ export default function VersionCountTimeline(props: VersionCountTimelineProps) {
   }, [duration]);
 
   return (
-    <Grid container alignItems="center" spacing={2}>
+    <Grid container spacing={2} sx={{
+      alignItems: 'center'
+    }}>
       <Grid size={12}>
         {timelineChartData.data.length > 0 ? (
           <TimelineChart
@@ -198,7 +200,9 @@ export default function VersionCountTimeline(props: VersionCountTimelineProps) {
       </Grid>
       <Grid container size={12}>
         <Grid size={12}>
-          <Box width={500}>
+          <Box sx={{
+            width: 500
+          }}>
             {timelineChartData.data.length > 0 ? (
               selectedEntry !== -1 ? (
                 <React.Fragment>
@@ -212,7 +216,13 @@ export default function VersionCountTimeline(props: VersionCountTimelineProps) {
                   />
                 </React.Fragment>
               ) : (
-                <Box color="text.secondary" fontSize={14} textAlign="center" lineHeight={1.5}>
+                <Box
+                  sx={{
+                    color: 'text.secondary',
+                    fontSize: 14,
+                    textAlign: 'center',
+                    lineHeight: 1.5
+                  }}>
                   Showing data for the last time point.
                   <br />
                   Click the chart to choose a different time point.

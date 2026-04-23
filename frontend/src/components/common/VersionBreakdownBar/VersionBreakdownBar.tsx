@@ -73,28 +73,16 @@ function VersionsTooltip(props: {
 function VersionProgressBar(props: { version_breakdown: any; channel: Channel | null }) {
   const theme = useTheme();
   const { t } = useTranslation();
-  let lastVersionChannel: string | null = '';
   const otherVersionLabel = t('common|other_option');
-  const [chartData, setChartData] = React.useState<{
-    data: any;
-    versions: string[];
-    colors: {
-      [key: string]: string;
-    };
-  }>({
-    data: {},
-    versions: [],
-    colors: {},
-  });
 
-  function setup(version_breakdown: any, channel: Channel | null) {
+  const chartData = React.useMemo(() => {
     const data: { [key: string]: any } = {};
     const other = {
-      versions: [],
+      versions: [] as string[],
       percentage: 0,
     };
 
-    version_breakdown.forEach((entry: never) => {
+    props.version_breakdown.forEach((entry: never) => {
       const { version, percentage } = entry;
       const percentageValue = parseFloat(percentage);
 
@@ -107,8 +95,9 @@ function VersionProgressBar(props: { version_breakdown: any; channel: Channel | 
       data[version] = percentageValue;
     });
 
-    const versionColors = makeColorsForVersions(theme as Theme, Object.keys(data), channel);
-    lastVersionChannel = channel && channel.package ? channel.package.version : null;
+    const versionColors = makeColorsForVersions(theme as Theme, Object.keys(data), props.channel);
+    const lastVersionChannel =
+      props.channel && props.channel.package ? props.channel.package.version : null;
 
     if (other.percentage > 0) {
       data[otherVersionLabel] = other.percentage;
@@ -116,9 +105,6 @@ function VersionProgressBar(props: { version_breakdown: any; channel: Channel | 
     }
 
     const versionsSorted = Object.keys(data).sort((version1, version2) => {
-      // If the version is the channel's one, then it should come first.
-      // If it's the 'Other', then it should come last.
-      // Otherwise compare the number of instances.
       const cleanVersion1 = cleanSemverVersion(version1);
       const cleanVersion2 = cleanSemverVersion(version2);
       const results: { [key: string]: number } = { cleanVersion1: -1, cleanVersion2: 1 };
@@ -139,17 +125,12 @@ function VersionProgressBar(props: { version_breakdown: any; channel: Channel | 
 
     data['key'] = 'version_breakdown';
 
-    setChartData({
+    return {
       data: data,
       versions: versionsSorted,
       colors: versionColors,
-    });
-  }
-
-  React.useEffect(() => {
-    setup(props.version_breakdown, props.channel);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.version_breakdown, props.channel]);
+    };
+  }, [props.version_breakdown, props.channel, theme, otherVersionLabel]);
 
   return (
     <StyledResponsiveContainer width="95%" height={30} className={classes.container}>

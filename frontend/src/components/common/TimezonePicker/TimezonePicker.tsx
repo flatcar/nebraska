@@ -40,7 +40,7 @@ interface RenderInputProps {
 }
 
 function renderInput(inputProps: RenderInputProps) {
-  const { InputProps, ref, ...other } = inputProps;
+  const { InputProps, InputLabelProps: inputLabelProps, ref, ...other } = inputProps;
 
   return (
     <TextField
@@ -59,6 +59,7 @@ function renderInput(inputProps: RenderInputProps) {
           },
           ...InputProps,
         },
+        inputLabel: inputLabelProps,
       }}
       {...other}
       data-testid="timezone-input"

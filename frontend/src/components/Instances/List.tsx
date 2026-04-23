@@ -81,8 +81,12 @@ function InstanceFilter(props: InstanceFilterProps) {
   }
 
   return (
-    <Box pr={2}>
-      <Grid container spacing={2} justifyContent="flex-end">
+    <Box sx={{
+      pr: 2
+    }}>
+      <Grid container spacing={2} sx={{
+        justifyContent: 'flex-end'
+      }}>
         <Grid size={5}>
           <FormControl fullWidth disabled={props.disabled}>
             <InputLabel variant="standard" htmlFor="select-status" shrink>
@@ -410,7 +414,9 @@ function ListView(props: ListViewProps) {
     <Root>
       <ListHeader title={t('instances|instance_list')} />
       <Paper>
-        <Box padding="1em">
+        <Box sx={{
+          padding: '1em'
+        }}>
           <Grid container spacing={1}>
             <Grid
               container
@@ -418,11 +424,12 @@ function ListView(props: ListViewProps) {
             >
               <Grid>
                 <Box
-                  mb={2}
-                  color={(theme as Theme).palette.greyShadeColor}
-                  fontSize={30}
-                  fontWeight={700}
-                >
+                  sx={{
+                    mb: 2,
+                    color: (theme as Theme).palette.greyShadeColor,
+                    fontSize: 30,
+                    fontWeight: 700
+                  }}>
                   {group.name}
                 </Box>
               </Grid>
@@ -467,22 +474,35 @@ function ListView(props: ListViewProps) {
                 />
               </Grid>
             </Grid>
-            <Box width="100%" borderTop={1} borderColor={'#E0E0E0'} className={classes.mainTable}>
+            <Box
+              className={classes.mainTable}
+              sx={{
+                width: '100%',
+                borderTop: 1,
+                borderColor: '#E0E0E0'
+              }}>
               <Grid
                 container
-                alignItems="stretch"
-                justifyContent="space-between"
                 size={{
                   md: 12,
                 }}
-              >
+                sx={{
+                  alignItems: 'stretch',
+                  justifyContent: 'space-between'
+                }}>
                 <Grid
                   size={{
                     md: 'grow',
                   }}
                 >
-                  <Box display="flex" alignItems="center">
-                    <Box ml={2}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}>
+                    <Box sx={{
+                      ml: 2
+                    }}>
                       <InstanceCountLabel countText={getInstanceCount()} instanceListView />
                     </Box>
                   </Box>
@@ -492,7 +512,9 @@ function ListView(props: ListViewProps) {
                     md: 'grow',
                   }}
                 >
-                  <Box mt={2}>
+                  <Box sx={{
+                    mt: 2
+                  }}>
                     <InstanceFilter
                       versions={versionBreakdown}
                       onFiltersChanged={onFiltersChanged}
@@ -505,9 +527,11 @@ function ListView(props: ListViewProps) {
             {isFiltered() && (
               <Grid
                 container
-                justifyContent="center"
                 size={{
                   md: 12,
+                }}
+                sx={{
+                  justifyContent: 'center'
                 }}
               >
                 <Grid>
@@ -540,12 +564,11 @@ function ListView(props: ListViewProps) {
                       count={instancesObj.total}
                       rowsPerPage={rowsPerPage}
                       page={page}
-                      backIconButtonProps={{
-                        'aria-label': t('frequent|previous_page'),
-                      }}
-                      nextIconButtonProps={{
-                        'aria-label': t('frequent|next_page'),
-                      }}
+                      getItemAriaLabel={(type) =>
+                        type === 'previous'
+                          ? t('frequent|previous_page')
+                          : t('frequent|next_page')
+                      }
                       onPageChange={handleChangePage}
                       onRowsPerPageChange={handleChangeRowsPerPage}
                     />

@@ -1,4 +1,5 @@
-import { Grid, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
+import Stack from '@mui/material/Stack';
 import { Trans, useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
@@ -8,15 +9,15 @@ export default function PageNotFoundLayout() {
   const { t } = useTranslation('missing');
 
   return (
-    <Grid
-      container
-      spacing={0}
+    <Stack
       direction="column"
-      alignItems="center"
-      justifyContent="center"
+      spacing={0}
       style={{ minHeight: '100vh', textAlign: 'center' }}
-    >
-      <Grid size={6}>
+      sx={{
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+      <Box sx={{ width: '50%' }}>
         <img src={pageNotFoundGraphic} alt="page not found 404" style={{ maxWidth: '100%' }} />
         <Typography variant="h1" style={{ fontSize: '1.875rem' }}>
           {t('missing|error_page_not_found')}
@@ -26,7 +27,7 @@ export default function PageNotFoundLayout() {
             Head back <Link to="/">home</Link>.
           </Trans>
         </Typography>
-      </Grid>
-    </Grid>
+      </Box>
+    </Stack>
   );
 }

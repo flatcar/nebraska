@@ -5,7 +5,13 @@ import ApplicationList from '../../Applications/ApplicationList';
 
 function MainLayout() {
   return (
-    <Grid container spacing={2} justifyContent="center" alignItems="flex-start">
+    <Grid
+      container
+      spacing={2}
+      sx={{
+        justifyContent: 'center',
+        alignItems: 'flex-start'
+      }}>
       <Grid
         size={{
           xs: 12,

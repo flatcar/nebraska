@@ -6,6 +6,7 @@ import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import React from 'react';
@@ -39,6 +40,7 @@ function FileListItem(props: FileListItemProps) {
 
   // If the file changes, we need to update the editing one.
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFileToEdit(file);
   }, [file]);
 
@@ -49,28 +51,28 @@ function FileListItem(props: FileListItemProps) {
   if (!edit) {
     return (
       <ListItem>
-        <Grid container direction="column">
-          <Grid>
+        <Stack direction="column">
+          <Box>
             <Typography>{fileToEdit.name}</Typography>
-          </Grid>
+          </Box>
           <Grid container>
             <Grid size={5}>
-              <Typography component="span" variant="body2" color="textSecondary">
+              <Typography component="span" variant="body2" color="text.secondary">
                 {t('frequent|size', { size: hasSize() ? fileToEdit.size : '-' })}
               </Typography>
             </Grid>
             <Grid>
-              <Typography component="span" variant="body2" color="textSecondary">
+              <Typography component="span" variant="body2" color="text.secondary">
                 {`${t('packages|sha1_hash_base64')}: ${fileToEdit.hash || '-'}`}
               </Typography>
             </Grid>
             <Grid>
-              <Typography component="span" variant="body2" color="textSecondary">
+              <Typography component="span" variant="body2" color="text.secondary">
                 {`${t('packages|sha256_hash_hex')}: ${fileToEdit.hash256 || '-'}`}
               </Typography>
             </Grid>
           </Grid>
-        </Grid>
+        </Stack>
         <ListItemSecondaryAction>
           <MoreMenu
             iconButtonProps={{ disabled: showEditOptions }}
@@ -250,7 +252,9 @@ export default function FileList(props: FileListProps) {
           edit
         />
       ) : (
-        <Box textAlign="center">
+        <Box sx={{
+          textAlign: 'center'
+        }}>
           <IconButton
             title={t('packages|add_file')}
             disabled={isEditing()}

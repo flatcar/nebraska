@@ -1,5 +1,5 @@
 import { Box, Link } from '@mui/material';
-import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useTranslation } from 'react-i18next';
 import { Link as RouterLink } from 'react-router';
@@ -14,8 +14,8 @@ export function InstanceCountLabel(props: {
   const { t } = useTranslation();
 
   return (
-    <Grid container direction="column">
-      <Grid>
+    <Stack direction="column">
+      <Box>
         <Typography
           sx={{
             color: theme => theme.palette.text.secondary,
@@ -25,8 +25,8 @@ export function InstanceCountLabel(props: {
         >
           {t('instances|instances')}
         </Typography>
-      </Grid>
-      <Grid>
+      </Box>
+      <Box>
         <Typography
           sx={{
             fontSize: '2rem;',
@@ -37,8 +37,8 @@ export function InstanceCountLabel(props: {
         >
           {countText}
         </Typography>
-      </Grid>
-      <Grid>
+      </Box>
+      <Box>
         {!instanceListView && Number(countText) > 0 ? (
           <Box>
             {!props.loading && (
@@ -57,7 +57,7 @@ export function InstanceCountLabel(props: {
         ) : (
           []
         )}
-      </Grid>
-    </Grid>
+      </Box>
+    </Stack>
   );
 }

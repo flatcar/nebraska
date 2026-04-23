@@ -60,17 +60,27 @@ export default function ChannelItem(props: ChannelItemProps) {
     }
     const date = channel.package ? new Date(channel.package.created_ts) : null;
     return (
-      <Box display="flex" ml={1}>
+      <Box
+        sx={{
+          display: 'flex',
+          ml: 1
+        }}>
         <Box>{text}</Box>
         {date && (
-          <Box pl={2}>
-            <Box display="flex">
+          <Box sx={{
+            pl: 2
+          }}>
+            <Box sx={{
+              display: 'flex'
+            }}>
               <Box>
                 <Tooltip title={t('channels|release_date') || ''}>
                   <ScheduleIcon fontSize="small" />
                 </Tooltip>
               </Box>
-              <Box pl={1}>
+              <Box sx={{
+                pl: 1
+              }}>
                 {makeLocaleTime(date, {
                   showTime: false,
                   dateFormat: { year: 'numeric', month: '2-digit', day: '2-digit' },
@@ -95,8 +105,16 @@ export default function ChannelItem(props: ChannelItemProps) {
         <Grid>
           <ListItemText
             primary={
-              <Box display="flex" alignItems="center">
-                <Box pl={1} display="inline-block">
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center'
+                }}>
+                <Box
+                  sx={{
+                    pl: 1,
+                    display: 'inline-block'
+                  }}>
                   {name}
                 </Box>
               </Box>

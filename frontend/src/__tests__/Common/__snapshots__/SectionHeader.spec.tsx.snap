@@ -50,7 +50,7 @@ exports[`Section Header > renders section header correctly 1`] = `
             class="MuiBreadcrumbs-li"
           >
             <p
-              class="MuiTypography-root MuiTypography-body1 css-zbfhf1-MuiTypography-root"
+              class="MuiTypography-root MuiTypography-body1 css-12h6qye-MuiTypography-root"
             >
               Flatcar
             </p>

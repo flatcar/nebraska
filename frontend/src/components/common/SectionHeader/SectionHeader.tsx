@@ -41,16 +41,15 @@ export default function SectionHeader(props: SectionHeaderProps) {
       <PageTitle title={title} />
       <Grid
         container
-        alignItems="center"
-        justifyContent="flex-start"
         sx={{
+          alignItems: 'center',
+          justifyContent: 'flex-start',
           padding: theme => theme.spacing(1),
           flexShrink: 1,
           marginTop: theme => theme.spacing(1),
           marginBottom: theme => theme.spacing(1),
-          display: 'inline-block',
-        }}
-      >
+          display: 'inline-block'
+        }}>
         <Grid>
           <StyledBreadcrumbs
             aria-label={t('common|breadcrumbs_label').toString()}
@@ -72,12 +71,12 @@ export default function SectionHeader(props: SectionHeaderProps) {
                   );
                 else
                   return (
-                    <Typography key={'breadcrumb_' + index} color="textPrimary">
+                    <Typography key={'breadcrumb_' + index} color="text.primary">
                       {label}
                     </Typography>
                   );
               })}
-            {title && <Typography color="textPrimary">{title}</Typography>}
+            {title && <Typography color="text.primary">{title}</Typography>}
           </StyledBreadcrumbs>
         </Grid>
       </Grid>

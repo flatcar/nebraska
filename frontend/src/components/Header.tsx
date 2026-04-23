@@ -140,12 +140,22 @@ function Appbar(props: AppbarProps) {
             }}
           >
             {(user?.name || user?.email) && (
-              <Box paddingY={2} paddingX={2} textAlign="center">
+              <Box
+                sx={{
+                  paddingY: 2,
+                  paddingX: 2,
+                  textAlign: 'center'
+                }}>
                 {user?.name && <Typography className={classes.userName}>{user.name}</Typography>}
                 {user?.email && <Typography className={classes.email}>{user.email}</Typography>}
               </Box>
             )}
-            <Box paddingY={1} paddingX={2} textAlign="center">
+            <Box
+              sx={{
+                paddingY: 1,
+                paddingX: 2,
+                textAlign: 'center'
+              }}>
               <Button
                 component="a"
                 startIcon={<CreateOutlined />}
@@ -158,7 +168,12 @@ function Appbar(props: AppbarProps) {
             {user?.authenticated && config?.auth_mode === 'oidc' && (
               <div>
                 <Divider />
-                <Box paddingY={1} paddingX={2} textAlign="center">
+                <Box
+                  sx={{
+                    paddingY: 1,
+                    paddingX: 2,
+                    textAlign: 'center'
+                  }}>
                   <Button startIcon={<LogoutOutlined />} onClick={handleLogout} fullWidth>
                     {t('header|logout')}
                   </Button>

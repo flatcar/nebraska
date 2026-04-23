@@ -200,13 +200,16 @@ export default function StatusCountTimeline(props: StatusCountTimelineProps) {
         }
       }
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedEntry(-1);
     getStatusTimeline(props.group);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.duration]);
 
   return (
-    <Grid container alignItems="center" spacing={2}>
+    <Grid container spacing={2} sx={{
+      alignItems: 'center'
+    }}>
       <Grid size={12}>
         {timelineChartData.data.length > 0 ? (
           <TimelineChart
@@ -221,7 +224,9 @@ export default function StatusCountTimeline(props: StatusCountTimelineProps) {
       </Grid>
       <Grid container size={12}>
         <Grid size={12}>
-          <Box width={500}>
+          <Box sx={{
+            width: 500
+          }}>
             {timelineChartData.data.length > 0 ? (
               selectedEntry !== -1 ? (
                 <React.Fragment>
