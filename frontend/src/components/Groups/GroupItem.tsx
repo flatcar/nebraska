@@ -3,6 +3,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import { Box, Divider, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
 import { TFunction } from 'i18next';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -125,9 +126,15 @@ export function PureGroupItem({
             />
           </CardHeader>
         </Grid>
-        <Grid container justifyContent="space-between" size={12}>
-          <Grid container direction="column" sx={{ padding: '1em' }} size={4}>
-            <Grid>
+        <Grid
+          container
+          size={12}
+          sx={{
+            justifyContent: 'space-between',
+          }}
+        >
+          <Stack direction="column" sx={{ padding: '1em', flex: '0 0 auto', width: '33.33%' }}>
+            <Box>
               <CardFeatureLabel>{t('groups|instances')}</CardFeatureLabel>
               <Box>
                 <CardLabel labelStyle={{ fontSize: '1.5rem' }}>
@@ -141,9 +148,19 @@ export function PureGroupItem({
                     <Empty>{t('frequent|loading')}</Empty>
                   )}
                 </CardLabel>
-                <Box display="flex" mr={2}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    mr: 2,
+                  }}
+                >
                   <ScheduleIcon color="disabled" />
-                  <Box pl={1} color="text.disabled">
+                  <Box
+                    sx={{
+                      pl: 1,
+                      color: 'text.disabled',
+                    }}
+                  >
                     <Typography
                       sx={{
                         color: 'rgba(0,0,0,0.6)',
@@ -156,20 +173,33 @@ export function PureGroupItem({
                   </Box>
                 </Box>
               </Box>
-            </Grid>
-          </Grid>
-          <Box width="1%">
+            </Box>
+          </Stack>
+          <Box
+            sx={{
+              width: '1%',
+            }}
+          >
             <Divider orientation="vertical" variant="fullWidth" />
           </Box>
-          <Grid container direction="column" sx={{ padding: '1em' }} size={7}>
-            <Grid>
+          <Stack direction="column" sx={{ padding: '1em', flex: '0 0 auto', width: '58.33%' }}>
+            <Box>
               <CardFeatureLabel>{t('groups|channel')}</CardFeatureLabel> {groupChannel}
-            </Grid>
-            <Grid>
+            </Box>
+            <Box>
               <CardFeatureLabel>{t('groups|updates')}</CardFeatureLabel>
-              <Box p={1} mb={1}>
+              <Box
+                sx={{
+                  p: 1,
+                  mb: 1,
+                }}
+              >
                 <CardLabel>
-                  <Box display="flex">
+                  <Box
+                    sx={{
+                      display: 'flex',
+                    }}
+                  >
                     {group.policy_updates_enabled ? (
                       <>
                         <Box>{t('frequent|enabled')}</Box>
@@ -191,13 +221,18 @@ export function PureGroupItem({
                   </Box>
                 </CardLabel>
               </Box>
-            </Grid>
-            <Grid>
+            </Box>
+            <Box>
               <CardFeatureLabel>{t('groups|rollout_policy')}</CardFeatureLabel>
-              <Box p={1} mb={1}>
+              <Box
+                sx={{
+                  p: 1,
+                  mb: 1,
+                }}
+              >
                 <CardLabel>{formatUpdateLimits(t, group)}</CardLabel>
               </Box>
-            </Grid>
+            </Box>
             <Grid container>
               <Grid size={12}>
                 <CardFeatureLabel>{t('groups|version_breakdown_lower')}</CardFeatureLabel>
@@ -212,7 +247,7 @@ export function PureGroupItem({
                 )}
               </Grid>
             </Grid>
-          </Grid>
+          </Stack>
         </Grid>
       </Grid>
     </ListItem>

@@ -34,6 +34,10 @@ function GroupList({ appID }: GroupListProps) {
     setUpdateGroupIDModal(groupID);
   }
 
+  function onChange() {
+    setApplication(applicationsStore().getCachedApplication(appID));
+  }
+
   React.useEffect(() => {
     applicationsStore().addChangeListener(onChange);
     return () => {
@@ -41,10 +45,6 @@ function GroupList({ appID }: GroupListProps) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  function onChange() {
-    setApplication(applicationsStore().getCachedApplication(appID));
-  }
 
   let channels: Channel[] = [];
   let groups: Group[] = [];

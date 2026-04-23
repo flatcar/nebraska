@@ -16,7 +16,14 @@ export default function AuthErrorLayout() {
   const errorMessage = location.state?.error || t('common|generic_error');
 
   return (
-    <Grid container spacing={2} justifyContent="center" style={{ marginTop: '2rem' }}>
+    <Grid
+      container
+      spacing={2}
+      style={{ marginTop: '2rem' }}
+      sx={{
+        justifyContent: 'center',
+      }}
+    >
       <Grid
         size={{
           xs: 12,
@@ -25,19 +32,35 @@ export default function AuthErrorLayout() {
         }}
       >
         <SectionPaper>
-          <Box textAlign="center" py={4}>
+          <Box
+            sx={{
+              textAlign: 'center',
+              py: 4,
+            }}
+          >
             <Typography variant="h5" gutterBottom>
               {t('common|authentication_error')}
             </Typography>
-            <Typography variant="body1" color="textSecondary" paragraph>
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
               {errorMessage}
             </Typography>
-            <Box mt={3}>
+            <Box
+              sx={{
+                mt: 3,
+              }}
+            >
               <Button variant="outlined" onClick={() => navigate('/')}>
                 {t('common|go_back')}
               </Button>
             </Box>
-            <Typography variant="caption" color="textSecondary" display="block" mt={3}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{
+                display: 'block',
+                mt: 3,
+              }}
+            >
               {t('common|auth_error_help')}
             </Typography>
           </Box>

@@ -33,7 +33,7 @@ interface RenderInputProps {
 }
 
 function renderInput(inputProps: RenderInputProps) {
-  const { InputProps, ref, onKeyDown, ...other } = inputProps;
+  const { InputProps, InputLabelProps: inputLabelProps, ref, onKeyDown, ...other } = inputProps;
 
   return (
     <TextField
@@ -52,6 +52,7 @@ function renderInput(inputProps: RenderInputProps) {
           },
           ...InputProps,
         },
+        inputLabel: inputLabelProps,
       }}
       onKeyDown={onKeyDown}
       {...other}

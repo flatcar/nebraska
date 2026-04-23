@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import TablePagination from '@mui/material/TablePagination';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -104,7 +104,11 @@ export function ActivityContainerPure(props: ActivityContainerPureProps) {
     <>
       <ListHeader title={t('activity|activity')} />
       <Paper>
-        <Box padding="1em">
+        <Box
+          sx={{
+            padding: '1em',
+          }}
+        >
           {_.isNull(activity) ? (
             <Loader />
           ) : _.isEmpty(activity) ? (
@@ -118,15 +122,15 @@ export function ActivityContainerPure(props: ActivityContainerPureProps) {
               </Trans>
             </Empty>
           ) : (
-            <Grid container direction="column">
-              <Grid>
+            <Stack direction="column">
+              <Box>
                 {Object.values(
                   _.mapObject(getPagedActivity(), (entries, timestamp) => {
                     return <ActivityList timestamp={timestamp} entries={entries} key={timestamp} />;
                   })
                 )}
-              </Grid>
-              <Grid>
+              </Box>
+              <Box>
                 <TablePagination
                   slotProps={{
                     toolbar: {
@@ -142,22 +146,19 @@ export function ActivityContainerPure(props: ActivityContainerPureProps) {
                       sx: { fontSize: '.85em' },
                     },
                   }}
+                  getItemAriaLabel={type =>
+                    type === 'previous' ? t('activity|previous_page') : t('activity|next_page')
+                  }
                   rowsPerPageOptions={rowsOptions}
                   component="div"
                   count={activity.length}
                   rowsPerPage={rowsPerPage}
                   page={page}
-                  backIconButtonProps={{
-                    'aria-label': t('activity|previous_page'),
-                  }}
-                  nextIconButtonProps={{
-                    'aria-label': t('activity|next_page'),
-                  }}
                   onPageChange={handleChangePage}
                   onRowsPerPageChange={handleChangeRowsPerPage}
                 />
-              </Grid>
-            </Grid>
+              </Box>
+            </Stack>
           )}
         </Box>
       </Paper>

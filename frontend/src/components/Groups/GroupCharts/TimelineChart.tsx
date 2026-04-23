@@ -16,7 +16,11 @@ function TimelineTooltip(props: { label?: string; data: any }) {
   return (
     <div className="custom-tooltip">
       <Paper>
-        <Box padding={1}>
+        <Box
+          sx={{
+            padding: 1,
+          }}
+        >
           <Typography>{label && data[label] && makeLocaleTime(data[label].timestamp)}</Typography>
         </Box>
       </Paper>

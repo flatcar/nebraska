@@ -6,7 +6,12 @@ function Footer() {
   const { title = '', nebraska_version = '' } = useSelector(state => state.config);
 
   return (
-    <Box mt={1} color="text.secondary">
+    <Box
+      sx={{
+        mt: 1,
+        color: 'text.secondary',
+      }}
+    >
       {`${title || 'Nebraska'} ${nebraska_version}`}
     </Box>
   );

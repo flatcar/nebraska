@@ -1,5 +1,7 @@
 import { IconifyIcon, InlineIcon } from '@iconify/react';
+import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import Stack from '@mui/material/Stack';
 import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import React from 'react';
@@ -78,8 +80,14 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
   });
 
   return (
-    <Grid container direction="column" justifyContent="center" alignItems="center">
-      <Grid>
+    <Stack
+      direction="column"
+      sx={{
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Box>
         <PieChart width={width} height={height}>
           <Pie
             data={dataSet}
@@ -123,8 +131,15 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
             })}
           </Pie>
         </PieChart>
-      </Grid>
-      <Grid container alignItems="center" justifyContent="center" spacing={1}>
+      </Box>
+      <Grid
+        container
+        spacing={1}
+        sx={{
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
         {icon && (
           <Grid>
             <InlineIcon icon={icon} color={color} width={iconSize} height={iconSize} />
@@ -151,7 +166,7 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
           </LightTooltip>
         </Grid>
       </Grid>
-    </Grid>
+    </Stack>
   );
 }
 
@@ -223,11 +238,23 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
   }
 
   return totalInstances > 0 ? (
-    <Grid container justifyContent="space-between" alignItems="center">
+    <Grid
+      container
+      sx={{
+        justifyContent: 'space-between',
+        alignItems: 'center',
+      }}
+    >
       <Grid size={4}>
         <InstanceCountLabel countText={totalInstances} href={href} />
       </Grid>
-      <Grid container justifyContent="space-between" size={8}>
+      <Grid
+        container
+        size={8}
+        sx={{
+          justifyContent: 'space-between',
+        }}
+      >
         {instanceStateCount.map(({ status, count }, i) => {
           // Sort the data entries so the smaller amounts are shown first.
           count.sort((obj1, obj2) => {

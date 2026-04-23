@@ -33,7 +33,15 @@ const StyledTableRow = styled(TableRow)({
 
 const TableLabel = function (props: PropsWithChildren<{ bgColor?: string; textColor?: string }>) {
   return (
-    <Box bgcolor={props.bgColor} color={props.textColor} display="inline-block" py={1} px={2}>
+    <Box
+      sx={{
+        bgcolor: props.bgColor,
+        color: props.textColor,
+        display: 'inline-block',
+        py: 1,
+        px: 2,
+      }}
+    >
       {props.children}
     </Box>
   );
@@ -122,7 +130,12 @@ function Item(props: ItemProps) {
           <span className={'box--' + versionStyle}>{version}</span>
         </TableCell>
         <TableCell>
-          <Box display="flex" justifyContent="space-between">
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+            }}
+          >
             <Box>{makeLocaleTime(date)}</Box>
             <Box>
               <IconButton onClick={onToggle} size="large">

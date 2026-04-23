@@ -74,10 +74,26 @@ export function ActivityItemPure(props: ActivityItemPureProps) {
         paddingLeft: '15px',
       }}
     >
-      <Grid container alignItems="center" justifyContent="space-between">
+      <Grid
+        container
+        sx={{
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
         <Grid size={10}>
-          <Box display="flex" alignItems="center" justifyContent="flex-start">
-            <Box mr={1}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+            }}
+          >
+            <Box
+              sx={{
+                mr: 1,
+              }}
+            >
               <ActivityItemIcon severityName={props.severityName} />
             </Box>
             <Box>
@@ -95,7 +111,7 @@ export function ActivityItemPure(props: ActivityItemPureProps) {
         </Grid>
         <Grid size={2}>
           <Typography
-            color="textSecondary"
+            color="text.secondary"
             sx={{
               fontSize: '.7rem',
             }}
@@ -106,7 +122,12 @@ export function ActivityItemPure(props: ActivityItemPureProps) {
         {subtitle && (
           <Grid container spacing={2} size={12}>
             <Grid>
-              <Typography color="textSecondary" display="inline">
+              <Typography
+                color="text.secondary"
+                sx={{
+                  display: 'inline',
+                }}
+              >
                 {subtitle}
               </Typography>
             </Grid>

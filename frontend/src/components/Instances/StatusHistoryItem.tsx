@@ -17,26 +17,10 @@ interface StatusHistoryItemProps {
 }
 
 function StatusHistoryItem(props: StatusHistoryItemProps) {
-  const [status, setStatus] = React.useState<{
-    type?: string;
-    className?: string;
-    spinning?: boolean;
-    icon?: string;
-    description?: string;
-    status?: string;
-    explanation?: string;
-    textColor?: string | undefined;
-    bgColor?: string | undefined;
-  }>({});
-  React.useEffect(() => {
-    fetchStatusFromStore();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  function fetchStatusFromStore() {
-    const status = getInstanceStatus(props.entry.status, props.entry.version);
-    setStatus(status);
-  }
+  const status = React.useMemo(
+    () => getInstanceStatus(props.entry.status, props.entry.version),
+    [props.entry.status, props.entry.version]
+  );
 
   const time = makeLocaleTime(props.entry.created_ts);
   const { className, bgColor, textColor, status: statusString } = status;
@@ -47,7 +31,14 @@ function StatusHistoryItem(props: StatusHistoryItemProps) {
     extendedErrorExplanation = prepareErrorMessage(errorMessages, flags);
   }
   const instanceLabel = className ? (
-    <Box p={1} bgcolor={bgColor} color={textColor} textAlign="center">
+    <Box
+      sx={{
+        p: 1,
+        bgcolor: bgColor,
+        color: textColor,
+        textAlign: 'center',
+      }}
+    >
       {statusString}
     </Box>
   ) : (

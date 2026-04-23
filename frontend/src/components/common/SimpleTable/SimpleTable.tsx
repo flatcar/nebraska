@@ -36,6 +36,7 @@ export default function SimpleTable(props: SimpleTableProps) {
   }
 
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(0);
   }, [props.instances]);
 
@@ -82,12 +83,9 @@ export default function SimpleTable(props: SimpleTableProps) {
           count={props.instances.length}
           rowsPerPage={rowsPerPage}
           page={page}
-          backIconButtonProps={{
-            'aria-label': t('frequent|previous_page'),
-          }}
-          nextIconButtonProps={{
-            'aria-label': t('frequent|next_page'),
-          }}
+          getItemAriaLabel={type =>
+            type === 'previous' ? t('frequent|previous_page') : t('frequent|next_page')
+          }
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />

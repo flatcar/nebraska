@@ -21,13 +21,16 @@ export default function ListHeader(props: { title: string; actions?: React.React
   return (
     <StyledGrid
       container
-      alignItems="flex-start"
-      justifyContent="space-between"
+      sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }}
       className={classes.sectionHeader}
     >
       {props.title && (
         <Grid>
-          <Box p={0.5}>
+          <Box
+            sx={{
+              p: 0.5,
+            }}
+          >
             <Typography variant="h1">{props.title}</Typography>
           </Box>
         </Grid>

@@ -109,6 +109,7 @@ function ChannelEdit(props: ChannelEditProps) {
   const [floorReason, setFloorReason] = React.useState<string>('');
 
   // Memoize filtered packages to avoid repeated filtering in render
+  /* eslint-disable react-hooks/preserve-manual-memoization */
   const packagesForArch = React.useMemo(
     () =>
       packages.packages.filter((pkg: Package) => {
@@ -127,6 +128,7 @@ function ChannelEdit(props: ChannelEditProps) {
       }),
     [packages.packages, arch, isCreation, props.data.channel?.id]
   );
+  /* eslint-enable react-hooks/preserve-manual-memoization */
 
   const availableFloorPackages = React.useMemo(
     () => packagesForArch.filter(pkg => !floorPackages.some(fp => fp.id === pkg.id)),
@@ -134,13 +136,16 @@ function ChannelEdit(props: ChannelEditProps) {
   );
 
   React.useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     setArch(props.data.channel ? props.data.channel.arch : defaultArch);
     setChannelColor(props.data.channel ? props.data.channel.color : defaultColor);
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [props.data]);
 
   // Fetch floor packages when showing an existing channel
   React.useEffect(() => {
     if (!isCreation && props.data.channel?.id && props.show) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoadingFloors(true);
       API.getChannelFloors(props.data.channel.id)
         .then(({ packages }) => {
@@ -279,6 +284,7 @@ function ChannelEdit(props: ChannelEditProps) {
       }, inputSearchTimeout);
     }
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSearchPage(0);
     searchOnTimeout(packageSearchTerm);
 
@@ -327,16 +333,24 @@ function ChannelEdit(props: ChannelEditProps) {
           <Grid
             container
             spacing={2}
-            justifyContent="space-between"
-            alignItems="center"
             wrap="nowrap"
+            sx={{
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
           >
             <Grid>
               <ColorPicker color={channelColor} onColorPicked={color => setChannelColor(color.hex)}>
                 <>{values.name ? values.name[0] : ''}</>
               </ColorPicker>
             </Grid>
-            <Grid container alignItems="flex-start" spacing={2}>
+            <Grid
+              container
+              spacing={2}
+              sx={{
+                alignItems: 'flex-start',
+              }}
+            >
               <Grid className={classes.nameField}>
                 <Field
                   name="name"
@@ -344,7 +358,7 @@ function ChannelEdit(props: ChannelEditProps) {
                   variant="standard"
                   margin="dense"
                   label={t('frequent|name')}
-                  InputLabelProps={{ shrink: true }}
+                  slotProps={{ inputLabel: { shrink: true } }}
                   type="text"
                   required
                   helperText={t(
@@ -406,9 +420,19 @@ function ChannelEdit(props: ChannelEditProps) {
             onBottomScrolled={loadMorePackages}
           />
           {!isCreation && (
-            <Box mt={2}>
-              <Box display="flex" alignItems="center" justifyContent="space-between">
-                <Typography variant="subtitle2" color="textSecondary">
+            <Box
+              sx={{
+                mt: 2,
+              }}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <Typography variant="subtitle2" color="text.secondary">
                   {t('channels|floor_packages')} ({floorPackages.length})
                 </Typography>
                 <Button
@@ -420,7 +444,14 @@ function ChannelEdit(props: ChannelEditProps) {
                   {t('channels|add_floor')}
                 </Button>
               </Box>
-              <Typography variant="caption" color="textSecondary" display="block" gutterBottom>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                gutterBottom
+                sx={{
+                  display: 'block',
+                }}
+              >
                 {t('channels|floor_packages_help')}
               </Typography>
               {loadingFloors ? (
@@ -447,7 +478,7 @@ function ChannelEdit(props: ChannelEditProps) {
                   ))}
                 </List>
               ) : (
-                <Typography variant="body2" color="textSecondary">
+                <Typography variant="body2" color="text.secondary">
                   {t('channels|no_floor_packages')}
                 </Typography>
               )}

@@ -111,8 +111,8 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
               helperText={t('applications|clone_channels_groups_from_another_app')}
               margin="normal"
               component={TextField}
-              InputLabelProps={{
-                shrink: true,
+              slotProps={{
+                inputLabel: { shrink: true },
               }}
             >
               <MenuItem value="none" key="none">

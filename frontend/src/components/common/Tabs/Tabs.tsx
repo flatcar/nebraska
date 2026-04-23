@@ -1,8 +1,8 @@
 import MuiTab from '@mui/material/Tab';
 import MuiTabs from '@mui/material/Tabs';
 import Typography, { TypographyProps } from '@mui/material/Typography';
-import { ReactElement } from 'react';
 import React from 'react';
+import { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 function a11yProps(index: number) {
@@ -44,9 +44,11 @@ export default function Tabs(props: TabsProps) {
 
   React.useEffect(() => {
     if (defaultIndex === null) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTabIndex(false);
       return;
     }
+
     setTabIndex(defaultIndex);
   }, [defaultIndex]);
 

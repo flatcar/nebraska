@@ -14,7 +14,11 @@ export default function ApplicationItemGroupsList(props: {
       {props.groups?.map((group, i) => (
         <Fragment key={group.id}>
           {i > 0 && <Divider variant="fullWidth" />}
-          <Box mt={1}>
+          <Box
+            sx={{
+              mt: 1,
+            }}
+          >
             <ApplicationItemGroupItem group={group} appName={props.appName} key={'group_' + i} />
           </Box>
         </Fragment>
