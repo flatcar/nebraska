@@ -1,5 +1,4 @@
-import squareIcon from '@iconify/icons-mdi/square';
-import { InlineIcon } from '@iconify/react';
+import Square from '@mui/icons-material/Square';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -65,7 +64,7 @@ export default function SimpleTable(props: SimpleTableProps) {
                   <TableCell key={`cell_${i}`}>
                     {i === 0 && row.color && (
                       <React.Fragment>
-                        <InlineIcon icon={squareIcon} color={row.color} height="15" width="15" />
+                        <Square sx={{ color: row.color, fontSize: 15, verticalAlign: 'middle' }} />
                         &nbsp;
                       </React.Fragment>
                     )}

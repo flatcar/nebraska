@@ -46,7 +46,7 @@ exports[`Card Header smoke-test 1`] = `
     CardHeader children
   </div>
 </div>
-<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light css-e5zbmt-MuiDivider-root">
+<hr class="MuiDivider-root MuiDivider-fullWidth css-nr2kyb-MuiDivider-root">
 `;
 
 exports[`Card HeaderWithCardId smoke-test 1`] = `
@@ -72,7 +72,7 @@ exports[`Card HeaderWithCardId smoke-test 1`] = `
     </div>
   </div>
 </div>
-<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light css-e5zbmt-MuiDivider-root">
+<hr class="MuiDivider-root MuiDivider-fullWidth css-nr2kyb-MuiDivider-root">
 `;
 
 exports[`Card HeaderWithCardTrack smoke-test 1`] = `
@@ -98,7 +98,7 @@ exports[`Card HeaderWithCardTrack smoke-test 1`] = `
     </div>
   </div>
 </div>
-<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light css-e5zbmt-MuiDivider-root">
+<hr class="MuiDivider-root MuiDivider-fullWidth css-nr2kyb-MuiDivider-root">
 `;
 
 exports[`Card HeaderWithChildren smoke-test 1`] = `
@@ -126,7 +126,7 @@ exports[`Card HeaderWithChildren smoke-test 1`] = `
     CardHeader children
   </div>
 </div>
-<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light css-e5zbmt-MuiDivider-root">
+<hr class="MuiDivider-root MuiDivider-fullWidth css-nr2kyb-MuiDivider-root">
 `;
 
 exports[`Card HeaderWithDescription smoke-test 1`] = `
@@ -151,7 +151,7 @@ exports[`Card HeaderWithDescription smoke-test 1`] = `
     </div>
   </div>
 </div>
-<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light css-e5zbmt-MuiDivider-root">
+<hr class="MuiDivider-root MuiDivider-fullWidth css-nr2kyb-MuiDivider-root">
 `;
 
 exports[`Card HeaderWithLink smoke-test 1`] = `
@@ -182,7 +182,7 @@ exports[`Card HeaderWithLink smoke-test 1`] = `
     </div>
   </div>
 </div>
-<hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light css-e5zbmt-MuiDivider-root">
+<hr class="MuiDivider-root MuiDivider-fullWidth css-nr2kyb-MuiDivider-root">
 `;
 
 exports[`Card Label smoke-test 1`] = `

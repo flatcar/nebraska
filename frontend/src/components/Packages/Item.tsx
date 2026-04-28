@@ -1,6 +1,6 @@
-import cancelIcon from '@iconify/icons-mdi/cancel';
-import cubeOutline from '@iconify/icons-mdi/cube-outline';
 import { InlineIcon } from '@iconify/react';
+import Cancel from '@mui/icons-material/Cancel';
+import ViewInArOutlined from '@mui/icons-material/ViewInArOutlined';
 import Box from '@mui/material/Box';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -9,6 +9,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
+import type React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
 
@@ -50,10 +51,10 @@ const StyledListItem = styled(ListItem)({
 });
 
 const containerIcons: {
-  [key: string]: any;
+  [key: string]: { icon: React.ReactNode; name: string };
 } = {
-  1: { icon: flatcarIcon, name: 'Flatcar' },
-  other: { icon: cubeOutline, name: 'Other' },
+  1: { icon: <InlineIcon icon={flatcarIcon} width="35" height="35" />, name: 'Flatcar' },
+  other: { icon: <ViewInArOutlined sx={{ fontSize: 35 }} />, name: 'Other' },
 };
 
 interface ItemProps {
@@ -132,7 +133,7 @@ function Item(props: ItemProps) {
           <Box>
             {props.packageItem.channels_blacklist && (
               <Label>
-                <InlineIcon icon={cancelIcon} width="10" height="10" /> {blacklistInfo}
+                <Cancel sx={{ fontSize: 10 }} /> {blacklistInfo}
               </Label>
             )}
           </Box>
@@ -140,7 +141,7 @@ function Item(props: ItemProps) {
         {props.packageItem.is_floor && (
           <Box>
             <Label>
-              <InlineIcon icon={cubeOutline} width="10" height="10" />{' '}
+              <ViewInArOutlined sx={{ fontSize: 10 }} />{' '}
               {t('packages|floor_package', { defaultValue: 'Floor Package' })}
             </Label>
           </Box>
@@ -151,9 +152,7 @@ function Item(props: ItemProps) {
 
   return (
     <StyledListItem dense alignItems="flex-start">
-      <ListItemIcon className={classes.packageIcon}>
-        <InlineIcon icon={item.icon} width="35" height="35" />
-      </ListItemIcon>
+      <ListItemIcon className={classes.packageIcon}>{item.icon}</ListItemIcon>
       <ListItemText
         disableTypography
         slotProps={{ primary: { className: classes.packageName } }}

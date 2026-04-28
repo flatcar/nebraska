@@ -1,6 +1,5 @@
-import chevronDown from '@iconify/icons-mdi/chevron-down';
-import chevronUp from '@iconify/icons-mdi/chevron-up';
-import { InlineIcon } from '@iconify/react';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import { Box } from '@mui/material';
 import Collapse from '@mui/material/Collapse';
 import IconButton from '@mui/material/IconButton';
@@ -139,13 +138,11 @@ function Item(props: ItemProps) {
             <Box>{makeLocaleTime(date)}</Box>
             <Box>
               <IconButton onClick={onToggle} size="large">
-                <InlineIcon
-                  icon={props.selected ? chevronUp : chevronDown}
-                  height="25"
-                  width="25"
-                  color="#808080"
-                  style={{ cursor: 'pointer' }}
-                />
+                {props.selected ? (
+                  <ExpandLess sx={{ fontSize: 25, color: '#808080', cursor: 'pointer' }} />
+                ) : (
+                  <ExpandMore sx={{ fontSize: 25, color: '#808080', cursor: 'pointer' }} />
+                )}
               </IconButton>
             </Box>
           </Box>

@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`applications/ApplicationItem Application smoke-test 1`] = `
-<li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider ApplicationItem-root css-12bropj-MuiListItem-root"
-    data-testid="list-item"
+<li data-testid="list-item"
+    class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider ApplicationItem-root css-12bropj-MuiListItem-root"
 >
   <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-1l3uuuo-MuiGrid-root">
     <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
@@ -56,7 +56,7 @@ exports[`applications/ApplicationItem Application smoke-test 1`] = `
           </div>
         </div>
       </div>
-      <hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light css-e5zbmt-MuiDivider-root">
+      <hr class="MuiDivider-root MuiDivider-fullWidth css-nr2kyb-MuiDivider-root">
     </div>
     <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
       <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row ApplicationItem-itemSection css-d64g0g-MuiGrid-root">
@@ -147,7 +147,7 @@ exports[`applications/ApplicationItem Application smoke-test 1`] = `
                     </div>
                   </div>
                   <div class="MuiGrid-root MuiGrid-direction-xs-row css-17fpwt7-MuiGrid-root">
-                    <div class="MuiListItemText-root MuiListItemText-multiline css-14i6ovm-MuiListItemText-root">
+                    <div class="MuiListItemText-root MuiListItemText-multiline css-1fnxsti-MuiListItemText-root">
                       <div class="MuiBox-root css-70qvj9">
                         <div class="MuiBox-root css-1xsd608">
                           main
@@ -194,8 +194,8 @@ exports[`applications/ApplicationItem Application smoke-test 1`] = `
 `;
 
 exports[`applications/ApplicationItem NoGroups smoke-test 1`] = `
-<li class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider ApplicationItem-root css-12bropj-MuiListItem-root"
-    data-testid="list-item"
+<li data-testid="list-item"
+    class="MuiListItem-root MuiListItem-padding MuiListItem-divider ListItem-divider ApplicationItem-root css-12bropj-MuiListItem-root"
 >
   <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-1l3uuuo-MuiGrid-root">
     <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
@@ -249,7 +249,7 @@ exports[`applications/ApplicationItem NoGroups smoke-test 1`] = `
           </div>
         </div>
       </div>
-      <hr class="MuiDivider-root MuiDivider-fullWidth MuiDivider-light css-e5zbmt-MuiDivider-root">
+      <hr class="MuiDivider-root MuiDivider-fullWidth css-nr2kyb-MuiDivider-root">
     </div>
     <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
       <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row ApplicationItem-itemSection css-d64g0g-MuiGrid-root">

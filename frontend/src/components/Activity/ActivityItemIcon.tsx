@@ -1,7 +1,7 @@
-import alertCircleOutline from '@iconify/icons-mdi/alert-circle-outline';
-import alertOutline from '@iconify/icons-mdi/alert-outline';
-import checkCircleOutline from '@iconify/icons-mdi/check-circle-outline';
-import { Icon, IconifyIcon } from '@iconify/react';
+import CheckCircleOutlined from '@mui/icons-material/CheckCircleOutlined';
+import ErrorOutlined from '@mui/icons-material/ErrorOutlined';
+import WarningAmberOutlined from '@mui/icons-material/WarningAmberOutlined';
+import type React from 'react';
 
 export interface ActivityItemIconProps {
   severityName?: string;
@@ -10,30 +10,31 @@ export interface ActivityItemIconProps {
 export default function ActivityItemIcon(props: ActivityItemIconProps) {
   const { severityName } = props;
   const stateIcon = stateIcons[severityName || 'info'];
+  const IconComponent = stateIcon.icon;
 
-  return <Icon icon={stateIcon.icon} color={stateIcon.color} width="30px" height="30px" />;
+  return <IconComponent sx={{ color: stateIcon.color, fontSize: 30 }} />;
 }
 
 const stateIcons: {
   [key: string]: {
-    icon: IconifyIcon;
+    icon: React.ElementType;
     color: string;
   };
 } = {
   warning: {
-    icon: alertOutline,
+    icon: WarningAmberOutlined,
     color: '#ff5500',
   },
   info: {
-    icon: alertCircleOutline,
+    icon: ErrorOutlined,
     color: '#00d3ff',
   },
   error: {
-    icon: alertCircleOutline,
+    icon: ErrorOutlined,
     color: '#F44336',
   },
   success: {
-    icon: checkCircleOutline,
+    icon: CheckCircleOutlined,
     color: '#22bb00',
   },
 };

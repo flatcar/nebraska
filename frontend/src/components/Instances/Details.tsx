@@ -1,6 +1,5 @@
-import chevronDown from '@iconify/icons-mdi/chevron-down';
-import chevronUp from '@iconify/icons-mdi/chevron-up';
-import { InlineIcon } from '@iconify/react';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 import Box from '@mui/material/Box';
 import Button, { ButtonProps } from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
@@ -107,12 +106,11 @@ function StatusLabel(props: StatusLabelProps) {
           >
             {label}
           </Box>
-          <InlineIcon
-            icon={activated ? chevronUp : chevronDown}
-            height="25"
-            width="25"
-            color="#808080"
-          />
+          {activated ? (
+            <ExpandLess sx={{ fontSize: 25, color: '#808080' }} />
+          ) : (
+            <ExpandMore sx={{ fontSize: 25, color: '#808080' }} />
+          )}
         </Button>
       ) : (
         <Typography

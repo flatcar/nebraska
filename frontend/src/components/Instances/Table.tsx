@@ -1,7 +1,6 @@
-import menuDown from '@iconify/icons-mdi/menu-down';
-import menuSwap from '@iconify/icons-mdi/menu-swap';
-import menuUp from '@iconify/icons-mdi/menu-up';
-import { Icon } from '@iconify/react';
+import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUp from '@mui/icons-material/ArrowDropUp';
+import UnfoldMore from '@mui/icons-material/UnfoldMore';
 import { IconButton } from '@mui/material';
 import MuiTable from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -39,7 +38,7 @@ function TableCellWithSortButtons(props: {
           clickHandler(newOrder, sortQuery);
         }}
       >
-        <Icon icon={!isDefault ? menuSwap : isDescSortOrder ? menuDown : menuUp} />
+        {!isDefault ? <UnfoldMore /> : isDescSortOrder ? <ArrowDropDown /> : <ArrowDropUp />}
       </IconButton>
     </TableCell>
   );

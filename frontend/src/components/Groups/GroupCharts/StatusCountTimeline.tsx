@@ -1,4 +1,3 @@
-import { IconifyIcon } from '@iconify/react';
 import { Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
@@ -61,7 +60,7 @@ export default function StatusCountTimeline(props: StatusCountTimelineProps) {
     [key: string]: {
       label: string;
       color: string;
-      icon: IconifyIcon;
+      icon: React.ElementType;
       queryValue: string;
     };
   } = makeStatusDefs(theme as Theme);

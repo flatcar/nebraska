@@ -1,4 +1,3 @@
-import { IconifyIcon, InlineIcon } from '@iconify/react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
@@ -25,7 +24,7 @@ interface ProgressDoughnutProps {
   width: number;
   height: number;
   color: string;
-  icon: IconifyIcon;
+  icon: React.ElementType;
   data: ProgressData[];
 }
 
@@ -37,7 +36,7 @@ interface PieDataEntry {
 }
 
 function ProgressDoughnut(props: ProgressDoughnutProps) {
-  const { label, data, width = 100, height = 100, color = '#afafaf', icon } = props;
+  const { label, data, width = 100, height = 100, color = '#afafaf', icon: StatusIcon } = props;
   const [hoverData, setHoverData] = React.useState<PieDataEntry | null>(null);
   const [showTooltip, setShowTooltip] = React.useState(false);
   const [activeIndex, setActiveIndex] = React.useState(-1);
@@ -140,9 +139,9 @@ function ProgressDoughnut(props: ProgressDoughnutProps) {
           justifyContent: 'center',
         }}
       >
-        {icon && (
+        {StatusIcon && (
           <Grid>
-            <InlineIcon icon={icon} color={color} width={iconSize} height={iconSize} />
+            <StatusIcon sx={{ color, fontSize: iconSize }} />
           </Grid>
         )}
         <Grid>

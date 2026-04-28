@@ -1,5 +1,4 @@
-import addIcon from '@iconify/icons-mdi/plus';
-import { Icon } from '@iconify/react';
+import Add from '@mui/icons-material/Add';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
@@ -264,7 +263,7 @@ export default function FileList(props: FileListProps) {
             onClick={() => addFile()}
             size="large"
           >
-            <Icon icon={addIcon} width="15" height="15" />
+            <Add sx={{ fontSize: 15 }} />
           </IconButton>
         </Box>
       )}

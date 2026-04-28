@@ -1,6 +1,5 @@
-import infoIcon from '@iconify/icons-mdi/information-circle-outline';
-import searchIcon from '@iconify/icons-mdi/search';
-import { Icon } from '@iconify/react';
+import InfoOutlined from '@mui/icons-material/InfoOutlined';
+import Search from '@mui/icons-material/Search';
 import { TableContainer, Theme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -455,7 +454,7 @@ function ListView(props: ListViewProps) {
                         title="Search Icon"
                         size="large"
                       >
-                        <Icon icon={searchIcon} width="15" height="15" />
+                        <Search sx={{ fontSize: 15 }} />
                       </IconButton>
                     </InputAdornment>
                   }
@@ -463,7 +462,7 @@ function ListView(props: ListViewProps) {
                     <InputAdornment position="end">
                       <LightTooltip title={getSearchTooltipText()}>
                         <IconButton size="large">
-                          <Icon icon={infoIcon} width="20" height="20" />
+                          <InfoOutlined sx={{ fontSize: 20 }} />
                         </IconButton>
                       </LightTooltip>
                     </InputAdornment>

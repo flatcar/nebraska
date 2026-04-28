@@ -8,7 +8,7 @@ exports[`AutoCompletePicker Closed smoke-test 1`] = `
     >
       Package
     </label>
-    <div class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-colorPrimary MuiInputBase-formControl Mui-readOnly MuiInputBase-readOnly css-zp593q-MuiInputBase-root-MuiInput-root">
+    <div class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-colorPrimary MuiInputBase-formControl Mui-readOnly MuiInputBase-readOnly css-1sesyyg-MuiInputBase-root-MuiInput-root">
       <input aria-invalid="false"
              placeholder="Pick a package"
              readonly
@@ -29,7 +29,7 @@ exports[`AutoCompletePicker Open smoke-test 1`] = `
     >
       Package
     </label>
-    <div class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-colorPrimary MuiInputBase-formControl Mui-readOnly MuiInputBase-readOnly css-zp593q-MuiInputBase-root-MuiInput-root">
+    <div class="MuiInputBase-root MuiInput-root MuiInput-underline MuiInputBase-colorPrimary MuiInputBase-formControl Mui-readOnly MuiInputBase-readOnly css-1sesyyg-MuiInputBase-root-MuiInput-root">
       <input aria-invalid="false"
              placeholder="Pick a package"
              readonly
