@@ -4,3 +4,4 @@ tools/golangci-lint
 tools/swag
 tools/oapi-codegen
 .env
+/nebraska

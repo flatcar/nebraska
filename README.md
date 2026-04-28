@@ -10,7 +10,7 @@
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/10926/badge)](https://www.bestpractices.dev/projects/10926)
 
 
-> **Note:** To file an issue for any Flatcar repository, please use the [central Flatcar issue tracker](https://github.com/flatcar/Flatcar/issues).
+> **Note:** To file an issue for Nebraska, [go-omaha](https://github.com/flatcar/go-omaha), or [nebraska-update-agent](https://github.com/flatcar/nebraska-update-agent), please use the [Nebraska issue tracker](https://github.com/flatcar/nebraska/issues).
 </div>
 
 # Nebraska  <img align="right" width=384 src="docs/nebraska-logo.svg">
