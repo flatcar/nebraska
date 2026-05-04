@@ -8,8 +8,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Security
 ### Added
+### Changed
+### Removed
+### Bugfixes
 
-- **Custom CA Certificate for TLS:** Added `--ca-file` flag to trust additional CA certificates for TLS verification (e.g., internal CA, Let's Encrypt staging). Applies to the OIDC provider client and the syncer. Supports multiple PEM-encoded certs, additive to system CAs. Also exposed as `config.caFile` in the Helm chart.
+## [4.0.0] - 04/05/2026
+
+### Breaking Changes
+
+- **PostgreSQL 14+ is now a hard requirement.** The `lib/pq` driver was upgraded from v1.10.9 (shipped in 3.0.0) to v1.12.3 across this release cycle. The breaking jump to v1.11.x — which per the upstream [v1.11.0 release notes](https://github.com/lib/pq/releases/tag/v1.11.0) drops support for PostgreSQL versions older than 14 — entered Nebraska transitively via [#1310](https://github.com/flatcar/nebraska/pull/1310).
+
+  **Operators running PostgreSQL 13 or older must upgrade their database before upgrading Nebraska.** PostgreSQL 17.x is recommended. See the [Upgrade PostgreSQL](https://github.com/flatcar/nebraska/tree/main/charts/nebraska#upgrade-postgresql) migration guide for step-by-step instructions.
+- **Cascaded Nebraska syncers must be on 4.0.0+ to consume channels where floor packages are configured;** older syncers receive `NoUpdate`. Does not affect regular Flatcar clients.
+
+### Added
+
+- **Custom CA Certificate for TLS:** Added `--ca-file` flag to trust additional CA certificates for TLS verification (e.g., internal CA, Let's Encrypt staging). Applies to the OIDC provider client and the syncer. Supports multiple PEM-encoded certs, additive to system CAs. Also exposed as `config.caFile` in the Helm chart. ([#1370](https://github.com/flatcar/nebraska/pull/1370))
 - **OEM Attribute Capture:** Instances now store OEM and Aleph version information from Omaha update requests. ([#1286](https://github.com/flatcar/nebraska/pull/1286))
 - **Multi-Step Updates with Floor Packages:** Added support for mandatory intermediate update versions (floor packages) that clients must install before reaching the target version. This enables safe migration paths for breaking changes by ensuring clients update through specific versions in order. Floor packages can be configured per channel with optional reasons and are architecture-specific. ([#1195](https://github.com/flatcar/nebraska/pull/1195))
 - **Nebraska backend is able to use OIDC userinfo endpoint:** Some OIDC providers do not return group membership inside the access token. The Nebraska frontend passes this access token via the header `Authorization: Bearer <token>` to the backend which can then (optionally) call the OIDC provider's userinfo endpoint to gather group membership. ([#1279](https://github.com/flatcar/nebraska/pull/1279))
@@ -21,11 +35,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Package list UI now updates immediately after blacklist changes
   - Channel edit dialog filters out blacklisted packages from selection
   - Floor package selection prevents choosing blacklisted packages with clear visual feedback
+- Improved reverse domain ID validation regex to eliminate inefficient nested quantifiers flagged by CodeQL, and extracted it into a shared constant with tests. ([#1222](https://github.com/flatcar/nebraska/pull/1222))
 
 ### Removed
 ### Bugfixes
 
 - Fixed package blacklist changes not appearing in UI immediately after save
+- Fixed instance statistics query that returned incorrect group dashboard counts. ([#1356](https://github.com/flatcar/nebraska/pull/1356), thanks to Thilo Fromm)
 
 ## [3.0.0] - 28/11/2025
 
