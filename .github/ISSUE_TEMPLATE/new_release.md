@@ -19,6 +19,6 @@ labels: "kind/release"
 
 ## 3. Announcements
 
-- [ ] Brief version announcement in slack (k8s slack #flatcar) and the Flatcar Matrix channel
+- [ ] Brief version announcement in slack (k8s slack #flatcar) and the [Flatcar Discord server](https://discord.gg/PMYjFUsJyq)
 
 [changelog]: https://github.com/flatcar/nebraska/blob/main/CHANGELOG.md
