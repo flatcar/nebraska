@@ -106,7 +106,7 @@ func (api *API) activityQuery(teamID string, p ActivityQueryParams, countSelect 
 		end = time.Now().UTC()
 	}
 	query := goqu.From(goqu.L(`
-		activity AS a 
+		all_activity AS a 
 		INNER JOIN application AS app ON (a.application_id = app.id)
 		LEFT JOIN groups AS g ON (a.group_id = g.id)
 		LEFT JOIN channel AS c ON (a.channel_id = c.id)
@@ -161,7 +161,10 @@ func (api *API) activityQuery(teamID string, p ActivityQueryParams, countSelect 
 	return query
 }
 
-func (api *API) hasRecentActivity(class int, p ActivityQueryParams) bool {
+// hasRecentRuntimeActivity reports whether there is matching runtime activity
+// entry in the last 24h. Only runtime classes (1-5) are meaningful here.
+// Admin events live in admin_activity and are not returned here.
+func (api *API) hasRecentRuntimeActivity(class int, p ActivityQueryParams) bool {
 	recent := time.Now().UTC().Add(-24 * time.Hour)
 
 	query := goqu.From("activity").
@@ -185,10 +188,6 @@ func (api *API) hasRecentActivity(class int, p ActivityQueryParams) bool {
 		query = query.Where(goqu.I("application_id").Eq(p.AppID))
 	}
 
-	if p.ChannelID != "" {
-		query = query.Where(goqu.I("channel_id").Eq(p.ChannelID))
-	}
-
 	if p.InstanceID != "" {
 		query = query.Where(goqu.C("instance_id").Eq(p.InstanceID))
 	} else {
@@ -202,7 +201,7 @@ func (api *API) hasRecentActivity(class int, p ActivityQueryParams) bool {
 		return false
 	}
 
-	id := 0
+	var id string
 	if err := api.db.QueryRow(sql).Scan(&id); err != nil {
 		return false
 	}
@@ -228,10 +227,10 @@ func (api *API) newGroupActivityEntry(class int, severity int, version, appID, g
 	return nil
 }
 
-// newChannelActivityEntry creates a new activity entry related to a specific
-// channel.
+// newChannelActivityEntry creates a new admin_activity entry related to a
+// specific channel.
 func (api *API) newChannelActivityEntry(class int, severity int, version, appID, channelID string) error {
-	query, _, err := goqu.Insert("activity").
+	query, _, err := goqu.Insert("admin_activity").
 		Cols("class", "severity", "version", "application_id", "channel_id").
 		Vals(goqu.Vals{class, severity, version, appID, channelID}).
 		ToSQL()

@@ -11,6 +11,8 @@ drop table if exists instance_application cascade;
 drop table if exists instance_status_history cascade;
 drop table if exists event_type cascade;
 drop table if exists event cascade;
+drop view if exists all_activity;
+drop table if exists admin_activity cascade;
 drop table if exists activity cascade;
 drop table if exists package_channel_blacklist cascade;
 drop table if exists database_migrations;
