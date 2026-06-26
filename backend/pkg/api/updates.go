@@ -172,7 +172,7 @@ func (api *API) GetUpdatePackage(inst Instance, instApp InstanceApplication) (*P
 	}
 
 	// Record activity
-	if !api.hasRecentActivity(activityRolloutStarted, ActivityQueryParams{
+	if !api.hasRecentRuntimeActivity(activityRolloutStarted, ActivityQueryParams{
 		Severity: activityInfo,
 		AppID:    appID,
 		Version:  version,
@@ -260,7 +260,7 @@ func (api *API) GetUpdatePackagesForSyncer(inst Instance, instApp InstanceApplic
 	}
 
 	// Record activity
-	if !api.hasRecentActivity(activityRolloutStarted, ActivityQueryParams{
+	if !api.hasRecentRuntimeActivity(activityRolloutStarted, ActivityQueryParams{
 		Severity: activityInfo,
 		AppID:    appID,
 		Version:  targetVersion,

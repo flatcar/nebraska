@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- **Activity events split across runtime-local and admin tables:** Admin-originated activity events (channel package updates) are now stored in a separate `admin_activity` table, in preparation for the distributed Nebraska topology described in [RFC #1375](https://github.com/flatcar/nebraska/issues/1375). The JSON contract is unchanged. ([#1398](https://github.com/flatcar/nebraska/pull/1398))
 - **Package Management UI Improvements:**
   - Replaced POST with idempotent PUT operation for floor package management
   - Package list UI now updates immediately after blacklist changes

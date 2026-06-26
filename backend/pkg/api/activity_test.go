@@ -56,7 +56,7 @@ func TestGetActivity(t *testing.T) {
 	assert.Equal(t, 5, len(activityEntries))
 	anActivity := activityEntries[0]
 
-	hasRecentActivity := a.hasRecentActivity(activityInstanceUpdateFailed, ActivityQueryParams{Severity: activitySuccess, AppID: tApp.ID, Version: tVersion, GroupID: tGroup.ID})
+	hasRecentActivity := a.hasRecentRuntimeActivity(activityInstanceUpdateFailed, ActivityQueryParams{Severity: activitySuccess, AppID: tApp.ID, Version: tVersion, GroupID: tGroup.ID})
 	assert.True(t, hasRecentActivity)
 
 	_, err = a.GetActivity("invalidTeamID", ActivityQueryParams{})
@@ -88,4 +88,38 @@ func TestGetActivity(t *testing.T) {
 	)
 	assert.NoError(t, err)
 	assert.Equal(t, 3, totalCount)
+}
+
+func TestActivityRouting(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	tVersion := "12.1.0"
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team_routing"})
+	tApp, _ := a.AddApp(&Application{Name: "test_app_routing", TeamID: tTeam.ID})
+	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: tVersion, ApplicationID: tApp.ID})
+	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel_routing", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := a.AddGroup(&Group{Name: "group_routing", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+
+	_ = a.newGroupActivityEntry(activityRolloutStarted, activitySuccess, tVersion, tApp.ID, tGroup.ID)
+	_ = a.newChannelActivityEntry(activityChannelPackageUpdated, activityInfo, tVersion, tApp.ID, tChannel.ID)
+
+	var runtimeCount, adminCount, runtimeAdminLeak, adminRuntimeLeak int
+	_ = a.db.QueryRow("select count(*) from activity where application_id = $1", tApp.ID).Scan(&runtimeCount)
+	_ = a.db.QueryRow("select count(*) from admin_activity where application_id = $1", tApp.ID).Scan(&adminCount)
+	_ = a.db.QueryRow("select count(*) from activity where class = 6 and application_id = $1", tApp.ID).Scan(&runtimeAdminLeak)
+	_ = a.db.QueryRow("select count(*) from admin_activity where class <> 6 and application_id = $1", tApp.ID).Scan(&adminRuntimeLeak)
+	assert.Equal(t, 1, runtimeCount)
+	assert.Equal(t, 1, adminCount)
+	assert.Equal(t, 0, runtimeAdminLeak)
+	assert.Equal(t, 0, adminRuntimeLeak)
+
+	entries, err := a.GetActivity(tTeam.ID, ActivityQueryParams{AppID: tApp.ID})
+	assert.NoError(t, err)
+	assert.Equal(t, 2, len(entries))
+
+	classes := []int{entries[0].Class, entries[1].Class}
+	assert.ElementsMatch(t, []int{activityRolloutStarted, activityChannelPackageUpdated}, classes)
+
+	assert.True(t, a.hasRecentRuntimeActivity(activityRolloutStarted, ActivityQueryParams{AppID: tApp.ID, Version: tVersion, GroupID: tGroup.ID}))
 }
