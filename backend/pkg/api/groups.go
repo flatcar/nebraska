@@ -198,7 +198,9 @@ func (api *API) AddGroup(group *Group) (*Group, error) {
 		return nil, err
 	}
 	api.updateCachedGroups()
-	return group, nil
+	// Re-read through groupsQuery so the returned struct reflects the joined
+	// group_local row.
+	return api.GetGroup(group.ID)
 }
 
 // UpdateGroup updates an existing group using the context of the group
@@ -250,11 +252,35 @@ func (api *API) UpdateGroup(group *Group) error {
 	if err != nil {
 		return err
 	}
-
 	if rowsAffected == 0 {
 		return ErrNoRowsAffected
 	}
 	api.updateCachedGroups()
+	return nil
+}
+
+// ClearUpdatesEnabledOverride clears the local policy_updates_enabled override
+// on the group_local row so the admin default on groups takes effect again on
+// this node.
+func (api *API) ClearUpdatesEnabledOverride(groupID string) error {
+	query, _, err := goqu.Update("group_local").
+		Set(goqu.Record{"policy_updates_enabled_override": nil}).
+		Where(goqu.C("group_id").Eq(groupID)).
+		ToSQL()
+	if err != nil {
+		return err
+	}
+	result, err := api.db.Exec(query)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return ErrNoRowsAffected
+	}
 	return nil
 }
 
@@ -284,8 +310,8 @@ func (api *API) DeleteGroup(groupID string) error {
 func (api *API) GetGroup(groupID string) (*Group, error) {
 	var group Group
 
-	query, _, err := goqu.From("groups").
-		Where(goqu.C("id").Eq(groupID)).
+	query, _, err := api.groupsQuery().
+		Where(goqu.I("groups.id").Eq(groupID)).
 		ToSQL()
 	if err != nil {
 		return nil, err
@@ -487,13 +513,13 @@ func (api *API) getGroupUpdatesStats(group *Group) (*UpdatesStats, error) {
 	return &updatesStats, nil
 }
 
-// disableUpdates updates the group provided setting the policy_updates_enabled
-// field to false. This usually happens when the first instance in a group
-// processing an update to a specific version fails if safe mode is enabled.
+// disableUpdates trips the safe-mode brake by setting the
+// policy_updates_enabled override on the group_local row. The override
+// lives on the node-local table, so it stops update grants on this node only.
 func (api *API) disableUpdates(groupID string) error {
-	query, _, err := goqu.Update("groups").
-		Set(goqu.Record{"policy_updates_enabled": false}).
-		Where(goqu.C("id").Eq(groupID)).
+	query, _, err := goqu.Update("group_local").
+		Set(goqu.Record{"policy_updates_enabled_override": false}).
+		Where(goqu.C("group_id").Eq(groupID)).
 		ToSQL()
 	if err != nil {
 		return err
@@ -506,9 +532,9 @@ func (api *API) disableUpdates(groupID string) error {
 // setGroupRolloutInProgress updates the value of the rollout_in_progress flag
 // for a given group, indicating if a rollout is taking place now or not.
 func (api *API) setGroupRolloutInProgress(groupID string, inProgress bool) error {
-	query, _, err := goqu.Update("groups").
+	query, _, err := goqu.Update("group_local").
 		Set(goqu.Record{"rollout_in_progress": inProgress}).
-		Where(goqu.C("id").Eq(groupID)).
+		Where(goqu.C("group_id").Eq(groupID)).
 		ToSQL()
 	if err != nil {
 		return err
@@ -518,14 +544,38 @@ func (api *API) setGroupRolloutInProgress(groupID string, inProgress bool) error
 	return err
 }
 
-// groupsQuery returns a SelectDataset prepared to return all groups. This
-// query is meant to be extended later in the methods using it to filter by a
-// specific group id, all groups of a given app, specify how to query the rows
-// or their destination.
+// groupsQuery returns a SelectDataset prepared to return all groups. It joins
+// the node-local group_local sidecar to expose rollout_in_progress and the
+// effective policy values, where effective means COALESCE(override, default).
+// The INNER JOIN is safe because the AFTER INSERT trigger on groups guarantees
+// a matching group_local row.
 func (api *API) groupsQuery() *goqu.SelectDataset {
-	query := goqu.From("groups").Order(goqu.I("created_ts").Desc())
-
-	return query
+	eff := func(name string) interface{} {
+		return goqu.COALESCE(goqu.I("group_local."+name+"_override"), goqu.I("groups."+name)).As(name)
+	}
+	return goqu.From("groups").
+		InnerJoin(
+			goqu.T("group_local"),
+			goqu.On(goqu.I("groups.id").Eq(goqu.I("group_local.group_id"))),
+		).
+		Select(
+			goqu.I("groups.id"),
+			goqu.I("groups.name"),
+			goqu.I("groups.description"),
+			goqu.I("groups.created_ts"),
+			goqu.I("groups.application_id"),
+			goqu.I("groups.channel_id"),
+			goqu.I("groups.track"),
+			goqu.I("group_local.rollout_in_progress"),
+			eff("policy_updates_enabled"),
+			eff("policy_safe_mode"),
+			eff("policy_office_hours"),
+			eff("policy_timezone"),
+			eff("policy_period_interval"),
+			eff("policy_max_updates_per_period"),
+			eff("policy_update_timeout"),
+		).
+		Order(goqu.I("groups.created_ts").Desc())
 }
 
 // GetGroupVersionBreakdown returns a version breakdown of all instances running on a given group.
