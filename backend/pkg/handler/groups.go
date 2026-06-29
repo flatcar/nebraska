@@ -122,6 +122,18 @@ func (h *Handler) UpdateGroup(ctx echo.Context, appIDorProductID string, groupID
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
+	// When the admin re-enables updates, also clear the local safe-mode brake
+	// so the admin re-enable takes effect on this node and a previously tripped
+	// safe-mode brake stops shadowing it.
+	// This behavior applies in single mode only. Once the Nebraska mode flag lands,
+	// distributed mode will handle this differently.
+	if !oldGroup.PolicyUpdatesEnabled && group.PolicyUpdatesEnabled {
+		if err := h.db.ClearUpdatesEnabledOverride(groupID); err != nil {
+			l.Error().Err(err).Str("groupID", groupID).Msg("updateGroup - clearing local updates-enabled override")
+			return ctx.NoContent(http.StatusInternalServerError)
+		}
+	}
+
 	group, err = h.db.GetGroup(groupID)
 	if err != nil {
 		l.Error().Err(err).Str("groupID", groupID).Msg("getGroup - getting group")

@@ -5,6 +5,7 @@ drop table if exists package cascade;
 drop table if exists flatcar_action cascade;
 drop table if exists channel cascade;
 drop table if exists groups cascade;
+drop table if exists group_local cascade;
 drop table if exists instance cascade;
 drop table if exists instance_status cascade;
 drop table if exists instance_application cascade;
@@ -16,5 +17,6 @@ drop table if exists admin_activity cascade;
 drop table if exists activity cascade;
 drop table if exists package_channel_blacklist cascade;
 drop table if exists database_migrations;
+drop function if exists create_group_local_for_group();
 -- Legacy tables if we're dropping tables in a non-migrated DB
 drop table if exists coreos_action cascade;
