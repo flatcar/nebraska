@@ -220,7 +220,11 @@ func (s *Syncer) checkForUpdates() error {
 				return err
 			}
 		} else {
-			l.Debug().Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Str("currentVersion", currentVersion).Msgf("checkForUpdates, no update available updateStatus %v", update.Status)
+			status := "no updatecheck in response"
+			if update != nil {
+				status = string(update.Status)
+			}
+			l.Debug().Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Str("currentVersion", currentVersion).Msgf("checkForUpdates, no update available updateStatus %v", status)
 		}
 
 		select {
@@ -273,13 +277,27 @@ func (s *Syncer) doOmahaRequest(descriptor channelDescriptor, currentVersion str
 	}
 	l.Debug().Str("response", string(body)).Msg("doOmahaRequest")
 
-	oresp := &omaha.Response{}
-	err = xml.Unmarshal(body, oresp)
+	update, err := parseOmahaUpdateResponse(body)
 	if err != nil {
-		l.Error().Err(err).Msg("checkForUpdates, unmarshalling omaha response")
+		l.Error().Err(err).Msg("checkForUpdates, parsing omaha response")
 		return nil, err
 	}
 
+	return update, nil
+}
+
+// parseOmahaUpdateResponse unmarshals an Omaha response body and returns the
+// update check of its first app. It returns an error (rather than panicking)
+// when the body is well-formed XML but carries no <app> element. The returned
+// update check may be nil when the app has no <updatecheck>.
+func parseOmahaUpdateResponse(body []byte) (*omaha.UpdateResponse, error) {
+	oresp := &omaha.Response{}
+	if err := xml.Unmarshal(body, oresp); err != nil {
+		return nil, err
+	}
+	if len(oresp.Apps) == 0 {
+		return nil, fmt.Errorf("omaha response contained no apps")
+	}
 	return oresp.Apps[0].UpdateCheck, nil
 }
 
