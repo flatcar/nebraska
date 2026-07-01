@@ -27,6 +27,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Bugfixes
 
 - Fixed package blacklist changes not appearing in UI immediately after save
+- Fixed the syncer crashing the Nebraska process when the upstream server returns a malformed or empty Omaha response
+- Fixed mandatory floor packages being skipped when an instance reports a pre-release of the floor's version
 
 ## [3.0.0] - 28/11/2025
 
