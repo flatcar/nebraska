@@ -331,6 +331,14 @@ func (s *Syncer) processSingleManifestUpdate(descriptor channelDescriptor, updat
 		return err
 	}
 
+	// A single manifest can still be a floor (e.g. the channel target is itself a
+	// floor). Record it as a floor so downstream clients cannot skip it.
+	if manifest.IsFloor {
+		if err := s.markPackageAsFloor(descriptor, pkg, manifest); err != nil {
+			return err
+		}
+	}
+
 	// Update channel to point to the package
 	if err := s.updateChannelToPackage(descriptor, pkg); err != nil {
 		l.Error().Err(err).
