@@ -1,17 +1,12 @@
 package api
 
 import (
-	"time"
-
 	"github.com/doug-martin/goqu/v9"
+
+	"github.com/flatcar/nebraska/backend/pkg/api/internal/types"
 )
 
-// Team represents a Nebraska team.
-type Team struct {
-	ID        string    `db:"id"`
-	Name      string    `db:"name"`
-	CreatedTs time.Time `db:"created_ts"`
-}
+type Team = types.Team
 
 func (api *API) GetTeams() ([]*Team, error) {
 	var teams []*Team

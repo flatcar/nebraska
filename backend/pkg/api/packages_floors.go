@@ -8,6 +8,8 @@ import (
 
 	"github.com/doug-martin/goqu/v9"
 	"gopkg.in/guregu/null.v4"
+
+	"github.com/flatcar/nebraska/backend/pkg/api/internal/types"
 )
 
 var (
@@ -324,11 +326,7 @@ func (api *API) GetChannelFloorPackagesPaginated(channelID string, page, perPage
 	return api.getPackagesFromQuery(query)
 }
 
-// ChannelFloorInfo contains a channel and its floor reason for a specific package
-type ChannelFloorInfo struct {
-	Channel     *Channel    `json:"channel"`
-	FloorReason null.String `json:"floor_reason"`
-}
+type ChannelFloorInfo = types.ChannelFloorInfo
 
 // GetPackageFloorChannels returns all channels where a package is marked as a floor
 func (api *API) GetPackageFloorChannels(packageID string) ([]ChannelFloorInfo, error) {

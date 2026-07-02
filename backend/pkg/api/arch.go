@@ -1,92 +1,18 @@
 package api
 
-import (
-	"fmt"
-)
+import "github.com/flatcar/nebraska/backend/pkg/api/internal/types"
 
-type Arch uint
+type Arch = types.Arch
 
 const (
-	ArchAll Arch = iota
-	ArchAMD64
-	ArchAArch64
-	ArchX86
+	ArchAll     = types.ArchAll
+	ArchAMD64   = types.ArchAMD64
+	ArchAArch64 = types.ArchAArch64
+	ArchX86     = types.ArchX86
 )
 
-var allSupportedArches = map[Arch]struct{}{
-	ArchAll:     {},
-	ArchAMD64:   {},
-	ArchAArch64: {},
-	ArchX86:     {},
-}
+var ErrInvalidArch = types.ErrInvalidArch
 
-func sprintfBogusArch(raw uint) string {
-	return fmt.Sprintf("Arch(%d)", raw)
-}
-
-func emptyBogusArch(_ uint) string {
-	return ""
-}
-
-const (
-	ourArchIdx = iota
-	omahaArchIdx
-	coreosArchIdx
-)
-
-var archStringData = [][3]string{
-	// our string, omaha string, coreos string
-	{"all", "", ""},
-	{"amd64", "x64", "amd64-usr"},
-	{"aarch64", "arm", "arm64-usr"},
-	{"x86", "x86", ""},
-}
-
-func (a Arch) toString(kindIdx int, bogus func(uint) string) string {
-	archIdx := int(a)
-	if archIdx < len(archStringData) {
-		return archStringData[archIdx][kindIdx]
-	}
-	return bogus(uint(a))
-}
-
-func (a Arch) String() string {
-	return a.toString(ourArchIdx, sprintfBogusArch)
-}
-
-func (a Arch) OmahaString() string {
-	return a.toString(omahaArchIdx, emptyBogusArch)
-}
-
-func (a Arch) CoreosString() string {
-	return a.toString(coreosArchIdx, emptyBogusArch)
-}
-
-func (a Arch) IsValid() bool {
-	_, ok := allSupportedArches[a]
-	return ok
-}
-
-func pkgArchFromIdxString(s string, idx int) (Arch, error) {
-	if s == "" {
-		return 0, ErrInvalidArch
-	}
-	for i := 0; i < len(archStringData); i++ {
-		if s == archStringData[i][idx] {
-			return Arch(i), nil
-		}
-	}
-	return ArchAll, ErrInvalidArch
-}
-
-func ArchFromString(s string) (Arch, error) {
-	return pkgArchFromIdxString(s, ourArchIdx)
-}
-
-func ArchFromOmahaString(s string) (Arch, error) {
-	return pkgArchFromIdxString(s, omahaArchIdx)
-}
-
-func ArchFromCoreosString(s string) (Arch, error) {
-	return pkgArchFromIdxString(s, coreosArchIdx)
-}
+func ArchFromString(s string) (Arch, error)       { return types.ArchFromString(s) }
+func ArchFromOmahaString(s string) (Arch, error)  { return types.ArchFromOmahaString(s) }
+func ArchFromCoreosString(s string) (Arch, error) { return types.ArchFromCoreosString(s) }

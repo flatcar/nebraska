@@ -6,11 +6,12 @@ import (
 	"regexp"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/jmoiron/sqlx"
 	"gopkg.in/guregu/null.v4"
+
+	"github.com/flatcar/nebraska/backend/pkg/api/internal/types"
 )
 
 type appsCache map[string]string
@@ -32,21 +33,7 @@ const (
 	flatcarAppID = "e96281a6-d1af-4bde-9a0a-97b76e56dc57"
 )
 
-// Application represents a Nebraska application instance.
-type Application struct {
-	ID          string      `db:"id" json:"id"`
-	ProductID   null.String `db:"product_id" json:"product_id"`
-	Name        string      `db:"name" json:"name"`
-	Description string      `db:"description" json:"description"`
-	CreatedTs   time.Time   `db:"created_ts" json:"created_ts"`
-	TeamID      string      `db:"team_id" json:"-"`
-	Groups      []*Group    `db:"groups" json:"groups"`
-	Channels    []*Channel  `db:"channels" json:"channels"`
-
-	Instances struct {
-		Count int `db:"count" json:"count"`
-	} `db:"instances" json:"instances,omitempty"`
-}
+type Application = types.Application
 
 // AddApp registers the provided application.
 func (api *API) AddApp(app *Application) (*Application, error) {
