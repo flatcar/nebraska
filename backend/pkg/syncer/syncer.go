@@ -17,6 +17,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/flatcar/go-omaha/omaha"
@@ -59,6 +60,7 @@ type Syncer struct {
 	checkFrequency    time.Duration
 	flatcarUpdatesURL string
 	stopCh            chan struct{}
+	stopOnce          sync.Once
 	machinesIDs       map[channelDescriptor]string
 	bootIDs           map[channelDescriptor]string
 	versions          map[channelDescriptor]string
@@ -169,7 +171,13 @@ L:
 func (s *Syncer) Stop() {
 	s.ticker.Stop()
 	l.Debug().Msg("stopping syncer..")
-	s.stopCh <- struct{}{}
+	// Close (rather than send) so every receiver observes the stop: both the
+	// main Start loop and any in-flight checkForUpdates pass. A single sent token
+	// could be consumed by checkForUpdates, leaving Start blocked forever.
+	// sync.Once guards against a panic if Stop is ever called more than once.
+	s.stopOnce.Do(func() {
+		close(s.stopCh)
+	})
 }
 
 // initialize does some initial setup to prepare the syncer, checking in
@@ -230,7 +238,9 @@ func (s *Syncer) checkForUpdates() error {
 		select {
 		case <-time.After(5 * time.Second):
 		case <-s.stopCh:
-			break
+			// Stop requested: abort the walk immediately instead of continuing
+			// to poll the remaining channels.
+			return nil
 		}
 	}
 
