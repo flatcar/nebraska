@@ -171,7 +171,7 @@ func (api *API) triggerEventConsequences(instanceID, appID, groupID, lastUpdateV
 			l.Error().Err(err).Msg("triggerEventConsequences - could not update instance status")
 		}
 
-		updatesStats, err := api.getGroupUpdatesStats(group)
+		updatesStats, err := api.GetGroupUpdatesStats(group)
 		if err != nil {
 			return err
 		}
@@ -212,7 +212,7 @@ func (api *API) triggerEventConsequences(instanceID, appID, groupID, lastUpdateV
 		}
 
 		if api.disableUpdatesOnFailedRollout {
-			updatesStats, err := api.getGroupUpdatesStats(group)
+			updatesStats, err := api.GetGroupUpdatesStats(group)
 			if err != nil {
 				return err
 			}
@@ -231,24 +231,4 @@ func (api *API) triggerEventConsequences(instanceID, appID, groupID, lastUpdateV
 	}
 
 	return nil
-}
-
-func (api *API) GetEvent(instanceID string, appID string, timestamp time.Time) (null.String, error) {
-	query, _, err := goqu.From("event").
-		Select("error_code").
-		Where(goqu.C("instance_id").Eq(instanceID)).
-		Where(goqu.C("application_id").Eq(appID)).
-		Where(goqu.C("created_ts").Lte(timestamp)).
-		Order(goqu.C("created_ts").Desc()).
-		Limit(1).
-		ToSQL()
-	if err != nil {
-		return null.NewString("", true), err
-	}
-	var errCode null.String
-	err = api.db.QueryRow(query).Scan(&errCode)
-	if err != nil {
-		return null.NewString("", true), err
-	}
-	return errCode, nil
 }

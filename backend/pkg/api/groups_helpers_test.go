@@ -1,6 +1,10 @@
 package api
 
-import "time"
+import (
+	"time"
+
+	"github.com/flatcar/nebraska/backend/pkg/api/internal/dbreads"
+)
 
 // TestCacheManager provides test utilities for cache management in API tests
 type TestCacheManager struct{}
@@ -13,12 +17,12 @@ func NewTestCacheManager() *TestCacheManager {
 // SetCacheLifespanForTest temporarily sets the cache lifespan for testing purposes.
 // Returns the previous lifespan so it can be restored.
 func (tcm *TestCacheManager) SetCacheLifespanForTest(lifespan time.Duration) time.Duration {
-	oldLifespan := cachedGroupVersionCountLifespan
-	cachedGroupVersionCountLifespan = lifespan
+	oldLifespan := dbreads.CachedGroupVersionCountLifespan
+	dbreads.CachedGroupVersionCountLifespan = lifespan
 	return oldLifespan
 }
 
 // RestoreCacheLifespan restores the cache lifespan to the given value
 func (tcm *TestCacheManager) RestoreCacheLifespan(lifespan time.Duration) {
-	cachedGroupVersionCountLifespan = lifespan
+	dbreads.CachedGroupVersionCountLifespan = lifespan
 }
