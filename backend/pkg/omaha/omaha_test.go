@@ -627,7 +627,7 @@ func TestPackageLabelsInResponse(t *testing.T) {
 	})
 }
 
-func TestPackageLabelsInMultiManifestResponse(t *testing.T) {
+func TestPackageLabelsInSyncerResponse(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
 	h := NewHandler(runtimeSvc(a))
@@ -648,26 +648,36 @@ func TestPackageLabelsInMultiManifestResponse(t *testing.T) {
 	group, err := as.AddGroup(&types.Group{Name: "labels-floors", ApplicationID: flatcarAppID, ChannelID: null.StringFrom(channel.ID), PolicyUpdatesEnabled: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 100, PolicyUpdateTimeout: "60 minutes"})
 	require.NoError(t, err)
 
-	req := omahaSpec.NewRequest()
-	req.OS.Platform = "CoreOS"
-	req.Version = "CoreOSUpdateEngine-0.1.0.0"
-	req.InstallSource = "scheduler"
-	app := req.AddApp(flatcarAppID, "40000.0.0")
-	app.MachineID = "syncer-labels"
-	app.Track = group.ID
-	app.MultiManifestOK = true
-	app.AddUpdateCheck()
-	reqXML, err := xml.Marshal(req)
-	require.NoError(t, err)
-	respXML := new(bytes.Buffer)
-	require.NoError(t, h.Handle(bytes.NewReader(reqXML), respXML, "10.0.0.1"))
-	var resp omahaSpec.Response
-	require.NoError(t, xml.NewDecoder(respXML).Decode(&resp))
+	// The syncer walks one package per response: first the floor, then the target.
+	syncerCheck := func(version string) *omahaSpec.UpdateResponse {
+		req := omahaSpec.NewRequest()
+		req.OS.Platform = "CoreOS"
+		req.Version = "CoreOSUpdateEngine-0.1.0.0"
+		req.InstallSource = "scheduler"
+		app := req.AddApp(flatcarAppID, version)
+		app.MachineID = "syncer-labels"
+		app.Track = group.ID
+		app.MultiManifestOK = true
+		app.AddUpdateCheck()
+		reqXML, err := xml.Marshal(req)
+		require.NoError(t, err)
+		respXML := new(bytes.Buffer)
+		require.NoError(t, h.Handle(bytes.NewReader(reqXML), respXML, "10.0.0.1"))
+		var resp omahaSpec.Response
+		require.NoError(t, xml.NewDecoder(respXML).Decode(&resp))
+		return resp.Apps[0].UpdateCheck
+	}
 
-	manifests := resp.Apps[0].UpdateCheck.Manifests
-	require.Len(t, manifests, 2)
-	step, _ := manifests[0].Packages[0].Labels.Get("step")
-	assert.Equal(t, "floor", step)
-	step, _ = manifests[1].Packages[0].Labels.Get("step")
-	assert.Equal(t, "target", step)
+	for _, step := range []struct{ from, version, label, url string }{
+		{"40000.0.0", "41000.0.0", "floor", floor.URL},
+		{"41000.0.0", "42000.0.0", "target", target.URL},
+	} {
+		uc := syncerCheck(step.from)
+		require.Len(t, uc.Manifests, 1, "from %s", step.from)
+		assert.Equal(t, step.version, uc.Manifests[0].Version)
+		label, _ := uc.Manifests[0].Packages[0].Labels.Get("step")
+		assert.Equal(t, step.label, label)
+		require.Len(t, uc.URLs, 1)
+		assert.Equal(t, step.url, uc.URLs[0].CodeBase, "each step uses its own package URL")
+	}
 }

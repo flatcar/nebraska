@@ -12,15 +12,8 @@ var l = logger.New("dbreads")
 
 type Queries struct {
 	db *sqlx.DB
-
-	// maxFloorsPerResponse defines the maximum number of floor versions
-	// to return in a single update response to syncers
-	maxFloorsPerResponse int
 }
 
-func New(conn *dbconn.Conn, maxFloorsPerResponse int) *Queries {
-	if maxFloorsPerResponse <= 0 {
-		maxFloorsPerResponse = DefaultMaxFloorsPerResponse
-	}
-	return &Queries{db: dbconn.DB(conn), maxFloorsPerResponse: maxFloorsPerResponse}
+func New(conn *dbconn.Conn) *Queries {
+	return &Queries{db: dbconn.DB(conn)}
 }

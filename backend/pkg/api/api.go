@@ -130,13 +130,7 @@ func New(options ...func(*API) error) (*API, error) {
 		return nil, err
 	}
 
-	// Load max floors per response configuration
-	maxFloorsPerResponse, err := strconv.Atoi(os.Getenv("NEBRASKA_MAX_FLOORS_PER_RESPONSE"))
-	if err != nil || maxFloorsPerResponse <= 0 {
-		maxFloorsPerResponse = dbreads.DefaultMaxFloorsPerResponse
-	}
-
-	api.Queries = dbreads.New(api.conn, maxFloorsPerResponse)
+	api.Queries = dbreads.New(api.conn)
 
 	for _, option := range options {
 		err := option(api)

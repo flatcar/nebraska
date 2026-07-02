@@ -22,15 +22,12 @@ Flatcar requires mandatory intermediate versions (floors) when updating across m
 - NULL `last_update_version` triggers completion to force fresh grant cycle
 
 #### Syncers (Nebraska instances)
-- **Modern syncers with `multi_manifest_ok=true`**: Receive all packages (floors + target) in one response
-- **Legacy syncers without `multi_manifest_ok`**: Blocked with `NoUpdate` response when floors exist
-- Syncers identified by `InstallSource="scheduler"` in Omaha request
-
-#### Target Detection (Syncer-specific)
-For multi-manifest responses, syncers use this priority:
-1. **Explicit**: Manifest with `is_target="true"` attribute
-2. **Implicit**: Last manifest that is NOT a floor (backward compatibility)
-3. **None**: All manifests are floors (valid - no channel update)
+Syncers mirror an upstream Nebraska. They receive updates the same way as regular clients - **one flagged package per response** - and walk floors one at a time:
+- The upstream returns the lowest floor above the syncer's reported version (`is_floor="true"`), then the target (`is_target="true"`) once all floors have been passed. A package can carry both flags.
+- The syncer keeps a **walk cursor** (the version it reports upstream) separate from its channel: an intermediate floor advances only the cursor and is recorded locally, while the **channel advances directly to the target** and never points at an intermediate floor.
+- **Floor-capable syncers** advertise `multi_manifest_ok=true`. A floor-unaware syncer that omits it is **blocked with `NoUpdate`** when a floor lies ahead, so it cannot walk past a floor it cannot record.
+- Syncers are identified by `InstallSource="scheduler"` in the Omaha request.
+- The syncer update lookup is stateless: no update grant and no rollout-policy evaluation, so a mirror is never throttled and always makes forward progress.
 
 ### Safety Rules & Constraints
 
@@ -40,10 +37,10 @@ For multi-manifest responses, syncers use this priority:
 3. **Cross-channel Independence**: Package can be floor for one channel and blacklisted for another
 
 #### Syncer-specific Constraints
-1. **Atomic Floor Operations**: Floor marking failures abort entire update
-2. **Package Verification**: Existing packages verified for hash/size match before reuse
-3. **Download Cleanup**: Failed downloads cleaned up to prevent orphaned files
-4. **Legacy Syncer Safety**: Syncers without multi-manifest support blocked when floors exist
+1. **Ordered floor recording**: a floor is recorded before the walk cursor advances, so a failure retries the same floor and never skips it
+2. **Package Verification**: existing packages verified for hash/size match before reuse
+3. **Download Cleanup**: failed downloads cleaned up to prevent orphaned files
+4. **Legacy Syncer Safety**: floor-unaware syncers (no `multi_manifest_ok`) blocked when a floor lies ahead
 
 ### API Endpoints
 
@@ -66,17 +63,16 @@ For multi-manifest responses, syncers use this priority:
 - Atomic operations prevent partial states
 
 ### Negative
-- Legacy syncers blocked when floors present (requires upgrade)
+- Legacy (floor-unaware) syncers blocked when floors are present (requires upgrade)
 - Additional database queries for floor checking
-- Increased complexity in update decision logic
+- A syncer converges on a multi-floor target over several sync cycles (one package per cycle) rather than in a single response
 
 ## Dependencies
 
 ### go-omaha Library
 Enhanced go-omaha library with:
-- Multi-manifest support (`Manifests` array replacing single `Manifest`)
-- Floor attributes (`IsFloor`, `FloorReason`, `IsTarget`)
-- `MultiManifestOK` capability flag for syncers
+- Floor attributes on the manifest (`IsFloor`, `FloorReason`, `IsTarget`)
+- `MultiManifestOK` capability flag, used as the syncer's "floor-aware" signal
 
 ## References
 - [Flatcar Discussion #1831](https://github.com/flatcar/Flatcar/discussions/1831)

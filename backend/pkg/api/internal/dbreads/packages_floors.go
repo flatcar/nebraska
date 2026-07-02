@@ -52,19 +52,8 @@ func (q *Queries) GetChannelFloorPackages(channelID string) ([]*types.Package, e
 	return q.getPackagesFromQuery(query)
 }
 
-const (
-	// DefaultMaxFloorsPerResponse is the default maximum number of floor versions
-	// to return in a single update response. This limit prevents:
-	// - Timeouts during sequential syncer updates
-	// - Very large Omaha responses
-	// - Overwhelming syncers with too many intermediate versions
-	// Can be overridden via NEBRASKA_MAX_FLOORS_PER_RESPONSE env var
-	DefaultMaxFloorsPerResponse = 5
-)
-
 // GetRequiredChannelFloors returns the floor packages between the instance version and
-// the channel target (instance < floor <= target), sorted ascending by semantic version
-// and capped at the configured limit.
+// the channel target (instance < floor <= target), sorted ascending by semantic version.
 func (q *Queries) GetRequiredChannelFloors(channel *types.Channel, instanceVersion string) ([]*types.Package, error) {
 	if channel == nil || channel.Package == nil {
 		return nil, types.ErrNoPackageFound
@@ -73,22 +62,17 @@ func (q *Queries) GetRequiredChannelFloors(channel *types.Channel, instanceVersi
 		return nil, fmt.Errorf("instance version cannot be empty")
 	}
 
-	limit := DefaultMaxFloorsPerResponse
-	if q.maxFloorsPerResponse > 0 {
-		limit = q.maxFloorsPerResponse
-	}
-
 	allFloors, err := q.GetChannelFloorPackages(channel.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	return selectFloorsInRange(allFloors, instanceVersion, channel.Package.Version, limit)
+	return selectFloorsInRange(allFloors, instanceVersion, channel.Package.Version)
 }
 
 // selectFloorsInRange returns the floor packages with instanceVersion < v <= targetVersion,
-// sorted ascending by semantic version and capped at limit.
-func selectFloorsInRange(floors []*types.Package, instanceVersion, targetVersion string, limit int) ([]*types.Package, error) {
+// sorted ascending by semantic version.
+func selectFloorsInRange(floors []*types.Package, instanceVersion, targetVersion string) ([]*types.Package, error) {
 	inst, err := semver.Make(instanceVersion)
 	if err != nil {
 		return nil, fmt.Errorf("invalid instance version %q: %w", instanceVersion, err)
@@ -115,9 +99,6 @@ func selectFloorsInRange(floors []*types.Package, instanceVersion, targetVersion
 		return vi.LT(vj)
 	})
 
-	if len(inRange) > limit {
-		inRange = inRange[:limit]
-	}
 	return inRange, nil
 }
 

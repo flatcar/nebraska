@@ -1,7 +1,6 @@
 package api
 
 import (
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -72,25 +71,22 @@ func TestFloorOperations(t *testing.T) {
 	assert.Equal(t, types.ErrNoRowsAffected, as.RemoveChannelPackageFloor(setup.Channel.ID, setup.Floors[0].ID))
 }
 
-// TestFloorMaxLimit tests max floors per response limit
-func TestFloorMaxLimit(t *testing.T) {
-	oldMax := os.Getenv("NEBRASKA_MAX_FLOORS_PER_RESPONSE")
-	defer os.Setenv("NEBRASKA_MAX_FLOORS_PER_RESPONSE", oldMax)
-	os.Setenv("NEBRASKA_MAX_FLOORS_PER_RESPONSE", "3")
-
+// TestFloorsUncapped verifies all in-range floors are returned (the per-response cap was removed)
+func TestFloorsUncapped(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
 
-	// Create floor versions
-	floorVersions := []string{"1000.0.0", "2000.0.0", "3000.0.0", "4000.0.0", "5000.0.0"}
-	setup := setupFloors(t, a, "maxtest", floorVersions, "6000.0.0")
+	// All in-range floors are returned; the per-response cap was removed (syncers
+	// walk floors one at a time). Use more than the old default cap (5) so a
+	// re-introduced limit would fail this test.
+	floorVersions := []string{"1000.0.0", "2000.0.0", "3000.0.0", "4000.0.0", "5000.0.0", "6000.0.0", "7000.0.0"}
+	setup := setupFloors(t, a, "maxtest", floorVersions, "8000.0.0")
 
-	// Should only get 3 floors due to limit
 	ch, err := a.GetChannel(setup.Channel.ID)
 	assert.NoError(t, err)
 	floors, err := a.GetRequiredChannelFloors(ch, "0.0.0")
 	assert.NoError(t, err)
-	assert.Len(t, floors, 3)
+	assert.Len(t, floors, 7)
 }
 
 // TestFloorPagination tests paginated floor retrieval
