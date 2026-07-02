@@ -193,11 +193,17 @@ func (api *API) GetUpdatePackage(inst Instance, instApp InstanceApplication) (*P
 	return packages[0], nil
 }
 
-// GetUpdatePackagesForSyncer returns all packages (floors + target) for a syncer client
-func (api *API) GetUpdatePackagesForSyncer(inst Instance, instApp InstanceApplication) ([]*Package, error) {
+// GetNextPackageForSyncer returns the single next package a syncer should mirror:
+// the lowest floor above the syncer's reported version (with IsFloor set), or the
+// channel target once all floors have been passed (with IsTarget set; a package can
+// be both). It is stateless - no grant, no rollout policy - so a syncer walks the
+// floors in order and eventually reaches the target without being throttled by group
+// rollout policy. Returns ErrNoUpdatePackageAvailable when the syncer is already at or
+// past the target.
+func (api *API) GetNextPackageForSyncer(inst Instance, instApp InstanceApplication) (*Package, error) {
 	instance, err := api.RegisterInstance(inst, instApp)
 	if err != nil {
-		l.Error().Err(err).Msg("GetUpdatePackagesForSyncer - could not register instance")
+		l.Error().Err(err).Msg("GetNextPackageForSyncer - could not register instance")
 		return nil, ErrRegisterInstanceFailed
 	}
 
@@ -219,12 +225,12 @@ func (api *API) GetUpdatePackagesForSyncer(inst Instance, instApp InstanceApplic
 
 	if group.Channel == nil || group.Channel.Package == nil {
 		if err := api.newGroupActivityEntry(activityPackageNotFound, activityWarning, "0.0.0", appID, groupID); err != nil {
-			l.Error().Err(err).Msg("GetUpdatePackagesForSyncer - could not add new group activity entry")
+			l.Error().Err(err).Msg("GetNextPackageForSyncer - could not add new group activity entry")
 		}
 		return nil, ErrNoPackageFound
 	}
 
-	// Check if update is needed
+	// Check whether an update is needed at all.
 	instanceSemver, _ := semver.Make(instanceVersion)
 	packageSemver, _ := semver.Make(group.Channel.Package.Version)
 	if !instanceSemver.LT(packageSemver) {
@@ -235,50 +241,28 @@ func (api *API) GetUpdatePackagesForSyncer(inst Instance, instApp InstanceApplic
 	if err != nil {
 		return nil, err
 	}
-
-	// Safety check: verify no packages are blacklisted for this channel
-	// Syncers need all packages, so if any is blacklisted we can't send a valid manifest
-	// This should never happen (floors/targets can't be blacklisted for their own channel)
-	// but we check anyway for data consistency
-	for _, pkg := range packages {
-		if slices.Contains(pkg.ChannelsBlacklist, group.Channel.ID) {
-			l.Error().Str("package", pkg.Version).Str("channel", group.Channel.ID).
-				Msg("Package is blacklisted for its own channel - data inconsistency!")
-			return nil, ErrNoUpdatePackageAvailable
-		}
+	if len(packages) == 0 {
+		return nil, ErrNoUpdatePackageAvailable
 	}
 
-	if err := api.enforceRolloutPolicy(instance, group); err != nil {
-		return nil, err
+	// packages are floors (ascending) followed by the target, so packages[0] is the
+	// next step: the lowest floor above the instance, or the target when no floors
+	// remain.
+	nextPkg := packages[0]
+
+	// A package is the target when it is the channel's current package. It may be
+	// both a floor and the target.
+	nextPkg.IsTarget = nextPkg.ID == group.Channel.Package.ID
+
+	// Safety check: a floor/target must never be blacklisted for its own channel.
+	// Write-time constraints forbid this; we guard against data inconsistency.
+	if slices.Contains(nextPkg.ChannelsBlacklist, group.Channel.ID) {
+		l.Error().Str("package", nextPkg.Version).Str("channel", group.Channel.ID).
+			Msg("Package is blacklisted for its own channel - data inconsistency!")
+		return nil, ErrNoUpdatePackageAvailable
 	}
 
-	// Grant the update using target version
-	targetVersion := packages[len(packages)-1].Version
-	if err := api.grantUpdate(instance, targetVersion); err != nil {
-		l.Error().Err(err).Str("version", targetVersion).Str("instance", instance.ID).Msg("GetUpdatePackagesForSyncer - grantUpdate error")
-		return nil, ErrUpdateGrantFailed
-	}
-
-	// Record activity
-	if !api.hasRecentRuntimeActivity(activityRolloutStarted, ActivityQueryParams{
-		Severity: activityInfo,
-		AppID:    appID,
-		Version:  targetVersion,
-		GroupID:  groupID,
-	}) {
-		if err := api.newGroupActivityEntry(activityRolloutStarted, activityInfo, targetVersion, appID, groupID); err != nil {
-			l.Error().Err(err).Msg("GetUpdatePackagesForSyncer - could not add new group activity entry")
-		}
-	}
-
-	// Set rollout in progress
-	if !group.RolloutInProgress {
-		if err := api.setGroupRolloutInProgress(groupID, true); err != nil {
-			l.Error().Err(err).Msg("GetUpdatePackagesForSyncer - could not set rollout progress")
-		}
-	}
-
-	return packages, nil
+	return nextPkg, nil
 }
 
 // enforceRolloutPolicy validates if an update should be provided to the

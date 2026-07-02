@@ -1,7 +1,6 @@
 package api
 
 import (
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -68,25 +67,22 @@ func TestFloorOperations(t *testing.T) {
 	assert.Equal(t, ErrNoRowsAffected, a.RemoveChannelPackageFloor(setup.Channel.ID, setup.Floors[0].ID))
 }
 
-// TestFloorMaxLimit tests max floors per response limit
-func TestFloorMaxLimit(t *testing.T) {
-	oldMax := os.Getenv("NEBRASKA_MAX_FLOORS_PER_RESPONSE")
-	defer os.Setenv("NEBRASKA_MAX_FLOORS_PER_RESPONSE", oldMax)
-	os.Setenv("NEBRASKA_MAX_FLOORS_PER_RESPONSE", "3")
-
+// TestFloorsUncapped verifies all in-range floors are returned (the per-response cap was removed)
+func TestFloorsUncapped(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
 
-	// Create floor versions
-	floorVersions := []string{"1000.0.0", "2000.0.0", "3000.0.0", "4000.0.0", "5000.0.0"}
-	setup := setupFloors(t, a, "maxtest", floorVersions, "6000.0.0")
+	// All in-range floors are returned; the per-response cap was removed (syncers
+	// walk floors one at a time). Use more than the old default cap (5) so a
+	// re-introduced limit would fail this test.
+	floorVersions := []string{"1000.0.0", "2000.0.0", "3000.0.0", "4000.0.0", "5000.0.0", "6000.0.0", "7000.0.0"}
+	setup := setupFloors(t, a, "maxtest", floorVersions, "8000.0.0")
 
-	// Should only get 3 floors due to limit
 	ch, err := a.GetChannel(setup.Channel.ID)
 	assert.NoError(t, err)
 	floors, err := a.GetRequiredChannelFloors(ch, "0.0.0")
 	assert.NoError(t, err)
-	assert.Len(t, floors, 3)
+	assert.Len(t, floors, 7)
 }
 
 // TestFloorPagination tests paginated floor retrieval
@@ -314,24 +310,21 @@ func TestSelectFloorsInRange(t *testing.T) {
 		name             string
 		floors           []*Package
 		instance, target string
-		limit            int
 		want             []string
-		wantMore         bool
 	}{
-		{"release floor not skipped over pre-release instance", mk("2000.0.0"), "2000.0.0-rc1", "3000.0.0", 5, []string{"2000.0.0"}, false},
-		{"same-core floors ordered, none dropped", mk("2000.0.0", "2000.0.0-beta", "2000.0.0-alpha"), "1000.0.0", "3000.0.0", 5, []string{"2000.0.0-alpha", "2000.0.0-beta", "2000.0.0"}, false},
-		{"lower pre-release below release instance excluded", mk("2000.0.0-rc1"), "2000.0.0", "3000.0.0", 5, []string{}, false},
-		{"build metadata treated as the release", mk("2000.0.0+build"), "1999.0.0", "3000.0.0", 5, []string{"2000.0.0+build"}, false},
-		{"shuffled input sorted, limited, hasMore", mk("3000.0.0", "1000.0.0", "2000.0.0"), "500.0.0", "4000.0.0", 2, []string{"1000.0.0", "2000.0.0"}, true},
-		{"target inclusive, above-target excluded", mk("2000.0.0", "4000.0.0"), "1000.0.0", "3000.0.0", 5, []string{"2000.0.0"}, false},
+		{"release floor not skipped over pre-release instance", mk("2000.0.0"), "2000.0.0-rc1", "3000.0.0", []string{"2000.0.0"}},
+		{"same-core floors ordered, none dropped", mk("2000.0.0", "2000.0.0-beta", "2000.0.0-alpha"), "1000.0.0", "3000.0.0", []string{"2000.0.0-alpha", "2000.0.0-beta", "2000.0.0"}},
+		{"lower pre-release below release instance excluded", mk("2000.0.0-rc1"), "2000.0.0", "3000.0.0", []string{}},
+		{"build metadata treated as the release", mk("2000.0.0+build"), "1999.0.0", "3000.0.0", []string{"2000.0.0+build"}},
+		{"shuffled input sorted, all in range", mk("3000.0.0", "1000.0.0", "2000.0.0"), "500.0.0", "4000.0.0", []string{"1000.0.0", "2000.0.0", "3000.0.0"}},
+		{"target inclusive, above-target excluded", mk("2000.0.0", "4000.0.0"), "1000.0.0", "3000.0.0", []string{"2000.0.0"}},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			res, more, err := selectFloorsInRange(tt.floors, tt.instance, tt.target, tt.limit)
+			res, err := selectFloorsInRange(tt.floors, tt.instance, tt.target)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, vers(res))
-			assert.Equal(t, tt.wantMore, more)
 		})
 	}
 }

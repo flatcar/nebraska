@@ -308,15 +308,14 @@ func (s *Syncer) processUpdate(descriptor channelDescriptor, update *omaha.Updat
 		return fmt.Errorf("no manifests in update response")
 	}
 
-	// Dispatch to appropriate handler based on manifest count
-	if len(update.Manifests) > 1 {
-		return s.processMultiManifestUpdate(descriptor, update)
-	}
-
+	// The upstream serves one flagged package at a time (is_floor/is_target); a
+	// syncer walks the floors and only advances its channel on the target.
 	return s.processSingleManifestUpdate(descriptor, update)
 }
 
-// processSingleManifestUpdate handles the traditional single-manifest response
+// processSingleManifestUpdate handles a single flagged package from the upstream.
+// A floor is recorded and only the walk cursor is advanced (the channel stays put);
+// the target - or a legacy manifest carrying neither flag - advances the channel.
 func (s *Syncer) processSingleManifestUpdate(descriptor channelDescriptor, update *omaha.UpdateResponse) error {
 	manifest := update.Manifests[0]
 
@@ -331,15 +330,22 @@ func (s *Syncer) processSingleManifestUpdate(descriptor channelDescriptor, updat
 		return err
 	}
 
-	// A single manifest can still be a floor (e.g. the channel target is itself a
-	// floor). Record it as a floor so downstream clients cannot skip it.
+	// Record the floor BEFORE advancing, so a failure retries the same floor and
+	// never skips it.
 	if manifest.IsFloor {
 		if err := s.markPackageAsFloor(descriptor, pkg, manifest); err != nil {
 			return err
 		}
 	}
 
-	// Update channel to point to the package
+	// An intermediate floor advances only the walk cursor, leaving the channel
+	// where it is (the channel must never point at an intermediate). The target -
+	// or a legacy manifest with neither flag - advances the channel directly.
+	if manifest.IsFloor && !manifest.IsTarget {
+		s.advanceCursor(descriptor, pkg)
+		return nil
+	}
+
 	if err := s.updateChannelToPackage(descriptor, pkg); err != nil {
 		l.Error().Err(err).
 			Str("channel", descriptor.name).
@@ -379,11 +385,15 @@ func (s *Syncer) getOrCreatePackage(
 	// Check if package already exists
 	pkg, err := s.api.GetPackageByVersionAndArch(flatcarAppID, version, descriptor.arch)
 	if err == nil && pkg != nil {
-		// Package exists - verify integrity if it's from multi-manifest
-		if len(update.Manifests) > 1 {
-			if err := s.verifyPackageIntegrity(pkg, manifest); err != nil {
-				return nil, err
-			}
+		// Package exists. Verify it matches what the upstream advertises, but do NOT
+		// fail the walk on a mismatch - that would wedge a syncer permanently on a
+		// re-published version. Surface it and keep using the stored package.
+		if verr := s.verifyPackageIntegrity(pkg, manifest); verr != nil {
+			l.Warn().Err(verr).
+				Str("channel", descriptor.name).
+				Str("arch", descriptor.arch.String()).
+				Str("version", version).
+				Msg("existing package differs from upstream manifest; using stored package")
 		}
 		return pkg, nil
 	}
@@ -553,9 +563,8 @@ func (s *Syncer) updateChannelToPackage(
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
-	// Update tracking
-	s.versions[descriptor] = pkg.Version
-	s.bootIDs[descriptor] = "{" + uuid.New().String() + "}"
+	// Advance the walk cursor to the (now channel-pointed) package.
+	s.advanceCursor(descriptor, pkg)
 
 	l.Debug().
 		Str("channel", descriptor.name).
@@ -564,6 +573,14 @@ func (s *Syncer) updateChannelToPackage(
 		Msg("Updated channel to new version")
 
 	return nil
+}
+
+// advanceCursor advances the syncer's walk position (the version it reports upstream)
+// without touching the channel. Advancing the cursor is what makes the upstream serve
+// the next floor on the following request.
+func (s *Syncer) advanceCursor(descriptor channelDescriptor, pkg *api.Package) {
+	s.versions[descriptor] = pkg.Version
+	s.bootIDs[descriptor] = "{" + uuid.New().String() + "}"
 }
 
 // markPackageAsFloor marks a package as a floor for a specific channel
@@ -592,124 +609,6 @@ func (s *Syncer) markPackageAsFloor(descriptor channelDescriptor, pkg *api.Packa
 		Str("channel", descriptor.name).
 		Str("arch", descriptor.arch.String()).
 		Msg("markPackageAsFloor - marked package as floor")
-	return nil
-}
-
-// processMultiManifestUpdate handles multi-manifest responses with floor versions.
-//
-// Multi-step update requirements:
-// 1. A manifest can be marked as floor (is_floor=true), target (is_target=true), or BOTH
-// 2. Floor marking is based solely on manifest metadata (is_floor flag), NOT on version comparison
-// 3. All-floors responses are valid - floors are processed but channel remains unchanged
-// 4. Any floor marking failure must abort the entire update process to maintain consistency
-//
-// Target detection priority:
-// 1. Explicit: manifest with is_target="true" attribute
-// 2. Implicit: last manifest that is NOT a floor (backward compatibility with old upstreams)
-// 3. None: all manifests are floors (valid case - no channel update needed)
-//
-// Edge cases handled:
-// - All manifests are floors: Process floors successfully, don't update channel
-// - Package is both floor AND target: Mark as floor AND set as channel target
-// - No manifests have explicit flags: Last manifest becomes target (legacy behavior)
-// - Package already exists: Verify integrity and still process floor marking
-//
-// Example scenarios:
-// 1. [floor, floor, target] → marks 2 floors, updates channel to target
-// 2. [floor, floor+target] → marks 2 floors, updates channel to 2nd (which is both)
-// 3. [floor, floor, floor] → marks 3 floors, channel stays at current version
-// 4. [manifest, manifest] (no flags) → last becomes target (backward compatibility)
-func (s *Syncer) processMultiManifestUpdate(descriptor channelDescriptor, update *omaha.UpdateResponse) error {
-	if len(update.Manifests) == 0 {
-		return fmt.Errorf("no manifests in update response")
-	}
-
-	// Find the target manifest - this determines which package the channel will point to.
-	// Note: targetVersion may remain empty if all manifests are floors (valid scenario)
-	var targetManifest *omaha.Manifest
-	var targetVersion string
-	var targetPkg *api.Package
-
-	// Priority 1: Check if any manifest is explicitly marked as target (is_target="true")
-	// This is the preferred way for upstreams to indicate the target version
-	for _, m := range update.Manifests {
-		if m.IsTarget {
-			targetManifest = m
-			targetVersion = m.Version
-			break
-		}
-	}
-
-	// Priority 2: If no explicit target, assume last non-floor is target
-	// This maintains backward compatibility with older upstreams that don't set is_target
-	// We iterate backwards to find the last manifest that isn't marked as a floor
-	if targetManifest == nil {
-		for i := len(update.Manifests) - 1; i >= 0; i-- {
-			if !update.Manifests[i].IsFloor {
-				targetManifest = update.Manifests[i]
-				targetVersion = targetManifest.Version
-				break
-			}
-		}
-	}
-	// If still no target found, all manifests are floors - targetVersion remains empty
-
-	// Process each manifest in the response
-	for _, manifest := range update.Manifests {
-		version := manifest.Version
-
-		// Get or create the package
-		pkg, err := s.getOrCreatePackage(descriptor, manifest, update)
-		if err != nil {
-			l.Error().Err(err).
-				Str("version", version).
-				Str("channel", descriptor.name).
-				Str("arch", descriptor.arch.String()).
-				Msg("processMultiManifestUpdate - failed to process package")
-			return fmt.Errorf("failed to process package %s: %w", version, err)
-		}
-
-		// Mark as floor if manifest indicates it
-		// IMPORTANT: Floor marking is based on manifest.IsFloor, NOT on version comparison
-		// A package can be BOTH a floor AND the target
-		if manifest.IsFloor {
-			if err := s.markPackageAsFloor(descriptor, pkg, manifest); err != nil {
-				return fmt.Errorf("failed to mark package %s as floor: %w", version, err)
-			}
-		}
-
-		// Track target package if this is the target
-		// Note: This is independent of floor marking - a package can be both
-		if targetVersion != "" && version == targetVersion {
-			targetPkg = pkg
-		}
-	}
-
-	if targetPkg == nil {
-		// All manifests were floors with no target package identified.
-		// This is a VALID scenario where upstream wants to establish mandatory floors
-		// without changing the current channel target yet (target may come later).
-		// We've successfully processed and marked all floors, but there's no new
-		// version to point the channel to, so it remains at its current version.
-		l.Info().
-			Str("channel", descriptor.name).
-			Str("arch", descriptor.arch.String()).
-			Int("floors_processed", len(update.Manifests)).
-			Msg("processMultiManifestUpdate - all manifests are floors, channel remains at current version")
-		return nil // Success - floors processed, just no channel update
-	}
-
-	// Update channel to point to the target package
-	// This only happens if we found a target (either explicit via is_target="true"
-	// or implicit as the last non-floor manifest)
-	if err := s.updateChannelToPackage(descriptor, targetPkg); err != nil {
-		l.Error().Err(err).
-			Str("channel", descriptor.name).
-			Str("arch", descriptor.arch.String()).
-			Msg("processMultiManifestUpdate - failed to update channel")
-		return err
-	}
-
 	return nil
 }
 

@@ -195,19 +195,8 @@ func (api *API) GetChannelFloorPackages(channelID string) ([]*Package, error) {
 	return api.getPackagesFromQuery(query)
 }
 
-const (
-	// DefaultMaxFloorsPerResponse is the default maximum number of floor versions
-	// to return in a single update response. This limit prevents:
-	// - Timeouts during sequential syncer updates
-	// - Very large Omaha responses
-	// - Overwhelming syncers with too many intermediate versions
-	// Can be overridden via NEBRASKA_MAX_FLOORS_PER_RESPONSE env var
-	DefaultMaxFloorsPerResponse = 5
-)
-
 // GetRequiredChannelFloors returns the floor packages between the instance version and
-// the channel target (instance < floor <= target), sorted ascending by semantic version
-// and capped at the configured limit.
+// the channel target (instance < floor <= target), sorted ascending by semantic version.
 func (api *API) GetRequiredChannelFloors(channel *Channel, instanceVersion string) ([]*Package, error) {
 	if channel == nil || channel.Package == nil {
 		return nil, ErrNoPackageFound
@@ -216,31 +205,24 @@ func (api *API) GetRequiredChannelFloors(channel *Channel, instanceVersion strin
 		return nil, fmt.Errorf("instance version cannot be empty")
 	}
 
-	limit := DefaultMaxFloorsPerResponse
-	if api.maxFloorsPerResponse > 0 {
-		limit = api.maxFloorsPerResponse
-	}
-
 	allFloors, err := api.GetChannelFloorPackages(channel.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	floors, _, err := selectFloorsInRange(allFloors, instanceVersion, channel.Package.Version, limit)
-	return floors, err
+	return selectFloorsInRange(allFloors, instanceVersion, channel.Package.Version)
 }
 
 // selectFloorsInRange returns the floor packages with instanceVersion < v <= targetVersion,
-// sorted ascending by semantic version and capped at limit. hasMore is true when more
-// floors fall in range than the limit.
-func selectFloorsInRange(floors []*Package, instanceVersion, targetVersion string, limit int) ([]*Package, bool, error) {
+// sorted ascending by semantic version.
+func selectFloorsInRange(floors []*Package, instanceVersion, targetVersion string) ([]*Package, error) {
 	inst, err := semver.Make(instanceVersion)
 	if err != nil {
-		return nil, false, fmt.Errorf("invalid instance version %q: %w", instanceVersion, err)
+		return nil, fmt.Errorf("invalid instance version %q: %w", instanceVersion, err)
 	}
 	target, err := semver.Make(targetVersion)
 	if err != nil {
-		return nil, false, fmt.Errorf("invalid target version %q: %w", targetVersion, err)
+		return nil, fmt.Errorf("invalid target version %q: %w", targetVersion, err)
 	}
 
 	inRange := make([]*Package, 0, len(floors))
@@ -260,11 +242,7 @@ func selectFloorsInRange(floors []*Package, instanceVersion, targetVersion strin
 		return vi.LT(vj)
 	})
 
-	hasMore := len(inRange) > limit
-	if hasMore {
-		inRange = inRange[:limit]
-	}
-	return inRange, hasMore, nil
+	return inRange, nil
 }
 
 // GetChannelFloorPackagesCount returns the count of floor packages for a channel
