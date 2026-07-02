@@ -83,27 +83,31 @@ func TestFloorUpdateScenarios(t *testing.T) {
 		checkOmahaUpdateResponse(t, resp, "", "", "", omahaSpec.NoUpdate)
 	})
 
-	t.Run("SyncerMultiManifest", func(t *testing.T) {
+	t.Run("SyncerSinglePackageWalk", func(t *testing.T) {
 		group, pkgs := setupOmahaFloorTest(t, a, "syncer", []string{"9000.0.0", "9500.0.0"}, "10000.0.0")
 		require.NotNil(t, group)
 		require.Len(t, pkgs, 3)
 
-		testCases := map[string]int{
-			"8500.0.0": 3, // below floors: all manifests
-			"9200.0.0": 2, // between: floor2 + target
-			"9700.0.0": 1, // above: target only
+		// The syncer gets ONE flagged package per request: the lowest floor above its
+		// version, then the target once all floors have been passed.
+		type want struct {
+			version  string
+			isFloor  bool
+			isTarget bool
+		}
+		cases := map[string]want{
+			"8500.0.0": {"9000.0.0", true, false},  // below floors -> lowest floor
+			"9200.0.0": {"9500.0.0", true, false},  // between floors -> next floor
+			"9700.0.0": {"10000.0.0", false, true}, // floors passed -> target
 		}
 
-		for version, expectedManifests := range testCases {
+		for version, w := range cases {
 			resp := syncerRequest(h, version, group.ID, true)
-			assert.Len(t, resp.Apps[0].UpdateCheck.Manifests, expectedManifests)
-			// Verify last is target
-			last := resp.Apps[0].UpdateCheck.Manifests[expectedManifests-1]
-			assert.True(t, last.IsTarget)
-			// Verify others are floors
-			for i := 0; i < expectedManifests-1; i++ {
-				assert.True(t, resp.Apps[0].UpdateCheck.Manifests[i].IsFloor)
-			}
+			manifests := resp.Apps[0].UpdateCheck.Manifests
+			require.Len(t, manifests, 1, "reported version %s should get one manifest", version)
+			assert.Equal(t, w.version, manifests[0].Version)
+			assert.Equal(t, w.isFloor, manifests[0].IsFloor)
+			assert.Equal(t, w.isTarget, manifests[0].IsTarget)
 		}
 	})
 
@@ -162,20 +166,22 @@ func TestFloorUpdateScenarios(t *testing.T) {
 		resp = doOmahaRequest(t, h, flatcarAppID, "12500.0.0", "client-high", group.ID, "10.0.0.3", false, true, nil)
 		checkOmahaUpdateResponse(t, resp, "13000.0.0", "flatcar_13000.0.0.gz", "http://sample.url/13000.0.0", omahaSpec.UpdateOK)
 
-		// Syncer should get all manifests with correct flags
+		// Syncer walks one flagged package at a time.
+		// At 10000.0.0 the next step is the lowest floor 11000.0.0 (floor, not target).
 		resp = syncerRequest(h, "10000.0.0", group.ID, true)
-		require.Len(t, resp.Apps[0].UpdateCheck.Manifests, 3)
-
-		// First two are floors only
+		require.Len(t, resp.Apps[0].UpdateCheck.Manifests, 1)
+		assert.Equal(t, "11000.0.0", resp.Apps[0].UpdateCheck.Manifests[0].Version)
 		assert.True(t, resp.Apps[0].UpdateCheck.Manifests[0].IsFloor)
 		assert.False(t, resp.Apps[0].UpdateCheck.Manifests[0].IsTarget)
-		assert.True(t, resp.Apps[0].UpdateCheck.Manifests[1].IsFloor)
-		assert.False(t, resp.Apps[0].UpdateCheck.Manifests[1].IsTarget)
 
-		// Last one is BOTH floor AND target
-		assert.True(t, resp.Apps[0].UpdateCheck.Manifests[2].IsFloor)
-		assert.True(t, resp.Apps[0].UpdateCheck.Manifests[2].IsTarget)
-		assert.Equal(t, "Critical mandatory version", resp.Apps[0].UpdateCheck.Manifests[2].FloorReason)
+		// Past the plain floors, the next step is the target 13000.0.0, which is ALSO
+		// a floor, so it carries BOTH flags.
+		resp = syncerRequest(h, "12000.0.0", group.ID, true)
+		require.Len(t, resp.Apps[0].UpdateCheck.Manifests, 1)
+		assert.Equal(t, "13000.0.0", resp.Apps[0].UpdateCheck.Manifests[0].Version)
+		assert.True(t, resp.Apps[0].UpdateCheck.Manifests[0].IsFloor)
+		assert.True(t, resp.Apps[0].UpdateCheck.Manifests[0].IsTarget)
+		assert.Equal(t, "Critical mandatory version", resp.Apps[0].UpdateCheck.Manifests[0].FloorReason)
 	})
 }
 
@@ -268,10 +274,13 @@ func TestLegacySyncerBlockedWithFloors(t *testing.T) {
 		err = xml.NewDecoder(respBuf).Decode(&resp)
 		require.NoError(t, err)
 
-		// Should get update with multiple manifests
+		// Gets a single flagged package: the lowest floor above its version.
 		require.Len(t, resp.Apps, 1)
 		require.NotNil(t, resp.Apps[0].UpdateCheck)
 		assert.Equal(t, omahaSpec.UpdateOK, resp.Apps[0].UpdateCheck.Status)
-		assert.Len(t, resp.Apps[0].UpdateCheck.Manifests, 3) // 2 floors + 1 target
+		require.Len(t, resp.Apps[0].UpdateCheck.Manifests, 1)
+		assert.Equal(t, "1000.0.0", resp.Apps[0].UpdateCheck.Manifests[0].Version)
+		assert.True(t, resp.Apps[0].UpdateCheck.Manifests[0].IsFloor)
+		assert.False(t, resp.Apps[0].UpdateCheck.Manifests[0].IsTarget)
 	})
 }

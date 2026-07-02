@@ -165,8 +165,9 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 
 		if reqApp.UpdateCheck != nil {
 			if isSyncerClient(omahaReq) {
-				// Syncer - get all packages
-				packages, err := h.crAPI.GetUpdatePackagesForSyncer(inst, instApp)
+				// Syncer - get the single next package to mirror (the lowest floor,
+				// or the target once all floors have been passed).
+				pkg, err := h.crAPI.GetNextPackageForSyncer(inst, instApp)
 				if err != nil {
 					if err == api.ErrNoUpdatePackageAvailable || err == api.ErrUpdateGrantFailed {
 						respApp.AddUpdateCheck(omahaSpec.NoUpdate)
@@ -177,34 +178,21 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 					continue
 				}
 
-				// Check if we got any packages
-				if len(packages) == 0 {
+				// Critical safety rule: a floor-unaware syncer must not walk past a
+				// floor it cannot record. If the next package is a floor and the syncer
+				// did not advertise floor support, block it.
+				if pkg.IsFloor && !reqApp.MultiManifestOK {
+					l.Warn().Str("instanceID", reqApp.MachineID).Str("version", pkg.Version).
+						Msg("Floor-unaware syncer blocked due to floor requirement")
 					respApp.AddUpdateCheck(omahaSpec.NoUpdate)
 					continue
 				}
 
-				// Critical safety rule: old syncers without MultiManifestOK cannot skip floors
-				// Check if ANY package is a floor (including the target which might also be a floor)
-				hasFloors := false
-				for _, pkg := range packages {
-					if pkg.IsFloor {
-						hasFloors = true
-						break
-					}
-				}
-
-				if hasFloors && !reqApp.MultiManifestOK {
-					l.Warn().Str("instanceID", reqApp.MachineID).
-						Int("packageCount", len(packages)).
-						Msg("Syncer without multi-manifest support blocked due to floor requirements")
-					respApp.AddUpdateCheck(omahaSpec.NoUpdate)
-					continue
-				}
-
-				// Either multi-manifest capable syncer or no floors exist
-				h.prepareMultiManifestUpdateCheck(respApp, packages)
+				// Single flagged manifest (is_floor / is_target) so the syncer records
+				// floors and only advances its channel on the target.
+				h.prepareSyncerUpdateCheck(respApp, pkg)
 			} else {
-				// Regular client - get single package
+				// Regular client - get single package (no floor flags emitted)
 				pkg, err := h.crAPI.GetUpdatePackage(inst, instApp)
 				if err != nil {
 					if err == api.ErrNoUpdatePackageAvailable || err == api.ErrUpdateGrantFailed {
@@ -346,46 +334,40 @@ func (h *Handler) prepareUpdateCheck(appResp *omahaSpec.AppResponse, pkg *api.Pa
 	updateCheck.AddURL(pkg.URL)
 }
 
-// prepareMultiManifestUpdateCheck creates a response with multiple manifests
-// Each package gets one manifest with appropriate floor/target metadata based on its properties
-func (h *Handler) prepareMultiManifestUpdateCheck(appResp *omahaSpec.AppResponse, packages []*api.Package) {
-	if len(packages) == 0 {
+// prepareSyncerUpdateCheck builds a single-manifest response for a syncer, carrying
+// the is_floor/is_target flags so the syncer records floors and advances its channel
+// only on the target. These flags are emitted only on the syncer path, never to
+// regular update_engine clients.
+func (h *Handler) prepareSyncerUpdateCheck(appResp *omahaSpec.AppResponse, pkg *api.Package) {
+	if pkg == nil {
 		appResp.AddUpdateCheck(omahaSpec.NoUpdate)
 		return
 	}
 
-	// The last package in the array is the target (by convention from GetUpdatePackagesForSyncer)
-	targetPkg := packages[len(packages)-1]
+	manifest := &omahaSpec.Manifest{Version: pkg.Version}
 
-	updateCheck := appResp.AddUpdateCheck(omahaSpec.UpdateOK)
-	updateCheck.AddURL(targetPkg.URL)
-
-	// Create manifest for each package with appropriate flags
-	for i, pkg := range packages {
-		manifest := updateCheck.AddManifest(pkg.Version)
-
-		// Set IsFloor if package has floor metadata
-		if pkg.IsFloor {
-			manifest.IsFloor = true
-			if pkg.FloorReason.Valid {
-				manifest.FloorReason = pkg.FloorReason.String
-			} else {
-				manifest.FloorReason = "Required intermediate version"
-			}
-		}
-
-		// Set IsTarget if this is the last package (the target)
-		// Note: A package can have both IsFloor and IsTarget flags
-		if i == len(packages)-1 {
-			manifest.IsTarget = true
-		}
-
-		h.addPackageToManifest(manifest, pkg)
-		if err := h.addFlatcarActionToManifest(manifest, pkg); err != nil {
-			appResp.UpdateCheck.Status = omahaSpec.UpdateInternalError
-			return
+	if pkg.IsFloor {
+		manifest.IsFloor = true
+		if pkg.FloorReason.Valid {
+			manifest.FloorReason = pkg.FloorReason.String
+		} else {
+			manifest.FloorReason = "Required intermediate version"
 		}
 	}
+	if pkg.IsTarget {
+		manifest.IsTarget = true
+	}
+
+	h.addPackageToManifest(manifest, pkg)
+	if err := h.addFlatcarActionToManifest(manifest, pkg); err != nil {
+		appResp.AddUpdateCheck(omahaSpec.UpdateInternalError)
+		return
+	}
+
+	updateCheck := appResp.AddUpdateCheck(omahaSpec.UpdateOK)
+	updateCheck.AddManifest(manifest.Version)
+	updateCheck.Manifests[0] = manifest
+	updateCheck.AddURL(pkg.URL)
 }
 
 func trace(v interface{}) {

@@ -75,6 +75,10 @@ type Package struct {
 	// Floor metadata (populated when querying floor packages)
 	IsFloor     bool        `db:"is_floor" json:"is_floor,omitempty"`
 	FloorReason null.String `db:"floor_reason" json:"floor_reason"`
+
+	// IsTarget is set at request time (not persisted) when this package is the
+	// channel's current target. A package can be both a floor and the target.
+	IsTarget bool `db:"-" json:"is_target,omitempty"`
 }
 
 // ChannelPackageFloor represents a floor package for a specific channel
@@ -382,7 +386,7 @@ func (api *API) DeletePackage(pkgID string) error {
 		var exists bool
 		var isFloor bool
 		err = api.db.QueryRow(`
-			SELECT 
+			SELECT
 				EXISTS(SELECT 1 FROM package WHERE id = $1),
 				EXISTS(SELECT 1 FROM channel_package_floors WHERE package_id = $1)
 		`, pkgID).Scan(&exists, &isFloor)

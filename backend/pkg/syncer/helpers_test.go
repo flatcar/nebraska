@@ -23,30 +23,22 @@ func setupSyncerTest(t *testing.T) (*Syncer, *api.API, *api.Group, *api.Channel)
 	return syncer, a, tGroup, tChannel
 }
 
-// createMultiManifestUpdate creates a standard multi-manifest update for testing
-func createMultiManifestUpdate(versions ...string) *omaha.UpdateResponse {
-	if len(versions) == 0 {
-		versions = []string{"1000.0.0", "2000.0.0", "3000.0.0"}
+// createSyncerUpdate builds a single flagged-manifest response as the upstream now
+// serves it to a syncer: one package per response, tagged is_floor/is_target.
+func createSyncerUpdate(version string, isFloor, isTarget bool) *omaha.UpdateResponse {
+	m := &omaha.Manifest{
+		Version:  version,
+		Packages: []*omaha.Package{{Name: "flatcar-" + version + ".gz", SHA1: "hash-" + version, Size: 1000}},
+		Actions:  []*omaha.Action{{Event: "postinstall", SHA256: "dGVzdHNoYTI1Ng=="}},
+		IsFloor:  isFloor,
+		IsTarget: isTarget,
 	}
-
-	manifests := make([]*omaha.Manifest, len(versions))
-	for i, v := range versions {
-		isFloor := i < len(versions)-1 // All but last are floors
-		manifest := &omaha.Manifest{
-			Version:  v,
-			Packages: []*omaha.Package{{Name: "flatcar-" + v + ".gz", SHA1: "hash" + v[:4], Size: uint64(i+1) * 1000}},
-			Actions:  []*omaha.Action{{Event: "postinstall", SHA256: "dGVzdHNoYTI1Ng=="}},
-			IsFloor:  isFloor,
-		}
-		if isFloor {
-			manifest.FloorReason = "Floor " + v
-		}
-		manifests[i] = manifest
+	if isFloor {
+		m.FloorReason = "Floor " + version
 	}
-
 	return &omaha.UpdateResponse{
 		Status:    "ok",
 		URLs:      []*omaha.URL{{CodeBase: "https://example.com"}},
-		Manifests: manifests,
+		Manifests: []*omaha.Manifest{m},
 	}
 }
