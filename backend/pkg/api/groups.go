@@ -757,9 +757,9 @@ func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (m
 	queryWg.Go(func() error {
 		// active instance without instance_status_history status as 4
 
-		instancesWithoutStatusQuery := fmt.Sprintf(`with time_series as ( select * from generate_series( now() - interval '%[2]s', now(), interval '%[3]s' ) as ts ), instances as ( select ia.instance_id, case when last_update_granted_ts is not null then last_update_granted_ts else ia.created_ts end, ia."version" from instance_application ia left join ( select * from instance_status_history where group_id = '%[1]s' and created_ts >= now() - interval '%[4]s' and status = 4 ) ish on ia.instance_id = ish.instance_id where (ia."group_id" = '%[1]s') and last_check_for_updates >= now() - interval '%[2]s' and ( ia.instance_id is null or ia.instance_id not like '{________-____-____-____-____________}' ) and ia.version not like '%%nightly%%' and ish.instance_id is null ) select ts, ( case when version is null then '' else version end ), sum( case when version is not null then 1 else 0 end ) total from ( select * from time_series left join ( select * from instances ) _ on created_ts <= time_series.ts ) as _ group by 1, 2 order by ts desc;`, groupID, durationString, interval, deadInstanceTimeSpan)
+		instancesWithoutStatusQuery := fmt.Sprintf(`with time_series as ( select * from generate_series( now() - interval '%[1]s', now(), interval '%[2]s' ) as ts ), instances as ( select ia.instance_id, case when last_update_granted_ts is not null then last_update_granted_ts else ia.created_ts end, ia."version" from instance_application ia left join ( select * from instance_status_history where group_id = $1 and created_ts >= now() - interval '%[3]s' and status = 4 ) ish on ia.instance_id = ish.instance_id where (ia."group_id" = $1) and last_check_for_updates >= now() - interval '%[1]s' and ( ia.instance_id is null or ia.instance_id not like '{________-____-____-____-____________}' ) and ia.version not like '%%nightly%%' and ish.instance_id is null ) select ts, ( case when version is null then '' else version end ), sum( case when version is not null then 1 else 0 end ) total from ( select * from time_series left join ( select * from instances ) _ on created_ts <= time_series.ts ) as _ group by 1, 2 order by ts desc;`, durationString, interval, deadInstanceTimeSpan)
 
-		rows, err := api.db.Queryx(instancesWithoutStatusQuery)
+		rows, err := api.db.Queryx(instancesWithoutStatusQuery, groupID)
 		if err != nil {
 			return err
 		}
@@ -780,10 +780,10 @@ func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (m
 		// active instances with instance_status_history in the interval
 
 		instanceWithStatusHistoryInInterval := fmt.Sprintf(`
-			select * from instance_status_history ish inner join (select instance_id from instance_application where ( "group_id" = '%[1]s' ) AND last_check_for_updates >= now() - interval '%[2]s' AND ( instance_id IS NULL OR instance_id NOT LIKE '{________-____-____-____-____________}')) ia on ish.instance_id = ia.instance_id  where ish.group_id = '%[1]s' and ish.status=4 and ish.created_ts >= now()-interval '%[2]s' order by ish.instance_id,ish.created_ts desc;
-			`, groupID, durationString)
+			select * from instance_status_history ish inner join (select instance_id from instance_application where ( "group_id" = $1 ) AND last_check_for_updates >= now() - interval '%[1]s' AND ( instance_id IS NULL OR instance_id NOT LIKE '{________-____-____-____-____________}')) ia on ish.instance_id = ia.instance_id  where ish.group_id = $1 and ish.status=4 and ish.created_ts >= now()-interval '%[1]s' order by ish.instance_id,ish.created_ts desc;
+			`, durationString)
 
-		statusHistoryRows, err := api.db.Queryx(instanceWithStatusHistoryInInterval)
+		statusHistoryRows, err := api.db.Queryx(instanceWithStatusHistoryInInterval, groupID)
 		if err != nil {
 			return err
 		}
@@ -808,13 +808,13 @@ func (api *API) GetGroupVersionCountTimeline(groupID string, duration string) (m
 	queryWg.Go(func() error {
 		// grouped version count for active instances that don't have instance_status_history in the interval
 		instancesWithoutStatusInIntervalQuery := fmt.Sprintf(
-			`with active_instance as (select instance_id from instance_application where group_id = '%[1]s' and last_check_for_updates >= now() - interval '%[2]s'  and( instance_id IS NULL OR instance_id NOT LIKE '{________-____-____-____-____________}')) ,
-			instance_status_interval as (select distinct instance_id from instance_status_history where instance_id in (select instance_id from active_instance) and status = 4 and created_ts >= now()-interval '%[2]s'),
+			`with active_instance as (select instance_id from instance_application where group_id = $1 and last_check_for_updates >= now() - interval '%[1]s'  and( instance_id IS NULL OR instance_id NOT LIKE '{________-____-____-____-____________}')) ,
+			instance_status_interval as (select distinct instance_id from instance_status_history where instance_id in (select instance_id from active_instance) and status = 4 and created_ts >= now()-interval '%[1]s'),
 			instance_status_to_process as (select ai.instance_id from active_instance ai left join instance_status_interval isi  on ai.instance_id = isi.instance_id where isi.instance_id is null)
-			select version as version, count(*) as count from (select distinct on (instance_id) instance_id,id,status,version,created_ts,application_id,group_id from instance_status_history where instance_id in (select instance_id from instance_status_to_process) and status=4 and created_ts >= now()-interval '%[3]s' order by instance_id,created_ts desc)_ group by version;`,
-			groupID, durationString, deadInstanceTimeSpan)
+			select version as version, count(*) as count from (select distinct on (instance_id) instance_id,id,status,version,created_ts,application_id,group_id from instance_status_history where instance_id in (select instance_id from instance_status_to_process) and status=4 and created_ts >= now()-interval '%[2]s' order by instance_id,created_ts desc)_ group by version;`,
+			durationString, deadInstanceTimeSpan)
 
-		versionAggRows, err := api.db.Queryx(instancesWithoutStatusInIntervalQuery)
+		versionAggRows, err := api.db.Queryx(instancesWithoutStatusInIntervalQuery, groupID)
 		if err != nil {
 			return err
 		}
