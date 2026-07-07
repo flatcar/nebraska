@@ -26,7 +26,7 @@ require (
 	github.com/rs/zerolog v1.35.1
 	github.com/rubenv/sql-migrate v1.8.1
 	github.com/stretchr/testify v1.11.1
-	github.com/tidwall/gjson v1.18.0
+	github.com/tidwall/gjson v1.19.0
 	golang.org/x/oauth2 v0.36.0
 	golang.org/x/sync v0.20.0
 	gopkg.in/guregu/null.v4 v4.0.0
