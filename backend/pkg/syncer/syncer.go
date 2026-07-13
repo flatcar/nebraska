@@ -405,11 +405,54 @@ func (s *Syncer) getOrCreatePackage(
 				Str("version", version).
 				Msg("existing package differs from upstream manifest; using stored package")
 		}
+		// When Nebraska hosts packages locally, the DB row alone doesn't guarantee the
+		// payload is still on disk (e.g. an out-of-band cleanup or a lost volume). Restore
+		// the hosted file(s) if missing, without recreating the row.
+		if err := s.rehostPackageFilesIfMissing(descriptor, manifest, update, pkg); err != nil {
+			return nil, err
+		}
 		return pkg, nil
 	}
 
 	// Package doesn't exist - create it
 	return s.createPackage(descriptor, manifest, update)
+}
+
+// rehostPackageFilesIfMissing re-downloads a locally-hosted package's payload (and
+// extra files) when Nebraska hosts packages but the hosted file has gone missing on
+// disk. It never touches the DB row, so it is safe to call for an already-recorded
+// package. It is a no-op when hosting is off, when the package is not hosted with the
+// syncer's local naming convention, or when the file is present.
+func (s *Syncer) rehostPackageFilesIfMissing(descriptor channelDescriptor, manifest *omaha.Manifest, update *omaha.UpdateResponse, pkg *api.Package) error {
+	if !s.hostPackages {
+		return nil
+	}
+	version := manifest.Version
+	// Only packages this syncer downloaded while hosting use this deterministic name;
+	// packages served from an upstream URL have no local file to restore.
+	if pkg.Filename.String != fmt.Sprintf("flatcar-%s-%s.gz", getArchString(descriptor.arch), version) {
+		return nil
+	}
+	// Present (nil) or an unexpected stat error: either way, don't re-download.
+	if _, err := os.Stat(filepath.Join(s.packagesPath, pkg.Filename.String)); !os.IsNotExist(err) {
+		return err
+	}
+	if len(manifest.Packages) == 0 {
+		return fmt.Errorf("manifest %s has no packages", version)
+	}
+	if len(update.URLs) == 0 {
+		return fmt.Errorf("manifest %s has no update URLs", version)
+	}
+	l.Warn().
+		Str("channel", descriptor.name).
+		Str("arch", descriptor.arch.String()).
+		Str("version", version).
+		Str("file", pkg.Filename.String).
+		Msg("hosted package file missing on disk; re-downloading")
+	if _, err := s.processExtraFiles(manifest, update, descriptor, version); err != nil {
+		return err
+	}
+	return s.downloadPackagePayload(manifest, update, manifest.Packages[0], pkg.Filename.String)
 }
 
 // verifyPackageIntegrity verifies that an existing package matches manifest data
@@ -449,6 +492,9 @@ func (s *Syncer) createPackage(
 	version := manifest.Version
 	if len(manifest.Packages) == 0 {
 		return nil, fmt.Errorf("manifest %s has no packages", version)
+	}
+	if len(update.URLs) == 0 {
+		return nil, fmt.Errorf("manifest %s has no update URLs", version)
 	}
 	omahaPkg := manifest.Packages[0]
 
