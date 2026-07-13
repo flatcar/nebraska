@@ -50,6 +50,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fixed `nebraska_application_instances_per_channel` counting instances that stopped checking in, and dropping instances whose group has no channel assigned. ([#1653](https://github.com/flatcar/nebraska/pull/1653))
 - Fixed instance statistics queries returning empty results on non-UTC database sessions by making timestamp literals timezone independent. ([#1682](https://github.com/flatcar/nebraska/pull/1682))
 - Fixed the syncer crashing the Nebraska process when an upstream Omaha response has no `<app>` or `<updatecheck>` element. ([#1410](https://github.com/flatcar/nebraska/pull/1410))
+- Fixed the syncer `Stop()` call possibly leaving the syncer goroutine blocked forever.
 
 ## [4.0.3] - 26/10/2026
 
