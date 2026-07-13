@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gopkg.in/guregu/null.v4"
 )
 
@@ -48,6 +49,83 @@ func TestGetUpdatePackage(t *testing.T) {
 
 	_, err = a.GetUpdatePackage(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1010.5.0+2016-05-27-1832"))
 	assert.Equal(t, ErrNoUpdatePackageAvailable, err, "Instance version is up to date.")
+}
+
+func TestGetNextPackageForSyncer_RespectsUpdatesDisabled(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	setup := setupFloors(t, a, "syncer-policy-disabled", []string{"2000.0.0"}, "3000.0.0")
+	setup.Group.PolicyUpdatesEnabled = false
+	require.NoError(t, a.UpdateGroup(setup.Group))
+
+	// Production syncers use brace-wrapped machine IDs, which are excluded from rollout
+	// statistics; use that shape so the test models real behavior.
+	instanceID := "{" + uuid.New().String() + "}"
+	_, err := a.GetNextPackageForSyncer(
+		Instance{ID: instanceID, IP: "10.0.0.1"},
+		NewInstanceApplication(setup.AppID, setup.Group.ID, "1000.0.0"),
+	)
+	assert.ErrorIs(t, err, ErrUpdatesDisabled)
+}
+
+// TestGetNextPackageForSyncer_PolicyGatedWalkWithoutGrant verifies a syncer walks the
+// floors one package per request under the group's rollout policy, is never granted an
+// update (a syncer is a fake, stats-excluded instance), does not throttle its own walk
+// even under safe mode, and is stopped mid-mirror when the policy later forbids updates.
+func TestGetNextPackageForSyncer_PolicyGatedWalkWithoutGrant(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	setup := setupFloors(t, a, "syncer-policy-walk", []string{"2000.0.0", "2500.0.0"}, "3000.0.0")
+	// A safe-mode group limited to a single update must NOT throttle the mirror itself,
+	// because the syncer's fake instance is excluded from rollout stats.
+	setup.Group.PolicySafeMode = true
+	setup.Group.PolicyMaxUpdatesPerPeriod = 1
+	require.NoError(t, a.UpdateGroup(setup.Group))
+
+	instanceID := "{" + uuid.New().String() + "}"
+	next := func(version string) (*Package, error) {
+		return a.GetNextPackageForSyncer(
+			Instance{ID: instanceID, IP: "10.0.0.1"},
+			NewInstanceApplication(setup.AppID, setup.Group.ID, version),
+		)
+	}
+
+	steps := []struct {
+		reported string
+		version  string
+		isFloor  bool
+		isTarget bool
+	}{
+		{"1000.0.0", "2000.0.0", true, false}, // below floors -> lowest floor
+		{"2000.0.0", "2500.0.0", true, false}, // between floors -> next floor
+		{"2500.0.0", "3000.0.0", false, true}, // floors passed -> target
+	}
+	for _, s := range steps {
+		pkg, err := next(s.reported)
+		require.NoError(t, err, "reported %s must not be throttled", s.reported)
+		assert.Equal(t, s.version, pkg.Version)
+		assert.Equal(t, s.isFloor, pkg.IsFloor)
+		assert.Equal(t, s.isTarget, pkg.IsTarget)
+	}
+
+	// No grant / rollout side effects: the group is never flipped into "rollout in
+	// progress" (that only happens on a grant, which we do not do for syncers).
+	group, err := a.GetGroup(setup.Group.ID)
+	require.NoError(t, err)
+	assert.False(t, group.RolloutInProgress, "a syncer must not change the group's rollout state")
+
+	// At the target the walk terminates.
+	_, err = next("3000.0.0")
+	assert.ErrorIs(t, err, ErrNoUpdatePackageAvailable)
+
+	// Disabling updates mid-mirror stops further syncing: policy is enforced on every
+	// request, not just the first.
+	setup.Group.PolicyUpdatesEnabled = false
+	require.NoError(t, a.UpdateGroup(setup.Group))
+	_, err = next("2000.0.0")
+	assert.ErrorIs(t, err, ErrUpdatesDisabled)
 }
 
 func TestGetUpdatePackage_GroupNoChannel(t *testing.T) {

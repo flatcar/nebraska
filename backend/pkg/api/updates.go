@@ -196,10 +196,12 @@ func (api *API) GetUpdatePackage(inst Instance, instApp InstanceApplication) (*P
 // GetNextPackageForSyncer returns the single next package a syncer should mirror:
 // the lowest floor above the syncer's reported version (with IsFloor set), or the
 // channel target once all floors have been passed (with IsTarget set; a package can
-// be both). It is stateless - no grant, no rollout policy - so a syncer walks the
-// floors in order and eventually reaches the target without being throttled by group
-// rollout policy. Returns ErrNoUpdatePackageAvailable when the syncer is already at or
-// past the target.
+// be both). Every request is gated by the group's rollout policy (updates enabled,
+// office hours, and the group's update limits) so a mirror honors the same policy as
+// regular clients. No update grant is recorded and rollout state is left untouched: a
+// syncer is a fake, stats-excluded instance, so a grant would be cosmetic and would
+// only reintroduce grant-reuse and stuck-rollout bookkeeping. Returns
+// ErrNoUpdatePackageAvailable when the syncer is already at or past the target.
 func (api *API) GetNextPackageForSyncer(inst Instance, instApp InstanceApplication) (*Package, error) {
 	instance, err := api.RegisterInstance(inst, instApp)
 	if err != nil {
@@ -254,12 +256,25 @@ func (api *API) GetNextPackageForSyncer(inst Instance, instApp InstanceApplicati
 	// both a floor and the target.
 	nextPkg.IsTarget = nextPkg.ID == group.Channel.Package.ID
 
-	// Safety check: a floor/target must never be blacklisted for its own channel.
-	// Write-time constraints forbid this; we guard against data inconsistency.
-	if slices.Contains(nextPkg.ChannelsBlacklist, group.Channel.ID) {
-		l.Error().Str("package", nextPkg.Version).Str("channel", group.Channel.ID).
-			Msg("Package is blacklisted for its own channel - data inconsistency!")
-		return nil, ErrNoUpdatePackageAvailable
+	// Safety check: no package needed by this walk may be blacklisted for its own
+	// channel. Write-time constraints forbid this; guard against data inconsistency.
+	for _, pkg := range packages {
+		if slices.Contains(pkg.ChannelsBlacklist, group.Channel.ID) {
+			l.Error().Str("package", pkg.Version).Str("channel", group.Channel.ID).
+				Msg("Package is blacklisted for its own channel - data inconsistency!")
+			return nil, ErrNoUpdatePackageAvailable
+		}
+	}
+
+	// Mirror the upstream group's rollout policy on every request (updates enabled,
+	// office hours, and the group's update limits). We deliberately do NOT grant the
+	// update or touch rollout state: the syncer is a fake instance excluded from
+	// rollout stats, so a grant would be cosmetic and would only reintroduce
+	// grant-reuse and stuck-rollout bookkeeping. The walk itself is not throttled
+	// because a fake instance never counts toward the group's granted/in-progress
+	// totals.
+	if err := api.enforceRolloutPolicy(instance, group); err != nil {
+		return nil, err
 	}
 
 	return nextPkg, nil

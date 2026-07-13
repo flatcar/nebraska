@@ -29,6 +29,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fixed package blacklist changes not appearing in UI immediately after save
 - Fixed the syncer crashing the Nebraska process when the upstream server returns a malformed or empty Omaha response
 - Fixed mandatory floor packages being skipped when an instance reports a pre-release of the floor's version
+- Changed syncers to mirror one flagged floor or target package per request while preserving upstream rollout-policy enforcement across the walk
+- Removed the obsolete `NEBRASKA_MAX_FLOORS_PER_RESPONSE` configuration variable
+- Fixed the syncer `Stop()` path potentially leaving its `Start()` goroutine blocked
 
 ## [3.0.0] - 28/11/2025
 

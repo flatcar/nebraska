@@ -27,7 +27,8 @@ Syncers mirror an upstream Nebraska. They receive updates the same way as regula
 - The syncer keeps a **walk cursor** (the version it reports upstream) separate from its channel: an intermediate floor advances only the cursor and is recorded locally, while the **channel advances directly to the target** and never points at an intermediate floor.
 - **Floor-capable syncers** advertise `multi_manifest_ok=true`. A floor-unaware syncer that omits it is **blocked with `NoUpdate`** when a floor lies ahead, so it cannot walk past a floor it cannot record.
 - Syncers are identified by `InstallSource="scheduler"` in the Omaha request.
-- The syncer update lookup is stateless: no update grant and no rollout-policy evaluation, so a mirror is never throttled and always makes forward progress.
+- Every syncer request is gated by the upstream group's rollout policy (updates enabled, office hours, and the group's update limits), so a mirror honors the same policy as regular clients. No update grant is recorded and rollout state is left untouched: a syncer is a fake, stats-excluded instance, so a grant would be cosmetic. The walk is not throttled by the group's per-period/concurrency limits, because a fake instance never counts toward those totals.
+- During a Nebraska-to-Nebraska upgrade, upgrade downstream syncers before upstreams. `multi_manifest_ok` remains the floor-safety gate (a syncer that does not advertise it is blocked when a floor lies ahead), but a downstream on a version that predates the single-package walk will advertise it and still mishandle a floor, so upgrade order is what guarantees safety.
 
 ### Safety Rules & Constraints
 
@@ -38,9 +39,10 @@ Syncers mirror an upstream Nebraska. They receive updates the same way as regula
 
 #### Syncer-specific Constraints
 1. **Ordered floor recording**: a floor is recorded before the walk cursor advances, so a failure retries the same floor and never skips it
-2. **Package Verification**: existing packages verified for hash/size match before reuse
-3. **Download Cleanup**: failed downloads cleaned up to prevent orphaned files
-4. **Legacy Syncer Safety**: floor-unaware syncers (no `multi_manifest_ok`) blocked when a floor lies ahead
+2. **Policy without grant**: every request is gated by the group's rollout policy, but no update grant or rollout-state change is recorded for the fake syncer instance
+3. **Package Verification**: existing packages verified for hash/size match before reuse
+4. **Download Cleanup**: failed downloads cleaned up to prevent orphaned files
+5. **Legacy Syncer Safety**: floor-unaware syncers (no `multi_manifest_ok`) blocked when a floor lies ahead
 
 ### API Endpoints
 
