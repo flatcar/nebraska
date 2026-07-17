@@ -1,5 +1,3 @@
-import cancelIcon from '@iconify/icons-mdi/cancel';
-import cubeOutline from '@iconify/icons-mdi/cube-outline';
 import { InlineIcon } from '@iconify/react';
 import Grid from '@mui/material/Grid';
 import ListItem from '@mui/material/ListItem';
@@ -14,6 +12,8 @@ import _ from 'underscore';
 import { Channel, Package } from '../../api/apiDataTypes';
 import { makeLocaleTime } from '../../i18n/dateTime';
 import flatcarIcon from '../../icons/flatcar-logo.json';
+import cancelIcon from '../../icons/mdi/cancel.json';
+import cubeOutline from '../../icons/mdi/cube-outline.json';
 import { applicationsStore } from '../../stores/Stores';
 import { ARCHES, cleanSemverVersion } from '../../utils/helpers';
 import ChannelAvatar from '../Channels/ChannelAvatar';
