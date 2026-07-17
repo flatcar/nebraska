@@ -1,7 +1,8 @@
-import alertCircleOutline from '@iconify/icons-mdi/alert-circle-outline';
-import alertOutline from '@iconify/icons-mdi/alert-outline';
-import checkCircleOutline from '@iconify/icons-mdi/check-circle-outline';
 import { Icon, IconifyIcon } from '@iconify/react';
+
+import alertCircleOutline from '../../icons/mdi/alert-circle-outline.json';
+import alertOutline from '../../icons/mdi/alert-outline.json';
+import checkCircleOutline from '../../icons/mdi/check-circle-outline.json';
 
 export interface ActivityItemIconProps {
   severityName?: string;

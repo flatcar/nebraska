@@ -1,5 +1,3 @@
-import infoIcon from '@iconify/icons-mdi/information-circle-outline';
-import searchIcon from '@iconify/icons-mdi/search';
 import { Icon } from '@iconify/react';
 import { TableContainer, Theme } from '@mui/material';
 import Box from '@mui/material/Box';
@@ -23,6 +21,8 @@ import _ from 'underscore';
 
 import API from '../../api/API';
 import { Application, Group, Instance, Instances } from '../../api/apiDataTypes';
+import infoIcon from '../../icons/mdi/information-circle-outline.json';
+import searchIcon from '../../icons/mdi/search.json';
 import {
   getInstanceStatus,
   getKeyByValue,

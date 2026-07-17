@@ -1,4 +1,3 @@
-import addIcon from '@iconify/icons-mdi/plus';
 import { Icon } from '@iconify/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -12,6 +11,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { File, Package } from '../../api/apiDataTypes';
+import addIcon from '../../icons/mdi/plus.json';
 import ListItem from '../common/ListItem';
 import MoreMenu from '../common/MoreMenu';
 
