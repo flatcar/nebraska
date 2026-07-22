@@ -292,6 +292,43 @@ func TestGetVersionCountTimeline(t *testing.T) {
 	assert.Equal(t, false, isCache)
 }
 
+// TestGetVersionCountTimelineInjection verifies groupID is bound as a parameter
+// and a malicious value cannot leak instances.
+func TestGetVersionCountTimelineInjection(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := a.AddGroup(&Group{Name: "g1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+
+	id := uuid.New().String()
+	_, _ = a.RegisterInstance(Instance{ID: id, IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, "4.0.0"))
+	inst, err := a.GetInstance(id, tApp.ID)
+	assert.NoError(t, err)
+	_ = a.grantUpdate(inst, "4.0.0")
+	_ = a.updateInstanceStatus(id, tApp.ID, InstanceStatusComplete)
+
+	total := func(m map[time.Time]VersionCountMap) (n uint64) {
+		for _, vm := range m {
+			for _, c := range vm {
+				n += c
+			}
+		}
+		return
+	}
+
+	// Baseline: the instance is visible for its real group.
+	legit, _, err := a.GetGroupVersionCountTimeline(tGroup.ID, "1h")
+	assert.NoError(t, err)
+	assert.Equal(t, uint64(1), total(legit))
+
+	leaked, _, _ := a.GetGroupVersionCountTimeline("00000000-0000-0000-0000-000000000000' OR '1'='1", "1h")
+	assert.Zero(t, total(leaked), "malicious groupID must not leak instances")
+}
+
 func TestGetStatusCountTimeline(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
