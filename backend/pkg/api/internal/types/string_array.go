@@ -1,6 +1,6 @@
 // This file was taken from the pq project and is licensed under the terms of the MIT license: https://github.com/lib/pq
 // Copyright (c) 2011-2013, 'pq' Contributors Portions Copyright (C) 2011 Blake Mizerany
-package api
+package types
 
 import (
 	"bytes"
