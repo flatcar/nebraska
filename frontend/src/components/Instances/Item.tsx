@@ -1,5 +1,3 @@
-import chevronDown from '@iconify/icons-mdi/chevron-down';
-import chevronUp from '@iconify/icons-mdi/chevron-up';
 import { InlineIcon } from '@iconify/react';
 import { Box } from '@mui/material';
 import Collapse from '@mui/material/Collapse';
@@ -16,6 +14,8 @@ import _ from 'underscore';
 import API from '../../api/API';
 import { Instance } from '../../api/apiDataTypes';
 import { makeLocaleTime } from '../../i18n/dateTime';
+import chevronDown from '../../icons/mdi/chevron-down.json';
+import chevronUp from '../../icons/mdi/chevron-up.json';
 import { cleanSemverVersion } from '../../utils/helpers';
 import StatusHistoryContainer from './StatusHistoryContainer';
 

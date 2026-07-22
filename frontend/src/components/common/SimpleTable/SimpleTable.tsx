@@ -1,4 +1,3 @@
-import squareIcon from '@iconify/icons-mdi/square';
 import { InlineIcon } from '@iconify/react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -9,6 +8,7 @@ import TableRow from '@mui/material/TableRow';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import squareIcon from '../../../icons/mdi/square.json';
 import Empty from '../EmptyContent/EmptyContent';
 
 interface SimpleTableProps {
