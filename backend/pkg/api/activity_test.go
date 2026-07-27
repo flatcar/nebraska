@@ -12,14 +12,15 @@ import (
 func TestGetActivity(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
 	tVersion := "12.1.0"
-	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: tVersion, ApplicationID: tApp.ID})
-	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
-	tGroup2, _ := a.AddGroup(&Group{Name: "group2", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: tVersion, ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tGroup2, _ := as.AddGroup(&Group{Name: "group2", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	tInstance, _ := a.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
 	tInstance2, _ := a.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.2"}, NewInstanceApplication(tApp.ID, tGroup2.ID, "1.0.0"))
 	tFakeInstance, _ := a.RegisterInstance(Instance{ID: "{" + uuid.New().String() + "}", IP: "10.0.0.2"}, NewInstanceApplication(tApp.ID, tGroup2.ID, "1.0.0"))
@@ -90,36 +91,34 @@ func TestGetActivity(t *testing.T) {
 	assert.Equal(t, 3, totalCount)
 }
 
-func TestActivityRouting(t *testing.T) {
+// TestRuntimeActivityRouting verifies that the runtime-side activity writer
+// writes only to the runtime `activity` table and never leaks into `admin_activity`.
+func TestRuntimeActivityRouting(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
 	tVersion := "12.1.0"
-	tTeam, _ := a.AddTeam(&Team{Name: "test_team_routing"})
-	tApp, _ := a.AddApp(&Application{Name: "test_app_routing", TeamID: tTeam.ID})
-	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: tVersion, ApplicationID: tApp.ID})
-	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel_routing", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := a.AddGroup(&Group{Name: "group_routing", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&Team{Name: "test_team_routing"})
+	tApp, _ := as.AddApp(&Application{Name: "test_app_routing", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: tVersion, ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel_routing", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&Group{Name: "group_routing", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
 	_ = a.newGroupActivityEntry(activityRolloutStarted, activitySuccess, tVersion, tApp.ID, tGroup.ID)
-	_ = a.newChannelActivityEntry(activityChannelPackageUpdated, activityInfo, tVersion, tApp.ID, tChannel.ID)
 
-	var runtimeCount, adminCount, runtimeAdminLeak, adminRuntimeLeak int
+	var runtimeCount, adminCount, runtimeAdminLeak int
 	_ = a.db.QueryRow("select count(*) from activity where application_id = $1", tApp.ID).Scan(&runtimeCount)
 	_ = a.db.QueryRow("select count(*) from admin_activity where application_id = $1", tApp.ID).Scan(&adminCount)
 	_ = a.db.QueryRow("select count(*) from activity where class = 6 and application_id = $1", tApp.ID).Scan(&runtimeAdminLeak)
-	_ = a.db.QueryRow("select count(*) from admin_activity where class <> 6 and application_id = $1", tApp.ID).Scan(&adminRuntimeLeak)
-	assert.Equal(t, 1, runtimeCount)
-	assert.Equal(t, 1, adminCount)
-	assert.Equal(t, 0, runtimeAdminLeak)
-	assert.Equal(t, 0, adminRuntimeLeak)
+	assert.Equal(t, 1, runtimeCount, "runtime writer must write to the activity table")
+	assert.Equal(t, 0, adminCount, "runtime writer must not write to admin_activity")
+	assert.Equal(t, 0, runtimeAdminLeak, "activity must not hold class 6 (admin) rows")
 
 	entries, err := a.GetActivity(tTeam.ID, ActivityQueryParams{AppID: tApp.ID})
 	assert.NoError(t, err)
-	assert.Equal(t, 2, len(entries))
-
-	classes := []int{entries[0].Class, entries[1].Class}
-	assert.ElementsMatch(t, []int{activityRolloutStarted, activityChannelPackageUpdated}, classes)
+	assert.Equal(t, 1, len(entries))
+	assert.Equal(t, activityRolloutStarted, entries[0].Class)
 
 	assert.True(t, a.HasRecentRuntimeActivity(activityRolloutStarted, ActivityQueryParams{AppID: tApp.ID, Version: tVersion, GroupID: tGroup.ID}))
 }

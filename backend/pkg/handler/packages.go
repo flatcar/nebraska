@@ -60,7 +60,7 @@ func (h *Handler) CreatePackage(ctx echo.Context, appIDorProductID string) error
 
 	pkg := packageFromRequest(appID, request.Arch, request.ChannelsBlacklist, request.Description, request.Filename, request.Hash, request.Size, request.Url, request.Version, request.Type, request.FlatcarAction, "", request.ExtraFiles)
 
-	pkg, err = h.db.AddPackage(pkg)
+	pkg, err = h.admin.AddPackage(pkg)
 	if err != nil {
 		l.Error().Err(err).Msgf("addPackage - adding package %v", request)
 		return ctx.NoContent(http.StatusInternalServerError)
@@ -117,7 +117,7 @@ func (h *Handler) UpdatePackage(ctx echo.Context, appIDorProductID string, packa
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	err = h.db.UpdatePackage(pkg)
+	err = h.admin.UpdatePackage(pkg)
 	if err != nil {
 		l.Error().Err(err).Msgf("updatePackage - updating package %+v", request)
 		return ctx.NoContent(http.StatusInternalServerError)
@@ -143,7 +143,7 @@ func (h *Handler) DeletePackage(ctx echo.Context, _ string, packageID string) er
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	err = h.db.DeletePackage(packageID)
+	err = h.admin.DeletePackage(packageID)
 	if err != nil {
 		l.Error().Err(err).Str("packageID", packageID).Msg("deletePackage")
 		return ctx.NoContent(http.StatusInternalServerError)
@@ -290,7 +290,7 @@ func (h *Handler) SetChannelFloor(ctx echo.Context, channelID string, packageID 
 	}
 
 	// Use AddChannelPackageFloor which already handles upsert via ON CONFLICT
-	if err := h.db.AddChannelPackageFloor(channelID, packageID, floorReason); err != nil {
+	if err := h.admin.AddChannelPackageFloor(channelID, packageID, floorReason); err != nil {
 		switch err {
 		case api.ErrInvalidPackage:
 			return ctx.NoContent(http.StatusNotFound)
@@ -319,7 +319,7 @@ func (h *Handler) SetChannelFloor(ctx echo.Context, channelID string, packageID 
 func (h *Handler) RemoveChannelFloor(ctx echo.Context, channelID string, packageID string) error {
 	l := loggerWithUsername(l, ctx)
 
-	if err := h.db.RemoveChannelPackageFloor(channelID, packageID); err != nil {
+	if err := h.admin.RemoveChannelPackageFloor(channelID, packageID); err != nil {
 		if err == api.ErrNoRowsAffected {
 			return ctx.NoContent(http.StatusNotFound)
 		}

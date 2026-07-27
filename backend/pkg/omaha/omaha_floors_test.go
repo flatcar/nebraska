@@ -16,6 +16,7 @@ func TestFloorUpdateScenarios(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
 	h := NewHandler(a)
+	as := adminSvc(a)
 
 	// Helper for syncer requests
 	syncerRequest := func(h *Handler, version, group string, multiManifestOK bool) *omahaSpec.Response {
@@ -146,7 +147,7 @@ func TestFloorUpdateScenarios(t *testing.T) {
 		require.Len(t, pkgs, 3)
 
 		// Mark the target as ALSO being a floor
-		err := a.AddChannelPackageFloor(group.ChannelID.String, pkgs[2].ID,
+		err := as.AddChannelPackageFloor(group.ChannelID.String, pkgs[2].ID,
 			null.StringFrom("Critical mandatory version"))
 		require.NoError(t, err)
 

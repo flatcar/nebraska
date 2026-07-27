@@ -1,10 +1,15 @@
 package types
 
 import (
+	"errors"
 	"time"
 
 	"gopkg.in/guregu/null.v4"
 )
+
+// ErrInvalidApplicationOrGroup indicates that the application or group id
+// provided are not valid or related to each other.
+var ErrInvalidApplicationOrGroup = errors.New("nebraska: invalid application or group")
 
 // Application represents a Nebraska application instance.
 type Application struct {

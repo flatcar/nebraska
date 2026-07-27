@@ -12,14 +12,15 @@ import (
 func TestAddGroup(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
-	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tApp2, _ := a.AddApp(&Application{Name: "test_app2", TeamID: tTeam.ID})
-	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tPkg2, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp2.ID})
-	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tChannel2, _ := a.AddChannel(&Channel{Name: "test_channel2", Color: "yellow", ApplicationID: tApp2.ID, PackageID: null.StringFrom(tPkg2.ID)})
+	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tApp2, _ := as.AddApp(&Application{Name: "test_app2", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tPkg2, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp2.ID})
+	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tChannel2, _ := as.AddChannel(&Channel{Name: "test_channel2", Color: "yellow", ApplicationID: tApp2.ID, PackageID: null.StringFrom(tPkg2.ID)})
 
 	group := &Group{
 		Name:                      "group1",
@@ -32,7 +33,7 @@ func TestAddGroup(t *testing.T) {
 		PolicyMaxUpdatesPerPeriod: 2,
 		PolicyUpdateTimeout:       "60 minutes",
 	}
-	group, err := a.AddGroup(group)
+	group, err := as.AddGroup(group)
 	assert.NoError(t, err)
 	assert.Equal(t, true, group.PolicyUpdatesEnabled)
 
@@ -53,27 +54,28 @@ func TestAddGroup(t *testing.T) {
 	assert.Equal(t, tChannel.Name, groupX.Channel.Name)
 	assert.Equal(t, tPkg.Version, groupX.Channel.Package.Version)
 
-	_, err = a.AddGroup(&Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel2.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	_, err = as.AddGroup(&Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel2.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	assert.Equal(t, ErrInvalidChannel, err, "Channel id used doesn't belong to the application id that this group will be bound to and it should.")
 }
 
 func TestUpdateGroup(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
-	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
-	tApp1, _ := a.AddApp(&Application{Name: "test_app1", TeamID: tTeam.ID})
-	tApp2, _ := a.AddApp(&Application{Name: "test_app2", TeamID: tTeam.ID})
-	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp1.ID})
-	tChannel1, _ := a.AddChannel(&Channel{Name: "test_channel1", Color: "blue", ApplicationID: tApp1.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tChannel2, _ := a.AddChannel(&Channel{Name: "test_channel2", Color: "green", ApplicationID: tApp1.ID})
-	tChannel3, _ := a.AddChannel(&Channel{Name: "test_channel3", Color: "red", ApplicationID: tApp2.ID})
+	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
+	tApp1, _ := as.AddApp(&Application{Name: "test_app1", TeamID: tTeam.ID})
+	tApp2, _ := as.AddApp(&Application{Name: "test_app2", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp1.ID})
+	tChannel1, _ := as.AddChannel(&Channel{Name: "test_channel1", Color: "blue", ApplicationID: tApp1.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tChannel2, _ := as.AddChannel(&Channel{Name: "test_channel2", Color: "green", ApplicationID: tApp1.ID})
+	tChannel3, _ := as.AddChannel(&Channel{Name: "test_channel3", Color: "red", ApplicationID: tApp2.ID})
 
-	group, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp1.ID, ChannelID: null.StringFrom(tChannel1.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	group, _ := as.AddGroup(&Group{Name: "group1", ApplicationID: tApp1.ID, ChannelID: null.StringFrom(tChannel1.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	group.Name = "group1_updated"
 	group.PolicyUpdatesEnabled = true
 	group.ChannelID = null.StringFrom(tChannel2.ID)
-	err := a.UpdateGroup(group)
+	err := as.UpdateGroup(group)
 	assert.NoError(t, err)
 
 	_, err = a.GetGroupUpdatesStats(group)
@@ -86,28 +88,29 @@ func TestUpdateGroup(t *testing.T) {
 	assert.Equal(t, tChannel2.Name, groupX.Channel.Name)
 
 	groupX.ApplicationID = tApp2.ID
-	err = a.UpdateGroup(groupX)
+	err = as.UpdateGroup(groupX)
 	assert.NoError(t, err, "Application id cannot be updated, but it won't produce an error.")
 
 	groupX, _ = a.GetGroup(group.ID)
 	assert.Equal(t, tApp1.ID, groupX.ApplicationID)
 
 	groupX.ChannelID = null.StringFrom(tChannel3.ID)
-	err = a.UpdateGroup(groupX)
+	err = as.UpdateGroup(groupX)
 	assert.Equal(t, ErrInvalidChannel, err, "Channel id used doesn't belong to the application id that this group is bound to and it should.")
 }
 
 func TestDeleteGroup(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
-	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := a.AddGroup(&Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
-	err := a.DeleteGroup(tGroup.ID)
+	err := as.DeleteGroup(tGroup.ID)
 	assert.NoError(t, err)
 
 	_, err = a.GetGroup(tGroup.ID)
@@ -117,12 +120,13 @@ func TestDeleteGroup(t *testing.T) {
 func TestGetGroup(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
-	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := a.AddGroup(&Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
 	group, err := a.GetGroup(tGroup.ID)
 	assert.NoError(t, err)
@@ -138,13 +142,14 @@ func TestGetGroup(t *testing.T) {
 func TestGetGroups(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
-	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup1, _ := a.AddGroup(&Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
-	tGroup2, _ := a.AddGroup(&Group{Name: "test_group2", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup1, _ := as.AddGroup(&Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tGroup2, _ := as.AddGroup(&Group{Name: "test_group2", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
 	groups, err := a.GetGroups(tApp.ID, 0, 0)
 	assert.NoError(t, err)
@@ -159,12 +164,13 @@ func TestGetGroups(t *testing.T) {
 func TestGetGroupsFiltered(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
-	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := a.AddGroup(&Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	realInstanceID := uuid.New().String()
 	fakeInstanceID1 := "{" + uuid.New().String() + "}"
 	fakeInstanceID2 := "{" + uuid.New().String() + "}"
@@ -192,12 +198,13 @@ func TestGetGroupsFiltered(t *testing.T) {
 func TestVersionBreakDownEmpty(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
-	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	_, err := a.AddGroup(&Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	_, err := as.AddGroup(&Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	assert.NoError(t, err)
 
 	groups, err := a.GetGroups(tApp.ID, 0, 0)
@@ -212,6 +219,7 @@ func TestVersionBreakDownEmpty(t *testing.T) {
 func TestGetVersionCountTimeline(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
 	// Set cache lifespan to 50ms for testing and restore when done
 	cacheManager := NewTestCacheManager()
@@ -219,11 +227,11 @@ func TestGetVersionCountTimeline(t *testing.T) {
 	defer cacheManager.RestoreCacheLifespan(oldLifespan)
 
 	version := "4.0.0"
-	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := a.AddGroup(&Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	instanceID := uuid.New().String()
 
 	_, _ = a.RegisterInstance(Instance{ID: instanceID, IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, version))
@@ -295,12 +303,13 @@ func TestGetVersionCountTimeline(t *testing.T) {
 func TestGetStatusCountTimeline(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 	version := "4.0.0"
-	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := a.AddGroup(&Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	instanceID1 := uuid.New().String()
 	instanceID2 := uuid.New().String()
 
@@ -353,13 +362,14 @@ func TestGetStatusCountTimeline(t *testing.T) {
 func TestGroupTrackName(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
 	trackName := "production"
-	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup1, _ := a.AddGroup(&Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes", Track: trackName})
+	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup1, _ := as.AddGroup(&Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes", Track: trackName})
 
 	id, err := a.GetGroupID(tApp.ID, trackName, ArchAll)
 	assert.NoError(t, err)
@@ -371,19 +381,19 @@ func TestGroupTrackName(t *testing.T) {
 	_, err = a.GetGroupID(tApp.ID, "Phony", ArchAll)
 	assert.Error(t, err, "no group found for track Phony and architecture amd64")
 
-	tGroup2, err := a.AddGroup(&Group{Name: "test_group2", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tGroup2, err := as.AddGroup(&Group{Name: "test_group2", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	assert.NoError(t, err)
 	assert.Equal(t, tGroup2.Track, tGroup2.ID)
 
 	// Check adding two groups with the same track name, in different apps, and getting them
-	tApp2, err := a.AddApp(&Application{Name: "test_app2", TeamID: tTeam.ID})
+	tApp2, err := as.AddApp(&Application{Name: "test_app2", TeamID: tTeam.ID})
 	assert.NoError(t, err)
-	tPkgApp2, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp2.ID})
-	tChannelApp2, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp2.ID, PackageID: null.StringFrom(tPkgApp2.ID)})
-	tGroupApp2, err := a.AddGroup(&Group{Name: "beta", ApplicationID: tApp2.ID, ChannelID: null.StringFrom(tChannelApp2.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes", Track: "beta"})
+	tPkgApp2, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp2.ID})
+	tChannelApp2, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp2.ID, PackageID: null.StringFrom(tPkgApp2.ID)})
+	tGroupApp2, err := as.AddGroup(&Group{Name: "beta", ApplicationID: tApp2.ID, ChannelID: null.StringFrom(tChannelApp2.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes", Track: "beta"})
 	assert.NoError(t, err)
 
-	tGroup3, err := a.AddGroup(&Group{Name: "beta", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes", Track: "beta"})
+	tGroup3, err := as.AddGroup(&Group{Name: "beta", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes", Track: "beta"})
 	assert.NoError(t, err)
 
 	betaGroupID, err := a.GetGroupID(tApp2.ID, "beta", ArchAll)
@@ -395,7 +405,7 @@ func TestGroupTrackName(t *testing.T) {
 	assert.Equal(t, tGroup3.ID, betaGroupID)
 
 	// Test group with a track name but no arch (because there's no channel assigned to it)
-	tGroupNoChannel, err := a.AddGroup(&Group{Name: "unknown", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes", Track: "unknown"})
+	tGroupNoChannel, err := as.AddGroup(&Group{Name: "unknown", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes", Track: "unknown"})
 	assert.NoError(t, err)
 
 	_, err = a.GetGroupID(tApp.ID, tGroupNoChannel.Track, ArchAll)

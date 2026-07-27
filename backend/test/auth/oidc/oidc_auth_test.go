@@ -26,7 +26,7 @@ func startWithOIDC(t *testing.T) oidcTestSetup {
 	startOIDCMockServer(t, mockOIDCProvider)
 
 	// start nebraska server
-	nebraskaServer, err := server.New(conf, db)
+	nebraskaServer, err := server.New(conf, db, adminSvc(db))
 	require.NotNil(t, nebraskaServer)
 	require.NoError(t, err)
 

@@ -6,6 +6,22 @@ import (
 	"gopkg.in/guregu/null.v4"
 )
 
+const (
+	ActivityPackageNotFound int = 1 + iota
+	ActivityRolloutStarted
+	ActivityRolloutFinished
+	ActivityRolloutFailed
+	ActivityInstanceUpdateFailed
+	ActivityChannelPackageUpdated
+)
+
+const (
+	ActivitySuccess int = 1 + iota
+	ActivityInfo
+	ActivityWarning
+	ActivityError
+)
+
 // Activity represents a Nebraska activity entry.
 type Activity struct {
 	ID              string      `db:"id" json:"id"`

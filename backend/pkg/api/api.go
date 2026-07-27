@@ -3,7 +3,6 @@ package api
 import (
 	"database/sql"
 	"embed"
-	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -14,6 +13,7 @@ import (
 	migrate "github.com/rubenv/sql-migrate"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/internal/dbreads"
+	"github.com/flatcar/nebraska/backend/pkg/api/internal/types"
 	"github.com/flatcar/nebraska/backend/pkg/logger"
 
 	// PostgreSQL Driver and Toolkit
@@ -47,14 +47,14 @@ var (
 
 	// ErrNoRowsAffected indicates that no rows were affected in an update or
 	// delete database operation.
-	ErrNoRowsAffected = errors.New("nebraska: no rows affected")
+	ErrNoRowsAffected = types.ErrNoRowsAffected
 
 	// ErrInvalidSemver indicates that the provided semver version is not valid.
-	ErrInvalidSemver = errors.New("nebraska: invalid semver")
+	ErrInvalidSemver = types.ErrInvalidSemver
 
 	// ErrArchMismatch indicates that arches of two objects didn't
 	// match (for example, for a package and channel)
-	ErrArchMismatch = errors.New("nebraska: mismatched arches")
+	ErrArchMismatch = types.ErrArchMismatch
 )
 
 const migrationsTable = "database_migrations"
@@ -236,6 +236,12 @@ func OptionDisableUpdatesOnFailedRollout(api *API) error {
 // Close releases the connections to the database.
 func (api *API) Close() {
 	_ = api.db.Close()
+}
+
+// Reads returns the shared read queries (dbreads.Queries) owned by this API
+// instance.
+func (api *API) Reads() *dbreads.Queries {
+	return api.Queries
 }
 
 // NewForTest creates a new API instance with given options and fills

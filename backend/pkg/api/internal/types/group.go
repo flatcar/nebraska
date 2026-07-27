@@ -1,10 +1,15 @@
 package types
 
 import (
+	"errors"
 	"time"
 
 	"gopkg.in/guregu/null.v4"
 )
+
+// ErrExpectingValidTimezone error indicates that a valid timezone wasn't
+// provided when enabling the flag PolicyOfficeHours.
+var ErrExpectingValidTimezone = errors.New("nebraska: expecting valid timezone")
 
 type GroupDescriptor struct {
 	AppID string

@@ -45,52 +45,6 @@ func versionCompareExpr(column, operator, value string) (goqu.Expression, error)
 	return goqu.L(fmt.Sprintf("%s %s %s", colArray, operator, valArray), value), nil
 }
 
-// IsPackageBlacklistedForChannel checks if a package is blacklisted for a specific channel
-func (q *Queries) IsPackageBlacklistedForChannel(packageID, channelID string) (bool, error) {
-	query, _, err := goqu.From("package_channel_blacklist").
-		Select(goqu.COUNT("*")).
-		Where(goqu.And(
-			goqu.C("channel_id").Eq(channelID),
-			goqu.C("package_id").Eq(packageID),
-		)).
-		ToSQL()
-
-	if err != nil {
-		return false, err
-	}
-
-	var count int
-	err = q.db.QueryRow(query).Scan(&count)
-	if err != nil {
-		return false, err
-	}
-
-	return count > 0, nil
-}
-
-// IsPackageFloorForChannel checks if a package is marked as a floor for a specific channel
-func (q *Queries) IsPackageFloorForChannel(packageID, channelID string) (bool, error) {
-	query, _, err := goqu.From("channel_package_floors").
-		Select(goqu.COUNT("*")).
-		Where(goqu.And(
-			goqu.C("channel_id").Eq(channelID),
-			goqu.C("package_id").Eq(packageID),
-		)).
-		ToSQL()
-
-	if err != nil {
-		return false, err
-	}
-
-	var count int
-	err = q.db.QueryRow(query).Scan(&count)
-	if err != nil {
-		return false, err
-	}
-
-	return count > 0, nil
-}
-
 // GetChannelFloorPackages returns all floor packages for a specific channel
 func (q *Queries) GetChannelFloorPackages(channelID string) ([]*types.Package, error) {
 	// No blacklist check needed for floors

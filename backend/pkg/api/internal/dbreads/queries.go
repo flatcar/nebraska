@@ -29,3 +29,8 @@ func New(db *sqlx.DB, maxFloorsPerResponse int) *Queries {
 	}
 	return &Queries{db: db, maxFloorsPerResponse: maxFloorsPerResponse}
 }
+
+// DB returns the underlying database handle shared by the read queries.
+func DB(q *Queries) *sqlx.DB {
+	return q.db
+}

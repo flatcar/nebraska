@@ -13,15 +13,16 @@ import (
 func TestRegisterInstance(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
-	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tApp2, _ := a.AddApp(&Application{Name: "test_app2", TeamID: tTeam.ID})
-	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
-	tGroup2, _ := a.AddGroup(&Group{Name: "group2", ApplicationID: tApp2.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
-	tGroup3, _ := a.AddGroup(&Group{Name: "group3", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tApp2, _ := as.AddApp(&Application{Name: "test_app2", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tGroup2, _ := as.AddGroup(&Group{Name: "group2", ApplicationID: tApp2.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tGroup3, _ := as.AddGroup(&Group{Name: "group3", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
 	instanceID := uuid.New().String()
 
@@ -77,12 +78,13 @@ func TestRegisterInstance(t *testing.T) {
 func TestGetInstance(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
-	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	tInstance, _ := a.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
 
 	_, err := a.GetInstance(uuid.New().String(), tApp.ID)
@@ -105,13 +107,14 @@ func TestGetInstance(t *testing.T) {
 func TestGetInstances(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
-	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
-	tGroup2, _ := a.AddGroup(&Group{Name: "group2", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tGroup2, _ := as.AddGroup(&Group{Name: "group2", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	tInstance, _ := a.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
 	_, _ = a.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.2"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.1"))
 	_, _ = a.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.3"}, NewInstanceApplication(tApp.ID, tGroup2.ID, "1.0.2"))
@@ -191,12 +194,13 @@ func TestGetInstances(t *testing.T) {
 func TestGetInstancesSearch(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
-	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	tInstance, _ := a.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
 	_, _ = a.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.2"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.1"))
 	_, _ = a.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.3"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.2"))
@@ -226,12 +230,13 @@ func TestGetInstancesSearch(t *testing.T) {
 func TestGetInstancesFiltered(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
-	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	instanceID1 := "{8d180b2a-0734-4406-af02-9a4f86bd1ee0}"
 	instanceID2 := "{8d180b2a07344406af029a4f86bd1ee1}"
 	instanceID3 := "8d180b2a-0734-4406-af02-9a4f86bd1ee2"
@@ -262,12 +267,13 @@ func TestGetInstanceStatusHistory(t *testing.T) {
 
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
-	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
 	newInstance1ID := uuid.New().String()
 	tInstance, _ := a.RegisterInstance(Instance{ID: newInstance1ID, Alias: "analias", IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
@@ -305,6 +311,7 @@ func TestGetInstanceStatusHistory(t *testing.T) {
 func TestUpdateInstanceStats(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
 	instances, err := a.GetInstanceStats()
 	assert.NoError(t, err)
@@ -313,11 +320,11 @@ func TestUpdateInstanceStats(t *testing.T) {
 	// First test case: Create tInstance1, tInstance2, and tInstance3; check tInstance1 twice; switch tInstance2 version
 	start := time.Now().UTC()
 
-	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: ArchAMD64})
-	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID), Arch: ArchAMD64})
-	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: ArchAMD64})
+	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID), Arch: ArchAMD64})
+	tGroup, _ := as.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	tInstance1, _ := a.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
 	tInstance2, _ := a.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.2"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
 	_, _ = a.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.3"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.1"))
@@ -381,12 +388,13 @@ func TestUpdateInstanceStats(t *testing.T) {
 func TestUpdateInstanceStatsNoArch(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
-	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	_, _ = a.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
 
 	ts := time.Now().UTC()

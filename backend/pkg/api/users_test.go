@@ -27,11 +27,12 @@ func TestGetUser(t *testing.T) {
 func TestUpdateUserPassword(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
-	err := a.UpdateUserPassword("non-existent", "new-password")
+	err := as.UpdateUserPassword("non-existent", "new-password")
 	assert.Error(t, err)
 
-	err = a.UpdateUserPassword("admin", "new-password")
+	err = as.UpdateUserPassword("admin", "new-password")
 	assert.NoError(t, err)
 
 	user, err := a.GetUser("admin")
@@ -45,6 +46,7 @@ func TestUpdateUserPassword(t *testing.T) {
 func TestAddUser(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
 	user := &User{
 		Username: "chandler",
@@ -52,17 +54,18 @@ func TestAddUser(t *testing.T) {
 		TeamID:   defaultTeamID,
 	}
 
-	chandler, err := a.AddUser(user)
+	chandler, err := as.AddUser(user)
 	assert.NoError(t, err)
 	assert.Equal(t, user.Username, chandler.Username)
 
-	_, err = a.AddUser(user)
+	_, err = as.AddUser(user)
 	assert.Error(t, err)
 }
 
 func TestGetUsersInTeam(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
 	_, err := a.GetUsersInTeam("non-existent")
 	assert.Error(t, err)
@@ -75,7 +78,7 @@ func TestGetUsersInTeam(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, len(teams), 1)
 
-	teamRoss, _ := a.AddTeam(&Team{Name: "team-ross"})
+	teamRoss, _ := as.AddTeam(&Team{Name: "team-ross"})
 	assert.NoError(t, err)
 	assert.Equal(t, teamRoss.Name, "team-ross")
 
@@ -85,7 +88,7 @@ func TestGetUsersInTeam(t *testing.T) {
 		TeamID:   teamRoss.ID,
 	}
 
-	chandler, err := a.AddUser(user)
+	chandler, err := as.AddUser(user)
 	assert.NoError(t, err)
 	assert.Equal(t, user.Username, chandler.Username)
 
