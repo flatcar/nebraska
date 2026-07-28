@@ -11,7 +11,7 @@ exports[`Confirmation Content > should render Confirmation Content correctly 1`]
       class="button-group"
     >
       <button
-        class="confirm-dialog-btn-abord"
+        class="confirm-dialog-btn-abort"
         type="button"
       >
         No

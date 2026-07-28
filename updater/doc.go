@@ -2,7 +2,7 @@
 Package updater aims to simplify omaha-powered updates.
 
 Its goal is to abstract many of the omaha-protocol details, so users can
-perform updates without having to understand the omaha protocal
+perform updates without having to understand the omaha protocol
 internals.
 
 Since the omaha protocol is very powerful, it supports many options that

@@ -232,7 +232,7 @@ func (u *updater) ReportProgress(ctx context.Context, progress progress) error {
 }
 
 // ReportError takes an optional errorCode and reports
-// that an error occured during the installation process.
+// that an error occurred during the installation process.
 // The optional errorCode can be used to send custom
 // error codes to the server. This error code can then be
 // used to trace out errors custom to the application
