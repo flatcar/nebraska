@@ -57,6 +57,32 @@ const (
 	   <app appid="e96281a6-d1af-4bde-9a0a-97b76e56dc57" status="error-internal">
 	   </app>
 	</response>`
+
+	// Multi-step response: floors first, target last. The floor carries a
+	// different package count so the assertions tell the two apart.
+	multiManifestResponse = `<?xml version="1.0" encoding="UTF-8"?>
+	<response protocol="3.0" server="nebraska">
+	   <daystart elapsed_seconds="0" />
+	   <app appid="e96281a6-d1af-4bde-9a0a-97b76e56dc57" status="ok">
+		  <updatecheck status="ok">
+			 <urls>
+				<url codebase="https://flatcar.org/test/response" />
+			 </urls>
+			 <manifest version="2191.5.0" is_floor="true">
+				<packages>
+				   <package name="flatcar_production_update.gz" hash="test+x2zIoeClk=" size="465881871" required="true" />
+				   <package name="flatcar_production_update_floor.gz" hash="test+x2zIoeClk=" size="465881871" required="true" />
+				</packages>
+			 </manifest>
+			 <manifest version="3033.2.0" is_floor="true" is_target="true">
+				<packages>
+				   <package name="flatcar_production_update.gz" hash="test+x2zIoeClk=" size="465881871" required="true" />
+				</packages>
+			 </manifest>
+		  </updatecheck>
+	   </app>
+	</response>
+	`
 	appID      = "e96281a6-d1af-4bde-9a0a-97b76e56dc57"
 	errorAppID = "h96281a6-d1af-4bde-9a0a-97b76e56dc57"
 )
@@ -83,6 +109,19 @@ func TestUpdateInfo(t *testing.T) {
 			packagesCount: 1,
 			urlCount:      1,
 			version:       "2191.5.0",
+		},
+		{
+			// The target is the last manifest, and is what the single-manifest
+			// field decoded to before go-omaha made it a list.
+			name:          "multi_manifest_reports_target",
+			response:      multiManifestResponse,
+			appID:         appID,
+			isNil:         false,
+			hasUpdate:     true,
+			updateStatus:  "ok",
+			packagesCount: 1,
+			urlCount:      1,
+			version:       "3033.2.0",
 		},
 		{
 			name:          "no_update_exists",
