@@ -340,36 +340,27 @@ export default class API {
       'Content-Type': 'application/json',
       ...authHeaders,
     };
-    let fetchConfigObject: {
+    const fetchConfigObject: {
       method: string;
       body?: REQUEST_DATA_TYPE;
       headers?: {
         [prop: string]: any;
       };
     } = {
-      method: 'GET',
+      method,
       headers,
     };
 
-    if (method === 'DELETE') {
-      fetchConfigObject = {
-        method,
-        headers,
-      };
-      return fetch(url, fetchConfigObject);
-    } else {
-      if (method !== 'GET') {
-        fetchConfigObject = {
-          method,
-          headers,
-          body: data,
-        };
-      }
+    if (method !== 'GET' && method !== 'DELETE') {
+      fetchConfigObject.body = data;
     }
 
     return fetch(url, fetchConfigObject).then(response => {
       if (!response.ok) {
         throw response;
+      }
+      if (method === 'DELETE') {
+        return response;
       }
       return response.json();
     });
