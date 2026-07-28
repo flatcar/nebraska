@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/blang/semver/v4"
+
+	"github.com/flatcar/nebraska/backend/pkg/api/internal/dbreads"
 )
 
 const (
@@ -24,7 +26,7 @@ var (
 
 	// ErrNoPackageFound indicates that the group doesn't have a channel
 	// assigned or that the channel doesn't have a package assigned.
-	ErrNoPackageFound = errors.New("nebraska: no package found")
+	ErrNoPackageFound = dbreads.ErrNoPackageFound
 
 	// ErrNoUpdatePackageAvailable indicates that the instance requesting the
 	// update has already the latest version of the application.
@@ -172,7 +174,7 @@ func (api *API) GetUpdatePackage(inst Instance, instApp InstanceApplication) (*P
 	}
 
 	// Record activity
-	if !api.hasRecentRuntimeActivity(activityRolloutStarted, ActivityQueryParams{
+	if !api.HasRecentRuntimeActivity(activityRolloutStarted, ActivityQueryParams{
 		Severity: activityInfo,
 		AppID:    appID,
 		Version:  version,
@@ -260,7 +262,7 @@ func (api *API) GetUpdatePackagesForSyncer(inst Instance, instApp InstanceApplic
 	}
 
 	// Record activity
-	if !api.hasRecentRuntimeActivity(activityRolloutStarted, ActivityQueryParams{
+	if !api.HasRecentRuntimeActivity(activityRolloutStarted, ActivityQueryParams{
 		Severity: activityInfo,
 		AppID:    appID,
 		Version:  targetVersion,
@@ -302,7 +304,7 @@ func (api *API) enforceRolloutPolicy(instance *Instance, group *Group) error {
 		return nil
 	}
 
-	updatesStats, err := api.getGroupUpdatesStats(group)
+	updatesStats, err := api.GetGroupUpdatesStats(group)
 	if err != nil {
 		l.Error().Err(err).Msg("GetUpdatePackage - getGroupUpdatesStats error (propagates as ErrGetUpdatesStatsFailed):")
 		return ErrGetUpdatesStatsFailed

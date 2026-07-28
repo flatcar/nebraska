@@ -13,6 +13,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	migrate "github.com/rubenv/sql-migrate"
 
+	"github.com/flatcar/nebraska/backend/pkg/api/internal/dbreads"
 	"github.com/flatcar/nebraska/backend/pkg/logger"
 
 	// PostgreSQL Driver and Toolkit
@@ -64,13 +65,11 @@ type API struct {
 	dbDriver string
 	dbURL    string
 
+	*dbreads.Queries
+
 	// disableUpdatesOnFailedRollout defines wether to disable updates
 	// after a first rollout attempt failed (ResultFailed)
 	disableUpdatesOnFailedRollout bool
-
-	// maxFloorsPerResponse defines the maximum number of floor versions
-	// to return in a single update response to syncers
-	maxFloorsPerResponse int
 }
 
 // New creates a new API instance, creates the underlying db connection.
@@ -120,10 +119,10 @@ func New(options ...func(*API) error) (*API, error) {
 	// Load max floors per response configuration
 	maxFloorsPerResponse, err := strconv.Atoi(os.Getenv("NEBRASKA_MAX_FLOORS_PER_RESPONSE"))
 	if err != nil || maxFloorsPerResponse <= 0 {
-		api.maxFloorsPerResponse = 5
-	} else {
-		api.maxFloorsPerResponse = maxFloorsPerResponse
+		maxFloorsPerResponse = dbreads.DefaultMaxFloorsPerResponse
 	}
+
+	api.Queries = dbreads.New(api.db, maxFloorsPerResponse)
 
 	for _, option := range options {
 		err := option(api)
@@ -131,6 +130,7 @@ func New(options ...func(*API) error) (*API, error) {
 			return nil, err
 		}
 	}
+
 	return api, nil
 }
 
@@ -148,8 +148,8 @@ func NewWithMigrations(options ...func(*API) error) (*API, error) {
 	if _, err := migrate.Exec(api.db.DB, "postgres", migrations, migrate.Up); err != nil {
 		return nil, err
 	}
-	api.updateCachedGroups()
-	api.clearCachedAppIDs()
+	api.UpdateCachedGroups()
+	api.ClearCachedAppIDs()
 
 	return api, nil
 }
@@ -220,7 +220,7 @@ func OptionInitDB(api *API) error {
 	if _, err := api.db.Exec(string(sqlFile)); err != nil {
 		return err
 	}
-	api.updateCachedGroups()
+	api.UpdateCachedGroups()
 
 	return nil
 }
@@ -255,8 +255,8 @@ func NewForTest(options ...func(*API) error) (*API, error) {
 	if err != nil {
 		return nil, err
 	}
-	a.updateCachedGroups()
-	a.clearCachedAppIDs()
+	a.UpdateCachedGroups()
+	a.ClearCachedAppIDs()
 
 	return a, nil
 }

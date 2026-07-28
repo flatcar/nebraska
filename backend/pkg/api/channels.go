@@ -1,7 +1,6 @@
 package api
 
 import (
-	"database/sql"
 	"errors"
 
 	"github.com/doug-martin/goqu/v9"
@@ -120,93 +119,6 @@ func (api *API) DeleteChannel(channelID string) error {
 	return nil
 }
 
-// GetChannel returns the channel identified by the id provided.
-func (api *API) GetChannel(channelID string) (*Channel, error) {
-	var channel Channel
-
-	query, _, err := goqu.From("channel").
-		Where(goqu.C("id").Eq(channelID)).
-		ToSQL()
-	if err != nil {
-		return nil, err
-	}
-	err = api.db.QueryRowx(query).StructScan(&channel)
-	if err != nil {
-		return nil, err
-	}
-	packageEntity, err := api.getPackage(channel.PackageID)
-	switch err {
-	case nil:
-		channel.Package = packageEntity
-	case sql.ErrNoRows:
-		channel.Package = nil
-	default:
-		return nil, err
-	}
-	return &channel, nil
-}
-
-// GetChannelsCount retuns the total number of channels in an app
-func (api *API) GetChannelsCount(appID string) (int, error) {
-	query := goqu.From("channel").Where(goqu.C("application_id").Eq(appID)).Select(goqu.L("count(*)"))
-	return api.GetCountQuery(query)
-}
-
-// GetChannels returns all channels associated to the application provided.
-func (api *API) GetChannels(appID string, page, perPage uint64) ([]*Channel, error) {
-	page, perPage = validatePaginationParams(page, perPage)
-	limit, offset := sqlPaginate(page, perPage)
-	query, _, err := api.channelsQuery().
-		Where(goqu.C("application_id").Eq(appID)).
-		Limit(limit).
-		Offset(offset).
-		ToSQL()
-	if err != nil {
-		return nil, err
-	}
-	return api.getChannelsFromQuery(query)
-}
-
-func (api *API) getChannels(appID string) ([]*Channel, error) {
-	query, _, err := api.channelsQuery().
-		Where(goqu.C("application_id").Eq(appID)).
-		ToSQL()
-	if err != nil {
-		return nil, err
-	}
-	return api.getChannelsFromQuery(query)
-}
-
-func (api *API) getChannelsFromQuery(query string) ([]*Channel, error) {
-	var channels []*Channel
-	rows, err := api.db.Queryx(query)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	for rows.Next() {
-		channel := Channel{}
-		if err := rows.StructScan(&channel); err != nil {
-			return nil, err
-		}
-
-		packageEntity, err := api.getPackage(channel.PackageID)
-		switch err {
-		case nil:
-			channel.Package = packageEntity
-		case sql.ErrNoRows:
-			channel.Package = nil
-		default:
-			return nil, err
-		}
-		channels = append(channels, &channel)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return channels, nil
-}
-
 // validatePackage checks if a package belongs to the application provided and
 // that the channel is not in the package's channels blacklist. It returns the
 // package if everything is ok.
@@ -228,14 +140,4 @@ func (api *API) validatePackage(packageID, channelID, appID string, channelArch 
 	}
 
 	return pkg, err
-}
-
-// channelsQuery returns a SelectDataset prepared to return all channels.
-// This query is meant to be extended later in the methods using it to filter
-// by a specific channel id, all channels that belong to a given application,
-// specify how to query the rows or their destination.
-
-func (api *API) channelsQuery() *goqu.SelectDataset {
-	query := goqu.From("channel").Order(goqu.I("name").Asc())
-	return query
 }

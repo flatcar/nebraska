@@ -56,7 +56,7 @@ func TestGetActivity(t *testing.T) {
 	assert.Equal(t, 5, len(activityEntries))
 	anActivity := activityEntries[0]
 
-	hasRecentActivity := a.hasRecentRuntimeActivity(activityInstanceUpdateFailed, ActivityQueryParams{Severity: activitySuccess, AppID: tApp.ID, Version: tVersion, GroupID: tGroup.ID})
+	hasRecentActivity := a.HasRecentRuntimeActivity(activityInstanceUpdateFailed, ActivityQueryParams{Severity: activitySuccess, AppID: tApp.ID, Version: tVersion, GroupID: tGroup.ID})
 	assert.True(t, hasRecentActivity)
 
 	_, err = a.GetActivity("invalidTeamID", ActivityQueryParams{})
@@ -121,5 +121,5 @@ func TestActivityRouting(t *testing.T) {
 	classes := []int{entries[0].Class, entries[1].Class}
 	assert.ElementsMatch(t, []int{activityRolloutStarted, activityChannelPackageUpdated}, classes)
 
-	assert.True(t, a.hasRecentRuntimeActivity(activityRolloutStarted, ActivityQueryParams{AppID: tApp.ID, Version: tVersion, GroupID: tGroup.ID}))
+	assert.True(t, a.HasRecentRuntimeActivity(activityRolloutStarted, ActivityQueryParams{AppID: tApp.ID, Version: tVersion, GroupID: tGroup.ID}))
 }

@@ -35,19 +35,3 @@ func (api *API) AddFlatcarAction(action *FlatcarAction) (*FlatcarAction, error) 
 	}
 	return action, err
 }
-
-// GetFlatcarAction returns the Flatcar action entry associated to the package id
-// provided.
-func (api *API) GetFlatcarAction(packageID string) (*FlatcarAction, error) {
-	action := FlatcarAction{}
-	query, _, err := goqu.From("flatcar_action").
-		Where(goqu.C("package_id").Eq(packageID)).ToSQL()
-	if err != nil {
-		return nil, err
-	}
-	err = api.db.QueryRowx(query).StructScan(&action)
-	if err != nil {
-		return nil, err
-	}
-	return &action, nil
-}
