@@ -36,7 +36,7 @@ export default function InstanceLayout() {
 
   const [group, setGroup] = React.useState(getGroupFromApplication(application || null));
 
-  const onChange = React.useCallback(() => {
+  const fetchInstance = React.useCallback(() => {
     if (!appID || !groupID || !instanceID) {
       return;
     }
@@ -48,13 +48,19 @@ export default function InstanceLayout() {
       );
       setInstance(instance);
     });
+  }, [appID, groupID, instanceID]);
+
+  const onChange = React.useCallback(() => {
     const apps = applicationsStore().getCachedApplications() || [];
     const app = apps.find(({ id }) => id === appID) || null;
-    if (app !== application) {
-      setApplication(app);
-      setGroup(getGroupFromApplication(app));
-    }
-  }, [appID, application, getGroupFromApplication, groupID, instanceID]);
+    setApplication(prev => (prev === app ? prev : app));
+    setGroup(getGroupFromApplication(app));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appID, getGroupFromApplication]);
+
+  React.useEffect(() => {
+    fetchInstance();
+  }, [fetchInstance]);
 
   React.useEffect(() => {
     if (!appID) {
@@ -102,14 +108,14 @@ export default function InstanceLayout() {
           },
         ]}
       />
-      {!instance ? (
+      {!instance || !application || !group ? (
         <Loader />
       ) : (
         <Details
-          application={application!}
-          group={group!}
+          application={application}
+          group={group}
           instance={instance}
-          onInstanceUpdated={() => onChange()}
+          onInstanceUpdated={fetchInstance}
         />
       )}
     </React.Fragment>
