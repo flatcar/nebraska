@@ -34,6 +34,7 @@ import { applicationsStore } from '../../stores/Stores';
 import { ARCHES, cleanSemverVersion } from '../../utils/helpers';
 import AutoCompletePicker from '../common/AutoCompletePicker';
 import ColorPicker from '../common/ColorPicker';
+import ConfirmDialog from '../common/ConfirmDialog';
 
 const PREFIX = 'ChannelEdit';
 
@@ -107,6 +108,7 @@ function ChannelEdit(props: ChannelEditProps) {
   const [showAddFloorDialog, setShowAddFloorDialog] = React.useState(false);
   const [selectedFloorPackage, setSelectedFloorPackage] = React.useState<Package | null>(null);
   const [floorReason, setFloorReason] = React.useState<string>('');
+  const [floorPendingDeleteId, setFloorPendingDeleteId] = React.useState<string | null>(null);
 
   // Memoize filtered packages to avoid repeated filtering in render
   const packagesForArch = React.useMemo(
@@ -168,14 +170,12 @@ function ChannelEdit(props: ChannelEditProps) {
   async function deleteFloorPackage(packageID: string) {
     if (!props.data.channel?.id) return;
 
-    if (window.confirm(t('channels|confirm_delete_floor'))) {
-      try {
-        await applicationsStore().deleteChannelFloor(props.data.channel.id, packageID);
-        setFloorPackages(prev => prev.filter(p => p.id !== packageID));
-      } catch (err) {
-        console.error('Failed to delete floor package:', err);
-        alert(t('channels|failed_to_delete_floor'));
-      }
+    try {
+      await applicationsStore().deleteChannelFloor(props.data.channel.id, packageID);
+      setFloorPackages(prev => prev.filter(p => p.id !== packageID));
+    } catch (err) {
+      console.error('Failed to delete floor package:', err);
+      alert(t('channels|failed_to_delete_floor'));
     }
   }
 
@@ -437,7 +437,7 @@ function ChannelEdit(props: ChannelEditProps) {
                         <IconButton
                           edge="end"
                           aria-label={`Remove floor package ${cleanSemverVersion(pkg.version)}`}
-                          onClick={() => pkg.id && deleteFloorPackage(pkg.id)}
+                          onClick={() => pkg.id && setFloorPendingDeleteId(pkg.id)}
                           size="small"
                         >
                           <DeleteIcon fontSize="small" />
@@ -571,6 +571,16 @@ function ChannelEdit(props: ChannelEditProps) {
           </Button>
         </DialogActions>
       </Dialog>
+      <ConfirmDialog
+        open={Boolean(floorPendingDeleteId)}
+        description={t('channels|confirm_delete_floor')}
+        onClose={() => setFloorPendingDeleteId(null)}
+        onConfirm={() => {
+          if (floorPendingDeleteId) {
+            deleteFloorPackage(floorPendingDeleteId);
+          }
+        }}
+      />
     </>
   );
 }

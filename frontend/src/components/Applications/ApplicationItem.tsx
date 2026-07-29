@@ -2,11 +2,13 @@ import ScheduleIcon from '@mui/icons-material/Schedule';
 import { Box, Divider, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Group } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../common/Card/Card';
+import ConfirmDialog from '../common/ConfirmDialog';
 import ListItem from '../common/ListItem';
 import MoreMenu from '../common/MoreMenu';
 import ApplicationItemGroupsList from './ApplicationItemGroupsList';
@@ -51,6 +53,7 @@ export interface ApplicationItemProps {
 export default function ApplicationItem(props: ApplicationItemProps) {
   const { t } = useTranslation();
   const { description, groups, numberOfInstances, id, productId, name } = props;
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
 
   return (
     <StyledListItem className={classes.root}>
@@ -71,11 +74,7 @@ export default function ApplicationItem(props: ApplicationItemProps) {
                 },
                 {
                   label: t('frequent|delete'),
-                  action: () => {
-                    if (window.confirm(t('applications|confirm_delete_application'))) {
-                      applicationsStore().deleteApplication(id);
-                    }
-                  },
+                  action: () => setConfirmDeleteOpen(true),
                 },
               ]}
             />
@@ -131,6 +130,12 @@ export default function ApplicationItem(props: ApplicationItemProps) {
           </Grid>
         </Grid>
       </Grid>
+      <ConfirmDialog
+        open={confirmDeleteOpen}
+        description={t('applications|confirm_delete_application')}
+        onClose={() => setConfirmDeleteOpen(false)}
+        onConfirm={() => applicationsStore().deleteApplication(id)}
+      />
     </StyledListItem>
   );
 }

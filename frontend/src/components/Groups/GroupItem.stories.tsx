@@ -7,7 +7,9 @@ export default {
   title: 'groups/GroupItem',
   argTypes: {
     handleUpdateGroup: { action: 'handleUpdateGroup' },
-    deleteGroup: { action: 'deleteGroup' },
+    onRequestDelete: { action: 'onRequestDelete' },
+    onCloseConfirmDelete: { action: 'onCloseConfirmDelete' },
+    onConfirmDelete: { action: 'onConfirmDelete' },
   },
 } as Meta;
 
@@ -25,6 +27,8 @@ export const Group = {
   args: {
     versionBreakdown: [],
     totalInstances: 2,
+    confirmDeleteOpen: false,
+    deleteConfirmationText: 'Are you sure you want to delete this group?',
     group: {
       id: '11a585f6-9418-4df0-8863-78b2fd3240f8',
       name: 'Stable (ARM)',
@@ -61,6 +65,8 @@ export const Loading = {
   args: {
     versionBreakdown: null,
     totalInstances: null,
+    confirmDeleteOpen: false,
+    deleteConfirmationText: 'Are you sure you want to delete this group?',
     group: {
       id: '11a585f6-9418-4df0-8863-78b2fd3240f8',
       name: 'Stable (ARM)',
