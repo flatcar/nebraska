@@ -309,7 +309,17 @@ func (q *Queries) instanceStatusHistoryQuery(instanceID, appID, groupID string, 
 	if limit == 0 {
 		limit = 20
 	}
-	return goqu.From("instance_status_history").Where(goqu.C("instance_id").Eq(instanceID)).
+	return goqu.From("instance_status_history").
+		Select(
+			"id",
+			"status",
+			goqu.L("COALESCE(version, '')").As("version"),
+			"created_ts",
+			"instance_id",
+			"application_id",
+			"group_id",
+		).
+		Where(goqu.C("instance_id").Eq(instanceID)).
 		Where(goqu.C("application_id").Eq(appID)).
 		Where(goqu.C("group_id").Eq(groupID)).
 		Order(goqu.C("created_ts").Desc()).

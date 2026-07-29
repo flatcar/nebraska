@@ -254,16 +254,22 @@ func (api *API) updateInstanceData(instance *Instance, data map[string]interface
 
 	// This insert is used with values returned from the update query that's executed together,
 	// so we do one transaction in the DB only.
-	// Note: When last_update_version is NULL this fails.
-	//       There always has to be a "updateInstanceStatusUpdatedGranted" done first.
+	// Prefer last_update_version when an update was granted; otherwise fall back to the
+	// instance's current version (e.g. OnHold before any grant — see issue #900).
 	insertQuery, _, err := goqu.Insert("instance_status_history").
 		Cols("status", "version", "instance_id", "application_id", "group_id").
 		With("inst_app", goqu.Update("instance_application").
 			Set(insertData).
 			Where(goqu.C("instance_id").Eq(instance.ID), goqu.C("application_id").Eq(appID)).
-			Returning("instance_id", "application_id", "last_update_version", "group_id")).
+			Returning("instance_id", "application_id", "last_update_version", "group_id", "version")).
 		FromQuery(goqu.From(goqu.L("inst_app")).
-			Select(goqu.V(newStatus).As("status"), goqu.C("last_update_version").As("version"), goqu.C("instance_id"), goqu.C("application_id"), goqu.C("group_id"))).
+			Select(
+				goqu.V(newStatus).As("status"),
+				goqu.L("COALESCE(last_update_version, version)").As("version"),
+				goqu.C("instance_id"),
+				goqu.C("application_id"),
+				goqu.C("group_id"),
+			)).
 		ToSQL()
 
 	if err != nil {

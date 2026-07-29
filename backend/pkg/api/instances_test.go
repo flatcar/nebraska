@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gopkg.in/guregu/null.v4"
 )
 
@@ -300,6 +301,62 @@ func TestGetInstanceStatusHistory(t *testing.T) {
 	assert.Equal(t, history[2].Version, "1.0.1")
 	assert.Equal(t, history[3].Status, InstanceStatusUpdateGranted)
 	assert.Equal(t, history[3].Version, "1.0.1")
+}
+
+// TestGetInstanceStatusHistory_OnHoldWithoutGrantedUpdate reproduces
+// https://github.com/flatcar/nebraska/issues/900 — a newly connected instance
+// put OnHold by policy has NULL last_update_version; status history must still
+// be readable and should fall back to the instance's current version.
+func TestGetInstanceStatusHistory_OnHoldWithoutGrantedUpdate(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+
+	tInstance, err := a.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	assert.NoError(t, err)
+
+	err = a.updateInstanceStatus(tInstance.ID, tApp.ID, InstanceStatusOnHold)
+	assert.NoError(t, err)
+
+	history, err := a.GetInstanceStatusHistory(tInstance.ID, tApp.ID, tGroup.ID, 100)
+	assert.NoError(t, err)
+	require.Len(t, history, 1)
+	assert.Equal(t, InstanceStatusOnHold, history[0].Status)
+	assert.Equal(t, "1.0.0", history[0].Version)
+}
+
+// TestGetInstanceStatusHistory_NullVersionRow ensures existing history rows with
+// NULL version (pre-fix data) can still be scanned without a 500.
+func TestGetInstanceStatusHistory_NullVersionRow(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := a.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+
+	tInstance, err := a.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	assert.NoError(t, err)
+
+	_, err = a.db.Exec(
+		`INSERT INTO instance_status_history (status, version, instance_id, application_id, group_id)
+		 VALUES ($1, NULL, $2, $3, $4)`,
+		InstanceStatusOnHold, tInstance.ID, tApp.ID, tGroup.ID,
+	)
+	assert.NoError(t, err)
+
+	history, err := a.GetInstanceStatusHistory(tInstance.ID, tApp.ID, tGroup.ID, 100)
+	assert.NoError(t, err)
+	require.Len(t, history, 1)
+	assert.Equal(t, InstanceStatusOnHold, history[0].Status)
+	assert.Equal(t, "", history[0].Version)
 }
 
 func TestUpdateInstanceStats(t *testing.T) {
