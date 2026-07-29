@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"strings"
@@ -139,6 +140,37 @@ func TestCreatePackage(t *testing.T) {
 		assert.NotNil(t, packageDB)
 
 		assert.Equal(t, packageName, packageDB.Filename.String)
+	})
+
+	t.Run("conflict_duplicate_package", func(t *testing.T) {
+		// establish DB connection
+		db := newDBForTest(t)
+		defer db.Close()
+
+		// get random app
+		app := getRandomApp(t, db)
+
+		url := fmt.Sprintf("%s/api/apps/%s/packages", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID)
+		method := "POST"
+
+		newPayload := func() *strings.Reader {
+			return strings.NewReader(fmt.Sprintf(`{"arch":1,"filename":"test_duplicate_package","description":"duplicate package test","url":"http://flatcar.org","version":"20.9.9","type":4,"size":"199","hash":"some random hash","application_id":"%s","channels_blacklist":[]}`, app.ID))
+		}
+
+		// first creation succeeds
+		var packageResp api.Package
+		httpDo(t, url, method, newPayload(), http.StatusOK, "json", &packageResp)
+
+		// creating a package with the same app id, version and arch again
+		// must return 409 Conflict with a meaningful error message
+		resp := httpMakeRequest(t, method, url, newPayload(), map[string]string{"Content-Type": "application/json"})
+		defer resp.Body.Close()
+		require.Equal(t, http.StatusConflict, resp.StatusCode)
+
+		bodyBytes, err := io.ReadAll(resp.Body)
+		require.NoError(t, err)
+		assert.Contains(t, string(bodyBytes), "package already exists")
+		assert.Contains(t, string(bodyBytes), "20.9.9")
 	})
 }
 

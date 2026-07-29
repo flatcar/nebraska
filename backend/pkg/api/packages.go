@@ -7,6 +7,7 @@ import (
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jmoiron/sqlx"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/internal/dbreads"
@@ -46,7 +47,22 @@ var (
 	// ErrBlacklistingFloor error indicates that the package cannot be blacklisted
 	// because it is marked as a floor version for the channel.
 	ErrBlacklistingFloor = errors.New("nebraska: cannot blacklist package marked as floor version for this channel")
+
+	// ErrPackageAlreadyExists error indicates that a package with the same
+	// application ID, version and arch already exists.
+	ErrPackageAlreadyExists = errors.New("nebraska: package already exists")
 )
+
+// pgUniqueViolationCode is the SQLSTATE code PostgreSQL returns when an
+// insert or update violates a unique constraint.
+const pgUniqueViolationCode = "23505"
+
+// isUniqueViolation reports whether err is a PostgreSQL unique constraint
+// violation (SQLSTATE 23505).
+func isUniqueViolation(err error) bool {
+	var pgErr *pgconn.PgError
+	return errors.As(err, &pgErr) && pgErr.Code == pgUniqueViolationCode
+}
 
 // checkMatchingArch returns an error if the arch does not match the channels
 func (api *API) checkMatchingArch(channelIDs StringArray, arch Arch) error {
@@ -108,6 +124,13 @@ func (api *API) addPackage(pkg *Package, tx *sqlx.Tx) error {
 		return err
 	}
 	if err = tx.QueryRowx(query).StructScan(pkg); err != nil {
+		// The package table has a single unique constraint over
+		// (application_id, version, arch) - package_appid_version_arch_unique -
+		// and its id is auto-generated, so a unique violation here means the
+		// package was already registered.
+		if isUniqueViolation(err) {
+			return fmt.Errorf("%w: appID %s, version %s, arch %s", ErrPackageAlreadyExists, pkg.ApplicationID, pkg.Version, pkg.Arch)
+		}
 		return err
 	}
 

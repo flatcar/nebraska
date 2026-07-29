@@ -69,6 +69,29 @@ func TestAddPackage(t *testing.T) {
 	assert.Error(t, err, "Arch must be a valid architecture")
 }
 
+func TestAddPackageAlreadyExists(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+
+	_, err := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: ArchAMD64})
+	assert.NoError(t, err)
+
+	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/another-pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: ArchAMD64})
+	assert.ErrorIs(t, err, ErrPackageAlreadyExists)
+
+	_, err = a.AddPackageWithMetadata(&Package{Type: PkgTypeOther, URL: "http://sample.url/another-pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: ArchAMD64})
+	assert.ErrorIs(t, err, ErrPackageAlreadyExists)
+
+	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: ArchAArch64})
+	assert.NoError(t, err)
+
+	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.2.0", ApplicationID: tApp.ID, Arch: ArchAMD64})
+	assert.NoError(t, err)
+}
+
 func TestAddPackageFlatcar(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
