@@ -37,7 +37,7 @@ export default function Main() {
       <CssBaseline />
       <SkipLink />
       <Header />
-      <Container component="main" id="main" sx={{ paddingTop: '0.52rem' }}>
+      <Container component="main" id="main" maxWidth="xl" sx={{ paddingTop: '0.52rem' }}>
         <Routes>
           <Route path="/404" element={<PageNotFoundLayout />} />
           <Route path="/auth/error" element={<AuthErrorLayout />} />

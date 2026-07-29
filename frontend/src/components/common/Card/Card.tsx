@@ -18,7 +18,9 @@ export function CardFeatureLabel(props: CardFeatureLabelProps) {
       sx={{
         color: theme => theme.palette.text.secondary,
         textTransform: 'uppercase',
-        fontSize: '1rem',
+        fontSize: '0.75rem',
+        fontWeight: 600,
+        letterSpacing: '0.08em',
       }}
     >
       {props.children}
@@ -81,7 +83,7 @@ export function CardHeader(props: CardHeaderProps) {
       <Grid
         container
         sx={{
-          padding: '1rem',
+          padding: '1.25rem 1rem 0.75rem',
           flexWrap: 'nowrap',
         }}
         justifyContent="space-between"
@@ -94,8 +96,10 @@ export function CardHeader(props: CardHeaderProps) {
                   component={RouterLink}
                   to={props.cardMainLinkPath}
                   sx={{
-                    fontSize: '1.8rem',
-                    fontWeight: 'bold',
+                    fontSize: '1.4rem',
+                    fontWeight: 700,
+                    letterSpacing: '-0.01em',
+                    color: theme.palette.primary.main,
                   }}
                   underline="hover"
                 >
@@ -105,9 +109,10 @@ export function CardHeader(props: CardHeaderProps) {
             ) : (
               <Typography
                 sx={{
-                  color: '#474747',
-                  fontSize: '1.8rem',
-                  fontWeight: 'bold',
+                  color: theme.palette.text.primary,
+                  fontSize: '1.4rem',
+                  fontWeight: 700,
+                  letterSpacing: '-0.01em',
                 }}
               >
                 {props.cardMainLinkLabel}
@@ -115,11 +120,21 @@ export function CardHeader(props: CardHeaderProps) {
             )}
           </Grid>
           <Grid size={12}>
-            <Box bgcolor={theme.palette.lightSilverShade} px={1} display="inline-block">
+            <Box
+              px={1.5}
+              py={0.25}
+              display="inline-block"
+              sx={{
+                backgroundColor: '#F2F4F7',
+                border: '1px solid #E4E7EC',
+                borderRadius: '999px',
+              }}
+            >
               <Typography
                 sx={{
                   color: theme => theme.palette.text.secondary,
-                  fontSize: '1rem',
+                  fontSize: '0.75rem',
+                  fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
                 }}
                 arial-label="group-id"
                 noWrap

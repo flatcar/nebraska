@@ -85,7 +85,7 @@ function InstanceFilter(props: InstanceFilterProps) {
       <Grid container spacing={2} justifyContent="flex-end">
         <Grid size={5}>
           <FormControl fullWidth disabled={props.disabled}>
-            <InputLabel variant="standard" htmlFor="select-status" shrink>
+            <InputLabel variant="outlined" htmlFor="select-status" shrink>
               {t('instances|filter_status')}
             </InputLabel>
             <Select
@@ -113,7 +113,7 @@ function InstanceFilter(props: InstanceFilterProps) {
         </Grid>
         <Grid size={5}>
           <FormControl fullWidth disabled={props.disabled}>
-            <InputLabel variant="standard" htmlFor="select-versions" shrink>
+            <InputLabel variant="outlined" htmlFor="select-versions" shrink>
               {t('instances|filter_version')}
             </InputLabel>
             <Select
@@ -427,7 +427,7 @@ function ListView(props: ListViewProps) {
                 </Box>
               </Grid>
               <Grid>
-                <InputLabel variant="standard" htmlFor="instance-search-filter" shrink>
+                <InputLabel variant="outlined" htmlFor="instance-search-filter" shrink>
                   {t('frequent|search')}
                 </InputLabel>
                 <SearchInput

@@ -25,11 +25,11 @@ const classes = {
   link: `${PREFIX}-link`,
 };
 
-const StyledTableRow = styled(TableRow)({
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
   [`& .${classes.link}`]: {
-    color: '#1b5c91',
+    color: theme.palette.primary.main,
   },
-});
+}));
 
 const TableLabel = function (props: PropsWithChildren<{ bgColor?: string; textColor?: string }>) {
   return (

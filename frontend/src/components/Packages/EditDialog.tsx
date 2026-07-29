@@ -251,9 +251,9 @@ function EditDialog(props: EditDialogProps) {
           <Grid container justifyContent="space-between">
             <Grid>
               <FormControl margin="dense" className={classes.topSelect}>
-                <InputLabel variant="standard">Type</InputLabel>
+                <InputLabel variant="outlined">Type</InputLabel>
                 <MuiSelect
-                  variant="standard"
+                  variant="outlined"
                   value={packageType}
                   onChange={handlePackageTypeChange}
                 >
@@ -273,8 +273,8 @@ function EditDialog(props: EditDialogProps) {
                 className={classes.topSelect}
                 disabled={!isCreation}
               >
-                <InputLabel variant="standard">{t('packages|architecture')}</InputLabel>
-                <MuiSelect variant="standard" value={arch} onChange={handleArchChange}>
+                <InputLabel variant="outlined">{t('packages|architecture')}</InputLabel>
+                <MuiSelect variant="outlined" value={arch} onChange={handleArchChange}>
                   {Object.keys(ARCHES).map((key: string) => {
                     const archName = ARCHES[parseInt(key)];
                     return (
@@ -299,7 +299,7 @@ function EditDialog(props: EditDialogProps) {
                       <Field
                         name="url"
                         component={TextField}
-                        variant="standard"
+                        variant="outlined"
                         margin="dense"
                         label={t('packages|url')}
                         type="url"
@@ -309,7 +309,7 @@ function EditDialog(props: EditDialogProps) {
                       <Field
                         name="filename"
                         component={TextField}
-                        variant="standard"
+                        variant="outlined"
                         margin="dense"
                         label={t('packages|filename')}
                         type="text"
@@ -319,7 +319,7 @@ function EditDialog(props: EditDialogProps) {
                       <Field
                         name="description"
                         component={TextField}
-                        variant="standard"
+                        variant="outlined"
                         margin="dense"
                         label={t('packages|description')}
                         type="text"
@@ -331,7 +331,7 @@ function EditDialog(props: EditDialogProps) {
                           <Field
                             name="version"
                             component={TextField}
-                            variant="standard"
+                            variant="outlined"
                             margin="dense"
                             label={`${t('packages|version')}`}
                             type="text"
@@ -344,7 +344,7 @@ function EditDialog(props: EditDialogProps) {
                           <Field
                             name="size"
                             component={TextField}
-                            variant="standard"
+                            variant="outlined"
                             margin="dense"
                             label={t('packages|size')}
                             type="number"
@@ -357,7 +357,7 @@ function EditDialog(props: EditDialogProps) {
                       <Field
                         name="hash"
                         component={TextField}
-                        variant="standard"
+                        variant="outlined"
                         margin="dense"
                         label={t('packages|hash')}
                         type="text"
@@ -371,7 +371,7 @@ function EditDialog(props: EditDialogProps) {
                         <Field
                           name="flatcarHash"
                           component={TextField}
-                          variant="standard"
+                          variant="outlined"
                           margin="dense"
                           label={t('packages|flatcar_action_sha256')}
                           type="text"
@@ -386,7 +386,7 @@ function EditDialog(props: EditDialogProps) {
                         <Field
                           name="channelsBlacklist"
                           component={Select}
-                          variant="standard"
+                          variant="outlined"
                           label="Channels Blacklist"
                           multiple
                           renderValue={(selected: string[]) =>
@@ -430,11 +430,11 @@ function EditDialog(props: EditDialogProps) {
                       {!isCreation && (
                         <>
                           <FormControl margin="dense" fullWidth>
-                            <InputLabel variant="standard" id="floor-channels-label">
+                            <InputLabel variant="outlined" id="floor-channels-label">
                               Floor Channels
                             </InputLabel>
                             <MuiSelect<string[]>
-                              variant="standard"
+                              variant="outlined"
                               labelId="floor-channels-label"
                               multiple
                               value={packageFloorChannels}
@@ -502,7 +502,7 @@ function EditDialog(props: EditDialogProps) {
                             </FormHelperText>
                           </FormControl>
                           <MuiTextField
-                            variant="standard"
+                            variant="outlined"
                             margin="dense"
                             label={t('packages|floor_reason')}
                             type="text"
@@ -544,11 +544,16 @@ function EditDialog(props: EditDialogProps) {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleClose} variant="text" color="inherit">
             {t('frequent|cancel')}
           </Button>
-          <Button type="submit" disabled={isSubmitting || isAddingFiles} color="primary">
-            {isCreation ? t('frequent|add_lower') : t('frequent|save')}
+          <Button
+            type="submit"
+            disabled={isSubmitting || isAddingFiles}
+            variant="contained"
+            color="primary"
+          >
+            {isCreation ? t('frequent|add') : t('frequent|save')}
           </Button>
         </DialogActions>
       </Form>

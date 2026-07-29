@@ -12,7 +12,7 @@ exports[`List Header > should render correct List Header actions 1`] = `
         class="MuiBox-root css-2rlxtj"
       >
         <h1
-          class="MuiTypography-root MuiTypography-h1 css-12oqc8p-MuiTypography-root"
+          class="MuiTypography-root MuiTypography-h1 css-1t0o8lt-MuiTypography-root"
         >
           Applications
         </h1>

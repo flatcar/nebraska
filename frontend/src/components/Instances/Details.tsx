@@ -66,7 +66,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 
   [`& .${classes.link}`]: {
     fontSize: '1rem',
-    color: '#1b5c91',
+    color: theme.palette.primary.main,
   },
 }));
 
@@ -254,7 +254,7 @@ function EditDialog(props: EditDialogProps) {
           <Field
             name="name"
             component={TextField}
-            variant="standard"
+            variant="outlined"
             margin="dense"
             label={t('instances|name')}
             type="text"
@@ -263,10 +263,10 @@ function EditDialog(props: EditDialogProps) {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleClose} variant="text" color="inherit">
             {t('frequent|cancel')}
           </Button>
-          <Button type="submit" disabled={isSubmitting} color="primary">
+          <Button type="submit" disabled={isSubmitting} variant="contained" color="primary">
             {t('frequent|save')}
           </Button>
         </DialogActions>
