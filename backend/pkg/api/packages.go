@@ -7,6 +7,7 @@ import (
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jmoiron/sqlx"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/internal/dbreads"
@@ -26,6 +27,13 @@ const (
 	// PkgTypeOther is the generic package type.
 	PkgTypeOther
 )
+
+// pgUniqueViolation is the PostgreSQL error code for a unique constraint violation.
+const pgUniqueViolation = "23505"
+
+// ErrDuplicatePackage indicates that a package with the same application,
+// version and arch already exists.
+var ErrDuplicatePackage = errors.New("nebraska: duplicate package")
 
 type (
 	File                = types.File
@@ -75,6 +83,12 @@ func (api *API) checkMatchingArch(channelIDs StringArray, arch Arch) error {
 	return nil
 }
 
+// isUniqueViolation reports whether err is a PostgreSQL unique constraint violation.
+func isUniqueViolation(err error) bool {
+	var pgErr *pgconn.PgError
+	return errors.As(err, &pgErr) && pgErr.Code == pgUniqueViolation
+}
+
 // addPackage contains the common logic for adding a package.
 // It handles validation, package insertion, blacklist, and files within a transaction.
 // The caller is responsible for handling FlatcarAction and committing the transaction.
@@ -108,6 +122,10 @@ func (api *API) addPackage(pkg *Package, tx *sqlx.Tx) error {
 		return err
 	}
 	if err = tx.QueryRowx(query).StructScan(pkg); err != nil {
+		// Only the package insert can violate package_appid_version_arch_unique.
+		if isUniqueViolation(err) {
+			return ErrDuplicatePackage
+		}
 		return err
 	}
 
