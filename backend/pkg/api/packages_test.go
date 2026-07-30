@@ -1,12 +1,16 @@
 package api
 
 import (
+	"errors"
+	"fmt"
 	"testing"
 
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAddPackage(t *testing.T) {
@@ -67,6 +71,60 @@ func TestAddPackage(t *testing.T) {
 
 	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.3.0", ApplicationID: tApp.ID, Arch: Arch(77777)})
 	assert.Error(t, err, "Arch must be a valid architecture")
+}
+
+func TestAddPackageDuplicate(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+
+	_, err := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: ArchAArch64})
+	assert.NoError(t, err)
+
+	// Same application, version and arch violates package_appid_version_arch_unique.
+	// A different URL still collides, the constraint does not cover it.
+	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/other", Version: "12.1.0", ApplicationID: tApp.ID, Arch: ArchAArch64})
+	assert.ErrorIs(t, err, ErrDuplicatePackage)
+
+	// The syncer reaches the same insert through AddPackageWithMetadata.
+	_, err = a.AddPackageWithMetadata(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: ArchAArch64})
+	assert.ErrorIs(t, err, ErrDuplicatePackage)
+
+	// A different arch or version is not a duplicate.
+	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: ArchX86})
+	assert.NoError(t, err)
+
+	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.2.0", ApplicationID: tApp.ID, Arch: ArchAArch64})
+	assert.NoError(t, err)
+}
+
+// A blacklist conflict is a different unique constraint and must not be
+// reported as a duplicate package.
+func TestAddPackageBlacklistConflictIsNotDuplicate(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tChannel, err := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, Arch: ArchAArch64})
+	require.NoError(t, err)
+
+	_, err = a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0",
+		ApplicationID: tApp.ID, Arch: ArchAArch64, ChannelsBlacklist: []string{tChannel.ID, tChannel.ID}})
+	assert.Error(t, err)
+	assert.NotErrorIs(t, err, ErrDuplicatePackage)
+}
+
+func TestIsUniqueViolation(t *testing.T) {
+	assert.True(t, isUniqueViolation(&pgconn.PgError{Code: pgUniqueViolation}))
+	assert.True(t, isUniqueViolation(fmt.Errorf("insert failed: %w", &pgconn.PgError{Code: pgUniqueViolation})))
+
+	// Foreign key violation, not a duplicate.
+	assert.False(t, isUniqueViolation(&pgconn.PgError{Code: "23503"}))
+	assert.False(t, isUniqueViolation(errors.New("connection refused")))
+	assert.False(t, isUniqueViolation(nil))
 }
 
 func TestAddPackageFlatcar(t *testing.T) {

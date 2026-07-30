@@ -889,8 +889,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/package"
-        "400": 
+        "400":
           description: Create Package bad request response
+        "409":
+          description: Create Package conflict response, the package already exists
         "500":
           description: Create package error response
   /api/apps/{appIDorProductID}/packages/{packageID}:
