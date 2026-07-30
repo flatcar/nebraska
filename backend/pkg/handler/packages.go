@@ -179,7 +179,7 @@ func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, desc
 		flatcarAction.PackageID = ID
 	}
 
-	var extraFilesArray []types.File
+	extraFilesArray := []types.File{}
 	if extraFiles != nil {
 		for _, file := range *extraFiles {
 			f := types.File{
