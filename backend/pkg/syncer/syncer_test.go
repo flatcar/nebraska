@@ -35,6 +35,9 @@ func newForTest(t *testing.T, conf *Config) *Syncer {
 	if conf.API == nil {
 		conf.API = a
 	}
+	if conf.Admin == nil {
+		conf.Admin = adminSvc(conf.API)
+	}
 	s, err := New(conf)
 	require.NoError(t, err)
 
@@ -57,6 +60,15 @@ func TestMain(m *testing.M) {
 func TestSyncer_NoAPI(t *testing.T) {
 	_, err := New(&Config{})
 	assert.ErrorIs(t, err, ErrInvalidAPIInstance)
+}
+
+func TestSyncer_NoAdmin(t *testing.T) {
+	a := newAPI(t)
+	t.Cleanup(func() {
+		a.Close()
+	})
+	_, err := New(&Config{API: a})
+	assert.ErrorIs(t, err, ErrInvalidAdminInstance)
 }
 
 func TestSyncer_InvalidPkgsURL(t *testing.T) {
@@ -94,6 +106,7 @@ func TestSyncer_InvalidPkgsURL(t *testing.T) {
 
 			_, err := New(&Config{
 				API:         a,
+				Admin:       adminSvc(a),
 				PackagesURL: testCase.url,
 			})
 			if testCase.isErr {
@@ -108,13 +121,14 @@ func TestSyncer_InvalidPkgsURL(t *testing.T) {
 func TestSyncer_Init(t *testing.T) {
 	syncer := newForTest(t, &Config{})
 	a := syncer.api
+	as := adminSvc(a)
 	t.Cleanup(func() {
 		syncer.api.Close()
 	})
 
 	tApp, err := a.GetApp(flatcarAppID)
 	require.NoError(t, err)
-	tPkg, err := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64})
+	tPkg, err := as.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64})
 	require.NoError(t, err)
 	groupID, err := a.GetGroupID(flatcarAppID, "stable", tPkg.Arch)
 	require.NoError(t, err)
@@ -126,7 +140,7 @@ func TestSyncer_Init(t *testing.T) {
 
 	tChannel.PackageID = null.StringFrom(tPkg.ID)
 
-	err = a.UpdateChannel(tChannel)
+	err = as.UpdateChannel(tChannel)
 	require.NoError(t, err)
 
 	err = syncer.initialize()
@@ -174,9 +188,10 @@ func createOmahaUpdate() *omaha.UpdateResponse {
 
 func setupFlatcarAppStableGroup(t *testing.T, a *api.API) *api.Group {
 	t.Helper()
+	as := adminSvc(a)
 	tApp, err := a.GetApp(flatcarAppID)
 	require.NoError(t, err)
-	tPkg, err := a.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "0.1.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64})
+	tPkg, err := as.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "0.1.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64})
 	require.NoError(t, err)
 	groupID, err := a.GetGroupID(flatcarAppID, "stable", tPkg.Arch)
 	require.NoError(t, err)

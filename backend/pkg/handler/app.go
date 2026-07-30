@@ -63,7 +63,7 @@ func (h *Handler) CreateApp(ctx echo.Context, params codegen.CreateAppParams) er
 		source = cloneAppID
 	}
 
-	app, err = h.db.AddAppCloning(app, source)
+	app, err = h.admin.AddAppCloning(app, source)
 	if err != nil {
 		sourceAppID := "none"
 		if params.CloneFrom != nil {
@@ -123,7 +123,7 @@ func (h *Handler) UpdateApp(ctx echo.Context, appIDorProductID string) error {
 
 	app := appFromRequest(request.Name, request.Description, appID, "", request.ProductId)
 
-	err = h.db.UpdateApp(app)
+	err = h.admin.UpdateApp(app)
 	if err != nil {
 		l.Error().Err(err).Msgf("updatedApp - updating app %s", appID)
 		return ctx.NoContent(http.StatusInternalServerError)
@@ -154,7 +154,7 @@ func (h *Handler) DeleteApp(ctx echo.Context, appIDorProductID string) error {
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	err = h.db.DeleteApp(appID)
+	err = h.admin.DeleteApp(appID)
 	if err != nil {
 		l.Error().Err(err).Str("appID", appID).Msg("deleteApp")
 		return ctx.NoContent(http.StatusInternalServerError)

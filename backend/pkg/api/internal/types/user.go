@@ -1,6 +1,13 @@
 package types
 
-import "time"
+import (
+	"errors"
+	"time"
+)
+
+// ErrUpdatingPassword indicates that something went wrong while updating
+// the user's password.
+var ErrUpdatingPassword = errors.New("nebraska: error updating password")
 
 // User represents a Nebraska user.
 type User struct {

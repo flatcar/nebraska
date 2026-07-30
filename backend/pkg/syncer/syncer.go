@@ -24,6 +24,7 @@ import (
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api/admin"
 	"github.com/flatcar/nebraska/backend/pkg/config"
 	"github.com/flatcar/nebraska/backend/pkg/logger"
 	"github.com/flatcar/nebraska/backend/pkg/tlsutil"
@@ -39,6 +40,10 @@ var (
 	// ErrInvalidAPIInstance error indicates that no valid api instance was
 	// provided to the syncer constructor.
 	ErrInvalidAPIInstance = errors.New("invalid api instance")
+
+	// ErrInvalidAdminInstance error indicates that no valid admin service was
+	// provided to the syncer constructor.
+	ErrInvalidAdminInstance = errors.New("invalid admin instance")
 )
 
 type channelDescriptor struct {
@@ -53,6 +58,7 @@ type channelDescriptor struct {
 // into packagesPath and package url/filename will be rewritten.
 type Syncer struct {
 	api               *api.API
+	admin             *admin.Service
 	hostPackages      bool
 	packagesPath      string
 	packagesURL       string
@@ -70,6 +76,7 @@ type Syncer struct {
 // Config represents the configuration used to create a new Syncer instance.
 type Config struct {
 	API               *api.API
+	Admin             *admin.Service
 	HostPackages      bool
 	PackagesPath      string
 	PackagesURL       string
@@ -79,7 +86,7 @@ type Config struct {
 }
 
 // Setup creates a new syncer from config and db connection, and returns it.
-func Setup(conf *config.Config, db *api.API) (*Syncer, error) {
+func Setup(conf *config.Config, db *api.API, adminSvc *admin.Service) (*Syncer, error) {
 	checkFrequency, err := time.ParseDuration(conf.CheckFrequencyVal)
 	if err != nil {
 		return nil, fmt.Errorf("invalid Check Frequency value: %w", err)
@@ -93,6 +100,7 @@ func Setup(conf *config.Config, db *api.API) (*Syncer, error) {
 
 	syncer, err := New(&Config{
 		API:               db,
+		Admin:             adminSvc,
 		HostPackages:      conf.HostFlatcarPackages,
 		PackagesPath:      conf.FlatcarPackagesPath,
 		PackagesURL:       conf.SyncerPkgsURL,
@@ -112,6 +120,10 @@ func New(conf *Config) (*Syncer, error) {
 		return nil, ErrInvalidAPIInstance
 	}
 
+	if conf.Admin == nil {
+		return nil, ErrInvalidAdminInstance
+	}
+
 	if conf.PackagesURL != "" {
 		if _, err := url.Parse(conf.PackagesURL); err != nil {
 			return nil, fmt.Errorf("invalid package url: %w", err)
@@ -120,6 +132,7 @@ func New(conf *Config) (*Syncer, error) {
 
 	s := &Syncer{
 		api:               conf.API,
+		admin:             conf.Admin,
 		hostPackages:      conf.HostPackages,
 		packagesPath:      conf.PackagesPath,
 		packagesURL:       conf.PackagesURL,
@@ -457,7 +470,7 @@ func (s *Syncer) createPackage(
 	}
 
 	// Create package in database
-	pkg, err = s.api.AddPackageWithMetadata(pkg)
+	pkg, err = s.admin.AddPackageWithMetadata(pkg)
 	if err != nil {
 		// Clean up downloaded files if DB operation failed
 		if s.hostPackages {
@@ -523,7 +536,7 @@ func (s *Syncer) updateChannelToPackage(
 	}
 
 	channel.PackageID = null.StringFrom(pkg.ID)
-	if err = s.api.UpdateChannel(channel); err != nil {
+	if err = s.admin.UpdateChannel(channel); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
@@ -552,7 +565,7 @@ func (s *Syncer) markPackageAsFloor(descriptor channelDescriptor, pkg *api.Packa
 		floorReason = null.StringFrom("Synced from upstream Flatcar channel")
 	}
 
-	if err := s.api.AddChannelPackageFloor(channelID, pkg.ID, floorReason); err != nil {
+	if err := s.admin.AddChannelPackageFloor(channelID, pkg.ID, floorReason); err != nil {
 		l.Error().Err(err).
 			Str("version", pkg.Version).
 			Str("channel", descriptor.name).

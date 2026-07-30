@@ -7,7 +7,14 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api/admin"
 )
+
+// adminSvc returns an admin.Service that reuses a's shared read queries so
+// tests can exercise admin write operations.
+func adminSvc(a *api.API) *admin.Service {
+	return admin.NewService(a.Reads())
+}
 
 // setupSyncerTest sets up a standard syncer test environment
 func setupSyncerTest(t *testing.T) (*Syncer, *api.API, *api.Group, *api.Channel) {

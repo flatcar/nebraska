@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api/admin"
 )
 
 // newDBForTest is a helper function that
@@ -18,6 +19,12 @@ func newDBForTest(t *testing.T) *api.API {
 	require.NoError(t, err)
 	require.NotNil(t, db)
 	return db
+}
+
+// adminSvc builds an admin.Service over the given API's shared read queries,
+// matching how the composition root injects it into the server.
+func adminSvc(db *api.API) *admin.Service {
+	return admin.NewService(db.Reads())
 }
 
 // newOIDCMockServer creates a new mockoidc server and returns it.

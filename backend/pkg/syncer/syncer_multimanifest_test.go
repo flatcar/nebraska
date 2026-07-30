@@ -24,6 +24,7 @@ func createMultiManifestUpdateWithReasons() *omaha.UpdateResponse {
 func TestSyncer_MultiManifestWithExistingPackage(t *testing.T) {
 	syncer := newForTest(t, &Config{})
 	a := syncer.api
+	as := adminSvc(a)
 	t.Cleanup(func() { a.Close() })
 
 	tGroup := setupFlatcarAppStableGroup(t, a)
@@ -31,14 +32,14 @@ func TestSyncer_MultiManifestWithExistingPackage(t *testing.T) {
 	require.NoError(t, syncer.initialize())
 
 	// Pre-create first package
-	tPkg, err := a.AddPackage(&api.Package{
+	tPkg, err := as.AddPackage(&api.Package{
 		Type: api.PkgTypeFlatcar, URL: "https://example.com/1000.0.0",
 		Version: "1000.0.0", Filename: null.StringFrom("flatcar-1000.0.0.gz"),
 		Size: null.StringFrom("1000"), Hash: null.StringFrom("hash1000"),
 		ApplicationID: flatcarAppID, Arch: tChannel.Arch,
 	})
 	require.NoError(t, err)
-	_, err = a.AddFlatcarAction(&api.FlatcarAction{
+	_, err = as.AddFlatcarAction(&api.FlatcarAction{
 		Event: "postinstall", Sha256: "dGVzdHNoYTI1Ng==", PackageID: tPkg.ID,
 	})
 	require.NoError(t, err)
@@ -73,6 +74,7 @@ func TestSyncer_PackageVerificationErrors(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			syncer := newForTest(t, &Config{})
 			a := syncer.api
+			as := adminSvc(a)
 			t.Cleanup(func() { a.Close() })
 
 			tGroup := setupFlatcarAppStableGroup(t, a)
@@ -80,14 +82,14 @@ func TestSyncer_PackageVerificationErrors(t *testing.T) {
 			require.NoError(t, syncer.initialize())
 
 			// Create package with wrong hash or size
-			tPkg, err := a.AddPackage(&api.Package{
+			tPkg, err := as.AddPackage(&api.Package{
 				Type: api.PkgTypeFlatcar, URL: "https://example.com/1000.0.0",
 				Version: "1000.0.0", Filename: null.StringFrom("flatcar-1000.0.0.gz"),
 				Size: null.StringFrom(tt.size), Hash: null.StringFrom(tt.hash),
 				ApplicationID: flatcarAppID, Arch: tChannel.Arch,
 			})
 			require.NoError(t, err)
-			_, err = a.AddFlatcarAction(&api.FlatcarAction{
+			_, err = as.AddFlatcarAction(&api.FlatcarAction{
 				Event: "postinstall", Sha256: "dGVzdHNoYTI1Ng==", PackageID: tPkg.ID,
 			})
 			require.NoError(t, err)
@@ -108,6 +110,7 @@ func TestSyncer_PackageVerificationErrors(t *testing.T) {
 func TestSyncer_MissingFlatcarAction(t *testing.T) {
 	syncer := newForTest(t, &Config{})
 	a := syncer.api
+	as := adminSvc(a)
 	t.Cleanup(func() { a.Close() })
 
 	tGroup := setupFlatcarAppStableGroup(t, a)
@@ -115,7 +118,7 @@ func TestSyncer_MissingFlatcarAction(t *testing.T) {
 	require.NoError(t, syncer.initialize())
 
 	// Create package WITHOUT FlatcarAction
-	_, err := a.AddPackage(&api.Package{
+	_, err := as.AddPackage(&api.Package{
 		Type: api.PkgTypeFlatcar, URL: "https://example.com/1000.0.0",
 		Version: "1000.0.0", Filename: null.StringFrom("flatcar-1000.0.0.gz"),
 		Size: null.StringFrom("1000"), Hash: null.StringFrom("hash1000"),
@@ -195,6 +198,7 @@ func TestSyncer_TargetAsFloor(t *testing.T) {
 func TestSyncer_AllFloorsNoTarget(t *testing.T) {
 	syncer := newForTest(t, &Config{})
 	a := syncer.api
+	as := adminSvc(a)
 	t.Cleanup(func() { a.Close() })
 
 	tGroup := setupFlatcarAppStableGroup(t, a)
@@ -202,14 +206,14 @@ func TestSyncer_AllFloorsNoTarget(t *testing.T) {
 	require.NoError(t, syncer.initialize())
 
 	// Pre-set channel to existing version
-	existingPkg, err := a.AddPackage(&api.Package{
+	existingPkg, err := as.AddPackage(&api.Package{
 		Type: api.PkgTypeFlatcar, URL: "https://example.com/500.0.0",
 		Version: "500.0.0", Filename: null.StringFrom("flatcar-500.0.0.gz"),
 		ApplicationID: flatcarAppID, Arch: tChannel.Arch,
 	})
 	require.NoError(t, err)
 	tChannel.PackageID = null.StringFrom(existingPkg.ID)
-	err = a.UpdateChannel(tChannel)
+	err = as.UpdateChannel(tChannel)
 	require.NoError(t, err)
 
 	// Create update with ONLY floors, no target

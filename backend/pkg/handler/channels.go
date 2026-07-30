@@ -57,7 +57,7 @@ func (h *Handler) CreateChannel(ctx echo.Context, appIDorProductID string) error
 		return appNotFoundResponse(ctx, appIDorProductID)
 	}
 	channel := newChannel(appID, request.Arch, request.Color, request.Name, request.PackageId)
-	_, err = h.db.AddChannel(channel)
+	_, err = h.admin.AddChannel(channel)
 	if err != nil {
 		l.Error().Err(err).Msgf("addChannel channel %v", channel)
 		return ctx.NoContent(http.StatusInternalServerError)
@@ -113,7 +113,7 @@ func (h *Handler) UpdateChannel(ctx echo.Context, appIDorProductID string, chann
 	channel := newChannel(appID, request.Arch, request.Color, request.Name, request.PackageId)
 	channel.ID = channelID
 
-	err = h.db.UpdateChannel(channel)
+	err = h.admin.UpdateChannel(channel)
 	if err != nil {
 		l.Error().Err(err).Msgf("updateChannel - updating channel %+v", channel)
 		return ctx.NoContent(http.StatusInternalServerError)
@@ -139,7 +139,7 @@ func (h *Handler) DeleteChannel(ctx echo.Context, _ string, channelID string) er
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	err = h.db.DeleteChannel(channelID)
+	err = h.admin.DeleteChannel(channelID)
 	if err != nil {
 		l.Error().Err(err).Str("channelID", channelID).Msg("deleteChannel")
 		return ctx.NoContent(http.StatusInternalServerError)

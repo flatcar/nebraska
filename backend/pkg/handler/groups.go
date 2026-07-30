@@ -61,7 +61,7 @@ func (h *Handler) CreateGroup(ctx echo.Context, appIDorProductID string) error {
 
 	group := groupFromRequest(request.Name, request.Description, request.PolicyMaxUpdatesPerPeriod, request.PolicyOfficeHours, request.PolicyPeriodInterval, request.PolicySafeMode, request.PolicyTimezone, request.PolicyUpdateTimeout, request.PolicyUpdatesEnabled, request.ChannelId, request.Track, "", appID)
 
-	group, err = h.db.AddGroup(group)
+	group, err = h.admin.AddGroup(group)
 	if err != nil {
 		l.Error().Err(err).Msgf("addGroup - adding group %v", group)
 		return ctx.NoContent(http.StatusInternalServerError)
@@ -116,7 +116,7 @@ func (h *Handler) UpdateGroup(ctx echo.Context, appIDorProductID string, groupID
 
 	group := groupFromRequest(request.Name, request.Description, request.PolicyMaxUpdatesPerPeriod, request.PolicyOfficeHours, request.PolicyPeriodInterval, request.PolicySafeMode, request.PolicyTimezone, request.PolicyUpdateTimeout, request.PolicyUpdatesEnabled, request.ChannelId, request.Track, groupID, appID)
 
-	err = h.db.UpdateGroup(group)
+	err = h.admin.UpdateGroup(group)
 	if err != nil {
 		l.Error().Err(err).Msgf("updateGroup - updating group %+v", request)
 		return ctx.NoContent(http.StatusInternalServerError)
@@ -157,7 +157,7 @@ func (h *Handler) DeleteGroup(ctx echo.Context, _ string, groupID string) error 
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	err = h.db.DeleteGroup(groupID)
+	err = h.admin.DeleteGroup(groupID)
 	if err != nil {
 		l.Error().Err(err).Str("groupID", groupID).Msg("deleteGroup")
 		return ctx.NoContent(http.StatusInternalServerError)

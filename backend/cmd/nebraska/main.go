@@ -6,6 +6,7 @@ import (
 	"github.com/rs/zerolog"
 
 	db "github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api/admin"
 	"github.com/flatcar/nebraska/backend/pkg/config"
 	"github.com/flatcar/nebraska/backend/pkg/logger"
 	"github.com/flatcar/nebraska/backend/pkg/metrics"
@@ -74,9 +75,12 @@ func main() {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	}
 
+	// setup admin service (injected into syncer and the HTTP handlers)
+	adminSvc := admin.NewService(db.Reads())
+
 	// setup syncer
 	if conf.EnableSyncer {
-		syncer, err := syncer.Setup(conf, db)
+		syncer, err := syncer.Setup(conf, db, adminSvc)
 		if err != nil {
 			l.Fatal().
 				Err(err).
@@ -94,7 +98,7 @@ func main() {
 			Msg("Failed to register metrics")
 	}
 
-	server, err := server.New(conf, db)
+	server, err := server.New(conf, db, adminSvc)
 	if err != nil {
 		l.Fatal().
 			Err(err).

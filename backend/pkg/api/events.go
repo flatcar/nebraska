@@ -6,6 +6,8 @@ import (
 
 	"github.com/doug-martin/goqu/v9"
 	"gopkg.in/guregu/null.v4"
+
+	"github.com/flatcar/nebraska/backend/pkg/api/internal/types"
 )
 
 const (
@@ -51,7 +53,7 @@ var (
 
 	// ErrInvalidApplicationOrGroup indicates that the application or group id
 	// provided are not valid or related to each other.
-	ErrInvalidApplicationOrGroup = errors.New("nebraska: invalid application or group")
+	ErrInvalidApplicationOrGroup = types.ErrInvalidApplicationOrGroup
 
 	// ErrInvalidEventTypeOrResult indicates that the event or result provided
 	// are not valid (Nebraska only implements a subset of the Omaha protocol

@@ -6,14 +6,23 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"gopkg.in/guregu/null.v4"
+
+	"github.com/flatcar/nebraska/backend/pkg/api/admin"
 )
+
+// adminSvc returns an admin.Service that reuses a's shared read queries so
+// tests can exercise admin write operations (which moved to package admin).
+func adminSvc(a *API) *admin.Service {
+	return admin.NewService(a.Reads())
+}
 
 // Test helper functions to reduce boilerplate in floor tests
 
 // quickPkg creates a Flatcar package with minimal setup
 func quickPkg(t *testing.T, a *API, appID, version string) *Package {
 	t.Helper()
-	pkg, err := a.AddPackage(&Package{
+	as := adminSvc(a)
+	pkg, err := as.AddPackage(&Package{
 		Type:          PkgTypeFlatcar,
 		URL:           "http://sample.url/" + version,
 		Version:       version,
@@ -52,12 +61,13 @@ type floorTestSetup struct {
 // setupFloors creates a standard floor test configuration
 func setupFloors(t *testing.T, a *API, name string, floorVersions []string, targetVersion string) *floorTestSetup {
 	t.Helper()
+	as := adminSvc(a)
 
 	// Use existing Flatcar app if available, otherwise create test app
 	tApp, err := a.GetApp("e96281a6-d1af-4bde-9a0a-97b76e56dc57") // flatcarAppID
 	if err != nil {
-		tTeam, _ := a.AddTeam(&Team{Name: "test_team_" + name})
-		tApp, _ = a.AddApp(&Application{Name: "test_app_" + name, TeamID: tTeam.ID})
+		tTeam, _ := as.AddTeam(&Team{Name: "test_team_" + name})
+		tApp, _ = as.AddApp(&Application{Name: "test_app_" + name, TeamID: tTeam.ID})
 	}
 
 	// Create all packages
@@ -69,7 +79,7 @@ func setupFloors(t *testing.T, a *API, name string, floorVersions []string, targ
 	target := pkgs[len(pkgs)-1]
 
 	// Create channel with target
-	channel, err := a.AddChannel(&Channel{
+	channel, err := as.AddChannel(&Channel{
 		Name:          name,
 		ApplicationID: tApp.ID,
 		PackageID:     null.StringFrom(target.ID),
@@ -79,13 +89,13 @@ func setupFloors(t *testing.T, a *API, name string, floorVersions []string, targ
 
 	// Add floors with reasons
 	for i, floor := range floors {
-		err := a.AddChannelPackageFloor(channel.ID, floor.ID,
+		err := as.AddChannelPackageFloor(channel.ID, floor.ID,
 			null.StringFrom(fmt.Sprintf("Floor %d", i+1)))
 		require.NoError(t, err)
 	}
 
 	// Create group
-	group, err := a.AddGroup(&Group{
+	group, err := as.AddGroup(&Group{
 		Name:                      name,
 		ApplicationID:             tApp.ID,
 		ChannelID:                 null.StringFrom(channel.ID),

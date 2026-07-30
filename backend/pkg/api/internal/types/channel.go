@@ -1,10 +1,19 @@
 package types
 
 import (
+	"errors"
 	"time"
 
 	"gopkg.in/guregu/null.v4"
 )
+
+// ErrInvalidChannel error indicates that a channel doesn't belong to the
+// application it was supposed to belong to.
+var ErrInvalidChannel = errors.New("nebraska: invalid channel")
+
+// ErrBlacklistedChannel error indicates an attempt of creating/updating a
+// channel using a package that has blacklisted the channel.
+var ErrBlacklistedChannel = errors.New("nebraska: blacklisted channel")
 
 // Channel represents a Nebraska application's channel.
 type Channel struct {

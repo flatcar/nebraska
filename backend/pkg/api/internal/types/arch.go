@@ -8,6 +8,10 @@ import (
 // ErrInvalidArch indicates that the provided architecture is not valid/supported
 var ErrInvalidArch = errors.New("nebraska: invalid/unsupported arch")
 
+// ErrArchMismatch indicates that arches of two objects didn't
+// match (for example, for a package and channel)
+var ErrArchMismatch = errors.New("nebraska: mismatched arches")
+
 type Arch uint
 
 const (

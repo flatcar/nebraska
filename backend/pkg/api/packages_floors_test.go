@@ -13,20 +13,21 @@ import (
 func TestFloorOperations(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
 	// Setup using helpers
 	setup := setupFloors(t, a, "test", []string{"1000.0.0", "2000.0.0"}, "3000.0.0")
 
 	// Update floor reason for first floor
-	assert.NoError(t, a.RemoveChannelPackageFloor(setup.Channel.ID, setup.Floors[0].ID))
-	assert.NoError(t, a.AddChannelPackageFloor(setup.Channel.ID, setup.Floors[0].ID, null.StringFrom("Filesystem upgrade")))
+	assert.NoError(t, as.RemoveChannelPackageFloor(setup.Channel.ID, setup.Floors[0].ID))
+	assert.NoError(t, as.AddChannelPackageFloor(setup.Channel.ID, setup.Floors[0].ID, null.StringFrom("Filesystem upgrade")))
 
 	// Test wrong arch
-	tTeam, err := a.AddTeam(&Team{Name: "test_team_arch"})
+	tTeam, err := as.AddTeam(&Team{Name: "test_team_arch"})
 	assert.NoError(t, err)
-	tApp, err := a.AddApp(&Application{Name: "test_app_arch", TeamID: tTeam.ID})
+	tApp, err := as.AddApp(&Application{Name: "test_app_arch", TeamID: tTeam.ID})
 	assert.NoError(t, err)
-	pkgWrongArch, err := a.AddPackage(&Package{
+	pkgWrongArch, err := as.AddPackage(&Package{
 		Type:          PkgTypeFlatcar,
 		URL:           "http://sample.url/1500.0.0",
 		Version:       "1500.0.0",
@@ -34,7 +35,7 @@ func TestFloorOperations(t *testing.T) {
 		Arch:          ArchAArch64,
 	})
 	assert.NoError(t, err)
-	assert.Equal(t, ErrArchMismatch, a.AddChannelPackageFloor(setup.Channel.ID, pkgWrongArch.ID, null.String{}))
+	assert.Equal(t, ErrArchMismatch, as.AddChannelPackageFloor(setup.Channel.ID, pkgWrongArch.ID, null.String{}))
 
 	// Test getting floors
 	floors, err := a.GetChannelFloorPackages(setup.Channel.ID)
@@ -61,11 +62,11 @@ func TestFloorOperations(t *testing.T) {
 	}
 
 	// Test removing floor
-	assert.NoError(t, a.RemoveChannelPackageFloor(setup.Channel.ID, setup.Floors[0].ID))
+	assert.NoError(t, as.RemoveChannelPackageFloor(setup.Channel.ID, setup.Floors[0].ID))
 	floors, err = a.GetChannelFloorPackages(setup.Channel.ID)
 	assert.NoError(t, err)
 	assert.Len(t, floors, 1)
-	assert.Equal(t, ErrNoRowsAffected, a.RemoveChannelPackageFloor(setup.Channel.ID, setup.Floors[0].ID))
+	assert.Equal(t, ErrNoRowsAffected, as.RemoveChannelPackageFloor(setup.Channel.ID, setup.Floors[0].ID))
 }
 
 // TestFloorMaxLimit tests max floors per response limit
@@ -143,6 +144,7 @@ func TestNonStandardVersions(t *testing.T) {
 func TestFloorReason(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
 	// Setup with one floor
 	setup := setupFloors(t, a, "reason", []string{"1000.0.0"}, "2000.0.0")
@@ -150,12 +152,12 @@ func TestFloorReason(t *testing.T) {
 	channel := setup.Channel
 
 	// Remove existing floor to test fresh add
-	err := a.RemoveChannelPackageFloor(channel.ID, pkg.ID)
+	err := as.RemoveChannelPackageFloor(channel.ID, pkg.ID)
 	require.NoError(t, err)
 
 	// Add with reason
 	reason := "Critical boot partition restructuring"
-	err = a.AddChannelPackageFloor(channel.ID, pkg.ID, null.StringFrom(reason))
+	err = as.AddChannelPackageFloor(channel.ID, pkg.ID, null.StringFrom(reason))
 	assert.NoError(t, err)
 
 	floors, err := a.GetChannelFloorPackages(channel.ID)
@@ -164,7 +166,7 @@ func TestFloorReason(t *testing.T) {
 
 	// Update reason (UPSERT)
 	newReason := "Updated: Filesystem upgrade"
-	err = a.AddChannelPackageFloor(channel.ID, pkg.ID, null.StringFrom(newReason))
+	err = as.AddChannelPackageFloor(channel.ID, pkg.ID, null.StringFrom(newReason))
 	assert.NoError(t, err)
 
 	floors, err = a.GetChannelFloorPackages(channel.ID)
@@ -176,6 +178,7 @@ func TestFloorReason(t *testing.T) {
 func TestFloorRolloutPolicy(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
 	// Setup with one floor
 	setup := setupFloors(t, a, "policy", []string{"2000.0.0"}, "3000.0.0")
@@ -183,7 +186,7 @@ func TestFloorRolloutPolicy(t *testing.T) {
 	// Update group to have restricted policy
 	group := setup.Group
 	group.PolicyMaxUpdatesPerPeriod = 1 // Only 1 update allowed
-	err := a.UpdateGroup(group)
+	err := as.UpdateGroup(group)
 	assert.NoError(t, err)
 
 	// First client gets floor
@@ -200,6 +203,7 @@ func TestFloorRolloutPolicy(t *testing.T) {
 func TestTargetAsFloor(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
 	// Setup with target also being a floor
 	// This represents a critical version that MUST be installed
@@ -207,7 +211,7 @@ func TestTargetAsFloor(t *testing.T) {
 	setup := setupFloors(t, a, "targetfloor", []string{"1000.0.0", "2000.0.0"}, "3000.0.0")
 
 	// Mark the target as ALSO being a floor (critical version)
-	err := a.AddChannelPackageFloor(setup.Channel.ID, setup.Target.ID,
+	err := as.AddChannelPackageFloor(setup.Channel.ID, setup.Target.ID,
 		null.StringFrom("Filesystem support for usr dir - mandatory"))
 	assert.NoError(t, err)
 
@@ -258,6 +262,7 @@ func TestTargetAsFloor(t *testing.T) {
 func TestFloorBlacklistConflict(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
+	as := adminSvc(a)
 
 	setup := setupFloors(t, a, "test-blacklist", []string{"1.0.0"}, "2.0.0")
 
@@ -266,7 +271,7 @@ func TestFloorBlacklistConflict(t *testing.T) {
 		floorPkg, err := a.GetPackage(setup.Floors[0].ID)
 		assert.NoError(t, err)
 		floorPkg.ChannelsBlacklist = append(floorPkg.ChannelsBlacklist, setup.Channel.ID)
-		err = a.UpdatePackage(floorPkg)
+		err = as.UpdatePackage(floorPkg)
 		assert.Equal(t, ErrBlacklistingFloor, err)
 	})
 
@@ -275,7 +280,7 @@ func TestFloorBlacklistConflict(t *testing.T) {
 		targetPkg, err := a.GetPackage(setup.Target.ID)
 		assert.NoError(t, err)
 		targetPkg.ChannelsBlacklist = append(targetPkg.ChannelsBlacklist, setup.Channel.ID)
-		err = a.UpdatePackage(targetPkg)
+		err = as.UpdatePackage(targetPkg)
 		assert.Equal(t, ErrBlacklistingChannel, err)
 	})
 
@@ -283,11 +288,11 @@ func TestFloorBlacklistConflict(t *testing.T) {
 		// Create new package with blacklist
 		pkg := quickPkg(t, a, setup.AppID, "3.0.0")
 		pkg.ChannelsBlacklist = StringArray{setup.Channel.ID}
-		err := a.UpdatePackage(pkg)
+		err := as.UpdatePackage(pkg)
 		assert.NoError(t, err)
 
 		// Try to mark as floor - should fail because it's blacklisted
-		err = a.AddChannelPackageFloor(setup.Channel.ID, pkg.ID, null.StringFrom("Should fail"))
+		err = as.AddChannelPackageFloor(setup.Channel.ID, pkg.ID, null.StringFrom("Should fail"))
 		assert.Error(t, err)
 	})
 }

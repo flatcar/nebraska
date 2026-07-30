@@ -14,7 +14,14 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api/admin"
 )
+
+// adminSvc returns an admin.Service that reuses db's shared read queries so
+// tests can construct a server with admin write support.
+func adminSvc(db *api.API) *admin.Service {
+	return admin.NewService(db.Reads())
+}
 
 // newDBForTest is a helper function that
 // establishes connection with test db and returns the db struct.

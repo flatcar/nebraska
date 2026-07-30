@@ -43,7 +43,7 @@ func TestAPIEndpointSecret(t *testing.T) {
 	// increase max update for the group
 	group := app.Groups[0]
 	group.PolicyMaxUpdatesPerPeriod = 1000
-	err := db.UpdateGroup(group)
+	err := adminSvc(db).UpdateGroup(group)
 	require.NoError(t, err)
 
 	tt := []struct {
@@ -124,7 +124,7 @@ func TestAPIEndpointSecret(t *testing.T) {
 			require.NoError(t, err)
 
 			testConfig.APIEndpointSuffix = tc.secret
-			server, err := server.New(&testConfig, db)
+			server, err := server.New(&testConfig, db, adminSvc(db))
 			assert.NoError(t, err)
 
 			//nolint:errcheck
