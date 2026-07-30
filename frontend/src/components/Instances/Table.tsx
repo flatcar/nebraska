@@ -1,6 +1,3 @@
-import menuDown from '@iconify/icons-mdi/menu-down';
-import menuSwap from '@iconify/icons-mdi/menu-swap';
-import menuUp from '@iconify/icons-mdi/menu-up';
 import { Icon } from '@iconify/react';
 import { IconButton } from '@mui/material';
 import MuiTable from '@mui/material/Table';
@@ -14,6 +11,9 @@ import semver from 'semver';
 import _ from 'underscore';
 
 import { Channel, Instance } from '../../api/apiDataTypes';
+import menuDown from '../../icons/mdi/menu-down.json';
+import menuSwap from '../../icons/mdi/menu-swap.json';
+import menuUp from '../../icons/mdi/menu-up.json';
 import { cleanSemverVersion, InstanceSortFilters } from '../../utils/helpers';
 import Item from './Item';
 

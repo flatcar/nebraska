@@ -1,5 +1,3 @@
-import chevronDown from '@iconify/icons-mdi/chevron-down';
-import chevronUp from '@iconify/icons-mdi/chevron-up';
 import { InlineIcon } from '@iconify/react';
 import Box from '@mui/material/Box';
 import Button, { ButtonProps } from '@mui/material/Button';
@@ -31,6 +29,8 @@ import * as Yup from 'yup';
 import API from '../../api/API';
 import { Application, Group, Instance, InstanceStatusHistory } from '../../api/apiDataTypes';
 import { makeLocaleTime } from '../../i18n/dateTime';
+import chevronDown from '../../icons/mdi/chevron-down.json';
+import chevronUp from '../../icons/mdi/chevron-up.json';
 import {
   ERROR_STATUS_CODE,
   getErrorAndFlags,

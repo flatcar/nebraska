@@ -1,13 +1,14 @@
-import alertCircleOutline from '@iconify/icons-mdi/alert-circle-outline';
-import checkCircleOutline from '@iconify/icons-mdi/check-circle-outline';
-import downloadCircleOutline from '@iconify/icons-mdi/download-circle-outline';
-import helpCircleOutline from '@iconify/icons-mdi/help-circle-outline';
-import packageVariantClosed from '@iconify/icons-mdi/package-variant-closed';
-import pauseCircle from '@iconify/icons-mdi/pause-circle';
-import playCircle from '@iconify/icons-mdi/play-circle';
-import progressDownload from '@iconify/icons-mdi/progress-download';
 import { Theme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+
+import alertCircleOutline from '../../icons/mdi/alert-circle-outline.json';
+import checkCircleOutline from '../../icons/mdi/check-circle-outline.json';
+import downloadCircleOutline from '../../icons/mdi/download-circle-outline.json';
+import helpCircleOutline from '../../icons/mdi/help-circle-outline.json';
+import packageVariantClosed from '../../icons/mdi/package-variant-closed.json';
+import pauseCircle from '../../icons/mdi/pause-circle.json';
+import playCircle from '../../icons/mdi/play-circle.json';
+import progressDownload from '../../icons/mdi/progress-download.json';
 
 function makeStatusDefs(theme: Theme): {
   [key: string]: {
