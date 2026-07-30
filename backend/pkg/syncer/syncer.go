@@ -459,6 +459,23 @@ func (s *Syncer) createPackage(
 	// Create package in database
 	pkg, err = s.api.AddPackageWithMetadata(pkg)
 	if err != nil {
+		if errors.Is(err, api.ErrPackageAlreadyExists) {
+			existingPkg, getErr := s.api.GetPackageByVersionAndArch(flatcarAppID, version, descriptor.arch)
+			if getErr == nil {
+				l.Info().
+					Str("channel", descriptor.name).
+					Str("arch", descriptor.arch.String()).
+					Str("version", version).
+					Msg("createPackage - package already registered, using existing package")
+				return existingPkg, nil
+			}
+			l.Warn().Err(getErr).
+				Str("channel", descriptor.name).
+				Str("arch", descriptor.arch.String()).
+				Str("version", version).
+				Msg("createPackage - package already registered but fetching it failed")
+			return nil, err
+		}
 		// Clean up downloaded files if DB operation failed
 		if s.hostPackages {
 			filesToClean := []string{filename}

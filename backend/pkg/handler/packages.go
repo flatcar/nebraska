@@ -2,6 +2,7 @@ package handler
 
 import (
 	"database/sql"
+	"errors"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -62,6 +63,10 @@ func (h *Handler) CreatePackage(ctx echo.Context, appIDorProductID string) error
 
 	pkg, err = h.db.AddPackage(pkg)
 	if err != nil {
+		if errors.Is(err, api.ErrPackageAlreadyExists) {
+			l.Warn().Err(err).Msg("addPackage - package already exists")
+			return ctx.String(http.StatusConflict, err.Error())
+		}
 		l.Error().Err(err).Msgf("addPackage - adding package %v", request)
 		return ctx.NoContent(http.StatusInternalServerError)
 	}

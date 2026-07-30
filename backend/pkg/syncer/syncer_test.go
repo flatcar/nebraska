@@ -1,8 +1,14 @@
 package syncer
 
 import (
+	"crypto/sha1"
+	"crypto/sha256"
+	"encoding/base64"
 	"log"
+	"net/http"
+	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/flatcar/go-omaha/omaha"
@@ -221,6 +227,103 @@ func TestSyncer_GetPackage(t *testing.T) {
 	assert.Equal(t, update.Manifests[0].Version, tGroup.Channel.Package.Version)
 	assert.Equal(t, update.URLs[0].CodeBase, tGroup.Channel.Package.URL)
 	assert.Equal(t, update.Manifests[0].Packages[0].Name, tGroup.Channel.Package.Filename.String)
+}
+
+func TestSyncer_CreatePackageAlreadyExists(t *testing.T) {
+	syncer := newForTest(t, &Config{})
+	a := syncer.api
+	t.Cleanup(func() {
+		a.Close()
+	})
+
+	update := createOmahaUpdate()
+	manifest := update.Manifests[0]
+
+	desc := channelDescriptor{
+		name: "stable",
+		arch: api.ArchAMD64,
+	}
+
+	existingPkg, err := a.AddPackage(&api.Package{
+		Type:          api.PkgTypeFlatcar,
+		URL:           "http://sample.url/pkg",
+		Version:       manifest.Version,
+		ApplicationID: flatcarAppID,
+		Arch:          desc.arch,
+	})
+	require.NoError(t, err)
+
+	pkg, err := syncer.createPackage(desc, manifest, update)
+	require.NoError(t, err)
+	assert.Equal(t, existingPkg.ID, pkg.ID)
+}
+
+func TestSyncer_CreatePackageAlreadyExistsHostPackages(t *testing.T) {
+	payload := []byte("fake flatcar payload for duplicate package test")
+	sha1Sum := sha1.Sum(payload)
+	sha1Base64 := base64.StdEncoding.EncodeToString(sha1Sum[:])
+	sha256Sum := sha256.Sum256(payload)
+	sha256Base64 := base64.StdEncoding.EncodeToString(sha256Sum[:])
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write(payload)
+	}))
+	t.Cleanup(server.Close)
+
+	packagesPath := t.TempDir()
+	syncer := newForTest(t, &Config{
+		HostPackages: true,
+		PackagesPath: packagesPath,
+	})
+	a := syncer.api
+	t.Cleanup(func() {
+		a.Close()
+	})
+
+	update := &omaha.UpdateResponse{
+		URLs: []*omaha.URL{
+			{CodeBase: server.URL},
+		},
+		Manifests: []*omaha.Manifest{
+			{
+				Version: "1.2.3",
+				Packages: []*omaha.Package{
+					{
+						Name: "updatepayload.tgz",
+						SHA1: sha1Base64,
+						Size: uint64(len(payload)),
+					},
+				},
+				Actions: []*omaha.Action{
+					{Event: "postinstall", SHA256: sha256Base64},
+				},
+			},
+		},
+	}
+	manifest := update.Manifests[0]
+
+	desc := channelDescriptor{
+		name: "stable",
+		arch: api.ArchAMD64,
+	}
+
+	existingPkg, err := a.AddPackage(&api.Package{
+		Type:          api.PkgTypeFlatcar,
+		URL:           "http://sample.url/pkg",
+		Version:       manifest.Version,
+		ApplicationID: flatcarAppID,
+		Arch:          desc.arch,
+	})
+	require.NoError(t, err)
+
+	pkg, err := syncer.createPackage(desc, manifest, update)
+	require.NoError(t, err)
+	assert.Equal(t, existingPkg.ID, pkg.ID)
+
+	hostedFile := filepath.Join(packagesPath, "flatcar-amd64-1.2.3.gz")
+	content, err := os.ReadFile(hostedFile)
+	require.NoError(t, err)
+	assert.Equal(t, payload, content)
 }
 
 func TestSyncer_GetMultiFilePackage(t *testing.T) {
