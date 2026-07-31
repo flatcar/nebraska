@@ -41,7 +41,7 @@ func (h *Handler) PaginateGroups(ctx echo.Context, appIDorProductID string, para
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	return ctx.JSON(http.StatusOK, groupsPage{totalCount, len(groups), groups})
+	return ctx.JSON(http.StatusOK, groupsPage{totalCount, len(groups), orEmpty(groups)})
 }
 
 func (h *Handler) CreateGroup(ctx echo.Context, appIDorProductID string) error {
