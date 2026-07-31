@@ -191,7 +191,45 @@ func TestGetGroupsFiltered(t *testing.T) {
 			vb := versionBreakdown[0]
 			assert.Equal(t, "1.0.0", vb.Version)
 			assert.Equal(t, 1, vb.Instances)
+			// The only instance that counts is the real one, so it accounts
+			// for the whole group and not just for a share of it.
+			assert.Equal(t, 100.0, vb.Percentage)
 		}
+	}
+}
+
+func TestVersionBreakdownPercentages(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	as := adminSvc(a)
+
+	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+
+	for _, version := range []string{"1.0.0", "1.0.0", "1.0.0", "2.0.0"} {
+		_, _ = a.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, version))
+	}
+	_, _ = a.RegisterInstance(Instance{ID: "{" + uuid.New().String() + "}", IP: "10.0.0.2"}, NewInstanceApplication(tApp.ID, tGroup.ID, "3.0.0"))
+
+	versionBreakdown, err := a.GetGroupVersionBreakdown(tGroup.ID)
+	assert.NoError(t, err)
+
+	total := 0.0
+	for _, entry := range versionBreakdown {
+		total += entry.Percentage
+	}
+	assert.InDelta(t, 100.0, total, 0.01)
+
+	if assert.Len(t, versionBreakdown, 2) {
+		assert.Equal(t, "2.0.0", versionBreakdown[0].Version)
+		assert.Equal(t, 1, versionBreakdown[0].Instances)
+		assert.InDelta(t, 25.0, versionBreakdown[0].Percentage, 0.01)
+		assert.Equal(t, "1.0.0", versionBreakdown[1].Version)
+		assert.Equal(t, 3, versionBreakdown[1].Instances)
+		assert.InDelta(t, 75.0, versionBreakdown[1].Percentage, 0.01)
 	}
 }
 
