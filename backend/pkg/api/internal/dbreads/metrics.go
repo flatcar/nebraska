@@ -7,6 +7,11 @@ import (
 	"github.com/flatcar/nebraska/backend/pkg/api/internal/types"
 )
 
+const (
+	metricsQueryName = "app_instances_per_channel"
+	failedUpdatesQueryName = "failed_updates"
+)
+
 var (
 	appInstancesPerChannelMetricSQL = fmt.Sprintf(`
 SELECT a.name AS app_name, ia.version AS version, c.name AS channel_name, count(ia.version) AS instances_count
@@ -29,19 +34,19 @@ func (q *Queries) GetAppInstancesPerChannelMetrics() ([]types.AppInstancesPerCha
 	var metrics []types.AppInstancesPerChannelMetric
 	rows, err := q.db.Queryx(appInstancesPerChannelMetricSQL)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to execute %s query: %w", metricsQueryName, err)
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var metric types.AppInstancesPerChannelMetric
 		err := rows.StructScan(&metric)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to scan %s metric row: %w", metricsQueryName, err)
 		}
 		metrics = append(metrics, metric)
 	}
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error iterating %s metric rows: %w", metricsQueryName, err)
 	}
 	return metrics, nil
 }
@@ -50,19 +55,19 @@ func (q *Queries) GetFailedUpdatesMetrics() ([]types.FailedUpdatesMetric, error)
 	var metrics []types.FailedUpdatesMetric
 	rows, err := q.db.Queryx(failedUpdatesSQL)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to execute %s query: %w", failedUpdatesQueryName, err)
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var metric types.FailedUpdatesMetric
 		err := rows.StructScan(&metric)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to scan %s metric row: %w", failedUpdatesQueryName, err)
 		}
 		metrics = append(metrics, metric)
 	}
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error iterating %s metric rows: %w", failedUpdatesQueryName, err)
 	}
 	return metrics, nil
 }
