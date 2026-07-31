@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gopkg.in/guregu/null.v4"
 )
 
@@ -189,6 +190,38 @@ func TestGetInstances(t *testing.T) {
 
 	_, err = a.GetInstances(InstancesQueryParams{ApplicationID: "invalidApplicationID", GroupID: "invalidGroupID", Version: "1.0.0", Page: 1, PerPage: 10}, testDuration)
 	assert.Error(t, err, "Application id and group id are required and must be valid uuids.")
+}
+
+func TestGetInstancesOEMAndAlephVersion(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	as := adminSvc(a)
+
+	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tGroup, _ := as.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+
+	_, err := a.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.1", OEM: "azure", AlephVersion: "2.9.1.1-r1"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	require.NoError(t, err)
+	_, err = a.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.2"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	require.NoError(t, err)
+
+	result, err := a.GetInstances(InstancesQueryParams{ApplicationID: tApp.ID, GroupID: tGroup.ID, Page: 1, PerPage: 10}, testDuration)
+	require.NoError(t, err)
+	require.Len(t, result.Instances, 2)
+	require.Equal(t, uint64(2), result.TotalInstances)
+
+	instancesByIP := make(map[string]*Instance)
+	for _, instance := range result.Instances {
+		instancesByIP[instance.IP] = instance
+	}
+	require.Contains(t, instancesByIP, "10.0.0.1")
+	require.Contains(t, instancesByIP, "10.0.0.2")
+
+	assert.Equal(t, "azure", instancesByIP["10.0.0.1"].OEM, "OEM should be returned by the instances list")
+	assert.Equal(t, "2.9.1.1-r1", instancesByIP["10.0.0.1"].AlephVersion, "AlephVersion should be returned by the instances list")
+	assert.Equal(t, "", instancesByIP["10.0.0.2"].OEM, "OEM should be empty when not reported")
+	assert.Equal(t, "", instancesByIP["10.0.0.2"].AlephVersion, "AlephVersion should be empty when not reported")
 }
 
 func TestGetInstancesSearch(t *testing.T) {
