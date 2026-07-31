@@ -6,6 +6,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/guregu/null.v4"
+
+	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
 )
 
 func TestAddApp(t *testing.T) {
@@ -157,13 +159,14 @@ func TestGetApp(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
 	as := adminSvc(a)
+	rs := runtimeSvc(a)
 
 	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
 	tApp, err := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
 	assert.NoError(t, err)
 	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID})
 	tGroup, _ := as.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
-	_, _ = a.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	_, _ = rs.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
 
 	app, err := a.GetApp(tApp.ID)
 	assert.NoError(t, err)
@@ -290,6 +293,7 @@ func TestGetAppsFiltered(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
 	as := adminSvc(a)
+	rs := runtimeSvc(a)
 
 	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
 	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
@@ -298,8 +302,8 @@ func TestGetAppsFiltered(t *testing.T) {
 	tGroup, _ := as.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	realInstanceID := uuid.New().String()
 	fakeInstanceID := "{" + uuid.New().String() + "}"
-	_, _ = a.RegisterInstance(Instance{ID: realInstanceID, IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
-	_, _ = a.RegisterInstance(Instance{ID: fakeInstanceID, IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	_, _ = rs.RegisterInstance(Instance{ID: realInstanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	_, _ = rs.RegisterInstance(Instance{ID: fakeInstanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
 
 	// should ignore fake instance in Instances count
 	apps, err := a.GetApps(tTeam.ID, 1, 10)

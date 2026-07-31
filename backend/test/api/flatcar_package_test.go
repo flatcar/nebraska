@@ -35,7 +35,7 @@ func TestHostFlatcarPackage(t *testing.T) {
 	defer db.Close()
 
 	t.Run("file_exists", func(t *testing.T) {
-		server, err := server.New(conf, db, adminSvc(db))
+		server, err := server.New(conf, db, adminSvc(db), runtimeSvc(db))
 		require.NotNil(t, server)
 		require.NoError(t, err)
 
@@ -75,7 +75,7 @@ func TestHostFlatcarPackage(t *testing.T) {
 	})
 
 	t.Run("file_not_exists", func(t *testing.T) {
-		server, err := server.New(conf, db, adminSvc(db))
+		server, err := server.New(conf, db, adminSvc(db), runtimeSvc(db))
 		require.NotNil(t, server)
 		require.NoError(t, err)
 

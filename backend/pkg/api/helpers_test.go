@@ -8,12 +8,25 @@ import (
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/admin"
+	"github.com/flatcar/nebraska/backend/pkg/api/internal/types"
+	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
 )
+
+// flatcarAppID is the well-known Flatcar application UUID seeded into every
+// database.
+const flatcarAppID = types.FlatcarAppID
 
 // adminSvc returns an admin.Service that reuses a's shared read queries so
 // tests can exercise admin write operations (which moved to package admin).
 func adminSvc(a *API) *admin.Service {
 	return admin.NewService(a.Reads())
+}
+
+// runtimeSvc returns a runtime.Service that reuses a's shared read queries so
+// tests can exercise the runtime operations (which moved to package
+// runtime).
+func runtimeSvc(a *API) *runtime.Service {
+	return runtime.NewService(a.Reads(), runtime.Config{DisableUpdatesOnFailedRollout: true})
 }
 
 // Test helper functions to reduce boilerplate in floor tests
@@ -64,7 +77,7 @@ func setupFloors(t *testing.T, a *API, name string, floorVersions []string, targ
 	as := adminSvc(a)
 
 	// Use existing Flatcar app if available, otherwise create test app
-	tApp, err := a.GetApp("e96281a6-d1af-4bde-9a0a-97b76e56dc57") // flatcarAppID
+	tApp, err := a.GetApp(flatcarAppID)
 	if err != nil {
 		tTeam, _ := as.AddTeam(&Team{Name: "test_team_" + name})
 		tApp, _ = as.AddApp(&Application{Name: "test_app_" + name, TeamID: tTeam.ID})

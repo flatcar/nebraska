@@ -46,7 +46,7 @@ func checkDB(t *testing.T) {
 func newForTest(t *testing.T) *api.API {
 	checkDB(t)
 
-	a, err := api.NewForTest(api.OptionInitDB, api.OptionDisableUpdatesOnFailedRollout)
+	a, err := api.NewForTest(api.OptionInitDB)
 
 	require.NoError(t, err)
 	require.NotNil(t, a)
@@ -65,7 +65,7 @@ func TestMain(m *testing.M) {
 func TestInvalidRequests(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
-	h := NewHandler(a)
+	h := NewHandler(runtimeSvc(a))
 	as := adminSvc(a)
 
 	tTeam, _ := as.AddTeam(&api.Team{Name: "test_team"})
@@ -97,7 +97,7 @@ func TestInvalidRequests(t *testing.T) {
 func TestAppNoUpdateForAppWithChannelAndPackageName(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
-	h := NewHandler(a)
+	h := NewHandler(runtimeSvc(a))
 	as := adminSvc(a)
 
 	tAppFlatcar, _ := a.GetApp(flatcarAppID)
@@ -150,7 +150,7 @@ func TestAppNoUpdateForAppWithChannelAndPackageName(t *testing.T) {
 func TestAppRegistrationForAppWithChannelAndPackageName(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
-	h := NewHandler(a)
+	h := NewHandler(runtimeSvc(a))
 	as := adminSvc(a)
 
 	tAppFlatcar, _ := a.GetApp(flatcarAppID)
@@ -179,7 +179,7 @@ func TestAppRegistrationForAppWithChannelAndPackageName(t *testing.T) {
 func TestAppUpdateForAppWithChannelAndPackageName(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
-	h := NewHandler(a)
+	h := NewHandler(runtimeSvc(a))
 	as := adminSvc(a)
 
 	tAppFlatcar, _ := a.GetApp(flatcarAppID)
@@ -235,7 +235,7 @@ func TestAppUpdateForAppWithChannelAndPackageName(t *testing.T) {
 func TestFlatcarGroupNamesConversionToIds(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
-	h := NewHandler(a)
+	h := NewHandler(runtimeSvc(a))
 
 	flatcarAppIDWithCurlyBraces := "{" + flatcarAppID + "}"
 	machineID := "65e1266d-6f54-4b87-9080-23b99ca9c12f"
@@ -254,7 +254,7 @@ func TestFlatcarGroupNamesConversionToIds(t *testing.T) {
 func TestProductIDBasedRequest(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
-	h := NewHandler(a)
+	h := NewHandler(runtimeSvc(a))
 	as := adminSvc(a)
 
 	tTeam, _ := as.AddTeam(&api.Team{Name: "test_team"})
@@ -281,7 +281,7 @@ func TestProductIDBasedRequest(t *testing.T) {
 func TestMultiManifestResponse(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
-	h := NewHandler(a)
+	h := NewHandler(runtimeSvc(a))
 	as := adminSvc(a)
 
 	extraFiles := []api.File{

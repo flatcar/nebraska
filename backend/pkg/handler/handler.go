@@ -10,6 +10,7 @@ import (
 
 	"github.com/flatcar/nebraska/backend/pkg/api"
 	"github.com/flatcar/nebraska/backend/pkg/api/admin"
+	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
 	"github.com/flatcar/nebraska/backend/pkg/auth"
 	"github.com/flatcar/nebraska/backend/pkg/codegen"
 	"github.com/flatcar/nebraska/backend/pkg/config"
@@ -26,6 +27,7 @@ const (
 type Handler struct {
 	db           *api.API
 	admin        *admin.Service
+	runtime      *runtime.Service
 	omahaHandler *omaha.Handler
 	conf         *config.Config
 	clientConf   *codegen.Config
@@ -37,7 +39,7 @@ var defaultPerPage = 10
 
 var l = logger.New("nebraska")
 
-func New(db *api.API, adminSvc *admin.Service, conf *config.Config, auth auth.Authenticator) (*Handler, error) {
+func New(db *api.API, adminSvc *admin.Service, runtimeSvc *runtime.Service, conf *config.Config, auth auth.Authenticator) (*Handler, error) {
 	clientConfig := &codegen.Config{
 		AuthMode:        conf.AuthMode,
 		NebraskaVersion: version.Version,
@@ -84,7 +86,7 @@ func New(db *api.API, adminSvc *admin.Service, conf *config.Config, auth auth.Au
 		}
 	}
 
-	return &Handler{db, adminSvc, omaha.NewHandler(db), conf, clientConfig, auth}, nil
+	return &Handler{db, adminSvc, runtimeSvc, omaha.NewHandler(runtimeSvc), conf, clientConfig, auth}, nil
 }
 
 func (h *Handler) Health(ctx echo.Context) error {

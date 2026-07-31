@@ -1,4 +1,4 @@
-package api
+package runtime
 
 import (
 	"time"
@@ -6,7 +6,7 @@ import (
 	"github.com/flatcar/nebraska/backend/pkg/api/internal/dbreads"
 )
 
-// TestCacheManager provides test utilities for cache management in API tests
+// TestCacheManager provides test utilities for cache management in runtime tests
 type TestCacheManager struct{}
 
 // NewTestCacheManager creates a new test cache manager

@@ -7,6 +7,10 @@ import (
 	"gopkg.in/guregu/null.v4"
 )
 
+// FlatcarAppID is the well-known Flatcar application UUID seeded into every
+// Nebraska database.
+const FlatcarAppID = "e96281a6-d1af-4bde-9a0a-97b76e56dc57"
+
 // ErrInvalidApplicationOrGroup indicates that the application or group id
 // provided are not valid or related to each other.
 var ErrInvalidApplicationOrGroup = errors.New("nebraska: invalid application or group")

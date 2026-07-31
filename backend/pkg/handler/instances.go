@@ -58,7 +58,7 @@ func (h *Handler) UpdateInstance(ctx echo.Context, instanceID string) error {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	instance, err := h.db.UpdateInstance(instanceID, request.Alias)
+	instance, err := h.runtime.UpdateInstance(instanceID, request.Alias)
 	if err != nil {
 		l.Error().Err(err).Str("instance", instanceID).Msgf("updateInstance - updating params %s", request.Alias)
 		return ctx.NoContent(http.StatusInternalServerError)

@@ -15,7 +15,7 @@ import (
 func TestFloorUpdateScenarios(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
-	h := NewHandler(a)
+	h := NewHandler(runtimeSvc(a))
 	as := adminSvc(a)
 
 	// Helper for syncer requests
@@ -184,7 +184,7 @@ func TestFloorUpdateScenarios(t *testing.T) {
 func TestLegacySyncerBlockedWithFloors(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
-	h := NewHandler(a)
+	h := NewHandler(runtimeSvc(a))
 
 	// Setup floor configuration
 	group, _ := setupOmahaFloorTest(t, a, "legacy-syncer", []string{"1000.0.0", "2000.0.0"}, "3000.0.0")
