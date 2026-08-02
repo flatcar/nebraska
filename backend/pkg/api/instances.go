@@ -122,7 +122,9 @@ func (api *API) RegisterInstance(inst Instance, instApp InstanceApplication) (*I
 			return nil, err
 		}
 
-		return instance, nil
+		// Re-fetch so the returned instance reflects the single-table update,
+		// matching the dual-update path below.
+		return api.GetInstance(inst.ID, appID)
 	}
 
 	// If this is an instance we haven't seen yet, then we write into instance + instance_application

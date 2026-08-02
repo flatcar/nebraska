@@ -75,6 +75,48 @@ func TestRegisterInstance(t *testing.T) {
 	assert.Equal(t, "3.0.0", instance.AlephVersion, "AlephVersion should be updated when provided")
 }
 
+// TestRegisterInstanceSingleTableUpdateReturn covers the path where only one of
+// instance / instance_application is written. That path used to return the
+// pre-update object instead of re-fetching like the dual-update path does.
+func TestRegisterInstanceSingleTableUpdateReturn(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	as := adminSvc(a)
+
+	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+
+	instanceID := uuid.New().String()
+	_, err := a.RegisterInstance(Instance{ID: instanceID, Alias: "alias-a", IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	assert.NoError(t, err)
+
+	// IP/alias-only change within the recent-check window: updates instance only.
+	instance, err := a.RegisterInstance(Instance{ID: instanceID, Alias: "alias-b", IP: "10.0.0.9"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	assert.NoError(t, err)
+	assert.Equal(t, "10.0.0.9", instance.IP, "returned instance should reflect the IP update")
+	assert.Equal(t, "alias-b", instance.Alias, "returned instance should reflect the alias update")
+	assert.Equal(t, "1.0.0", instance.Application.Version)
+
+	fetched, err := a.GetInstance(instanceID, tApp.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, fetched.IP, instance.IP)
+	assert.Equal(t, fetched.Alias, instance.Alias)
+
+	// Version-only change with unchanged instance fields: updates instance_application only.
+	instance, err = a.RegisterInstance(Instance{ID: instanceID, Alias: "alias-b", IP: "10.0.0.9"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.1"))
+	assert.NoError(t, err)
+	assert.Equal(t, "1.0.1", instance.Application.Version, "returned instance should reflect the version update")
+	assert.Equal(t, "10.0.0.9", instance.IP)
+	assert.Equal(t, "alias-b", instance.Alias)
+
+	fetched, err = a.GetInstance(instanceID, tApp.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, fetched.Application.Version, instance.Application.Version)
+}
+
 func TestGetInstance(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
