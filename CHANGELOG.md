@@ -27,6 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Bugfixes
 
 - Fixed package blacklist changes not appearing in UI immediately after save
+- Fixed `nebraska_application_instances_per_channel` and `nebraska_failed_updates` Prometheus metrics keeping stale label values (e.g. after an application rename) instead of dropping them
 
 ## [3.0.0] - 28/11/2025
 
