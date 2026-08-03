@@ -40,6 +40,18 @@ var (
 		},
 	)
 
+	appInstancesByOEMGaugeMetric = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: "nebraska",
+			Name:      "application_instances_by_oem",
+			Help:      "Number of instances running an application, broken down by OEM/platform",
+		},
+		[]string{
+			"application",
+			"oem",
+		},
+	)
+
 	openConnections = prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			Namespace: "nebraska",
@@ -71,6 +83,7 @@ var (
 func registerNebraskaMetrics() error {
 	collectors := []prometheus.Collector{
 		appInstancePerChannelGaugeMetric,
+		appInstancesByOEMGaugeMetric,
 		failedUpdatesGaugeMetric,
 		openConnections,
 		inUseConnections,
@@ -146,6 +159,15 @@ func calculateMetrics(api *api.API) error {
 
 	for _, metric := range fuMetrics {
 		failedUpdatesGaugeMetric.WithLabelValues(metric.ApplicationName).Set(float64(metric.FailureCount))
+	}
+
+	oemMetrics, err := api.GetAppInstancesByOEMMetrics()
+	if err != nil {
+		return fmt.Errorf("failed to get app instances by OEM metrics: %w", err)
+	}
+
+	for _, metric := range oemMetrics {
+		appInstancesByOEMGaugeMetric.WithLabelValues(metric.ApplicationName, metric.OEM).Set(float64(metric.InstancesCount))
 	}
 
 	// db stats

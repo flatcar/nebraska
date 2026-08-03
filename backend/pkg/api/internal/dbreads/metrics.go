@@ -23,6 +23,14 @@ WHERE a.id = e.application_id AND e.event_type_id = et.id AND et.result = 0 AND 
 GROUP BY app_name
 ORDER BY app_name
 `, ignoreFakeInstanceCondition("e.instance_id"))
+
+	appInstancesByOEMSQL = fmt.Sprintf(`
+SELECT a.name AS app_name, i.oem AS oem, count(*) AS instances_count
+FROM instance_application ia, application a, instance i
+WHERE a.id = ia.application_id AND i.id = ia.instance_id AND i.oem <> '' AND %s
+GROUP BY app_name, oem
+ORDER BY app_name, oem
+`, ignoreFakeInstanceCondition("i.id"))
 )
 
 func (q *Queries) GetAppInstancesPerChannelMetrics() ([]types.AppInstancesPerChannelMetric, error) {
@@ -55,6 +63,27 @@ func (q *Queries) GetFailedUpdatesMetrics() ([]types.FailedUpdatesMetric, error)
 	defer rows.Close()
 	for rows.Next() {
 		var metric types.FailedUpdatesMetric
+		err := rows.StructScan(&metric)
+		if err != nil {
+			return nil, err
+		}
+		metrics = append(metrics, metric)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return metrics, nil
+}
+
+func (q *Queries) GetAppInstancesByOEMMetrics() ([]types.AppInstancesByOEMMetric, error) {
+	var metrics []types.AppInstancesByOEMMetric
+	rows, err := q.db.Queryx(appInstancesByOEMSQL)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var metric types.AppInstancesByOEMMetric
 		err := rows.StructScan(&metric)
 		if err != nil {
 			return nil, err
