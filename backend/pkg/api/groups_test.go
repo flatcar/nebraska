@@ -221,6 +221,68 @@ func TestVersionBreakDownEmpty(t *testing.T) {
 	assert.Len(t, versionBreakdown, 0)
 }
 
+func TestOEMBreakDown(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	as := adminSvc(a)
+	rs := runtimeSvc(a)
+
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&types.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&types.Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+
+	// Two instances on the same OEM, one on another, one with no OEM at all,
+	// plus a fake instance that must be excluded from the breakdown.
+	fakeInstanceID := "{" + uuid.New().String() + "}"
+	_, _ = rs.RegisterInstance(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1", OEM: "azure"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	_, _ = rs.RegisterInstance(types.Instance{ID: uuid.New().String(), IP: "10.0.0.2", OEM: "azure"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	_, _ = rs.RegisterInstance(types.Instance{ID: uuid.New().String(), IP: "10.0.0.3", OEM: "ami"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	_, _ = rs.RegisterInstance(types.Instance{ID: uuid.New().String(), IP: "10.0.0.4"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	_, _ = rs.RegisterInstance(types.Instance{ID: fakeInstanceID, IP: "10.0.0.5", OEM: "azure"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+
+	groups, err := a.GetGroups(tApp.ID, 0, 0)
+	assert.NoError(t, err)
+	if assert.Len(t, groups, 1) {
+		g := groups[0]
+		oemBreakdown, obErr := a.GetGroupOEMBreakdown(g.ID)
+		assert.NoError(t, obErr)
+		if assert.Len(t, oemBreakdown, 3) {
+			// Ordered by instance count descending, then OEM ascending.
+			assert.Equal(t, "azure", oemBreakdown[0].OEM)
+			assert.Equal(t, 2, oemBreakdown[0].Instances)
+			assert.Equal(t, "ami", oemBreakdown[1].OEM)
+			assert.Equal(t, 1, oemBreakdown[1].Instances)
+			// An instance reporting no OEM is grouped as "unknown".
+			assert.Equal(t, "unknown", oemBreakdown[2].OEM)
+			assert.Equal(t, 1, oemBreakdown[2].Instances)
+		}
+	}
+}
+
+func TestOEMBreakDownEmpty(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	as := adminSvc(a)
+
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&types.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	_, err := as.AddGroup(&types.Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	assert.NoError(t, err)
+
+	groups, err := a.GetGroups(tApp.ID, 0, 0)
+	assert.NoError(t, err)
+	g := groups[0]
+
+	oemBreakdown, obErr := a.GetGroupOEMBreakdown(g.ID)
+	assert.NoError(t, obErr)
+	assert.NotNil(t, oemBreakdown)
+	assert.Len(t, oemBreakdown, 0)
+}
+
 func TestGroupTrackName(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
