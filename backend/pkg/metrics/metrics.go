@@ -216,6 +216,10 @@ func calculateMetrics(api *api.API) error {
 		return fmt.Errorf("failed to get app instances per channel metrics: %w", err)
 	}
 
+	// Reset gauge to clear stale label combinations before setting new values.
+	// This prevents old labels (e.g., from renamed applications or changed channels)
+	// from persisting indefinitely with their last known value.
+	appInstancePerChannelGaugeMetric.Reset()
 	for _, metric := range aipcMetrics {
 		appInstancePerChannelGaugeMetric.WithLabelValues(metric.ApplicationName, metric.Version, metric.ChannelName).Set(float64(metric.InstancesCount))
 	}
@@ -225,6 +229,8 @@ func calculateMetrics(api *api.API) error {
 		return fmt.Errorf("failed to get failed update metrics: %w", err)
 	}
 
+	// Reset gauge to clear stale label combinations.
+	failedUpdatesGaugeMetric.Reset()
 	for _, metric := range fuMetrics {
 		failedUpdatesGaugeMetric.WithLabelValues(metric.ApplicationName).Set(float64(metric.FailureCount))
 	}
@@ -234,6 +240,16 @@ func calculateMetrics(api *api.API) error {
 	if err != nil {
 		return fmt.Errorf("failed to get group updates stats metrics: %w", err)
 	}
+
+	// Reset all rollout progress gauges to clear stale label combinations.
+	groupTotalInstancesMetric.Reset()
+	groupUpdatesGrantedMetric.Reset()
+	groupUpdatesAttemptedMetric.Reset()
+	groupUpdatesSucceededMetric.Reset()
+	groupUpdatesFailedMetric.Reset()
+	groupUpdatesInProgressMetric.Reset()
+	groupUpdatesTimedOutMetric.Reset()
+	groupUpdatesGrantedInPeriodMetric.Reset()
 
 	for _, metric := range groupStatsMetrics {
 		labels := []string{metric.ApplicationName, metric.GroupName, metric.ChannelName}
