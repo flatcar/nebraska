@@ -33,14 +33,22 @@ func newUpdateInfo(resp *omaha.Response, appID string) (*UpdateInfo, error) {
 		return nil, errors.New("omaha response is not a valid update check response")
 	}
 
+	// go-omaha made this a list for multi-step updates. Take the last, which is
+	// the target and what the old single-manifest field decoded to. Multi-step
+	// support is #1166.
+	var manifest *omaha.Manifest
+	if n := len(app.UpdateCheck.Manifests); n > 0 {
+		manifest = app.UpdateCheck.Manifests[n-1]
+	}
+
 	version := ""
-	if app.UpdateCheck.Manifest != nil {
-		version = app.UpdateCheck.Manifest.Version
+	if manifest != nil {
+		version = manifest.Version
 	}
 
 	var packages []*omaha.Package
-	if app.UpdateCheck.Manifest != nil && app.UpdateCheck.Manifest.Packages != nil {
-		packages = app.UpdateCheck.Manifest.Packages
+	if manifest != nil && manifest.Packages != nil {
+		packages = manifest.Packages
 	}
 
 	var urls []string
