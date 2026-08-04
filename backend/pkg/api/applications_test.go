@@ -87,6 +87,12 @@ func TestAddAppCloning(t *testing.T) {
 	_, err = as.AddApp(&Application{Name: "productIDApp3", TeamID: tTeam.ID, ProductID: null.StringFrom("io2.valid12.New-Name")})
 	assert.NoError(t, err)
 
+	_, err = as.AddApp(&Application{Name: "productIDApp3b", TeamID: tTeam.ID, ProductID: null.StringFrom("io.flatcar.v2app")})
+	assert.NoError(t, err)
+
+	_, err = as.AddApp(&Application{Name: "productIDApp3c", TeamID: tTeam.ID, ProductID: null.StringFrom("com.example.app2024.service9")})
+	assert.NoError(t, err)
+
 	_, err = as.AddApp(&Application{Name: "productIDApp4", TeamID: tTeam.ID, ProductID: null.StringFrom("io.invalid.New_Name")})
 	assert.Error(t, err)
 
