@@ -98,6 +98,9 @@ extraEnvVars:
   # NEBRASKA_DB_MAX_IDLE_CONNS: 25
   # NEBRASKA_DB_CONN_MAX_LIFETIME: 300
   # NEBRASKA_MAX_FLOORS_PER_RESPONSE: 5
+  # Update interval for the Nebraska application metrics.
+  # Go duration string; invalid or non-positive values fall back to 15s.
+  # NEBRASKA_METRICS_UPDATE_INTERVAL: 15s
 
 # extraEnv allows you to set environment variables using values found in your secrets, or any other env spec you might like.
 ## extraEnv:
