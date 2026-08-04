@@ -1,0 +1,34 @@
+version: 2
+
+project_name: nebraska
+
+builds:
+  - id: nebraska
+    dir: backend
+    main: ./cmd/nebraska
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+        -X github.com/flatcar/nebraska/backend/pkg/version.Version={{.Version}}
+
+archives:
+  - id: nebraska
+    formats: [binary]
+    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}"
+
+checksum:
+  name_template: SHA256SUMS
+  algorithm: sha256
+
+release:
+  draft: true
+  extra_files:
+    - glob: ./nebraska-static-assets.tar.gz
