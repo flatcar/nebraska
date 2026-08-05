@@ -32,6 +32,12 @@ updates:
         versions: [">=8.0.0"]
       - dependency-name: "@mui/icons-material"
         versions: [">=8.0.0"]
+      - dependency-name: "@mui/system"
+        versions: [">=8.0.0"]
+      - dependency-name: "@mui/utils"
+        versions: [">=8.0.0"]
+      - dependency-name: "@mui/styled-engine-sc"
+        versions: [">=8.0.0"]
       - dependency-name: "eslint-plugin-react-hooks"
         versions: [">=7.1.0"]
 
