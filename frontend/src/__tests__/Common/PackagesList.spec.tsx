@@ -40,13 +40,15 @@ vi.mock('../../components/Packages/EditDialog.tsx', () => ({
   default: ({ data, onPackageUpdated }: any) =>
     data.package?.id ? (
       <button
-        onClick={() =>
-          onPackageUpdated({
+        onClick={() => {
+          const updatedPackage = {
             id: 'pkg1',
             application_id: 'app123',
             extra_files: [{ name: 'signature.txt' }],
-          })
-        }
+          };
+          storeMocks.updatePackage(updatedPackage);
+          onPackageUpdated(updatedPackage);
+        }}
       >
         Save package
       </button>
@@ -103,6 +105,6 @@ describe('List Component', () => {
     fireEvent.click(screen.getByText('Save package'));
 
     expect(screen.getByText('signature.txt')).toBeTruthy();
-    expect(storeMocks.updatePackage).not.toHaveBeenCalled();
+    expect(storeMocks.updatePackage).toHaveBeenCalledOnce();
   });
 });
