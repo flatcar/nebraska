@@ -21,6 +21,7 @@ export default function InstanceLayout() {
     applicationsStore().getCachedApplication(appID || '')
   );
   const [instance, setInstance] = React.useState<Instance | null>(null);
+  const instanceRequestID = React.useRef(0);
   const { t } = useTranslation();
 
   const getGroupFromApplication = React.useCallback(
@@ -41,7 +42,11 @@ export default function InstanceLayout() {
       return;
     }
 
+    const requestID = ++instanceRequestID.current;
     API.getInstance(appID, groupID, instanceID).then(instance => {
+      if (requestID !== instanceRequestID.current) {
+        return;
+      }
       instance.statusInfo = getInstanceStatus(
         instance.application.status,
         instance.application.version
@@ -55,6 +60,13 @@ export default function InstanceLayout() {
       setGroup(getGroupFromApplication(app));
     }
   }, [appID, application, getGroupFromApplication, groupID, instanceID]);
+
+  React.useEffect(() => {
+    setInstance(null);
+    return () => {
+      instanceRequestID.current += 1;
+    };
+  }, [appID, groupID, instanceID]);
 
   React.useEffect(() => {
     if (!appID) {
