@@ -20,7 +20,7 @@ vi.mock('../../api/API', () => ({
 
 vi.mock('../../stores/Stores', () => ({
   applicationsStore: () => ({
-    getCachedApplication: () => application,
+    getCachedApplication: () => ({ ...application }),
     getCachedApplications: () => [application],
     addChangeListener: testState.addChangeListener,
     removeChangeListener: testState.removeChangeListener,
@@ -174,5 +174,14 @@ describe('InstanceLayout', () => {
     await act(async () => instanceB.resolve(makeInstance('instance-b')));
 
     expect(screen.getByTestId('group-details').textContent).toBe('group-2');
+  });
+
+  it('does not refetch the application after its cached value changes', async () => {
+    testState.getInstance.mockResolvedValue(makeInstance('instance-a'));
+
+    renderInstanceRoute();
+    await act(async () => undefined);
+
+    expect(testState.getApplication).toHaveBeenCalledTimes(1);
   });
 });

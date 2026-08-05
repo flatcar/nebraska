@@ -55,12 +55,10 @@ export default function InstanceLayout() {
     });
     const apps = applicationsStore().getCachedApplications() || [];
     const app = apps.find(({ id }) => id === appID) || null;
-    if (app !== application) {
-      setApplication(app);
-    }
-  }, [appID, application, groupID, instanceID]);
+    setApplication(currentApplication => (app === currentApplication ? currentApplication : app));
+  }, [appID, groupID, instanceID]);
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     setInstance(null);
     return () => {
       instanceRequestID.current += 1;
