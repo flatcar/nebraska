@@ -40,6 +40,22 @@ var (
 		},
 	)
 
+	// instancesPerOEMGaugeMetric exposes the count of active instances broken
+	// down by application and OEM platform (e.g. "aws", "azure", "vmware",
+	// "qemu"). This surfaces the data stored in the instance.oem column,
+	// which is populated from Omaha update requests, as a Prometheus metric.
+	instancesPerOEMGaugeMetric = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: "nebraska",
+			Name:      "instances_per_oem",
+			Help:      "Number of active instances per application and OEM platform",
+		},
+		[]string{
+			"application",
+			"oem",
+		},
+	)
+
 	openConnections = prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			Namespace: "nebraska",
@@ -72,6 +88,7 @@ func registerNebraskaMetrics() error {
 	collectors := []prometheus.Collector{
 		appInstancePerChannelGaugeMetric,
 		failedUpdatesGaugeMetric,
+		instancesPerOEMGaugeMetric,
 		openConnections,
 		inUseConnections,
 		idleConnections,
@@ -103,16 +120,14 @@ func getMetricsRefreshInterval() time.Duration {
 	return refreshInterval
 }
 
-// registerAndInstrumentMetrics registers the application metrics and instruments them in configurable intervals.
+// RegisterAndInstrument registers the application metrics and instruments them in configurable intervals.
 func RegisterAndInstrument(api *api.API) error {
-	// register application metrics
 	err := registerNebraskaMetrics()
 	if err != nil {
 		return err
 	}
 
 	refreshInterval := getMetricsRefreshInterval()
-
 	metricsTicker := time.NewTicker(refreshInterval)
 
 	go func() {
@@ -148,7 +163,15 @@ func calculateMetrics(api *api.API) error {
 		failedUpdatesGaugeMetric.WithLabelValues(metric.ApplicationName).Set(float64(metric.FailureCount))
 	}
 
-	// db stats
+	oemMetrics, err := api.GetInstancesPerOEMMetrics()
+	if err != nil {
+		return fmt.Errorf("failed to get instances per OEM metrics: %w", err)
+	}
+
+	for _, metric := range oemMetrics {
+		instancesPerOEMGaugeMetric.WithLabelValues(metric.ApplicationName, metric.OEM).Set(float64(metric.InstancesCount))
+	}
+
 	dbStats := api.DbStats()
 	openConnections.Set(float64(dbStats.OpenConnections))
 	inUseConnections.Set(float64(dbStats.InUse))

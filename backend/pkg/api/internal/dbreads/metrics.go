@@ -23,6 +23,18 @@ WHERE a.id = e.application_id AND e.event_type_id = et.id AND et.result = 0 AND 
 GROUP BY app_name
 ORDER BY app_name
 `, ignoreFakeInstanceCondition("e.instance_id"))
+
+	// instancesPerOEMMetricSQL counts active instances grouped by application
+	// and OEM platform. It joins instance (for the oem column) with
+	// instance_application and application, and excludes synthetic test
+	// instances using the same fake-instance filter applied elsewhere.
+	instancesPerOEMMetricSQL = fmt.Sprintf(`
+SELECT a.name AS app_name, i.oem AS oem, count(*) AS instances_count
+FROM instance i, instance_application ia, application a
+WHERE i.id = ia.instance_id AND a.id = ia.application_id AND %s
+GROUP BY app_name, oem
+ORDER BY app_name, oem
+`, ignoreFakeInstanceCondition("i.id"))
 )
 
 func (q *Queries) GetAppInstancesPerChannelMetrics() ([]types.AppInstancesPerChannelMetric, error) {
@@ -55,6 +67,31 @@ func (q *Queries) GetFailedUpdatesMetrics() ([]types.FailedUpdatesMetric, error)
 	defer rows.Close()
 	for rows.Next() {
 		var metric types.FailedUpdatesMetric
+		err := rows.StructScan(&metric)
+		if err != nil {
+			return nil, err
+		}
+		metrics = append(metrics, metric)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return metrics, nil
+}
+
+// GetInstancesPerOEMMetrics returns the count of active instances for each
+// (application, OEM platform) pair. Instances with an empty OEM string are
+// included under the empty-string key so operators can see how many instances
+// have not yet reported their platform.
+func (q *Queries) GetInstancesPerOEMMetrics() ([]types.InstancesPerOEMMetric, error) {
+	var metrics []types.InstancesPerOEMMetric
+	rows, err := q.db.Queryx(instancesPerOEMMetricSQL)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var metric types.InstancesPerOEMMetric
 		err := rows.StructScan(&metric)
 		if err != nil {
 			return nil, err
