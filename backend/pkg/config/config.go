@@ -32,6 +32,7 @@ type Config struct {
 	Debug               bool   `koanf:"debug"`
 	ServerPort          uint   `koanf:"port"`
 	RollbackDBTo        string `koanf:"rollback-db-to"`
+	SecureCookie        bool   `koanf:"secure-cookie"`
 
 	GhClientID        string `koanf:"gh-client-id"`
 	GhClientSecret    string `koanf:"gh-client-secret"`
@@ -145,6 +146,7 @@ func Parse() (*Config, error) {
 	f.String("api-endpoint-suffix", "", "Additional suffix for the API endpoint to serve Omaha clients on; use a secret to only serve your clients, e.g., mysecret results in /v1/update/mysecret")
 	f.Bool("debug", false, "sets log level to debug")
 	f.Uint("port", 8000, "port to run server")
+	f.Bool("secure-cookie", true, "mark the session cookie as Secure (HTTPS only); only disable this if Nebraska is deliberately served over plain HTTP, e.g. behind a trusted TLS-terminating proxy on a private network")
 
 	k := koanf.New(".")
 
