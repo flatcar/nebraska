@@ -18,3 +18,19 @@
   echo "Visit http://127.0.0.1:8080 to use your application"
   kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
 {{- end }}
+
+{{- if and (.Values.postgresql).enabled (not (((.Values.postgresql).primary).persistence).enabled) }}
+
+WARNING: the bundled PostgreSQL runs without persistent storage.
+
+  postgresql.primary.persistence.enabled is set to false, so the Nebraska
+  database lives in the container filesystem. Every application, group,
+  channel, package and instance history is lost the next time the PostgreSQL
+  pod restarts, gets rescheduled or is OOM-killed, and there is no backup to
+  restore from.
+
+  Only keep this setting for throwaway installations. To store the database on
+  a PersistentVolume, reinstall or upgrade with:
+
+    --set postgresql.primary.persistence.enabled=true
+{{- end }}
