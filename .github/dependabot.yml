@@ -22,12 +22,12 @@ updates:
           - "*"
     # These majors require dedicated migration PRs, so hold them out of the
     # grouped updates to keep the group green and mergeable:
-    # - typescript 7 breaks the @typescript-eslint peer range (>=4.8.4 <6.1.0)
+    # - typescript >=6.1.0 breaks the @typescript-eslint peer range (>=4.8.4 <6.1.0)
     # - MUI 8/9 need the Grid v2 / sx migration
     # - eslint-plugin-react-hooks 7.1+ enables new rules that flag existing code
     ignore:
       - dependency-name: "typescript"
-        versions: [">=7.0.0"]
+        versions: [">=6.1.0"]
       - dependency-name: "@mui/material"
         versions: [">=8.0.0"]
       - dependency-name: "@mui/icons-material"
