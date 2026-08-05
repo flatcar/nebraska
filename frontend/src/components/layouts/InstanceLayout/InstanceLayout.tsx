@@ -35,7 +35,7 @@ export default function InstanceLayout() {
     [groupID]
   );
 
-  const [group, setGroup] = React.useState(getGroupFromApplication(application || null));
+  const group = getGroupFromApplication(application || null);
 
   const onChange = React.useCallback(() => {
     if (!appID || !groupID || !instanceID) {
@@ -57,9 +57,8 @@ export default function InstanceLayout() {
     const app = apps.find(({ id }) => id === appID) || null;
     if (app !== application) {
       setApplication(app);
-      setGroup(getGroupFromApplication(app));
     }
-  }, [appID, application, getGroupFromApplication, groupID, instanceID]);
+  }, [appID, application, groupID, instanceID]);
 
   React.useEffect(() => {
     setInstance(null);

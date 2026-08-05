@@ -37,8 +37,11 @@ vi.mock('../../components/common/Loader', () => ({
 }));
 
 vi.mock('../../components/Instances/Details', () => ({
-  default: ({ instance }: { instance: Instance }) => (
-    <div data-testid="instance-details">{instance.id}</div>
+  default: ({ group, instance }: { group: { id: string }; instance: Instance }) => (
+    <>
+      <div data-testid="instance-details">{instance.id}</div>
+      <div data-testid="group-details">{group.id}</div>
+    </>
   ),
 }));
 
@@ -51,7 +54,10 @@ import InstanceLayout from '../../components/layouts/InstanceLayout/InstanceLayo
 const application = {
   id: 'app-1',
   name: 'Application',
-  groups: [{ id: 'group-1', name: 'Group' }],
+  groups: [
+    { id: 'group-1', name: 'Group 1' },
+    { id: 'group-2', name: 'Group 2' },
+  ],
 } as Application;
 
 function makeInstance(id: string): Instance {
@@ -77,9 +83,14 @@ function renderInstanceRoute() {
   function NavigateToInstanceB() {
     const navigate = useNavigate();
     return (
-      <button onClick={() => navigate('/apps/app-1/groups/group-1/instances/instance-b')}>
-        Show instance B
-      </button>
+      <>
+        <button onClick={() => navigate('/apps/app-1/groups/group-1/instances/instance-b')}>
+          Show instance B
+        </button>
+        <button onClick={() => navigate('/apps/app-1/groups/group-2/instances/instance-b')}>
+          Show instance B in group 2
+        </button>
+      </>
     );
   }
 
@@ -145,5 +156,23 @@ describe('InstanceLayout', () => {
 
     await act(async () => instanceA.resolve(makeInstance('instance-a')));
     expect(screen.getByTestId('instance-details').textContent).toBe('instance-b');
+  });
+
+  it('uses the group from the current route when the application is unchanged', async () => {
+    const instanceA = deferred<Instance>();
+    const instanceB = deferred<Instance>();
+    testState.getInstance
+      .mockReturnValueOnce(instanceA.promise)
+      .mockReturnValueOnce(instanceB.promise);
+
+    renderInstanceRoute();
+
+    await act(async () => instanceA.resolve(makeInstance('instance-a')));
+    expect(screen.getByTestId('group-details').textContent).toBe('group-1');
+
+    fireEvent.click(screen.getByText('Show instance B in group 2'));
+    await act(async () => instanceB.resolve(makeInstance('instance-b')));
+
+    expect(screen.getByTestId('group-details').textContent).toBe('group-2');
   });
 });
