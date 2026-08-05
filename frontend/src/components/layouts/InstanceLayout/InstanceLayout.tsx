@@ -22,6 +22,7 @@ export default function InstanceLayout() {
   );
   const [instance, setInstance] = React.useState<Instance | null>(null);
   const instanceRequestID = React.useRef(0);
+  const activeRoute = React.useRef({ appID, groupID, instanceID });
   const { t } = useTranslation();
 
   const getGroupFromApplication = React.useCallback(
@@ -39,6 +40,13 @@ export default function InstanceLayout() {
 
   const onChange = React.useCallback(() => {
     if (!appID || !groupID || !instanceID) {
+      return;
+    }
+    if (
+      activeRoute.current.appID !== appID ||
+      activeRoute.current.groupID !== groupID ||
+      activeRoute.current.instanceID !== instanceID
+    ) {
       return;
     }
 
@@ -59,6 +67,7 @@ export default function InstanceLayout() {
   }, [appID, groupID, instanceID]);
 
   React.useLayoutEffect(() => {
+    activeRoute.current = { appID, groupID, instanceID };
     setInstance(null);
     return () => {
       instanceRequestID.current += 1;

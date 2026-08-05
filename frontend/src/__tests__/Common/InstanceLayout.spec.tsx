@@ -10,6 +10,7 @@ const testState = vi.hoisted(() => ({
   removeChangeListener: vi.fn(),
   getApplication: vi.fn(),
   listener: undefined as (() => void) | undefined,
+  listeners: [] as (() => void)[],
 }));
 
 vi.mock('../../api/API', () => ({
@@ -111,14 +112,19 @@ describe('InstanceLayout', () => {
   beforeEach(() => {
     testState.getInstance.mockReset();
     testState.listener = undefined;
+    testState.listeners = [];
     testState.addChangeListener.mockReset();
     testState.removeChangeListener.mockReset();
     testState.getApplication.mockReset();
     testState.addChangeListener.mockImplementation(listener => {
       testState.listener = listener;
+      testState.listeners.push(listener);
+    });
+    testState.removeChangeListener.mockImplementation(listener => {
+      testState.listeners = testState.listeners.filter(candidate => candidate !== listener);
     });
     testState.getApplication.mockImplementation(() => {
-      testState.listener?.();
+      testState.listeners.forEach(listener => listener());
     });
   });
 
@@ -183,5 +189,25 @@ describe('InstanceLayout', () => {
     await act(async () => undefined);
 
     expect(testState.getApplication).toHaveBeenCalledTimes(1);
+  });
+
+  it('ignores a stale store listener after the route changes', async () => {
+    const instanceA = deferred<Instance>();
+    const instanceB = deferred<Instance>();
+    const staleInstance = deferred<Instance>();
+    testState.getInstance
+      .mockReturnValueOnce(instanceA.promise)
+      .mockReturnValueOnce(instanceB.promise)
+      .mockReturnValueOnce(staleInstance.promise);
+
+    renderInstanceRoute();
+    const staleListener = testState.listener!;
+
+    fireEvent.click(screen.getByText('Show instance B'));
+    staleListener();
+    await act(async () => instanceB.resolve(makeInstance('instance-b')));
+
+    expect(testState.getInstance).toHaveBeenCalledTimes(2);
+    expect(screen.getByTestId('instance-details').textContent).toBe('instance-b');
   });
 });
