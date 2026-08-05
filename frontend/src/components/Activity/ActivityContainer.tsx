@@ -104,7 +104,7 @@ export function ActivityContainerPure(props: ActivityContainerPureProps) {
     <>
       <ListHeader title={t('activity|activity')} />
       <Paper>
-        <Box padding="1em">
+        <Box padding="1.25em">
           {_.isNull(activity) ? (
             <Loader />
           ) : _.isEmpty(activity) ? (

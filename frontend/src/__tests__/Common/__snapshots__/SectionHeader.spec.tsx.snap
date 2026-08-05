@@ -10,7 +10,7 @@ exports[`Section Header > renders section header correctly 1`] = `
     >
       <nav
         aria-label="breadcrumbs"
-        class="MuiTypography-root MuiTypography-body1 MuiBreadcrumbs-root css-13untqk-MuiTypography-root-MuiBreadcrumbs-root"
+        class="MuiTypography-root MuiTypography-body1 MuiBreadcrumbs-root css-c0x724-MuiTypography-root-MuiBreadcrumbs-root"
       >
         <ol
           class="MuiBreadcrumbs-ol css-1uwp4ue-MuiBreadcrumbs-ol"
@@ -22,7 +22,7 @@ exports[`Section Header > renders section header correctly 1`] = `
               class="SectionHeader-breadCrumbsItem MuiBox-root css-0"
             >
               <a
-                class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-1tr280c-MuiTypography-root-MuiLink-root"
+                class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-1ve2nm-MuiTypography-root-MuiLink-root"
                 data-discover="true"
                 href="/apps"
               >
@@ -50,7 +50,7 @@ exports[`Section Header > renders section header correctly 1`] = `
             class="MuiBreadcrumbs-li"
           >
             <p
-              class="MuiTypography-root MuiTypography-body1 css-zbfhf1-MuiTypography-root"
+              class="MuiTypography-root MuiTypography-body1 css-5qyenw-MuiTypography-root"
             >
               Flatcar
             </p>

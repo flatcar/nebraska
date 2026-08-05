@@ -75,7 +75,6 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
           <Field
             name="name"
             component={TextField}
-            variant="standard"
             margin="dense"
             label={t('frequent|name')}
             type="text"
@@ -85,7 +84,6 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
           <Field
             name="product_id"
             component={TextField}
-            variant="standard"
             margin="dense"
             label={t('frequent|product_id')}
             type="text"
@@ -95,7 +93,6 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
           <Field
             name="description"
             component={TextField}
-            variant="standard"
             margin="dense"
             label={t('frequent|description')}
             type="text"
@@ -105,12 +102,12 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
             <Field
               type="text"
               name="appToClone"
-              variant="standard"
               label={t('applications|groups_channels')}
               select
               helperText={t('applications|clone_channels_groups_from_another_app')}
-              margin="normal"
+              margin="dense"
               component={TextField}
+              fullWidth
               InputLabelProps={{
                 shrink: true,
               }}
@@ -130,11 +127,11 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleClose} variant="text" color="inherit">
             {t('frequent|cancel')}
           </Button>
-          <Button type="submit" disabled={isSubmitting} color="primary">
-            {isCreation ? t('frequent|add_lower') : t('frequent|update')}
+          <Button type="submit" disabled={isSubmitting} variant="contained" color="primary">
+            {isCreation ? t('frequent|add') : t('frequent|update')}
           </Button>
         </DialogActions>
       </Form>
@@ -162,8 +159,14 @@ export default function ApplicationEdit(props: ApplicationEditProps) {
   });
 
   return (
-    <Dialog open={props.show} onClose={handleClose} aria-labelledby="form-dialog-title">
-      <DialogTitle>
+    <Dialog
+      open={props.show}
+      onClose={handleClose}
+      aria-labelledby="form-dialog-title"
+      fullWidth
+      maxWidth="sm"
+    >
+      <DialogTitle id="form-dialog-title">
         {isCreation ? t('applications|add_application') : t('applications|update_application')}
       </DialogTitle>
       <Formik

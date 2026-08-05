@@ -42,7 +42,7 @@ function ApplicationItemGroupItem(props: { group: Group; appName: string }) {
           <Link
             sx={{
               fontSize: '1rem',
-              color: '#1b5c91',
+              color: 'primary.main',
             }}
             to={{ pathname: `/apps/${props.group.application_id}/groups/${props.group.id}` }}
             component={RouterLink}
@@ -60,7 +60,7 @@ function ApplicationItemGroupItem(props: { group: Group; appName: string }) {
               }}
               component={RouterLink}
               sx={{
-                color: '#1b5c91',
+                color: 'primary.main',
               }}
               underline="hover"
             >

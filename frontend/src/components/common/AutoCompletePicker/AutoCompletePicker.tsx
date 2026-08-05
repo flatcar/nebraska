@@ -218,7 +218,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
   return (
     <Box>
       <FormControl fullWidth>
-        <InputLabel variant="standard" shrink>
+        <InputLabel variant="outlined" shrink>
           {props.label}
         </InputLabel>
         <Input
@@ -303,7 +303,8 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
               // selected any longer.
               props.onValueChanged(null);
             }}
-            color="primary"
+            variant="text"
+            color="inherit"
           >
             {t('frequent|cancel')}
           </Button>
@@ -313,6 +314,7 @@ export default function AutoCompletePicker(props: AutoCompletePickerProps) {
               setCurrentValue(selectedValue);
               props.onSelect(selectedValue);
             }}
+            variant="contained"
             color="primary"
           >
             {t('frequent|select')}

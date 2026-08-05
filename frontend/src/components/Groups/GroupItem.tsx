@@ -14,6 +14,7 @@ import { applicationsStore } from '../../stores/Stores';
 import { useGroupVersionBreakdown } from '../../utils/helpers';
 import ChannelItem from '../Channels/ChannelItem';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../common/Card';
+import ConfirmDialog from '../common/ConfirmDialog';
 import Empty from '../common/EmptyContent';
 import ListItem from '../common/ListItem';
 import MoreMenu from '../common/MoreMenu';
@@ -40,13 +41,11 @@ export interface GroupItemProps {
 function GroupItem({ group, handleUpdateGroup }: GroupItemProps) {
   const { t } = useTranslation();
   const [totalInstances, setTotalInstances] = React.useState<null | number>(null);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
   const versionBreakdown = useGroupVersionBreakdown(group);
 
-  function deleteGroup(appID: string, groupID: string) {
-    const confirmationText = t('groups|group_delete_confirmation');
-    if (window.confirm(confirmationText)) {
-      applicationsStore().deleteGroup(appID, groupID);
-    }
+  function deleteGroup() {
+    applicationsStore().deleteGroup(group.application_id, group.id);
   }
 
   React.useEffect(() => {
@@ -62,9 +61,13 @@ function GroupItem({ group, handleUpdateGroup }: GroupItemProps) {
     <PureGroupItem
       group={group}
       handleUpdateGroup={handleUpdateGroup}
-      deleteGroup={deleteGroup}
+      onRequestDelete={() => setConfirmDeleteOpen(true)}
       versionBreakdown={versionBreakdown}
       totalInstances={totalInstances}
+      confirmDeleteOpen={confirmDeleteOpen}
+      onCloseConfirmDelete={() => setConfirmDeleteOpen(false)}
+      onConfirmDelete={deleteGroup}
+      deleteConfirmationText={t('groups|group_delete_confirmation')}
     />
   );
 }
@@ -74,7 +77,11 @@ export interface PureGroupItemProps {
   versionBreakdown: VersionBreakdownEntry[] | null;
   totalInstances: number | null;
   handleUpdateGroup: (appID: string, groupID: string) => void;
-  deleteGroup: (appID: string, groupID: string) => void;
+  onRequestDelete: () => void;
+  confirmDeleteOpen: boolean;
+  onCloseConfirmDelete: () => void;
+  onConfirmDelete: () => void;
+  deleteConfirmationText: string;
 }
 
 export function PureGroupItem({
@@ -82,7 +89,11 @@ export function PureGroupItem({
   versionBreakdown,
   totalInstances,
   handleUpdateGroup,
-  deleteGroup,
+  onRequestDelete,
+  confirmDeleteOpen,
+  onCloseConfirmDelete,
+  onConfirmDelete,
+  deleteConfirmationText,
 }: PureGroupItemProps) {
   const { t } = useTranslation();
 
@@ -119,7 +130,7 @@ export function PureGroupItem({
                 },
                 {
                   label: t('frequent|delete'),
-                  action: () => deleteGroup(group.application_id, group.id),
+                  action: onRequestDelete,
                 },
               ]}
             />
@@ -215,6 +226,12 @@ export function PureGroupItem({
           </Grid>
         </Grid>
       </Grid>
+      <ConfirmDialog
+        open={confirmDeleteOpen}
+        description={deleteConfirmationText}
+        onClose={onCloseConfirmDelete}
+        onConfirm={onConfirmDelete}
+      />
     </ListItem>
   );
 }

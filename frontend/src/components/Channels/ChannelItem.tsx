@@ -3,12 +3,14 @@ import { Box, Grid, Tooltip, useTheme } from '@mui/material';
 import ListItem from '@mui/material/ListItem';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Channel } from '../../api/apiDataTypes';
 import { makeLocaleTime } from '../../i18n/dateTime';
 import { applicationsStore } from '../../stores/Stores';
 import { ARCHES, cleanSemverVersion } from '../../utils/helpers';
+import ConfirmDialog from '../common/ConfirmDialog';
 import MoreMenu from '../common/MoreMenu';
 import ChannelAvatar from './ChannelAvatar';
 
@@ -26,16 +28,14 @@ export default function ChannelItem(props: ChannelItemProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { channel, showArch = true, isAppView = false, onChannelUpdate = null, ...others } = props;
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
   const name = channel.name;
   const version = channel.package
     ? cleanSemverVersion(channel.package.version)
     : t('channels|no_package');
 
   function deleteChannel() {
-    const confirmationText = t('channels|confirm_delete_channel');
-    if (window.confirm(confirmationText)) {
-      applicationsStore().deleteChannel(channel.application_id, channel.id);
-    }
+    applicationsStore().deleteChannel(channel.application_id, channel.id);
   }
 
   function updateChannel() {
@@ -114,11 +114,17 @@ export default function ChannelItem(props: ChannelItemProps) {
           <MoreMenu
             options={[
               { label: t('frequent|edit'), action: updateChannel },
-              { label: t('frequent|delete'), action: deleteChannel },
+              { label: t('frequent|delete'), action: () => setConfirmDeleteOpen(true) },
             ]}
           />
         </ListItemSecondaryAction>
       )}
+      <ConfirmDialog
+        open={confirmDeleteOpen}
+        description={t('channels|confirm_delete_channel')}
+        onClose={() => setConfirmDeleteOpen(false)}
+        onConfirm={deleteChannel}
+      />
     </ListItem>
   );
 }

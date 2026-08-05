@@ -1,5 +1,6 @@
 {
   "confirmation_prompt": "Are you sure… ?",
+  "confirm_delete_title": "Confirm delete",
   "no_data_message": "No data to be shown.",
   "open_menu": "Open menu",
   "other_option": "Other",

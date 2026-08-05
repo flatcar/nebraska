@@ -1,4 +1,4 @@
-import { Box, Divider, useTheme } from '@mui/material';
+import { Box, Divider } from '@mui/material';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -33,7 +33,7 @@ const StyledDialog = styled(Dialog)({
     overflow: 'hidden',
   },
   [`& .${classes.indicator}`]: {
-    background: '#000',
+    background: '#0B7C85',
   },
 });
 
@@ -51,7 +51,6 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
 
   const [groupEditActiveTab, setGroupEditActiveTab] = React.useState(0);
   const { t } = useTranslation();
-  const theme = useTheme();
   const { appID } = useParams<{ appID: string }>();
 
   function handleSubmit(values: { [key: string]: any }, actions: { [key: string]: any }) {
@@ -153,15 +152,11 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>
-            <Box color={theme.palette.greyShadeColor} component="span">
-              {t('frequent|cancel')}
-            </Box>
+          <Button onClick={handleClose} variant="text" color="inherit">
+            {t('frequent|cancel')}
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            <Box component="span" color="#ffff" bgcolor="#000" width="100%" px={1.5} py={1}>
-              {isCreation ? t('frequent|add_lower') : t('frequent|save')}
-            </Box>
+          <Button type="submit" disabled={isSubmitting} variant="contained" color="primary">
+            {isCreation ? t('frequent|add') : t('frequent|save')}
           </Button>
         </DialogActions>
       </Form>

@@ -6,6 +6,7 @@ import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
 
@@ -17,6 +18,7 @@ import cubeOutline from '../../icons/mdi/cube-outline.json';
 import { applicationsStore } from '../../stores/Stores';
 import { ARCHES, cleanSemverVersion } from '../../utils/helpers';
 import ChannelAvatar from '../Channels/ChannelAvatar';
+import ConfirmDialog from '../common/ConfirmDialog';
 import Label from '../common/Label';
 import MoreMenu from '../common/MoreMenu';
 
@@ -63,6 +65,7 @@ interface ItemProps {
 
 function Item(props: ItemProps) {
   const { t } = useTranslation();
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
 
   const type = props.packageItem.type || 1;
   const processedChannels = _.where(props.channels, { package_id: props.packageItem.id });
@@ -77,13 +80,10 @@ function Item(props: ItemProps) {
   }
 
   function deletePackage() {
-    const confirmationText = t('packages|confirm_delete_package');
-    if (window.confirm(confirmationText)) {
-      applicationsStore().deletePackage(
-        props.packageItem.application_id,
-        props.packageItem.id as string
-      );
-    }
+    applicationsStore().deletePackage(
+      props.packageItem.application_id,
+      props.packageItem.id as string
+    );
   }
 
   function updatePackage() {
@@ -163,10 +163,16 @@ function Item(props: ItemProps) {
         <MoreMenu
           options={[
             { label: t('frequent|edit'), action: updatePackage },
-            { label: t('frequent|delete'), action: deletePackage },
+            { label: t('frequent|delete'), action: () => setConfirmDeleteOpen(true) },
           ]}
         />
       </ListItemSecondaryAction>
+      <ConfirmDialog
+        open={confirmDeleteOpen}
+        description={t('packages|confirm_delete_package')}
+        onClose={() => setConfirmDeleteOpen(false)}
+        onConfirm={deletePackage}
+      />
     </StyledListItem>
   );
 }

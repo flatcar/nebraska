@@ -34,6 +34,7 @@ import { applicationsStore } from '../../stores/Stores';
 import { ARCHES, cleanSemverVersion } from '../../utils/helpers';
 import AutoCompletePicker from '../common/AutoCompletePicker';
 import ColorPicker from '../common/ColorPicker';
+import ConfirmDialog from '../common/ConfirmDialog';
 
 const PREFIX = 'ChannelEdit';
 
@@ -107,6 +108,7 @@ function ChannelEdit(props: ChannelEditProps) {
   const [showAddFloorDialog, setShowAddFloorDialog] = React.useState(false);
   const [selectedFloorPackage, setSelectedFloorPackage] = React.useState<Package | null>(null);
   const [floorReason, setFloorReason] = React.useState<string>('');
+  const [floorPendingDeleteId, setFloorPendingDeleteId] = React.useState<string | null>(null);
 
   // Memoize filtered packages to avoid repeated filtering in render
   const packagesForArch = React.useMemo(
@@ -168,14 +170,12 @@ function ChannelEdit(props: ChannelEditProps) {
   async function deleteFloorPackage(packageID: string) {
     if (!props.data.channel?.id) return;
 
-    if (window.confirm(t('channels|confirm_delete_floor'))) {
-      try {
-        await applicationsStore().deleteChannelFloor(props.data.channel.id, packageID);
-        setFloorPackages(prev => prev.filter(p => p.id !== packageID));
-      } catch (err) {
-        console.error('Failed to delete floor package:', err);
-        alert(t('channels|failed_to_delete_floor'));
-      }
+    try {
+      await applicationsStore().deleteChannelFloor(props.data.channel.id, packageID);
+      setFloorPackages(prev => prev.filter(p => p.id !== packageID));
+    } catch (err) {
+      console.error('Failed to delete floor package:', err);
+      alert(t('channels|failed_to_delete_floor'));
     }
   }
 
@@ -341,7 +341,7 @@ function ChannelEdit(props: ChannelEditProps) {
                 <Field
                   name="name"
                   component={TextField}
-                  variant="standard"
+                  variant="outlined"
                   margin="dense"
                   label={t('frequent|name')}
                   InputLabelProps={{ shrink: true }}
@@ -356,9 +356,9 @@ function ChannelEdit(props: ChannelEditProps) {
             </Grid>
           </Grid>
           <FormControl margin="dense" disabled={!isCreation} fullWidth>
-            <InputLabel variant="standard">Architecture</InputLabel>
+            <InputLabel variant="outlined">Architecture</InputLabel>
             <MuiSelect
-              variant="standard"
+              variant="outlined"
               value={arch}
               onChange={(event: SelectChangeEvent<number>) => setArch(event.target.value as number)}
             >
@@ -437,7 +437,7 @@ function ChannelEdit(props: ChannelEditProps) {
                         <IconButton
                           edge="end"
                           aria-label={`Remove floor package ${cleanSemverVersion(pkg.version)}`}
-                          onClick={() => pkg.id && deleteFloorPackage(pkg.id)}
+                          onClick={() => pkg.id && setFloorPendingDeleteId(pkg.id)}
                           size="small"
                         >
                           <DeleteIcon fontSize="small" />
@@ -455,11 +455,11 @@ function ChannelEdit(props: ChannelEditProps) {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => props.onHide()} color="primary">
+          <Button onClick={() => props.onHide()} variant="text" color="inherit">
             {t('frequent|cancel')}
           </Button>
-          <Button type="submit" disabled={isSubmitting} color="primary">
-            {isCreation ? t('frequent|add_lower') : t('frequent|save')}
+          <Button type="submit" disabled={isSubmitting} variant="contained" color="primary">
+            {isCreation ? t('frequent|add') : t('frequent|save')}
           </Button>
         </DialogActions>
       </Form>
@@ -546,7 +546,7 @@ function ChannelEdit(props: ChannelEditProps) {
           <MuiTextField
             fullWidth
             margin="dense"
-            variant="standard"
+            variant="outlined"
             label={t('channels|floor_reason')}
             value={floorReason}
             onChange={e => setFloorReason(e.target.value)}
@@ -558,12 +558,29 @@ function ChannelEdit(props: ChannelEditProps) {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowAddFloorDialog(false)}>{t('frequent|cancel')}</Button>
-          <Button onClick={handleAddFloor} color="primary" disabled={!selectedFloorPackage}>
+          <Button onClick={() => setShowAddFloorDialog(false)} variant="text" color="inherit">
+            {t('frequent|cancel')}
+          </Button>
+          <Button
+            onClick={handleAddFloor}
+            variant="contained"
+            color="primary"
+            disabled={!selectedFloorPackage}
+          >
             {t('frequent|add')}
           </Button>
         </DialogActions>
       </Dialog>
+      <ConfirmDialog
+        open={Boolean(floorPendingDeleteId)}
+        description={t('channels|confirm_delete_floor')}
+        onClose={() => setFloorPendingDeleteId(null)}
+        onConfirm={() => {
+          if (floorPendingDeleteId) {
+            deleteFloorPackage(floorPendingDeleteId);
+          }
+        }}
+      />
     </>
   );
 }

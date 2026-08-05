@@ -9,7 +9,7 @@ function MainLayout() {
       <Grid
         size={{
           xs: 12,
-          sm: 8,
+          md: 8,
         }}
       >
         <ApplicationList />
@@ -17,7 +17,7 @@ function MainLayout() {
       <Grid
         size={{
           xs: 12,
-          sm: 4,
+          md: 4,
         }}
       >
         <ActivityContainer />

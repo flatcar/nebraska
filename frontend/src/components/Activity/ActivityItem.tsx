@@ -59,7 +59,7 @@ export function ActivityItemPure(props: ActivityItemPureProps) {
     const groupPath = `/apps/${props.appId}/groups/${props.groupId}`;
     subtitle = t('activity|group');
     name = (
-      <Link component={RouterLink} to={groupPath} sx={{ color: '#1b5c91' }} underline="hover">
+      <Link component={RouterLink} to={groupPath} sx={{ color: 'primary.main' }} underline="hover">
         {props.groupName}
       </Link>
     );

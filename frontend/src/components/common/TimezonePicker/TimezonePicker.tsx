@@ -183,7 +183,7 @@ export default function TimzonePicker(props: {
   return (
     <Box>
       <FormControl fullWidth>
-        <InputLabel variant="standard" shrink>
+        <InputLabel variant="outlined" shrink>
           Timezone
         </InputLabel>
         <Input
@@ -258,10 +258,10 @@ export default function TimzonePicker(props: {
           </Downshift>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleClose} variant="text" color="inherit">
             {t('frequent|cancel')}
           </Button>
-          <Button onClick={handleSelect} color="primary">
+          <Button onClick={handleSelect} variant="contained" color="primary">
             {t('frequent|select')}
           </Button>
         </DialogActions>
