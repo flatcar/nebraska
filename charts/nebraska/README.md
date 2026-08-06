@@ -214,7 +214,7 @@ $ kubectl exec -ti pod/nebraska-postgresql-0 -- psql < backup.sql
 | `postgresql.auth.database`                               | PostgreSQL database                                                                                           | `nebraska`             |
 | `postgresql.auth.postgresPassword`                       | PostgreSQL password of user "postgres" **Recommended to change it to something secure for security reasons.** | `changeIt`             |
 | `postgresql.image.tag`                                   | PostgreSQL Image tag                                                                                          | `13.8.0-debian-11-r18` |
-| `postgresql.primary.persistence.enabled`                 | Enable persistence using PVC                                                                                  | `false`                |
+| `postgresql.primary.persistence.enabled`                 | Enable persistence using PVC. Disabling it loses the whole database when the PostgreSQL pod restarts          | `true`                 |
 | `postgresql.primary.persistence.storageClass`            | PVC Storage Class for PostgreSQL volume                                                                       | `nil`                  |
 | `postgresql.primary.persistence.accessModes`             | PVC Access Mode for PostgreSQL volume                                                                         | `["ReadWriteOnce"]`    |
 | `postgresql.primary.persistence.size`                    | PVC Storage Request for PostgreSQL volume                                                                     | `1Gi`                  |
