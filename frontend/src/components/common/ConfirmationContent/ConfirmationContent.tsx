@@ -29,7 +29,7 @@ function ConfirmationContent(props: {
     <div className="popover-content" {...props}>
       {t('common|confirmation_prompt')}
       <p className="button-group">
-        <button type="button" className="confirm-dialog-btn-abord">
+        <button type="button" className="confirm-dialog-btn-abort">
           {t('frequent|no')}
         </button>
         <button type="button" className="confirm-dialog-btn-confirm" onClick={processClick}>

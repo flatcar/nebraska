@@ -8,7 +8,7 @@ import (
 
 // UpdateInfo wraps helper functions and fields
 // to fetch specific values from the omaha response
-// that was recieved for check if any new update
+// that was received for check if any new update
 // exists request.
 type UpdateInfo struct {
 	HasUpdate     bool
