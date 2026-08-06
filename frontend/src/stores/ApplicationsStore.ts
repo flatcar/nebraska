@@ -2,6 +2,7 @@ import _ from 'underscore';
 
 import API from '../api/API';
 import { Application, Channel, Group, Package, Packages } from '../api/apiDataTypes';
+import i18n from '../i18n/config';
 import Store from './BaseStore';
 import { setUser } from './redux/features/user';
 import store from './redux/store';
@@ -160,13 +161,17 @@ class ApplicationsStore extends Store {
   }
 
   deleteApplication(applicationID: string) {
-    API.deleteApplication(applicationID).then(() => {
-      this.applications = _.without(
-        this.applications as _.List<any>,
-        _.findWhere(this.applications as _.Collection<any>, { id: applicationID })
-      );
-      this.emitChange();
-    });
+    API.deleteApplication(applicationID)
+      .then(() => {
+        this.applications = _.without(
+          this.applications as _.List<any>,
+          _.findWhere(this.applications as _.Collection<any>, { id: applicationID })
+        );
+        this.emitChange();
+      })
+      .catch(() => {
+        window.alert(i18n.t('common|generic_error'));
+      });
   }
 
   // Groups
@@ -186,18 +191,22 @@ class ApplicationsStore extends Store {
   }
 
   deleteGroup(applicationID: string, groupID: string) {
-    API.deleteGroup(applicationID, groupID).then(() => {
-      const applicationToUpdate = _.findWhere(this.applications as _.Collection<any>, {
-        id: applicationID,
-      });
-      const newGroups = _.without(
-        applicationToUpdate.groups,
-        _.findWhere(applicationToUpdate.groups, { id: groupID })
-      );
+    API.deleteGroup(applicationID, groupID)
+      .then(() => {
+        const applicationToUpdate = _.findWhere(this.applications as _.Collection<any>, {
+          id: applicationID,
+        });
+        const newGroups = _.without(
+          applicationToUpdate.groups,
+          _.findWhere(applicationToUpdate.groups, { id: groupID })
+        );
 
-      applicationToUpdate.groups = [...newGroups];
-      this.emitChange();
-    });
+        applicationToUpdate.groups = [...newGroups];
+        this.emitChange();
+      })
+      .catch(() => {
+        window.alert(i18n.t('common|generic_error'));
+      });
   }
 
   async updateGroup(data: Group) {

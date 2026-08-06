@@ -163,4 +163,28 @@ describe('API methods using URLSearchParams', () => {
       }
     );
   });
+
+  describe('deleteApplication', () => {
+    let deleteFetchMock;
+
+    beforeEach(() => {
+      deleteFetchMock = vi.spyOn(global, 'fetch');
+    });
+
+    it('should throw when the response is not ok', async () => {
+      deleteFetchMock.mockResolvedValueOnce({
+        ok: false,
+        status: 403,
+      });
+
+      await expect(API.deleteApplication(applicationID)).rejects.toMatchObject({ status: 403 });
+    });
+
+    it('should resolve when the response is ok', async () => {
+      const response = { ok: true, status: 204 };
+      deleteFetchMock.mockResolvedValueOnce(response);
+
+      await expect(API.deleteApplication(applicationID)).resolves.toBe(response);
+    });
+  });
 });
