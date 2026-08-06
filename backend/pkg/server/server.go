@@ -17,6 +17,7 @@ import (
 
 	db "github.com/flatcar/nebraska/backend/pkg/api"
 	"github.com/flatcar/nebraska/backend/pkg/api/admin"
+	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
 	"github.com/flatcar/nebraska/backend/pkg/auth"
 	"github.com/flatcar/nebraska/backend/pkg/codegen"
 	"github.com/flatcar/nebraska/backend/pkg/config"
@@ -42,7 +43,7 @@ var (
 
 // New takes the config and db connection to create the server and returns it.
 // It also starts a background job to update instance stats periodically.
-func New(conf *config.Config, db *db.API, adminSvc *admin.Service) (*echo.Echo, error) {
+func New(conf *config.Config, db *db.API, adminSvc *admin.Service, runtimeSvc *runtime.Service) (*echo.Echo, error) {
 	// Setup Echo Server
 	e := echo.New()
 
@@ -118,7 +119,7 @@ func New(conf *config.Config, db *db.API, adminSvc *admin.Service) (*echo.Echo, 
 		}))
 
 	// setup handler
-	handlers, err := handler.New(db, adminSvc, conf, authenticator)
+	handlers, err := handler.New(db, adminSvc, runtimeSvc, conf, authenticator)
 	if err != nil {
 		return nil, fmt.Errorf("error setting up handlers: %w", err)
 	}
@@ -151,7 +152,7 @@ func New(conf *config.Config, db *db.API, adminSvc *admin.Service) (*echo.Echo, 
 	// setup background job for updating instance stats
 	go func() {
 		// update once at startup
-		err = db.UpdateInstanceStats(nil, nil)
+		err = runtimeSvc.UpdateInstanceStats(nil, nil)
 		if err != nil {
 			l.Err(err).Msg("Error updating instance stats")
 		}
@@ -159,7 +160,7 @@ func New(conf *config.Config, db *db.API, adminSvc *admin.Service) (*echo.Echo, 
 		defer ticker.Stop()
 
 		for range ticker.C {
-			err := db.UpdateInstanceStats(nil, nil)
+			err := runtimeSvc.UpdateInstanceStats(nil, nil)
 			if err != nil {
 				l.Err(err).Msg("Error updating instance stats")
 			}

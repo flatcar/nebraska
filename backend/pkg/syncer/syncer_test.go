@@ -19,7 +19,7 @@ const (
 
 func newAPI(t *testing.T) *api.API {
 	t.Helper()
-	a, err := api.NewForTest(api.OptionInitDB, api.OptionDisableUpdatesOnFailedRollout)
+	a, err := api.NewForTest(api.OptionInitDB)
 
 	t.Logf("Failed to init DB: %v\n", err)
 	t.Log("These tests require PostgreSQL running and a tests database created, please adjust NEBRASKA_DB_URL as needed.")
