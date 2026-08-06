@@ -45,15 +45,20 @@ type Cache interface {
 
 // Store contains cache and codec for session management.
 type Store struct {
-	cache Cache
-	codec Codec
+	cache  Cache
+	codec  Codec
+	secure bool
 }
 
-// NewStore creates a new sessions store.
-func NewStore(cache Cache, codec Codec) *Store {
+// NewStore creates a new sessions store. secure controls whether the
+// Secure flag is set on the session cookie, restricting it to
+// encrypted connections; it should be true unless Nebraska is
+// deliberately served over plain HTTP.
+func NewStore(cache Cache, codec Codec, secure bool) *Store {
 	return &Store{
-		cache: cache,
-		codec: codec,
+		cache:  cache,
+		codec:  codec,
+		secure: secure,
 	}
 }
 
@@ -76,7 +81,8 @@ func (s *Store) GetSessionUse(request *http.Request, name string) *Session {
 		return session
 	}
 	builder := sessionBuilder{
-		codec: s.codec,
+		codec:  s.codec,
+		secure: s.secure,
 	}
 	if id, err := s.getSessionIDFromRequest(request, name); err == nil {
 		if session := s.cache.GetSessionUseByID(builder, id, name); session != nil {
