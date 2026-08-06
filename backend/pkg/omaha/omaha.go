@@ -139,6 +139,12 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 			respApp.AddUpdateCheck(omahaSpec.UpdateInternalError)
 			return omahaResp, nil
 		}
+		if reqApp.MachineID == "" {
+			l.Warn().Str("app", reqApp.ID).Msgf("buildOmahaResponse - request has no machine ID, refusing to register instance")
+			respApp.Status = h.getStatusMessage(api.ErrRegisterInstanceFailed)
+			respApp.AddUpdateCheck(omahaSpec.UpdateInternalError)
+			continue
+		}
 
 		for _, event := range reqApp.Events {
 			if err := h.processEvent(reqApp.MachineID, appID, group, event); err != nil {
