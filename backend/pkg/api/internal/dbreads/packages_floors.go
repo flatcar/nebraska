@@ -217,7 +217,7 @@ func (q *Queries) GetPackageFloorChannels(packageID string) ([]types.ChannelFloo
 	}
 	defer rows.Close()
 
-	var result []types.ChannelFloorInfo
+	result := []types.ChannelFloorInfo{}
 	for rows.Next() {
 		var chWithFloor channelWithFloor
 		if err := rows.StructScan(&chWithFloor); err != nil {

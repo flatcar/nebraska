@@ -65,7 +65,7 @@ func (q *Queries) GetAppsCount(teamID string) (int, error) {
 // GetApps returns all applications that belong to the team id provided.
 func (q *Queries) GetApps(teamID string, page, perPage uint64) ([]*types.Application, error) {
 	page, perPage = validatePaginationParams(page, perPage)
-	var apps []*types.Application
+	apps := []*types.Application{}
 	limit, offset := sqlPaginate(page, perPage)
 	query, _, err := q.appsQuery().
 		Where(goqu.C("team_id").Eq(teamID)).
