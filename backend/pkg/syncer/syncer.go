@@ -163,13 +163,17 @@ func (s *Syncer) Start() {
 	l.Debug().Msg("syncer ready!")
 	s.ticker = time.NewTicker(s.checkFrequency)
 
-	_ = s.checkForUpdates()
+	if err := s.checkForUpdates(); err != nil {
+		l.Error().Err(err).Msg("syncer: initial check for updates failed")
+	}
 
 L:
 	for {
 		select {
 		case <-s.ticker.C:
-			_ = s.checkForUpdates()
+			if err := s.checkForUpdates(); err != nil {
+				l.Error().Err(err).Msg("syncer: periodic check for updates failed")
+			}
 		case <-s.stopCh:
 			break L
 		}
