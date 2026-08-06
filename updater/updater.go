@@ -322,6 +322,10 @@ func (u *updater) TryUpdate(ctx context.Context, handler UpdateHandler) error {
 		}
 	}
 
+	if err := u.ReportProgress(ctx, ProgressDownloadStarted); err != nil {
+		return fmt.Errorf("reporting progress download started: %w", err)
+	}
+
 	if err := handler.FetchUpdate(ctx, *info); err != nil {
 		if reportErr := u.ReportError(ctx, nil); reportErr != nil && u.debug {
 			fmt.Println("Reporting error to omaha server:", errors.Unwrap(reportErr))
@@ -331,6 +335,10 @@ func (u *updater) TryUpdate(ctx context.Context, handler UpdateHandler) error {
 
 	if err := u.ReportProgress(ctx, ProgressDownloadFinished); err != nil {
 		return fmt.Errorf("reporting progress download finished: %w", err)
+	}
+
+	if err := u.ReportProgress(ctx, ProgressInstallationStarted); err != nil {
+		return fmt.Errorf("reporting progress installation started: %w", err)
 	}
 
 	if err := handler.ApplyUpdate(ctx, *info); err != nil {
