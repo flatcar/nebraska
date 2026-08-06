@@ -73,6 +73,28 @@ func TestRegisterInstance(t *testing.T) {
 	assert.Equal(t, null.StringFrom(tGroup3.ID), instance.Application.GroupID)
 	assert.Equal(t, "gcp", instance.OEM, "OEM should be updated when provided")
 	assert.Equal(t, "3.0.0", instance.AlephVersion, "AlephVersion should be updated when provided")
+
+	instance, err = a.RegisterInstance(Instance{ID: instanceID, IP: "10.0.0.4"}, NewInstanceApplication(tApp.ID, tGroup3.ID, "1.0.3"))
+	assert.NoError(t, err, "Registering an already registered instance updating only instance IP.")
+	assert.Equal(t, "10.0.0.4", instance.IP)
+	assert.Equal(t, "1.0.3", instance.Application.Version)
+	assert.Equal(t, null.StringFrom(tGroup3.ID), instance.Application.GroupID)
+	assert.Equal(t, "gcp", instance.OEM)
+	assert.Equal(t, "3.0.0", instance.AlephVersion)
+
+	instance, err = a.RegisterInstance(Instance{ID: instanceID, IP: "10.0.0.4"}, NewInstanceApplication(tApp.ID, tGroup3.ID, "1.0.4"))
+	assert.NoError(t, err, "Registering an already registered instance updating only application version.")
+	assert.Equal(t, "10.0.0.4", instance.IP)
+	assert.Equal(t, "1.0.4", instance.Application.Version)
+	assert.Equal(t, null.StringFrom(tGroup3.ID), instance.Application.GroupID)
+	assert.Equal(t, "gcp", instance.OEM)
+	assert.Equal(t, "3.0.0", instance.AlephVersion)
+
+	instance, err = a.RegisterInstance(Instance{ID: instanceID, Alias: "partiallyupdatedalias", IP: "10.0.0.4"}, NewInstanceApplication(tApp.ID, tGroup3.ID, "1.0.4"))
+	assert.NoError(t, err, "Registering an already registered instance updating only alias.")
+	assert.Equal(t, "partiallyupdatedalias", instance.Alias)
+	assert.Equal(t, "10.0.0.4", instance.IP)
+	assert.Equal(t, "1.0.4", instance.Application.Version)
 }
 
 func TestGetInstance(t *testing.T) {

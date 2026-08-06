@@ -122,7 +122,7 @@ func (api *API) RegisterInstance(inst Instance, instApp InstanceApplication) (*I
 			return nil, err
 		}
 
-		return instance, nil
+		return api.GetInstance(inst.ID, appID)
 	}
 
 	// If this is an instance we haven't seen yet, then we write into instance + instance_application
