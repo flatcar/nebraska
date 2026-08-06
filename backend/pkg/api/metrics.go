@@ -6,5 +6,6 @@ import (
 
 type (
 	AppInstancesPerChannelMetric = types.AppInstancesPerChannelMetric
+	AppInstancesByOEMMetric      = types.AppInstancesByOEMMetric
 	FailedUpdatesMetric          = types.FailedUpdatesMetric
 )
