@@ -55,11 +55,6 @@ var (
 	// provided are not valid or related to each other.
 	ErrInvalidApplicationOrGroup = types.ErrInvalidApplicationOrGroup
 
-	// ErrInvalidEventTypeOrResult indicates that the event or result provided
-	// are not valid (Nebraska only implements a subset of the Omaha protocol
-	// events).
-	ErrInvalidEventTypeOrResult = errors.New("nebraska: invalid event type or result")
-
 	// ErrEventRegistrationFailed indicates that the event registration into
 	// Nebraska failed.
 	ErrEventRegistrationFailed = errors.New("nebraska: event registration failed")
@@ -82,7 +77,8 @@ type Event struct {
 	ErrorCode       null.String `db:"error_code" json:"error_code"`
 	InstanceID      string      `db:"instance_id" json:"instance_id"`
 	ApplicationID   string      `db:"application_id" json:"application_id"`
-	EventTypeID     string      `db:"event_type_id" json:"event_type_id"`
+	Type            int         `db:"event_type" json:"event_type"`
+	Result          int         `db:"event_result" json:"event_result"`
 }
 
 // RegisterEvent registers an event posted by an instance in Nebraska. The
@@ -123,22 +119,18 @@ func (api *API) RegisterEvent(instanceID, appID, groupID string, etype, eresult 
 		}
 	}
 
-	var eventTypeID int
-	query, _, err := goqu.From("event_type").
-		Select("id").
-		Where(goqu.C("type").Eq(etype), goqu.C("result").Eq(eresult)).
-		ToSQL()
-	if err != nil {
-		return err
-	}
-	err = api.db.QueryRow(query).Scan(&eventTypeID)
-	if err != nil {
-		return ErrInvalidEventTypeOrResult
+	event := &Event{
+		Type:            etype,
+		Result:          eresult,
+		PreviousVersion: null.StringFrom(previousVersion),
+		ErrorCode:       null.StringFrom(errorCode),
+		InstanceID:      instanceID,
+		ApplicationID:   appID,
 	}
 
 	insertQuery, _, err := goqu.Insert("event").
-		Cols("event_type_id", "instance_id", "application_id", "previous_version", "error_code").
-		Vals(goqu.Vals{eventTypeID, instanceID, appID, previousVersion, errorCode}).
+		Cols("event_type", "event_result", "instance_id", "application_id", "previous_version", "error_code").
+		Vals(goqu.Vals{event.Type, event.Result, event.InstanceID, event.ApplicationID, event.PreviousVersion, event.ErrorCode}).
 		ToSQL()
 	if err != nil {
 		return err
