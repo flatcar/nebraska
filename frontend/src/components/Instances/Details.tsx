@@ -327,7 +327,7 @@ function DetailsView(props: DetailsViewProps) {
 
   function onEditHide(newInstance?: Instance) {
     setShowEdit(false);
-    if (newInstance !== null) {
+    if (newInstance !== undefined) {
       onInstanceUpdated();
     }
   }
