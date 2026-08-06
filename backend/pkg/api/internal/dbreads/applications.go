@@ -114,10 +114,14 @@ func (q *Queries) GetApps(teamID string, page, perPage uint64) ([]*types.Applica
 // must be called whenever the apps entries are modified.
 func (q *Queries) ClearCachedAppIDs() {
 	cachedAppsIDsLock.Lock()
+	oldSize := len(cachedAppIDs)
 	cachedAppIDs = nil
-	// Generating the map is not always possible here because the database
-	// can be closed.
 	cachedAppsIDsLock.Unlock()
+	
+	cacheInvalidations.WithLabelValues("app_ids").Inc()
+	if oldSize > 0 {
+		cacheSize.WithLabelValues("app_ids").Set(0)
+	}
 }
 
 func (q *Queries) GetAppID(appOrProductID string) (string, error) {
@@ -131,6 +135,7 @@ func (q *Queries) GetAppID(appOrProductID string) (string, error) {
 
 	// Generate map on startup or if invalidated.
 	if cachedAppsRef == nil {
+		cacheMisses.WithLabelValues("app_ids").Inc()
 		cachedAppsIDsLock.Lock()
 		cachedAppsRef = cachedAppIDs
 
@@ -167,6 +172,7 @@ func (q *Queries) GetAppID(appOrProductID string) (string, error) {
 			}
 
 			cachedAppsRef = cachedAppIDs
+			cacheSize.WithLabelValues("app_ids").Set(float64(len(cachedAppsRef)))
 		}
 		cachedAppsIDsLock.Unlock()
 	}
@@ -185,6 +191,7 @@ func (q *Queries) GetAppID(appOrProductID string) (string, error) {
 	if !ok {
 		return "", fmt.Errorf("no app found for ID %v", appOrProductID)
 	}
+	cacheHits.WithLabelValues("app_ids").Inc()
 	return cachedAppID, nil
 }
 
