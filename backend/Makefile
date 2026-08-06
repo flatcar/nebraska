@@ -29,7 +29,15 @@ ifeq ($(VERSION),)
 	endif
 endif
 
-LDFLAGS := "-w -X github.com/flatcar/nebraska/backend/pkg/version.Version=$(VERSION) -extldflags \"-static\""
+# The external linker on macOS (clang) does not support static linking
+# (-static), so that flag is only used on other platforms (e.g. Linux,
+# where the container image is built).
+VERSION_LDFLAGS := -w -X github.com/flatcar/nebraska/backend/pkg/version.Version=$(VERSION)
+ifeq ($(shell uname -s),Darwin)
+	LDFLAGS := "$(VERSION_LDFLAGS)"
+else
+	LDFLAGS := "$(VERSION_LDFLAGS) -extldflags \"-static\""
+endif
 .PHONY: all
 all: codegen run-generators code-checks build
 

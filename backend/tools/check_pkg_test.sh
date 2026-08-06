@@ -8,7 +8,10 @@
 set -euo pipefail
 
 output_lines=()
-mapfile -t output_lines < <(go list -f '{{.Dir}} - {{.TestGoFiles}} {{.XTestGoFiles}}' ./...)
+# mapfile is not available on macOS (bash 3.2), so collect the lines in a loop.
+while IFS= read -r line; do
+    output_lines+=("${line}")
+done < <(go list -f '{{.Dir}} - {{.TestGoFiles}} {{.XTestGoFiles}}' ./...)
 
 if [[ ${#output_lines[@]} -eq 0 ]]; then
     exit 0
