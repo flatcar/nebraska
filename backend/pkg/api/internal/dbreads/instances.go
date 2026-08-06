@@ -463,3 +463,30 @@ func (q *Queries) GetInstanceStatsByTimestamp(t time.Time) ([]types.InstanceStat
 
 	return instances, nil
 }
+
+// GetLatestInstanceStatsTimestamp returns the MAX(timestamp) from instance_stats.
+func (q *Queries) GetLatestInstanceStatsTimestamp() (time.Time, error) {
+	var t time.Time
+	query, _, err := goqu.From("instance_stats").
+		Select(goqu.MAX("timestamp")).ToSQL()
+	if err != nil {
+		return t, err
+	}
+
+	err = q.db.QueryRowx(query).Scan(&t)
+	if err != nil {
+		return t, err
+	}
+
+	return t, nil
+}
+
+// GetInstanceStatsLatest returns an InstanceStats array of instances matching the
+// latest timestamp, ordered by version.
+func (q *Queries) GetInstanceStatsLatest() ([]types.InstanceStats, error) {
+	t, err := q.GetLatestInstanceStatsTimestamp()
+	if err != nil {
+		return nil, err
+	}
+	return q.GetInstanceStatsByTimestamp(t.UTC())
+}
