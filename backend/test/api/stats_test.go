@@ -106,6 +106,32 @@ func TestGroupVersionBreakdown(t *testing.T) {
 	})
 }
 
+func TestGroupOEMBreakdown(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// establish DB connection
+		db := newDBForTest(t)
+
+		// get app that has instance
+		appWithInstance := getAppWithInstance(t, db)
+
+		// fetch OEM breakdown from DB
+		breakdownDB, err := db.GetGroupOEMBreakdown(appWithInstance.Groups[0].ID)
+		require.NoError(t, err)
+		require.NotNil(t, breakdownDB)
+
+		// fetch OEM breakdown from API
+		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/oem_breakdown", os.Getenv("NEBRASKA_TEST_SERVER_URL"), appWithInstance.ID, appWithInstance.Groups[0].ID)
+		method := "GET"
+
+		// response
+		var breakdownResp []*api.OEMBreakdownEntry
+
+		httpDo(t, url, method, nil, http.StatusOK, "json", &breakdownResp)
+
+		assert.Equal(t, breakdownDB, breakdownResp)
+	})
+}
+
 func TestGroupStatusTimeline(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// set timezone

@@ -164,6 +164,9 @@ type ClientInterface interface {
 	// GetGroupInstancesCount request
 	GetGroupInstancesCount(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupInstancesCountParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetGroupOEMBreakdown request
+	GetGroupOEMBreakdown(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetGroupStatusTimeline request
 	GetGroupStatusTimeline(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupStatusTimelineParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -544,6 +547,18 @@ func (c *Client) GetGroupInstanceStats(ctx context.Context, appIDorProductID str
 
 func (c *Client) GetGroupInstancesCount(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupInstancesCountParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetGroupInstancesCountRequest(c.Server, appIDorProductID, groupID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetGroupOEMBreakdown(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetGroupOEMBreakdownRequest(c.Server, appIDorProductID, groupID)
 	if err != nil {
 		return nil, err
 	}
@@ -2186,6 +2201,47 @@ func NewGetGroupInstancesCountRequest(server string, appIDorProductID string, gr
 	return req, nil
 }
 
+// NewGetGroupOEMBreakdownRequest generates requests for GetGroupOEMBreakdown
+func NewGetGroupOEMBreakdownRequest(server string, appIDorProductID string, groupID string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "groupID", runtime.ParamLocationPath, groupID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/apps/%s/groups/%s/oem_breakdown", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetGroupStatusTimelineRequest generates requests for GetGroupStatusTimeline
 func NewGetGroupStatusTimelineRequest(server string, appIDorProductID string, groupID string, params *GetGroupStatusTimelineParams) (*http.Request, error) {
 	var err error
@@ -3175,6 +3231,9 @@ type ClientWithResponsesInterface interface {
 	// GetGroupInstancesCountWithResponse request
 	GetGroupInstancesCountWithResponse(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupInstancesCountParams, reqEditors ...RequestEditorFn) (*GetGroupInstancesCountResponse, error)
 
+	// GetGroupOEMBreakdownWithResponse request
+	GetGroupOEMBreakdownWithResponse(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*GetGroupOEMBreakdownResponse, error)
+
 	// GetGroupStatusTimelineWithResponse request
 	GetGroupStatusTimelineWithResponse(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupStatusTimelineParams, reqEditors ...RequestEditorFn) (*GetGroupStatusTimelineResponse, error)
 
@@ -3694,6 +3753,28 @@ func (r GetGroupInstancesCountResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetGroupInstancesCountResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetGroupOEMBreakdownResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *GroupOEMBreakdown
+}
+
+// Status returns HTTPResponse.Status
+func (r GetGroupOEMBreakdownResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetGroupOEMBreakdownResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -4359,6 +4440,15 @@ func (c *ClientWithResponses) GetGroupInstancesCountWithResponse(ctx context.Con
 		return nil, err
 	}
 	return ParseGetGroupInstancesCountResponse(rsp)
+}
+
+// GetGroupOEMBreakdownWithResponse request returning *GetGroupOEMBreakdownResponse
+func (c *ClientWithResponses) GetGroupOEMBreakdownWithResponse(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*GetGroupOEMBreakdownResponse, error) {
+	rsp, err := c.GetGroupOEMBreakdown(ctx, appIDorProductID, groupID, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetGroupOEMBreakdownResponse(rsp)
 }
 
 // GetGroupStatusTimelineWithResponse request returning *GetGroupStatusTimelineResponse
@@ -5070,6 +5160,32 @@ func ParseGetGroupInstancesCountResponse(rsp *http.Response) (*GetGroupInstances
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest InstanceCount
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetGroupOEMBreakdownResponse parses an HTTP response from a GetGroupOEMBreakdownWithResponse call
+func ParseGetGroupOEMBreakdownResponse(rsp *http.Response) (*GetGroupOEMBreakdownResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetGroupOEMBreakdownResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GroupOEMBreakdown
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
