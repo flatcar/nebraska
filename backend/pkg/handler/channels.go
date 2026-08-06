@@ -39,7 +39,7 @@ func (h *Handler) PaginateChannels(ctx echo.Context, appIDorProductID string, pa
 		l.Error().Err(err).Str("appID", appID).Msg("getChannels - getting channels")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
-	return ctx.JSON(http.StatusOK, channelsPage{totalCount, len(channels), channels})
+	return ctx.JSON(http.StatusOK, channelsPage{totalCount, len(channels), orEmpty(channels)})
 }
 
 func (h *Handler) CreateChannel(ctx echo.Context, appIDorProductID string) error {
