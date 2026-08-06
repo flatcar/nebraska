@@ -47,7 +47,7 @@ func TestAddAppCloning(t *testing.T) {
 	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
 	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
 	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	_, _ = as.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	_, _ = as.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes", Track: "beta"})
 	_, _ = as.AddGroup(&Group{Name: "group2", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
 	clonedApp, err := as.AddAppCloning(&Application{Name: "app1", TeamID: tTeam.ID}, tApp.ID)
@@ -58,10 +58,74 @@ func TestAddAppCloning(t *testing.T) {
 	assert.Equal(t, len(sourceApp.Groups), len(clonedAppX.Groups))
 	assert.Equal(t, len(sourceApp.Channels), len(clonedAppX.Channels))
 
-	// TODO: test specific fields in groups and channels (do not forget channel id in group!)
+	// Verify cloned channel attributes
+	assert.Equal(t, "test_channel", clonedAppX.Channels[0].Name)
+	assert.Equal(t, "blue", clonedAppX.Channels[0].Color)
+	assert.Equal(t, clonedApp.ID, clonedAppX.Channels[0].ApplicationID)
+	assert.False(t, clonedAppX.Channels[0].PackageID.Valid, "Cloned channel should not have package attached")
+
+	// Verify cloned group attributes, custom track, and mapped channel ID
+	var group1, group2 *Group
+	for _, g := range clonedAppX.Groups {
+		if g.Name == "group1" {
+			group1 = g
+		} else if g.Name == "group2" {
+			group2 = g
+		}
+	}
+	assert.NotNil(t, group1)
+	assert.Equal(t, clonedApp.ID, group1.ApplicationID)
+	assert.True(t, group1.ChannelID.Valid)
+	assert.Equal(t, clonedAppX.Channels[0].ID, group1.ChannelID.String)
+	assert.NotEqual(t, tChannel.ID, group1.ChannelID.String)
+	assert.Equal(t, "beta", group1.Track, "Custom track should be preserved")
+
+	assert.NotNil(t, group2)
+	assert.Equal(t, clonedApp.ID, group2.ApplicationID)
+	assert.False(t, group2.ChannelID.Valid, "Group without channel should remain without channel")
+	assert.Equal(t, group2.ID, group2.Track, "Default track should match new group ID")
 
 	_, err = as.AddAppCloning(&Application{Name: "app2", TeamID: tTeam.ID}, "")
 	assert.NoError(t, err, "Using an empty source app id when cloning has the same effect as not cloning.")
+
+	// Test cloning with invalid/non-existent source app id returns error and does not create app
+	_, err = as.AddAppCloning(&Application{Name: "app_invalid_source", TeamID: tTeam.ID}, "00000000-0000-0000-0000-000000000000")
+	assert.Error(t, err)
+
+	apps, listErr := a.GetApps(tTeam.ID, 0, 0)
+	assert.NoError(t, listErr)
+	found := false
+	for _, existing := range apps {
+		if existing.Name == "app_invalid_source" {
+			found = true
+			break
+		}
+	}
+	assert.False(t, found, "Application should not be created when source app is invalid")
+
+	// Test rollback when cloning fails midway: create source app with a broken group
+	brokenSourceApp, err := as.AddApp(&Application{Name: "broken_source_app", TeamID: tTeam.ID})
+	assert.NoError(t, err)
+	_, err = as.AddChannel(&Channel{Name: "broken_channel", Color: "green", ApplicationID: brokenSourceApp.ID})
+	assert.NoError(t, err)
+	// Directly insert a group with invalid timezone and policy_office_hours=true to trigger error during AddGroup cloning
+	_, err = a.db.Exec("insert into groups (id, name, description, application_id, policy_office_hours, policy_timezone, policy_period_interval, policy_max_updates_per_period, policy_update_timeout) values ($1, $2, 'test_desc', $3, true, 'InvalidTimezone', '15 minutes', 2, '60 minutes')",
+		uuid.New().String(), "invalid_tz_group", brokenSourceApp.ID)
+	assert.NoError(t, err)
+
+	_, err = as.AddAppCloning(&Application{Name: "app_should_rollback", TeamID: tTeam.ID}, brokenSourceApp.ID)
+	assert.Error(t, err, "AddAppCloning should fail when group cloning fails")
+
+	apps, listErr = a.GetApps(tTeam.ID, 0, 0)
+	assert.NoError(t, listErr)
+	foundRollback := false
+	for _, existing := range apps {
+		if existing.Name == "app_should_rollback" {
+			foundRollback = true
+			break
+		}
+	}
+	assert.False(t, foundRollback, "Partially cloned application should be deleted/rolled back on failure")
 
 	_, err = as.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("io.invalid. Name")})
 	assert.Error(t, err)

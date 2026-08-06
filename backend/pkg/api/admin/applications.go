@@ -36,44 +36,70 @@ func (s *Service) AddApp(app *types.Application) (*types.Application, error) {
 // channels from an existing application. Channels' packages will be set to null
 // as packages won't be cloned.
 func (s *Service) AddAppCloning(app *types.Application, sourceAppID string) (*types.Application, error) {
+	var sourceApp *types.Application
+	if sourceAppID != "" {
+		var err error
+		sourceApp, err = s.GetApp(sourceAppID)
+		if err != nil {
+			return nil, fmt.Errorf("cannot get source app: %w", err)
+		}
+	}
+
 	app, err := s.AddApp(app)
 	if err != nil {
 		return nil, err
 	}
 
-	// NOTE: cloning operation is not transactional and something could go wrong
-
-	if sourceAppID != "" {
-		sourceApp, err := s.GetApp(sourceAppID)
-		if err != nil {
-			l.Error().Err(err).Msg("AddAppCloning - could not get source app")
-			return app, nil
-		}
-
+	if sourceApp != nil {
 		channelsIDsMappings := make(map[string]null.String)
 
 		for _, channel := range sourceApp.Channels {
 			originalChannelID := channel.ID
-			channel.ApplicationID = app.ID
-			channel.PackageID = null.String{}
-			channelCopy, err := s.AddChannel(channel)
+			newChannel := &types.Channel{
+				Name:          channel.Name,
+				Color:         channel.Color,
+				ApplicationID: app.ID,
+				PackageID:     null.String{},
+				Arch:          channel.Arch,
+			}
+			channelCopy, err := s.AddChannel(newChannel)
 			if err != nil {
-				l.Error().Err(err).Msg("AddAppCloning - could not add channel")
-				return app, nil // FIXME - think about what we should return to the caller
+				if delErr := s.DeleteApp(app.ID); delErr != nil {
+					return nil, fmt.Errorf("cannot clone channel %q: %w (rollback failed: %v)", channel.Name, err, delErr)
+				}
+				return nil, fmt.Errorf("cannot clone channel %q: %w", channel.Name, err)
 			}
 			channelsIDsMappings[originalChannelID] = null.StringFrom(channelCopy.ID)
 		}
 
 		for _, group := range sourceApp.Groups {
-			group.ApplicationID = app.ID
+			var channelID null.String
 			if group.ChannelID.String != "" {
-				group.ChannelID = channelsIDsMappings[group.ChannelID.String]
+				channelID = channelsIDsMappings[group.ChannelID.String]
 			}
-			group.PolicyUpdatesEnabled = true
-			group.ID = ""
-			if _, err := s.AddGroup(group); err != nil {
-				l.Error().Err(err).Msg("AddAppCloning - could not add group")
-				return app, nil // FIXME - think about what we should return to the caller
+			track := group.Track
+			if track == group.ID {
+				track = ""
+			}
+			newGroup := &types.Group{
+				Name:                      group.Name,
+				Description:               group.Description,
+				ApplicationID:             app.ID,
+				ChannelID:                 channelID,
+				PolicyUpdatesEnabled:      true,
+				PolicySafeMode:            group.PolicySafeMode,
+				PolicyOfficeHours:         group.PolicyOfficeHours,
+				PolicyTimezone:            group.PolicyTimezone,
+				PolicyPeriodInterval:      group.PolicyPeriodInterval,
+				PolicyMaxUpdatesPerPeriod: group.PolicyMaxUpdatesPerPeriod,
+				PolicyUpdateTimeout:       group.PolicyUpdateTimeout,
+				Track:                     track,
+			}
+			if _, err := s.AddGroup(newGroup); err != nil {
+				if delErr := s.DeleteApp(app.ID); delErr != nil {
+					return nil, fmt.Errorf("cannot clone group %q: %w (rollback failed: %v)", group.Name, err, delErr)
+				}
+				return nil, fmt.Errorf("cannot clone group %q: %w", group.Name, err)
 			}
 		}
 	}
