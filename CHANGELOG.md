@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Security
 ### Added
 
+- **Pre-built release binaries:** GitHub releases now include pre-built `nebraska` binaries for Linux, macOS and Windows (amd64/arm64), the static frontend assets as a `nebraska-static-assets.tar.gz`, and a `SHA256SUMS` checksum file. This allows running Nebraska without Docker or a local Go/Node.js toolchain. ([#1139](https://github.com/flatcar/nebraska/issues/1139))
 - **Custom CA Certificate for TLS:** Added `--ca-file` flag to trust additional CA certificates for TLS verification (e.g., internal CA, Let's Encrypt staging). Applies to the OIDC provider client and the syncer. Supports multiple PEM-encoded certs, additive to system CAs. Also exposed as `config.caFile` in the Helm chart.
 - **OEM Attribute Capture:** Instances now store OEM and Aleph version information from Omaha update requests. ([#1286](https://github.com/flatcar/nebraska/pull/1286))
 - **Multi-Step Updates with Floor Packages:** Added support for mandatory intermediate update versions (floor packages) that clients must install before reaching the target version. This enables safe migration paths for breaking changes by ensuring clients update through specific versions in order. Floor packages can be configured per channel with optional reasons and are architecture-specific. ([#1195](https://github.com/flatcar/nebraska/pull/1195))
