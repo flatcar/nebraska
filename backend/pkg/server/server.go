@@ -10,10 +10,11 @@ import (
 	"time"
 
 	"github.com/getkin/kin-openapi/openapi3filter"
-	"github.com/labstack/echo-contrib/prometheus"
+	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	echomiddleware "github.com/oapi-codegen/echo-middleware"
+	"github.com/prometheus/client_golang/prometheus"
 
 	db "github.com/flatcar/nebraska/backend/pkg/api"
 	"github.com/flatcar/nebraska/backend/pkg/api/admin"
@@ -58,8 +59,23 @@ func New(conf *config.Config, db *db.API, adminSvc *admin.Service) (*echo.Echo, 
 		return nil, fmt.Errorf("swagger config error: %w", err)
 	}
 
-	p := prometheus.NewPrometheus(serviceName, nil)
-	p.Use(e)
+	// Register the Echo request metrics on a private registry so that repeated
+	// calls to New() (e.g. in tests) don't panic with duplicate registration on
+	// the default registerer. The /metrics handler gathers from both this
+	// registry and the default gatherer, so Go/process collectors and the
+	// Nebraska business metrics (registered on the default registerer in the
+	// metrics package) are still exposed.
+	metricsRegistry := prometheus.NewRegistry()
+	e.Use(echoprometheus.NewMiddlewareWithConfig(echoprometheus.MiddlewareConfig{
+		Subsystem:  serviceName,
+		Registerer: metricsRegistry,
+		Skipper: func(c echo.Context) bool {
+			return c.Path() == "/metrics"
+		},
+	}))
+	e.GET("/metrics", echoprometheus.NewHandlerWithConfig(echoprometheus.HandlerConfig{
+		Gatherer: prometheus.Gatherers{metricsRegistry, prometheus.DefaultGatherer},
+	}))
 
 	// setup authenticator
 	defaultTeam, err := db.GetTeam()
