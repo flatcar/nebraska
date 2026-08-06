@@ -311,6 +311,9 @@ function DetailsView(props: DetailsViewProps) {
   const hasAlias = !!instance.alias;
 
   React.useEffect(() => {
+    if (!application?.id || !group?.id || !instance?.id) {
+      return;
+    }
     API.getInstanceStatusHistory(application.id, group.id, instance.id)
       .then(statusHistory => {
         setEventHistory(statusHistory || []);
@@ -318,8 +321,7 @@ function DetailsView(props: DetailsViewProps) {
       .catch(() => {
         setEventHistory([]);
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [instance]);
+  }, [application?.id, group?.id, instance?.id]);
 
   function updateInstance() {
     setShowEdit(true);
