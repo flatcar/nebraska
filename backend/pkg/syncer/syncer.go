@@ -2,6 +2,7 @@ package syncer
 
 import (
 	"bytes"
+	"context"
 	"crypto/sha1"
 	"crypto/sha256"
 	"encoding/base64"
@@ -163,19 +164,43 @@ func (s *Syncer) Start() {
 	l.Debug().Msg("syncer ready!")
 	s.ticker = time.NewTicker(s.checkFrequency)
 
-	_ = s.checkForUpdates()
+	s.runSyncTick()
 
 L:
 	for {
 		select {
 		case <-s.ticker.C:
-			_ = s.checkForUpdates()
+			s.runSyncTick()
 		case <-s.stopCh:
 			break L
 		}
 	}
 
 	s.api.Close()
+}
+
+// runSyncTick acquires sync leadership for this tick so only one replica
+// performs the sync at a time; other replicas skip the tick rather than
+// racing to write the same data concurrently. See #388.
+func (s *Syncer) runSyncTick() {
+	leadership, acquired, err := s.api.AcquireSyncLeadership(context.Background())
+	if err != nil {
+		l.Error().Err(err).Msg("failed to acquire sync leadership")
+
+		return
+	}
+	if !acquired {
+		l.Debug().Msg("sync leadership not acquired, skipping tick")
+
+		return
+	}
+	defer func() {
+		if err := leadership.Close(); err != nil {
+			l.Warn().Err(err).Msg("failed to release sync leadership")
+		}
+	}()
+
+	_ = s.checkForUpdates()
 }
 
 // Stop stops the polling for updates.
