@@ -53,9 +53,9 @@ export default function MoreMenu(props: MoreMenuProps) {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        {options.map(({ label, action }, i) => (
+        {options.map(({ label, action }) => (
           <MenuItem
-            key={i}
+            key={label}
             onClick={() => {
               handleClose();
               action();

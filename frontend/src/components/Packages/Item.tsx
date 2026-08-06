@@ -106,9 +106,9 @@ function Item(props: ItemProps) {
               {`${t('packages|channels')}:`}
             </Typography>
             &nbsp;
-            {processedChannels.map((channel, i) => {
+            {processedChannels.map(channel => {
               return (
-                <span className={classes.channelLabel} key={i}>
+                <span className={classes.channelLabel} key={channel.name}>
                   <ChannelAvatar color={channel.color} size="10px" />
                   &nbsp;
                   {channel.name}
