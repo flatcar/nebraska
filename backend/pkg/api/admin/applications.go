@@ -83,6 +83,8 @@ func (s *Service) AddAppCloning(app *types.Application, sourceAppID string) (*ty
 	return app, nil
 }
 
+var productIDRegex = regexp.MustCompile(`^[a-zA-Z]+([a-zA-Z0-9\-]*[a-zA-Z0-9])*(\.[a-zA-Z]+([a-zA-Z0-9\-]*[a-zA-Z0-9])*)+$`)
+
 func validateProductID(productID null.String) error {
 	if productID.Ptr() == nil {
 		return nil
@@ -92,18 +94,7 @@ func validateProductID(productID null.String) error {
 		return fmt.Errorf("product ID %v is not valid (max length 155)", *productID.Ptr())
 	}
 
-	// This regex matches an ID that matches
-	// * At least two segments.
-	// * All characters must be alphanumeric, a dash.
-	// Each segment must start with a letter.
-	// Each segment must not end with a dash.
-	regMatcher := "^[a-zA-Z]+([a-zA-Z0-9\\-]*[a-zA-Z0-9])*(\\.[a-zA-Z]+([a-zA-Z0-1\\-]*[a-zA-Z0-9])*)+$"
-	matches, err := regexp.MatchString(regMatcher, *productID.Ptr())
-	if err != nil {
-		return err
-	}
-
-	if !matches {
+	if !productIDRegex.MatchString(*productID.Ptr()) {
 		return fmt.Errorf("product ID %v is not valid (has to be in the form e.g. io.example.App)", *productID.Ptr())
 	}
 
