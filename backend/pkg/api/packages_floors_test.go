@@ -9,6 +9,13 @@ import (
 	"gopkg.in/guregu/null.v4"
 )
 
+func TestMain(m *testing.M) {
+	if os.Getenv("NEBRASKA_SKIP_TESTS") != "" {
+		return
+	}
+	os.Exit(m.Run())
+}
+
 // TestFloorOperations tests basic floor CRUD operations
 func TestFloorOperations(t *testing.T) {
 	a := newForTest(t)
