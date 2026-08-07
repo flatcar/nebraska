@@ -297,6 +297,10 @@ func (s *Syncer) doOmahaRequest(descriptor channelDescriptor, currentVersion str
 		return nil, err
 	}
 
+	if len(oresp.Apps) == 0 {
+		return nil, fmt.Errorf("omaha response contains no apps")
+	}
+
 	return oresp.Apps[0].UpdateCheck, nil
 }
 
@@ -430,6 +434,9 @@ func (s *Syncer) createPackage(
 	}
 
 	// Determine URL and filename
+	if len(update.URLs) == 0 {
+		return nil, fmt.Errorf("omaha update response contains no URLs for version %s", manifest.Version)
+	}
 	url := update.URLs[0].CodeBase
 	filename := omahaPkg.Name
 
@@ -754,6 +761,9 @@ func (s *Syncer) downloadPackage(update *omaha.UpdateResponse, pkgName, sha1Base
 	}
 	defer os.Remove(tmpFile.Name())
 
+	if len(update.URLs) == 0 {
+		return fmt.Errorf("omaha update response contains no URLs")
+	}
 	updateURL, err := url.Parse(update.URLs[0].CodeBase)
 	if err != nil {
 		return err
