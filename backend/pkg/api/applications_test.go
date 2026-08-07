@@ -58,7 +58,29 @@ func TestAddAppCloning(t *testing.T) {
 	assert.Equal(t, len(sourceApp.Groups), len(clonedAppX.Groups))
 	assert.Equal(t, len(sourceApp.Channels), len(clonedAppX.Channels))
 
-	// TODO: test specific fields in groups and channels (do not forget channel id in group!)
+	// Verify cloned channel fields
+	if assert.NotEmpty(t, clonedAppX.Channels) {
+		assert.Equal(t, tChannel.Name, clonedAppX.Channels[0].Name)
+		assert.Equal(t, tChannel.Color, clonedAppX.Channels[0].Color)
+	}
+
+	// Verify cloned group fields and linked channel ID
+	var groupWithChannel *Group
+	for _, g := range clonedAppX.Groups {
+		if g.Name == "group1" {
+			groupWithChannel = g
+			break
+		}
+	}
+	if assert.NotNil(t, groupWithChannel) && assert.NotEmpty(t, clonedAppX.Channels) {
+		assert.True(t, groupWithChannel.ChannelID.Valid)
+		assert.Equal(t, clonedAppX.Channels[0].ID, groupWithChannel.ChannelID.String)
+		assert.True(t, groupWithChannel.PolicyUpdatesEnabled)
+		assert.True(t, groupWithChannel.PolicySafeMode)
+		assert.Equal(t, "15 minutes", groupWithChannel.PolicyPeriodInterval)
+		assert.Equal(t, 2, groupWithChannel.PolicyMaxUpdatesPerPeriod)
+		assert.Equal(t, "60 minutes", groupWithChannel.PolicyUpdateTimeout)
+	}
 
 	_, err = as.AddAppCloning(&Application{Name: "app2", TeamID: tTeam.ID}, "")
 	assert.NoError(t, err, "Using an empty source app id when cloning has the same effect as not cloning.")
