@@ -27,6 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Bugfixes
 
 - Fixed package blacklist changes not appearing in UI immediately after save
+- **RegisterInstance stale return:** When only the `instance` or `instance_application` table was updated, `RegisterInstance` returned the pre-update object. It now re-fetches via `GetInstance`, matching the dual-update path. ([#1448](https://github.com/flatcar/nebraska/issues/1448))
 
 ## [3.0.0] - 28/11/2025
 
