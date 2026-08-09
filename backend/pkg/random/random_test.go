@@ -1,6 +1,7 @@
 package random
 
 import (
+	"errors"
 	"os"
 	"testing"
 )
@@ -54,6 +55,14 @@ func TestRandomData(t *testing.T) {
 		if !byteSliceEqual(tt.output, got) {
 			t.Errorf("For n = %d, expected %#v, got %#v", tt.n, tt.output, got)
 		}
+
+		gotE, err := DataE(tt.n)
+		if err != nil {
+			t.Errorf("DataE returned unexpected error for n = %d: %v", tt.n, err)
+		}
+		if !byteSliceEqual(tt.output, gotE) {
+			t.Errorf("DataE for n = %d, expected %#v, got %#v", tt.n, tt.output, gotE)
+		}
 	}
 }
 
@@ -103,6 +112,34 @@ func TestRandomString(t *testing.T) {
 		if tt.output != got {
 			t.Errorf("For n = %d, expected %s, got %s", tt.n, tt.output, got)
 		}
+
+		gotE, err := StringE(tt.n)
+		if err != nil {
+			t.Errorf("StringE returned unexpected error for n = %d: %v", tt.n, err)
+		}
+		if tt.output != gotE {
+			t.Errorf("StringE for n = %d, expected %s, got %s", tt.n, tt.output, gotE)
+		}
+	}
+}
+
+func TestRandomDataEError(t *testing.T) {
+	origRandRead := randRead
+	defer func() { randRead = origRandRead }()
+
+	errMock := errors.New("mock randRead failure")
+	randRead = func(b []byte) (int, error) {
+		return 0, errMock
+	}
+
+	_, err := DataE(10)
+	if !errors.Is(err, errMock) {
+		t.Errorf("expected error %v, got %v", errMock, err)
+	}
+
+	_, err = StringE(10)
+	if !errors.Is(err, errMock) {
+		t.Errorf("expected error %v, got %v", errMock, err)
 	}
 }
 
