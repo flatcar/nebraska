@@ -54,6 +54,14 @@ type Config struct {
 	OidcUseUserInfo   bool   `koanf:"oidc-use-userinfo"`
 	CAFile            string `koanf:"ca-file"`
 	CACertPool        *x509.CertPool
+
+	NotificationEmailFrom  string `koanf:"sync-notification-email-from"`
+	NotificationEmailTo    string `koanf:"sync-notification-email-to"`
+	NotificationSMTPHost   string `koanf:"sync-notification-smtp-host"`
+	NotificationSMTPPort   int    `koanf:"sync-notification-smtp-port"`
+	NotificationSMTPUser   string `koanf:"sync-notification-smtp-user"`
+	NotificationSMTPPass   string `koanf:"sync-notification-smtp-pass"`
+	NotificationWebhookURL string `koanf:"sync-notification-webhook-url"`
 }
 
 const (
@@ -139,6 +147,13 @@ func Parse() (*Config, error) {
 	f.String("ca-file", "", "path to a PEM-encoded CA certificate file to trust for TLS verification (additive to system CAs, supports multiple certs in one file)")
 	f.String("sync-update-url", "https://public.update.flatcar-linux.net/v1/update/", "Flatcar update URL to sync from")
 	f.String("sync-interval", "1h", "Sync check interval (the minimum depends on the number of channels to sync, e.g., 8m for 8 channels incl. different architectures)")
+	f.String("sync-notification-email-from", "", "Email address to send sync notifications from")
+	f.String("sync-notification-email-to", "", "Comma-separated list of email addresses to send sync notifications to")
+	f.String("sync-notification-smtp-host", "", "SMTP host for sending sync notification emails")
+	f.Int("sync-notification-smtp-port", 25, "SMTP port for sending sync notification emails")
+	f.String("sync-notification-smtp-user", "", "SMTP username")
+	f.String("sync-notification-smtp-pass", "", "SMTP password")
+	f.String("sync-notification-webhook-url", "", "Webhook URL (e.g. Slack/Teams/HTTP) to send sync notifications to")
 	f.String("client-logo", "", "Client app logo, should be a path to svg file")
 	f.String("client-title", "", "Client app title")
 	f.String("client-header-style", "light", "Client app header style, should be either dark or light")
