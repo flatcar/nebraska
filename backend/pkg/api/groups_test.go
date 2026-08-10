@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -410,4 +411,77 @@ func TestGroupTrackName(t *testing.T) {
 
 	_, err = a.GetGroupID(tApp.ID, tGroupNoChannel.Track, ArchAll)
 	assert.Error(t, err, "no group found")
+}
+
+// TestGroupInstanceStatsStableAcrossSessionTimezones ensures reporting windows
+// that compare timestamptz columns to now() are not skewed by the Postgres
+// session timezone (see #1541).
+func TestGroupInstanceStatsStableAcrossSessionTimezones(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	as := adminSvc(a)
+
+	// Force a single pooled connection so SET TIME ZONE sticks for later queries.
+	a.db.SetMaxOpenConns(1)
+	a.db.SetMaxIdleConns(1)
+	defer func() {
+		a.db.SetMaxOpenConns(maxOpenAndIdleDbConns)
+		a.db.SetMaxIdleConns(maxOpenAndIdleDbConns)
+	}()
+
+	tTeam, err := as.AddTeam(&Team{Name: "tz_stats_team"})
+	assert.NoError(t, err)
+	tApp, err := as.AddApp(&Application{Name: "tz_stats_app", TeamID: tTeam.ID})
+	assert.NoError(t, err)
+	tPkg, err := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	assert.NoError(t, err)
+	tChannel, err := as.AddChannel(&Channel{Name: "tz_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	assert.NoError(t, err)
+	tGroup, err := as.AddGroup(&Group{Name: "tz_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	assert.NoError(t, err)
+
+	ids := []string{uuid.New().String(), uuid.New().String(), uuid.New().String(), uuid.New().String(), uuid.New().String()}
+	for i, id := range ids {
+		_, err = a.RegisterInstance(Instance{ID: id, IP: fmt.Sprintf("10.0.0.%d", i+1)}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+		assert.NoError(t, err)
+	}
+
+	// Ages chosen so a session-offset bug would change which rows fall inside a 1-day window.
+	ages := []string{"2 hours", "10 hours", "22 hours", "27 hours", "30 hours"}
+	for i, age := range ages {
+		_, err = a.db.Exec(`UPDATE instance_application SET last_check_for_updates = now() - interval '`+age+`' WHERE instance_id = $1 AND application_id = $2`, ids[i], tApp.ID)
+		assert.NoError(t, err)
+	}
+
+	type tzCase struct {
+		name string
+		tz   string
+	}
+	cases := []tzCase{
+		{name: "utc", tz: "UTC"},
+		{name: "new_york", tz: "America/New_York"},
+		{name: "kolkata", tz: "Asia/Kolkata"},
+	}
+
+	var totals []int
+	for _, tc := range cases {
+		_, err = a.db.Exec("SET TIME ZONE '" + tc.tz + "'")
+		assert.NoError(t, err, tc.name)
+
+		stats, err := a.GetGroupInstancesStats(tGroup.ID, testDuration)
+		assert.NoError(t, err, tc.name)
+		assert.NotNil(t, stats, tc.name)
+		totals = append(totals, stats.Total)
+
+		breakdown, err := a.GetGroupVersionBreakdown(tGroup.ID)
+		assert.NoError(t, err, tc.name)
+		breakdownCount := 0
+		for _, entry := range breakdown {
+			breakdownCount += entry.Instances
+		}
+		assert.Equal(t, stats.Total, breakdownCount, "version breakdown should match instance stats under %s", tc.name)
+	}
+
+	// Three instances checked in within the last 24h; must be stable in every session TZ.
+	assert.Equal(t, []int{3, 3, 3}, totals)
 }
