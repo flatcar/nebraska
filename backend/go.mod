@@ -7,7 +7,7 @@ require (
 	github.com/coreos/go-oidc/v3 v3.18.0
 	github.com/doug-martin/goqu/v9 v9.19.0
 	github.com/flatcar/go-omaha v0.0.2-0.20251014063321-4998849bd39c
-	github.com/getkin/kin-openapi v0.145.0
+	github.com/getkin/kin-openapi v0.146.0
 	github.com/golangci/golangci-lint/v2 v2.12.2
 	github.com/google/go-github/v28 v28.1.1
 	github.com/google/uuid v1.6.0

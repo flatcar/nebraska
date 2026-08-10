@@ -2,11 +2,12 @@ package api
 
 import (
 	"testing"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/guregu/null.v4"
+
+	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
 )
 
 func TestAddGroup(t *testing.T) {
@@ -165,6 +166,7 @@ func TestGetGroupsFiltered(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
 	as := adminSvc(a)
+	rs := runtimeSvc(a)
 
 	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
 	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
@@ -174,9 +176,9 @@ func TestGetGroupsFiltered(t *testing.T) {
 	realInstanceID := uuid.New().String()
 	fakeInstanceID1 := "{" + uuid.New().String() + "}"
 	fakeInstanceID2 := "{" + uuid.New().String() + "}"
-	_, _ = a.RegisterInstance(Instance{ID: realInstanceID, IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
-	_, _ = a.RegisterInstance(Instance{ID: fakeInstanceID1, IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, "2.0.0"))
-	_, _ = a.RegisterInstance(Instance{ID: fakeInstanceID2, IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	_, _ = rs.RegisterInstance(Instance{ID: realInstanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	_, _ = rs.RegisterInstance(Instance{ID: fakeInstanceID1, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "2.0.0"))
+	_, _ = rs.RegisterInstance(Instance{ID: fakeInstanceID2, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
 
 	groups, err := a.GetGroups(tApp.ID, 0, 0)
 	assert.NoError(t, err)
@@ -214,149 +216,6 @@ func TestVersionBreakDownEmpty(t *testing.T) {
 	versionBreakdown, vbErr := a.GetGroupVersionBreakdown(g.ID)
 	assert.NoError(t, vbErr)
 	assert.Len(t, versionBreakdown, 0)
-}
-
-func TestGetVersionCountTimeline(t *testing.T) {
-	a := newForTest(t)
-	defer a.Close()
-	as := adminSvc(a)
-
-	// Set cache lifespan to 50ms for testing and restore when done
-	cacheManager := NewTestCacheManager()
-	oldLifespan := cacheManager.SetCacheLifespanForTest(50 * time.Millisecond)
-	defer cacheManager.RestoreCacheLifespan(oldLifespan)
-
-	version := "4.0.0"
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := as.AddGroup(&Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
-	instanceID := uuid.New().String()
-
-	_, _ = a.RegisterInstance(Instance{ID: instanceID, IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, version))
-
-	instance, err := a.GetInstance(instanceID, tApp.ID)
-	assert.NoError(t, err)
-	_ = a.grantUpdate(instance, version)
-	_ = a.updateInstanceStatus(instanceID, tApp.ID, InstanceStatusComplete)
-
-	var versionTimelineMap map[time.Time](VersionCountMap)
-	var isCache bool
-
-	// get VersionCountTimeline from 1 hr before now
-	_, isCache, err = a.GetGroupVersionCountTimeline(tGroup.ID, "1h")
-	assert.NoError(t, err)
-
-	// the first time the cache is not hit
-	assert.Equal(t, false, isCache)
-
-	// wait a moment for the cache to be set (it's set asynchronously)
-	time.Sleep(10 * time.Millisecond)
-
-	// call again - should hit cache (within 50ms lifespan)
-	_, isCache, err = a.GetGroupVersionCountTimeline(tGroup.ID, "1h")
-	assert.NoError(t, err)
-
-	// the cache must be hit
-	assert.Equal(t, true, isCache)
-
-	// wait for cache to expire (100ms > 50ms lifespan)
-	time.Sleep(100 * time.Millisecond)
-
-	versionTimelineMap, isCache, err = a.GetGroupVersionCountTimeline(tGroup.ID, "1h")
-	assert.NoError(t, err)
-
-	// the cache must be stale as we waited longer than the lifespan
-	assert.Equal(t, false, isCache)
-
-	var totalInstances uint64
-	for _, versionMap := range versionTimelineMap {
-		totalInstances += versionMap[version]
-	}
-	assert.Equal(t, totalInstances, uint64(1))
-	// for 1h we generate timestamp for every 15 minute so total timeline should have 5 timestamps
-	assert.Equal(t, len(versionTimelineMap), 5)
-
-	versionTimelineMap, isCache, err = a.GetGroupVersionCountTimeline(tGroup.ID, "1d")
-	assert.NoError(t, err)
-	// for 1d we generate timestamp for each hour so total timeline should have 25 timestamps
-	assert.Equal(t, len(versionTimelineMap), 25)
-	// the first time the cache is not hit
-	assert.Equal(t, false, isCache)
-
-	versionTimelineMap, isCache, err = a.GetGroupVersionCountTimeline(tGroup.ID, "7d")
-	assert.NoError(t, err)
-	// for 7d we generate timestamp for each day so total timeline should have 8 timestamps
-	assert.Equal(t, len(versionTimelineMap), 8)
-	// the first time the cache is not hit
-	assert.Equal(t, false, isCache)
-
-	versionTimelineMap, isCache, err = a.GetGroupVersionCountTimeline(tGroup.ID, "30d")
-	assert.NoError(t, err)
-	// for 30d we generate timestamp after each 3days so total timeline should have 11 timestamps
-	assert.Equal(t, len(versionTimelineMap), 11)
-	// the first time the cache is not hit
-	assert.Equal(t, false, isCache)
-}
-
-func TestGetStatusCountTimeline(t *testing.T) {
-	a := newForTest(t)
-	defer a.Close()
-	as := adminSvc(a)
-	version := "4.0.0"
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := as.AddGroup(&Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
-	instanceID1 := uuid.New().String()
-	instanceID2 := uuid.New().String()
-
-	_, _ = a.RegisterInstance(Instance{ID: instanceID1, IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, version))
-
-	instance1, err := a.GetInstance(instanceID1, tApp.ID)
-	assert.NoError(t, err)
-
-	_ = a.grantUpdate(instance1, version)
-	_ = a.updateInstanceStatus(instanceID1, tApp.ID, InstanceStatusComplete)
-	_, _ = a.RegisterInstance(Instance{ID: instanceID2, IP: "10.0.0.2"}, NewInstanceApplication(tApp.ID, tGroup.ID, version))
-
-	instance2, err := a.GetInstance(instanceID2, tApp.ID)
-	assert.NoError(t, err)
-
-	_ = a.grantUpdate(instance2, version)
-	_ = a.updateInstanceStatus(instanceID2, tApp.ID, InstanceStatusDownloading)
-
-	// get StatusCountTimeline from 1 hr before now
-	statusTimelineMap, err := a.GetGroupStatusCountTimeline(tGroup.ID, "1h")
-	assert.NoError(t, err)
-	// for 1h we generate timestamp for every 15 minute so total timeline should have 5 timestamps
-	assert.Equal(t, len(statusTimelineMap), 5)
-	var statusInstanceCountMap = make(map[int]uint64)
-	for _, statusMap := range statusTimelineMap {
-		statusInstanceCountMap[InstanceStatusComplete] += statusMap[InstanceStatusComplete][version]
-		statusInstanceCountMap[InstanceStatusDownloading] += statusMap[InstanceStatusDownloading][version]
-	}
-	// as we registered two instances with version 4.0.0 with statuses 4 and 7
-	// so our status breakdown should have count 1 for both status 4 and 7
-	assert.Equal(t, statusInstanceCountMap[InstanceStatusComplete], uint64(1))
-	assert.Equal(t, statusInstanceCountMap[InstanceStatusDownloading], uint64(1))
-
-	statusTimelineMap, err = a.GetGroupStatusCountTimeline(tGroup.ID, "1d")
-	assert.NoError(t, err)
-	// for 1d we generate timestamp for each hour so total timeline should have 25 timestamps
-	assert.Equal(t, len(statusTimelineMap), 25)
-
-	statusTimelineMap, err = a.GetGroupStatusCountTimeline(tGroup.ID, "7d")
-	assert.NoError(t, err)
-	// for 7d we generate timestamp for each day so total timeline should have 8 timestamps
-	assert.Equal(t, len(statusTimelineMap), 8)
-
-	statusTimelineMap, err = a.GetGroupStatusCountTimeline(tGroup.ID, "30d")
-	assert.NoError(t, err)
-	// for 30d we generate timestamp after each 3days so total timeline should have 11 timestamps
-	assert.Equal(t, len(statusTimelineMap), 11)
 }
 
 func TestGroupTrackName(t *testing.T) {

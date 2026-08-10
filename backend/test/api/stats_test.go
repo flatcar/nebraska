@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
 )
 
 func TestGroupVersionTimeline(t *testing.T) {
@@ -121,15 +122,15 @@ func TestGroupStatusTimeline(t *testing.T) {
 
 		// create instance for app[0]
 		instanceID := uuid.New()
-		instanceDB, err := db.RegisterInstance(api.Instance{ID: instanceID.String(), Alias: "alias", IP: "0.0.0.0"}, api.NewInstanceApplication(app.ID, app.Groups[0].ID, "0.0.1"))
+		instanceDB, err := runtimeSvc(db).RegisterInstance(api.Instance{ID: instanceID.String(), Alias: "alias", IP: "0.0.0.0"}, runtime.NewInstanceApplication(app.ID, app.Groups[0].ID, "0.0.1"))
 		require.NoError(t, err)
 
 		// GetUpdatePackage
-		_, err = db.GetUpdatePackage(api.Instance{ID: instanceDB.ID, Alias: instanceDB.Alias, IP: instanceDB.IP}, api.NewInstanceApplication(app.ID, app.Groups[0].ID, instanceDB.Application.Version))
+		_, err = runtimeSvc(db).GetUpdatePackage(api.Instance{ID: instanceDB.ID, Alias: instanceDB.Alias, IP: instanceDB.IP}, runtime.NewInstanceApplication(app.ID, app.Groups[0].ID, instanceDB.Application.Version))
 		require.NoError(t, err)
 
 		// create event for instance
-		err = db.RegisterEvent(instanceDB.ID, app.ID, app.Groups[0].ID, api.EventUpdateComplete, api.ResultSuccessReboot, "0.0.0", "0")
+		err = runtimeSvc(db).RegisterEvent(instanceDB.ID, app.ID, app.Groups[0].ID, api.EventUpdateComplete, api.ResultSuccessReboot, "0.0.0", "0")
 		require.NoError(t, err)
 
 		// get group status timeline from DB

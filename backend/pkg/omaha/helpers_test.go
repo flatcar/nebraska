@@ -8,12 +8,19 @@ import (
 
 	"github.com/flatcar/nebraska/backend/pkg/api"
 	"github.com/flatcar/nebraska/backend/pkg/api/admin"
+	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
 )
 
 // adminSvc returns an admin.Service that reuses a's shared read queries so
 // tests can exercise admin write operations.
 func adminSvc(a *api.API) *admin.Service {
 	return admin.NewService(a.Reads())
+}
+
+// runtimeSvc returns a runtime.Service that reuses a's shared read queries so
+// tests can construct the Omaha handler over the runtime service.
+func runtimeSvc(a *api.API) *runtime.Service {
+	return runtime.NewService(a.Reads(), runtime.Config{DisableUpdatesOnFailedRollout: true})
 }
 
 // setupOmahaFloorTest creates a complete Omaha floor test environment

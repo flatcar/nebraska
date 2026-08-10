@@ -7,6 +7,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/guregu/null.v4"
+
+	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
 )
 
 // TestFloorOperations tests basic floor CRUD operations
@@ -179,6 +181,7 @@ func TestFloorRolloutPolicy(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
 	as := adminSvc(a)
+	rs := runtimeSvc(a)
 
 	// Setup with one floor
 	setup := setupFloors(t, a, "policy", []string{"2000.0.0"}, "3000.0.0")
@@ -190,12 +193,12 @@ func TestFloorRolloutPolicy(t *testing.T) {
 	assert.NoError(t, err)
 
 	// First client gets floor
-	pkg1, err := a.GetUpdatePackage(Instance{ID: "i1", IP: "10.0.0.1"}, NewInstanceApplication(setup.AppID, group.ID, "1000.0.0"))
+	pkg1, err := rs.GetUpdatePackage(Instance{ID: "i1", IP: "10.0.0.1"}, runtime.NewInstanceApplication(setup.AppID, group.ID, "1000.0.0"))
 	assert.NoError(t, err)
 	assert.Equal(t, "2000.0.0", pkg1.Version)
 
 	// Second client blocked by policy
-	_, err = a.GetUpdatePackage(Instance{ID: "i2", IP: "10.0.0.2"}, NewInstanceApplication(setup.AppID, group.ID, "1000.0.0"))
+	_, err = rs.GetUpdatePackage(Instance{ID: "i2", IP: "10.0.0.2"}, runtime.NewInstanceApplication(setup.AppID, group.ID, "1000.0.0"))
 	assert.Equal(t, ErrMaxUpdatesPerPeriodLimitReached, err)
 }
 
@@ -204,6 +207,7 @@ func TestTargetAsFloor(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
 	as := adminSvc(a)
+	rs := runtimeSvc(a)
 
 	// Setup with target also being a floor
 	// This represents a critical version that MUST be installed
@@ -249,11 +253,11 @@ func TestTargetAsFloor(t *testing.T) {
 	}
 
 	// Test that regular client gets the appropriate update
-	pkg, err := a.GetUpdatePackage(Instance{ID: "i1", IP: "10.0.0.1"}, NewInstanceApplication(setup.AppID, setup.Group.ID, "500.0.0"))
+	pkg, err := rs.GetUpdatePackage(Instance{ID: "i1", IP: "10.0.0.1"}, runtime.NewInstanceApplication(setup.AppID, setup.Group.ID, "500.0.0"))
 	assert.NoError(t, err)
 	assert.Equal(t, "1000.0.0", pkg.Version) // Gets first floor
 
-	pkg, err = a.GetUpdatePackage(Instance{ID: "i2", IP: "10.0.0.2"}, NewInstanceApplication(setup.AppID, setup.Group.ID, "2500.0.0"))
+	pkg, err = rs.GetUpdatePackage(Instance{ID: "i2", IP: "10.0.0.2"}, runtime.NewInstanceApplication(setup.AppID, setup.Group.ID, "2500.0.0"))
 	assert.NoError(t, err)
 	assert.Equal(t, "3000.0.0", pkg.Version) // Gets target-floor directly
 }

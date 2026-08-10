@@ -15,12 +15,19 @@ import (
 
 	"github.com/flatcar/nebraska/backend/pkg/api"
 	"github.com/flatcar/nebraska/backend/pkg/api/admin"
+	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
 )
 
 // adminSvc returns an admin.Service that reuses db's shared read queries so
 // tests can construct a server with admin write support.
 func adminSvc(db *api.API) *admin.Service {
 	return admin.NewService(db.Reads())
+}
+
+// runtimeSvc returns a runtime.Service that reuses db's shared read queries so
+// tests can construct a server with the runtime service.
+func runtimeSvc(db *api.API) *runtime.Service {
+	return runtime.NewService(db.Reads(), runtime.Config{})
 }
 
 // newDBForTest is a helper function that
