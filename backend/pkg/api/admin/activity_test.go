@@ -13,11 +13,11 @@ import (
 
 // TestAdminActivityRouting verifies that the admin-side activity writer
 // (newChannelActivityEntry) writes only to the admin_activity table and never
-// leaks into the runtime activity table. The runtime side is covered by the api
-// package's TestRuntimeActivityRouting. Together they preserve the routing
+// leaks into the runtime activity table. The runtime side is covered by the
+// runtime package's TestRuntimeActivityRouting. Together they preserve the routing
 // invariant introduced when the activity table was split (PR #1398).
 func TestAdminActivityRouting(t *testing.T) {
-	a, err := api.NewForTest(api.OptionInitDB, api.OptionDisableUpdatesOnFailedRollout)
+	a, err := api.NewForTest(api.OptionInitDB)
 	require.NoError(t, err)
 	require.NotNil(t, a)
 	defer a.Close()

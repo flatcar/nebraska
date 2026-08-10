@@ -7,6 +7,7 @@ import (
 
 	db "github.com/flatcar/nebraska/backend/pkg/api"
 	"github.com/flatcar/nebraska/backend/pkg/api/admin"
+	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
 	"github.com/flatcar/nebraska/backend/pkg/config"
 	"github.com/flatcar/nebraska/backend/pkg/logger"
 	"github.com/flatcar/nebraska/backend/pkg/metrics"
@@ -78,6 +79,9 @@ func main() {
 	// setup admin service (injected into syncer and the HTTP handlers)
 	adminSvc := admin.NewService(db.Reads())
 
+	// setup runtime service (injected into the HTTP handlers and the stats job)
+	runtimeSvc := runtime.NewService(db.Reads(), runtime.Config{})
+
 	// setup syncer
 	if conf.EnableSyncer {
 		syncer, err := syncer.Setup(conf, db, adminSvc)
@@ -98,7 +102,7 @@ func main() {
 			Msg("Failed to register metrics")
 	}
 
-	server, err := server.New(conf, db, adminSvc)
+	server, err := server.New(conf, db, adminSvc, runtimeSvc)
 	if err != nil {
 		l.Fatal().
 			Err(err).
