@@ -15,7 +15,7 @@ const (
 )
 
 func newForTest(t *testing.T) *API {
-	a, err := NewForTest(OptionInitDB, OptionDisableUpdatesOnFailedRollout)
+	a, err := NewForTest(OptionInitDB)
 
 	require.NoError(t, err)
 	require.NotNil(t, a)

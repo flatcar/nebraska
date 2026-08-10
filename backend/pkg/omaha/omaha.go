@@ -11,6 +11,7 @@ import (
 	"github.com/rs/zerolog"
 
 	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
 	"github.com/flatcar/nebraska/backend/pkg/logger"
 )
 
@@ -42,13 +43,13 @@ var (
 // Handler represents a component capable of processing Omaha requests. It uses
 // the Nebraska API to get packages updates, process events, etc.
 type Handler struct {
-	crAPI *api.API
+	runtimeSvc *runtime.Service
 }
 
 // NewHandler creates a new Handler instance.
-func NewHandler(crAPI *api.API) *Handler {
+func NewHandler(runtimeSvc *runtime.Service) *Handler {
 	return &Handler{
-		crAPI: crAPI,
+		runtimeSvc: runtimeSvc,
 	}
 }
 
@@ -111,7 +112,7 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 	for _, reqApp := range omahaReq.Apps {
 		var respApp *omahaSpec.AppResponse
 
-		appID, err := h.crAPI.GetAppID(reqApp.ID)
+		appID, err := h.runtimeSvc.GetAppID(reqApp.ID)
 		if err != nil {
 			l.Info().Str("machineId", reqApp.MachineID).Str("app", reqApp.ID).Msgf("buildOmahaResponse - no app found for %s", err.Error())
 
@@ -130,7 +131,7 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 			l.Info().Str("machineId", reqApp.MachineID).Str("uuid", group).Msgf("buildOmahaResponse - found client using a hard-coded group UUID")
 			group = trackName
 		}
-		groupID, err := h.crAPI.GetGroupID(appID, group, getArch(omahaReq.OS, reqApp))
+		groupID, err := h.runtimeSvc.GetGroupID(appID, group, getArch(omahaReq.OS, reqApp))
 		if err == nil {
 			group = groupID
 		} else {
@@ -154,10 +155,10 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 			OEM:          reqApp.OEM,
 			AlephVersion: reqApp.AlephVersion,
 		}
-		instApp := api.NewInstanceApplication(appID, group, reqApp.Version)
+		instApp := runtime.NewInstanceApplication(appID, group, reqApp.Version)
 
 		if reqApp.Ping != nil {
-			if _, err := h.crAPI.RegisterInstance(inst, instApp); err != nil {
+			if _, err := h.runtimeSvc.RegisterInstance(inst, instApp); err != nil {
 				l.Debug().Str("machineId", reqApp.MachineID).Msgf("processPing error %s", err.Error())
 			}
 			respApp.AddPing()
@@ -166,7 +167,7 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 		if reqApp.UpdateCheck != nil {
 			if isSyncerClient(omahaReq) {
 				// Syncer - get all packages
-				packages, err := h.crAPI.GetUpdatePackagesForSyncer(inst, instApp)
+				packages, err := h.runtimeSvc.GetUpdatePackagesForSyncer(inst, instApp)
 				if err != nil {
 					if err == api.ErrNoUpdatePackageAvailable || err == api.ErrUpdateGrantFailed {
 						respApp.AddUpdateCheck(omahaSpec.NoUpdate)
@@ -205,7 +206,7 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 				h.prepareMultiManifestUpdateCheck(respApp, packages)
 			} else {
 				// Regular client - get single package
-				pkg, err := h.crAPI.GetUpdatePackage(inst, instApp)
+				pkg, err := h.runtimeSvc.GetUpdatePackage(inst, instApp)
 				if err != nil {
 					if err == api.ErrNoUpdatePackageAvailable || err == api.ErrUpdateGrantFailed {
 						respApp.AddUpdateCheck(omahaSpec.NoUpdate)
@@ -228,7 +229,7 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 func (h *Handler) processEvent(machineID string, appID string, group string, event *omahaSpec.EventRequest) error {
 	l.Info().Str("machineId", machineID).Str("appID", appID).Str("group", group).Str("event", event.Type.String()+"."+event.Result.String()).Str("previousVersion", event.PreviousVersion).Msgf("processEvent eventError %d", event.ErrorCode)
 
-	return h.crAPI.RegisterEvent(machineID, appID, group, int(event.Type), int(event.Result), event.PreviousVersion, strconv.Itoa(event.ErrorCode))
+	return h.runtimeSvc.RegisterEvent(machineID, appID, group, int(event.Type), int(event.Result), event.PreviousVersion, strconv.Itoa(event.ErrorCode))
 }
 
 func (h *Handler) getStatusMessage(crErr error) omahaSpec.AppStatus {
@@ -305,7 +306,7 @@ func (h *Handler) addFlatcarActionToManifest(manifest *omahaSpec.Manifest, pkg *
 		return nil
 	}
 
-	cra, err := h.crAPI.GetFlatcarAction(pkg.ID)
+	cra, err := h.runtimeSvc.GetFlatcarAction(pkg.ID)
 	if err != nil {
 		return err
 	}

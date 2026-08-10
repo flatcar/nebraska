@@ -128,7 +128,7 @@ func (h *Handler) UpdateGroup(ctx echo.Context, appIDorProductID string, groupID
 	// This behavior applies in single mode only. Once the Nebraska mode flag lands,
 	// distributed mode will handle this differently.
 	if !oldGroup.PolicyUpdatesEnabled && group.PolicyUpdatesEnabled {
-		if err := h.db.ClearUpdatesEnabledOverride(groupID); err != nil {
+		if err := h.runtime.ClearUpdatesEnabledOverride(groupID); err != nil {
 			l.Error().Err(err).Str("groupID", groupID).Msg("updateGroup - clearing local updates-enabled override")
 			return ctx.NoContent(http.StatusInternalServerError)
 		}

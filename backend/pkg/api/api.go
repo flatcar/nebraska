@@ -40,10 +40,6 @@ const (
 	dBConnMaxLifetime     = 5 * 60 // seconds
 )
 
-func nowUTC() time.Time {
-	return time.Now().UTC()
-}
-
 // withUTCSessionTimezone ensures the Postgres session TimeZone is UTC.
 // Without this, managed Postgres instances that default to a non-UTC timezone
 // would make any remaining "timestamp without time zone" expressions drift.
@@ -91,10 +87,6 @@ type API struct {
 	dbURL    string
 
 	*dbreads.Queries
-
-	// disableUpdatesOnFailedRollout defines wether to disable updates
-	// after a first rollout attempt failed (ResultFailed)
-	disableUpdatesOnFailedRollout bool
 }
 
 // New creates a new API instance, creates the underlying db connection.
@@ -247,14 +239,6 @@ func OptionInitDB(api *API) error {
 		return err
 	}
 	api.UpdateCachedGroups()
-
-	return nil
-}
-
-// OptionDisableUpdatesOnFailedRollout will modify API to disable
-// updates on failed rollout.
-func OptionDisableUpdatesOnFailedRollout(api *API) error {
-	api.disableUpdatesOnFailedRollout = true
 
 	return nil
 }
