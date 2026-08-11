@@ -27,6 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Bugfixes
 
 - Fixed package blacklist changes not appearing in UI immediately after save
+- **Session timezone skew in reporting queries:** Replaced `now() at time zone 'utc'` with timezone-aware `now()` in instance/group stats and rollout policy windows, and pin Postgres session `TimeZone=UTC` on connect. Fixes incorrect dashboard counts and early/late rollout timeouts when the database session is not UTC. ([#1541](https://github.com/flatcar/nebraska/issues/1541))
 
 ## [3.0.0] - 28/11/2025
 

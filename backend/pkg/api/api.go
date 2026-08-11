@@ -4,8 +4,10 @@ import (
 	"database/sql"
 	"embed"
 	"fmt"
+	"net/url"
 	"os"
 	"strconv"
+	"strings"
 
 	//register "pgx" sql driver
 	"github.com/doug-martin/goqu/v9"
@@ -38,6 +40,29 @@ const (
 	maxOpenAndIdleDbConns = 25
 	dBConnMaxLifetime     = 5 * 60 // seconds
 )
+
+// withUTCSessionTimezone ensures the Postgres session TimeZone is UTC.
+// Without this, managed Postgres instances that default to a non-UTC timezone
+// would make any remaining "timestamp without time zone" expressions drift.
+// Existing explicit TimeZone/timezone query params are left unchanged.
+func withUTCSessionTimezone(dbURL string) string {
+	u, err := url.Parse(dbURL)
+	if err != nil {
+		return dbURL
+	}
+	q := u.Query()
+	if q.Get("TimeZone") != "" || q.Get("timezone") != "" {
+		return dbURL
+	}
+	// Also respect an options=-c TimeZone=... override if the operator set one.
+	options := q.Get("options")
+	if strings.Contains(strings.ToLower(options), "timezone=") {
+		return dbURL
+	}
+	q.Set("TimeZone", "UTC")
+	u.RawQuery = q.Encode()
+	return u.String()
+}
 
 var (
 	l = logger.New("api")
@@ -80,6 +105,7 @@ func New(options ...func(*API) error) (*API, error) {
 	if api.dbURL == "" {
 		api.dbURL = defaultDbURL
 	}
+	api.dbURL = withUTCSessionTimezone(api.dbURL)
 
 	var err error
 
