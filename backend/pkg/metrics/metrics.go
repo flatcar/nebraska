@@ -33,10 +33,11 @@ var (
 		prometheus.GaugeOpts{
 			Namespace: "nebraska",
 			Name:      "failed_updates",
-			Help:      "Number of failed updates of an application",
+			Help:      "Number of failed updates per application and group in the last day",
 		},
 		[]string{
 			"application",
+			"group",
 		},
 	)
 
@@ -144,8 +145,10 @@ func calculateMetrics(api *api.API) error {
 		return fmt.Errorf("failed to get failed update metrics: %w", err)
 	}
 
+	// Reset before repopulating so removed apps/groups do not leave stale series.
+	failedUpdatesGaugeMetric.Reset()
 	for _, metric := range fuMetrics {
-		failedUpdatesGaugeMetric.WithLabelValues(metric.ApplicationName).Set(float64(metric.FailureCount))
+		failedUpdatesGaugeMetric.WithLabelValues(metric.ApplicationName, metric.GroupName).Set(float64(metric.FailureCount))
 	}
 
 	// db stats

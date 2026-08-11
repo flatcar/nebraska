@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- **`nebraska_failed_updates` metric:** Counts only failed updates from the last day (matching other reporting windows) and adds a `group` label so operators can alert per rollout group. The gauge is reset before each refresh to avoid stale series. ([#1567](https://github.com/flatcar/nebraska/issues/1567))
 - **Per-group runtime state moved to node-local `group_local` sidecar:** `rollout_in_progress` plus a nullable override column for each `policy_*` column on `groups` now live on a new `group_local` table, in preparation for the distributed Nebraska topology described in [RFC #1375](https://github.com/flatcar/nebraska/issues/1375). The safe-mode auto-pause brake writes the local override instead of mutating the admin default; reads return `COALESCE(override, default)`. The JSON contract is unchanged. ([#1396](https://github.com/flatcar/nebraska/pull/1396))
 - **Activity events split across runtime-local and admin tables:** Admin-originated activity events (channel package updates) are now stored in a separate `admin_activity` table, in preparation for the distributed Nebraska topology described in [RFC #1375](https://github.com/flatcar/nebraska/issues/1375). The JSON contract is unchanged. ([#1398](https://github.com/flatcar/nebraska/pull/1398))
 - **Package Management UI Improvements:**

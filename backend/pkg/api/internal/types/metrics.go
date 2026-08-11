@@ -9,5 +9,6 @@ type AppInstancesPerChannelMetric struct {
 
 type FailedUpdatesMetric struct {
 	ApplicationName string `db:"app_name" json:"app_name"`
+	GroupName       string `db:"group_name" json:"group_name"`
 	FailureCount    int    `db:"fail_count" json:"fail_count"`
 }

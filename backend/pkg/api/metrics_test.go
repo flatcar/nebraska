@@ -77,6 +77,7 @@ func TestGetFailedUpdatesMetrics(t *testing.T) {
 	expectedMetrics := []FailedUpdatesMetric{
 		{
 			ApplicationName: "Sample application",
+			GroupName:       "Failing Qa-Dev",
 			FailureCount:    1,
 		},
 	}
