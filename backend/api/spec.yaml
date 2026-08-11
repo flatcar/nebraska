@@ -546,6 +546,36 @@ paths:
           description: Group not found response
         "500":
           description:  Version Breakdown of group error response
+  /api/apps/{appIDorProductID}/groups/{groupID}/oem_breakdown:
+    get:
+      description: get OEM/platform breakdown of a group given its groupID and appID
+      operationId: getGroupOEMBreakdown
+      security:
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
+      parameters:
+        - in: path
+          name: appIDorProductID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: groupID
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OEM Breakdown of group success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/groupOEMBreakdown"
+        "404":
+          description: Group not found response
+        "500":
+          description: OEM Breakdown of group error response
   /api/apps/{appIDorProductID}/channels:
     get:
       description: paginate channels of an app
@@ -1814,6 +1844,24 @@ components:
       type: array
       items: 
         $ref:  "#/components/schemas/versionBreakdownEntry"
+    oemBreakdownEntry:
+      type: object
+      required:
+        - oem
+        - instances
+        - percentage
+      properties:
+        oem:
+          type: string
+        instances:
+          type: integer
+        percentage:
+          type: number
+          format: double
+    groupOEMBreakdown:
+      type: array
+      items:
+        $ref: "#/components/schemas/oemBreakdownEntry"
 
     application:
       type: object

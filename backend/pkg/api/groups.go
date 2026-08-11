@@ -16,6 +16,7 @@ type (
 	GroupDescriptor                 = types.GroupDescriptor
 	Group                           = types.Group
 	VersionBreakdownEntry           = types.VersionBreakdownEntry
+	OEMBreakdownEntry               = types.OEMBreakdownEntry
 	VersionCountTimelineEntry       = types.VersionCountTimelineEntry
 	StatusVersionCountTimelineEntry = types.StatusVersionCountTimelineEntry
 	VersionCountMap                 = types.VersionCountMap
