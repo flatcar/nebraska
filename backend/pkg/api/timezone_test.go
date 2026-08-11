@@ -9,6 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/guregu/null.v4"
+
+	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
 )
 
 // dbSessionTimeZones holds the Postgres session time zones the stats queries
@@ -174,7 +176,7 @@ func newForTestWithTimeZone(t *testing.T, timeZone string) *API {
 	a := newForTest(t)
 
 	var sessionTimeZone string
-	require.NoError(t, a.db.QueryRow("SHOW timezone").Scan(&sessionTimeZone))
+	require.NoError(t, a.db().QueryRow("SHOW timezone").Scan(&sessionTimeZone))
 	require.Equal(t, timeZone, sessionTimeZone)
 
 	return a
@@ -188,10 +190,10 @@ func registerInstanceCheckedInAgo(t *testing.T, a *API, appID, groupID, ago stri
 	t.Helper()
 
 	instanceID := uuid.New().String()
-	_, err := a.RegisterInstance(Instance{ID: instanceID, IP: "10.0.0.1"}, NewInstanceApplication(appID, groupID, "1.0.0"))
+	_, err := runtimeSvc(a).RegisterInstance(Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(appID, groupID, "1.0.0"))
 	require.NoError(t, err)
 
-	_, err = a.db.Exec("UPDATE instance_application SET last_check_for_updates = now() - $1::interval WHERE instance_id = $2", ago, instanceID)
+	_, err = a.db().Exec("UPDATE instance_application SET last_check_for_updates = now() - $1::interval WHERE instance_id = $2", ago, instanceID)
 	require.NoError(t, err)
 
 	return instanceID
@@ -202,6 +204,6 @@ func registerInstanceCheckedInAgo(t *testing.T, a *API, appID, groupID, ago stri
 func grantUpdateAgo(t *testing.T, a *API, instanceID, ago string) {
 	t.Helper()
 
-	_, err := a.db.Exec("UPDATE instance_application SET last_update_granted_ts = now() - $1::interval, last_update_version = '1.0.0', update_in_progress = true WHERE instance_id = $2", ago, instanceID)
+	_, err := a.db().Exec("UPDATE instance_application SET last_update_granted_ts = now() - $1::interval, last_update_version = '1.0.0', update_in_progress = true WHERE instance_id = $2", ago, instanceID)
 	require.NoError(t, err)
 }

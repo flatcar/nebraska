@@ -22,7 +22,7 @@ func TestOIDCAuthModeSetup(t *testing.T) {
 		// establish db connection
 		db := newDBForTest(t)
 
-		server, err := server.New(conf, db, adminSvc(db))
+		server, err := server.New(conf, db, adminSvc(db), runtimeSvc(db))
 		assert.Nil(t, server)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "error setting up oidc provider")
@@ -43,7 +43,7 @@ func TestOIDCAuthModeSetup(t *testing.T) {
 		oidcServer := newOIDCMockServer(t)
 		startOIDCMockServer(t, oidcServer)
 
-		server, err := server.New(&testConfig, db, adminSvc(db))
+		server, err := server.New(&testConfig, db, adminSvc(db), runtimeSvc(db))
 		assert.Nil(t, server)
 		assert.Contains(t, err.Error(), "error setting up oidc provider")
 		assert.Contains(t, err.Error(), "404 page not found")
@@ -60,7 +60,7 @@ func TestOIDCAuthModeSetup(t *testing.T) {
 		oidcServer := newOIDCMockServer(t)
 		startOIDCMockServer(t, oidcServer)
 
-		server, err := server.New(conf, db, adminSvc(db))
+		server, err := server.New(conf, db, adminSvc(db), runtimeSvc(db))
 		assert.NotNil(t, server)
 		assert.NoError(t, err)
 
@@ -109,7 +109,7 @@ func TestOIDCEndpointBehavior(t *testing.T) {
 		startOIDCMockServer(t, oidcServer)
 
 		// start nebraska server
-		server, err := server.New(conf, db, adminSvc(db))
+		server, err := server.New(conf, db, adminSvc(db), runtimeSvc(db))
 		require.NotNil(t, server)
 		require.NoError(t, err)
 
@@ -147,7 +147,7 @@ func TestValidateTokenEndpoint(t *testing.T) {
 		startOIDCMockServer(t, oidcServer)
 
 		// start nebraska server
-		server, err := server.New(conf, db, adminSvc(db))
+		server, err := server.New(conf, db, adminSvc(db), runtimeSvc(db))
 		require.NotNil(t, server)
 		require.NoError(t, err)
 
