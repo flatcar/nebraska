@@ -33,14 +33,20 @@ func newUpdateInfo(resp *omaha.Response, appID string) (*UpdateInfo, error) {
 		return nil, errors.New("omaha response is not a valid update check response")
 	}
 
+	// The updater always receives a single manifest.
+	var manifest *omaha.Manifest
+	if len(app.UpdateCheck.Manifests) > 0 {
+		manifest = app.UpdateCheck.Manifests[0]
+	}
+
 	version := ""
-	if app.UpdateCheck.Manifest != nil {
-		version = app.UpdateCheck.Manifest.Version
+	if manifest != nil {
+		version = manifest.Version
 	}
 
 	var packages []*omaha.Package
-	if app.UpdateCheck.Manifest != nil && app.UpdateCheck.Manifest.Packages != nil {
-		packages = app.UpdateCheck.Manifest.Packages
+	if manifest != nil {
+		packages = manifest.Packages
 	}
 
 	var urls []string

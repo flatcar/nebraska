@@ -66,7 +66,7 @@ func progressToEventRequest(p progress) *omaha.EventRequest {
 		}
 	case ProgressInstallationFinished:
 		return &omaha.EventRequest{
-			Type:   omaha.EventTypeInstallStarted,
+			Type:   omaha.EventTypeInstallComplete,
 			Result: omaha.EventResultSuccess,
 		}
 	case ProgressError:
