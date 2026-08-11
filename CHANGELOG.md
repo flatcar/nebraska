@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Security
+
+- **User password secrets now hashed with bcrypt instead of unsalted md5:** `backend/pkg/api/admin/users.go` stored the local `users.secret` column as a raw `md5(username:realm:password)` digest, which is fast to brute-force and gives identical users with the same password identical stored values. New and changed passwords are now hashed with bcrypt (`golang.org/x/crypto/bcrypt`), which is deliberately slow and per-hash salted. Existing legacy md5 secrets keep verifying correctly and are transparently upgraded to bcrypt on the account's next successful login (`admin.Service.Authenticate`); no scheme-marker column was needed since a bcrypt hash and a hex md5 digest can never have the same shape. Requires migration `0024_widen_user_secret_for_bcrypt.sql`, which widens `users.secret` from `varchar(50)` to `text` to fit bcrypt's longer output.
 ### Added
 
 - **Custom CA Certificate for TLS:** Added `--ca-file` flag to trust additional CA certificates for TLS verification (e.g., internal CA, Let's Encrypt staging). Applies to the OIDC provider client and the syncer. Supports multiple PEM-encoded certs, additive to system CAs. Also exposed as `config.caFile` in the Helm chart.
