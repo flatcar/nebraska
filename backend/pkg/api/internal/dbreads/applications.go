@@ -218,7 +218,7 @@ func (q *Queries) appInstancesCountQuery(appID, groupID string, duration postgre
 	query := goqu.From("instance_application").
 		Select(goqu.COUNT("*")).
 		Where(
-			goqu.L("last_check_for_updates > now() at time zone 'utc' - interval ?", duration),
+			goqu.L("last_check_for_updates > now() - interval ?", duration),
 			goqu.L(ignoreFakeInstanceCondition("instance_id")),
 		)
 	if appID != "" {
