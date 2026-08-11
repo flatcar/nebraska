@@ -72,21 +72,21 @@ insert into instance_application values ('1.0.3', default, 7, default, default, 
 insert into instance_application values ('1.0.2', default, 2, default, default, NULL, default, 'instance10', 'b6458005-8f40-4627-b33b-be70a718c48e', 'b110813a-5f82-11e5-9d70-feff819cdc9f');
 insert into instance_application values ('1.0.1', default, 3, default, default, NULL, default, 'instance11', 'b6458005-8f40-4627-b33b-be70a718c48e', 'b110813a-5f82-11e5-9d70-feff819cdc9f');
 insert into instance_application values ('1.0.1', default, 3, default, default, NULL, default, 'instance12', 'b6458005-8f40-4627-b33b-be70a718c48e', 'cccccccc-5f82-11e5-9d70-feff819cdc9f');
-insert into activity values (default, now() at time zone 'utc' - interval '3 hours', 1, 4, '1.0.3', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021', 'instance1');
-insert into activity values (default, now() at time zone 'utc' - interval '6 hours', 5, 3, '1.0.3', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021', 'instance1');
-insert into activity values (default, now() at time zone 'utc' - interval '12 hours', 3, 1, '1.0.3', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021', 'instance1');
-insert into activity values (default, now() at time zone 'utc' - interval '18 hours', 4, 4, '1.0.3', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021', 'instance1');
-insert into activity values (default, now() at time zone 'utc' - interval '24 hours', 2, 2, '1.0.3', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021', 'instance1');
-insert into instance_status_history values (default, 4, '1.0.3', now() at time zone 'utc' - interval '8 hours', 'instance5', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021');
-insert into instance_status_history values (default, 5, '1.0.3', now() at time zone 'utc' - interval '8 hours 5 minutes', 'instance5', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021');
-insert into instance_status_history values (default, 6, '1.0.3', now() at time zone 'utc' - interval '9 hours', 'instance5', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021');
-insert into instance_status_history values (default, 7, '1.0.3', now() at time zone 'utc' - interval '9 hours 45 minutes', 'instance5', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021');
-insert into instance_status_history values (default, 2, '1.0.3', now() at time zone 'utc' - interval '9 hours 45 minutes 10 seconds', 'instance5', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021');
-insert into instance_status_history values (default, 4, '1.0.2', now() at time zone 'utc' - interval '36 hours', 'instance5', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021');
-insert into instance_status_history values (default, 5, '1.0.2', now() at time zone 'utc' - interval '36 hours 5 minutes', 'instance5', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021');
-insert into instance_status_history values (default, 6, '1.0.2', now() at time zone 'utc' - interval '37 hours', 'instance5', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021');
-insert into instance_status_history values (default, 7, '1.0.2', now() at time zone 'utc' - interval '37 hours 45 minutes', 'instance5', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021');
-insert into instance_status_history values (default, 2, '1.0.2', now() at time zone 'utc' - interval '37 hours 45 minutes 10 seconds', 'instance5', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021');
+insert into activity values (default, now() - interval '3 hours', 1, 4, '1.0.3', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021', 'instance1');
+insert into activity values (default, now() - interval '6 hours', 5, 3, '1.0.3', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021', 'instance1');
+insert into activity values (default, now() - interval '12 hours', 3, 1, '1.0.3', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021', 'instance1');
+insert into activity values (default, now() - interval '18 hours', 4, 4, '1.0.3', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021', 'instance1');
+insert into activity values (default, now() - interval '24 hours', 2, 2, '1.0.3', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021', 'instance1');
+insert into instance_status_history values (default, 4, '1.0.3', now() - interval '8 hours', 'instance5', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021');
+insert into instance_status_history values (default, 5, '1.0.3', now() - interval '8 hours 5 minutes', 'instance5', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021');
+insert into instance_status_history values (default, 6, '1.0.3', now() - interval '9 hours', 'instance5', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021');
+insert into instance_status_history values (default, 7, '1.0.3', now() - interval '9 hours 45 minutes', 'instance5', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021');
+insert into instance_status_history values (default, 2, '1.0.3', now() - interval '9 hours 45 minutes 10 seconds', 'instance5', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021');
+insert into instance_status_history values (default, 4, '1.0.2', now() - interval '36 hours', 'instance5', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021');
+insert into instance_status_history values (default, 5, '1.0.2', now() - interval '36 hours 5 minutes', 'instance5', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021');
+insert into instance_status_history values (default, 6, '1.0.2', now() - interval '37 hours', 'instance5', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021');
+insert into instance_status_history values (default, 7, '1.0.2', now() - interval '37 hours 45 minutes', 'instance5', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021');
+insert into instance_status_history values (default, 2, '1.0.2', now() - interval '37 hours 45 minutes 10 seconds', 'instance5', 'b6458005-8f40-4627-b33b-be70a718c48e', '7074264a-2070-4b84-96ed-8a269dba5021');
 insert into event (previous_version, error_code, instance_id, application_id, event_type_id) select '', '', 'instance12', 'b6458005-8f40-4627-b33b-be70a718c48e', et.id from event_type et where et.type = 3 and et.result = 0;
 
 -- Sample application 2

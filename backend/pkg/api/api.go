@@ -4,8 +4,11 @@ import (
 	"database/sql"
 	"embed"
 	"fmt"
+	"net/url"
 	"os"
+	"regexp"
 	"strconv"
+	"strings"
 
 	//register "pgx" sql driver
 	"github.com/doug-martin/goqu/v9"
@@ -37,7 +40,18 @@ const (
 	defaultDbURL          = "postgres://postgres:nebraska@127.0.0.1:5432/nebraska?sslmode=disable&connect_timeout=10"
 	maxOpenAndIdleDbConns = 25
 	dBConnMaxLifetime     = 5 * 60 // seconds
+
+	// defaultDbTimeZone is the Postgres session time zone Nebraska connects
+	// with when the DSN doesn't pin one itself. Queries are written to be
+	// time zone agnostic, so this only makes the timestamps Postgres reports
+	// back (and anything an operator inspects with the same DSN) predictable.
+	defaultDbTimeZone = "UTC"
 )
+
+// dbTimeZoneParamRegexp matches a "timezone" (or "options", which can carry
+// "-c timezone=...") run-time parameter in either the URL or the keyword/value
+// form of a Postgres DSN.
+var dbTimeZoneParamRegexp = regexp.MustCompile(`(?i)(^|[?&\s])(timezone|options)=`)
 
 var (
 	l = logger.New("api")
@@ -70,6 +84,25 @@ func (api *API) db() *sqlx.DB {
 	return dbconn.DB(api.conn)
 }
 
+// withDefaultTimeZone returns dbURL with the Postgres "timezone" run-time
+// parameter set to defaultDbTimeZone, leaving the DSN untouched if it already
+// pins a session time zone. Both the URL and the keyword/value DSN forms are
+// supported.
+func withDefaultTimeZone(dbURL string) string {
+	if dbTimeZoneParamRegexp.MatchString(dbURL) {
+		return dbURL
+	}
+
+	if u, err := url.Parse(dbURL); err == nil && (u.Scheme == "postgres" || u.Scheme == "postgresql") {
+		params := u.Query()
+		params.Set("timezone", defaultDbTimeZone)
+		u.RawQuery = params.Encode()
+		return u.String()
+	}
+
+	return strings.TrimSpace(dbURL) + " timezone=" + defaultDbTimeZone
+}
+
 // New creates a new API instance, creates the underlying db connection.
 func New(options ...func(*API) error) (*API, error) {
 	api := &API{
@@ -80,6 +113,8 @@ func New(options ...func(*API) error) (*API, error) {
 	if api.dbURL == "" {
 		api.dbURL = defaultDbURL
 	}
+
+	api.dbURL = withDefaultTimeZone(api.dbURL)
 
 	var err error
 
