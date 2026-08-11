@@ -27,6 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Bugfixes
 
 - Fixed package blacklist changes not appearing in UI immediately after save
+- **Instance stats and rollout policy on a non-UTC database session:** The instance and update statistics queries compared `timestamptz` columns against `now() at time zone 'utc'`, which yields a zone-less timestamp that Postgres converts back using the *session* time zone. Every time window was therefore shifted by the offset of the session, skewing the instance counts and, more importantly, making granted updates look older or younger than they are to the rollout policy. The queries now use plain `now()`, and connections pin the session time zone to UTC unless the database URL already sets one. ([#1541](https://github.com/flatcar/nebraska/issues/1541))
 
 ## [3.0.0] - 28/11/2025
 

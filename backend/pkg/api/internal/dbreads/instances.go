@@ -255,7 +255,7 @@ func (q *Queries) GetInstancesCount(p types.InstancesQueryParams, duration strin
 // of the app identified by the application id provided for a given instance.
 func (q *Queries) instanceAppQuery(appID, instanceID string, duration postgresDuration, sortFilter string, orderOfSort sortOrder) *goqu.SelectDataset {
 	query := prepareInstanceAppQuery().Where(goqu.C("application_id").Eq(appID)).
-		Where(goqu.L("last_check_for_updates > now() at time zone 'utc' - interval ?", duration))
+		Where(goqu.L("last_check_for_updates > now() - interval ?", duration))
 
 	if instanceID != "" {
 		query = query.Where(goqu.C("instance_id").Eq(instanceID))
@@ -280,7 +280,7 @@ func (q *Queries) getFilterInstancesQuery(selectPart exp.LiteralExpression, p ty
 	query := goqu.From("instance_application").
 		Select(selectPart).
 		Where(goqu.C("application_id").Eq(p.ApplicationID), goqu.C("group_id").Eq(p.GroupID)).
-		Where(goqu.L("last_check_for_updates > now() at time zone 'utc' - interval ?", duration),
+		Where(goqu.L("last_check_for_updates > now() - interval ?", duration),
 			goqu.L(ignoreFakeInstanceCondition("instance_id")))
 
 	if p.Status == types.InstanceStatusUndefined {
