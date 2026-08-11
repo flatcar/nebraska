@@ -23,6 +23,31 @@ WHERE a.id = e.application_id AND e.event_type_id = et.id AND et.result = 0 AND 
 GROUP BY app_name
 ORDER BY app_name
 `, ignoreFakeInstanceCondition("e.instance_id"))
+
+	groupUpdatesStatsMetricSQL = fmt.Sprintf(`
+SELECT 
+	g.application_id,
+	g.id as group_id,
+	a.name as application_name,
+	g.name as group_name,
+	COALESCE(c.name, 'no channel') as channel_name,
+	COUNT(ia.instance_id) AS total_instances,
+	COALESCE(SUM(CASE WHEN ia.last_update_version = COALESCE(p.version, '') THEN 1 ELSE 0 END), 0) AS updates_to_current_version_granted,
+	COALESCE(SUM(CASE WHEN ia.update_in_progress = false AND ia.last_update_version = COALESCE(p.version, '') THEN 1 ELSE 0 END), 0) AS updates_to_current_version_attempted,
+	COALESCE(SUM(CASE WHEN ia.update_in_progress = false AND ia.last_update_version = COALESCE(p.version, '') AND ia.last_update_version = ia.version THEN 1 ELSE 0 END), 0) AS updates_to_current_version_succeeded,
+	COALESCE(SUM(CASE WHEN ia.update_in_progress = false AND ia.last_update_version = COALESCE(p.version, '') AND ia.last_update_version != ia.version THEN 1 ELSE 0 END), 0) AS updates_to_current_version_failed,
+	COALESCE(SUM(CASE WHEN ia.last_update_granted_ts > (now() AT TIME ZONE 'utc' - g.policy_period_interval::interval) THEN 1 ELSE 0 END), 0) AS updates_granted_in_last_period,
+	COALESCE(SUM(CASE WHEN ia.update_in_progress = true AND (now() AT TIME ZONE 'utc' - ia.last_update_granted_ts) <= g.policy_update_timeout::interval THEN 1 ELSE 0 END), 0) AS updates_in_progress,
+	COALESCE(SUM(CASE WHEN ia.update_in_progress = true AND (now() AT TIME ZONE 'utc' - ia.last_update_granted_ts) > g.policy_update_timeout::interval THEN 1 ELSE 0 END), 0) AS updates_timed_out
+FROM groups g
+JOIN application a ON g.application_id = a.id
+LEFT JOIN instance_application ia ON ia.group_id = g.id AND %s
+LEFT JOIN channel c ON g.channel_id = c.id
+LEFT JOIN package p ON c.package_id = p.id
+WHERE g.policy_updates_enabled = true
+GROUP BY g.id, g.application_id, a.name, g.name, c.name, p.version
+ORDER BY a.name, g.name
+`, ignoreFakeInstanceCondition("ia.instance_id"))
 )
 
 func (q *Queries) GetAppInstancesPerChannelMetrics() ([]types.AppInstancesPerChannelMetric, error) {
@@ -55,6 +80,30 @@ func (q *Queries) GetFailedUpdatesMetrics() ([]types.FailedUpdatesMetric, error)
 	defer rows.Close()
 	for rows.Next() {
 		var metric types.FailedUpdatesMetric
+		err := rows.StructScan(&metric)
+		if err != nil {
+			return nil, err
+		}
+		metrics = append(metrics, metric)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return metrics, nil
+}
+
+// GetGroupUpdatesStatsMetrics returns rollout progress and update tracking metrics for all groups
+// with updates enabled. This exposes data that Nebraska already tracks internally for policy
+// enforcement, making it observable for monitoring and alerting.
+func (q *Queries) GetGroupUpdatesStatsMetrics() ([]types.GroupUpdatesStatsMetric, error) {
+	var metrics []types.GroupUpdatesStatsMetric
+	rows, err := q.db.Queryx(groupUpdatesStatsMetricSQL)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var metric types.GroupUpdatesStatsMetric
 		err := rows.StructScan(&metric)
 		if err != nil {
 			return nil, err
