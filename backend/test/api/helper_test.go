@@ -16,6 +16,7 @@ import (
 	"github.com/flatcar/nebraska/backend/pkg/api"
 	"github.com/flatcar/nebraska/backend/pkg/api/admin"
 	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
 // adminSvc returns an admin.Service that reuses db's shared read queries so
@@ -51,8 +52,8 @@ func getTeamID(t *testing.T, db *api.API) string {
 }
 
 // getApps is a helper function that
-// takes an active db connection and retuns the first 10 applications.
-func getApps(t *testing.T, db *api.API) []*api.Application {
+// takes an active db connection and returns the first 10 applications.
+func getApps(t *testing.T, db *api.API) []*types.Application {
 	t.Helper()
 
 	teamID := getTeamID(t, db)
@@ -64,7 +65,7 @@ func getApps(t *testing.T, db *api.API) []*api.Application {
 
 // getRandomApp is a helper function that
 // takes an active db connection and returns a random app.
-func getRandomApp(t *testing.T, db *api.API) *api.Application {
+func getRandomApp(t *testing.T, db *api.API) *types.Application {
 	t.Helper()
 	apps := getApps(t, db)
 	rand.New(rand.NewSource(time.Now().Unix()))
@@ -74,7 +75,7 @@ func getRandomApp(t *testing.T, db *api.API) *api.Application {
 // getAppWithInstance is a helper function that
 // takes an active db connection and returns an app
 // that has instances.
-func getAppWithInstance(t *testing.T, db *api.API) *api.Application {
+func getAppWithInstance(t *testing.T, db *api.API) *types.Application {
 	t.Helper()
 
 	apps := getApps(t, db)
@@ -88,7 +89,7 @@ func getAppWithInstance(t *testing.T, db *api.API) *api.Application {
 	return nil
 }
 
-func getAppWithProductID(t *testing.T, db *api.API) *api.Application {
+func getAppWithProductID(t *testing.T, db *api.API) *types.Application {
 	t.Helper()
 
 	apps := getApps(t, db)

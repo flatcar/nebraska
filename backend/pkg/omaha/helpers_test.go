@@ -9,6 +9,7 @@ import (
 	"github.com/flatcar/nebraska/backend/pkg/api"
 	"github.com/flatcar/nebraska/backend/pkg/api/admin"
 	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
 // adminSvc returns an admin.Service that reuses a's shared read queries so
@@ -24,7 +25,7 @@ func runtimeSvc(a *api.API) *runtime.Service {
 }
 
 // setupOmahaFloorTest creates a complete Omaha floor test environment
-func setupOmahaFloorTest(t *testing.T, a *api.API, name string, floorVersions []string, targetVersion string) (*api.Group, []*api.Package) {
+func setupOmahaFloorTest(t *testing.T, a *api.API, name string, floorVersions []string, targetVersion string) (*types.Group, []*types.Package) {
 	t.Helper()
 	as := adminSvc(a)
 
@@ -34,16 +35,16 @@ func setupOmahaFloorTest(t *testing.T, a *api.API, name string, floorVersions []
 
 	// Create all packages using shared helper
 	allVersions := append(floorVersions, targetVersion)
-	pkgs := make([]*api.Package, len(allVersions))
+	pkgs := make([]*types.Package, len(allVersions))
 	for i, v := range allVersions {
-		pkg, err := as.AddPackage(&api.Package{
-			Type:          api.PkgTypeFlatcar,
+		pkg, err := as.AddPackage(&types.Package{
+			Type:          types.PkgTypeFlatcar,
 			URL:           "http://sample.url/" + v,
 			Version:       v,
 			Filename:      null.StringFrom("flatcar_" + v + ".gz"),
 			ApplicationID: tApp.ID,
-			Arch:          api.ArchAMD64,
-			FlatcarAction: &api.FlatcarAction{
+			Arch:          types.ArchAMD64,
+			FlatcarAction: &types.FlatcarAction{
 				Event:                 "postinstall",
 				Sha256:                "sha256-" + v,
 				DisablePayloadBackoff: true,
@@ -54,11 +55,11 @@ func setupOmahaFloorTest(t *testing.T, a *api.API, name string, floorVersions []
 	}
 
 	// Create channel with target (last package)
-	channel, err := as.AddChannel(&api.Channel{
+	channel, err := as.AddChannel(&types.Channel{
 		Name:          name,
 		ApplicationID: tApp.ID,
 		PackageID:     null.StringFrom(pkgs[len(pkgs)-1].ID),
-		Arch:          api.ArchAMD64,
+		Arch:          types.ArchAMD64,
 	})
 	require.NoError(t, err)
 
@@ -70,7 +71,7 @@ func setupOmahaFloorTest(t *testing.T, a *api.API, name string, floorVersions []
 	}
 
 	// Create group with standard policy
-	group, err := as.AddGroup(&api.Group{
+	group, err := as.AddGroup(&types.Group{
 		Name:                      name,
 		ApplicationID:             tApp.ID,
 		ChannelID:                 null.StringFrom(channel.ID),

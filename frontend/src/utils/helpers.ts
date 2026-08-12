@@ -39,7 +39,7 @@ export const ARCHES: {
 };
 
 // Indexes/keys for the instancesFilter need to match the ones in
-// pkg/api/instances.go.
+// pkg/api/internal/dbreads/instances.go.
 export const InstanceSortFilters: {
   [key: string]: string;
 } = {

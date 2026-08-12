@@ -9,6 +9,7 @@ import (
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
 // TestFloorOperations tests basic floor CRUD operations
@@ -25,19 +26,19 @@ func TestFloorOperations(t *testing.T) {
 	assert.NoError(t, as.AddChannelPackageFloor(setup.Channel.ID, setup.Floors[0].ID, null.StringFrom("Filesystem upgrade")))
 
 	// Test wrong arch
-	tTeam, err := as.AddTeam(&Team{Name: "test_team_arch"})
+	tTeam, err := as.AddTeam(&types.Team{Name: "test_team_arch"})
 	assert.NoError(t, err)
-	tApp, err := as.AddApp(&Application{Name: "test_app_arch", TeamID: tTeam.ID})
+	tApp, err := as.AddApp(&types.Application{Name: "test_app_arch", TeamID: tTeam.ID})
 	assert.NoError(t, err)
-	pkgWrongArch, err := as.AddPackage(&Package{
-		Type:          PkgTypeFlatcar,
+	pkgWrongArch, err := as.AddPackage(&types.Package{
+		Type:          types.PkgTypeFlatcar,
 		URL:           "http://sample.url/1500.0.0",
 		Version:       "1500.0.0",
 		ApplicationID: tApp.ID,
-		Arch:          ArchAArch64,
+		Arch:          types.ArchAArch64,
 	})
 	assert.NoError(t, err)
-	assert.Equal(t, ErrArchMismatch, as.AddChannelPackageFloor(setup.Channel.ID, pkgWrongArch.ID, null.String{}))
+	assert.Equal(t, types.ErrArchMismatch, as.AddChannelPackageFloor(setup.Channel.ID, pkgWrongArch.ID, null.String{}))
 
 	// Test getting floors
 	floors, err := a.GetChannelFloorPackages(setup.Channel.ID)
@@ -68,7 +69,7 @@ func TestFloorOperations(t *testing.T) {
 	floors, err = a.GetChannelFloorPackages(setup.Channel.ID)
 	assert.NoError(t, err)
 	assert.Len(t, floors, 1)
-	assert.Equal(t, ErrNoRowsAffected, as.RemoveChannelPackageFloor(setup.Channel.ID, setup.Floors[0].ID))
+	assert.Equal(t, types.ErrNoRowsAffected, as.RemoveChannelPackageFloor(setup.Channel.ID, setup.Floors[0].ID))
 }
 
 // TestFloorMaxLimit tests max floors per response limit
@@ -193,13 +194,13 @@ func TestFloorRolloutPolicy(t *testing.T) {
 	assert.NoError(t, err)
 
 	// First client gets floor
-	pkg1, err := rs.GetUpdatePackage(Instance{ID: "i1", IP: "10.0.0.1"}, runtime.NewInstanceApplication(setup.AppID, group.ID, "1000.0.0"))
+	pkg1, err := rs.GetUpdatePackage(types.Instance{ID: "i1", IP: "10.0.0.1"}, runtime.NewInstanceApplication(setup.AppID, group.ID, "1000.0.0"))
 	assert.NoError(t, err)
 	assert.Equal(t, "2000.0.0", pkg1.Version)
 
 	// Second client blocked by policy
-	_, err = rs.GetUpdatePackage(Instance{ID: "i2", IP: "10.0.0.2"}, runtime.NewInstanceApplication(setup.AppID, group.ID, "1000.0.0"))
-	assert.Equal(t, ErrMaxUpdatesPerPeriodLimitReached, err)
+	_, err = rs.GetUpdatePackage(types.Instance{ID: "i2", IP: "10.0.0.2"}, runtime.NewInstanceApplication(setup.AppID, group.ID, "1000.0.0"))
+	assert.Equal(t, types.ErrMaxUpdatesPerPeriodLimitReached, err)
 }
 
 // TestTargetAsFloor tests when target package is also marked as a floor
@@ -253,11 +254,11 @@ func TestTargetAsFloor(t *testing.T) {
 	}
 
 	// Test that regular client gets the appropriate update
-	pkg, err := rs.GetUpdatePackage(Instance{ID: "i1", IP: "10.0.0.1"}, runtime.NewInstanceApplication(setup.AppID, setup.Group.ID, "500.0.0"))
+	pkg, err := rs.GetUpdatePackage(types.Instance{ID: "i1", IP: "10.0.0.1"}, runtime.NewInstanceApplication(setup.AppID, setup.Group.ID, "500.0.0"))
 	assert.NoError(t, err)
 	assert.Equal(t, "1000.0.0", pkg.Version) // Gets first floor
 
-	pkg, err = rs.GetUpdatePackage(Instance{ID: "i2", IP: "10.0.0.2"}, runtime.NewInstanceApplication(setup.AppID, setup.Group.ID, "2500.0.0"))
+	pkg, err = rs.GetUpdatePackage(types.Instance{ID: "i2", IP: "10.0.0.2"}, runtime.NewInstanceApplication(setup.AppID, setup.Group.ID, "2500.0.0"))
 	assert.NoError(t, err)
 	assert.Equal(t, "3000.0.0", pkg.Version) // Gets target-floor directly
 }
@@ -276,7 +277,7 @@ func TestFloorBlacklistConflict(t *testing.T) {
 		assert.NoError(t, err)
 		floorPkg.ChannelsBlacklist = append(floorPkg.ChannelsBlacklist, setup.Channel.ID)
 		err = as.UpdatePackage(floorPkg)
-		assert.Equal(t, ErrBlacklistingFloor, err)
+		assert.Equal(t, types.ErrBlacklistingFloor, err)
 	})
 
 	t.Run("cannot_blacklist_channel_target", func(t *testing.T) {
@@ -285,13 +286,13 @@ func TestFloorBlacklistConflict(t *testing.T) {
 		assert.NoError(t, err)
 		targetPkg.ChannelsBlacklist = append(targetPkg.ChannelsBlacklist, setup.Channel.ID)
 		err = as.UpdatePackage(targetPkg)
-		assert.Equal(t, ErrBlacklistingChannel, err)
+		assert.Equal(t, types.ErrBlacklistingChannel, err)
 	})
 
 	t.Run("cannot_mark_blacklisted_as_floor", func(t *testing.T) {
 		// Create new package with blacklist
 		pkg := quickPkg(t, a, setup.AppID, "3.0.0")
-		pkg.ChannelsBlacklist = StringArray{setup.Channel.ID}
+		pkg.ChannelsBlacklist = types.StringArray{setup.Channel.ID}
 		err := as.UpdatePackage(pkg)
 		assert.NoError(t, err)
 

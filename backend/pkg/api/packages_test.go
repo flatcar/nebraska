@@ -7,6 +7,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
 func TestAddPackage(t *testing.T) {
@@ -14,59 +16,59 @@ func TestAddPackage(t *testing.T) {
 	defer a.Close()
 	as := adminSvc(a)
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tChannel1, _ := as.AddChannel(&Channel{Name: "test_channel1", Color: "blue", ApplicationID: tApp.ID, Arch: ArchAArch64})
-	tChannel2, _ := as.AddChannel(&Channel{Name: "test_channel2", Color: "green", ApplicationID: tApp.ID, Arch: ArchAArch64})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tChannel1, _ := as.AddChannel(&types.Channel{Name: "test_channel1", Color: "blue", ApplicationID: tApp.ID, Arch: types.ArchAArch64})
+	tChannel2, _ := as.AddChannel(&types.Channel{Name: "test_channel2", Color: "green", ApplicationID: tApp.ID, Arch: types.ArchAArch64})
 
-	pkg, err := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, ChannelsBlacklist: []string{tChannel1.ID, tChannel2.ID}, Arch: ArchAArch64})
+	pkg, err := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, ChannelsBlacklist: []string{tChannel1.ID, tChannel2.ID}, Arch: types.ArchAArch64})
 	assert.NoError(t, err)
 
-	_, err = as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: ArchX86})
+	_, err = as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: types.ArchX86})
 	assert.NoError(t, err)
 
 	pkgX, err := a.GetPackage(pkg.ID)
 	assert.NoError(t, err)
-	assert.Equal(t, PkgTypeOther, pkgX.Type)
+	assert.Equal(t, types.PkgTypeOther, pkgX.Type)
 	assert.Equal(t, "http://sample.url/pkg", pkgX.URL)
 	assert.Equal(t, "12.1.0", pkgX.Version)
 	assert.Equal(t, tApp.ID, pkgX.ApplicationID)
 	assert.Contains(t, pkgX.ChannelsBlacklist, tChannel1.ID)
 	assert.Contains(t, pkgX.ChannelsBlacklist, tChannel2.ID)
-	assert.Equal(t, ArchAArch64, pkgX.Arch)
+	assert.Equal(t, types.ArchAArch64, pkgX.Arch)
 
-	_, err = as.AddPackage(&Package{URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	_, err = as.AddPackage(&types.Package{URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
 	assert.Error(t, err, "Package type is required.")
 
-	_, err = as.AddPackage(&Package{Type: PkgTypeOther, Version: "12.1.0", ApplicationID: tApp.ID})
+	_, err = as.AddPackage(&types.Package{Type: types.PkgTypeOther, Version: "12.1.0", ApplicationID: tApp.ID})
 	assert.Error(t, err, "Package url is required.")
 
-	_, err = as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", ApplicationID: tApp.ID})
+	_, err = as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", ApplicationID: tApp.ID})
 	assert.Error(t, err, "Package version is required.")
 
-	_, err = as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "aaa12.1.0"})
-	assert.Equal(t, ErrInvalidSemver, err, "Package version must be a valid semver.")
+	_, err = as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "aaa12.1.0"})
+	assert.Equal(t, types.ErrInvalidSemver, err, "Package version must be a valid semver.")
 
-	_, err = as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0"})
+	_, err = as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0"})
 	assert.Error(t, err, "App id is required and must be a valid uuid.")
 
-	_, err = as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, ChannelsBlacklist: []string{uuid.New().String()}})
+	_, err = as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, ChannelsBlacklist: []string{uuid.New().String()}})
 	assert.Error(t, err, "Blacklisted channels must be existing channels ids.")
 
-	_, err = as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, ChannelsBlacklist: []string{"invalidChannelID"}})
+	_, err = as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, ChannelsBlacklist: []string{"invalidChannelID"}})
 	assert.Error(t, err, "Blacklisted channels must be valid existing channels ids.")
 
-	_, err = as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0",
+	_, err = as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0",
 		ApplicationID: tApp.ID, ChannelsBlacklist: []string{tChannel1.ID}})
-	assert.Equal(t, ErrArchMismatch, err, "When using Blacklisted channels, an Arch must be supplied.")
+	assert.Equal(t, types.ErrArchMismatch, err, "When using Blacklisted channels, an Arch must be supplied.")
 
-	_, err = as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg",
+	_, err = as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg",
 		Version: "12.2.0", ApplicationID: tApp.ID,
 		ChannelsBlacklist: []string{tChannel1.ID},
-		Arch:              ArchAMD64})
-	assert.Equal(t, ErrArchMismatch, err, "Blacklisted channels must have a matching arch.")
+		Arch:              types.ArchAMD64})
+	assert.Equal(t, types.ErrArchMismatch, err, "Blacklisted channels must have a matching arch.")
 
-	_, err = as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.3.0", ApplicationID: tApp.ID, Arch: Arch(77777)})
+	_, err = as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.3.0", ApplicationID: tApp.ID, Arch: types.Arch(77777)})
 	assert.Error(t, err, "Arch must be a valid architecture")
 }
 
@@ -75,15 +77,15 @@ func TestAddPackageFlatcar(t *testing.T) {
 	defer a.Close()
 	as := adminSvc(a)
 
-	pkg := &Package{
-		Type:          PkgTypeFlatcar,
+	pkg := &types.Package{
+		Type:          types.PkgTypeFlatcar,
 		URL:           "https://update.release.flatcar-linux.net/amd64-usr/XYZ/",
 		Filename:      null.StringFrom("update.gz"),
 		Version:       "2016.6.6",
 		Size:          null.StringFrom("123456"),
 		Hash:          null.StringFrom("sha1:blablablabla"),
 		ApplicationID: flatcarAppID,
-		FlatcarAction: &FlatcarAction{
+		FlatcarAction: &types.FlatcarAction{
 			Sha256: "sha256:blablablabla",
 		},
 	}
@@ -101,17 +103,17 @@ func TestUpdatePackage(t *testing.T) {
 	defer a.Close()
 	as := adminSvc(a)
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tChannel1, _ := as.AddChannel(&Channel{Name: "test_channel1", Color: "blue", ApplicationID: tApp.ID})
-	tPkg, err := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, ChannelsBlacklist: []string{tChannel1.ID}})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tChannel1, _ := as.AddChannel(&types.Channel{Name: "test_channel1", Color: "blue", ApplicationID: tApp.ID})
+	tPkg, err := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, ChannelsBlacklist: []string{tChannel1.ID}})
 	assert.NoError(t, err)
 
-	tChannel2, _ := as.AddChannel(&Channel{Name: "test_channel2", Color: "green", ApplicationID: tApp.ID})
-	tChannel3, _ := as.AddChannel(&Channel{Name: "test_channel3", Color: "red", ApplicationID: tApp.ID})
-	tChannel4, _ := as.AddChannel(&Channel{Name: "test_channel4", Color: "yellow", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tChannel2, _ := as.AddChannel(&types.Channel{Name: "test_channel2", Color: "green", ApplicationID: tApp.ID})
+	tChannel3, _ := as.AddChannel(&types.Channel{Name: "test_channel3", Color: "red", ApplicationID: tApp.ID})
+	tChannel4, _ := as.AddChannel(&types.Channel{Name: "test_channel4", Color: "yellow", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
 
-	err = as.UpdatePackage(&Package{ID: tPkg.ID, Type: PkgTypeOther, URL: "http://sample.url/pkg_updated", Version: "12.2.0", ChannelsBlacklist: []string{tChannel2.ID, tChannel3.ID}})
+	err = as.UpdatePackage(&types.Package{ID: tPkg.ID, Type: types.PkgTypeOther, URL: "http://sample.url/pkg_updated", Version: "12.2.0", ChannelsBlacklist: []string{tChannel2.ID, tChannel3.ID}})
 	assert.NoError(t, err)
 
 	pkg, err := a.GetPackage(tPkg.ID)
@@ -122,15 +124,15 @@ func TestUpdatePackage(t *testing.T) {
 	assert.Contains(t, pkg.ChannelsBlacklist, tChannel2.ID)
 	assert.Contains(t, pkg.ChannelsBlacklist, tChannel3.ID)
 
-	err = as.UpdatePackage(&Package{ID: tPkg.ID, Type: PkgTypeOther, URL: "http://sample.url/pkg_updated", Version: "12.2.0", ChannelsBlacklist: []string{tChannel4.ID}})
-	assert.Equal(t, ErrBlacklistingChannel, err)
+	err = as.UpdatePackage(&types.Package{ID: tPkg.ID, Type: types.PkgTypeOther, URL: "http://sample.url/pkg_updated", Version: "12.2.0", ChannelsBlacklist: []string{tChannel4.ID}})
+	assert.Equal(t, types.ErrBlacklistingChannel, err)
 
-	err = as.UpdatePackage(&Package{ID: tPkg.ID, Type: PkgTypeOther, URL: "http://sample.url/pkg_updated", Version: "12.2.0", ChannelsBlacklist: nil, Arch: ArchAArch64})
+	err = as.UpdatePackage(&types.Package{ID: tPkg.ID, Type: types.PkgTypeOther, URL: "http://sample.url/pkg_updated", Version: "12.2.0", ChannelsBlacklist: nil, Arch: types.ArchAArch64})
 	assert.NoError(t, err)
 	pkg, _ = a.GetPackage(tPkg.ID)
 	assert.Len(t, pkg.ChannelsBlacklist, 0)
 	// can't change an arch of a package
-	assert.Equal(t, ArchAll, pkg.Arch)
+	assert.Equal(t, types.ArchAll, pkg.Arch)
 }
 
 func TestUpdatePackageFlatcar(t *testing.T) {
@@ -138,8 +140,8 @@ func TestUpdatePackageFlatcar(t *testing.T) {
 	defer a.Close()
 	as := adminSvc(a)
 
-	pkg := &Package{
-		Type:          PkgTypeFlatcar,
+	pkg := &types.Package{
+		Type:          types.PkgTypeFlatcar,
 		URL:           "https://update.release.flatcar-linux.net/amd64-usr/XYZ/",
 		Filename:      null.StringFrom("update.gz"),
 		Version:       "2016.6.6",
@@ -155,7 +157,7 @@ func TestUpdatePackageFlatcar(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Nil(t, pkg.FlatcarAction)
 
-	pkg.FlatcarAction = &FlatcarAction{
+	pkg.FlatcarAction = &types.FlatcarAction{
 		Sha256: "sha256:blablablabla",
 	}
 	err = as.UpdatePackage(pkg)
@@ -169,8 +171,8 @@ func TestUpdatePackageFlatcar(t *testing.T) {
 	err = as.DeletePackage(pkg.ID)
 	assert.NoError(t, err)
 
-	pkg = &Package{
-		Type:          PkgTypeFlatcar,
+	pkg = &types.Package{
+		Type:          types.PkgTypeFlatcar,
 		URL:           "https://update.release.flatcar-linux.net/amd64-usr/XYZ/",
 		Filename:      null.StringFrom("update.gz"),
 		Version:       "2016.6.6",
@@ -178,7 +180,7 @@ func TestUpdatePackageFlatcar(t *testing.T) {
 		Hash:          null.StringFrom("sha1:blablablabla"),
 		ApplicationID: flatcarAppID,
 	}
-	pkg.FlatcarAction = &FlatcarAction{
+	pkg.FlatcarAction = &types.FlatcarAction{
 		Sha256: "sha256:blablablabla",
 	}
 	pkg, err = as.AddPackage(pkg)
@@ -198,9 +200,9 @@ func TestDeletePackage(t *testing.T) {
 	defer a.Close()
 	as := adminSvc(a)
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, err := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, err := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
 	assert.NoError(t, err)
 
 	err = as.DeletePackage(tPkg.ID)
@@ -218,20 +220,20 @@ func TestGetPackage(t *testing.T) {
 	defer a.Close()
 	as := adminSvc(a)
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel1", Color: "blue", ApplicationID: tApp.ID})
-	tPkg, err := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, ChannelsBlacklist: []string{tChannel.ID}})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tChannel, _ := as.AddChannel(&types.Channel{Name: "test_channel1", Color: "blue", ApplicationID: tApp.ID})
+	tPkg, err := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, ChannelsBlacklist: []string{tChannel.ID}})
 	assert.NoError(t, err)
 
 	pkg, err := a.GetPackage(tPkg.ID)
 	assert.NoError(t, err)
-	assert.Equal(t, PkgTypeOther, pkg.Type)
+	assert.Equal(t, types.PkgTypeOther, pkg.Type)
 	assert.Equal(t, "http://sample.url/pkg", pkg.URL)
 	assert.Equal(t, "12.1.0", pkg.Version)
 	assert.Equal(t, tApp.ID, pkg.ApplicationID)
-	assert.Equal(t, StringArray([]string{tChannel.ID}), pkg.ChannelsBlacklist)
-	assert.Equal(t, ArchAll, pkg.Arch)
+	assert.Equal(t, types.StringArray([]string{tChannel.ID}), pkg.ChannelsBlacklist)
+	assert.Equal(t, types.ArchAll, pkg.Arch)
 
 	_, err = a.GetPackage("invalidPackageID")
 	assert.Error(t, err, "Package id must be a valid uuid.")
@@ -245,36 +247,36 @@ func TestGetPackageByVersionAndArch(t *testing.T) {
 	defer a.Close()
 	as := adminSvc(a)
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, err := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, err := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
 	assert.NoError(t, err)
-	tPkgARM, err := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "13.2.1", ApplicationID: tApp.ID, Arch: ArchAArch64})
+	tPkgARM, err := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "13.2.1", ApplicationID: tApp.ID, Arch: types.ArchAArch64})
 	assert.NoError(t, err)
 
-	pkg, err := a.GetPackageByVersionAndArch(tApp.ID, tPkg.Version, ArchAll)
+	pkg, err := a.GetPackageByVersionAndArch(tApp.ID, tPkg.Version, types.ArchAll)
 	assert.NoError(t, err)
-	assert.Equal(t, PkgTypeOther, pkg.Type)
+	assert.Equal(t, types.PkgTypeOther, pkg.Type)
 	assert.Equal(t, "http://sample.url/pkg", pkg.URL)
 	assert.Equal(t, "12.1.0", pkg.Version)
 	assert.Equal(t, tApp.ID, pkg.ApplicationID)
-	assert.Equal(t, ArchAll, pkg.Arch)
+	assert.Equal(t, types.ArchAll, pkg.Arch)
 
-	_, err = a.GetPackageByVersionAndArch("invalidAppID", "12.1.0", ArchAll)
+	_, err = a.GetPackageByVersionAndArch("invalidAppID", "12.1.0", types.ArchAll)
 	assert.Error(t, err, "Application id must be a valid uuid.")
 
-	_, err = a.GetPackageByVersionAndArch(uuid.New().String(), "12.1.0", ArchAll)
+	_, err = a.GetPackageByVersionAndArch(uuid.New().String(), "12.1.0", types.ArchAll)
 	assert.Error(t, err, "Application id must exist.")
 
-	_, err = a.GetPackageByVersionAndArch(tApp.ID, "hola", ArchAll)
+	_, err = a.GetPackageByVersionAndArch(tApp.ID, "hola", types.ArchAll)
 	assert.Error(t, err, "Version must be a valid semver value.")
 
-	_, err = a.GetPackageByVersionAndArch(tApp.ID, tPkgARM.Version, ArchAll)
+	_, err = a.GetPackageByVersionAndArch(tApp.ID, tPkgARM.Version, types.ArchAll)
 	assert.Error(t, err, "Shouldn't pick the ARM version")
 
-	pkg, err = a.GetPackageByVersionAndArch(tApp.ID, tPkgARM.Version, ArchAArch64)
+	pkg, err = a.GetPackageByVersionAndArch(tApp.ID, tPkgARM.Version, types.ArchAArch64)
 	assert.NoError(t, err)
-	assert.Equal(t, ArchAArch64, pkg.Arch)
+	assert.Equal(t, types.ArchAArch64, pkg.Arch)
 }
 
 func TestGetPackages(t *testing.T) {
@@ -282,12 +284,12 @@ func TestGetPackages(t *testing.T) {
 	defer a.Close()
 	as := adminSvc(a)
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	_, _ = as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg1", Version: "1010.5.0+2016-05-27-1832", ApplicationID: tApp.ID, Arch: ArchAMD64})
-	_, _ = as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg2", Version: "12.1.0", ApplicationID: tApp.ID, Arch: ArchX86})
-	_, _ = as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg3", Version: "14.1.0", ApplicationID: tApp.ID, Arch: ArchAArch64})
-	_, _ = as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg4", Version: "1010.6.0-blabla", ApplicationID: tApp.ID})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	_, _ = as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg1", Version: "1010.5.0+2016-05-27-1832", ApplicationID: tApp.ID, Arch: types.ArchAMD64})
+	_, _ = as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg2", Version: "12.1.0", ApplicationID: tApp.ID, Arch: types.ArchX86})
+	_, _ = as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg3", Version: "14.1.0", ApplicationID: tApp.ID, Arch: types.ArchAArch64})
+	_, _ = as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg4", Version: "1010.6.0-blabla", ApplicationID: tApp.ID})
 
 	pkgs, err := a.GetPackages(tApp.ID, 0, 0, nil)
 	assert.NoError(t, err)
@@ -297,10 +299,10 @@ func TestGetPackages(t *testing.T) {
 	assert.Equal(t, "http://sample.url/pkg3", pkgs[2].URL)
 	assert.Equal(t, "http://sample.url/pkg2", pkgs[3].URL)
 
-	assert.Equal(t, ArchAll, pkgs[0].Arch)
-	assert.Equal(t, ArchAMD64, pkgs[1].Arch)
-	assert.Equal(t, ArchAArch64, pkgs[2].Arch)
-	assert.Equal(t, ArchX86, pkgs[3].Arch)
+	assert.Equal(t, types.ArchAll, pkgs[0].Arch)
+	assert.Equal(t, types.ArchAMD64, pkgs[1].Arch)
+	assert.Equal(t, types.ArchAArch64, pkgs[2].Arch)
+	assert.Equal(t, types.ArchX86, pkgs[3].Arch)
 
 	_, err = a.GetPackages("invalidAppID", 0, 0, nil)
 	assert.Error(t, err, "Add id must be a valid uuid.")
@@ -319,12 +321,12 @@ func TestMultiFilePackage(t *testing.T) {
 	defer a.Close()
 	as := adminSvc(a)
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, err := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, err := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
 	assert.NoError(t, err)
 
-	pkg := &Package{
-		Type:          PkgTypeOther,
+	pkg := &types.Package{
+		Type:          types.PkgTypeOther,
 		URL:           "https://myurl.io",
 		Filename:      null.StringFrom("update.gz"),
 		Version:       "1.2.3",
@@ -337,7 +339,7 @@ func TestMultiFilePackage(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Nil(t, pkg.ExtraFiles)
 
-	pkg.ExtraFiles = []File{
+	pkg.ExtraFiles = []types.File{
 		{
 			Name: null.StringFrom("myfile1.txt"),
 			Size: null.StringFrom("1234"),
@@ -354,7 +356,7 @@ func TestMultiFilePackage(t *testing.T) {
 
 	oldFile1ID := pkg.ExtraFiles[0].ID
 
-	pkg.ExtraFiles = []File{
+	pkg.ExtraFiles = []types.File{
 		{
 			Name: null.StringFrom("myfile1.txt"),
 			Size: null.StringFrom(""),
@@ -383,7 +385,7 @@ func TestMultiFilePackage(t *testing.T) {
 	oldFile1ID = pkg.ExtraFiles[0].ID
 
 	// Switch file names without creating new files
-	pkg.ExtraFiles = []File{
+	pkg.ExtraFiles = []types.File{
 		{
 			ID:   pkg.ExtraFiles[0].ID,
 			Name: null.StringFrom("myfile2.txt"),
@@ -411,7 +413,7 @@ func TestMultiFilePackage(t *testing.T) {
 	assert.Equal(t, "12345", pkg.ExtraFiles[1].Size.String)
 
 	// Switch positions by recreating files
-	pkg.ExtraFiles = []File{
+	pkg.ExtraFiles = []types.File{
 		{
 			Name: null.StringFrom("myfile2.txt"),
 			Size: null.StringFrom("12345"),
@@ -437,15 +439,15 @@ func TestMultiFilePackage(t *testing.T) {
 	assert.NotNil(t, pkg.ExtraFiles)
 	assert.Equal(t, 2, len(pkg.ExtraFiles))
 
-	pkg = &Package{
-		Type:          PkgTypeOther,
+	pkg = &types.Package{
+		Type:          types.PkgTypeOther,
 		URL:           "https://myurl.io",
 		Filename:      null.StringFrom("update.gz"),
 		Version:       "1.2.33",
 		Size:          null.StringFrom("123456"),
 		Hash:          null.StringFrom("sha1:blablablabla"),
 		ApplicationID: tApp.ID,
-		ExtraFiles: []File{
+		ExtraFiles: []types.File{
 			{
 				Name: null.StringFrom("newfile1.txt"),
 				Size: null.StringFrom("1234"),

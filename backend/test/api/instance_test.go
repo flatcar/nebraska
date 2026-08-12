@@ -11,8 +11,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/flatcar/nebraska/backend/pkg/api"
 	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/codegen"
 )
 
@@ -30,11 +30,11 @@ func TestListInstances(t *testing.T) {
 		method := "GET"
 
 		// response
-		var instances api.InstancesWithTotal
+		var instances types.InstancesWithTotal
 
 		httpDo(t, url, method, nil, http.StatusOK, "json", &instances)
 
-		count, err := db.GetInstancesCount(api.InstancesQueryParams{
+		count, err := db.GetInstancesCount(types.InstancesQueryParams{
 			ApplicationID: appWithInstance.ID,
 			GroupID:       appWithInstance.Groups[0].ID,
 		}, "30d")
@@ -42,7 +42,7 @@ func TestListInstances(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, len(instances.Instances), int(count))
 
-		instancesDB, err := db.GetInstances(api.InstancesQueryParams{
+		instancesDB, err := db.GetInstances(types.InstancesQueryParams{
 			ApplicationID: appWithInstance.ID,
 			GroupID:       appWithInstance.Groups[0].ID,
 			Status:        0,
@@ -72,7 +72,7 @@ func TestGetInstanceCount(t *testing.T) {
 
 		httpDo(t, url, method, nil, http.StatusOK, "json", &instancesCountResp)
 
-		count, err := db.GetInstancesCount(api.InstancesQueryParams{
+		count, err := db.GetInstancesCount(types.InstancesQueryParams{
 			ApplicationID: appWithInstance.ID,
 			GroupID:       appWithInstance.Groups[0].ID,
 		}, "30d")
@@ -93,14 +93,14 @@ func TestGetInstance(t *testing.T) {
 
 		// create instance for app
 		instanceID := uuid.New()
-		instanceDB, err := runtimeSvc(db).RegisterInstance(api.Instance{ID: instanceID.String(), Alias: "alias", IP: "0.0.0.0"}, runtime.NewInstanceApplication(app.ID, app.Groups[0].ID, "0.0.1"))
+		instanceDB, err := runtimeSvc(db).RegisterInstance(types.Instance{ID: instanceID.String(), Alias: "alias", IP: "0.0.0.0"}, runtime.NewInstanceApplication(app.ID, app.Groups[0].ID, "0.0.1"))
 		require.NoError(t, err)
 
 		// fetch instance from API
 		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/instances/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID, app.Groups[0].ID, instanceDB.ID)
 		method := "GET"
 
-		var instance api.Instance
+		var instance types.Instance
 
 		httpDo(t, url, method, nil, http.StatusOK, "json", &instance)
 
@@ -117,14 +117,14 @@ func TestGetInstance(t *testing.T) {
 
 		// create instance for app
 		instanceID := uuid.New()
-		instanceDB, err := runtimeSvc(db).RegisterInstance(api.Instance{ID: instanceID.String(), Alias: "alias", IP: "0.0.0.0"}, runtime.NewInstanceApplication(app.ID, app.Groups[0].ID, "0.0.1"))
+		instanceDB, err := runtimeSvc(db).RegisterInstance(types.Instance{ID: instanceID.String(), Alias: "alias", IP: "0.0.0.0"}, runtime.NewInstanceApplication(app.ID, app.Groups[0].ID, "0.0.1"))
 		require.NoError(t, err)
 
 		// fetch instance from API
 		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/instances/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ProductID.String, app.Groups[0].ID, instanceDB.ID)
 		method := "GET"
 
-		var instance api.Instance
+		var instance types.Instance
 
 		httpDo(t, url, method, nil, http.StatusOK, "json", &instance)
 
@@ -144,29 +144,29 @@ func TestGetInstanceStatusHistory(t *testing.T) {
 
 		// create instance for app
 		instanceID := uuid.New()
-		instanceDB, err := runtimeSvc(db).RegisterInstance(api.Instance{ID: instanceID.String(), Alias: "alias", IP: "0.0.0.0"}, runtime.NewInstanceApplication(app.ID, app.Groups[0].ID, "0.0.1"))
+		instanceDB, err := runtimeSvc(db).RegisterInstance(types.Instance{ID: instanceID.String(), Alias: "alias", IP: "0.0.0.0"}, runtime.NewInstanceApplication(app.ID, app.Groups[0].ID, "0.0.1"))
 		require.NoError(t, err)
 
 		// GetUpdatePackage
-		_, err = runtimeSvc(db).GetUpdatePackage(api.Instance{ID: instanceDB.ID, Alias: instanceDB.Alias, IP: instanceDB.IP}, runtime.NewInstanceApplication(app.ID, app.Groups[0].ID, instanceDB.Application.Version))
+		_, err = runtimeSvc(db).GetUpdatePackage(types.Instance{ID: instanceDB.ID, Alias: instanceDB.Alias, IP: instanceDB.IP}, runtime.NewInstanceApplication(app.ID, app.Groups[0].ID, instanceDB.Application.Version))
 		require.NoError(t, err)
 
 		// create event for instance
-		err = runtimeSvc(db).RegisterEvent(instanceDB.ID, app.ID, app.Groups[0].ID, api.EventUpdateComplete, api.ResultSuccessReboot, "0.0.0", "0")
+		err = runtimeSvc(db).RegisterEvent(instanceDB.ID, app.ID, app.Groups[0].ID, types.EventUpdateComplete, types.ResultSuccessReboot, "0.0.0", "0")
 		require.NoError(t, err)
 
 		// fetch instance status_history
 		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/instances/%s/status_history", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID, app.Groups[0].ID, instanceDB.ID)
 		method := "GET"
 
-		var instanceEvents []api.InstanceStatusHistoryEntry
+		var instanceEvents []types.InstanceStatusHistoryEntry
 
 		httpDo(t, url, method, nil, http.StatusOK, "json", &instanceEvents)
 
 		require.Equal(t, 2, len(instanceEvents))
 
-		assert.Equal(t, api.InstanceStatusComplete, instanceEvents[0].Status)
-		assert.Equal(t, api.InstanceStatusUpdateGranted, instanceEvents[1].Status)
+		assert.Equal(t, types.InstanceStatusComplete, instanceEvents[0].Status)
+		assert.Equal(t, types.InstanceStatusUpdateGranted, instanceEvents[1].Status)
 	})
 	t.Run("success_product_id", func(t *testing.T) {
 		// establish DB connection
@@ -178,29 +178,29 @@ func TestGetInstanceStatusHistory(t *testing.T) {
 
 		// create instance for app
 		instanceID := uuid.New()
-		instanceDB, err := runtimeSvc(db).RegisterInstance(api.Instance{ID: instanceID.String(), Alias: "alias", IP: "0.0.0.0"}, runtime.NewInstanceApplication(app.ID, app.Groups[0].ID, "0.0.1"))
+		instanceDB, err := runtimeSvc(db).RegisterInstance(types.Instance{ID: instanceID.String(), Alias: "alias", IP: "0.0.0.0"}, runtime.NewInstanceApplication(app.ID, app.Groups[0].ID, "0.0.1"))
 		require.NoError(t, err)
 
 		// GetUpdatePackage
-		_, err = runtimeSvc(db).GetUpdatePackage(api.Instance{ID: instanceDB.ID, Alias: instanceDB.Alias, IP: instanceDB.IP}, runtime.NewInstanceApplication(app.ID, app.Groups[0].ID, instanceDB.Application.Version))
+		_, err = runtimeSvc(db).GetUpdatePackage(types.Instance{ID: instanceDB.ID, Alias: instanceDB.Alias, IP: instanceDB.IP}, runtime.NewInstanceApplication(app.ID, app.Groups[0].ID, instanceDB.Application.Version))
 		require.NoError(t, err)
 
 		// create event for instance
-		err = runtimeSvc(db).RegisterEvent(instanceDB.ID, app.ID, app.Groups[0].ID, api.EventUpdateComplete, api.ResultSuccessReboot, "0.0.0", "0")
+		err = runtimeSvc(db).RegisterEvent(instanceDB.ID, app.ID, app.Groups[0].ID, types.EventUpdateComplete, types.ResultSuccessReboot, "0.0.0", "0")
 		require.NoError(t, err)
 
 		// fetch instance status_history
 		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/instances/%s/status_history", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ProductID.String, app.Groups[0].ID, instanceDB.ID)
 		method := "GET"
 
-		var instanceEvents []api.InstanceStatusHistoryEntry
+		var instanceEvents []types.InstanceStatusHistoryEntry
 
 		httpDo(t, url, method, nil, http.StatusOK, "json", &instanceEvents)
 
 		require.Equal(t, 2, len(instanceEvents))
 
-		assert.Equal(t, api.InstanceStatusComplete, instanceEvents[0].Status)
-		assert.Equal(t, api.InstanceStatusUpdateGranted, instanceEvents[1].Status)
+		assert.Equal(t, types.InstanceStatusComplete, instanceEvents[0].Status)
+		assert.Equal(t, types.InstanceStatusUpdateGranted, instanceEvents[1].Status)
 	})
 }
 
@@ -215,7 +215,7 @@ func TestUpdateInstance(t *testing.T) {
 
 		// create instance for app
 		instanceID := uuid.New()
-		instanceDB, err := runtimeSvc(db).RegisterInstance(api.Instance{ID: instanceID.String(), Alias: "alias", IP: "0.0.0.0"}, runtime.NewInstanceApplication(app.ID, app.Groups[0].ID, "0.0.1"))
+		instanceDB, err := runtimeSvc(db).RegisterInstance(types.Instance{ID: instanceID.String(), Alias: "alias", IP: "0.0.0.0"}, runtime.NewInstanceApplication(app.ID, app.Groups[0].ID, "0.0.1"))
 		require.NoError(t, err)
 
 		// fetch instance from API
@@ -226,7 +226,7 @@ func TestUpdateInstance(t *testing.T) {
 		payload := strings.NewReader(fmt.Sprintf(`{"alias":"%s"}`, newAlias))
 
 		// response
-		var instance api.Instance
+		var instance types.Instance
 
 		httpDo(t, url, method, payload, http.StatusOK, "json", &instance)
 

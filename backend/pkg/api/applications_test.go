@@ -8,6 +8,7 @@ import (
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
 func TestAddApp(t *testing.T) {
@@ -15,28 +16,28 @@ func TestAddApp(t *testing.T) {
 	defer a.Close()
 	as := adminSvc(a)
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
 
-	newApp, err := as.AddApp(&Application{Name: "app1", TeamID: tTeam.ID})
+	newApp, err := as.AddApp(&types.Application{Name: "app1", TeamID: tTeam.ID})
 	assert.NoError(t, err)
 
 	newAppX, err := a.GetApp(newApp.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, "app1", newAppX.Name)
 
-	_, err = as.AddApp(&Application{Name: "app1", TeamID: tTeam.ID})
+	_, err = as.AddApp(&types.Application{Name: "app1", TeamID: tTeam.ID})
 	assert.Error(t, err, "App name must be unique per team.")
 
-	_, err = as.AddApp(&Application{TeamID: tTeam.ID})
+	_, err = as.AddApp(&types.Application{TeamID: tTeam.ID})
 	assert.Error(t, err, "App name is required.")
 
-	_, err = as.AddApp(&Application{Name: "app2"})
+	_, err = as.AddApp(&types.Application{Name: "app2"})
 	assert.Error(t, err, "Team id is required.")
 
-	_, err = as.AddApp(&Application{Name: "app2", TeamID: uuid.New().String()})
+	_, err = as.AddApp(&types.Application{Name: "app2", TeamID: uuid.New().String()})
 	assert.Error(t, err, "Team id used must exist.")
 
-	_, err = as.AddApp(&Application{Name: "app2", TeamID: "invalidTeamID"})
+	_, err = as.AddApp(&types.Application{Name: "app2", TeamID: "invalidTeamID"})
 	assert.Error(t, err, "Team id must be a valid uuid.")
 }
 
@@ -45,14 +46,14 @@ func TestAddAppCloning(t *testing.T) {
 	defer a.Close()
 	as := adminSvc(a)
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	_, _ = as.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
-	_, _ = as.AddGroup(&Group{Name: "group2", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&types.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	_, _ = as.AddGroup(&types.Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	_, _ = as.AddGroup(&types.Group{Name: "group2", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
-	clonedApp, err := as.AddAppCloning(&Application{Name: "app1", TeamID: tTeam.ID}, tApp.ID)
+	clonedApp, err := as.AddAppCloning(&types.Application{Name: "app1", TeamID: tTeam.ID}, tApp.ID)
 	assert.NoError(t, err)
 
 	sourceApp, _ := a.GetApp(tApp.ID)
@@ -62,34 +63,34 @@ func TestAddAppCloning(t *testing.T) {
 
 	// TODO: test specific fields in groups and channels (do not forget channel id in group!)
 
-	_, err = as.AddAppCloning(&Application{Name: "app2", TeamID: tTeam.ID}, "")
+	_, err = as.AddAppCloning(&types.Application{Name: "app2", TeamID: tTeam.ID}, "")
 	assert.NoError(t, err, "Using an empty source app id when cloning has the same effect as not cloning.")
 
-	_, err = as.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("io.invalid. Name")})
+	_, err = as.AddApp(&types.Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("io.invalid. Name")})
 	assert.Error(t, err)
 
-	_, err = as.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("1io.invalid.Name")})
+	_, err = as.AddApp(&types.Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("1io.invalid.Name")})
 	assert.Error(t, err)
 
-	_, err = as.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("")})
+	_, err = as.AddApp(&types.Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("")})
 	assert.Error(t, err)
 
-	_, err = as.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("io.invalid-.Name")})
+	_, err = as.AddApp(&types.Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("io.invalid-.Name")})
 	assert.Error(t, err)
 
-	_, err = as.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("io.invalid_.Name")})
+	_, err = as.AddApp(&types.Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("io.invalid_.Name")})
 	assert.Error(t, err)
 
-	_, err = as.AddApp(&Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("io.valid.Name")})
+	_, err = as.AddApp(&types.Application{Name: "productIDApp1", TeamID: tTeam.ID, ProductID: null.StringFrom("io.valid.Name")})
 	assert.NoError(t, err)
 
-	_, err = as.AddApp(&Application{Name: "productIDApp2", TeamID: tTeam.ID, ProductID: null.StringFrom("io.valid.New-Name")})
+	_, err = as.AddApp(&types.Application{Name: "productIDApp2", TeamID: tTeam.ID, ProductID: null.StringFrom("io.valid.New-Name")})
 	assert.NoError(t, err)
 
-	_, err = as.AddApp(&Application{Name: "productIDApp3", TeamID: tTeam.ID, ProductID: null.StringFrom("io2.valid12.New-Name")})
+	_, err = as.AddApp(&types.Application{Name: "productIDApp3", TeamID: tTeam.ID, ProductID: null.StringFrom("io2.valid12.New-Name")})
 	assert.NoError(t, err)
 
-	_, err = as.AddApp(&Application{Name: "productIDApp4", TeamID: tTeam.ID, ProductID: null.StringFrom("io.invalid.New_Name")})
+	_, err = as.AddApp(&types.Application{Name: "productIDApp4", TeamID: tTeam.ID, ProductID: null.StringFrom("io.invalid.New_Name")})
 	assert.Error(t, err)
 
 	tooLongName := `io.` +
@@ -98,11 +99,11 @@ func TestAddAppCloning(t *testing.T) {
 		`loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong` +
 		`loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong.example.com`
 
-	_, err = as.AddApp(&Application{Name: "productIDApp5", TeamID: tTeam.ID, ProductID: null.StringFrom(tooLongName)})
+	_, err = as.AddApp(&types.Application{Name: "productIDApp5", TeamID: tTeam.ID, ProductID: null.StringFrom(tooLongName)})
 	assert.Error(t, err)
 
 	_, err = as.AddApp(
-		&Application{
+		&types.Application{
 			Name:      "productIDApp4",
 			TeamID:    tTeam.ID,
 			ProductID: null.StringFrom("io.VALID.Name"),
@@ -116,27 +117,27 @@ func TestUpdateApp(t *testing.T) {
 	defer a.Close()
 	as := adminSvc(a)
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&Application{Name: "test_app", Description: "description", TeamID: tTeam.ID})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", Description: "description", TeamID: tTeam.ID})
 
-	err := as.UpdateApp(&Application{ID: tApp.ID, Name: "test_app_updated"})
+	err := as.UpdateApp(&types.Application{ID: tApp.ID, Name: "test_app_updated"})
 	assert.NoError(t, err)
 
 	app, _ := a.GetApp(tApp.ID)
 	assert.Equal(t, "test_app_updated", app.Name)
 	assert.Equal(t, "", app.Description, "Description set to empty string in last update as it wasn't provided")
 
-	err = as.UpdateApp(&Application{ID: tApp.ID, Name: "test_app", Description: "description_updated"})
+	err = as.UpdateApp(&types.Application{ID: tApp.ID, Name: "test_app", Description: "description_updated"})
 	assert.NoError(t, err)
 
 	app, _ = a.GetApp(tApp.ID)
 	assert.Equal(t, "test_app", app.Name)
 	assert.Equal(t, "description_updated", app.Description)
 
-	err = as.UpdateApp(&Application{Name: "test_app_updated_again"})
+	err = as.UpdateApp(&types.Application{Name: "test_app_updated_again"})
 	assert.Error(t, err, "App id is required.")
 
-	err = as.UpdateApp(&Application{ID: "invalidAppID", Name: "test_app_updated_again"})
+	err = as.UpdateApp(&types.Application{ID: "invalidAppID", Name: "test_app_updated_again"})
 	assert.Error(t, err, "App id must be a valid uuid.")
 }
 
@@ -145,8 +146,8 @@ func TestDeleteApp(t *testing.T) {
 	defer a.Close()
 	as := adminSvc(a)
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
 
 	err := as.DeleteApp(tApp.ID)
 	assert.NoError(t, err)
@@ -161,12 +162,12 @@ func TestGetApp(t *testing.T) {
 	as := adminSvc(a)
 	rs := runtimeSvc(a)
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, err := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, err := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
 	assert.NoError(t, err)
-	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID})
-	tGroup, _ := as.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
-	_, _ = rs.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	tChannel, _ := as.AddChannel(&types.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID})
+	tGroup, _ := as.AddGroup(&types.Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	_, _ = rs.RegisterInstance(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
 
 	app, err := a.GetApp(tApp.ID)
 	assert.NoError(t, err)
@@ -178,7 +179,7 @@ func TestGetApp(t *testing.T) {
 	_, err = a.GetApp(uuid.New().String())
 	assert.Error(t, err, "Trying to get non existent app.")
 
-	tApp1, err := as.AddApp(&Application{Name: "test_app1", ProductID: null.StringFrom("io.flatcar.MyNewApp"), TeamID: tTeam.ID})
+	tApp1, err := as.AddApp(&types.Application{Name: "test_app1", ProductID: null.StringFrom("io.flatcar.MyNewApp"), TeamID: tTeam.ID})
 	assert.NoError(t, err)
 	assert.NotEqual(t, null.StringFrom(""), tApp1.ProductID)
 
@@ -194,11 +195,11 @@ func TestGetApp(t *testing.T) {
 	assert.Equal(t, tApp1.ProductID, app.ProductID)
 
 	// App with same product_id
-	_, err = as.AddApp(&Application{Name: "test_app2", ProductID: null.StringFrom("io.flatcar.MyNewApp"), TeamID: tTeam.ID})
+	_, err = as.AddApp(&types.Application{Name: "test_app2", ProductID: null.StringFrom("io.flatcar.MyNewApp"), TeamID: tTeam.ID})
 	assert.Error(t, err)
 
 	// App with a default product_id, to test the constraint is not limiting too much
-	_, err = as.AddApp(&Application{Name: "test_app3", TeamID: tTeam.ID})
+	_, err = as.AddApp(&types.Application{Name: "test_app3", TeamID: tTeam.ID})
 	assert.NoError(t, err)
 }
 
@@ -207,10 +208,10 @@ func TestGetApps(t *testing.T) {
 	defer a.Close()
 	as := adminSvc(a)
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp1, _ := as.AddApp(&Application{Name: "test_app1", TeamID: tTeam.ID})
-	tApp2, _ := as.AddApp(&Application{Name: "test_app2", TeamID: tTeam.ID})
-	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp1.ID})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp1, _ := as.AddApp(&types.Application{Name: "test_app1", TeamID: tTeam.ID})
+	tApp2, _ := as.AddApp(&types.Application{Name: "test_app2", TeamID: tTeam.ID})
+	tChannel, _ := as.AddChannel(&types.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp1.ID})
 
 	apps, err := a.GetApps(tTeam.ID, 0, 0)
 	assert.NoError(t, err)
@@ -228,9 +229,9 @@ func TestGetAppIDs(t *testing.T) {
 	defer a.Close()
 	as := adminSvc(a)
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp1, _ := as.AddApp(&Application{Name: "test_app1", TeamID: tTeam.ID})
-	tApp2, _ := as.AddApp(&Application{Name: "test_app2", TeamID: tTeam.ID, ProductID: null.StringFrom("io.flatcar.MyApp2")})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp1, _ := as.AddApp(&types.Application{Name: "test_app1", TeamID: tTeam.ID})
+	tApp2, _ := as.AddApp(&types.Application{Name: "test_app2", TeamID: tTeam.ID, ProductID: null.StringFrom("io.flatcar.MyApp2")})
 
 	apps, err := a.GetApps(tTeam.ID, 0, 0)
 	assert.NoError(t, err)
@@ -259,7 +260,7 @@ func TestGetAppIDs(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, tApp2.ID, app2ID)
 
-	tApp3, err := as.AddApp(&Application{Name: "test_app3", TeamID: tTeam.ID, ProductID: null.StringFrom("io.flatcar.MyApp3")})
+	tApp3, err := as.AddApp(&types.Application{Name: "test_app3", TeamID: tTeam.ID, ProductID: null.StringFrom("io.flatcar.MyApp3")})
 	assert.NoError(t, err)
 
 	app3ID, err := a.GetAppID("io.flatcar.MyApp3")
@@ -295,15 +296,15 @@ func TestGetAppsFiltered(t *testing.T) {
 	as := adminSvc(a)
 	rs := runtimeSvc(a)
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := as.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&types.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&types.Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 	realInstanceID := uuid.New().String()
 	fakeInstanceID := "{" + uuid.New().String() + "}"
-	_, _ = rs.RegisterInstance(Instance{ID: realInstanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
-	_, _ = rs.RegisterInstance(Instance{ID: fakeInstanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	_, _ = rs.RegisterInstance(types.Instance{ID: realInstanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	_, _ = rs.RegisterInstance(types.Instance{ID: fakeInstanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
 
 	// should ignore fake instance in Instances count
 	apps, err := a.GetApps(tTeam.ID, 1, 10)

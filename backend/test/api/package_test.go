@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"gopkg.in/guregu/null.v4"
 
-	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/codegen"
 )
 
@@ -97,7 +97,7 @@ func TestCreatePackage(t *testing.T) {
 		payload := strings.NewReader(fmt.Sprintf(`{"arch":1,"filename":"%s","description":"flatcar package","url":"http://flatcar.org","version":"20.2.1","type":4,"size":"199","hash":"some random hash","application_id":"%s","channels_blacklist":[]}`, packageName, app.ID))
 
 		// response
-		var packageResp api.Package
+		var packageResp types.Package
 
 		httpDo(t, url, method, payload, http.StatusOK, "json", &packageResp)
 
@@ -127,7 +127,7 @@ func TestCreatePackage(t *testing.T) {
 		payload := strings.NewReader(fmt.Sprintf(`{"arch":1,"filename":"%s","description":"flatcar package","url":"http://flatcar.org","version":"20.2.4","type":4,"size":"199","hash":"some random hash","application_id":"%s","channels_blacklist":[]}`, packageName, app.ID))
 
 		// response
-		var packageResp api.Package
+		var packageResp types.Package
 
 		httpDo(t, url, method, payload, http.StatusOK, "json", &packageResp)
 
@@ -160,7 +160,7 @@ func TestGetPackage(t *testing.T) {
 		url := fmt.Sprintf("%s/api/apps/%s/packages/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID, packagesDB[0].ID)
 		method := "GET"
 
-		var packageResp api.Package
+		var packageResp types.Package
 
 		httpDo(t, url, method, nil, http.StatusOK, "json", &packageResp)
 
@@ -184,7 +184,7 @@ func TestGetPackage(t *testing.T) {
 		url := fmt.Sprintf("%s/api/apps/%s/packages/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ProductID.String, packagesDB[0].ID)
 		method := "GET"
 
-		var packageResp api.Package
+		var packageResp types.Package
 
 		httpDo(t, url, method, nil, http.StatusOK, "json", &packageResp)
 
@@ -208,7 +208,7 @@ func TestUpdatePackage(t *testing.T) {
 		require.NotNil(t, packagesDB)
 
 		// update package request
-		var packageDB api.Package
+		var packageDB types.Package
 		err = copier.Copy(&packageDB, packagesDB[0])
 		require.NoError(t, err)
 
@@ -235,7 +235,7 @@ func TestUpdatePackage(t *testing.T) {
 		url := fmt.Sprintf("%s/api/apps/%s/packages/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID, packageDB.ID)
 		method := "PUT"
 
-		var packageResp api.Package
+		var packageResp types.Package
 
 		httpDo(t, url, method, bytes.NewReader(payload), http.StatusOK, "json", &packageResp)
 
@@ -260,7 +260,7 @@ func TestUpdatePackage(t *testing.T) {
 		require.NotNil(t, packagesDB)
 
 		// update package request
-		var packageDB api.Package
+		var packageDB types.Package
 		err = copier.Copy(&packageDB, packagesDB[0])
 		require.NoError(t, err)
 
@@ -287,7 +287,7 @@ func TestUpdatePackage(t *testing.T) {
 		url := fmt.Sprintf("%s/api/apps/%s/packages/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ProductID.String, packageDB.ID)
 		method := "PUT"
 
-		var packageResp api.Package
+		var packageResp types.Package
 
 		httpDo(t, url, method, bytes.NewReader(payload), http.StatusOK, "json", &packageResp)
 
