@@ -23,6 +23,18 @@ WHERE a.id = e.application_id AND e.event_type_id = et.id AND et.result = 0 AND 
 GROUP BY app_name
 ORDER BY app_name
 `, ignoreFakeInstanceCondition("e.instance_id"))
+
+	// Empty OEM is reported as "unknown" so operators can still see machines
+	// that checked in without a platform string.
+	instancesPerOEMMetricSQL = fmt.Sprintf(`
+SELECT a.name AS app_name, COALESCE(NULLIF(i.oem, ''), 'unknown') AS oem, count(*) AS instances_count
+FROM instance i
+JOIN instance_application ia ON ia.instance_id = i.id
+JOIN application a ON a.id = ia.application_id
+WHERE %s
+GROUP BY app_name, oem
+ORDER BY app_name, oem
+`, ignoreFakeInstanceCondition("ia.instance_id"))
 )
 
 func (q *Queries) GetAppInstancesPerChannelMetrics() ([]types.AppInstancesPerChannelMetric, error) {
@@ -55,6 +67,28 @@ func (q *Queries) GetFailedUpdatesMetrics() ([]types.FailedUpdatesMetric, error)
 	defer rows.Close()
 	for rows.Next() {
 		var metric types.FailedUpdatesMetric
+		err := rows.StructScan(&metric)
+		if err != nil {
+			return nil, err
+		}
+		metrics = append(metrics, metric)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return metrics, nil
+}
+
+// GetInstancesPerOEMMetrics returns instance counts grouped by application and OEM.
+func (q *Queries) GetInstancesPerOEMMetrics() ([]types.InstancesPerOEMMetric, error) {
+	var metrics []types.InstancesPerOEMMetric
+	rows, err := q.db.Queryx(instancesPerOEMMetricSQL)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var metric types.InstancesPerOEMMetric
 		err := rows.StructScan(&metric)
 		if err != nil {
 			return nil, err
