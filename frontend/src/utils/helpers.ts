@@ -7,7 +7,7 @@ import { red } from '@mui/material/colors';
 import React from 'react';
 
 import API from '../api/API';
-import { Channel, Group, VersionBreakdownEntry } from '../api/apiDataTypes';
+import { Channel, Group, OEMBreakdownEntry, VersionBreakdownEntry } from '../api/apiDataTypes';
 
 export const SearchFilterClassifiers = [
   {
@@ -252,6 +252,27 @@ export function useGroupVersionBreakdown(group: Group) {
   }, [group]);
 
   return versionBreakdown;
+}
+
+export function useGroupOEMBreakdown(group: Group) {
+  const [oemBreakdown, setOEMBreakdown] = React.useState<OEMBreakdownEntry[] | null>(null);
+
+  React.useEffect(() => {
+    if (!group) {
+      return;
+    }
+
+    API.getGroupOEMBreakdown(group.application_id, group.id)
+      .then(entries => {
+        setOEMBreakdown(entries || []);
+      })
+      .catch(err => {
+        console.error('Error getting OEM breakdown for group', group.id, '\nError:', err);
+        setOEMBreakdown([]);
+      });
+  }, [group]);
+
+  return oemBreakdown;
 }
 
 // Keep in sync with https://github.com/flatcar-linux/update_engine/blob/flatcar-master/src/update_engine/action_processor.h#L25

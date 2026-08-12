@@ -32,6 +32,8 @@
   "updates_timeout_lower": "Updates timeout",
   "version_breakdown": "Version Breakdown",
   "version_breakdown_lower": "Version breakdown",
+  "oem_breakdown": "OEM Breakdown",
+  "oem_breakdown_lower": "OEM / platform breakdown",
   "time_days": "days",
   "time_hours": "hours",
   "time_last_24_hours": "last 24 hours",

@@ -15,6 +15,7 @@ import {
   InstanceStatusHistory,
   Package,
   VersionBreakdownEntry,
+  OEMBreakdownEntry,
 } from './apiDataTypes';
 
 type WithCount<T> = T & {
@@ -107,6 +108,13 @@ export default class API {
     groupID: string
   ): Promise<VersionBreakdownEntry[]> {
     return API.getJSON(`${BASE_URL}/apps/${applicationID}/groups/${groupID}/version_breakdown`);
+  }
+
+  static getGroupOEMBreakdown(
+    applicationID: string,
+    groupID: string
+  ): Promise<OEMBreakdownEntry[]> {
+    return API.getJSON(`${BASE_URL}/apps/${applicationID}/groups/${groupID}/oem_breakdown`);
   }
 
   static deleteChannel(applicationID: string, channelID: string) {
