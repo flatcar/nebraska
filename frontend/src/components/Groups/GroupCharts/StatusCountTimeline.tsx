@@ -24,9 +24,86 @@ export interface StatusCountTimelineProps {
   isAnimationActive?: boolean;
 }
 
+function makeEmptyTimelineChartData() {
+  return { data: [], keys: [], colors: {} };
+}
+
+function getStatusFromTimeline(timeline: { [key: number]: number }) {
+  if (Object.keys(timeline).length === 0) {
+    return [];
+  }
+
+  return Object.keys(Object.values(timeline)[0]).filter(status => parseInt(status) !== 0);
+}
+
+function makeStatusesColors(
+  statuses: { [key: string]: any },
+  statusDefs: {
+    [key: string]: {
+      label: string;
+      color: string;
+      icon: IconifyIcon;
+      queryValue: string;
+    };
+  }
+) {
+  const colors: {
+    [key: string]: string;
+  } = {};
+
+  Object.values(statuses).forEach(status => {
+    const statusInfo = getInstanceStatus(status, '');
+    colors[status] = statusDefs[statusInfo.type].color;
+  });
+
+  return colors;
+}
+
+function makeTimelineChartData(
+  groupTimeline: { [key: string]: any },
+  statusDefs: {
+    [key: string]: {
+      label: string;
+      color: string;
+      icon: IconifyIcon;
+      queryValue: string;
+    };
+  }
+) {
+  const data = Object.keys(groupTimeline).map((timestamp, i) => {
+    const status = groupTimeline[timestamp];
+    const statusCount: {
+      [key: string]: any;
+    } = {};
+    Object.keys(status).forEach((st: string) => {
+      const values = status[st];
+      const count = Object.values(values).reduce((a: any, b: any) => a + b, 0);
+      statusCount[st] = count;
+    });
+
+    return {
+      index: i,
+      timestamp: timestamp,
+      ...statusCount,
+    };
+  });
+
+  const statuses = getStatusFromTimeline(groupTimeline);
+  const colors = makeStatusesColors(statuses, statusDefs);
+
+  return {
+    data: data,
+    keys: statuses,
+    colors: colors,
+  };
+}
+
 export default function StatusCountTimeline(props: StatusCountTimelineProps) {
   const [selectedEntry, setSelectedEntry] = React.useState(-1);
-  const { duration } = props;
+  const { duration, group } = props;
+  const applicationID = group?.application_id;
+  const groupID = group?.id;
+  const durationQueryValue = duration.queryValue;
   const [timelineChartData, setTimelineChartData] = React.useState<{
     data: {
       index: number;
@@ -36,11 +113,7 @@ export default function StatusCountTimeline(props: StatusCountTimelineProps) {
     colors: {
       [key: string]: string;
     };
-  }>({
-    data: [],
-    keys: [],
-    colors: {},
-  });
+  }>(makeEmptyTimelineChartData);
 
   const [timeline, setTimeline] = React.useState<{
     timeline: {
@@ -65,56 +138,11 @@ export default function StatusCountTimeline(props: StatusCountTimelineProps) {
       queryValue: string;
     };
   } = makeStatusDefs(theme as Theme);
+  const statusDefsRef = React.useRef(statusDefs);
 
-  function makeChartData(groupTimeline: { [key: string]: any }) {
-    const data = Object.keys(groupTimeline).map((timestamp, i) => {
-      const status = groupTimeline[timestamp];
-      const statusCount: {
-        [key: string]: any;
-      } = {};
-      Object.keys(status).forEach((st: string) => {
-        const values = status[st];
-        const count = Object.values(values).reduce((a: any, b: any) => a + b, 0);
-        statusCount[st] = count;
-      });
-
-      return {
-        index: i,
-        timestamp: timestamp,
-        ...statusCount,
-      };
-    });
-
-    const statuses = getStatusFromTimeline(groupTimeline);
-    const colors = makeStatusesColors(statuses);
-
-    setTimelineChartData({
-      data: data,
-      keys: statuses,
-      colors: colors,
-    });
-  }
-
-  function makeStatusesColors(statuses: { [key: string]: any }) {
-    const colors: {
-      [key: string]: string;
-    } = {};
-
-    Object.values(statuses).forEach(status => {
-      const statusInfo = getInstanceStatus(status, '');
-      colors[status] = statusDefs[statusInfo.type].color;
-    });
-
-    return colors;
-  }
-
-  function getStatusFromTimeline(timeline: { [key: number]: number }) {
-    if (Object.keys(timeline).length === 0) {
-      return [];
-    }
-
-    return Object.keys(Object.values(timeline)[0]).filter(status => parseInt(status) !== 0);
-  }
+  React.useEffect(() => {
+    statusDefsRef.current = statusDefs;
+  });
 
   function getInstanceCount(selectedEntry: number) {
     const status_breakdown: {
@@ -179,31 +207,55 @@ export default function StatusCountTimeline(props: StatusCountTimelineProps) {
 
   // Make the timeline data again when needed.
   React.useEffect(() => {
-    async function getStatusTimeline(group: Group | null) {
-      if (group) {
-        setTimelineChartData({ data: [], keys: [], colors: {} });
-        try {
-          const statusCountTimeline = await groupChartStore.getGroupStatusCountTimeline(
-            group.application_id,
-            group.id,
-            duration.queryValue
-          );
-          setTimeline({
-            timeline: statusCountTimeline,
-            lastUpdate: new Date().toUTCString(),
-          });
+    let canceled = false;
 
-          makeChartData(statusCountTimeline || []);
-          setSelectedEntry(-1);
-        } catch (error) {
+    setSelectedEntry(-1);
+    setTimelineChartData(makeEmptyTimelineChartData());
+
+    if (!applicationID || !groupID) {
+      setTimeline({
+        timeline: {},
+        lastUpdate: new Date().toUTCString(),
+      });
+      return () => {
+        canceled = true;
+      };
+    }
+
+    const selectedApplicationID = applicationID;
+    const selectedGroupID = groupID;
+
+    async function getStatusTimeline() {
+      try {
+        const statusCountTimeline = await groupChartStore.getGroupStatusCountTimeline(
+          selectedApplicationID,
+          selectedGroupID,
+          durationQueryValue
+        );
+        if (canceled) {
+          return;
+        }
+
+        const safeTimeline = statusCountTimeline || {};
+        setTimeline({
+          timeline: safeTimeline,
+          lastUpdate: new Date().toUTCString(),
+        });
+
+        setTimelineChartData(makeTimelineChartData(safeTimeline, statusDefsRef.current));
+      } catch (error) {
+        if (!canceled) {
           console.error(error);
         }
       }
     }
-    setSelectedEntry(-1);
-    getStatusTimeline(props.group);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.duration]);
+
+    getStatusTimeline();
+
+    return () => {
+      canceled = true;
+    };
+  }, [applicationID, durationQueryValue, groupChartStore, groupID]);
 
   return (
     <Grid container alignItems="center" spacing={2}>
