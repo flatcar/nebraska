@@ -45,9 +45,12 @@ Four independent reasons, any one of which is sufficient:
    `/bitnami/postgresql/data`; the official image uses
    `/var/lib/postgresql/data/pgdata`.
 2. **Different uid.** Bitnami ran as uid 1001. The Alpine-based official image
-   runs as uid 70 (the Debian-based variants use 999). Every file in the data
+   runs as uid 999 (the Alpine variants use 70 instead). Every file in the data
    directory is owned by the wrong user.
-3. **Different C library.** Bitnami images are Debian/glibc; `postgres:17-alpine`
+3. **Different C library.** Bitnami images are Debian/glibc, and so is the
+   default here (`17-bookworm`, glibc 2.36 — the same version Bitnami shipped),
+   so collation is unchanged by the migration. This blocker applies if you
+   switch to an Alpine tag: `postgres:17-alpine`
    is musl. Collation ordering differs between the two, and a btree index on
    `text`/`varchar` built under one collation is silently wrong under another —
    queries can fail to find rows that are present. See
@@ -154,6 +157,20 @@ the new empty cluster was created beside it in `pgdata/`. Run
 replays the stored 2.0.0 manifest and does not re-resolve the Bitnami chart
 repository, so it works even though that repository is deprecated.
 
+> **Helm 4 caveat.** If the Secret was ever edited outside Helm — a
+> `kubectl patch` to rotate the password, or an operator writing into it — the
+> rollback fails on Helm 4 with
+> `conflict with "kubectl-patch" using v1: .data.postgres-password`, and leaves
+> the release `failed`. Helm 4 defaults to server-side apply and will not take
+> ownership of a field another manager set. Retry with:
+>
+> ```console
+> $ helm rollback my-nebraska 1 --force-conflicts
+> ```
+>
+> Verified on a live cluster: the rollback then succeeds and the data comes
+> back. Helm 3.12.1 (what CI uses) applies client-side and is unaffected.
+
 Be aware the symptom is not obvious. The Nebraska Deployment's pod spec is
 unchanged between 2.0.0 and 3.0.0, so an in-place upgrade does **not** restart
 Nebraska, and Nebraska only runs its schema migrations at process start. The pod
@@ -182,14 +199,14 @@ Two things to know:
 | 2.0.0 | 3.0.0 | Note |
 |-------|-------|------|
 | `postgresql.image.repository: bitnamilegacy/postgresql` | `postgresql.image.repository: postgres` | |
-| `postgresql.image.tag: 17.5.0` | `postgresql.image.tag: 17-alpine` | Same PostgreSQL major version. |
+| `postgresql.image.tag: 17.5.0` | `postgresql.image.tag: 17-bookworm` | Same PostgreSQL major version, and the same glibc as the Bitnami image, so collation is unchanged. |
 | *(n/a)* | `postgresql.auth.existingSecret` | New: bring your own secret. |
 | *(n/a)* | `postgresql.auth.secretKeys.adminPasswordKey` | New; defaults to the previous key name `postgres-password`. |
 | *(n/a)* | `postgresql.dataMountPath`, `postgresql.dataSubdir` | New; see below. |
 | *(n/a)* | `postgresql.args` | New: arguments for the postgres server. The only way to set start-time settings such as `wal_level` or `log_connections`, which `ALTER SYSTEM` cannot change. |
 | *(n/a)* | `postgresql.image.digest` | New: pin the image by content rather than by tag. |
-| *(n/a)* | `postgresql.startupProbe`, `postgresql.shutdownTimeoutSeconds`, `postgresql.shmSizeLimit` | New; see `values.yaml`. |
-| *(n/a)* | `postgresql.podSecurityContext`, `postgresql.containerSecurityContext`, `postgresql.resources`, `postgresql.extraEnv`, `postgresql.extraVolumes`, `postgresql.extraVolumeMounts`, `postgresql.nodeSelector`, `postgresql.tolerations`, `postgresql.affinity` | New; previously supplied by the subchart under `postgresql.primary.*`. |
+| *(n/a)* | `postgresql.startupProbe`, `postgresql.shmSizeLimit`, `postgresql.extraPodSpec` | New; see `values.yaml`. |
+| *(n/a)* | `postgresql.podSecurityContext`, `postgresql.containerSecurityContext`, `postgresql.resources`, `postgresql.extraEnv`, `postgresql.extraVolumes`, `postgresql.extraVolumeMounts` | New; previously supplied by the subchart under `postgresql.primary.*`. Scheduling fields (`nodeSelector`, `tolerations`, `affinity`, `priorityClassName`) are set through `postgresql.extraPodSpec` rather than one key each. |
 | any other `postgresql.*` key from the Bitnami subchart | **rejected at render time** | The chart reports any value it does not read rather than ignoring it. Keys switched off or left empty (`metrics.enabled: false`, `tls: {}`, `architecture: standalone`) are accepted silently. Keys carrying a real value are reported with the setting they moved to — see below. |
 
 If you vendored the upstream Bitnami `values.yaml` wholesale, expect roughly
@@ -338,6 +355,12 @@ Two things do change:
   taken from the Bitnami PVC cannot be restored into the new StatefulSet, for
   the same four reasons listed above. Take a logical dump before upgrading, and
   treat any pre-upgrade snapshots as restorable only onto chart 2.0.0.
+* **Backup scripts that source the Bitnami environment break.** The official
+  image has no `POSTGRESQL_*` variables (`POSTGRESQL_PASSWORD`,
+  `POSTGRESQL_DATABASE`, ...) and no `/opt/bitnami/scripts/*`. Anything that
+  `exec`s into the pod and relies on those needs rewriting against
+  `POSTGRES_*` — or better, pointed at the Service over the network, which is
+  unaffected.
 * **`kubectl exec ... pg_dumpall` without credentials still works, but for a
   different reason.** The official image's `initdb` leaves `local` connections
   on `trust`, and the container runs as the `postgres` OS user, so a dump over
@@ -424,18 +447,22 @@ statefulset.apps/nebraska-postgresql scaled
 
 3. Upgrade PostgreSQL version, e.g:
 ```diff
--    tag: 17-alpine
-+    tag: 18-alpine
+-    tag: 17-bookworm
++    tag: 18-bookworm
 ```
-   Note that PostgreSQL 18 relocates both `PGDATA` and the image's declared
-   volume — and note the two must move together. The image declares a `VOLUME`,
-   and if the PVC is mounted at an *ancestor* of it the runtime mounts an empty
-   volume over the top and everything underneath becomes invisible inside the
-   container. For 17 the VOLUME is `/var/lib/postgresql/data`, so mounting at
-   `/var/lib/postgresql` silently hides your data; for 18 it is
-   `/var/lib/postgresql`, so that mount point becomes the correct one. Set
-   `postgresql.dataMountPath: /var/lib/postgresql` and
-   `postgresql.dataSubdir: 18/docker` to match.
+   **The mount path must move with the major version.** PostgreSQL 18 relocates
+   both `PGDATA` and the image's declared `VOLUME`:
+
+   | major | set `dataMountPath` | set `dataSubdir` |
+   |-------|---------------------|------------------|
+   | 17    | `/var/lib/postgresql/data` | `pgdata` |
+   | 18    | `/var/lib/postgresql`      | `18/docker` |
+
+   Get this wrong and the failure is silent: mounting the PVC *above* the
+   image's `VOLUME` makes the runtime lay an empty volume over the top, so
+   everything already on your disk becomes invisible inside the container. The
+   chart refuses the combination rather than letting it happen — but only when
+   it can read the major version from the tag.
 
 5. Apply the changes and scale up Nebraska statefulset to its original value
 
@@ -557,14 +584,14 @@ $ kubectl exec -ti pod/nebraska-postgresql-0 -- psql < backup.sql
 |----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|------------------------|
 | `postgresql.enabled`                                     | Deploy the PostgreSQL StatefulSet bundled with this chart                                                     | `true`                 |
 | `postgresql.auth.database`                               | PostgreSQL database                                                                                           | `nebraska`             |
-| `postgresql.auth.postgresPassword`                       | PostgreSQL password of user "postgres" **Recommended to change it to something secure for security reasons.** | `changeIt`             |
+| `postgresql.auth.postgresPassword`                       | PostgreSQL password of user "postgres" **Recommended to change it to something secure for security reasons.** | `""` (a random password is generated on first install)             |
 | `postgresql.image.repository`                             | PostgreSQL image repository                                                                                   | `postgres`             |
-| `postgresql.image.tag`                                   | PostgreSQL Image tag                                                                                          | `17-alpine`            |
+| `postgresql.image.tag`                                   | PostgreSQL Image tag                                                                                          | `17-bookworm`            |
 | `postgresql.auth.existingSecret`                         | Use an existing secret for the password instead of rendering one (evaluated as a template)                    | `""`                   |
 | `postgresql.auth.secretKeys.adminPasswordKey`            | Key inside the secret holding the password                                                                    | `postgres-password`    |
 | `postgresql.dataMountPath`                               | Where the data volume is mounted                                                                              | `/var/lib/postgresql/data` |
 | `postgresql.dataSubdir`                                  | Subdirectory of the mount used as `PGDATA` (must not be the mount root)                                       | `pgdata`               |
-| `postgresql.podSecurityContext`                          | Pod security context; uid/gid 70 matches the Alpine image (Debian variants use 999)                           | see `values.yaml`      |
+| `postgresql.podSecurityContext`                          | Pod security context; uid/gid 999 matches the Debian image (Debian variants use 999)                           | see `values.yaml`      |
 | `postgresql.containerSecurityContext`                    | Container security context; `readOnlyRootFilesystem` is on by default                                         | see `values.yaml`      |
 | `postgresql.resources`                                   | Resource requests/limits for the PostgreSQL container                                                         | `250m` / `256Mi` requests |
 | `postgresql.primary.persistence.enabled`                 | Enable persistence using PVC                                                                                  | `false`                |

@@ -134,12 +134,12 @@ metadata:
   name: {{ $pgName }}
   {{- include "nebraska.postgresql.metadata" . | nindent 2 }}
 spec:
-  # [MIGRATION] Hardcoded, not a value. A second replica would mount the same
-  # single PVC and run a second postmaster over one data directory, which
-  # corrupts it. PostgreSQL replicas are a different StatefulSet with their own
-  # volumes and a replication protocol, not `replicas: 2` -- and Nebraska has no
-  # read/write split to use them anyway. See _validate.tpl for the guidance
-  # given to anyone who sets postgresql.architecture.
+  {{- /* [MIGRATION] Hardcoded, not a value. A second replica would mount the same
+         single PVC and run a second postmaster over one data directory, which
+         corrupts it. PostgreSQL replicas are a different StatefulSet with their own
+         volumes and a replication protocol, not `replicas: 2` -- and Nebraska has no
+         read/write split to use them anyway. See _validate.tpl for the guidance
+         given to anyone who sets postgresql.architecture. */}}
   replicas: 1
   serviceName: {{ $pgHl }}
   updateStrategy:
@@ -189,13 +189,13 @@ spec:
               value: {{ $user | quote }}
             - name: POSTGRES_DB
               value: {{ $db | quote }}
-            # [MIGRATION] PGDATA must be a SUBDIRECTORY of the volume mount point. PostgreSQL
-            # refuses to start unless the data directory is exactly 0700 or 0750
-            # (see src/backend/utils/init/miscinit.c), and a mounted volume root
-            # is neither: the docker-library image ships it 1777 so that arbitrary
-            # --user values work, fsGroup adds group-write, and ext4 volumes also
-            # arrive with a lost+found entry that makes initdb refuse to run.
-            # Letting initdb create its own subdirectory sidesteps all three.
+            {{- /* [MIGRATION] PGDATA must be a SUBDIRECTORY of the volume mount point. PostgreSQL
+                   refuses to start unless the data directory is exactly 0700 or 0750
+                   (see src/backend/utils/init/miscinit.c), and a mounted volume root
+                   is neither: the docker-library image ships it 1777 so that arbitrary
+                   --user values work, fsGroup adds group-write, and ext4 volumes also
+                   arrive with a lost+found entry that makes initdb refuse to run.
+                   Letting initdb create its own subdirectory sidesteps all three. */}}
             - name: PGDATA
               value: {{ printf "%s/%s" .Values.postgresql.dataMountPath .Values.postgresql.dataSubdir | quote }}
             - name: PGPORT
@@ -229,17 +229,19 @@ spec:
                 command:
                   - /bin/sh
                   - -c
-                  {{- /* No -w. `pg_ctl -w` waits for the postmaster to exit,
-                         but the postmaster is PID 1: the moment it goes, the
-                         runtime tears down the sandbox and SIGKILLs this hook
-                         before pg_ctl can return. It exits 137 and the kubelet
+                  {{- /* -W, not the absence of -w. Waiting is `pg_ctl stop`'s
+                         DEFAULT ("-w, --wait ... (default)"), so dropping -w
+                         changes nothing -- opting out requires -W explicitly.
+                         That matters because the postmaster is PID 1: the moment
+                         it exits, the runtime tears down the sandbox and SIGKILLs
+                         a still-waiting hook. It exits 137 and the kubelet
                          records a FailedPreStopHook Warning on EVERY pod
-                         deletion, even though the shutdown itself is clean --
-                         confirmed on kind: pod gone in 3s, next start shows no
-                         crash recovery. Signalling and returning immediately
-                         avoids the spurious warning; terminationGracePeriod
-                         covers the rest of the shutdown. */}}
-                  - exec pg_ctl -D "$PGDATA" -m fast stop
+                         deletion, even though the shutdown itself is clean.
+                         With -W: "server shutting down", exit 0, the shutdown
+                         completes in the background, and the next start shows no
+                         crash recovery. terminationGracePeriodSeconds is what
+                         gives it room to finish. */}}
+                  - exec pg_ctl -D "$PGDATA" -m fast -W stop
           {{- /* [EXTRA -- not required by the migration] Chart 2.0.0 shipped the
                  same liveness/readiness numbers and no startupProbe, so this is
                  a pre-existing hazard rather than one the migration introduced.
@@ -274,23 +276,23 @@ spec:
           volumeMounts:
             - name: data
               mountPath: {{ .Values.postgresql.dataMountPath }}
-            # [MIGRATION] The image patches DEFAULT_PGSOCKET_DIR to /var/run/postgresql, so
-            # the unix socket and its lock file land there. (postmaster.pid is
-            # always inside PGDATA, not here.) Without a writable mount the
-            # server cannot create its socket and does not start at all, so this
-            # is mandatory whenever readOnlyRootFilesystem is true -- and it is
-            # also what makes `kubectl exec ... pg_dump` over the socket work.
+            {{- /* [MIGRATION] The image patches DEFAULT_PGSOCKET_DIR to /var/run/postgresql, so
+                   the unix socket and its lock file land there. (postmaster.pid is
+                   always inside PGDATA, not here.) Without a writable mount the
+                   server cannot create its socket and does not start at all, so this
+                   is mandatory whenever readOnlyRootFilesystem is true -- and it is
+                   also what makes `kubectl exec ... pg_dump` over the socket work. */}}
             - name: run
               mountPath: /var/run/postgresql
-            # [MIGRATION] Only strictly required by the entrypoint's nss_wrapper path, which
-            # runs mktemp when the effective uid is absent from /etc/passwd -- i.e.
-            # if podSecurityContext.runAsUser is overridden away from the image's
-            # own postgres uid. Cheap insurance, so it is always mounted.
+            {{- /* [MIGRATION] Only strictly required by the entrypoint's nss_wrapper path, which
+                   runs mktemp when the effective uid is absent from /etc/passwd -- i.e.
+                   if podSecurityContext.runAsUser is overridden away from the image's
+                   own postgres uid. Cheap insurance, so it is always mounted. */}}
             - name: tmp
               mountPath: /tmp
-            # [PARITY] The subchart mounted this too (shmVolume, default on).
-            # The container runtime default for /dev/shm is 64Mi, which PostgreSQL
-            # can exhaust ("could not resize shared memory segment").
+            {{- /* [PARITY] The subchart mounted this too (shmVolume, default on).
+                   The container runtime default for /dev/shm is 64Mi, which PostgreSQL
+                   can exhaust ("could not resize shared memory segment"). */}}
             - name: dshm
               mountPath: /dev/shm
             {{- with .Values.postgresql.extraVolumeMounts }}
@@ -338,12 +340,12 @@ spec:
   {{- if $persistence.enabled }}
   volumeClaimTemplates:
     - metadata:
-        # [MIGRATION] Named `data` because the Bitnami subchart named it `data`.
-        # The StatefulSet controller derives the PVC name from this
-        # (`data-<sts>-0`), so changing it would strand the existing volume and
-        # silently provision an empty one. volumeClaimTemplates is also an
-        # immutable field, so this must match for `helm upgrade` to be accepted
-        # at all.
+        {{- /* [MIGRATION] Named `data` because the Bitnami subchart named it `data`.
+               The StatefulSet controller derives the PVC name from this
+               (`data-<sts>-0`), so changing it would strand the existing volume and
+               silently provision an empty one. volumeClaimTemplates is also an
+               immutable field, so this must match for `helm upgrade` to be accepted
+               at all. */}}
         name: data
         {{- with $persistence.labels }}
         labels:

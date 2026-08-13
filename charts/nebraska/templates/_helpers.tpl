@@ -88,9 +88,12 @@ nameOverride `nebraska` produced `nebraska` before and would produce
 {{/*
 Standard metadata for the bundled PostgreSQL objects.
 
-Factored out because the same labels/annotations stanza appeared on all five
-objects. Emits the `annotations:` key only when there is something to put under
-it, so it stays valid when extraAnnotations is empty.
+Factored out because the same labels/annotations stanza appeared on each of
+them. Used by four of the five: the Secret inlines its own copy because it also
+carries `helm.sh/resource-policy: keep`, and merging one fixed annotation into
+this helper would cost more indirection than the six duplicated lines. Emits the
+`annotations:` key only when there is something to put under it, so it stays
+valid when extraAnnotations is empty.
 */}}
 {{- define "nebraska.postgresql.metadata" -}}
 labels:

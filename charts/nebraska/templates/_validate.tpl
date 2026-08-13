@@ -117,13 +117,13 @@ is ignored; only values that would actually have changed behaviour are reported.
   "architecture"                     "streaming standbys are not provided by this chart. Note Nebraska cannot use a read-only standby anyway -- every Omaha check-in writes, and it opens a single DSN. If you are after the distributed topology in RFC #1375, that uses one-way LOGICAL replication, which this chart can do: set postgresql.args to include -c wal_level=logical. For managed HA, use an operator such as CloudNativePG with postgresql.enabled=false."
   "replication"                      "streaming replication is not provided by this chart. Logical replication is reachable via postgresql.args (-c wal_level=logical); for managed HA use an operator with postgresql.enabled=false."
   "readReplicas"                     "read replicas are not provided by this chart, and Nebraska opens a single DSN so it has no read/write split to use them."
-  "metrics"                          "the postgres-exporter sidecar, ServiceMonitor and PrometheusRule are gone. Run the exporter via postgresql.sidecars, and supply the ServiceMonitor through the top-level extraObjects."
+  "metrics"                          "the postgres-exporter sidecar, ServiceMonitor and PrometheusRule are gone. Run postgres-exporter as its own Deployment against the PostgreSQL Service, and supply it plus any ServiceMonitor through the top-level extraObjects."
   "tls"                              "in-chart TLS termination is gone. Set server options via postgresql.args (-c ssl=on -c ssl_cert_file=...) with the cert supplied through postgresql.extraVolumes, or terminate at a proxy/mesh."
   "ldap"                             "LDAP auth is gone. It was never used by Nebraska."
   "audit"                            "pgAuditLog/pgAuditLogCatalog need the pgaudit extension, which the official image does not ship. The other audit settings (logConnections, logDisconnections, logHostname, logLinePrefix, logTimezone, clientMinMessages) are plain PostgreSQL settings -- set them via postgresql.args, e.g. -c log_connections=on."
   "postgresqlSharedPreloadLibraries" "set this via postgresql.args (-c shared_preload_libraries=...). Note the official image does not ship pgaudit."
   "postgresqlDataDir"                "renamed. Use postgresql.dataMountPath plus postgresql.dataSubdir; PGDATA must be a strict subdirectory of the mount."
-  "volumePermissions"                "podSecurityContext.fsGroup handles ownership on CSI drivers that honour it. On storage that ignores fsGroup (some NFS), reproduce the chown with postgresql.initContainers -- see the example in values.yaml."
+  "volumePermissions"                "podSecurityContext.fsGroup handles ownership on CSI drivers that honour it. On storage that ignores fsGroup (some NFS), reproduce the chown with postgresql.extraPodSpec.initContainers -- see the worked example in values.yaml."
   "networkPolicy"                    "NetworkPolicy is not rendered by this chart. Supply your own through the top-level extraObjects."
   "rbac"                             "no Role/RoleBinding is needed; the pod does not talk to the API server."
   "psp"                              "PodSecurityPolicy was removed from Kubernetes in 1.25."
@@ -161,11 +161,6 @@ is ignored; only values that would actually have changed behaviour are reported.
 {{- end -}}
 {{- end -}}
 
-{{/* Most `primary.*` keys just moved up a level, so derive that message from
-     the known-keys list rather than writing fourteen near-identical table
-     entries by hand. Only keys whose replacement is NOT a simple rename need a
-     bespoke message below. `extraEnvVars` is the one rename that changed name
-     as well as level, so it is listed explicitly. */}}
 {{/* Recurse one level into auth.secretKeys: only adminPasswordKey is read, and
      Bitnami's siblings (userPasswordKey, replicationPasswordKey) were passing
      silently -- exactly the class of gap the deny-unknown design exists to
@@ -178,6 +173,11 @@ is ignored; only values that would actually have changed behaviour are reported.
 {{- end -}}
 {{- end -}}
 
+{{/* Most `primary.*` keys just moved up a level, so derive that message from
+     the known-keys list rather than writing fourteen near-identical table
+     entries by hand. Only keys whose replacement is NOT a simple rename need a
+     bespoke message below. `extraEnvVars` is the one rename that changed name
+     as well as level, so it is listed explicitly. */}}
 {{- $guidePrimary := dict
   "configuration"             "custom postgresql.conf is not rendered. Set server options with postgresql.args, e.g. -c max_connections=200."
   "extendedConfiguration"     "set server options with postgresql.args."
@@ -203,7 +203,7 @@ is ignored; only values that would actually have changed behaviour are reported.
   "readinessProbe"            "probes are fixed by this chart. postgresql.startupProbe tunes the first-start budget."
   "lifecycleHooks"            "not supported; the chart sets a preStop hook for clean shutdown."
   "sidecars"                  "not supported. A metrics exporter or backup agent does not need to share the pod -- run it as its own Deployment against the Service. If you need one badly enough, use postgresql.enabled=false and a real database."
-  "initContainers"            "set them through postgresql.extraPodSpec."
+  "initContainers"            "set them through postgresql.extraPodSpec.initContainers."
   "nodeSelector"              "set it through postgresql.extraPodSpec."
   "tolerations"               "set them through postgresql.extraPodSpec."
   "affinity"                  "set it through postgresql.extraPodSpec."
@@ -280,14 +280,12 @@ right one; an unrecognisable tag is left alone rather than guessed at.
 {{- $pg := .Values.postgresql | default dict -}}
 {{- if $pg.enabled -}}
 {{- $mount := $pg.dataMountPath | default "" | toString | trimSuffix "/" -}}
-{{- $tag := (($pg.image | default dict).tag | default "" | toString) -}}
-{{- $major := regexFind "^[0-9]+" $tag -}}
-{{- $vol := "" -}}
-{{- if $major -}}
-{{- $vol = ternary "/var/lib/postgresql" "/var/lib/postgresql/data" (ge (int $major) 18) -}}
-{{- end -}}
-{{- if and $vol $mount (hasPrefix (printf "%s/" $mount) $vol) -}}
+{{- $major := regexFind "^[0-9]+" ((($pg.image | default dict).tag | default "" | toString)) -}}
+{{- if and $major $mount -}}
+{{- $vol := ternary "/var/lib/postgresql" "/var/lib/postgresql/data" (ge (int $major) 18) -}}
+{{- if hasPrefix (printf "%s/" $mount) $vol -}}
 {{- fail (printf "\n\npostgresql.dataMountPath is %q, which is above the VOLUME the image declares (%q\nfor PostgreSQL %s).\n\nMounting the data volume above the image's VOLUME makes the runtime lay an empty\nvolume over the top: the pod starts, PostgreSQL initialises into what looks like\nempty space, and everything already on your PVC becomes invisible from inside the\ncontainer. It is still on the disk, and nothing will tell you.\n\nSet postgresql.dataMountPath to %q (and keep postgresql.dataSubdir as the\nsubdirectory inside it).\n" $mount $vol $major $vol) -}}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 {{- end -}}

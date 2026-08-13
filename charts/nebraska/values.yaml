@@ -284,7 +284,7 @@ postgresql:
     tag: 17-bookworm
     # [PARITY] The subchart had image.digest too.
     # Pin by content instead of by tag. When set this replaces the tag entirely,
-    # so a rebuild of `17-alpine` cannot change what runs. Recommended for
+    # so a rebuild of `17-bookworm` cannot change what runs. Recommended for
     # production; keep it updated with Renovate/Dependabot or you will pin
     # yourself to an unpatched image, which is the problem this chart set out to
     # solve. Example: sha256:abc123...
@@ -305,9 +305,11 @@ postgresql:
   # (/var/lib/postgresql/data on 17, /var/lib/postgresql on 18). Mount above it
   # and the runtime lays an empty volume over the top, hiding everything your PVC
   # holds underneath -- observed live: a Bitnami data directory present on the PV
-  # and unreadable from inside the pod. The chart refuses that configuration. These must stay two separate settings: PostgreSQL refuses
-  # to start unless PGDATA is exactly 0700/0750, which a volume mount root
-  # never is. See the comment in templates/postgresql.yaml.
+  # and unreadable from inside the pod. The chart refuses that configuration.
+  #
+  # These must stay two separate settings: PostgreSQL refuses to start unless
+  # PGDATA is exactly 0700/0750, which a volume mount root never is. See the
+  # comment in templates/postgresql.yaml.
   dataMountPath: /var/lib/postgresql/data
   dataSubdir: pgdata
 

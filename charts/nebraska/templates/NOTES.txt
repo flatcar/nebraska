@@ -31,7 +31,9 @@ NOTE ON THE BUNDLED POSTGRESQL
   than an obviously empty UI. Do not treat a Ready pod as confirmation.
 {{ end -}}
 {{- if and .Values.postgresql.enabled (eq (.Values.postgresql.auth.postgresPassword | toString) "changeIt") (not .Values.postgresql.auth.existingSecret) }}
-WARNING: the PostgreSQL superuser password is still the chart default.
+WARNING: the PostgreSQL superuser password is set to "changeIt", the fixed
+         default that chart 2.0.0 shipped. 3.0.0 generates a random one instead,
+         so this value can only have come from a carried-over values file.
 
   Anything on the pod network that knows this default has full control of the
   database, including command execution inside its container. There is no
