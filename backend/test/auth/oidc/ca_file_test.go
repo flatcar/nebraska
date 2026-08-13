@@ -112,7 +112,7 @@ func TestCAFileOIDCSetup(t *testing.T) {
 		testConfig.CACertPool = caPool
 
 		db := newDBForTest(t)
-		srv, err := server.New(&testConfig, db, adminSvc(db))
+		srv, err := server.New(&testConfig, db, adminSvc(db), runtimeSvc(db))
 		assert.NotNil(t, srv)
 		assert.NoError(t, err)
 	})
@@ -128,7 +128,7 @@ func TestCAFileOIDCSetup(t *testing.T) {
 		testConfig.OidcIssuerURL = oidcServer.Issuer()
 
 		db := newDBForTest(t)
-		srv, err := server.New(&testConfig, db, adminSvc(db))
+		srv, err := server.New(&testConfig, db, adminSvc(db), runtimeSvc(db))
 		assert.Nil(t, srv)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "error setting up oidc provider")

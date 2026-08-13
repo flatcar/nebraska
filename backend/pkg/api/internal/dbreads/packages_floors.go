@@ -8,7 +8,7 @@ import (
 	"github.com/doug-martin/goqu/v9"
 	"gopkg.in/guregu/null.v4"
 
-	"github.com/flatcar/nebraska/backend/pkg/api/internal/types"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
 // semverToIntArray returns a PostgreSQL expression that converts a semantic version
@@ -86,7 +86,7 @@ const (
 // GetRequiredChannelFloors returns floor packages between instance and target versions for a channel
 func (q *Queries) GetRequiredChannelFloors(channel *types.Channel, instanceVersion string) ([]*types.Package, error) {
 	if channel == nil || channel.Package == nil {
-		return nil, ErrNoPackageFound
+		return nil, types.ErrNoPackageFound
 	}
 	if instanceVersion == "" {
 		return nil, fmt.Errorf("instance version cannot be empty")

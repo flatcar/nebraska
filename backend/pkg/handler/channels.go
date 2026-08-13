@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"gopkg.in/guregu/null.v4"
 
-	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/codegen"
 )
 
@@ -150,12 +150,12 @@ func (h *Handler) DeleteChannel(ctx echo.Context, _ string, channelID string) er
 	return ctx.NoContent(http.StatusNoContent)
 }
 
-func newChannel(appID string, arch uint, color string, name string, packageID *string) *api.Channel {
-	channel := &api.Channel{
+func newChannel(appID string, arch uint, color string, name string, packageID *string) *types.Channel {
+	channel := &types.Channel{
 		ApplicationID: appID,
 		Name:          name,
 		Color:         color,
-		Arch:          api.Arch(arch),
+		Arch:          types.Arch(arch),
 	}
 	if packageID != nil && *packageID != "" {
 		channel.PackageID = null.StringFromPtr(packageID)
@@ -164,7 +164,7 @@ func newChannel(appID string, arch uint, color string, name string, packageID *s
 }
 
 type channelsPage struct {
-	TotalCount int            `json:"totalCount"`
-	Count      int            `json:"count"`
-	Channels   []*api.Channel `json:"channels"`
+	TotalCount int              `json:"totalCount"`
+	Count      int              `json:"count"`
+	Channels   []*types.Channel `json:"channels"`
 }

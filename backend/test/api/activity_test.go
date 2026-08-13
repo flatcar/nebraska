@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/codegen"
 )
 
@@ -22,7 +22,7 @@ func TestListActivity(t *testing.T) {
 
 		endTime := time.Now()
 		startTime := time.Now().Add(time.Duration(-1 * 24 * 7 * time.Hour))
-		activitiesDB, err := db.GetActivity(teamID, api.ActivityQueryParams{Start: startTime, End: endTime})
+		activitiesDB, err := db.GetActivity(teamID, types.ActivityQueryParams{Start: startTime, End: endTime})
 		require.NoError(t, err)
 		require.NotNil(t, activitiesDB)
 

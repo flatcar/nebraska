@@ -5,6 +5,7 @@ package admin
 import (
 	"github.com/jmoiron/sqlx"
 
+	"github.com/flatcar/nebraska/backend/pkg/api/internal/dbconn"
 	"github.com/flatcar/nebraska/backend/pkg/api/internal/dbreads"
 	"github.com/flatcar/nebraska/backend/pkg/logger"
 )
@@ -18,11 +19,12 @@ type Service struct {
 	db *sqlx.DB
 }
 
-// NewService creates a new admin Service that reuses the given read queries
-// (and their underlying DB connection).
-func NewService(q *dbreads.Queries) *Service {
+// NewService creates a new admin Service that writes over the given connection
+// and reuses the given read queries.
+// conn must be the same connection used to construct q.
+func NewService(conn *dbconn.Conn, q *dbreads.Queries) *Service {
 	return &Service{
 		Queries: q,
-		db:      dbreads.DB(q),
+		db:      dbconn.DB(conn),
 	}
 }

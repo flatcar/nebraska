@@ -2,18 +2,13 @@
 package dbreads
 
 import (
-	"errors"
-
 	"github.com/jmoiron/sqlx"
 
+	"github.com/flatcar/nebraska/backend/pkg/api/internal/dbconn"
 	"github.com/flatcar/nebraska/backend/pkg/logger"
 )
 
 var l = logger.New("dbreads")
-
-// ErrNoPackageFound indicates that the group doesn't have a channel
-// assigned or that the channel doesn't have a package assigned.
-var ErrNoPackageFound = errors.New("nebraska: no package found")
 
 type Queries struct {
 	db *sqlx.DB
@@ -23,14 +18,9 @@ type Queries struct {
 	maxFloorsPerResponse int
 }
 
-func New(db *sqlx.DB, maxFloorsPerResponse int) *Queries {
+func New(conn *dbconn.Conn, maxFloorsPerResponse int) *Queries {
 	if maxFloorsPerResponse <= 0 {
 		maxFloorsPerResponse = DefaultMaxFloorsPerResponse
 	}
-	return &Queries{db: db, maxFloorsPerResponse: maxFloorsPerResponse}
-}
-
-// DB returns the underlying database handle shared by the read queries.
-func DB(q *Queries) *sqlx.DB {
-	return q.db
+	return &Queries{db: dbconn.DB(conn), maxFloorsPerResponse: maxFloorsPerResponse}
 }
