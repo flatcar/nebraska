@@ -228,7 +228,17 @@ spec:
                 command:
                   - /bin/sh
                   - -c
-                  - exec pg_ctl -D "$PGDATA" -m fast -w -t {{ .Values.postgresql.shutdownTimeoutSeconds }} stop
+                  {{- /* No -w. `pg_ctl -w` waits for the postmaster to exit,
+                         but the postmaster is PID 1: the moment it goes, the
+                         runtime tears down the sandbox and SIGKILLs this hook
+                         before pg_ctl can return. It exits 137 and the kubelet
+                         records a FailedPreStopHook Warning on EVERY pod
+                         deletion, even though the shutdown itself is clean --
+                         confirmed on kind: pod gone in 3s, next start shows no
+                         crash recovery. Signalling and returning immediately
+                         avoids the spurious warning; terminationGracePeriod
+                         covers the rest of the shutdown. */}}
+                  - exec pg_ctl -D "$PGDATA" -m fast stop
           {{- /* [EXTRA -- not required by the migration] Chart 2.0.0 shipped the
                  same liveness/readiness numbers and no startupProbe, so this is
                  a pre-existing hazard rather than one the migration introduced.

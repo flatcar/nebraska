@@ -106,7 +106,7 @@ is ignored; only values that would actually have changed behaviour are reported.
   "extraPodSpec"
   "auth" "image" "service" "dataMountPath" "dataSubdir" "primary"
   "serviceAccount" "podSecurityContext" "containerSecurityContext"
-  "terminationGracePeriodSeconds" "shutdownTimeoutSeconds"
+  "terminationGracePeriodSeconds"
   "resources"
   "extraEnv" "extraVolumes" "extraVolumeMounts"
   "args" "shmSizeLimit" "startupProbe"
@@ -166,6 +166,18 @@ is ignored; only values that would actually have changed behaviour are reported.
      entries by hand. Only keys whose replacement is NOT a simple rename need a
      bespoke message below. `extraEnvVars` is the one rename that changed name
      as well as level, so it is listed explicitly. */}}
+{{/* Recurse one level into auth.secretKeys: only adminPasswordKey is read, and
+     Bitnami's siblings (userPasswordKey, replicationPasswordKey) were passing
+     silently -- exactly the class of gap the deny-unknown design exists to
+     close, missed because the recursion stopped at auth.* */}}
+{{- range $k, $v := (($pg.auth | default dict).secretKeys | default dict) -}}
+{{- if ne $k "adminPasswordKey" -}}
+{{- if not (include "nebraska.postgresql.isInertValue" (dict "key" $k "value" $v)) -}}
+{{- $found = append $found (printf "postgresql.auth.secretKeys.%s -- not read by this chart. The official image has a single superuser, so only adminPasswordKey applies." $k) -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
 {{- $guidePrimary := dict
   "configuration"             "custom postgresql.conf is not rendered. Set server options with postgresql.args, e.g. -c max_connections=200."
   "extendedConfiguration"     "set server options with postgresql.args."
@@ -256,8 +268,14 @@ rather than a stale value. Fail with an explanation instead.
 */}}
 {{- define "nebraska.postgresql.validateImage" -}}
 {{- $img := (.Values.postgresql | default dict).image | default dict -}}
-{{- $repo := $img.repository | default "" | toString -}}
-{{- if regexMatch "(^|/)bitnami" $repo -}}
-{{- fail (printf "\n\npostgresql.image.repository is %q, which is a Bitnami-family image.\n\nChart 3.0.0 runs the official postgres image and configures it accordingly\n(PGDATA layout, uid, env var names). A Bitnami image will not start correctly\nhere, and bitnamilegacy/* is a frozen archive that receives no security updates\n-- which is the reason this chart stopped using it.\n\nRemove the postgresql.image override to use the chart default, or set\npostgresql.enabled=false and run your own database.\n" $repo) -}}
+{{- /* Match the FULL reference, not just the repository. Checking `repository`
+       alone was bypassable by pushing the vendor name into the registry:
+         --set postgresql.image.registry=docker.io/bitnamilegacy
+         --set postgresql.image.repository=postgresql
+       rendered silently. A guard with a trivial bypass is worse than none,
+       because it advertises protection it does not provide. */ -}}
+{{- $ref := printf "%s/%s" ($img.registry | default "" | toString) ($img.repository | default "" | toString) -}}
+{{- if regexMatch "bitnami" (lower $ref) -}}
+{{- fail (printf "\n\nThe PostgreSQL image resolves to %q, which is a Bitnami-family image.\n\nChart 3.0.0 runs the official postgres image and configures it accordingly\n(PGDATA layout, uid, env var names). A Bitnami image will not start correctly\nhere, and bitnamilegacy/* is a frozen archive that receives no security updates\n-- which is the reason this chart stopped using it.\n\nRemove the postgresql.image override to use the chart default, or set\npostgresql.enabled=false and run your own database.\n" $ref) -}}
 {{- end -}}
 {{- end -}}

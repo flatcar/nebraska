@@ -360,16 +360,15 @@ postgresql:
       drop:
         - ALL
 
-  # [EXTRA -- not required by the migration] These two exist only to support the
-  # preStop hook, which fixes a pre-existing unclean-shutdown bug. 2.0.0 used 60
-  # with no hook. Drop both along with the hook if you want the migration alone.
+  # [EXTRA -- not required by the migration] Supports the preStop hook, which
+  # fixes a pre-existing unclean-shutdown bug. 2.0.0 used 60 with no hook.
   #
-  # Must stay comfortably above shutdownTimeoutSeconds, or the kubelet SIGKILLs
-  # the container while the preStop hook is still shutting PostgreSQL down --
-  # producing exactly the unclean shutdown the hook exists to prevent.
+  # The hook signals a fast shutdown and returns immediately; this budget is what
+  # PostgreSQL then has to finish flushing before the kubelet sends SIGKILL. A
+  # small database needs a fraction of a second, a large one with a big
+  # shared_buffers can need much longer -- raise it if you see the next start log
+  # "database system was not properly shut down".
   terminationGracePeriodSeconds: 90
-  # Passed to `pg_ctl -m fast -w -t`. Deliberately shorter than the grace period.
-  shutdownTimeoutSeconds: 45
 
   # [PARITY] Replaces the subchart's primary.configuration / existingConfigmap.
   # Extra arguments for the postgres server. The first element must be

@@ -6,15 +6,22 @@ NOTE ON THE BUNDLED POSTGRESQL
   {{ .Values.postgresql.dataMountPath }}/{{ .Values.postgresql.dataSubdir }}.
 
   If you have just upgraded from chart 2.0.0, that path is NOT where the Bitnami
-  subchart kept its data. Check that your data is really there:
+  subchart kept its data. Check that your data is really there -- first that the
+  schema exists at all, then that it has rows:
 
     kubectl exec -n {{ .Release.Namespace }} {{ include "nebraska.postgresql.fullname" . }}-0 -- \
       psql -U {{ .Values.postgresql.auth.username }} -d {{ .Values.postgresql.auth.database }} \
-      -tAc "select coalesce((select count(*)::text from application), 'NO SCHEMA')"
+      -tAc "select to_regclass('public.application')"
+    # empty output = no schema at all = PostgreSQL started a FRESH cluster
 
-  Anything other than a plausible row count -- "NO SCHEMA", or 0 on an install
-  that had data -- means PostgreSQL started a fresh cluster and your old one is
-  still sitting unused in the volume's data/ directory.
+    kubectl exec -n {{ .Release.Namespace }} {{ include "nebraska.postgresql.fullname" . }}-0 -- \
+      psql -U {{ .Values.postgresql.auth.username }} -d {{ .Values.postgresql.auth.database }} \
+      -tAc "select count(*) from application"
+    # run only if the first command printed a name
+
+  Empty output from the first command, or 0 from the second on an install that
+  had data, means your old cluster is still sitting unused in the volume's
+  data/ directory.
 
     kubectl rollout undo is NOT the fix. Run:  helm rollback {{ .Release.Name }}
     Do this BEFORE deleting any PVC or PersistentVolume. It is recoverable.
