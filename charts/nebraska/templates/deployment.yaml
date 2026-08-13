@@ -148,8 +148,21 @@ spec:
               valueFrom:
                 secretKeyRef:
                   {{- if .Values.config.database.passwordExistingSecret.enabled }}
+                  {{- /* [PARITY] Both are template-evaluated so the defaults in
+                         values.yaml can follow the secret the chart actually
+                         renders. `name` was already tpl'd; `key` was not, and had
+                         to be, once its default became
+                         `{{ .Values.postgresql.auth.secretKeys.adminPasswordKey }}`.
+
+                         Why the defaults changed: they were hardcoded to
+                         `<release>-postgresql` / `postgres-password`, so setting
+                         postgresql.auth.existingSecret brought PostgreSQL up
+                         against the new secret while Nebraska kept looking for a
+                         secret the chart no longer rendered, and sat in
+                         CreateContainerConfigError. Pre-existing in 2.0.0, but
+                         3.0.0 advertises existingSecret, so it had to work. */}}
                   name: {{ tpl .Values.config.database.passwordExistingSecret.name . }}
-                  key: {{ .Values.config.database.passwordExistingSecret.key }}
+                  key: {{ tpl .Values.config.database.passwordExistingSecret.key . }}
                   {{- else }}
                   name: {{ include "nebraska.fullname" . }}
                   key: dbPassword

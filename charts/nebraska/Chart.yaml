@@ -18,11 +18,33 @@ sources:
 maintainers:
   - name: flatcar
     url: https://flatcar.org/
-version: 2.0.0
+
+# 2.0.0 -> 3.0.0: MAJOR, because the bundled PostgreSQL changed image, data
+# directory layout and uid. Installs with persistence enabled need a dump and
+# restore; see "Upgrading to 3.0.0" in README.md.
+version: 3.0.0
 appVersion: "3.0.0"
 
-dependencies:
-  - name: postgresql
-    version: 11.9.1
-    repository: https://charts.bitnami.com/bitnami
-    condition: postgresql.enabled
+# There is deliberately no `dependencies:` block, and Chart.lock is deleted.
+#
+# 2.0.0 depended on postgresql 11.9.1 from https://charts.bitnami.com/bitnami.
+# Bitnami retired its free catalogue on 2025-08-28: images moved to the frozen
+# docker.io/bitnamilegacy archive (never rebuilt, so every CVE since then is
+# unpatched) and the classic chart repo is deprecated with no committed shutdown
+# date. Those are flatcar/nebraska#1574 and #1148 respectively, and they are the
+# same root cause, so this chart fixes them together by vendoring a small
+# StatefulSet instead of swapping one external dependency for another.
+#
+# Alternatives considered:
+#   - Keep the subchart, point image.repository at docker.io/postgres. Does not
+#     work: the Bitnami templates set POSTGRESQL_* env vars, mount /bitnami, and
+#     run a Bitnami-specific entrypoint.
+#   - Adopt a maintained third-party postgres subchart (CloudPirates is the one
+#     the ecosystem converged on). Viable, and roughly half of comparable
+#     projects did this. Rejected here to avoid trading one external chart
+#     dependency for another for what is only a convenience database.
+#   - Require an operator such as CloudNativePG. Rejected as a default: it needs
+#     cluster-scoped CRDs installed before this chart can render at all. It
+#     remains the recommendation for production, via postgresql.enabled=false.
+#
+# Vendoring is what the closest comparable migration (helixml/helix#1890) did.
