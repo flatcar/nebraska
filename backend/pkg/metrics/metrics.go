@@ -8,8 +8,14 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/logger"
 )
+
+// noChannelArchLabel is the "arch" label value used for instances whose
+// group has no channel (or no group) assigned, since there is no
+// architecture to report in that case.
+const noChannelArchLabel = "none"
 
 const (
 	defaultMetricsUpdateInterval = 15 * time.Second
@@ -26,6 +32,12 @@ var (
 			"application",
 			"version",
 			"channel",
+			// arch distinguishes channels that share the same name across
+			// architectures (e.g. "stable" for amd64 and arm64). This is a
+			// new label: existing dashboards/alerts that group solely by
+			// application/version/channel should add `by (arch)` or sum()
+			// over the new label to keep prior totals.
+			"arch",
 		},
 	)
 
@@ -136,7 +148,11 @@ func calculateMetrics(api *api.API) error {
 	}
 
 	for _, metric := range aipcMetrics {
-		appInstancePerChannelGaugeMetric.WithLabelValues(metric.ApplicationName, metric.Version, metric.ChannelName).Set(float64(metric.InstancesCount))
+		archLabel := noChannelArchLabel
+		if metric.Arch >= 0 {
+			archLabel = types.Arch(uint(metric.Arch)).String()
+		}
+		appInstancePerChannelGaugeMetric.WithLabelValues(metric.ApplicationName, metric.Version, metric.ChannelName, archLabel).Set(float64(metric.InstancesCount))
 	}
 
 	fuMetrics, err := api.GetFailedUpdatesMetrics()
