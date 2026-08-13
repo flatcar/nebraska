@@ -299,7 +299,13 @@ postgresql:
     port: 5432
 
   # Where the data volume is mounted, and the subdirectory inside it that
-  # becomes PGDATA. These must stay two separate settings: PostgreSQL refuses
+  # becomes PGDATA.
+  #
+  # dataMountPath must NOT be an ancestor of the image's declared VOLUME
+  # (/var/lib/postgresql/data on 17, /var/lib/postgresql on 18). Mount above it
+  # and the runtime lays an empty volume over the top, hiding everything your PVC
+  # holds underneath -- observed live: a Bitnami data directory present on the PV
+  # and unreadable from inside the pod. The chart refuses that configuration. These must stay two separate settings: PostgreSQL refuses
   # to start unless PGDATA is exactly 0700/0750, which a volume mount root
   # never is. See the comment in templates/postgresql.yaml.
   dataMountPath: /var/lib/postgresql/data

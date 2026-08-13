@@ -428,7 +428,13 @@ statefulset.apps/nebraska-postgresql scaled
 +    tag: 18-alpine
 ```
    Note that PostgreSQL 18 relocates both `PGDATA` and the image's declared
-   volume; set `postgresql.dataMountPath: /var/lib/postgresql` and
+   volume — and note the two must move together. The image declares a `VOLUME`,
+   and if the PVC is mounted at an *ancestor* of it the runtime mounts an empty
+   volume over the top and everything underneath becomes invisible inside the
+   container. For 17 the VOLUME is `/var/lib/postgresql/data`, so mounting at
+   `/var/lib/postgresql` silently hides your data; for 18 it is
+   `/var/lib/postgresql`, so that mount point becomes the correct one. Set
+   `postgresql.dataMountPath: /var/lib/postgresql` and
    `postgresql.dataSubdir: 18/docker` to match.
 
 5. Apply the changes and scale up Nebraska statefulset to its original value
@@ -536,7 +542,7 @@ $ kubectl exec -ti pod/nebraska-postgresql-0 -- psql < backup.sql
 | `config.database.port`                                | The port number the database server is listening on                                                                                  | `5432`                                                                  |
 | `config.database.sslMode`                             | The mode of the database connection                                                                                                  | `disable`                                                               |
 | `config.database.dbname`                              | The database name                                                                                                                    | `{{ .Values.postgresql.auth.database }}` (evaluated as a template)      |
-| `config.database.username`                            | PostgreSQL user                                                                                                                      | `{{ .Values.postgresql.postgresqlUsername }}` (evaluated as a template)                                    |
+| `config.database.username`                            | PostgreSQL user                                                                                                                      | `{{ .Values.postgresql.auth.username }}` (evaluated as a template)                                    |
 | `config.database.password`                            | PostgreSQL user password                                                                                                             | `""` (evaluated as a template)                                          |
 | `config.database.passwordExistingSecret.enabled`      | Enables setting PostgreSQL user password via an existing secret                                                                      | `true`                                                                  |
 | `config.database.passwordExistingSecret.name`         | Name of the existing secret                                                                                                          | `{{ .Release.Name }}-postgresql` (evaluated as a template)              |

@@ -24,6 +24,7 @@
        notice them being ignored. */ -}}
 {{- include "nebraska.postgresql.validateUnknownValues" . -}}
 {{- include "nebraska.postgresql.validateImage" . -}}
+{{- include "nebraska.postgresql.validateMountPath" . -}}
 {{- include "nebraska.postgresql.validateDataDirMigration" . -}}
 {{- if .Values.postgresql.enabled }}
 {{- $pgName := include "nebraska.postgresql.fullname" . -}}

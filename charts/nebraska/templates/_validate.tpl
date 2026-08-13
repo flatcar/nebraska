@@ -258,6 +258,41 @@ is ignored; only values that would actually have changed behaviour are reported.
 {{- end -}}
 
 {{/*
+Refuse a data mount that sits above the image's declared VOLUME.
+
+The postgres image declares a VOLUME. If the PVC is mounted at an ANCESTOR of
+that path, the container runtime mounts an empty volume over the top and
+everything the PVC holds underneath becomes invisible inside the container. The
+pod starts, initdb runs into what looks like empty space, and the real data is
+still on the PV where nobody can see it.
+
+docker-library documents this for <=17 ("mount at /var/lib/postgresql/data and
+NOT at /var/lib/postgresql, or data WILL NOT PERSIST"). It is widely assumed to
+be a Docker-only quirk that Kubernetes ignores. It is not -- this was observed
+live on kind, with a Bitnami data directory present on the PV and unreadable
+from inside the pod.
+
+The VOLUME moved in 18 (/var/lib/postgresql/data -> /var/lib/postgresql), so the
+correct mount point depends on the major version. The tag is parsed to pick the
+right one; an unrecognisable tag is left alone rather than guessed at.
+*/}}
+{{- define "nebraska.postgresql.validateMountPath" -}}
+{{- $pg := .Values.postgresql | default dict -}}
+{{- if $pg.enabled -}}
+{{- $mount := $pg.dataMountPath | default "" | toString | trimSuffix "/" -}}
+{{- $tag := (($pg.image | default dict).tag | default "" | toString) -}}
+{{- $major := regexFind "^[0-9]+" $tag -}}
+{{- $vol := "" -}}
+{{- if $major -}}
+{{- $vol = ternary "/var/lib/postgresql" "/var/lib/postgresql/data" (ge (int $major) 18) -}}
+{{- end -}}
+{{- if and $vol $mount (hasPrefix (printf "%s/" $mount) $vol) -}}
+{{- fail (printf "\n\npostgresql.dataMountPath is %q, which is above the VOLUME the image declares (%q\nfor PostgreSQL %s).\n\nMounting the data volume above the image's VOLUME makes the runtime lay an empty\nvolume over the top: the pod starts, PostgreSQL initialises into what looks like\nempty space, and everything already on your PVC becomes invisible from inside the\ncontainer. It is still on the disk, and nothing will tell you.\n\nSet postgresql.dataMountPath to %q (and keep postgresql.dataSubdir as the\nsubdirectory inside it).\n" $mount $vol $major $vol) -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Refuse a Bitnami-family image.
 
 The whole point of 3.0.0 is to stop shipping an image that never gets CVE fixes.
