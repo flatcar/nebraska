@@ -44,9 +44,9 @@ Four independent reasons, any one of which is sufficient:
 1. **Different data directory.** Bitnami stored the cluster at
    `/bitnami/postgresql/data`; the official image uses
    `/var/lib/postgresql/data/pgdata`.
-2. **Different uid.** Bitnami ran as uid 1001. The Alpine-based official image
-   runs as uid 999 (the Alpine variants use 70 instead). Every file in the data
-   directory is owned by the wrong user.
+2. **Different uid.** Bitnami ran as uid 1001. The default official image here
+   (`17-bookworm`, Debian) runs as uid 999; the Alpine variants use 70. Either
+   way every file in the data directory is owned by the wrong user.
 3. **Different C library.** Bitnami images are Debian/glibc, and so is the
    default here (`17-bookworm`, glibc 2.36 — the same version Bitnami shipped),
    so collation is unchanged by the migration. This blocker applies if you
@@ -247,12 +247,12 @@ a `config.database.passwordExistingSecret` pointing at them keeps working.
 * **No `pgaudit`, and no connection logging by default.** Set
   `postgresql.args: [postgres, -c, log_connections=on, -c, log_disconnections=on]`
   if you need an access trail.
-* **Sort order may change.** The Bitnami image collated with Debian glibc; the
-  Alpine image's musl collation is effectively byte order. `ORDER BY` on text
-  columns can return a different order for mixed-case or non-ASCII values. Set
-  `postgresql.image.tag` to a Debian variant such as `17-bookworm` (and
-  `runAsUser`/`runAsGroup`/`fsGroup` to `999`) if you need glibc collation —
-  bookworm carries the same glibc 2.36 as the Bitnami image did.
+* **Sort order is unchanged by default, but watch it if you switch to Alpine.**
+  The default `17-bookworm` carries the same glibc 2.36 as the Bitnami image, so
+  collation — and therefore `ORDER BY` on text and btree index ordering — is
+  identical. Only if you set `postgresql.image.tag` to an Alpine variant does
+  this change: musl collation is effectively byte order, and you must move
+  `runAsUser`/`runAsGroup`/`fsGroup` to `70` at the same time.
 * **Clean shutdowns.** The pod now has a `preStop` hook running
   `pg_ctl -m fast`. Kubernetes sends SIGTERM, which PostgreSQL reads as "smart
   shutdown" and which makes it wait indefinitely for Nebraska's pooled
@@ -263,6 +263,17 @@ a `config.database.passwordExistingSecret` pointing at them keeps working.
   without it), `/tmp` and `/dev/shm`. This stops an attacker tampering with the
   binaries; it does not stop code execution, because those mounts are writable
   and a PostgreSQL superuser has `COPY ... TO PROGRAM` regardless.
+* **The metrics exporter and the volumePermissions init container are gone.**
+  The Bitnami subchart could run a `postgres-exporter` sidecar with a
+  ServiceMonitor and PrometheusRule (`metrics.enabled`), and a root init
+  container that chowned the volume (`volumePermissions.enabled`). Neither is
+  rendered here, and setting either value is refused at render time rather than
+  ignored. The routes: run postgres-exporter as its own Deployment against the
+  PostgreSQL Service and supply it plus any ServiceMonitor through the top-level
+  `extraObjects`; reproduce the chown with `postgresql.extraPodSpec.initContainers`
+  (worked example in `values.yaml`) if your storage ignores `fsGroup`, which is
+  mainly some NFS provisioners. Note both of the images those features used moved
+  to `bitnamilegacy` and no longer pull.
 * **Do not upgrade with `--force-replace`** (Helm 3's `--force`). It deletes and
   recreates the Services, which changes the ClusterIP and breaks every pooled
   connection Nebraska is holding.
@@ -591,7 +602,7 @@ $ kubectl exec -ti pod/nebraska-postgresql-0 -- psql < backup.sql
 | `postgresql.auth.secretKeys.adminPasswordKey`            | Key inside the secret holding the password                                                                    | `postgres-password`    |
 | `postgresql.dataMountPath`                               | Where the data volume is mounted                                                                              | `/var/lib/postgresql/data` |
 | `postgresql.dataSubdir`                                  | Subdirectory of the mount used as `PGDATA` (must not be the mount root)                                       | `pgdata`               |
-| `postgresql.podSecurityContext`                          | Pod security context; uid/gid 999 matches the Debian image (Debian variants use 999)                           | see `values.yaml`      |
+| `postgresql.podSecurityContext`                          | Pod security context; uid/gid 999 matches the default Debian image (use 70 for Alpine tags)                           | see `values.yaml`      |
 | `postgresql.containerSecurityContext`                    | Container security context; `readOnlyRootFilesystem` is on by default                                         | see `values.yaml`      |
 | `postgresql.resources`                                   | Resource requests/limits for the PostgreSQL container                                                         | `250m` / `256Mi` requests |
 | `postgresql.primary.persistence.enabled`                 | Enable persistence using PVC                                                                                  | `false`                |

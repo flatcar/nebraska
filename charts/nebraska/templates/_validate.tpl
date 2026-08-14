@@ -276,6 +276,37 @@ The VOLUME moved in 18 (/var/lib/postgresql/data -> /var/lib/postgresql), so the
 correct mount point depends on the major version. The tag is parsed to pick the
 right one; an unrecognisable tag is left alone rather than guessed at.
 */}}
+{{/*
+=============================================================================
+OPEN QUESTION (D1) -- keep this guard, or drop it? Reviewer's call.
+=============================================================================
+Not a defect; a scope judgement. Everything below is settled fact, the choice
+is not.
+
+WHERE IT CAME FROM. This guard was written after finding E-E, which surfaced in
+the *competing PR's* live run, not on this branch. Scope creep from PR findings
+was pushed back on during review, fairly -- so the guard is open to the charge
+that it does not belong to this migration.
+
+CASE FOR KEEPING. `postgresql.dataMountPath` is a settable value here, and this
+chart's own README tells people to change it when moving to PostgreSQL 18
+(the image's VOLUME moved in 18). So the trap is reachable through a workflow
+this chart documents, not just through a typo. The failure is silent and total:
+the pod comes up healthy and the data is invisible.
+
+CASE FOR DROPPING. It guards a value most users never touch, and it is the only
+place the chart parses an image tag to infer behaviour -- an unrecognisable tag
+is deliberately left alone, so the guard is best-effort by construction.
+
+COST TO REMOVE (self-contained, ~4 edits):
+  1. this define, in this file
+  2. its include at templates/postgresql.yaml:27
+  3. the `postgresql.dataMountPath` note in values.yaml
+  4. the `postgresql.dataMountPath` row in the README parameter table
+Removing it does NOT affect the data-directory migration gate
+(`acknowledgeDataDirMigration`), which is a separate mechanism.
+=============================================================================
+*/}}
 {{- define "nebraska.postgresql.validateMountPath" -}}
 {{- $pg := .Values.postgresql | default dict -}}
 {{- if $pg.enabled -}}

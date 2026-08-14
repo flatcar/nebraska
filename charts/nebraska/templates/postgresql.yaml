@@ -61,6 +61,32 @@ metadata:
            outlive it too, an uninstall/reinstall cycle regenerates the password
            while the old database on the surviving volume still expects the old
            one -- an unrecoverable lockout unless you kept a copy. */}}
+    {{- /*
+    =====================================================================
+    OPEN QUESTION (D2) -- accepted side effect, or worth emitting a
+    compatibility key? Reviewer's call.
+    =====================================================================
+    `resource-policy: keep` is what makes the lockout above impossible, but it
+    has a consequence: the Secret survives `helm uninstall`. If someone then
+    installs chart 2.0.0 over the leftovers, Bitnami's own check aborts with
+
+        PASSWORDS ERROR ... does not contain the key "password"
+
+    because 3.0.0 emits only `postgres-password`, while 2.0.0's subchart also
+    expected a `password` key (a SEPARATE app-user credential in that chart).
+
+    OPTION A (current): document the downgrade path and leave the data honest.
+    OPTION B: also emit a `password` key so the Secret keeps 2.0.0's shape.
+      That makes the downgrade work, but the key would hold the SUPERUSER
+      password under a name that meant "app user" in 2.0.0 -- a value that is
+      wrong about itself, and that anything reading the old key would silently
+      misuse.
+
+    Left at Option A deliberately: fabricating a credential to smooth a
+    downgrade seemed worse than a documented failure with a clear message. This
+    is a judgement about honesty-vs-convenience, so it is yours to overrule.
+    Scope if you pick B: this data block, plus a README note.
+    ===================================================================== */}}
     helm.sh/resource-policy: keep
     {{- with .Values.extraAnnotations }}
     {{- toYaml . | nindent 4 }}

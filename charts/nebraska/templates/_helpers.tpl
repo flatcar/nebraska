@@ -178,6 +178,33 @@ Selector labels for the bundled PostgreSQL StatefulSet.
 subchart emitted. A StatefulSet's spec.selector is immutable, so keeping them
 byte-for-byte lets `helm upgrade` patch the existing StatefulSet in place
 instead of failing outright. Do not change them without a major chart bump.
+
+=============================================================================
+OPEN QUESTION (D5) -- freeze these forever, or normalise now? Reviewer's call.
+=============================================================================
+This is the decision with the longest half-life in the chart, and 3.0.0 is the
+cheap moment to make it.
+
+THE TRADE. Frozen (current): an existing 2.0.0 install upgrades in place,
+because the apiserver accepts the patch. Normalised (e.g.
+`app.kubernetes.io/name: nebraska`, `component: postgresql`): the labels read
+correctly and match the rest of the chart, but `spec.selector` is IMMUTABLE, so
+every existing install fails the upgrade until someone runs
+`kubectl delete statefulset --cascade=orphan` by hand.
+
+WHY NOW. 3.0.0 is already a breaking release with a documented dump/restore
+path for persistent installs. If the labels are ever going to be normalised,
+doing it while users are already being asked to migrate is far cheaper than
+spending a future major on cosmetics alone. Keep them frozen and the chart
+carries a permanently wrong-looking selector -- `name: postgresql` on a chart
+whose name is nebraska -- that can never be corrected without another major.
+
+WHAT IT AFFECTS. Only the bundled StatefulSet's selector and the labels derived
+from it. It does not touch the app Deployment, the Secret contract, or the data
+path. Note the ephemeral-storage default means many installs have nothing to
+lose from a delete/recreate -- but the ones with persistence are exactly the
+ones already handling a dump/restore.
+=============================================================================
 */}}
 {{- define "nebraska.postgresql.selectorLabels" -}}
 app.kubernetes.io/name: postgresql
