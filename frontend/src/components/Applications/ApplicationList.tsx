@@ -1,4 +1,4 @@
-import { List } from '@mui/material';
+import { List, TablePagination } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -20,15 +20,30 @@ export default function ApplicationList() {
     applicationsStore().getCachedApplications ? applicationsStore().getCachedApplications() : []
   );
 
+  const [totalCount, setTotalCount] = React.useState(
+    applicationsStore().getApplicationsTotalCount() || 0
+  );
+
   const onChange = React.useCallback(() => {
     setApplications(applicationsStore().getCachedApplications());
+    setTotalCount(applicationsStore().getApplicationsTotalCount());
   }, []);
+
+  const applicationsQueryParams = applicationsStore().getApplicationsQueryParams();
+
+  function handleChangePage(
+    _event: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
+    newPage: number
+  ) {
+    applicationsStore().setApplicationsQueryParams({ ...applicationsQueryParams, page: newPage });
+  }
 
   React.useEffect(() => {
     // Get initial data in case store already has applications loaded
     const currentApplications = applicationsStore().getCachedApplications();
     if (currentApplications) {
       setApplications(currentApplications);
+      setTotalCount(applicationsStore().getApplicationsTotalCount());
     }
 
     // Set up listener for future changes
@@ -40,12 +55,26 @@ export default function ApplicationList() {
     };
   }, [onChange]);
 
-  return <ApplicationListPure applications={applications} loading={applications === null} />;
+  return (
+    <ApplicationListPure
+      applicationsQueryParams={applicationsQueryParams}
+      handleChangePage={handleChangePage}
+      applications={applications}
+      loading={applications === null}
+      applicationsTotalCount={totalCount}
+    />
+  );
 }
 
 export interface ApplicationListPureProps {
   /** To show. */
   applications: null | Application[];
+
+  applicationsTotalCount?: number;
+
+  applicationsQueryParams?: { perPage: number; page: number };
+
+  handleChangePage?: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void;
   /** If we are waiting for applications to load. */
   loading?: boolean;
   /** If the edit screen is open for editId */
@@ -124,18 +153,36 @@ export function ApplicationListPure(props: ApplicationListPureProps) {
         ]}
       />
       <Paper>
-        <List
-          sx={{
-            '& > hr:first-of-type': {
-              display: 'none',
-            },
-          }}
-        >
-          {entries}
-        </List>
-        {appToUpdate && (
-          <ApplicationEdit data={appToUpdate} show={editOpen} onHide={closeUpdateAppModal} />
-        )}
+        <React.Fragment>
+          <List
+            sx={{
+              '& > hr:first-of-type': {
+                display: 'none',
+              },
+            }}
+          >
+            {entries}
+          </List>
+          {appToUpdate && (
+            <ApplicationEdit data={appToUpdate} show={editOpen} onHide={closeUpdateAppModal} />
+          )}
+          {props.handleChangePage && props.applicationsQueryParams && (
+            <TablePagination
+              rowsPerPageOptions={[]}
+              component="div"
+              count={props.applicationsTotalCount ?? props.applications?.length ?? 0}
+              rowsPerPage={props.applicationsQueryParams.perPage}
+              page={props.applicationsQueryParams.page}
+              backIconButtonProps={{
+                'aria-label': t('frequent|previous_page'),
+              }}
+              nextIconButtonProps={{
+                'aria-label': t('frequent|next_page'),
+              }}
+              onPageChange={props.handleChangePage}
+            />
+          )}
+        </React.Fragment>
       </Paper>
     </>
   );

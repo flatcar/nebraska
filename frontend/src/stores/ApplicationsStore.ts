@@ -7,16 +7,26 @@ import { setUser } from './redux/features/user';
 import store from './redux/store';
 
 type PackageQueryParams = { page: number; perPage: number };
+type ApplicationsQueryParams = { page: number; perPage: number };
 
 class ApplicationsStore extends Store {
   applications: Application[];
+  applicationsTotalCount: number;
   packageQueryParams: PackageQueryParams;
+  applicationsQueryParams: ApplicationsQueryParams;
+
   interval: null | number;
   constructor() {
     super();
     this.applications = [];
+    this.applicationsTotalCount = 0;
     this.interval = null;
     this.packageQueryParams = { page: 0, perPage: 10 };
+    this.applicationsQueryParams = { page: 0, perPage: 10 };
+  }
+
+  getApplicationsTotalCount() {
+    return this.applicationsTotalCount;
   }
 
   // Applications
@@ -25,9 +35,19 @@ class ApplicationsStore extends Store {
     return this.packageQueryParams;
   }
 
+  getApplicationsQueryParams() {
+    return { ...this.applicationsQueryParams };
+  }
+
   setPackageQueryParams(params: PackageQueryParams, applicationID: string) {
     this.packageQueryParams = params;
     this.getAndUpdatePackages(applicationID);
+  }
+
+  setApplicationsQueryParams(params: ApplicationsQueryParams) {
+    this.applicationsQueryParams = params;
+    this.emitChange();
+    this.getApplications();
   }
 
   getCachedApplications() {
@@ -50,15 +70,22 @@ class ApplicationsStore extends Store {
       }, 60 * 1000);
     }
 
-    API.getApplications()
+    const applicationsQueryParams = {
+      perpage: this.applicationsQueryParams.perPage,
+      page: this.applicationsQueryParams.page + 1,
+    };
+
+    API.getApplications(applicationsQueryParams)
       .then(response => {
         this.applications = response.applications;
+        this.applicationsTotalCount = response.totalCount;
         this.emitChange();
       })
       .catch(error => {
         switch (error.status) {
           case 404:
             this.applications = [];
+            this.applicationsTotalCount = 0;
             this.emitChange();
             break;
           case 401:
@@ -103,13 +130,9 @@ class ApplicationsStore extends Store {
     data: Pick<Application, 'name' | 'description' | 'product_id'>,
     clonedApplication: string
   ) {
-    const application = await API.createApplication(data, clonedApplication);
-    const applicationItem = application;
-    if (this.applications) {
-      this.applications.unshift(applicationItem);
-      this.applications = [...this.applications];
-      this.emitChange();
-    }
+    await API.createApplication(data, clonedApplication);
+    this.applicationsQueryParams = { ...this.applicationsQueryParams, page: 0 };
+    this.getApplications();
   }
 
   async updateApplication(applicationID: string, data: any) {
@@ -160,12 +183,15 @@ class ApplicationsStore extends Store {
   }
 
   deleteApplication(applicationID: string) {
-    API.deleteApplication(applicationID).then(() => {
-      this.applications = _.without(
-        this.applications as _.List<any>,
-        _.findWhere(this.applications as _.Collection<any>, { id: applicationID })
-      );
-      this.emitChange();
+    return API.deleteApplication(applicationID).then(() => {
+      const isLastItemOnPage = this.applications.length === 1;
+      if (isLastItemOnPage && this.applicationsQueryParams.page > 0) {
+        this.applicationsQueryParams = {
+          ...this.applicationsQueryParams,
+          page: this.applicationsQueryParams.page - 1,
+        };
+      }
+      this.getApplications();
     });
   }
 
