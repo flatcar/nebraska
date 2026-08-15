@@ -124,7 +124,7 @@ func TestAPIEndpointSecret(t *testing.T) {
 			require.NoError(t, err)
 
 			testConfig.APIEndpointSuffix = tc.secret
-			server, err := server.New(&testConfig, db, adminSvc(db))
+			server, err := server.New(&testConfig, db, adminSvc(db), runtimeSvc(db))
 			assert.NoError(t, err)
 
 			//nolint:errcheck

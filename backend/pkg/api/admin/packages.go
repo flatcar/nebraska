@@ -9,7 +9,7 @@ import (
 	"github.com/jmoiron/sqlx"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/internal/dbreads"
-	"github.com/flatcar/nebraska/backend/pkg/api/internal/types"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
 // checkMatchingArch returns an error if the arch does not match the channels

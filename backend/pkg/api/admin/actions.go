@@ -3,7 +3,7 @@ package admin
 import (
 	"github.com/doug-martin/goqu/v9"
 
-	"github.com/flatcar/nebraska/backend/pkg/api/internal/types"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
 // AddFlatcarAction registers the provided Omaha Flatcar action.

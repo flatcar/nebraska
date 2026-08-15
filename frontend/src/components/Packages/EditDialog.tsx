@@ -36,7 +36,7 @@ const classes = {
   dialog: `${PREFIX}-dialog`,
 };
 
-// Package type constants - must match backend pkg/api/packages.go
+// Package type constants - must match backend pkg/api/types/package.go
 const PACKAGE_TYPE_FLATCAR = 1; // Flatcar Linux OS update package
 const PACKAGE_TYPE_OTHER = 4; // Generic/other package type
 

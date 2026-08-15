@@ -25,6 +25,7 @@ import (
 
 	"github.com/flatcar/nebraska/backend/pkg/api"
 	"github.com/flatcar/nebraska/backend/pkg/api/admin"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/config"
 	"github.com/flatcar/nebraska/backend/pkg/logger"
 	"github.com/flatcar/nebraska/backend/pkg/tlsutil"
@@ -48,7 +49,7 @@ var (
 
 type channelDescriptor struct {
 	name string
-	arch api.Arch
+	arch types.Arch
 }
 
 // Syncer represents a process in charge of checking for updates in the
@@ -338,7 +339,7 @@ func (s *Syncer) processSingleManifestUpdate(descriptor channelDescriptor, updat
 	return nil
 }
 
-func getArchString(arch api.Arch) string {
+func getArchString(arch types.Arch) string {
 	return strings.TrimSuffix(arch.CoreosString(), "-usr")
 }
 
@@ -360,7 +361,7 @@ func (s *Syncer) getOrCreatePackage(
 	descriptor channelDescriptor,
 	manifest *omaha.Manifest,
 	update *omaha.UpdateResponse,
-) (*api.Package, error) {
+) (*types.Package, error) {
 	version := manifest.Version
 
 	// Check if package already exists
@@ -380,7 +381,7 @@ func (s *Syncer) getOrCreatePackage(
 }
 
 // verifyPackageIntegrity verifies that an existing package matches manifest data
-func (s *Syncer) verifyPackageIntegrity(pkg *api.Package, manifest *omaha.Manifest) error {
+func (s *Syncer) verifyPackageIntegrity(pkg *types.Package, manifest *omaha.Manifest) error {
 	if len(manifest.Packages) == 0 {
 		return fmt.Errorf("manifest has no packages")
 	}
@@ -412,7 +413,7 @@ func (s *Syncer) createPackage(
 	descriptor channelDescriptor,
 	manifest *omaha.Manifest,
 	update *omaha.UpdateResponse,
-) (*api.Package, error) {
+) (*types.Package, error) {
 	version := manifest.Version
 	if len(manifest.Packages) == 0 {
 		return nil, fmt.Errorf("manifest %s has no packages", version)
@@ -452,8 +453,8 @@ func (s *Syncer) createPackage(
 	}
 
 	// Build package object
-	pkg := &api.Package{
-		Type:          api.PkgTypeFlatcar,
+	pkg := &types.Package{
+		Type:          types.PkgTypeFlatcar,
 		URL:           url,
 		Version:       version,
 		Filename:      null.StringFrom(filename),
@@ -510,8 +511,8 @@ func (s *Syncer) downloadPackagePayload(
 }
 
 // buildFlatcarAction creates a FlatcarAction from Omaha action data
-func (s *Syncer) buildFlatcarAction(action *omaha.Action) *api.FlatcarAction {
-	return &api.FlatcarAction{
+func (s *Syncer) buildFlatcarAction(action *omaha.Action) *types.FlatcarAction {
+	return &types.FlatcarAction{
 		Event:                 action.Event,
 		ChromeOSVersion:       action.DisplayVersion,
 		Sha256:                action.SHA256,
@@ -528,7 +529,7 @@ func (s *Syncer) buildFlatcarAction(action *omaha.Action) *api.FlatcarAction {
 // updateChannelToPackage updates a channel to point to a specific package
 func (s *Syncer) updateChannelToPackage(
 	descriptor channelDescriptor,
-	pkg *api.Package,
+	pkg *types.Package,
 ) error {
 	channel, err := s.api.GetChannel(s.channelsIDs[descriptor])
 	if err != nil {
@@ -554,7 +555,7 @@ func (s *Syncer) updateChannelToPackage(
 }
 
 // markPackageAsFloor marks a package as a floor for a specific channel
-func (s *Syncer) markPackageAsFloor(descriptor channelDescriptor, pkg *api.Package, manifest *omaha.Manifest) error {
+func (s *Syncer) markPackageAsFloor(descriptor channelDescriptor, pkg *types.Package, manifest *omaha.Manifest) error {
 	if pkg == nil || !manifest.IsFloor {
 		return nil
 	}
@@ -615,7 +616,7 @@ func (s *Syncer) processMultiManifestUpdate(descriptor channelDescriptor, update
 	// Note: targetVersion may remain empty if all manifests are floors (valid scenario)
 	var targetManifest *omaha.Manifest
 	var targetVersion string
-	var targetPkg *api.Package
+	var targetPkg *types.Package
 
 	// Priority 1: Check if any manifest is explicitly marked as target (is_target="true")
 	// This is the preferred way for upstreams to indicate the target version
@@ -702,15 +703,15 @@ func (s *Syncer) processMultiManifestUpdate(descriptor channelDescriptor, update
 
 // processExtraFiles handles extra files (signatures, metadata) from a manifest
 // Returns the extra files array and downloads them if hosting is enabled
-func (s *Syncer) processExtraFiles(manifest *omaha.Manifest, update *omaha.UpdateResponse, descriptor channelDescriptor, version string) ([]api.File, error) {
-	var extraFiles []api.File
+func (s *Syncer) processExtraFiles(manifest *omaha.Manifest, update *omaha.UpdateResponse, descriptor channelDescriptor, version string) ([]types.File, error) {
+	var extraFiles []types.File
 
 	if len(manifest.Packages) > 1 {
-		extraFiles = make([]api.File, len(manifest.Packages)-1)
+		extraFiles = make([]types.File, len(manifest.Packages)-1)
 		for i := 1; i < len(manifest.Packages); i++ {
 			omahaPkg := manifest.Packages[i]
 			size := strconv.FormatUint(omahaPkg.Size, 10)
-			extraFiles[i-1] = api.File{
+			extraFiles[i-1] = types.File{
 				Name:    null.StringFrom(omahaPkg.Name),
 				Size:    null.StringFrom(size),
 				Hash:    null.StringFrom(omahaPkg.SHA1),

@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/codegen"
 )
 
@@ -91,7 +91,7 @@ func TestCreateChannel(t *testing.T) {
 		channelName := "test_channel"
 		payload := strings.NewReader(fmt.Sprintf(`{"name":"%s","arch":0,"color":"","application_id":"%s"}`, channelName, app.ID))
 
-		var channel api.Channel
+		var channel types.Channel
 
 		httpDo(t, url, method, payload, http.StatusOK, "json", &channel)
 
@@ -119,7 +119,7 @@ func TestCreateChannel(t *testing.T) {
 		channelName := "test_channel"
 		payload := strings.NewReader(fmt.Sprintf(`{"name":"%s","arch":0,"color":"","application_id":"%s"}`, channelName, app.ID))
 
-		var channel api.Channel
+		var channel types.Channel
 
 		httpDo(t, url, method, payload, http.StatusOK, "json", &channel)
 
@@ -147,7 +147,7 @@ func TestGetChannel(t *testing.T) {
 		method := "GET"
 
 		// response
-		var channel api.Channel
+		var channel types.Channel
 
 		httpDo(t, url, method, nil, http.StatusOK, "json", &channel)
 
@@ -167,7 +167,7 @@ func TestGetChannel(t *testing.T) {
 		method := "GET"
 
 		// response
-		var channel api.Channel
+		var channel types.Channel
 
 		httpDo(t, url, method, nil, http.StatusOK, "json", &channel)
 
@@ -186,7 +186,7 @@ func TestUpdateChannel(t *testing.T) {
 		app := getRandomApp(t, db)
 
 		// update channel request
-		var channelDB api.Channel
+		var channelDB types.Channel
 		err := copier.Copy(&channelDB, app.Channels[0])
 		require.NoError(t, err)
 
@@ -200,7 +200,7 @@ func TestUpdateChannel(t *testing.T) {
 		method := "PUT"
 
 		// response
-		var channel api.Channel
+		var channel types.Channel
 
 		httpDo(t, url, method, bytes.NewReader(payload), http.StatusOK, "json", &channel)
 		assert.Equal(t, channelName, channel.Name)
@@ -222,7 +222,7 @@ func TestUpdateChannel(t *testing.T) {
 		defer db.Close()
 
 		// update channel request
-		var channelDB api.Channel
+		var channelDB types.Channel
 		err := copier.Copy(&channelDB, app.Channels[0])
 		require.NoError(t, err)
 
@@ -236,7 +236,7 @@ func TestUpdateChannel(t *testing.T) {
 		method := "PUT"
 
 		// response
-		var channel api.Channel
+		var channel types.Channel
 
 		httpDo(t, url, method, bytes.NewReader(payload), http.StatusOK, "json", &channel)
 		assert.Equal(t, channelName, channel.Name)

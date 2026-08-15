@@ -15,7 +15,7 @@ const (
 )
 
 func newForTest(t *testing.T) *API {
-	a, err := NewForTest(OptionInitDB, OptionDisableUpdatesOnFailedRollout)
+	a, err := NewForTest(OptionInitDB)
 
 	require.NoError(t, err)
 	require.NotNil(t, a)
@@ -57,7 +57,7 @@ func TestMigrateDown(t *testing.T) {
 	require.NoError(t, err)
 
 	var migrations []migration
-	rows, err := db.db.Queryx(query)
+	rows, err := db.db().Queryx(query)
 	require.NoError(t, err)
 
 	defer rows.Close()
