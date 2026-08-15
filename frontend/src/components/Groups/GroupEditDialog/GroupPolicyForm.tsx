@@ -117,6 +117,22 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
           </Grid>
         </Grid>
       </Box>
+      <Box mt={1}>
+        <FormControlLabel
+        label={t('groups|unlimited_updates_lower')}
+        control={
+          <Field
+            name="updatesUnlimited"
+            component={Switch}
+            color="primary"
+            checked={values.updatesUnlimited}
+            onChange={(e: any) => {
+              setFieldValue('updatesUnlimited', e.target.checked);
+            }}
+          />
+          }
+        />
+        </Box>
       <Box my={2}>
         <Grid container spacing={2} justifyContent="space-between" alignItems="center" size={12}>
           <Grid size={5}>
@@ -129,7 +145,8 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
                 margin="dense"
                 type="number"
                 fullWidth
-                inputProps={{ min: 0 }}
+                disabled={values.updatesUnlimited}
+                inputProps={{ min: 1 }}
               />
             </Box>
           </Grid>
