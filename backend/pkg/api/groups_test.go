@@ -219,6 +219,62 @@ func TestVersionBreakDownEmpty(t *testing.T) {
 	assert.Len(t, versionBreakdown, 0)
 }
 
+func TestOEMBreakDown(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	as := adminSvc(a)
+	rs := runtimeSvc(a)
+
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&types.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&types.Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+
+	realInstanceID1 := uuid.New().String()
+	realInstanceID2 := uuid.New().String()
+	fakeInstanceID := "{" + uuid.New().String() + "}"
+
+	_, _ = rs.RegisterInstance(types.Instance{ID: realInstanceID1, IP: "10.0.0.1", OEM: "aws"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	_, _ = rs.RegisterInstance(types.Instance{ID: realInstanceID2, IP: "10.0.0.2", OEM: "azure"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	_, _ = rs.RegisterInstance(types.Instance{ID: fakeInstanceID, IP: "10.0.0.3", OEM: "gcp"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+
+	groups, err := a.GetGroups(tApp.ID, 0, 0)
+	assert.NoError(t, err)
+	if assert.Len(t, groups, 1) {
+		g := groups[0]
+		oemBreakdown, err := a.GetGroupOEMBreakdown(g.ID)
+		assert.NoError(t, err)
+		if assert.Len(t, oemBreakdown, 2) {
+			oemNames := []string{oemBreakdown[0].OEM, oemBreakdown[1].OEM}
+			assert.Contains(t, oemNames, "aws")
+			assert.Contains(t, oemNames, "azure")
+		}
+	}
+}
+
+func TestOEMBreakDownEmpty(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	as := adminSvc(a)
+
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&types.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	_, err := as.AddGroup(&types.Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	assert.NoError(t, err)
+
+	groups, err := a.GetGroups(tApp.ID, 0, 0)
+	assert.NoError(t, err)
+	g := groups[0]
+
+	oemBreakdown, err := a.GetGroupOEMBreakdown(g.ID)
+	assert.NoError(t, err)
+	assert.Len(t, oemBreakdown, 0)
+}
+
+
 func TestGroupTrackName(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
