@@ -10,9 +10,11 @@ Every field the Kubernetes StatefulSet controller treats as immutable --
 spec.selector, spec.serviceName, spec.volumeClaimTemplates -- is deliberately
 byte-identical to what the subchart emitted, so `helm upgrade` is ACCEPTED and
 returns 0. The pod restarts, finds no PG_VERSION at the new PGDATA, runs initdb
-into a fresh sibling directory, and comes up as an empty cluster. Nebraska then
-recreates its schema. Every application, group, channel and rollout disappears
-from the user's point of view while the old cluster sits untouched next to it.
+into a fresh sibling directory, and comes up as an empty cluster. Nebraska's
+pod spec is unchanged by the upgrade, so it is NOT restarted and keeps serving
+from stale connections; it recreates its schema on its next restart. Every
+application, group, channel and rollout disappears from the user's point of
+view while the old cluster sits untouched next to it.
 No error is produced anywhere.
 
 Prose in the README does not defend against this: nobody reads a README during
@@ -21,6 +23,14 @@ with the data.
 
 The old cluster is still on the volume, so an accidental upgrade is recoverable
 with `helm rollback` -- that is worth knowing and is in the message.
+
+TODO (F1, deferred): this whole file is migration scaffolding. A release or two
+after 3.0.0, when nobody upgrades straight from 2.0.0 anymore, delete it --
+nothing here emits output on the happy path.
+TODO (F2, deferred): the scan loops in validateUnknownValues could be collapsed
+from six to three. Not before 3.0.0 ships: two validator bugs surfaced in one
+review session and one tidying attempt already broke the chart, so any
+consolidation needs the full mutation suite (42/42) re-run afterwards.
 */}}
 {{- define "nebraska.postgresql.validateDataDirMigration" -}}
 {{- $pg := .Values.postgresql | default dict -}}
@@ -68,7 +78,8 @@ is ignored; only values that would actually have changed behaviour are reported.
      precisely the people the README promises it will work for.
 
      A value is inert when it is empty, false, an empty collection, a feature
-     block that is switched off, or a map whose every member is itself inert. */}}
+     block that is switched off, a map whose every member is itself inert, or
+     a setting sitting at its Bitnami default (e.g. architecture: standalone). */}}
 {{- define "nebraska.postgresql.isInertValue" -}}
 {{- $v := .value -}}
 {{- $k := .key -}}
@@ -174,8 +185,8 @@ is ignored; only values that would actually have changed behaviour are reported.
 {{- end -}}
 
 {{/* Most `primary.*` keys just moved up a level, so derive that message from
-     the known-keys list rather than writing fourteen near-identical table
-     entries by hand. Only keys whose replacement is NOT a simple rename need a
+     the known-keys list rather than writing a near-identical table entry for
+     each by hand. Only keys whose replacement is NOT a simple rename need a
      bespoke message below. `extraEnvVars` is the one rename that changed name
      as well as level, so it is listed explicitly. */}}
 {{- $guidePrimary := dict
@@ -341,5 +352,11 @@ rather than a stale value. Fail with an explanation instead.
 {{- $ref := printf "%s/%s" ($img.registry | default "" | toString) ($img.repository | default "" | toString) -}}
 {{- if regexMatch "bitnami" (lower $ref) -}}
 {{- fail (printf "\n\nThe PostgreSQL image resolves to %q, which is a Bitnami-family image.\n\nChart 3.0.0 runs the official postgres image and configures it accordingly\n(PGDATA layout, uid, env var names). A Bitnami image will not start correctly\nhere, and bitnamilegacy/* is a frozen archive that receives no security updates\n-- which is the reason this chart stopped using it.\n\nRemove the postgresql.image override to use the chart default, or set\npostgresql.enabled=false and run your own database.\n" $ref) -}}
+{{- end -}}
+{{- /* An empty tag with no digest renders `postgres:` -- unpullable, and the
+       appVersion fallback is deliberately disabled for this image (postgres
+       has no 3.x matching the chart's). Fail with a message instead. */ -}}
+{{- if and (not ($img.tag | default "" | toString)) (not ($img.digest | default "" | toString)) -}}
+{{- fail "\n\npostgresql.image.tag is empty and no postgresql.image.digest is set, so the image\nwould render as 'postgres:' with no tag -- unpullable. (The chart's appVersion\nfallback applies to the Nebraska image only; there is no postgres:3.0.0.)\nSet a tag (e.g. 17-bookworm) or a digest.\n" -}}
 {{- end -}}
 {{- end -}}

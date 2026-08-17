@@ -127,8 +127,8 @@ $ kubectl exec -i my-nebraska-postgresql-0 -- \
     env PGPASSWORD="$PGPW" psql -U postgres -d nebraska \
       -v ON_ERROR_STOP=1 --single-transaction < nebraska.sql
 
-# 8. Refresh planner statistics. pg_restore does not do this, and without it the
-#    first queries run against empty stats.
+# 8. Refresh planner statistics. A plain SQL restore does not do this, and
+#    without it the first queries run against empty stats.
 $ kubectl exec -i my-nebraska-postgresql-0 -- \
     env PGPASSWORD="$PGPW" psql -U postgres -d nebraska -c 'ANALYZE'
 
@@ -203,7 +203,7 @@ Two things to know:
 | *(n/a)* | `postgresql.auth.existingSecret` | New: bring your own secret. |
 | *(n/a)* | `postgresql.auth.secretKeys.adminPasswordKey` | New; defaults to the previous key name `postgres-password`. |
 | *(n/a)* | `postgresql.dataMountPath`, `postgresql.dataSubdir` | New; see below. |
-| *(n/a)* | `postgresql.args` | New: arguments for the postgres server. The only way to set start-time settings such as `wal_level` or `log_connections`, which `ALTER SYSTEM` cannot change. |
+| *(n/a)* | `postgresql.args` | New: arguments for the postgres server. The only declarative, first-boot way to set start-time settings such as `wal_level` or `log_connections` (`ALTER SYSTEM` works but needs pod access and a restart). |
 | *(n/a)* | `postgresql.image.digest` | New: pin the image by content rather than by tag. |
 | *(n/a)* | `postgresql.startupProbe`, `postgresql.shmSizeLimit`, `postgresql.extraPodSpec` | New; see `values.yaml`. |
 | *(n/a)* | `postgresql.podSecurityContext`, `postgresql.containerSecurityContext`, `postgresql.resources`, `postgresql.extraEnv`, `postgresql.extraVolumes`, `postgresql.extraVolumeMounts` | New; previously supplied by the subchart under `postgresql.primary.*`. Scheduling fields (`nodeSelector`, `tolerations`, `affinity`, `priorityClassName`) are set through `postgresql.extraPodSpec` rather than one key each. |
@@ -456,7 +456,7 @@ statefulset.apps/nebraska-postgresql scaled
 
 4. Backup and remove the data from the bound volume (depending on the storage class)
 
-3. Upgrade PostgreSQL version, e.g:
+5. Upgrade PostgreSQL version, e.g:
 ```diff
 -    tag: 17-bookworm
 +    tag: 18-bookworm
@@ -475,14 +475,14 @@ statefulset.apps/nebraska-postgresql scaled
    chart refuses the combination rather than letting it happen — but only when
    it can read the major version from the tag.
 
-5. Apply the changes and scale up Nebraska statefulset to its original value
+6. Apply the changes and scale up Nebraska statefulset to its original value
 
-6. Inject the backup and assert that everything looks good in the database:
+7. Inject the backup and assert that everything looks good in the database:
 ```
 $ kubectl exec -ti pod/nebraska-postgresql-0 -- psql < backup.sql
 ```
 
-7. Scale up Nebraska deployment and assert that everything is back to normal
+8. Scale up Nebraska deployment and assert that everything is back to normal
 
 ## Parameters
 
@@ -524,7 +524,7 @@ $ kubectl exec -ti pod/nebraska-postgresql-0 -- psql < backup.sql
 | `ingress.hosts`                         | Hostname(s) for the Ingress resource                                                                                                     | `["flatcar.example.com"]`             |
 | `ingress.ingressClassName`              | Ingress controller which implements the resource. This replaces the deprecated `kubernetes.io/ingress.class` annotation on K8s > 1.19    | `""`                                  |
 | `ingress.tls`                           | Ingress TLS configuration                                                                                                                | `[]`                                  |
-| `ingress.update.enabled`                | Create a separate ingress for the `/v1/update` and `/flatcar` paths, with it's own annotations.                                          | `false`                               |
+| `ingress.update.enabled`                | Create a separate ingress for the `/v1/update` and `/flatcar` paths, with its own annotations.                                           | `false`                               |
 | `ingress.update.annotations`            | Annotations for Ingress resource                                                                                                         | `{}`                                  |
 | `ingress.update.ingressClassName`       | Ingress controller which implements the resource. This replaces the deprecated `kubernetes.io/ingress.class` annotation on K8s > 1.19    | `""`                                  |
 | `resources`                             | CPU/Memory resource requests/limits                                                                                                      | `{}`                                  |
@@ -549,11 +549,11 @@ $ kubectl exec -ti pod/nebraska-postgresql-0 -- psql < backup.sql
 | `config.hostFlatcarPackages.packagesPath`             | Path where Flatcar packages files should be stored                                                                                   | `/mnt/packages`                                                         |
 | `config.hostFlatcarPackages.nebraskaURL`              | Nebraska URL (`http://host:port`)                                                                                                    | `nil` (defaults to first ingress host)                                  |
 | `config.hostFlatcarPackages.persistence.enabled`      | Enable persistence using PVC                                                                                                         | `false`                                                                 |
-| `config.hostFlatcarPackages.persistence.labels        | Additional labels to be applied to the PVC                                |                                                          | `nil`                                                                   |
-| `config.hostFlatcarPackages.persistence.annotations   | Additional annotations to be applied to the PVC                           |                                                          | `nil`                                                                   |
-| `config.hostFlatcarPackages.persistence.storageClass` | PVC Storage Class for PostgreSQL volume                                                                                              | `nil`                                                                   |
-| `config.hostFlatcarPackages.persistence.accessModes`  | PVC Access Mode for PostgreSQL volume                                                                                                | `["ReadWriteOnce"]`                                                     |
-| `config.hostFlatcarPackages.persistence.size`         | PVC Storage Request for PostgreSQL volume                                                                                            | `10Gi`                                                                  |
+| `config.hostFlatcarPackages.persistence.labels`       | Additional labels to be applied to the PVC                                                                                           | `nil`                                                                   |
+| `config.hostFlatcarPackages.persistence.annotations`  | Additional annotations to be applied to the PVC                                                                                      | `nil`                                                                   |
+| `config.hostFlatcarPackages.persistence.storageClass` | PVC Storage Class for the Flatcar packages volume                                                                                    | `nil`                                                                   |
+| `config.hostFlatcarPackages.persistence.accessModes`  | PVC Access Mode for the Flatcar packages volume                                                                                      | `["ReadWriteOnce"]`                                                     |
+| `config.hostFlatcarPackages.persistence.size`         | PVC Storage Request for the Flatcar packages volume                                                                                  | `10Gi`                                                                  |
 | `config.caFile`                                       | Path to a PEM-encoded CA certificate file to trust for TLS verification (additive to system CAs, used for OIDC and syncer) | `nil`  |
 | `config.auth.mode`                                    | Authentication mode, available modes: `noop`, `github`, `oidc`                                                                               | `noop`                                                                  |
 | `config.auth.github.clientID`                         | GitHub client ID used for authentication                                                                                             | `nil`                                                                   |
@@ -583,19 +583,19 @@ $ kubectl exec -ti pod/nebraska-postgresql-0 -- psql < backup.sql
 | `config.database.username`                            | PostgreSQL user                                                                                                                      | `{{ .Values.postgresql.auth.username }}` (evaluated as a template)                                    |
 | `config.database.password`                            | PostgreSQL user password                                                                                                             | `""` (evaluated as a template)                                          |
 | `config.database.passwordExistingSecret.enabled`      | Enables setting PostgreSQL user password via an existing secret                                                                      | `true`                                                                  |
-| `config.database.passwordExistingSecret.name`         | Name of the existing secret                                                                                                          | `{{ .Release.Name }}-postgresql` (evaluated as a template)              |
+| `config.database.passwordExistingSecret.name`         | Name of the existing secret                                                                                                          | `{{ include "nebraska.postgresql.secretName" . }}` (follows `existingSecret`/name overrides) |
 | `config.database.passwordExistingSecret.key`          | Key inside the existing secret containing the PostgreSQL user password                                                               | `postgres-password`                                                     |
 | `extraArgs`                                           | Extra arguments to pass to Nebraska binary                                                                                           | `[]`                                                                    |
 | `extraEnvVars`                                        | Any extra environment variables you would like to pass on to the pod                                                                 | `{ "TZ": "UTC" }`                                                       |
 | `extraEnv`                                        | Any extra environment variables in the form of env spec to pass into the deployment pod                                                                 | `[]`                                                       |
 
-### Postgresql dependency
+### Bundled PostgreSQL parameters
 
 | Parameter                                                | Description                                                                                                   | Default                |
 |----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|------------------------|
 | `postgresql.enabled`                                     | Deploy the PostgreSQL StatefulSet bundled with this chart                                                     | `true`                 |
 | `postgresql.auth.database`                               | PostgreSQL database                                                                                           | `nebraska`             |
-| `postgresql.auth.postgresPassword`                       | PostgreSQL password of user "postgres" **Recommended to change it to something secure for security reasons.** | `""` (a random password is generated on first install)             |
+| `postgresql.auth.postgresPassword`                       | PostgreSQL password of user "postgres" | `""` (a random password is generated on first install)             |
 | `postgresql.image.repository`                             | PostgreSQL image repository                                                                                   | `postgres`             |
 | `postgresql.image.tag`                                   | PostgreSQL Image tag                                                                                          | `17-bookworm`            |
 | `postgresql.auth.existingSecret`                         | Use an existing secret for the password instead of rendering one (evaluated as a template)                    | `""`                   |

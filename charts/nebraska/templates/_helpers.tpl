@@ -141,9 +141,9 @@ The base name is truncated to 60 before the suffix is appended, so the result is
 both <=63 characters and distinct from the main Service.
 
 Appending "-hl" to an already-63-character name and then truncating gives back
-the main Service's name -- three Services rendered with one name, which the
-apiserver rejects. Truncating after appending instead gives 66 characters, which
-it also rejects. The Bitnami subchart had the same collision, so a release name
+the main Service's name -- both Services rendered with one name, which the
+apiserver rejects. Appending without truncating instead gives 66 characters,
+which it also rejects. The Bitnami subchart had the same collision, so a release name
 around 53 characters could never install on either chart; there is no working
 deployment to stay compatible with, and this is strictly better than reproducing
 the bug faithfully.
@@ -258,8 +258,9 @@ http{{ if $.Values.ingress.tls }}s{{ end }}
 {{- end -}}
 
 {{/*
-Return the proper image name
-This allows usage of global overrides for the image registry in a similar way the postgresql subchart does.
+Return the proper image name.
+This honours global overrides for the image registry the same way the former
+postgresql subchart did.
 */}}
 {{- define "nebraska.image" -}}
 {{- $registryName := .imageRoot.registry -}}

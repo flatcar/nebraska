@@ -19,9 +19,10 @@
                 these are needed for the migration; they are called out
                 individually and can be dropped without affecting it.
 */ -}}
-{{- /* [GUARD] Runs unconditionally: stale Bitnami values must be reported even
-       when postgresql.enabled is false, since that is exactly when nobody would
-       notice them being ignored. */ -}}
+{{- /* [GUARD] These two run unconditionally: stale Bitnami values must be
+       reported even when postgresql.enabled is false, since that is exactly
+       when nobody would notice them being ignored. (validateMountPath and
+       validateDataDirMigration below are gated on postgresql.enabled.) */ -}}
 {{- include "nebraska.postgresql.validateUnknownValues" . -}}
 {{- include "nebraska.postgresql.validateImage" . -}}
 {{- include "nebraska.postgresql.validateMountPath" . -}}
@@ -86,6 +87,9 @@ metadata:
     downgrade seemed worse than a documented failure with a clear message. This
     is a judgement about honesty-vs-convenience, so it is yours to overrule.
     Scope if you pick B: this data block, plus a README note.
+    FOLLOW-UP still open under A: the README downgrade/uninstall note itself
+    has not been written yet -- the "documented failure" currently lives only
+    in this comment.
     ===================================================================== */}}
     helm.sh/resource-policy: keep
     {{- with .Values.extraAnnotations }}
@@ -196,11 +200,14 @@ spec:
           {{- /* [PARITY] Replaces the subchart's primary.configuration /
                  extendedConfiguration / existingConfigmap, which were the only
                  ways to set server options and all disappeared with it.
-                 The only way to set a postmaster start-time GUC. ALTER SYSTEM
-                 cannot set wal_level, and the image has no env var for it, so
-                 without this the database can never do logical replication, TLS,
-                 or connection logging. The entrypoint dispatches on $1 ==
-                 "postgres", so the first element must be "postgres". */}}
+                 This is the only declarative, first-boot way to set a
+                 postmaster start-time GUC (ALTER SYSTEM works but needs
+                 superuser access plus a restart, and its postgresql.auto.conf
+                 dies with the volume when persistence is off), and the image
+                 has no env var for it, so without this there is no managed
+                 route to logical replication, TLS, or connection logging.
+                 The entrypoint dispatches on $1 == "postgres", so the first
+                 element must be "postgres". */}}
           {{- with .Values.postgresql.args }}
           args:
             {{- toYaml . | nindent 12 }}
@@ -237,7 +244,7 @@ spec:
                  pre-existing bug: chart 2.0.0 had the same problem with the
                  Bitnami image and no preStop hook. Dropping this block does not
                  affect the migration; it only restores the old
-                 90-second-then-SIGKILL shutdown behaviour. */}}
+                 wait-then-SIGKILL shutdown behaviour. */}}
           # Kubernetes sends SIGTERM on pod termination. Whether the image's
           # `STOPSIGNAL SIGINT` is honoured is runtime-dependent -- containerd
           # and CRI-O do respect it, but it is not guaranteed by the Kubernetes
@@ -247,8 +254,9 @@ spec:
           # 25 connections that do not close on their own, so the pod would sit
           # until terminationGracePeriodSeconds expires and then be SIGKILLed,
           # leaving the cluster to do crash recovery on the next start. `-m fast`
-          # rolls back open transactions and shuts down cleanly in well under a
-          # second, on every runtime.
+          # rolls back open transactions and shuts down cleanly -- quickly for a
+          # database of this size; a big shared_buffers flush can need longer,
+          # which is what terminationGracePeriodSeconds bounds.
           lifecycle:
             preStop:
               exec:
@@ -268,11 +276,12 @@ spec:
                          crash recovery. terminationGracePeriodSeconds is what
                          gives it room to finish. */}}
                   - exec pg_ctl -D "$PGDATA" -m fast -W stop
-          {{- /* [EXTRA -- not required by the migration] Chart 2.0.0 shipped the
-                 same liveness/readiness numbers and no startupProbe, so this is
-                 a pre-existing hazard rather than one the migration introduced.
-                 Fixed here because a first-time initdb is exactly what every
-                 migrated install is about to do.
+          {{- /* [EXTRA -- not required by the migration] Chart 2.0.0 shipped
+                 these probe numbers plus a liveness initialDelaySeconds: 30
+                 (dropped here -- the startupProbe covers the delay), and no
+                 startupProbe, so this is a pre-existing hazard rather than one
+                 the migration introduced. Fixed here because a first-time
+                 initdb is exactly what every migrated install is about to do.
 
                  First start has to cover a recursive fsGroup chown of the whole
                  volume, an fsync-heavy initdb, and the entrypoint's socket-only

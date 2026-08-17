@@ -225,7 +225,6 @@ spec:
               value: {{ $value | quote }}
             {{- end }}
             {{- if .Values.extraEnv }}
-            # Extra environment variables
             {{- toYaml .Values.extraEnv | nindent 12 }}
             {{- end }}
           {{- if .Values.config.hostFlatcarPackages.enabled }}

@@ -33,7 +33,7 @@ NOTE ON THE BUNDLED POSTGRESQL
 {{- if and .Values.postgresql.enabled (eq (.Values.postgresql.auth.postgresPassword | toString) "changeIt") (not .Values.postgresql.auth.existingSecret) }}
 WARNING: the PostgreSQL superuser password is set to "changeIt", the fixed
          default that chart 2.0.0 shipped. 3.0.0 generates a random one instead,
-         so this value can only have come from a carried-over values file.
+         so this almost certainly came from a carried-over values file.
 
   Anything on the pod network that knows this default has full control of the
   database, including command execution inside its container. There is no
@@ -42,7 +42,7 @@ WARNING: the PostgreSQL superuser password is set to "changeIt", the fixed
   Set postgresql.auth.postgresPassword, or point postgresql.auth.existingSecret
   at a secret you manage.
 {{ end -}}
-1. Get the application URL by running these commands:
+Get the application URL by running these commands:
 {{- if .Values.ingress.enabled }}
 {{- range .Values.ingress.hosts }}
   http{{ if $.Values.ingress.tls }}s{{ end }}://{{ . }}
@@ -53,7 +53,7 @@ WARNING: the PostgreSQL superuser password is set to "changeIt", the fixed
   echo http://$NODE_IP:$NODE_PORT
 {{- else if contains "LoadBalancer" .Values.service.type }}
      NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "nebraska.fullname" . }}'
+           You can watch its status by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "nebraska.fullname" . }}'
   export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "nebraska.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
   echo http://$SERVICE_IP:{{ .Values.service.port }}
 {{- else if contains "ClusterIP" .Values.service.type }}

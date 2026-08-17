@@ -158,7 +158,7 @@ ingress:
   ingressClassName: ""
   update:
     # Create a separate ingress for the /v1/update and /flatcar paths,
-    # with it's own annotations.
+    # with its own annotations.
     enabled: false
     annotations: {}
     ingressClassName: ""
@@ -212,12 +212,19 @@ extraAnnotations: {}
 # `postgresql.enabled: false` and point `config.database.*` at a database you
 # operate, or at an operator such as CloudNativePG.
 #
+# OPEN QUESTION (D4 -- reviewer's call): if CloudNativePG is the intended HA /
+# distributed substrate, this pointer should become a worked
+# Publication/Subscription recipe. OPEN QUESTION (D3): whether this StatefulSet
+# is ever an RFC #1375 logical-replication node -- if so, the ephemeral default
+# below (persistence.enabled: false) is wrong, since pod loss destroys
+# replication slots. Both are currently documented as "not for distributed use".
 # HOW THE KEYS WERE CHOSEN. Names that existed in 2.0.0 keep their meaning
 # (`enabled`, `auth.*`, `image.*`, `primary.persistence.*`, `serviceAccount.*`,
 # `nameOverride`), so most values files keep working. Keys that lived under
 # `primary.*` purely because the subchart was a separate chart moved up to
-# `postgresql.*`. Anything this chart does not read is reported at render time
-# rather than ignored -- see templates/_validate.tpl for why.
+# `postgresql.*`. Anything this chart does not read that would have changed
+# behaviour is reported at render time rather than ignored -- values left at
+# inert Bitnami defaults are accepted silently; see templates/_validate.tpl.
 postgresql:
   enabled: true
 
@@ -228,10 +235,10 @@ postgresql:
   # See "Upgrading to 3.0.0" in the README. Ignored when persistence is disabled.
   acknowledgeDataDirMigration: false
 
-  # Overrides the "postgresql" component name used for the Service, Secret,
-  # ServiceAccount and StatefulSet (`<release>-<nameOverride>`). As in the
-  # Bitnami subchart, the suffix is skipped when the release name already
-  # contains this value.
+  # Overrides the "postgresql" component name used for the Services (main and
+  # headless), Secret, ServiceAccount and StatefulSet (`<release>-<nameOverride>`).
+  # As in the Bitnami subchart, the suffix is skipped when the release name
+  # already contains this value.
   nameOverride: ""
   # Replaces the generated name outright.
   fullnameOverride: ""
@@ -369,7 +376,8 @@ postgresql:
         - ALL
 
   # [EXTRA -- not required by the migration] Supports the preStop hook, which
-  # fixes a pre-existing unclean-shutdown bug. 2.0.0 used 60 with no hook.
+  # fixes a pre-existing unclean-shutdown bug. 2.0.0 set nothing, so pods got
+  # the Kubernetes default of 30, with no hook.
   #
   # The hook signals a fast shutdown and returns immediately; this budget is what
   # PostgreSQL then has to finish flushing before the kubelet sends SIGKILL. A
@@ -380,8 +388,10 @@ postgresql:
 
   # [PARITY] Replaces the subchart's primary.configuration / existingConfigmap.
   # Extra arguments for the postgres server. The first element must be
-  # "postgres" -- the image entrypoint dispatches on it. This is the only way to
-  # set start-time GUCs, which ALTER SYSTEM cannot change. For example:
+  # "postgres" -- the image entrypoint dispatches on it. This is the only
+  # declarative, first-boot way to set start-time GUCs (ALTER SYSTEM works, but
+  # needs superuser access plus a manual restart, and its postgresql.auto.conf
+  # is lost with the volume when persistence is off). For example:
   #   args:
   #     - postgres
   #     - "-c"

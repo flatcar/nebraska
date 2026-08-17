@@ -2,7 +2,7 @@ apiVersion: v2
 name: nebraska
 description: Nebraska is an update manager for Flatcar Container Linux.
 type: application
-home: https://github.com/flatcar/nebraska/tree/main/deploy/helm
+home: https://github.com/flatcar/nebraska/tree/main/charts/nebraska
 icon: https://raw.githubusercontent.com/flatcar/nebraska/main/docs/nebraska-logo.svg
 keywords:
   - nebraska
@@ -40,8 +40,8 @@ appVersion: "3.0.0"
 #     work: the Bitnami templates set POSTGRESQL_* env vars, mount /bitnami, and
 #     run a Bitnami-specific entrypoint.
 #   - Adopt a maintained third-party postgres subchart (CloudPirates is the one
-#     the ecosystem converged on). Viable, and roughly half of comparable
-#     projects did this. Rejected here to avoid trading one external chart
+#     the ecosystem converged on; Superset, docker-selenium and Opik all moved
+#     to it). Rejected here to avoid trading one external chart
 #     dependency for another for what is only a convenience database.
 #   - Require an operator such as CloudNativePG. Rejected as a default: it needs
 #     cluster-scoped CRDs installed before this chart can render at all. It
