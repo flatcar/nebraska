@@ -5,7 +5,7 @@
   This file renders the same five objects the subchart did, under the same
   names: ServiceAccount, Secret, Service, headless Service, StatefulSet.
   Names, labels and the `postgres-password` secret key are deliberately
-  byte-identical to the subchart's output so that existing releases, external
+  kept exactly the same as the subchart's output, so that existing releases, external
   secret managers and `config.database.passwordExistingSecret` keep working.
 
   Scope of each block is marked so a reviewer can tell what the migration
@@ -19,10 +19,12 @@
                 these are needed for the migration; they are called out
                 individually and can be dropped without affecting it.
 */ -}}
-{{- /* [GUARD] These two run unconditionally: stale Bitnami values must be
-       reported even when postgresql.enabled is false, since that is exactly
-       when nobody would notice them being ignored. (validateMountPath and
-       validateDataDirMigration below are gated on postgresql.enabled.) */ -}}
+{{- /* [GUARD] validateUnknownValues runs unconditionally: stale Bitnami values
+       must be reported even when postgresql.enabled is false, since that is
+       exactly when nobody would notice them being ignored. validateImage,
+       validateMountPath and validateDataDirMigration are gated on
+       postgresql.enabled, they guard things that only exist when the
+       bundled database runs. */ -}}
 {{- include "nebraska.postgresql.validateUnknownValues" . -}}
 {{- include "nebraska.postgresql.validateImage" . -}}
 {{- include "nebraska.postgresql.validateMountPath" . -}}
@@ -54,43 +56,34 @@ metadata:
     {{- toYaml . | nindent 4 }}
     {{- end }}
   annotations:
-    {{- /* [EXTRA -- not required by the migration] Pre-existing footgun, but
+    {{- /* [EXTRA, not required by the migration] This was already a problem before, but
            the migration makes an uninstall/reinstall cycle much more likely, so
            it is fixed here. The PVC outlives the release (the StatefulSet
            controller owns it, and
            StatefulSet deletion does not cascade to PVCs). If the Secret does not
            outlive it too, an uninstall/reinstall cycle regenerates the password
            while the old database on the surviving volume still expects the old
-           one -- an unrecoverable lockout unless you kept a copy. */}}
-    {{- /*
-    =====================================================================
-    OPEN QUESTION (D2) -- accepted side effect, or worth emitting a
-    compatibility key? Reviewer's call.
-    =====================================================================
-    `resource-policy: keep` is what makes the lockout above impossible, but it
-    has a consequence: the Secret survives `helm uninstall`. If someone then
-    installs chart 2.0.0 over the leftovers, Bitnami's own check aborts with
+           one. Then nobody can log in any more, unless you kept a copy of the old
+           password.
 
-        PASSWORDS ERROR ... does not contain the key "password"
+           Consequence to be aware of: the Secret therefore survives
+           `helm uninstall`. Installing chart 2.0.0 over the leftovers aborts in
+           Bitnami's own check with
 
-    because 3.0.0 emits only `postgres-password`, while 2.0.0's subchart also
-    expected a `password` key (a SEPARATE app-user credential in that chart).
+               PASSWORDS ERROR ... does not contain the key "password"
 
-    OPTION A (current): document the downgrade path and leave the data honest.
-    OPTION B: also emit a `password` key so the Secret keeps 2.0.0's shape.
-      That makes the downgrade work, but the key would hold the SUPERUSER
-      password under a name that meant "app user" in 2.0.0 -- a value that is
-      wrong about itself, and that anything reading the old key would silently
-      misuse.
+           because 3.0.0 emits only `postgres-password`, while 2.0.0's subchart
+           also expected a `password` key (a SEPARATE app-user credential in
+           that chart).
 
-    Left at Option A deliberately: fabricating a credential to smooth a
-    downgrade seemed worse than a documented failure with a clear message. This
-    is a judgement about honesty-vs-convenience, so it is yours to overrule.
-    Scope if you pick B: this data block, plus a README note.
-    FOLLOW-UP still open under A: the README downgrade/uninstall note itself
-    has not been written yet -- the "documented failure" currently lives only
-    in this comment.
-    ===================================================================== */}}
+           We decided to accept that downgrade failure instead of writing a fake key.
+           The alternative was to also emit a `password` key so the Secret keeps
+           2.0.0's shape, which would make the downgrade work, but that key
+           would hold the SUPERUSER password under a name that meant "app user"
+           in 2.0.0. A value that is wrong about itself, and that anything
+           reading the old key would silently misuse, is worse than a documented
+           failure with a clear message. If we ever change our mind about this, the
+           scope is this data block plus a README note. */}}
     helm.sh/resource-policy: keep
     {{- with .Values.extraAnnotations }}
     {{- toYaml . | nindent 4 }}
@@ -111,7 +104,7 @@ data:
 
          lookup returns empty during `helm template` and `--dry-run`, so a
          rendered manifest shows a fresh random value each time. That is fine for
-         real installs but shows as drift under GitOps -- those users should set
+         real installs but shows as drift under GitOps, those users should set
          postgresql.auth.existingSecret. */}}
   {{- $key := .Values.postgresql.auth.secretKeys.adminPasswordKey }}
   {{- $existing := (lookup "v1" "Secret" .Release.Namespace $pgName) | default dict }}
@@ -167,7 +160,7 @@ spec:
   {{- /* [MIGRATION] Hardcoded, not a value. A second replica would mount the same
          single PVC and run a second postmaster over one data directory, which
          corrupts it. PostgreSQL replicas are a different StatefulSet with their own
-         volumes and a replication protocol, not `replicas: 2` -- and Nebraska has no
+         volumes and a replication protocol, not `replicas: 2`, and Nebraska has no
          read/write split to use them anyway. See _validate.tpl for the guidance
          given to anyone who sets postgresql.architecture. */}}
   replicas: 1
@@ -185,9 +178,20 @@ spec:
       serviceAccountName: {{ include "nebraska.postgresql.serviceAccountName" . }}
       automountServiceAccountToken: {{ .Values.postgresql.serviceAccount.automountServiceAccountToken }}
       terminationGracePeriodSeconds: {{ .Values.postgresql.terminationGracePeriodSeconds }}
+      {{- /* [PARITY] The subchart took pullSecrets as BARE STRINGS
+             (`pullSecrets: [regcred]`) and converted them to
+             LocalObjectReference itself. Emitting them with toYaml produced
+             `- regcred`, which the apiserver rejects. Accept both the old
+             string form and the object form used elsewhere in this chart. */}}
       {{- with .Values.postgresql.image.pullSecrets }}
       imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+        {{- range . }}
+        {{- if kindIs "string" . }}
+        - name: {{ . }}
+        {{- else }}
+        - name: {{ .name }}
+        {{- end }}
+        {{- end }}
       {{- end }}
       securityContext:
         {{- toYaml .Values.postgresql.podSecurityContext | nindent 8 }}
@@ -240,13 +244,13 @@ spec:
             - name: tcp-postgresql
               containerPort: {{ $pgPort }}
               protocol: TCP
-          {{- /* [EXTRA -- not required by the migration] This fixes a
+          {{- /* [EXTRA, not required by the migration] This fixes a
                  pre-existing bug: chart 2.0.0 had the same problem with the
                  Bitnami image and no preStop hook. Dropping this block does not
                  affect the migration; it only restores the old
                  wait-then-SIGKILL shutdown behaviour. */}}
           # Kubernetes sends SIGTERM on pod termination. Whether the image's
-          # `STOPSIGNAL SIGINT` is honoured is runtime-dependent -- containerd
+          # `STOPSIGNAL SIGINT` is honoured is runtime-dependent, containerd
           # and CRI-O do respect it, but it is not guaranteed by the Kubernetes
           # API, so a chart cannot rely on it. If SIGTERM does reach PostgreSQL
           # it means "smart shutdown": refuse new connections but wait
@@ -254,7 +258,7 @@ spec:
           # 25 connections that do not close on their own, so the pod would sit
           # until terminationGracePeriodSeconds expires and then be SIGKILLed,
           # leaving the cluster to do crash recovery on the next start. `-m fast`
-          # rolls back open transactions and shuts down cleanly -- quickly for a
+          # rolls back open transactions and shuts down cleanly, quickly for a
           # database of this size; a big shared_buffers flush can need longer,
           # which is what terminationGracePeriodSeconds bounds.
           lifecycle:
@@ -265,7 +269,7 @@ spec:
                   - -c
                   {{- /* -W, not the absence of -w. Waiting is `pg_ctl stop`'s
                          DEFAULT ("-w, --wait ... (default)"), so dropping -w
-                         changes nothing -- opting out requires -W explicitly.
+                         changes nothing, opting out requires -W explicitly.
                          That matters because the postmaster is PID 1: the moment
                          it exits, the runtime tears down the sandbox and SIGKILLs
                          a still-waiting hook. It exits 137 and the kubelet
@@ -276,16 +280,16 @@ spec:
                          crash recovery. terminationGracePeriodSeconds is what
                          gives it room to finish. */}}
                   - exec pg_ctl -D "$PGDATA" -m fast -W stop
-          {{- /* [EXTRA -- not required by the migration] Chart 2.0.0 shipped
+          {{- /* [EXTRA, not required by the migration] Chart 2.0.0 shipped
                  these probe numbers plus a liveness initialDelaySeconds: 30
-                 (dropped here -- the startupProbe covers the delay), and no
+                 (dropped here, the startupProbe covers the delay), and no
                  startupProbe, so this is a pre-existing hazard rather than one
                  the migration introduced. Fixed here because a first-time
                  initdb is exactly what every migrated install is about to do.
 
                  First start has to cover a recursive fsGroup chown of the whole
                  volume, an fsync-heavy initdb, and the entrypoint's socket-only
-                 temporary server -- during which pg_isready on 127.0.0.1 cannot
+                 temporary server, during which pg_isready on 127.0.0.1 cannot
                  succeed. Without a startupProbe the liveness budget was ~80s; if
                  it fired mid-initdb the data directory was left non-empty without
                  PG_VERSION, which initdb then refuses forever: a permanent
@@ -315,14 +319,14 @@ spec:
                    the unix socket and its lock file land there. (postmaster.pid is
                    always inside PGDATA, not here.) Without a writable mount the
                    server cannot create its socket and does not start at all, so this
-                   is mandatory whenever readOnlyRootFilesystem is true -- and it is
+                   is mandatory whenever readOnlyRootFilesystem is true, and it is
                    also what makes `kubectl exec ... pg_dump` over the socket work. */}}
             - name: run
               mountPath: /var/run/postgresql
             {{- /* [MIGRATION] Only strictly required by the entrypoint's nss_wrapper path, which
-                   runs mktemp when the effective uid is absent from /etc/passwd -- i.e.
-                   if podSecurityContext.runAsUser is overridden away from the image's
-                   own postgres uid. Cheap insurance, so it is always mounted. */}}
+                   runs mktemp when the effective uid is not in /etc/passwd. That happens
+                   when podSecurityContext.runAsUser is set to something other than
+                   the image's own postgres uid. Cheap insurance, so it is always mounted. */}}
             - name: tmp
               mountPath: /tmp
             {{- /* [PARITY] The subchart mounted this too (shmVolume, default on).
@@ -338,12 +342,12 @@ spec:
              Chart 2.0.0 documented ten postgresql.* parameters. Everything else
              the Bitnami subchart accepted was reachable but never offered,
              tested or supported by Nebraska, so re-implementing it here would be
-             inventing a contract rather than preserving one.
+             promising something new instead of keeping what was already there.
 
              Merged into the pod spec, so it covers the cases that do come up --
              an initContainer to chown the volume where fsGroup is ignored,
              priorityClassName, schedulerName, hostAliases,
-             topologySpreadConstraints -- without a value per field.
+             topologySpreadConstraints, without a value per field.
 
              Do not set `containers` here: it would emit a second containers key
              alongside the chart's own. Anything needing a sidecar wants a real

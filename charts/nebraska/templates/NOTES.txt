@@ -6,15 +6,15 @@ NOTE ON THE BUNDLED POSTGRESQL
   {{ .Values.postgresql.dataMountPath }}/{{ .Values.postgresql.dataSubdir }}.
 
   If you have just upgraded from chart 2.0.0, that path is NOT where the Bitnami
-  subchart kept its data. Check that your data is really there -- first that the
+  subchart kept its data. Check that your data is really there, first that the
   schema exists at all, then that it has rows:
 
-    kubectl exec -n {{ .Release.Namespace }} {{ include "nebraska.postgresql.fullname" . }}-0 -- \
+    kubectl exec -n {{ .Release.Namespace }} {{ include "nebraska.postgresql.fullname" . }}-0, \
       psql -U {{ .Values.postgresql.auth.username }} -d {{ .Values.postgresql.auth.database }} \
       -tAc "select to_regclass('public.application')"
     # empty output = no schema at all = PostgreSQL started a FRESH cluster
 
-    kubectl exec -n {{ .Release.Namespace }} {{ include "nebraska.postgresql.fullname" . }}-0 -- \
+    kubectl exec -n {{ .Release.Namespace }} {{ include "nebraska.postgresql.fullname" . }}-0, \
       psql -U {{ .Values.postgresql.auth.username }} -d {{ .Values.postgresql.auth.database }} \
       -tAc "select count(*) from application"
     # run only if the first command printed a name
@@ -26,9 +26,11 @@ NOTE ON THE BUNDLED POSTGRESQL
     kubectl rollout undo is NOT the fix. Run:  helm rollback {{ .Release.Name }}
     Do this BEFORE deleting any PVC or PersistentVolume. It is recoverable.
 
-  Note the Nebraska pod is not restarted by this upgrade (its spec is unchanged),
-  so it keeps serving from its existing connections and will report errors rather
-  than an obviously empty UI. Do not treat a Ready pod as confirmation.
+  Note the Nebraska pod IS restarted by this upgrade (chart 3.0.0 carries a
+  pod-template annotation for exactly this reason), so it re-runs its schema
+  migrations against whatever database it now points at. Its liveness probe does
+  not touch the database either way, so do not treat a Ready pod as confirmation
+ , run the two commands above.
 {{ end -}}
 {{- if and .Values.postgresql.enabled (eq (.Values.postgresql.auth.postgresPassword | toString) "changeIt") (not .Values.postgresql.auth.existingSecret) }}
 WARNING: the PostgreSQL superuser password is set to "changeIt", the fixed

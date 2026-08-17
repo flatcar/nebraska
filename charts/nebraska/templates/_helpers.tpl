@@ -133,23 +133,31 @@ Bitnami subchart did, so an existing install pinning one keeps working.
 {{/*
 Name of the headless Service backing the StatefulSet.
 
-[EXTRA -- not required by the migration] A pre-existing bug that the Bitnami
-subchart had too; fixed rather than faithfully reproduced, because no working
-install can exist to stay compatible with.
+[EXTRA, not required by the migration] A pre-existing bug that the Bitnami
+subchart had too, handled with exact parity wherever a working install can exist.
 
-The base name is truncated to 60 before the suffix is appended, so the result is
-both <=63 characters and distinct from the main Service.
+The subchart computed `printf "%s-hl" fullname | trunc 63 | trimSuffix "-"`.
+At release-name length 50 the fullname is 61 chars, so that yields
+`<fullname>-h`, distinct from the main Service, a working install, and an
+immutable `spec.serviceName` that this chart has to reproduce exactly. So the
+Bitnami expression is used verbatim whenever its result differs from the main
+Service name.
 
-Appending "-hl" to an already-63-character name and then truncating gives back
-the main Service's name -- both Services rendered with one name, which the
-apiserver rejects. Appending without truncating instead gives 66 characters,
-which it also rejects. The Bitnami subchart had the same collision, so a release name
-around 53 characters could never install on either chart; there is no working
-deployment to stay compatible with, and this is strictly better than reproducing
-the bug faithfully.
+At lengths 51-52 the truncation drops the whole "-hl" (and trimSuffix drops
+the dangling "-"), so the headless name COLLIDES with the main Service name and
+the apiserver rejects the release: no working install can exist to stay
+compatible with there. Only for that case the base is truncated to 60 before
+appending, which is guaranteed distinct and <=63. (Appending without truncating
+would give 66 characters, equally rejected.)
 */}}
 {{- define "nebraska.postgresql.headlessName" -}}
-{{- printf "%s-hl" (include "nebraska.postgresql.fullname" . | trunc 60 | trimSuffix "-") -}}
+{{- $fullname := include "nebraska.postgresql.fullname" . -}}
+{{- $bitnami := printf "%s-hl" $fullname | trunc 63 | trimSuffix "-" -}}
+{{- if ne $bitnami $fullname -}}
+{{- $bitnami -}}
+{{- else -}}
+{{- printf "%s-hl" ($fullname | trunc 60 | trimSuffix "-") -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -174,40 +182,36 @@ storageClassName: {{ $sc | quote }}
 {{/*
 Selector labels for the bundled PostgreSQL StatefulSet.
 
-[MIGRATION] These are deliberately identical to the ones the Bitnami postgresql 11.9.1
-subchart emitted. A StatefulSet's spec.selector is immutable, so keeping them
-byte-for-byte lets `helm upgrade` patch the existing StatefulSet in place
-instead of failing outright. Do not change them without a major chart bump.
+[MIGRATION] These are the same labels the Bitnami postgresql 11.9.1 subchart
+used. A StatefulSet spec.selector cannot be changed after it is created, so
+keeping them the same lets `helm upgrade` patch the existing StatefulSet instead
+of failing. Do not change them without a major chart bump.
 
-=============================================================================
-OPEN QUESTION (D5) -- freeze these forever, or normalise now? Reviewer's call.
-=============================================================================
-This is the decision with the longest half-life in the chart, and 3.0.0 is the
-cheap moment to make it.
+Why they are kept as they are:
 
-THE TRADE. Frozen (current): an existing 2.0.0 install upgrades in place,
-because the apiserver accepts the patch. Normalised (e.g.
-`app.kubernetes.io/name: nebraska`, `component: postgresql`): the labels read
-correctly and match the rest of the chart, but `spec.selector` is IMMUTABLE, so
-every existing install fails the upgrade until someone runs
-`kubectl delete statefulset --cascade=orphan` by hand.
+If we renamed them to match the rest of the chart (for example
+`app.kubernetes.io/name: nebraska` with `component: postgresql`) the labels
+would read better, but every existing install would fail to upgrade. The user
+would have to run `kubectl delete statefulset --cascade=orphan` by hand first.
 
-WHY NOW. 3.0.0 is already a breaking release with a documented dump/restore
-path for persistent installs. If the labels are ever going to be normalised,
-doing it while users are already being asked to migrate is far cheaper than
-spending a future major on cosmetics alone. Keep them frozen and the chart
-carries a permanently wrong-looking selector -- `name: postgresql` on a chart
-whose name is nebraska -- that can never be corrected without another major.
+3.0.0 is a breaking release anyway, so this was the cheapest moment to rename
+them. We decided not to. Upgrading in place without manual steps is worth more
+than nicer labels. The price is that the chart keeps a selector that looks
+wrong, `name: postgresql` in a chart called nebraska, and we cannot fix that
+until the next major version.
 
-WHAT IT AFFECTS. Only the bundled StatefulSet's selector and the labels derived
-from it. It does not touch the app Deployment, the Secret contract, or the data
-path. Note the ephemeral-storage default means many installs have nothing to
-lose from a delete/recreate -- but the ones with persistence are exactly the
-ones already handling a dump/restore.
-=============================================================================
+If this is revisited later, the change is small. It only affects this
+StatefulSet selector and the labels built from it. It does not affect the
+Nebraska Deployment, the Secret, or the data.
 */}}
 {{- define "nebraska.postgresql.selectorLabels" -}}
-app.kubernetes.io/name: postgresql
+{{- /* The name label follows nameOverride (NOT fullnameOverride), because the
+       subchart's `common.names.name` is `default .Chart.Name .Values.nameOverride`
+       and the StatefulSet's immutable selector embeds it. A 2.0.0 install with
+       postgresql.nameOverride=pg has `name: pg` in its selector; hardcoding
+       "postgresql" here would change an immutable field and get the upgrade
+       REJECTED by the apiserver, verified against the vendored subchart. */ -}}
+app.kubernetes.io/name: {{ default "postgresql" .Values.postgresql.nameOverride }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/component: primary
 {{- end -}}
@@ -230,7 +234,7 @@ Name of the secret holding the PostgreSQL superuser password.
 {{- $name := tpl .Values.postgresql.auth.existingSecret . -}}
 {{- /* Naming the chart's own secret suppresses its template while leaving both
        workloads referencing it, so Helm deletes it on upgrade and everything
-       fails with CreateContainerConfigError -- with the password gone. */ -}}
+       fails with CreateContainerConfigError, with the password gone. */ -}}
 {{- if eq $name (include "nebraska.postgresql.fullname" .) -}}
 {{- fail (printf "postgresql.auth.existingSecret must not name the secret this chart manages (%s): Helm would stop rendering it and then delete it, taking the password with it. Either drop existingSecret and set postgresql.auth.postgresPassword, or point it at a separately-managed secret." $name) -}}
 {{- end -}}
