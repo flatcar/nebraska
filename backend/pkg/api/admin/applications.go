@@ -7,7 +7,7 @@ import (
 	"github.com/doug-martin/goqu/v9"
 	"gopkg.in/guregu/null.v4"
 
-	"github.com/flatcar/nebraska/backend/pkg/api/internal/types"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
 // AddApp registers the provided application.

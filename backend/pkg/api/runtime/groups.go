@@ -3,7 +3,7 @@ package runtime
 import (
 	"github.com/doug-martin/goqu/v9"
 
-	"github.com/flatcar/nebraska/backend/pkg/api/internal/types"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
 // ClearUpdatesEnabledOverride clears the local policy_updates_enabled override

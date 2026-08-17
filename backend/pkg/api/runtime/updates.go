@@ -6,8 +6,7 @@ import (
 
 	"github.com/blang/semver/v4"
 
-	"github.com/flatcar/nebraska/backend/pkg/api/internal/dbreads"
-	"github.com/flatcar/nebraska/backend/pkg/api/internal/types"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
 const (
@@ -44,7 +43,7 @@ func (s *Service) GetUpdatePackage(inst types.Instance, instApp types.InstanceAp
 		if err := s.newGroupActivityEntry(types.ActivityPackageNotFound, types.ActivityWarning, "0.0.0", appID, groupID); err != nil {
 			l.Error().Err(err).Msg("GetUpdatePackage - could not add new group activity entry")
 		}
-		return nil, dbreads.ErrNoPackageFound
+		return nil, types.ErrNoPackageFound
 	}
 
 	// Handle already-granted updates
@@ -176,7 +175,7 @@ func (s *Service) GetUpdatePackagesForSyncer(inst types.Instance, instApp types.
 		if err := s.newGroupActivityEntry(types.ActivityPackageNotFound, types.ActivityWarning, "0.0.0", appID, groupID); err != nil {
 			l.Error().Err(err).Msg("GetUpdatePackagesForSyncer - could not add new group activity entry")
 		}
-		return nil, dbreads.ErrNoPackageFound
+		return nil, types.ErrNoPackageFound
 	}
 
 	// Check if update is needed
@@ -322,7 +321,7 @@ func inOfficeHoursNow(tz string) bool {
 // This is a helper method extracted from the UpdateHandler logic
 func (s *Service) getPackagesWithFloorsForUpdate(group *types.Group, instanceVersion string) ([]*types.Package, error) {
 	if group.Channel == nil || group.Channel.Package == nil {
-		return nil, dbreads.ErrNoPackageFound
+		return nil, types.ErrNoPackageFound
 	}
 
 	// Get required floors using the channel

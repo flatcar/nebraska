@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"gopkg.in/guregu/null.v4"
 
-	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/codegen"
 )
 
@@ -245,7 +245,7 @@ func (h *Handler) GetGroupInstances(ctx echo.Context, appIDorProductID string, g
 		params.Perpage = &defaultPerPage
 	}
 
-	p := api.InstancesQueryParams{
+	p := types.InstancesQueryParams{
 		ApplicationID: appID,
 		GroupID:       groupID,
 		Status:        params.Status,
@@ -283,7 +283,7 @@ func (h *Handler) GetGroupInstancesCount(ctx echo.Context, appIDorProductID stri
 		return appNotFoundResponse(ctx, appIDorProductID)
 	}
 
-	p := api.InstancesQueryParams{
+	p := types.InstancesQueryParams{
 		ApplicationID: appID,
 		GroupID:       groupID,
 	}
@@ -297,8 +297,8 @@ func (h *Handler) GetGroupInstancesCount(ctx echo.Context, appIDorProductID stri
 	return ctx.JSON(http.StatusOK, codegen.InstanceCount{Count: uint64(count)})
 }
 
-func groupFromRequest(name string, description *string, policyMaxUpdatesPerPeriod int, policyOfficeHours *bool, policyPeriodInterval string, policySafeMode *bool, policyTimezone string, policyUpdateTimeout string, policyUpdatesEnabled *bool, channelID *string, track *string, groupID string, appID string) *api.Group {
-	group := &api.Group{
+func groupFromRequest(name string, description *string, policyMaxUpdatesPerPeriod int, policyOfficeHours *bool, policyPeriodInterval string, policySafeMode *bool, policyTimezone string, policyUpdateTimeout string, policyUpdatesEnabled *bool, channelID *string, track *string, groupID string, appID string) *types.Group {
+	group := &types.Group{
 		Name:                      name,
 		PolicyMaxUpdatesPerPeriod: policyMaxUpdatesPerPeriod,
 		PolicyPeriodInterval:      policyPeriodInterval,
@@ -336,7 +336,7 @@ func groupFromRequest(name string, description *string, policyMaxUpdatesPerPerio
 }
 
 type groupsPage struct {
-	TotalCount int          `json:"totalCount"`
-	Count      int          `json:"count"`
-	Groups     []*api.Group `json:"groups"`
+	TotalCount int            `json:"totalCount"`
+	Count      int            `json:"count"`
+	Groups     []*types.Group `json:"groups"`
 }

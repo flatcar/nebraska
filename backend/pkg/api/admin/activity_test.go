@@ -8,7 +8,7 @@ import (
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/flatcar/nebraska/backend/pkg/api"
-	"github.com/flatcar/nebraska/backend/pkg/api/internal/types"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
 // TestAdminActivityRouting verifies that the admin-side activity writer
@@ -42,7 +42,7 @@ func TestAdminActivityRouting(t *testing.T) {
 	assert.Equal(t, 0, runtimeCount, "admin writer must not write to the runtime activity table")
 
 	// Checking the admin activity is visible through the GetActivity as well.
-	entries, err := a.GetActivity(tTeam.ID, api.ActivityQueryParams{AppID: tApp.ID})
+	entries, err := a.GetActivity(tTeam.ID, types.ActivityQueryParams{AppID: tApp.ID})
 	require.NoError(t, err)
 	require.Len(t, entries, 1)
 	assert.Equal(t, types.ActivityChannelPackageUpdated, entries[0].Class, "admin activity must be visible through GetActivity/all_activity")

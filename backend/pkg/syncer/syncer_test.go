@@ -11,6 +11,7 @@ import (
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
 const (
@@ -128,7 +129,7 @@ func TestSyncer_Init(t *testing.T) {
 
 	tApp, err := a.GetApp(flatcarAppID)
 	require.NoError(t, err)
-	tPkg, err := as.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64})
+	tPkg, err := as.AddPackage(&types.Package{Type: types.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: types.ArchAMD64})
 	require.NoError(t, err)
 	groupID, err := a.GetGroupID(flatcarAppID, "stable", tPkg.Arch)
 	require.NoError(t, err)
@@ -186,12 +187,12 @@ func createOmahaUpdate() *omaha.UpdateResponse {
 	}
 }
 
-func setupFlatcarAppStableGroup(t *testing.T, a *api.API) *api.Group {
+func setupFlatcarAppStableGroup(t *testing.T, a *api.API) *types.Group {
 	t.Helper()
 	as := adminSvc(a)
 	tApp, err := a.GetApp(flatcarAppID)
 	require.NoError(t, err)
-	tPkg, err := as.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "0.1.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64})
+	tPkg, err := as.AddPackage(&types.Package{Type: types.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "0.1.0", ApplicationID: tApp.ID, Arch: types.ArchAMD64})
 	require.NoError(t, err)
 	groupID, err := a.GetGroupID(flatcarAppID, "stable", tPkg.Arch)
 	require.NoError(t, err)

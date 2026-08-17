@@ -14,7 +14,6 @@ import (
 
 	"github.com/flatcar/nebraska/backend/pkg/api/internal/dbconn"
 	"github.com/flatcar/nebraska/backend/pkg/api/internal/dbreads"
-	"github.com/flatcar/nebraska/backend/pkg/api/internal/types"
 	"github.com/flatcar/nebraska/backend/pkg/logger"
 
 	// PostgreSQL Driver and Toolkit
@@ -39,20 +38,7 @@ const (
 	dBConnMaxLifetime     = 5 * 60 // seconds
 )
 
-var (
-	l = logger.New("api")
-
-	// ErrNoRowsAffected indicates that no rows were affected in an update or
-	// delete database operation.
-	ErrNoRowsAffected = types.ErrNoRowsAffected
-
-	// ErrInvalidSemver indicates that the provided semver version is not valid.
-	ErrInvalidSemver = types.ErrInvalidSemver
-
-	// ErrArchMismatch indicates that arches of two objects didn't
-	// match (for example, for a package and channel)
-	ErrArchMismatch = types.ErrArchMismatch
-)
+var l = logger.New("api")
 
 const migrationsTable = "database_migrations"
 

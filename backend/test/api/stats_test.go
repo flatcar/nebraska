@@ -12,8 +12,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/flatcar/nebraska/backend/pkg/api"
 	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
 func TestGroupVersionTimeline(t *testing.T) {
@@ -34,7 +34,7 @@ func TestGroupVersionTimeline(t *testing.T) {
 		method := "GET"
 
 		// response
-		var timelineResponse map[time.Time](api.VersionCountMap)
+		var timelineResponse map[time.Time](types.VersionCountMap)
 
 		httpDo(t, url, method, nil, http.StatusOK, "json", &timelineResponse)
 
@@ -57,7 +57,7 @@ func TestGroupVersionTimeline(t *testing.T) {
 			return dbKeys[i].Before(dbKeys[j])
 		})
 
-		var dbVersionCountMap []api.VersionCountMap
+		var dbVersionCountMap []types.VersionCountMap
 		for _, k := range dbKeys {
 			dbVersionCountMap = append(dbVersionCountMap, timelineDB[k])
 		}
@@ -72,7 +72,7 @@ func TestGroupVersionTimeline(t *testing.T) {
 			return respKeys[i].Before(respKeys[j])
 		})
 
-		var respVersionCountMap []api.VersionCountMap
+		var respVersionCountMap []types.VersionCountMap
 		for _, k := range respKeys {
 			respVersionCountMap = append(respVersionCountMap, timelineResponse[k])
 		}
@@ -99,7 +99,7 @@ func TestGroupVersionBreakdown(t *testing.T) {
 		method := "GET"
 
 		// response
-		var breakdownResp []*api.VersionBreakdownEntry
+		var breakdownResp []*types.VersionBreakdownEntry
 
 		httpDo(t, url, method, nil, http.StatusOK, "json", &breakdownResp)
 
@@ -122,15 +122,15 @@ func TestGroupStatusTimeline(t *testing.T) {
 
 		// create instance for app[0]
 		instanceID := uuid.New()
-		instanceDB, err := runtimeSvc(db).RegisterInstance(api.Instance{ID: instanceID.String(), Alias: "alias", IP: "0.0.0.0"}, runtime.NewInstanceApplication(app.ID, app.Groups[0].ID, "0.0.1"))
+		instanceDB, err := runtimeSvc(db).RegisterInstance(types.Instance{ID: instanceID.String(), Alias: "alias", IP: "0.0.0.0"}, runtime.NewInstanceApplication(app.ID, app.Groups[0].ID, "0.0.1"))
 		require.NoError(t, err)
 
 		// GetUpdatePackage
-		_, err = runtimeSvc(db).GetUpdatePackage(api.Instance{ID: instanceDB.ID, Alias: instanceDB.Alias, IP: instanceDB.IP}, runtime.NewInstanceApplication(app.ID, app.Groups[0].ID, instanceDB.Application.Version))
+		_, err = runtimeSvc(db).GetUpdatePackage(types.Instance{ID: instanceDB.ID, Alias: instanceDB.Alias, IP: instanceDB.IP}, runtime.NewInstanceApplication(app.ID, app.Groups[0].ID, instanceDB.Application.Version))
 		require.NoError(t, err)
 
 		// create event for instance
-		err = runtimeSvc(db).RegisterEvent(instanceDB.ID, app.ID, app.Groups[0].ID, api.EventUpdateComplete, api.ResultSuccessReboot, "0.0.0", "0")
+		err = runtimeSvc(db).RegisterEvent(instanceDB.ID, app.ID, app.Groups[0].ID, types.EventUpdateComplete, types.ResultSuccessReboot, "0.0.0", "0")
 		require.NoError(t, err)
 
 		// get group status timeline from DB
@@ -144,7 +144,7 @@ func TestGroupStatusTimeline(t *testing.T) {
 		method := "GET"
 
 		// response
-		var groupStatusCountTimelineResp map[time.Time](map[int](api.VersionCountMap))
+		var groupStatusCountTimelineResp map[time.Time](map[int](types.VersionCountMap))
 
 		httpDo(t, url, method, nil, http.StatusOK, "json", &groupStatusCountTimelineResp)
 
@@ -162,7 +162,7 @@ func TestGroupStatusTimeline(t *testing.T) {
 			return dbKeys[i].Before(dbKeys[j])
 		})
 
-		var dbStatusCountMap []map[int](api.VersionCountMap)
+		var dbStatusCountMap []map[int](types.VersionCountMap)
 		for _, k := range dbKeys {
 			dbStatusCountMap = append(dbStatusCountMap, groupStatusCountTimelineDB[k])
 		}
@@ -177,7 +177,7 @@ func TestGroupStatusTimeline(t *testing.T) {
 			return respKeys[i].Before(respKeys[j])
 		})
 
-		var respStatusCountMap []map[int](api.VersionCountMap)
+		var respStatusCountMap []map[int](types.VersionCountMap)
 		for _, k := range respKeys {
 			respStatusCountMap = append(respStatusCountMap, groupStatusCountTimelineResp[k])
 		}
@@ -204,7 +204,7 @@ func TestGroupInstanceStats(t *testing.T) {
 		method := "GET"
 
 		// response
-		var instanceStatsResp api.InstancesStatusStats
+		var instanceStatsResp types.InstancesStatusStats
 
 		httpDo(t, url, method, nil, http.StatusOK, "json", &instanceStatsResp)
 

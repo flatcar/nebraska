@@ -10,6 +10,7 @@ import (
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
 const testDuration = "1d"
@@ -20,38 +21,38 @@ func TestGetUpdatePackage(t *testing.T) {
 	as := adminSvc(a)
 	rs := runtimeSvc(a)
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tApp2, _ := as.AddApp(&Application{Name: "test_app2", TeamID: tTeam.ID})
-	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tChannel2, _ := as.AddChannel(&Channel{Name: "test_channel2", Color: "green", ApplicationID: tApp2.ID})
-	tGroup, _ := as.AddGroup(&Group{Name: "group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
-	tGroup2, _ := as.AddGroup(&Group{Name: "group2", ApplicationID: tApp2.ID, ChannelID: null.StringFrom(tChannel2.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tApp2, _ := as.AddApp(&types.Application{Name: "test_app2", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&types.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tChannel2, _ := as.AddChannel(&types.Channel{Name: "test_channel2", Color: "green", ApplicationID: tApp2.ID})
+	tGroup, _ := as.AddGroup(&types.Group{Name: "group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tGroup2, _ := as.AddGroup(&types.Group{Name: "group2", ApplicationID: tApp2.ID, ChannelID: null.StringFrom(tChannel2.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
-	_, err := rs.GetUpdatePackage(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication("invalidApplicationID", tGroup.ID, "1.0.0"))
-	assert.Error(t, ErrInvalidApplicationOrGroup, err, "Invalid application id.")
+	_, err := rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication("invalidApplicationID", tGroup.ID, "1.0.0"))
+	assert.Error(t, types.ErrInvalidApplicationOrGroup, err, "Invalid application id.")
 
-	_, err = rs.GetUpdatePackage(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, "invalidGroupID", "1.0.0"))
+	_, err = rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, "invalidGroupID", "1.0.0"))
 	assert.Error(t, err, "Invalid group id.")
 
-	_, err = rs.GetUpdatePackage(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(uuid.New().String(), tGroup.ID, "1.0.0"))
+	_, err = rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(uuid.New().String(), tGroup.ID, "1.0.0"))
 	assert.Error(t, err, "Non existent application id.")
 
-	_, err = rs.GetUpdatePackage(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, uuid.New().String(), "1.0.0"))
+	_, err = rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, uuid.New().String(), "1.0.0"))
 	assert.Error(t, err, "Non existent group id.")
 
-	_, err = rs.GetUpdatePackage(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup2.ID, "1.0.0"))
+	_, err = rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup2.ID, "1.0.0"))
 	assert.Error(t, err, "Group doesn't belong to the application provided.")
 
-	_, err = rs.GetUpdatePackage(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp2.ID, tGroup2.ID, "1.0.0"))
-	assert.Equal(t, ErrNoPackageFound, err, "Group's channel has no package bound.")
+	_, err = rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp2.ID, tGroup2.ID, "1.0.0"))
+	assert.Equal(t, types.ErrNoPackageFound, err, "Group's channel has no package bound.")
 
-	_, err = rs.GetUpdatePackage(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.1.0"))
-	assert.Equal(t, ErrNoUpdatePackageAvailable, err, "Instance version is up to date.")
+	_, err = rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.1.0"))
+	assert.Equal(t, types.ErrNoUpdatePackageAvailable, err, "Instance version is up to date.")
 
-	_, err = rs.GetUpdatePackage(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1010.5.0+2016-05-27-1832"))
-	assert.Equal(t, ErrNoUpdatePackageAvailable, err, "Instance version is up to date.")
+	_, err = rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1010.5.0+2016-05-27-1832"))
+	assert.Equal(t, types.ErrNoUpdatePackageAvailable, err, "Instance version is up to date.")
 }
 
 func TestGetUpdatePackage_GroupNoChannel(t *testing.T) {
@@ -60,12 +61,12 @@ func TestGetUpdatePackage_GroupNoChannel(t *testing.T) {
 	as := adminSvc(a)
 	rs := runtimeSvc(a)
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tGroup, _ := as.AddGroup(&Group{Name: "group", ApplicationID: tApp.ID, PolicyUpdatesEnabled: false, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tGroup, _ := as.AddGroup(&types.Group{Name: "group", ApplicationID: tApp.ID, PolicyUpdatesEnabled: false, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
-	_, _ = rs.GetUpdatePackage(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
-	assert.Error(t, ErrNoPackageFound)
+	_, _ = rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+	assert.Error(t, types.ErrNoPackageFound)
 }
 
 func TestGetUpdatePackage_UpdatesDisabled(t *testing.T) {
@@ -74,14 +75,14 @@ func TestGetUpdatePackage_UpdatesDisabled(t *testing.T) {
 	as := adminSvc(a)
 	rs := runtimeSvc(a)
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := as.AddGroup(&Group{Name: "group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: false, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&types.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&types.Group{Name: "group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: false, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
-	_, err := rs.GetUpdatePackage(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
-	assert.Equal(t, ErrUpdatesDisabled, err)
+	_, err := rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+	assert.Equal(t, types.ErrUpdatesDisabled, err)
 }
 
 func TestGetUpdatePackage_MaxUpdatesPerPeriodLimitReached_SafeMode(t *testing.T) {
@@ -92,17 +93,17 @@ func TestGetUpdatePackage_MaxUpdatesPerPeriodLimitReached_SafeMode(t *testing.T)
 
 	safeMode := true
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := as.AddGroup(&Group{Name: "group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: safeMode, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&types.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&types.Group{Name: "group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: safeMode, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
-	_, err := rs.GetUpdatePackage(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+	_, err := rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
 	assert.NoError(t, err)
 
-	_, err = rs.GetUpdatePackage(Instance{ID: uuid.New().String(), IP: "10.0.0.2"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
-	assert.Equal(t, ErrMaxUpdatesPerPeriodLimitReached, err, "Safe mode is enabled, first update should be completed before letting more through.")
+	_, err = rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.2"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+	assert.Equal(t, types.ErrMaxUpdatesPerPeriodLimitReached, err, "Safe mode is enabled, first update should be completed before letting more through.")
 }
 
 func TestGetUpdatePackage_MaxUpdatesPerPeriodLimitReached_LimitUpdated(t *testing.T) {
@@ -111,23 +112,23 @@ func TestGetUpdatePackage_MaxUpdatesPerPeriodLimitReached_LimitUpdated(t *testin
 	as := adminSvc(a)
 	rs := runtimeSvc(a)
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := as.AddGroup(&Group{Name: "group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 1, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&types.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&types.Group{Name: "group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 1, PolicyUpdateTimeout: "60 minutes"})
 
 	instanceID := uuid.New().String()
-	_, err := rs.GetUpdatePackage(Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+	_, err := rs.GetUpdatePackage(types.Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
 	assert.NoError(t, err)
 
-	_, err = rs.GetUpdatePackage(Instance{ID: uuid.New().String(), IP: "10.0.0.2"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
-	assert.Equal(t, ErrMaxUpdatesPerPeriodLimitReached, err, "Max 1 update per period, limit reached")
+	_, err = rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.2"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+	assert.Equal(t, types.ErrMaxUpdatesPerPeriodLimitReached, err, "Max 1 update per period, limit reached")
 
 	tGroup.PolicyMaxUpdatesPerPeriod = 2
 	_ = as.UpdateGroup(tGroup)
 
-	_, err = rs.GetUpdatePackage(Instance{ID: uuid.New().String(), IP: "10.0.0.2"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+	_, err = rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.2"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
 	assert.NoError(t, err)
 }
 
@@ -143,27 +144,27 @@ func TestGetUpdatePackage_MaxTimedOutUpdatesLimitReached_SafeMode(t *testing.T) 
 	updateTimeoutSetting := fmt.Sprintf("%d milliseconds", updateTimeout.Milliseconds())
 	extraWaitPeriod := 10 * time.Millisecond // to avoid a race
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := as.AddGroup(&Group{Name: "group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: periodIntervalSetting, PolicyMaxUpdatesPerPeriod: 1, PolicyUpdateTimeout: updateTimeoutSetting})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&types.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&types.Group{Name: "group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: periodIntervalSetting, PolicyMaxUpdatesPerPeriod: 1, PolicyUpdateTimeout: updateTimeoutSetting})
 
-	_, err := rs.GetUpdatePackage(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+	_, err := rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
 	assert.NoError(t, err)
 
 	time.Sleep(periodInterval + extraWaitPeriod) // ensure that period interval is over but update timeout isn't
 
-	_, err = rs.GetUpdatePackage(Instance{ID: uuid.New().String(), IP: "10.0.0.3"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
-	assert.Equal(t, ErrMaxConcurrentUpdatesLimitReached, err)
+	_, err = rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.3"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+	assert.Equal(t, types.ErrMaxConcurrentUpdatesLimitReached, err)
 
 	time.Sleep(updateTimeout - periodInterval + extraWaitPeriod) // ensure that update timeout is over
 
-	_, err = rs.GetUpdatePackage(Instance{ID: uuid.New().String(), IP: "10.0.0.3"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
-	assert.Equal(t, ErrMaxTimedOutUpdatesLimitReached, err)
+	_, err = rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.3"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+	assert.Equal(t, types.ErrMaxTimedOutUpdatesLimitReached, err)
 
-	_, err = rs.GetUpdatePackage(Instance{ID: uuid.New().String(), IP: "10.0.0.2"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
-	assert.Equal(t, ErrUpdatesDisabled, err)
+	_, err = rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.2"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+	assert.Equal(t, types.ErrUpdatesDisabled, err)
 }
 
 func TestGetUpdatePackage_ResumeUpdates(t *testing.T) {
@@ -179,26 +180,26 @@ func TestGetUpdatePackage_ResumeUpdates(t *testing.T) {
 	updateTimeoutSetting := fmt.Sprintf("%d milliseconds", updateTimeout.Milliseconds())
 	extraWaitPeriod := 10 * time.Millisecond // to avoid a race
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := as.AddGroup(&Group{Name: "group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: periodIntervalSetting, PolicyMaxUpdatesPerPeriod: maxUpdatesPerPeriod, PolicyUpdateTimeout: updateTimeoutSetting})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&types.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&types.Group{Name: "group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: periodIntervalSetting, PolicyMaxUpdatesPerPeriod: maxUpdatesPerPeriod, PolicyUpdateTimeout: updateTimeoutSetting})
 
-	_, err := rs.GetUpdatePackage(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+	_, err := rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
 	assert.NoError(t, err)
 
-	_, err = rs.GetUpdatePackage(Instance{ID: uuid.New().String(), IP: "10.0.0.2"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+	_, err = rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.2"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
 	assert.NoError(t, err)
 
 	time.Sleep(periodInterval + extraWaitPeriod) // ensure that period interval is over but update timeout isn't
 
-	_, err = rs.GetUpdatePackage(Instance{ID: uuid.New().String(), IP: "10.0.0.3"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
-	assert.Equal(t, ErrMaxConcurrentUpdatesLimitReached, err)
+	_, err = rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.3"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+	assert.Equal(t, types.ErrMaxConcurrentUpdatesLimitReached, err)
 
 	time.Sleep(updateTimeout - periodInterval + extraWaitPeriod) // ensure that update timeout is over
 
-	_, err = rs.GetUpdatePackage(Instance{ID: uuid.New().String(), IP: "10.0.0.3"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+	_, err = rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.3"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
 	assert.NoError(t, err)
 }
 
@@ -208,19 +209,19 @@ func TestGetUpdatePackage_RolloutStats(t *testing.T) {
 	as := adminSvc(a)
 	rs := runtimeSvc(a)
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := as.AddGroup(&Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 4, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&types.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&types.Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 4, PolicyUpdateTimeout: "60 minutes"})
 
-	instance1, _ := rs.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
-	instance2, _ := rs.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
-	instance3, _ := rs.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	instance1, _ := rs.RegisterInstance(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	instance2, _ := rs.RegisterInstance(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	instance3, _ := rs.RegisterInstance(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
 
-	_, _ = rs.GetUpdatePackage(Instance{ID: instance1.ID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
-	_, _ = rs.GetUpdatePackage(Instance{ID: instance2.ID, IP: "10.0.0.2"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
-	_, _ = rs.GetUpdatePackage(Instance{ID: instance3.ID, IP: "10.0.0.3"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+	_, _ = rs.GetUpdatePackage(types.Instance{ID: instance1.ID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+	_, _ = rs.GetUpdatePackage(types.Instance{ID: instance2.ID, IP: "10.0.0.2"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+	_, _ = rs.GetUpdatePackage(types.Instance{ID: instance3.ID, IP: "10.0.0.3"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
 
 	group, _ := a.GetGroup(tGroup.ID)
 	assert.True(t, group.RolloutInProgress)
@@ -229,7 +230,7 @@ func TestGetUpdatePackage_RolloutStats(t *testing.T) {
 	assert.Equal(t, int64(1), stats.UpdateGranted.Int64)
 	assert.Equal(t, int64(2), stats.OnHold.Int64)
 
-	_ = rs.RegisterEvent(instance1.ID, tApp.ID, tGroup.ID, EventUpdateDownloadStarted, ResultSuccess, "", "")
+	_ = rs.RegisterEvent(instance1.ID, tApp.ID, tGroup.ID, types.EventUpdateDownloadStarted, types.ResultSuccess, "", "")
 
 	group, _ = a.GetGroup(tGroup.ID)
 	assert.True(t, group.RolloutInProgress)
@@ -237,9 +238,9 @@ func TestGetUpdatePackage_RolloutStats(t *testing.T) {
 	assert.Equal(t, int64(1), stats.Downloading.Int64)
 	assert.Equal(t, int64(2), stats.OnHold.Int64)
 
-	_ = rs.RegisterEvent(instance1.ID, tApp.ID, tGroup.ID, EventUpdateComplete, ResultSuccessReboot, "", "")
-	_, _ = rs.GetUpdatePackage(Instance{ID: instance2.ID, IP: "10.0.0.2"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
-	_, _ = rs.GetUpdatePackage(Instance{ID: instance3.ID, IP: "10.0.0.3"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+	_ = rs.RegisterEvent(instance1.ID, tApp.ID, tGroup.ID, types.EventUpdateComplete, types.ResultSuccessReboot, "", "")
+	_, _ = rs.GetUpdatePackage(types.Instance{ID: instance2.ID, IP: "10.0.0.2"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+	_, _ = rs.GetUpdatePackage(types.Instance{ID: instance3.ID, IP: "10.0.0.3"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
 
 	group, _ = a.GetGroup(tGroup.ID)
 	assert.True(t, group.RolloutInProgress)
@@ -247,8 +248,8 @@ func TestGetUpdatePackage_RolloutStats(t *testing.T) {
 	assert.Equal(t, int64(1), stats.Complete.Int64)
 	assert.Equal(t, int64(2), stats.UpdateGranted.Int64)
 
-	_ = rs.RegisterEvent(instance2.ID, tApp.ID, tGroup.ID, EventUpdateComplete, ResultSuccessReboot, "", "")
-	_ = rs.RegisterEvent(instance3.ID, tApp.ID, tGroup.ID, EventUpdateComplete, ResultFailed, "", "")
+	_ = rs.RegisterEvent(instance2.ID, tApp.ID, tGroup.ID, types.EventUpdateComplete, types.ResultSuccessReboot, "", "")
+	_ = rs.RegisterEvent(instance3.ID, tApp.ID, tGroup.ID, types.EventUpdateComplete, types.ResultFailed, "", "")
 
 	group, _ = a.GetGroup(tGroup.ID)
 	assert.True(t, group.RolloutInProgress)
@@ -256,8 +257,8 @@ func TestGetUpdatePackage_RolloutStats(t *testing.T) {
 	assert.Equal(t, int64(2), stats.Complete.Int64)
 	assert.Equal(t, int64(1), stats.Error.Int64)
 
-	_, _ = rs.GetUpdatePackage(Instance{ID: instance3.ID, IP: "10.0.0.3"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
-	_ = rs.RegisterEvent(instance3.ID, tApp.ID, tGroup.ID, EventUpdateComplete, ResultSuccessReboot, "", "")
+	_, _ = rs.GetUpdatePackage(types.Instance{ID: instance3.ID, IP: "10.0.0.3"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+	_ = rs.RegisterEvent(instance3.ID, tApp.ID, tGroup.ID, types.EventUpdateComplete, types.ResultSuccessReboot, "", "")
 
 	group, _ = a.GetGroup(tGroup.ID)
 	assert.False(t, group.RolloutInProgress)
@@ -271,38 +272,38 @@ func TestGetUpdatePackage_CompletionStats(t *testing.T) {
 	as := adminSvc(a)
 	rs := runtimeSvc(a)
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := as.AddGroup(&Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 4, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&types.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&types.Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 4, PolicyUpdateTimeout: "60 minutes"})
 
 	addAndUpdateInstance := func() {
-		tInstance, err := rs.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+		tInstance, err := rs.RegisterInstance(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
 		assert.NoError(t, err)
 
-		_, err = rs.GetUpdatePackage(Instance{ID: tInstance.ID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+		_, err = rs.GetUpdatePackage(types.Instance{ID: tInstance.ID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
 		assert.NoError(t, err)
 
-		err = rs.RegisterEvent(tInstance.ID, "{"+tApp.ID+"}", tGroup.ID, EventUpdateDownloadStarted, ResultSuccess, "11.0.0", "")
+		err = rs.RegisterEvent(tInstance.ID, "{"+tApp.ID+"}", tGroup.ID, types.EventUpdateDownloadStarted, types.ResultSuccess, "11.0.0", "")
 		assert.NoError(t, err)
 		instance, _ := a.GetInstance(tInstance.ID, tApp.ID)
-		assert.Equal(t, null.IntFrom(int64(InstanceStatusDownloading)), instance.Application.Status)
+		assert.Equal(t, null.IntFrom(int64(types.InstanceStatusDownloading)), instance.Application.Status)
 
-		err = rs.RegisterEvent(tInstance.ID, tApp.ID, "{"+tGroup.ID+"}", EventUpdateDownloadFinished, ResultSuccess, "11.0.0", "")
+		err = rs.RegisterEvent(tInstance.ID, tApp.ID, "{"+tGroup.ID+"}", types.EventUpdateDownloadFinished, types.ResultSuccess, "11.0.0", "")
 		assert.NoError(t, err)
 		instance, _ = a.GetInstance(tInstance.ID, tApp.ID)
-		assert.Equal(t, null.IntFrom(int64(InstanceStatusDownloaded)), instance.Application.Status)
+		assert.Equal(t, null.IntFrom(int64(types.InstanceStatusDownloaded)), instance.Application.Status)
 
-		err = rs.RegisterEvent(tInstance.ID, tApp.ID, tGroup.ID, EventUpdateInstalled, ResultSuccess, "11.0.0", "")
+		err = rs.RegisterEvent(tInstance.ID, tApp.ID, tGroup.ID, types.EventUpdateInstalled, types.ResultSuccess, "11.0.0", "")
 		assert.NoError(t, err)
 		instance, _ = a.GetInstance(tInstance.ID, tApp.ID)
-		assert.Equal(t, null.IntFrom(int64(InstanceStatusInstalled)), instance.Application.Status)
+		assert.Equal(t, null.IntFrom(int64(types.InstanceStatusInstalled)), instance.Application.Status)
 
-		err = rs.RegisterEvent(tInstance.ID, tApp.ID, tGroup.ID, EventUpdateComplete, ResultSuccessReboot, "11.0.0", "")
+		err = rs.RegisterEvent(tInstance.ID, tApp.ID, tGroup.ID, types.EventUpdateComplete, types.ResultSuccessReboot, "11.0.0", "")
 		assert.NoError(t, err)
 		instance, _ = a.GetInstance(tInstance.ID, tApp.ID)
-		assert.Equal(t, null.IntFrom(int64(InstanceStatusComplete)), instance.Application.Status)
+		assert.Equal(t, null.IntFrom(int64(types.InstanceStatusComplete)), instance.Application.Status)
 	}
 
 	addAndUpdateInstance()
@@ -312,19 +313,19 @@ func TestGetUpdatePackage_CompletionStats(t *testing.T) {
 
 	// This instance has the group's current package's version already and reports no status.
 	// We need to make sure it doesn't show up as undefined.
-	instance1, _ := rs.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, tPkg.Version))
+	instance1, _ := rs.RegisterInstance(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, tPkg.Version))
 
 	stats, _ = a.GetGroupInstancesStats(tGroup.ID, testDuration)
 	assert.Equal(t, int64(0), stats.Undefined.Int64)
 	assert.Equal(t, int64(2), stats.Complete.Int64)
 
 	// Just ensuring that a call for getting an update in an already up to date instance won't change its status
-	_, err := rs.GetUpdatePackage(Instance{ID: instance1.ID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, tPkg.Version))
+	_, err := rs.GetUpdatePackage(types.Instance{ID: instance1.ID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, tPkg.Version))
 	assert.Error(t, err, "nebraska: no update package available")
 
 	// This version has a version different from the group's current one, and reports no status, so the
 	// status should be undefined.
-	_, err = rs.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "0.1.0"))
+	_, err = rs.RegisterInstance(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "0.1.0"))
 	assert.NoError(t, err)
 
 	stats, _ = a.GetGroupInstancesStats(tGroup.ID, testDuration)
@@ -351,30 +352,30 @@ func TestGetUpdatePackage_CheckVersionForGrantedUpdate(t *testing.T) {
 	as := adminSvc(a)
 	rs := runtimeSvc(a)
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := as.AddGroup(&Group{Name: "group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&types.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&types.Group{Name: "group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
 
 	instanceID := uuid.New().String()
 
-	_, err := rs.GetUpdatePackage(Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+	_, err := rs.GetUpdatePackage(types.Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
 	assert.NoError(t, err)
 
 	instance, err := a.GetInstance(instanceID, tApp.ID)
 	assert.NoError(t, err)
 	assert.True(t, instance.Application.UpdateInProgress)
-	assert.Equal(t, int64(InstanceStatusUpdateGranted), instance.Application.Status.Int64)
+	assert.Equal(t, int64(types.InstanceStatusUpdateGranted), instance.Application.Status.Int64)
 	assert.Equal(t, "12.1.0", instance.Application.LastUpdateVersion.String)
 	assert.Equal(t, "12.0.0", instance.Application.Version)
 
-	_, err = rs.GetUpdatePackage(Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.1.0"))
-	assert.Equal(t, ErrNoUpdatePackageAvailable, err)
+	_, err = rs.GetUpdatePackage(types.Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.1.0"))
+	assert.Equal(t, types.ErrNoUpdatePackageAvailable, err)
 
 	instanceStatusHistory, err := a.GetInstanceStatusHistory(instanceID, tApp.ID, tGroup.ID, 1)
 	assert.NoError(t, err)
-	assert.Equal(t, InstanceStatusComplete, instanceStatusHistory[0].Status)
+	assert.Equal(t, types.InstanceStatusComplete, instanceStatusHistory[0].Status)
 	assert.Equal(t, "12.1.0", instanceStatusHistory[0].Version)
 }
 
@@ -384,25 +385,25 @@ func TestGetUpdatePackage_InstanceStatusHistory(t *testing.T) {
 	as := adminSvc(a)
 	rs := runtimeSvc(a)
 
-	tTeam, _ := as.AddTeam(&Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := as.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := as.AddGroup(&Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 3, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&types.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&types.Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 3, PolicyUpdateTimeout: "60 minutes"})
 
-	instance1, _ := rs.RegisterInstance(Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	instance1, _ := rs.RegisterInstance(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
 
-	_, _ = rs.GetUpdatePackage(Instance{ID: instance1.ID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
-	_ = rs.RegisterEvent(instance1.ID, tApp.ID, tGroup.ID, EventUpdateDownloadStarted, ResultSuccess, "", "")
-	_ = rs.RegisterEvent(instance1.ID, tApp.ID, tGroup.ID, EventUpdateComplete, ResultSuccessReboot, "", "")
+	_, _ = rs.GetUpdatePackage(types.Instance{ID: instance1.ID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+	_ = rs.RegisterEvent(instance1.ID, tApp.ID, tGroup.ID, types.EventUpdateDownloadStarted, types.ResultSuccess, "", "")
+	_ = rs.RegisterEvent(instance1.ID, tApp.ID, tGroup.ID, types.EventUpdateComplete, types.ResultSuccessReboot, "", "")
 
 	instanceStatusHistory, err := a.GetInstanceStatusHistory(instance1.ID, tApp.ID, tGroup.ID, 5)
 	assert.NoError(t, err)
-	assert.Equal(t, InstanceStatusComplete, instanceStatusHistory[0].Status)
+	assert.Equal(t, types.InstanceStatusComplete, instanceStatusHistory[0].Status)
 	assert.Equal(t, tPkg.Version, instanceStatusHistory[0].Version)
-	assert.Equal(t, InstanceStatusDownloading, instanceStatusHistory[1].Status)
+	assert.Equal(t, types.InstanceStatusDownloading, instanceStatusHistory[1].Status)
 	assert.Equal(t, tPkg.Version, instanceStatusHistory[1].Version)
-	assert.Equal(t, InstanceStatusUpdateGranted, instanceStatusHistory[2].Status)
+	assert.Equal(t, types.InstanceStatusUpdateGranted, instanceStatusHistory[2].Status)
 	assert.Equal(t, tPkg.Version, instanceStatusHistory[2].Version)
 }
 
@@ -420,44 +421,44 @@ func TestMultiStepUpdateProgression(t *testing.T) {
 	groupID := setup.Group.ID
 
 	// Step 1: Instance at 1000 → should get first floor (2000)
-	pkg, err := rs.GetUpdatePackage(Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(appID, groupID, "1000.0.0"))
+	pkg, err := rs.GetUpdatePackage(types.Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(appID, groupID, "1000.0.0"))
 	assert.NoError(t, err)
 	assert.Equal(t, "2000.0.0", pkg.Version, "Should get first floor")
 
 	// Verify granted version is tracked
 	instance, _ := a.GetInstance(instanceID, appID)
-	assert.Equal(t, InstanceStatusUpdateGranted, int(instance.Application.Status.Int64))
+	assert.Equal(t, types.InstanceStatusUpdateGranted, int(instance.Application.Status.Int64))
 	assert.Equal(t, "2000.0.0", instance.Application.LastUpdateVersion.String)
 
 	// Step 2: Still at 1000 (already-granted) → should get 2000 again
-	pkg, err = rs.GetUpdatePackage(Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(appID, groupID, "1000.0.0"))
+	pkg, err = rs.GetUpdatePackage(types.Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(appID, groupID, "1000.0.0"))
 	assert.NoError(t, err)
 	assert.Equal(t, "2000.0.0", pkg.Version, "Should get same floor when not updated")
 
 	// Step 3: Instance updates to 2000 → should complete
-	_, err = rs.GetUpdatePackage(Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(appID, groupID, "2000.0.0"))
-	assert.Equal(t, ErrNoUpdatePackageAvailable, err, "Should complete when floor reached")
+	_, err = rs.GetUpdatePackage(types.Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(appID, groupID, "2000.0.0"))
+	assert.Equal(t, types.ErrNoUpdatePackageAvailable, err, "Should complete when floor reached")
 
 	instance, _ = a.GetInstance(instanceID, appID)
-	assert.Equal(t, InstanceStatusComplete, int(instance.Application.Status.Int64))
+	assert.Equal(t, types.InstanceStatusComplete, int(instance.Application.Status.Int64))
 
 	// Step 4: Instance at 2000 → should get second floor (2500)
-	pkg, err = rs.GetUpdatePackage(Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(appID, groupID, "2000.0.0"))
+	pkg, err = rs.GetUpdatePackage(types.Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(appID, groupID, "2000.0.0"))
 	assert.NoError(t, err)
 	assert.Equal(t, "2500.0.0", pkg.Version, "Should get second floor")
 
 	// Step 5: Instance updates to 2500 → should complete
-	_, err = rs.GetUpdatePackage(Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(appID, groupID, "2500.0.0"))
-	assert.Equal(t, ErrNoUpdatePackageAvailable, err)
+	_, err = rs.GetUpdatePackage(types.Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(appID, groupID, "2500.0.0"))
+	assert.Equal(t, types.ErrNoUpdatePackageAvailable, err)
 
 	// Step 6: Instance at 2500 → should get target (3000)
-	pkg, err = rs.GetUpdatePackage(Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(appID, groupID, "2500.0.0"))
+	pkg, err = rs.GetUpdatePackage(types.Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(appID, groupID, "2500.0.0"))
 	assert.NoError(t, err)
 	assert.Equal(t, "3000.0.0", pkg.Version, "Should get target after all floors")
 
 	// Step 7: Instance updates to 3000 → should complete
-	_, err = rs.GetUpdatePackage(Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(appID, groupID, "3000.0.0"))
-	assert.Equal(t, ErrNoUpdatePackageAvailable, err, "Should complete when target reached")
+	_, err = rs.GetUpdatePackage(types.Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(appID, groupID, "3000.0.0"))
+	assert.Equal(t, types.ErrNoUpdatePackageAvailable, err, "Should complete when target reached")
 }
 
 // TestAlreadyGrantedWithoutLastUpdateVersion tests the safer fallback when LastUpdateVersion is NULL
@@ -470,7 +471,7 @@ func TestAlreadyGrantedWithoutLastUpdateVersion(t *testing.T) {
 	instanceID := "old-instance"
 
 	// Get initial update
-	pkg, err := rs.GetUpdatePackage(Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(setup.AppID, setup.Group.ID, "1000.0.0"))
+	pkg, err := rs.GetUpdatePackage(types.Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(setup.AppID, setup.Group.ID, "1000.0.0"))
 	assert.NoError(t, err)
 	assert.Equal(t, "2000.0.0", pkg.Version)
 
@@ -484,15 +485,15 @@ func TestAlreadyGrantedWithoutLastUpdateVersion(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Call with already-granted but no LastUpdateVersion - should complete and return error
-	_, err = rs.GetUpdatePackage(Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(setup.AppID, setup.Group.ID, "1000.0.0"))
-	assert.Equal(t, ErrNoUpdatePackageAvailable, err, "Should complete when LastUpdateVersion is NULL")
+	_, err = rs.GetUpdatePackage(types.Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(setup.AppID, setup.Group.ID, "1000.0.0"))
+	assert.Equal(t, types.ErrNoUpdatePackageAvailable, err, "Should complete when LastUpdateVersion is NULL")
 
 	// Verify status is now Complete
 	instance, _ = a.GetInstance(instanceID, setup.AppID)
-	assert.Equal(t, InstanceStatusComplete, int(instance.Application.Status.Int64))
+	assert.Equal(t, types.InstanceStatusComplete, int(instance.Application.Status.Int64))
 
 	// Next call should go through normal grant path
-	pkg, err = rs.GetUpdatePackage(Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(setup.AppID, setup.Group.ID, "1000.0.0"))
+	pkg, err = rs.GetUpdatePackage(types.Instance{ID: instanceID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(setup.AppID, setup.Group.ID, "1000.0.0"))
 	assert.NoError(t, err)
 	assert.Equal(t, "2000.0.0", pkg.Version, "Should get floor through normal grant path")
 
@@ -512,12 +513,12 @@ func TestSafetyRulesValidation(t *testing.T) {
 	setup := setupFloors(t, a, "safety-test", []string{"1000.0.0", "2000.0.0"}, "3000.0.0")
 
 	// Register an instance to test update behavior
-	_, err := rs.RegisterInstance(Instance{ID: "safety-instance", IP: "10.0.0.1"}, runtime.NewInstanceApplication(setup.AppID, setup.Group.ID, "500.0.0"))
+	_, err := rs.RegisterInstance(types.Instance{ID: "safety-instance", IP: "10.0.0.1"}, runtime.NewInstanceApplication(setup.AppID, setup.Group.ID, "500.0.0"))
 	assert.NoError(t, err)
 
 	t.Run("floor_never_blacklisted_for_own_channel", func(t *testing.T) {
 		// Get update should work normally
-		pkg, err := rs.GetUpdatePackage(Instance{ID: "safety-instance", IP: "10.0.0.1"}, runtime.NewInstanceApplication(setup.AppID, setup.Group.ID, "500.0.0"))
+		pkg, err := rs.GetUpdatePackage(types.Instance{ID: "safety-instance", IP: "10.0.0.1"}, runtime.NewInstanceApplication(setup.AppID, setup.Group.ID, "500.0.0"))
 		assert.NoError(t, err)
 		assert.Equal(t, "1000.0.0", pkg.Version)
 
@@ -528,7 +529,7 @@ func TestSafetyRulesValidation(t *testing.T) {
 		assert.NoError(t, err)
 		floorPkg.ChannelsBlacklist = append(floorPkg.ChannelsBlacklist, setup.Channel.ID)
 		err = as.UpdatePackage(floorPkg)
-		assert.Equal(t, ErrBlacklistingFloor, err, "API should prevent blacklisting floors")
+		assert.Equal(t, types.ErrBlacklistingFloor, err, "API should prevent blacklisting floors")
 	})
 
 	t.Run("target_never_blacklisted_for_own_channel", func(t *testing.T) {
@@ -537,15 +538,15 @@ func TestSafetyRulesValidation(t *testing.T) {
 		assert.NoError(t, err)
 		targetPkg.ChannelsBlacklist = append(targetPkg.ChannelsBlacklist, setup.Channel.ID)
 		err = as.UpdatePackage(targetPkg)
-		assert.Equal(t, ErrBlacklistingChannel, err, "API should prevent blacklisting channel target")
+		assert.Equal(t, types.ErrBlacklistingChannel, err, "API should prevent blacklisting channel target")
 	})
 
 	t.Run("cross_channel_blacklist_allowed", func(t *testing.T) {
 		// Create another channel
-		channel2, err := as.AddChannel(&Channel{
+		channel2, err := as.AddChannel(&types.Channel{
 			Name:          "safety-test-2",
 			ApplicationID: setup.AppID,
-			Arch:          ArchAMD64,
+			Arch:          types.ArchAMD64,
 			PackageID:     null.StringFrom(setup.Target.ID),
 		})
 		assert.NoError(t, err)
@@ -558,7 +559,7 @@ func TestSafetyRulesValidation(t *testing.T) {
 		assert.NoError(t, err, "Can blacklist package for different channel")
 
 		// Cleanup - remove from blacklist
-		floorPkg.ChannelsBlacklist = StringArray{}
+		floorPkg.ChannelsBlacklist = types.StringArray{}
 		err = as.UpdatePackage(floorPkg)
 		assert.NoError(t, err)
 	})
