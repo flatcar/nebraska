@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
   Nebraska does not follow the rule in the same section that requires rejecting any token whose header type is not `at+jwt`. Most providers issue access tokens with a plain `JWT` header, so that rule would reject them. In those setups the audience check is what separates an access token from an ID token.
 
+- **SQL injection in the group version timeline:** the `groupID` path parameter was put straight into three SQL statements in the version timeline query path, so a crafted value could change those queries. All three now bind `groupID` as a query parameter. The `groupID` of the endpoint is also declared as a UUID in the OpenAPI spec, so a malformed value is rejected before it reaches the database.
+
 ### Breaking Changes
 
 - **OIDC access token audience is now required.** A deployment that uses `--auth-mode=oidc` must set `--oidc-audience` to the audience that its identity provider puts in API access tokens. Nebraska refuses to start without it. Setting the flag is not enough on its own. The provider must really put that value in the `aud` claim of the access token. If it does not, Nebraska starts normally but then rejects every request. Keycloak does not support the `audience` request parameter, so you have to add an audience mapper that puts the value into the access token. Dex issues access tokens whose audience is the client ID. `--auth-mode=noop` and `--auth-mode=github` are not affected. `--oidc-skip-audience-check` brings back the old behaviour so you can migrate in steps, but it is insecure. See the [OIDC Migration Guide](docs/oidc-migration-guide.md).
