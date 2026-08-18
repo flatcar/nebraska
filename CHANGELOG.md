@@ -30,6 +30,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - **ID tokens are no longer accepted as access tokens.** Nebraska rejects a bearer token that says it is an ID token. In practice this affects Keycloak, which marks the kind of a token using a `typ` claim with the value `ID`. A provider that does not mark the kind of a token is not affected. Dex marks neither kind and gives both types of token the same audience and the same claims, so Nebraska cannot tell them apart there. Treat a Dex ID token as being as sensitive as an access token. This change only breaks a deployment that puts the API audience into ID tokens as well as access tokens, which is not the Keycloak default.
 
+### Added
+
+- **OIDC UserInfo endpoint for role extraction ([#1279](https://github.com/flatcar/nebraska/pull/1279)):** some providers do not place group membership in the access token. `--oidc-use-userinfo` makes the backend call the provider's UserInfo endpoint instead, using the same `--oidc-roles-path` to locate the roles. The token is verified before it is forwarded, so only an access token issued for this API reaches the provider.
+
 ## [3.0.0] - 28/11/2025
 
 ### Semantic Versioning Correction
