@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
@@ -168,13 +169,15 @@ func (h *Handler) DeleteGroup(ctx echo.Context, _ string, groupID string) error 
 	return ctx.NoContent(http.StatusNoContent)
 }
 
-func (h *Handler) GetGroupVersionTimeline(ctx echo.Context, _ string, groupID string, params codegen.GetGroupVersionTimelineParams) error {
-	versionCountTimeline, isCache, err := h.db.GetGroupVersionCountTimeline(groupID, params.Duration)
+func (h *Handler) GetGroupVersionTimeline(ctx echo.Context, _ string, groupID openapi_types.UUID, params codegen.GetGroupVersionTimelineParams) error {
+	groupIDStr := groupID.String()
+
+	versionCountTimeline, isCache, err := h.db.GetGroupVersionCountTimeline(groupIDStr, params.Duration)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
 		}
-		l.Error().Err(err).Str("groupID", groupID).Msg("getGroupVersionCountTimeline - getting version timeline")
+		l.Error().Err(err).Str("groupID", groupIDStr).Msg("getGroupVersionCountTimeline - getting version timeline")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 

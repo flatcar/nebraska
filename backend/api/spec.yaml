@@ -429,6 +429,7 @@ paths:
           required: true
           schema:
             type: string
+            format: uuid
         - in: query
           name: duration
           required: true

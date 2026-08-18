@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"github.com/oapi-codegen/runtime"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
@@ -171,7 +172,7 @@ type ClientInterface interface {
 	GetGroupVersionBreakdown(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetGroupVersionTimeline request
-	GetGroupVersionTimeline(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupVersionTimelineParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	GetGroupVersionTimeline(ctx context.Context, appIDorProductID string, groupID openapi_types.UUID, params *GetGroupVersionTimelineParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PaginatePackages request
 	PaginatePackages(ctx context.Context, appIDorProductID string, params *PaginatePackagesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -578,7 +579,7 @@ func (c *Client) GetGroupVersionBreakdown(ctx context.Context, appIDorProductID 
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetGroupVersionTimeline(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupVersionTimelineParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+func (c *Client) GetGroupVersionTimeline(ctx context.Context, appIDorProductID string, groupID openapi_types.UUID, params *GetGroupVersionTimelineParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetGroupVersionTimelineRequest(c.Server, appIDorProductID, groupID, params)
 	if err != nil {
 		return nil, err
@@ -2287,7 +2288,7 @@ func NewGetGroupVersionBreakdownRequest(server string, appIDorProductID string, 
 }
 
 // NewGetGroupVersionTimelineRequest generates requests for GetGroupVersionTimeline
-func NewGetGroupVersionTimelineRequest(server string, appIDorProductID string, groupID string, params *GetGroupVersionTimelineParams) (*http.Request, error) {
+func NewGetGroupVersionTimelineRequest(server string, appIDorProductID string, groupID openapi_types.UUID, params *GetGroupVersionTimelineParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
@@ -3182,7 +3183,7 @@ type ClientWithResponsesInterface interface {
 	GetGroupVersionBreakdownWithResponse(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*GetGroupVersionBreakdownResponse, error)
 
 	// GetGroupVersionTimelineWithResponse request
-	GetGroupVersionTimelineWithResponse(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupVersionTimelineParams, reqEditors ...RequestEditorFn) (*GetGroupVersionTimelineResponse, error)
+	GetGroupVersionTimelineWithResponse(ctx context.Context, appIDorProductID string, groupID openapi_types.UUID, params *GetGroupVersionTimelineParams, reqEditors ...RequestEditorFn) (*GetGroupVersionTimelineResponse, error)
 
 	// PaginatePackagesWithResponse request
 	PaginatePackagesWithResponse(ctx context.Context, appIDorProductID string, params *PaginatePackagesParams, reqEditors ...RequestEditorFn) (*PaginatePackagesResponse, error)
@@ -4380,7 +4381,7 @@ func (c *ClientWithResponses) GetGroupVersionBreakdownWithResponse(ctx context.C
 }
 
 // GetGroupVersionTimelineWithResponse request returning *GetGroupVersionTimelineResponse
-func (c *ClientWithResponses) GetGroupVersionTimelineWithResponse(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupVersionTimelineParams, reqEditors ...RequestEditorFn) (*GetGroupVersionTimelineResponse, error) {
+func (c *ClientWithResponses) GetGroupVersionTimelineWithResponse(ctx context.Context, appIDorProductID string, groupID openapi_types.UUID, params *GetGroupVersionTimelineParams, reqEditors ...RequestEditorFn) (*GetGroupVersionTimelineResponse, error) {
 	rsp, err := c.GetGroupVersionTimeline(ctx, appIDorProductID, groupID, params, reqEditors...)
 	if err != nil {
 		return nil, err
