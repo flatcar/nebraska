@@ -78,3 +78,84 @@ The OIDC provider's SSO session cookies handle re-authentication transparently, 
 - [RFC 7636 - PKCE](https://datatracker.ietf.org/doc/html/rfc7636)
 - [OAuth 2.0 Security BCP](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-security-topics)
 - [OAuth 2.0 for SPAs](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps)
+
+---
+
+## ADR-002: OIDC Access Token Audience Validation
+
+**Status**: Implemented
+**Supersedes**: part of ADR-001's stateless JWT validation
+
+### Context
+
+ADR-001 moved the backend to stateless JWT validation. That implementation set
+go-oidc's `SkipClientIDCheck: true`, so the backend verified only the signature,
+issuer and expiry. Any valid, unexpired token from the configured issuer was
+accepted, including one the provider issued to a completely different
+application in the same realm or tenant.
+
+### Decision
+
+Validate the access token audience: the `aud` claim must contain the value of
+`--oidc-audience`, which becomes required in OIDC mode.
+
+This is the standard OAuth resource-server boundary:
+
+- [RFC 9068](https://www.rfc-editor.org/rfc/rfc9068) §4 requires a resource
+  server to reject a JWT access token whose `aud` does not identify it.
+- [RFC 8725](https://www.rfc-editor.org/rfc/rfc8725) §3.9 requires audience
+  validation to prevent token substitution, and §3.12 lists "use different `aud`
+  values for different uses of JWTs from the same issuer" as a way to keep
+  validation rules for different token kinds mutually exclusive.
+
+### Options considered
+
+**Validate `azp` / `client_id` instead of or alongside `aud`.** Rejected. `azp`
+is optional in OIDC Core and is not a resource-server check; Okta uses `cid`
+rather than `azp`, and no comparable project (Kubernetes apiserver, Argo CD,
+Grafana, Harbor) pivots on it. Restricting which client applications may call the
+API is a separate defence-in-depth feature, not the audience boundary.
+
+**Require the audience to differ from `--oidc-client-id`.** Rejected. A provider
+with no separate resource server legitimately issues access tokens whose audience
+is the client itself. Dex does exactly that, defaulting the access token audience
+to the requesting client. Enforcing a difference would leave such deployments
+with no valid configuration.
+
+**Warn instead of failing when the audience is unset.** Rejected as the default.
+A deployment that silently keeps accepting foreign tokens is the vulnerable
+state, and operators rarely revisit warnings. `--oidc-skip-audience-check` gives
+a one-flag path to start immediately without changing the identity provider, so
+requiring the audience does not block upgrades.
+
+**Rely on audience validation alone to separate access tokens from ID tokens.**
+Adopted for the security fix itself, then hardened separately. Audience
+validation is a spec-sanctioned way to keep the two kinds mutually exclusive
+(RFC 8725 §3.12), and Keycloak's audience mapper keeps the API audience out of
+ID tokens by default. Nebraska additionally rejects tokens that positively
+identify as another kind — an RFC 9068 `at+jwt` type header is an authoritative
+accept, a Keycloak `typ` claim of `ID` is rejected, and providers that emit no
+token type marker are unaffected.
+
+### Consequences
+
+**Breaking** for OIDC deployments: Nebraska refuses to start without
+`--oidc-audience`, and providers that do not place that value in the access token
+will see requests rejected. Keycloak requires an audience protocol mapper; it
+ignores the `audience` request parameter. `--auth-mode=noop` and
+`--auth-mode=github` are unaffected. See the
+[OIDC Migration Guide](./oidc-migration-guide.md) for the staged upgrade path.
+
+`--oidc-audience` now has two roles: the frontend still sends it as the OIDC
+`audience` authorization request parameter, and the backend validates it. These
+are the request and the result of the same identifier, so a single setting is
+correct. Auth0 in particular needs the request parameter, without which it issues
+an opaque access token that cannot be validated at all. Providers that do not
+implement the parameter must ignore it per RFC 6749 §3.1 and §3.2.
+
+### References
+
+- [RFC 9068 - JWT Profile for OAuth 2.0 Access Tokens](https://www.rfc-editor.org/rfc/rfc9068)
+- [RFC 8725 - JSON Web Token Best Current Practices](https://www.rfc-editor.org/rfc/rfc8725)
+- [RFC 9700 - Best Current Practice for OAuth 2.0 Security](https://www.rfc-editor.org/rfc/rfc9700)
+- [Keycloak audience support](https://www.keycloak.org/docs/latest/server_admin/#_audience)

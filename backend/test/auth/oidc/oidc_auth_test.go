@@ -5,19 +5,23 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/oauth2-proxy/mockoidc"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/flatcar/nebraska/backend/pkg/config"
 	"github.com/flatcar/nebraska/backend/pkg/server"
 )
 
 type oidcTestSetup struct {
 	nebraskaServer   interface{ Shutdown(context.Context) error }
-	mockOIDCProvider interface{ Shutdown() error }
+	mockOIDCProvider *mockoidc.MockOIDC
 }
 
-func startWithOIDC(t *testing.T) oidcTestSetup {
+func startWithOIDC(t *testing.T, configure ...func(*config.Config)) oidcTestSetup {
 	// establish db connection
 	db := newDBForTest(t)
 
@@ -25,8 +29,13 @@ func startWithOIDC(t *testing.T) oidcTestSetup {
 	mockOIDCProvider := newOIDCMockServer(t)
 	startOIDCMockServer(t, mockOIDCProvider)
 
+	localConf := *conf
+	for _, fn := range configure {
+		fn(&localConf)
+	}
+
 	// start nebraska server
-	nebraskaServer, err := server.New(conf, db, adminSvc(db), runtimeSvc(db))
+	nebraskaServer, err := server.New(&localConf, db, adminSvc(db), runtimeSvc(db))
 	require.NotNil(t, nebraskaServer)
 	require.NoError(t, err)
 
@@ -47,7 +56,133 @@ func (s oidcTestSetup) shutdown() {
 	_ = s.mockOIDCProvider.Shutdown()
 }
 
+func signedAccessToken(t *testing.T, provider *mockoidc.MockOIDC, audience []string) string {
+	t.Helper()
+	return signedTokenWithClaims(t, provider, func(c jwt.MapClaims) { c["aud"] = audience })
+}
+
+// signedTokenWithClaims builds a token with the expected audience, then lets the
+// caller mutate the claims to model a specific provider's token shape.
+func signedTokenWithClaims(t *testing.T, provider *mockoidc.MockOIDC, mutate func(jwt.MapClaims)) string {
+	t.Helper()
+
+	now := time.Now()
+	claims := jwt.MapClaims{
+		"iss":    issuerURL,
+		"sub":    "oidc-test-user",
+		"aud":    []string{audienceID},
+		"iat":    now.Unix(),
+		"nbf":    now.Unix(),
+		"exp":    now.Add(5 * time.Minute).Unix(),
+		"groups": []string{"nebraska-member"},
+	}
+	mutate(claims)
+
+	token, err := provider.Keypair.SignJWT(claims)
+	require.NoError(t, err)
+	return token
+}
+
+func requestWithToken(t *testing.T, path, token string) *http.Response {
+	t.Helper()
+
+	req, err := http.NewRequest(http.MethodGet, testServerURL+path, nil)
+	require.NoError(t, err)
+	req.Header.Set("Authorization", "Bearer "+token)
+
+	resp, err := http.DefaultClient.Do(req)
+	require.NoError(t, err)
+	return resp
+}
+
 func TestOIDCAuthorization(t *testing.T) {
+	t.Run("authorize_with_expected_audience", func(t *testing.T) {
+		setup := startWithOIDC(t)
+		defer setup.shutdown()
+
+		resp := requestWithToken(t, "/api/apps", signedAccessToken(t, setup.mockOIDCProvider, []string{audienceID}))
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+	})
+
+	t.Run("reject_wrong_audience", func(t *testing.T) {
+		setup := startWithOIDC(t)
+		defer setup.shutdown()
+
+		resp := requestWithToken(t, "/api/apps", signedAccessToken(t, setup.mockOIDCProvider, []string{"other-api"}))
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
+	})
+
+	t.Run("reject_missing_audience", func(t *testing.T) {
+		setup := startWithOIDC(t)
+		defer setup.shutdown()
+
+		resp := requestWithToken(t, "/api/apps", signedAccessToken(t, setup.mockOIDCProvider, nil))
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
+	})
+
+	t.Run("authorize_when_one_of_multiple_audiences_matches", func(t *testing.T) {
+		setup := startWithOIDC(t)
+		defer setup.shutdown()
+
+		resp := requestWithToken(t, "/api/apps", signedAccessToken(t, setup.mockOIDCProvider, []string{"account", audienceID}))
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+	})
+
+	t.Run("reject_token_issued_for_the_frontend_client", func(t *testing.T) {
+		setup := startWithOIDC(t)
+		defer setup.shutdown()
+
+		resp := requestWithToken(t, "/api/apps", signedAccessToken(t, setup.mockOIDCProvider, []string{clientID}))
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
+	})
+
+	// An operator who maps the API audience onto ID tokens as well as access
+	// tokens produces an ID token that passes audience validation. Only the
+	// token type check rejects it.
+	t.Run("reject_id_token_carrying_the_api_audience", func(t *testing.T) {
+		setup := startWithOIDC(t)
+		defer setup.shutdown()
+
+		token := signedTokenWithClaims(t, setup.mockOIDCProvider, func(c jwt.MapClaims) {
+			c["aud"] = []string{clientID, audienceID}
+			c["typ"] = "ID"
+		})
+
+		resp := requestWithToken(t, "/api/apps", token)
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
+	})
+
+	// Providers that mark access tokens the Keycloak way must keep working.
+	t.Run("authorize_token_with_bearer_typ_claim", func(t *testing.T) {
+		setup := startWithOIDC(t)
+		defer setup.shutdown()
+
+		token := signedTokenWithClaims(t, setup.mockOIDCProvider, func(c jwt.MapClaims) {
+			c["typ"] = "Bearer"
+		})
+
+		resp := requestWithToken(t, "/api/apps", token)
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+	})
+
+	t.Run("skip_audience_check_restores_old_behavior", func(t *testing.T) {
+		setup := startWithOIDC(t, func(conf *config.Config) {
+			conf.OidcSkipAudienceCheck = true
+		})
+		defer setup.shutdown()
+
+		resp := requestWithToken(t, "/api/apps", signedAccessToken(t, setup.mockOIDCProvider, []string{"other-api"}))
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+	})
+
 	t.Run("authorize_with_invalid_token", func(t *testing.T) {
 		setup := startWithOIDC(t)
 		defer setup.shutdown()
@@ -105,6 +240,24 @@ func TestOIDCAuthorization(t *testing.T) {
 }
 
 func TestOIDCValidateTokenEndpoint(t *testing.T) {
+	t.Run("validate_token_with_expected_audience", func(t *testing.T) {
+		setup := startWithOIDC(t)
+		defer setup.shutdown()
+
+		resp := requestWithToken(t, "/login/validate_token", signedAccessToken(t, setup.mockOIDCProvider, []string{audienceID}))
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+	})
+
+	t.Run("validate_token_rejects_wrong_audience", func(t *testing.T) {
+		setup := startWithOIDC(t)
+		defer setup.shutdown()
+
+		resp := requestWithToken(t, "/login/validate_token", signedAccessToken(t, setup.mockOIDCProvider, []string{"other-api"}))
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
+	})
+
 	t.Run("validate_token_without_header", func(t *testing.T) {
 		setup := startWithOIDC(t)
 		defer setup.shutdown()
@@ -139,5 +292,82 @@ func TestOIDCValidateTokenEndpoint(t *testing.T) {
 
 		// Should return 401 Unauthorized
 		assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
+	})
+}
+
+// sessionAccessToken mints a token mockoidc will accept at its userinfo
+// endpoint. The token carries only registered claims, so it holds no roles of
+// its own and the roles can only come from userinfo. The audience is overridden
+// to the API audience so the token also clears Nebraska's audience check.
+func sessionAccessToken(t *testing.T, provider *mockoidc.MockOIDC, scopes string, groups []string) string {
+	t.Helper()
+
+	session, err := provider.SessionStore.NewSession(scopes, "", &mockoidc.MockUser{
+		Subject: "userinfo-test-user",
+		Groups:  groups,
+	}, "", "")
+	require.NoError(t, err)
+
+	cfg := provider.Config()
+	cfg.ClientID = audienceID
+
+	token, err := session.AccessToken(cfg, provider.Keypair, time.Now())
+	require.NoError(t, err)
+
+	return token
+}
+
+func TestOIDCUserInfoRoleExtraction(t *testing.T) {
+	const scopesWithGroups = "openid profile email groups"
+
+	useUserInfo := func(c *config.Config) { c.OidcUseUserInfo = true }
+
+	t.Run("roles_resolved_from_userinfo", func(t *testing.T) {
+		setup := startWithOIDC(t, useUserInfo)
+		defer setup.shutdown()
+
+		token := sessionAccessToken(t, setup.mockOIDCProvider, scopesWithGroups, []string{"nebraska-admin"})
+
+		resp := requestWithToken(t, "/api/apps", token)
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+	})
+
+	t.Run("unmatched_userinfo_roles_are_forbidden", func(t *testing.T) {
+		setup := startWithOIDC(t, useUserInfo)
+		defer setup.shutdown()
+
+		token := sessionAccessToken(t, setup.mockOIDCProvider, scopesWithGroups, []string{"some-other-role"})
+
+		resp := requestWithToken(t, "/api/apps", token)
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusForbidden, resp.StatusCode)
+	})
+
+	// Without the groups scope mockoidc omits the roles path from userinfo. That
+	// is a misconfiguration, not an authorization decision, so it must not be
+	// reported as a 403.
+	t.Run("userinfo_without_the_roles_path_is_an_error", func(t *testing.T) {
+		setup := startWithOIDC(t, useUserInfo)
+		defer setup.shutdown()
+
+		token := sessionAccessToken(t, setup.mockOIDCProvider, "openid profile email", []string{"nebraska-admin"})
+
+		resp := requestWithToken(t, "/api/apps", token)
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+	})
+
+	// The same token on the default path proves the roles really came from
+	// userinfo: the token itself carries none.
+	t.Run("token_path_finds_no_roles_in_the_same_token", func(t *testing.T) {
+		setup := startWithOIDC(t)
+		defer setup.shutdown()
+
+		token := sessionAccessToken(t, setup.mockOIDCProvider, scopesWithGroups, []string{"nebraska-admin"})
+
+		resp := requestWithToken(t, "/api/apps", token)
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
 	})
 }

@@ -14,6 +14,7 @@ const (
 	testServerURL    = "http://localhost:6000"
 	defaultTestDbURL = "postgres://postgres:nebraska@127.0.0.1:5432/nebraska_tests?sslmode=disable&connect_timeout=10"
 	clientID         = "clientID"
+	audienceID       = "https://nebraska-api"
 	clientSecret     = "clientSecret"
 	issuerURL        = "http://127.0.0.1:8080/oidc"
 	serverPort       = uint(6000)
@@ -29,6 +30,7 @@ var conf = &config.Config{
 	Debug:           true,
 	ServerPort:      serverPort,
 	OidcClientID:    clientID,
+	OidcAudience:    audienceID,
 	OidcIssuerURL:   issuerURL,
 	OidcAdminRoles:  "nebraska-admin",
 	OidcViewerRoles: "nebraska-member",

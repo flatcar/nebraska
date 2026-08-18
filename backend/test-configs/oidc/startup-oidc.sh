@@ -34,6 +34,7 @@ exec /nebraska/nebraska \
     --auth-mode=oidc \
     --oidc-issuer-url=http://127.0.0.1:8063/realms/test \
     --oidc-client-id=nebraska-test \
+    --oidc-audience=nebraska-api \
     --oidc-admin-roles=test_admin \
     --oidc-viewer-roles=test_viewer \
     --oidc-roles-path=realm_access.roles \
