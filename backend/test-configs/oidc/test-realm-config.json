@@ -8,7 +8,9 @@
         "name": "test_admin",
         "composite": true,
         "composites": {
-          "realm": ["test_viewer"]
+          "realm": [
+            "test_viewer"
+          ]
         }
       },
       {
@@ -25,8 +27,14 @@
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": true,
       "implicitFlowEnabled": false,
-      "redirectUris": ["http://localhost:8003/*", "http://127.0.0.1:8003/*"],
-      "webOrigins": ["http://localhost:8003", "http://127.0.0.1:8003"],
+      "redirectUris": [
+        "http://localhost:8003/*",
+        "http://127.0.0.1:8003/*"
+      ],
+      "webOrigins": [
+        "http://localhost:8003",
+        "http://127.0.0.1:8003"
+      ],
       "protocolMappers": [
         {
           "name": "realm-roles",
@@ -40,6 +48,17 @@
             "id.token.claim": "true",
             "access.token.claim": "true"
           }
+        },
+        {
+          "name": "nebraska-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "nebraska-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "false"
+          }
         }
       ]
     }
@@ -51,35 +70,47 @@
       "firstName": "Test",
       "lastName": "Admin",
       "enabled": true,
-      "credentials": [{
-        "type": "password",
-        "value": "admin123"
-      }],
-      "realmRoles": ["test_admin"]
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin123"
+        }
+      ],
+      "realmRoles": [
+        "test_admin"
+      ]
     },
     {
       "username": "test-viewer",
-      "email": "viewer@test.com", 
+      "email": "viewer@test.com",
       "firstName": "Test",
       "lastName": "Viewer",
       "enabled": true,
-      "credentials": [{
-        "type": "password",
-        "value": "viewer123"
-      }],
-      "realmRoles": ["test_viewer"]
+      "credentials": [
+        {
+          "type": "password",
+          "value": "viewer123"
+        }
+      ],
+      "realmRoles": [
+        "test_viewer"
+      ]
     },
     {
       "username": "test-expired",
       "email": "expired@test.com",
-      "firstName": "Test", 
+      "firstName": "Test",
       "lastName": "Expired",
       "enabled": true,
-      "credentials": [{
-        "type": "password",
-        "value": "expired123"
-      }],
-      "realmRoles": ["test_viewer"]
+      "credentials": [
+        {
+          "type": "password",
+          "value": "expired123"
+        }
+      ],
+      "realmRoles": [
+        "test_viewer"
+      ]
     }
   ]
 }
