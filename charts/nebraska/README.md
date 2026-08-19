@@ -26,7 +26,8 @@ The OIDC implementation has been refactored to use Authorization Code Flow with 
 - `config.auth.oidc.sessionCryptKey` - Backend is stateless
 
 **Added Configuration Options:**
-- `config.auth.oidc.audience` - Optional, required for Auth0
+- `config.auth.oidc.audience` - Required API/resource audience expected in access tokens
+- `config.auth.oidc.skipAudienceCheck` - Insecure migration escape hatch; disables audience validation
 - `config.auth.oidc.useUserInfo` - Use UserInfo endpoint for role extraction (for providers that don't include roles in access token)
 - `config.caFile` - Path to a PEM-encoded CA certificate file to trust for TLS verification
 
@@ -50,8 +51,8 @@ The OIDC implementation has been refactored to use Authorization Code Flow with 
          issuerURL: "https://your-oidc-provider.com"
          adminRoles: "nebraska-admin"
          viewerRoles: "nebraska-viewer"
+         audience: "your-nebraska-api-identifier"
          # Remove: clientSecret, validRedirectURLs, sessionAuthKey, sessionCryptKey
-         # Optional: audience (required for Auth0)
    ```
 
 3. **Upgrade the helm chart:**
@@ -191,7 +192,8 @@ $ kubectl exec -ti pod/nebraska-postgresql-0 -- psql < backup.sql
 | `config.auth.oidc.viewerRoles`                        | comma-separated list of accepted roles with viewer access | `nil`  |
 | `config.auth.oidc.rolesPath`                          | json path in which the roles array is present in the id token  | `nil`  |
 | `config.auth.oidc.scopes`                             | comma-separated list of scopes to be used in OIDC | `nil`  |
-| `config.auth.oidc.audience`                           | OIDC audience (required for Auth0, optional for others) | `nil`  |
+| `config.auth.oidc.audience`                           | Required API/resource audience expected in OIDC access tokens | `nil`  |
+| `config.auth.oidc.skipAudienceCheck`                  | Disable access-token audience validation (insecure migration escape hatch) | `false` |
 | `config.auth.oidc.useUserInfo`                        | Use UserInfo endpoint for role extraction (for providers that don't include roles in access token) | `false`  |
 | `config.database.host`                                | The host name of the database server                                                                                                 | `""` (use postgresql from Bitnami subchart)                             |
 | `config.database.port`                                | The port number the database server is listening on                                                                                  | `5432`                                                                  |
