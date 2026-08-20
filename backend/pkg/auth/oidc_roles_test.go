@@ -1,12 +1,21 @@
 package auth
 
 import (
+	"context"
+	"crypto"
+	"crypto/rand"
+	"crypto/rsa"
 	"encoding/json"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"testing"
+	"time"
 
+	"github.com/coreos/go-oidc/v3/oidc"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
-	"github.com/tidwall/gjson"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMain(m *testing.M) {
@@ -16,8 +25,9 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-// TestRolesPathExtraction tests the gjson path extraction logic used in both
-// rolesFromToken and rolesFromUserInfo
+// TestRolesPathExtraction pins the path extraction contract of rolesFromToken
+// and rolesFromUserInfo. Both must answer identically, so every case runs
+// against both.
 func TestRolesPathExtraction(t *testing.T) {
 	tests := []struct {
 		name          string
@@ -53,7 +63,18 @@ func TestRolesPathExtraction(t *testing.T) {
 			},
 			rolesPath:     "groups",
 			expectExists:  true,
-			expectedRoles: nil,
+			expectedRoles: []string{},
+		},
+		{
+			// A scalar must not be rejected; the pre-gjson code type-asserted
+			// this to []any and panicked.
+			name: "scalar value at path",
+			claims: map[string]any{
+				"groups": "admin",
+			},
+			rolesPath:     "groups",
+			expectExists:  true,
+			expectedRoles: []string{"admin"},
 		},
 		{
 			name: "path does not exist",
@@ -75,20 +96,21 @@ func TestRolesPathExtraction(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			claimsJSON, err := json.Marshal(tt.claims)
-			assert.NoError(t, err)
+			tokenRoles, tokenErr := rolesFromToken(idTokenWithClaims(t, tt.claims), tt.rolesPath)
 
-			result := gjson.GetBytes(claimsJSON, tt.rolesPath)
-			assert.Equal(t, tt.expectExists, result.Exists())
+			oa := &oidcAuth{provider: userInfoProvider(t, tt.claims)}
+			userInfoRoles, userInfoErr := oa.rolesFromUserInfo(context.Background(), userInfoToken, tt.rolesPath)
 
-			if tt.expectExists {
-				var roles []string
-				result.ForEach(func(_, value gjson.Result) bool {
-					roles = append(roles, value.String())
-					return true
-				})
-				assert.Equal(t, tt.expectedRoles, roles)
+			if !tt.expectExists {
+				assert.Error(t, tokenErr, "a missing roles path must be an error")
+				assert.Error(t, userInfoErr, "a missing roles path must be an error")
+				return
 			}
+
+			assert.NoError(t, tokenErr)
+			assert.Equal(t, tt.expectedRoles, tokenRoles)
+			assert.NoError(t, userInfoErr)
+			assert.Equal(t, tt.expectedRoles, userInfoRoles)
 		})
 	}
 }
@@ -137,4 +159,80 @@ func TestDetermineAccessLevel(t *testing.T) {
 			assert.Equal(t, tt.expectLevel, level)
 		})
 	}
+}
+
+const userInfoToken = "test-access-token"
+
+// signingKey is generated once; RSA key generation dominates the test runtime.
+var signingKey = func() *rsa.PrivateKey {
+	key, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		panic(err)
+	}
+	return key
+}()
+
+// idTokenWithClaims signs claims and runs them back through go-oidc's verifier,
+// the only way to build a populated *oidc.IDToken from outside that package.
+func idTokenWithClaims(t *testing.T, claims map[string]any) *oidc.IDToken {
+	t.Helper()
+
+	const issuer = "https://issuer.example"
+
+	mapClaims := jwt.MapClaims{
+		"iss": issuer,
+		"sub": "roles-test-user",
+		"aud": []string{"nebraska-api"},
+		"exp": time.Now().Add(5 * time.Minute).Unix(),
+	}
+	for k, v := range claims {
+		mapClaims[k] = v
+	}
+
+	raw, err := jwt.NewWithClaims(jwt.SigningMethodRS256, mapClaims).SignedString(signingKey)
+	require.NoError(t, err)
+
+	token, err := oidc.NewVerifier(
+		issuer,
+		&oidc.StaticKeySet{PublicKeys: []crypto.PublicKey{signingKey.Public()}},
+		&oidc.Config{SkipClientIDCheck: true},
+	).Verify(context.Background(), raw)
+	require.NoError(t, err)
+
+	return token
+}
+
+// userInfoProvider serves the discovery document go-oidc needs plus a userinfo
+// endpoint returning the given claims.
+func userInfoProvider(t *testing.T, userInfoClaims map[string]any) *oidc.Provider {
+	t.Helper()
+
+	mux := http.NewServeMux()
+	server := httptest.NewServer(mux)
+	t.Cleanup(server.Close)
+
+	mux.HandleFunc("/.well-known/openid-configuration", func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		require.NoError(t, json.NewEncoder(w).Encode(map[string]any{
+			"issuer":                 server.URL,
+			"authorization_endpoint": server.URL + "/auth",
+			"token_endpoint":         server.URL + "/token",
+			"jwks_uri":               server.URL + "/keys",
+			"userinfo_endpoint":      server.URL + "/userinfo",
+		}))
+	})
+
+	mux.HandleFunc("/userinfo", func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Authorization") != "Bearer "+userInfoToken {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		require.NoError(t, json.NewEncoder(w).Encode(userInfoClaims))
+	})
+
+	provider, err := oidc.NewProvider(context.Background(), server.URL)
+	require.NoError(t, err)
+
+	return provider
 }

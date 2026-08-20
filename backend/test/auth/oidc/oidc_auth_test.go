@@ -296,3 +296,80 @@ func TestOIDCAudienceAuthorization(t *testing.T) {
 		assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 	})
 }
+
+// sessionAccessToken mints a token mockoidc will accept at its userinfo
+// endpoint. The token carries only registered claims, so it holds no roles of
+// its own and the roles can only come from userinfo. The audience is overridden
+// to the API audience so the token also clears Nebraska's audience check.
+func sessionAccessToken(t *testing.T, provider *mockoidc.MockOIDC, scopes string, groups []string) string {
+	t.Helper()
+
+	session, err := provider.SessionStore.NewSession(scopes, "", &mockoidc.MockUser{
+		Subject: "userinfo-test-user",
+		Groups:  groups,
+	}, "", "")
+	require.NoError(t, err)
+
+	cfg := provider.Config()
+	cfg.ClientID = audienceID
+
+	token, err := session.AccessToken(cfg, provider.Keypair, time.Now())
+	require.NoError(t, err)
+
+	return token
+}
+
+func TestOIDCUserInfoRoleExtraction(t *testing.T) {
+	const scopesWithGroups = "openid profile email groups"
+
+	useUserInfo := func(c *config.Config) { c.OidcUseUserInfo = true }
+
+	t.Run("roles_resolved_from_userinfo", func(t *testing.T) {
+		setup := startWithOIDC(t, useUserInfo)
+		defer setup.shutdown()
+
+		token := sessionAccessToken(t, setup.mockOIDCProvider, scopesWithGroups, []string{"nebraska-admin"})
+
+		resp := requestWithToken(t, "/api/apps", token)
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+	})
+
+	t.Run("unmatched_userinfo_roles_are_forbidden", func(t *testing.T) {
+		setup := startWithOIDC(t, useUserInfo)
+		defer setup.shutdown()
+
+		token := sessionAccessToken(t, setup.mockOIDCProvider, scopesWithGroups, []string{"some-other-role"})
+
+		resp := requestWithToken(t, "/api/apps", token)
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusForbidden, resp.StatusCode)
+	})
+
+	// Without the groups scope mockoidc omits the roles path from userinfo. That
+	// is a misconfiguration, not an authorization decision, so it must not be
+	// reported as a 403.
+	t.Run("userinfo_without_the_roles_path_is_an_error", func(t *testing.T) {
+		setup := startWithOIDC(t, useUserInfo)
+		defer setup.shutdown()
+
+		token := sessionAccessToken(t, setup.mockOIDCProvider, "openid profile email", []string{"nebraska-admin"})
+
+		resp := requestWithToken(t, "/api/apps", token)
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+	})
+
+	// The same token on the default path proves the roles really came from
+	// userinfo: the token itself carries none.
+	t.Run("token_path_finds_no_roles_in_the_same_token", func(t *testing.T) {
+		setup := startWithOIDC(t)
+		defer setup.shutdown()
+
+		token := sessionAccessToken(t, setup.mockOIDCProvider, scopesWithGroups, []string{"nebraska-admin"})
+
+		resp := requestWithToken(t, "/api/apps", token)
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+	})
+}
