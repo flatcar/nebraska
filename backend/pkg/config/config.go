@@ -115,6 +115,9 @@ func (c *Config) Validate() error {
 	if c.InstanceRetention > 0 && c.InstanceRetentionBatchSize == 0 {
 		return errors.New("instance-retention-batch-size must be greater than zero when instance-retention is enabled")
 	}
+	if c.InstanceRetentionBatchSize > 10000 {
+		return errors.New("instance-retention-batch-size must be at most 10000")
+	}
 
 	return nil
 }

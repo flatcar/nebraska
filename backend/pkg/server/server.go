@@ -189,11 +189,16 @@ func runInstanceStatsAndPrune(conf *config.Config, runtimeSvc *runtime.Service) 
 		return
 	}
 
+	if result.Deleted == 0 && !result.MoreRemain {
+		return
+	}
+
 	if result.Deleted > 0 {
 		metrics.AddInstancesPruned(float64(result.Deleted))
 	}
 	l.Info().
 		Int64("deleted", result.Deleted).
+		Bool("more_remain", result.MoreRemain).
 		Dur("retention", conf.InstanceRetention).
 		Msg("instance retention pruned stale instances")
 }
