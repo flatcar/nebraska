@@ -48,8 +48,10 @@ The job runs once at startup and then every hour, next to the existing
 
 ## What is deleted
 
-Each pass deletes up to `instance-retention-batch-size` rows from `instance`
-(`500` by default) and repeats until none remain. Foreign keys on related
+Each hourly pass deletes up to `instance-retention-batch-size` rows per
+statement (`500` by default) and at most 20 statements, so a first enable
+against a large backlog cannot lock the hot tables for the whole hour.
+Remaining stale rows are picked up on later ticks. Foreign keys on related
 tables are `ON DELETE CASCADE`, so history, events, and activity for those
 machines go with them.
 

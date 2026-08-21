@@ -114,6 +114,11 @@ func TestValidateInstanceRetention(t *testing.T) {
 		c := &Config{AuthMode: "noop", InstanceRetention: -time.Hour, InstanceRetentionBatchSize: 500}
 		assert.Error(t, c.Validate())
 	})
+
+	t.Run("batch size too large", func(t *testing.T) {
+		c := &Config{AuthMode: "noop", InstanceRetention: time.Hour, InstanceRetentionBatchSize: 10001}
+		assert.Error(t, c.Validate())
+	})
 }
 
 // withArgs replaces the command line for one test, because Parse reads os.Args.
