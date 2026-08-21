@@ -147,6 +147,16 @@ func calculateMetrics(api *api.API) error {
 		return fmt.Errorf("failed to get app instances per channel metrics: %w", err)
 	}
 
+	// Reset before repopulating: the DB query only returns label
+	// combinations that currently have active instances, but the
+	// Prometheus client library keeps every previously-seen label
+	// combination (and its last value) registered until it's explicitly
+	// removed. Without this, a series whose instances all went stale, or
+	// whose channel was deleted, would keep exporting its last non-zero
+	// count forever, undermining the freshness filter in
+	// GetAppInstancesPerChannelMetrics and making the metric disagree
+	// with the UI again.
+	appInstancePerChannelGaugeMetric.Reset()
 	for _, metric := range aipcMetrics {
 		archLabel := noChannelArchLabel
 		if metric.Arch >= 0 {
@@ -160,6 +170,9 @@ func calculateMetrics(api *api.API) error {
 		return fmt.Errorf("failed to get failed update metrics: %w", err)
 	}
 
+	// Same reasoning as above: an application with no failed updates left
+	// should stop being exported instead of keeping its last count.
+	failedUpdatesGaugeMetric.Reset()
 	for _, metric := range fuMetrics {
 		failedUpdatesGaugeMetric.WithLabelValues(metric.ApplicationName).Set(float64(metric.FailureCount))
 	}
