@@ -4,6 +4,7 @@ import (
 	"os"
 	"strconv"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -91,6 +92,28 @@ func TestParseInstanceMode(t *testing.T) {
 			assert.Equal(t, tc.want, conf.InstanceMode)
 		})
 	}
+}
+
+func TestValidateInstanceRetention(t *testing.T) {
+	t.Run("disabled by default", func(t *testing.T) {
+		c := &Config{AuthMode: "noop"}
+		assert.NoError(t, c.Validate())
+	})
+
+	t.Run("enabled requires batch size", func(t *testing.T) {
+		c := &Config{AuthMode: "noop", InstanceRetention: time.Hour}
+		assert.Error(t, c.Validate())
+	})
+
+	t.Run("enabled with batch size", func(t *testing.T) {
+		c := &Config{AuthMode: "noop", InstanceRetention: time.Hour, InstanceRetentionBatchSize: 500}
+		assert.NoError(t, c.Validate())
+	})
+
+	t.Run("negative retention", func(t *testing.T) {
+		c := &Config{AuthMode: "noop", InstanceRetention: -time.Hour, InstanceRetentionBatchSize: 500}
+		assert.Error(t, c.Validate())
+	})
 }
 
 // withArgs replaces the command line for one test, because Parse reads os.Args.
