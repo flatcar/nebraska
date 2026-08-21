@@ -23,6 +23,7 @@ import (
 	"github.com/flatcar/nebraska/backend/pkg/config"
 	"github.com/flatcar/nebraska/backend/pkg/handler"
 	"github.com/flatcar/nebraska/backend/pkg/logger"
+	"github.com/flatcar/nebraska/backend/pkg/metrics"
 	custommiddleware "github.com/flatcar/nebraska/backend/pkg/middleware"
 	"github.com/flatcar/nebraska/backend/pkg/sessions"
 	echosessions "github.com/flatcar/nebraska/backend/pkg/sessions/echo"
@@ -149,25 +150,52 @@ func New(conf *config.Config, db *db.API, adminSvc *admin.Service, runtimeSvc *r
 		e.DefaultHTTPErrorHandler(err, c)
 	}
 
-	// setup background job for updating instance stats
+	// setup background job for updating instance stats and optional instance retention
 	go func() {
-		// update once at startup
-		err = runtimeSvc.UpdateInstanceStats(nil, nil)
-		if err != nil {
-			l.Err(err).Msg("Error updating instance stats")
-		}
+		runInstanceStatsAndPrune(conf, runtimeSvc)
 		ticker := time.NewTicker(time.Hour)
 		defer ticker.Stop()
 
 		for range ticker.C {
-			err := runtimeSvc.UpdateInstanceStats(nil, nil)
-			if err != nil {
-				l.Err(err).Msg("Error updating instance stats")
-			}
+			runInstanceStatsAndPrune(conf, runtimeSvc)
 		}
 	}()
 
 	return e, nil
+}
+
+func runInstanceStatsAndPrune(conf *config.Config, runtimeSvc *runtime.Service) {
+	err := runtimeSvc.UpdateInstanceStats(nil, nil)
+	if err != nil {
+		l.Err(err).Msg("Error updating instance stats")
+	}
+
+	if conf.InstanceRetention <= 0 {
+		return
+	}
+
+	cutoff := time.Now().UTC().Add(-conf.InstanceRetention)
+	result, err := runtimeSvc.PruneStaleInstances(cutoff, int(conf.InstanceRetentionBatchSize), conf.InstanceRetentionDryRun)
+	if err != nil {
+		l.Err(err).Dur("retention", conf.InstanceRetention).Msg("Error pruning stale instances")
+		return
+	}
+
+	if conf.InstanceRetentionDryRun {
+		l.Info().
+			Int64("candidates", result.Candidates).
+			Dur("retention", conf.InstanceRetention).
+			Msg("instance retention dry-run; no rows deleted")
+		return
+	}
+
+	if result.Deleted > 0 {
+		metrics.AddInstancesPruned(float64(result.Deleted))
+	}
+	l.Info().
+		Int64("deleted", result.Deleted).
+		Dur("retention", conf.InstanceRetention).
+		Msg("instance retention pruned stale instances")
 }
 
 func setupAuthenticator(conf config.Config, sessionStore *sessions.Store, defaultTeamID string) (auth.Authenticator, error) {
