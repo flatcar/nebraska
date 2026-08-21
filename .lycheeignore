@@ -9,3 +9,8 @@ https://x.com/flatcar
 
 # www.robotstxt.org times out frequently in CI
 https://www.robotstxt.org/robotstxt.html
+
+# kubernetes.slack.com rejects non-browser user agents such as lychee's with a
+# "browser not supported" 403. Checking it would be pointless anyway, since the
+# channel URL resolves to the workspace sign-in page rather than the channel.
+https://kubernetes.slack.com
