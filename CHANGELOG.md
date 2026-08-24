@@ -8,6 +8,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Security
 
+### Added
+
+- **Custom CA Certificate for TLS:** Added `--ca-file` flag to trust additional CA certificates for TLS verification (e.g., internal CA, Let's Encrypt staging). Applies to the OIDC provider client and the syncer. Supports multiple PEM-encoded certs, additive to system CAs. Also exposed as `config.caFile` in the Helm chart.
+- **OEM Attribute Capture:** Instances now store OEM and Aleph version information from Omaha update requests. ([#1286](https://github.com/flatcar/nebraska/pull/1286))
+- **Multi-Step Updates with Floor Packages:** Added support for mandatory intermediate update versions (floor packages) that clients must install before reaching the target version. This enables safe migration paths for breaking changes by ensuring clients update through specific versions in order. Floor packages can be configured per channel with optional reasons and are architecture-specific. ([#1195](https://github.com/flatcar/nebraska/pull/1195))
+- **Optional least-privilege database roles:** `NEBRASKA_MIGRATIONS_DB_URL` runs schema migrations over a separate, short-lived connection, so the serving connection no longer has to own the schema. Both connections must point at the same database in the same cluster. When it is set and names a different user than `NEBRASKA_DB_URL`, Nebraska grants the admin and runtime table privileges to two `NOLOGIN` roles named after the database, `nebraska_admin_<database>` and `nebraska_runtime_<database>`, and adds the serving user to the admin role. Those two roles are created if they do not already exist, which needs `CREATE ROLE` on the migrations role. Groundwork for the distributed topology described in [RFC #1375](https://github.com/flatcar/nebraska/issues/1375); the runtime role is provisioned but not yet selected, so nothing is restricted in this release. Deployments that do not set `NEBRASKA_MIGRATIONS_DB_URL` are unaffected: no roles are created and no table privileges change. ([#1575](https://github.com/flatcar/nebraska/pull/1575))
+
+### Changed
+
+- **Per-group runtime state moved to node-local `group_local` sidecar:** `rollout_in_progress` plus a nullable override column for each `policy_*` column on `groups` now live on a new `group_local` table, in preparation for the distributed Nebraska topology described in [RFC #1375](https://github.com/flatcar/nebraska/issues/1375). The safe-mode auto-pause brake writes the local override instead of mutating the admin default; reads return `COALESCE(override, default)`. The JSON contract is unchanged. ([#1396](https://github.com/flatcar/nebraska/pull/1396))
+- **Activity events split across runtime-local and admin tables:** Admin-originated activity events (channel package updates) are now stored in a separate `admin_activity` table, in preparation for the distributed Nebraska topology described in [RFC #1375](https://github.com/flatcar/nebraska/issues/1375). The JSON contract is unchanged. ([#1398](https://github.com/flatcar/nebraska/pull/1398))
+- **Package Management UI Improvements:**
+  - Replaced POST with idempotent PUT operation for floor package management
+  - Package list UI now updates immediately after blacklist changes
+  - Channel edit dialog filters out blacklisted packages from selection
+  - Floor package selection prevents choosing blacklisted packages with clear visual feedback
+### Removed
+### Bugfixes
+
+- Fixed package blacklist changes not appearing in UI immediately after save
+
+## [4.0.0] - 25/08/2026
+
+### Security
+
 - **OIDC access token audience validation:** Before this release the backend checked only the signature, the issuer and the expiry time of a token. It therefore accepted any token from the configured issuer. This included a token that the provider issued for a different application in the same realm or tenant, and an ID token sent in place of an access token.
 
   Nebraska now also checks the `aud` claim of the token. That claim must contain the audience you configure for the backend API, as required by [RFC 9068](https://www.rfc-editor.org/rfc/rfc9068) section 4. Nebraska also rejects a token that clearly says it is an ID token. A token whose header type is `at+jwt` is accepted as an access token. A token that carries a Keycloak `typ` claim with the value `ID` is rejected. A token that says nothing about its kind is accepted.
@@ -24,25 +49,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- **Custom CA Certificate for TLS:** Added `--ca-file` flag to trust additional CA certificates for TLS verification (e.g., internal CA, Let's Encrypt staging). Applies to the OIDC provider client and the syncer. Supports multiple PEM-encoded certs, additive to system CAs. Also exposed as `config.caFile` in the Helm chart.
-- **OEM Attribute Capture:** Instances now store OEM and Aleph version information from Omaha update requests. ([#1286](https://github.com/flatcar/nebraska/pull/1286))
-- **Multi-Step Updates with Floor Packages:** Added support for mandatory intermediate update versions (floor packages) that clients must install before reaching the target version. This enables safe migration paths for breaking changes by ensuring clients update through specific versions in order. Floor packages can be configured per channel with optional reasons and are architecture-specific. ([#1195](https://github.com/flatcar/nebraska/pull/1195))
-- **Nebraska backend is able to use OIDC userinfo endpoint:** Some OIDC providers do not return group membership inside the access token. The Nebraska frontend passes this access token via the header `Authorization: Bearer <token>` to the backend which can then (optionally) call the OIDC provider's userinfo endpoint to gather group membership. ([#1279](https://github.com/flatcar/nebraska/pull/1279))
-- **Optional least-privilege database roles:** `NEBRASKA_MIGRATIONS_DB_URL` runs schema migrations over a separate, short-lived connection, so the serving connection no longer has to own the schema. Both connections must point at the same database in the same cluster. When it is set and names a different user than `NEBRASKA_DB_URL`, Nebraska grants the admin and runtime table privileges to two `NOLOGIN` roles named after the database, `nebraska_admin_<database>` and `nebraska_runtime_<database>`, and adds the serving user to the admin role. Those two roles are created if they do not already exist, which needs `CREATE ROLE` on the migrations role. Groundwork for the distributed topology described in [RFC #1375](https://github.com/flatcar/nebraska/issues/1375); the runtime role is provisioned but not yet selected, so nothing is restricted in this release. Deployments that do not set `NEBRASKA_MIGRATIONS_DB_URL` are unaffected: no roles are created and no table privileges change. ([#1575](https://github.com/flatcar/nebraska/pull/1575))
-
-### Changed
-
-- **Per-group runtime state moved to node-local `group_local` sidecar:** `rollout_in_progress` plus a nullable override column for each `policy_*` column on `groups` now live on a new `group_local` table, in preparation for the distributed Nebraska topology described in [RFC #1375](https://github.com/flatcar/nebraska/issues/1375). The safe-mode auto-pause brake writes the local override instead of mutating the admin default; reads return `COALESCE(override, default)`. The JSON contract is unchanged. ([#1396](https://github.com/flatcar/nebraska/pull/1396))
-- **Activity events split across runtime-local and admin tables:** Admin-originated activity events (channel package updates) are now stored in a separate `admin_activity` table, in preparation for the distributed Nebraska topology described in [RFC #1375](https://github.com/flatcar/nebraska/issues/1375). The JSON contract is unchanged. ([#1398](https://github.com/flatcar/nebraska/pull/1398))
-- **Package Management UI Improvements:**
-  - Replaced POST with idempotent PUT operation for floor package management
-  - Package list UI now updates immediately after blacklist changes
-  - Channel edit dialog filters out blacklisted packages from selection
-  - Floor package selection prevents choosing blacklisted packages with clear visual feedback
-### Removed
-### Bugfixes
-
-- Fixed package blacklist changes not appearing in UI immediately after save
+- **OIDC UserInfo endpoint for role extraction ([#1279](https://github.com/flatcar/nebraska/pull/1279)):** some providers do not place group membership in the access token. `--oidc-use-userinfo` makes the backend call the provider's UserInfo endpoint instead, using the same `--oidc-roles-path` to locate the roles. The token is verified before it is forwarded, so only an access token issued for this API reaches the provider.
 
 ## [3.0.0] - 28/11/2025
 
