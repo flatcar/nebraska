@@ -213,7 +213,11 @@ postgresql:
     tag: 17.5.0
   primary:
     persistence:
-      enabled: false
+      # Keep the Nebraska database on a PersistentVolume. Disabling this stores
+      # the database in the container filesystem, so every application, group,
+      # channel, package and instance history is lost when the PostgreSQL pod
+      # restarts. Only turn it off for throwaway installations.
+      enabled: true
       storageClass:
       accessModes:
         - ReadWriteOnce
