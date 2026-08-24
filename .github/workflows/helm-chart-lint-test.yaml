@@ -42,6 +42,44 @@ jobs:
         if: steps.list-changed.outputs.changed == 'true'
         run: ct lint --config .github/ct.yaml
 
+      # `helm lint` does NOT enforce the chart's own guards. On Helm 4 a
+      # template `fail` surfaces as `level=INFO msg="funcMap fail"` and lint
+      # still exits 0 -- verified on Helm 4.2.3. So a values file carrying stale
+      # Bitnami keys, or a Bitnami image, would pass `ct lint` untouched.
+      # `helm template` does fail, so gate on that.
+      - name: Render guards (helm template, which lint cannot enforce)
+        if: steps.list-changed.outputs.changed == 'true'
+        run: |
+          set -euo pipefail
+          helm template ci charts/nebraska > /dev/null
+          helm template ci charts/nebraska \
+            --set postgresql.primary.persistence.enabled=true > /dev/null
+
+          # Each of these MUST fail. If one starts passing, a guard has regressed.
+          for bad in \
+            "postgresql.metrics.enabled=true" \
+            "postgresql.image.repository=bitnamilegacy/postgresql" \
+            "postgresql.primary.resources.limits.memory=4Gi" ; do
+            if helm template ci charts/nebraska --set "$bad" > /dev/null 2>&1; then
+              echo "::error::guard regression: --set $bad should have been rejected"
+              exit 1
+            fi
+          done
+
+          # The data-directory guard is upgrade-only.
+          if helm template ci charts/nebraska --is-upgrade \
+               --set postgresql.primary.persistence.enabled=true > /dev/null 2>&1; then
+            echo "::error::guard regression: persistent upgrade without acknowledgement was allowed"
+            exit 1
+          fi
+
+          # Values left at Bitnami defaults must NOT be rejected, so that
+          # vendoring the old values.yaml wholesale still installs.
+          helm template ci charts/nebraska \
+            --set postgresql.architecture=standalone \
+            --set postgresql.metrics.enabled=false \
+            --set postgresql.tls.enabled=false > /dev/null
+
       - name: Create kind cluster
         uses: helm/kind-action@ef37e7f390d99f746eb8b610417061a60e82a6cc # v1.14.0
         if: steps.list-changed.outputs.changed == 'true'

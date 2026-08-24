@@ -1,4 +1,50 @@
-1. Get the application URL by running these commands:
+{{- if and .Values.postgresql.enabled .Values.postgresql.primary.persistence.enabled }}
+NOTE ON THE BUNDLED POSTGRESQL
+
+  This release stores its database in the volume claim
+  data-{{ include "nebraska.postgresql.fullname" . }}-0, at the path
+  {{ .Values.postgresql.dataMountPath }}/{{ .Values.postgresql.dataSubdir }}.
+
+  If you have just upgraded from chart 2.0.0, that path is NOT where the Bitnami
+  subchart kept its data. Check that your data is really there, first that the
+  schema exists at all, then that it has rows:
+
+    kubectl exec -n {{ .Release.Namespace }} {{ include "nebraska.postgresql.fullname" . }}-0, \
+      psql -U {{ .Values.postgresql.auth.username }} -d {{ .Values.postgresql.auth.database }} \
+      -tAc "select to_regclass('public.application')"
+    # empty output = no schema at all = PostgreSQL started a FRESH cluster
+
+    kubectl exec -n {{ .Release.Namespace }} {{ include "nebraska.postgresql.fullname" . }}-0, \
+      psql -U {{ .Values.postgresql.auth.username }} -d {{ .Values.postgresql.auth.database }} \
+      -tAc "select count(*) from application"
+    # run only if the first command printed a name
+
+  Empty output from the first command, or 0 from the second on an install that
+  had data, means your old cluster is still sitting unused in the volume's
+  data/ directory.
+
+    kubectl rollout undo is NOT the fix. Run:  helm rollback {{ .Release.Name }}
+    Do this BEFORE deleting any PVC or PersistentVolume. It is recoverable.
+
+  Note the Nebraska pod IS restarted by this upgrade (chart 3.0.0 carries a
+  pod-template annotation for exactly this reason), so it re-runs its schema
+  migrations against whatever database it now points at. Its liveness probe does
+  not touch the database either way, so do not treat a Ready pod as confirmation
+ , run the two commands above.
+{{ end -}}
+{{- if and .Values.postgresql.enabled (eq (.Values.postgresql.auth.postgresPassword | toString) "changeIt") (not .Values.postgresql.auth.existingSecret) }}
+WARNING: the PostgreSQL superuser password is set to "changeIt", the fixed
+         default that chart 2.0.0 shipped. 3.0.0 generates a random one instead,
+         so this almost certainly came from a carried-over values file.
+
+  Anything on the pod network that knows this default has full control of the
+  database, including command execution inside its container. There is no
+  NetworkPolicy restricting access to port 5432.
+
+  Set postgresql.auth.postgresPassword, or point postgresql.auth.existingSecret
+  at a secret you manage.
+{{ end -}}
+Get the application URL by running these commands:
 {{- if .Values.ingress.enabled }}
 {{- range .Values.ingress.hosts }}
   http{{ if $.Values.ingress.tls }}s{{ end }}://{{ . }}
@@ -9,7 +55,7 @@
   echo http://$NODE_IP:$NODE_PORT
 {{- else if contains "LoadBalancer" .Values.service.type }}
      NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "nebraska.fullname" . }}'
+           You can watch its status by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "nebraska.fullname" . }}'
   export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "nebraska.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
   echo http://$SERVICE_IP:{{ .Values.service.port }}
 {{- else if contains "ClusterIP" .Values.service.type }}

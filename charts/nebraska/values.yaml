@@ -74,15 +74,21 @@ config:
 
   database:
     host: ""
-    port: 5432
+    # Empty follows the bundled database's port (postgresql.service.port) when
+    # postgresql.enabled, and 5432 for an external host. Set explicitly to pin.
+    port: ""
     dbname: '{{ .Values.postgresql.auth.database }}'
     username: '{{ .Values.postgresql.auth.username }}'
     password: ""
     sslMode: ""
     passwordExistingSecret:
       enabled: true
-      name: '{{ .Release.Name }}-postgresql'
-      key: postgres-password
+      # Follows postgresql.auth.existingSecret / nameOverride / fullnameOverride.
+      # Hardcoding '{{ .Release.Name }}-postgresql' here meant that setting
+      # postgresql.auth.existingSecret brought PostgreSQL up against the new
+      # secret while Nebraska kept looking for the old one and never started.
+      name: '{{ include "nebraska.postgresql.secretName" . }}'
+      key: '{{ .Values.postgresql.auth.secretKeys.adminPasswordKey }}'
 
 extraArgs: []
   # - "-http-log"
@@ -154,7 +160,7 @@ ingress:
   ingressClassName: ""
   update:
     # Create a separate ingress for the /v1/update and /flatcar paths,
-    # with it's own annotations.
+    # with its own annotations.
     enabled: false
     annotations: {}
     ingressClassName: ""
@@ -198,29 +204,270 @@ readinessProbe:
 extraLabels: {}
 extraAnnotations: {}
 
-# Configuration values for the postgresql dependency.
-# ... for more options see https://github.com/bitnami/charts/tree/master/bitnami/postgresql
+# Configuration values for the bundled PostgreSQL StatefulSet.
+#
+# WHAT THIS IS. A deliberately minimal, single-replica PostgreSQL whose only job
+# is to make `helm install nebraska` produce a working Nebraska. It does no
+# backups, no failover and no automated major-version upgrades. That is the same
+# scope the Bitnami subchart had here, 11.9.1 shipped no backup automation
+# either, and chart 2.0.0 configured none. For anything you care about, set
+# `postgresql.enabled: false` and point `config.database.*` at a database you
+# operate, or at an operator such as CloudNativePG.
+#
+# HOW THE KEYS WERE CHOSEN. Names that existed in 2.0.0 keep their meaning
+# (`enabled`, `auth.*`, `image.*`, `primary.persistence.*`, `serviceAccount.*`,
+# `nameOverride`), so most values files keep working. Keys that lived under
+# `primary.*` purely because the subchart was a separate chart moved up to
+# `postgresql.*`. Anything this chart does not read that would have changed
+# behaviour is reported at render time rather than ignored, values left at
+# inert Bitnami defaults are accepted silently; see templates/_validate.tpl.
 postgresql:
   enabled: true
 
+  # Upgrading from chart 2.0.0 with persistence enabled moves the data directory
+  # inside the volume, which PostgreSQL cannot follow: it would initialise a new
+  # empty cluster next to the old one, with no error. The chart refuses to render
+  # until you confirm you have either migrated the data or intend to start empty.
+  # See "Upgrading to 3.0.0" in the README. Ignored when persistence is disabled.
+  acknowledgeDataDirMigration: false
+
+  # Overrides the "postgresql" component name used for the Services (main and
+  # headless), Secret, ServiceAccount and StatefulSet (`<release>-<nameOverride>`).
+  # As in the Bitnami subchart, the suffix is skipped when the release name
+  # already contains this value.
+  nameOverride: ""
+  # Replaces the generated name outright.
+  fullnameOverride: ""
+
   auth:
+    # The official postgres image has no separate superuser/app-user split the
+    # way the Bitnami image did: POSTGRES_USER *is* the superuser created by
+    # initdb, and POSTGRES_DB is created owned by it.
     username: postgres
     database: nebraska
-    postgresPassword: changeIt
+    # Empty means "generate a random password on first install and keep it".
+    # This is what the Bitnami subchart did; chart 2.0.0 overrode it with the
+    # literal "changeIt", which published the superuser password of a database
+    # reachable from the entire pod network.
+    #
+    # Retrieve the generated password with:
+    #   kubectl get secret <release>-postgresql \
+    #     -o jsonpath='{.data.postgres-password}' | base64 -d
+    #
+    # Set it explicitly if you manage credentials yourself, or use
+    # existingSecret. GitOps users should prefer existingSecret: generation is
+    # not deterministic, so a re-render shows drift.
+    postgresPassword: ""
+    # Use a pre-existing secret instead of rendering one from postgresPassword.
+    # Evaluated as a template. The key is taken from secretKeys.adminPasswordKey.
+    existingSecret: ""
+    secretKeys:
+      adminPasswordKey: postgres-password
+
   image:
     registry: docker.io
-    repository: bitnamilegacy/postgresql
-    tag: 17.5.0
+    repository: postgres
+    # Debian bookworm, not Alpine, and deliberately so.
+    #
+    # bookworm carries glibc 2.36, the same C library as the Bitnami image
+    # this chart replaces, so text collation, and therefore `ORDER BY` results
+    # and btree index ordering, are unchanged by the migration.
+    #
+    # The Alpine variants are smaller (~112MiB vs ~154MiB compressed) but use
+    # musl, whose collation is basically byte order. Worse, musl makes up a
+    # locale for any name it is given and PostgreSQL's own collation-version
+    # guard is compiled only for glibc, so attaching a glibc-era volume to an
+    # Alpine image starts cleanly and silently returns wrong index results.
+    # For a database, 40MiB is not worth that failure mode.
+    #
+    # Pinned to the PostgreSQL 17 line to match the previous default. Do not
+    # move to 18 without reading the migration notes: 18 relocates both PGDATA
+    # and the declared volume, and a major-version jump needs pg_upgrade or a
+    # dump/restore either way.
+    tag: 17-bookworm
+    # [PARITY] The subchart had image.digest too.
+    # Pin by content instead of by tag. When set this replaces the tag entirely,
+    # so a rebuild of `17-bookworm` cannot change what runs. Recommended for
+    # production; keep it updated with Renovate/Dependabot or you will pin
+    # yourself to an unpatched image, which is the problem this chart set out to
+    # solve. Example: sha256:abc123...
+    digest: ""
+    # Note: with a floating tag and IfNotPresent, a node that has already cached
+    # the tag will not pick up a rebuilt image. Use a digest, or set Always, if
+    # you need CVE fixes to actually reach your nodes.
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+
+  service:
+    port: 5432
+
+  # Where the data volume is mounted, and the subdirectory inside it that
+  # becomes PGDATA.
+  #
+  # dataMountPath must NOT be an ancestor of the image's declared VOLUME
+  # (/var/lib/postgresql/data on 17, /var/lib/postgresql on 18). Mount above it
+  # and the runtime lays an empty volume over the top, hiding everything your PVC
+  # holds underneath, observed live: a Bitnami data directory present on the PV
+  # and unreadable from inside the pod. The chart refuses that configuration.
+  #
+  # These must stay two separate settings: PostgreSQL refuses to start unless
+  # PGDATA is exactly 0700/0750, which a volume mount root never is. See the
+  # comment in templates/postgresql.yaml.
+  dataMountPath: /var/lib/postgresql/data
+  dataSubdir: pgdata
+
   primary:
     persistence:
+      # Default OFF, inherited unchanged from chart 2.0.0.
+      #
+      # Kept off deliberately: this database is a convenience for getting
+      # started, and defaulting to a PVC would leave orphaned volumes behind
+      # every `helm uninstall` for evaluation installs. Anyone running Nebraska
+      # for real should either turn this on or, better, use an external
+      # database.
+      #
+      # Note if you DO turn it on: the data directory layout changed in 3.0.0,
+      # so upgrading a persistent 2.0.0 install needs a dump and restore. The
+      # chart refuses to render such an upgrade until you acknowledge it, see
+      # acknowledgeDataDirMigration above.
       enabled: false
+      # Empty means "use the cluster default StorageClass". `global.storageClass`
+      # is honoured as a fallback, and the Bitnami "-" sentinel (meaning "render
+      # an empty storageClassName") still works, both for parity with 2.0.0.
       storageClass:
       accessModes:
         - ReadWriteOnce
       size: 1Gi
+      labels: {}
+      annotations: {}
+
   serviceAccount:
     create: true
+    # Defaults to the generated name. Honoured whether or not create is true,
+    # matching the Bitnami subchart.
+    name: ""
     automountServiceAccountToken: false
+
+  # uid/gid 999 is the "postgres" user in the Debian-based images. The Alpine
+  # variants use 70 instead, change all three together if you switch
+  # image.tag to an Alpine flavour, or the data directory ends up owned by the
+  # wrong user and PostgreSQL refuses to start.
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 999
+    runAsGroup: 999
+    fsGroup: 999
+    # [EXTRA, not required by the migration] Performance only.
+    # Without this the kubelet recursively chowns the entire volume on every
+    # mount, which on a large database adds minutes to every pod start.
+    fsGroupChangePolicy: OnRootMismatch
+    seccompProfile:
+      type: RuntimeDefault
+
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop:
+        - ALL
+
+  # [EXTRA, not required by the migration] Supports the preStop hook, which
+  # fixes a pre-existing unclean-shutdown bug. 2.0.0 set nothing, so pods got
+  # the Kubernetes default of 30, with no hook.
+  #
+  # The hook signals a fast shutdown and returns immediately; this budget is what
+  # PostgreSQL then has to finish flushing before the kubelet sends SIGKILL. A
+  # small database needs a fraction of a second, a large one with a big
+  # shared_buffers can need much longer, raise it if you see the next start log
+  # "database system was not properly shut down".
+  terminationGracePeriodSeconds: 90
+
+  # [PARITY] Replaces the subchart's primary.configuration / existingConfigmap.
+  # Extra arguments for the postgres server. The first element must be
+  # "postgres", the image entrypoint dispatches on it. This is the only
+  # declarative, first-boot way to set start-time GUCs (ALTER SYSTEM works, but
+  # needs superuser access plus a manual restart, and its postgresql.auto.conf
+  # is lost with the volume when persistence is off). For example:
+  #   args:
+  #     - postgres
+  #     - "-c"
+  #     - "log_connections=on"          # connection auditing
+  #     - "-c"
+  #     - "wal_level=logical"           # required to publish logical replication
+  args: []
+
+  # [PARITY] The subchart had shmVolume.sizeLimit; this replaces it.
+  # Bound the memory-backed /dev/shm emptyDir. Empty means unbounded, which
+  # defaults to half the node's RAM and is charged to this pod.
+  shmSizeLimit: 256Mi
+
+  # [EXTRA, not required by the migration] 2.0.0 had no startupProbe.
+  # First-start budget. Covers the fsGroup chown of the volume, initdb, and the
+  # entrypoint's socket-only temporary server. 5s x 60 = 300s.
+  startupProbe:
+    periodSeconds: 5
+    timeoutSeconds: 5
+    failureThreshold: 60
+
+  # Requests only, no limits, matching chart 2.0.0 and the Bitnami subchart,
+  # which also shipped `limits: {}`.
+  #
+  # A memory limit is NOT set on purpose. PostgreSQL's working set depends
+  # entirely on your data and query pattern, and a limit that is too low does not
+  # degrade gracefully: the kernel OOM-kills the postmaster mid-transaction and
+  # the next start does crash recovery. The chart will not guess a number. Set
+  # `postgresql.resources.limits` once you have measured your instance.
+  #
+  # The specific resource-exhaustion risk that a memory-backed volume creates is
+  # handled separately, by bounding /dev/shm (see shmSizeLimit).
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+  # Env and volumes stay first-class: they are the documented answers to two
+  # things the official image does not do for us, initdb scripts (mount a
+  # ConfigMap at /docker-entrypoint-initdb.d) and TLS certificates.
+  extraEnv: []
+  extraVolumes: []
+  extraVolumeMounts: []
+
+  # The single escape hatch, merged into the PostgreSQL pod spec.
+  #
+  # Chart 2.0.0 documented ten postgresql.* parameters. Everything else the
+  # Bitnami subchart happened to accept, sidecars, LDAP, TLS termination,
+  # replicas, an exporter, its own NetworkPolicy, was never offered, tested or
+  # documented by Nebraska, and most of it does not make sense for a single
+  # bundled convenience database anyway. Re-implementing it here would be
+  # promising something new, not keeping what was there. So there is one escape
+  # hatch instead of a
+  # value per Bitnami feature.
+  #
+  # It covers the cases that genuinely do come up, for example chowning the
+  # volume where the storage driver ignores fsGroup (what Bitnami's
+  # volumePermissions did):
+  #
+  #   extraPodSpec:
+  #     initContainers:
+  #       - name: volume-permissions
+  #         image: busybox:1.36
+  #         command: ['sh','-c','chown -R 999:999 /var/lib/postgresql/data']
+  #         # runAsNonRoot: true is set at pod level in this chart; the
+  #         # container-level override is required or the kubelet rejects the pod.
+  #         securityContext: { runAsUser: 0, runAsNonRoot: false }
+  #         volumeMounts:
+  #           - name: data
+  #             mountPath: /var/lib/postgresql/data
+  #
+  # and scheduling knobs: priorityClassName, schedulerName, hostAliases,
+  # topologySpreadConstraints.
+  #
+  # Do NOT set `containers` here, it emits a second containers key next to the
+  # chart's own. If you need a sidecar (a metrics exporter, a backup agent) you
+  # have outgrown the bundled database: set postgresql.enabled=false and run a
+  # real one. An exporter does not need to share the pod in any case; point it at
+  # the Service.
+  extraPodSpec: {}
 
 extraObjects: []
   # - apiVersion: external-secrets.io/v1beta1

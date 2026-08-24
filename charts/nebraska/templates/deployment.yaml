@@ -1,6 +1,9 @@
 {{- $db := ( tpl .Values.config.database.dbname . ) }}
 {{- $host := .Values.config.database.host | default (include "nebraska.postgresql.fullname" .) }}
-{{- $port := .Values.config.database.port | toString }}
+{{- /* Port: an explicit config.database.port wins; otherwise follow the bundled
+       Service's port when postgresql.enabled (postgresql.service.port changes
+       the port PostgreSQL actually listens on) and 5432 for external hosts. */ -}}
+{{- $port := .Values.config.database.port | default (ternary .Values.postgresql.service.port 5432 .Values.postgresql.enabled) | toString }}
 {{- $sslMode := .Values.config.database.sslMode | default "disable" }}
 {{- $user := ( tpl .Values.config.database.username . ) }}
 apiVersion: apps/v1
@@ -26,9 +29,28 @@ spec:
       {{- include "nebraska.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
+      {{- /* [GUARD] The bundled database is REPLACED by this migration, and on
+             the default ephemeral install it comes back EMPTY. Nebraska applies
+             its schema migrations only at process start, and nothing else in
+             this Deployment changes between 2.0.0 and 3.0.0, so without a
+             pod-template change here Helm does not roll Nebraska, and it keeps
+             serving from a database with no tables while looking healthy (its
+             probes hit `/`, and /health returns 200 unconditionally).
+
+             This annotation changes the pod template exactly once, so the
+             upgrade restarts Nebraska and it recreates its schema unattended.
+             Only bump the value if the bundled database is ever replaced again;
+             it is deliberately NOT derived from the image tag, because that
+             would also restart Nebraska (strategy: Recreate = downtime) on a
+             harmless PostgreSQL patch bump. */}}
+      {{- if or .Values.postgresql.enabled .Values.podAnnotations }}
       annotations:
+        {{- if .Values.postgresql.enabled }}
+        nebraska.flatcar.org/bundled-db-generation: "official-postgres-v1"
+        {{- end }}
+        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- end }}
       labels:
         {{- include "nebraska.selectorLabels" . | nindent 8 }}
@@ -148,8 +170,21 @@ spec:
               valueFrom:
                 secretKeyRef:
                   {{- if .Values.config.database.passwordExistingSecret.enabled }}
+                  {{- /* [PARITY] Both are template-evaluated so the defaults in
+                         values.yaml can follow the secret the chart actually
+                         renders. `name` was already tpl'd; `key` was not, and had
+                         to be, once its default became
+                         `{{ .Values.postgresql.auth.secretKeys.adminPasswordKey }}`.
+
+                         Why the defaults changed: they were hardcoded to
+                         `<release>-postgresql` / `postgres-password`, so setting
+                         postgresql.auth.existingSecret brought PostgreSQL up
+                         against the new secret while Nebraska kept looking for a
+                         secret the chart no longer rendered, and sat in
+                         CreateContainerConfigError. Pre-existing in 2.0.0, but
+                         3.0.0 advertises existingSecret, so it had to work. */}}
                   name: {{ tpl .Values.config.database.passwordExistingSecret.name . }}
-                  key: {{ .Values.config.database.passwordExistingSecret.key }}
+                  key: {{ tpl .Values.config.database.passwordExistingSecret.key . }}
                   {{- else }}
                   name: {{ include "nebraska.fullname" . }}
                   key: dbPassword
@@ -212,7 +247,6 @@ spec:
               value: {{ $value | quote }}
             {{- end }}
             {{- if .Values.extraEnv }}
-            # Extra environment variables
             {{- toYaml .Values.extraEnv | nindent 12 }}
             {{- end }}
           {{- if .Values.config.hostFlatcarPackages.enabled }}

@@ -17,6 +17,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- **helm/postgresql: the default superuser password is now generated, not `changeIt`.** `postgresql.auth.postgresPassword` defaults to `""` and the chart generates a random 24-character password on first install, keeping any value already in the cluster across upgrades. This restores what the Bitnami subchart did before chart 2.0.0 replaced it with a fixed default. Retrieve it with `kubectl get secret <release>-postgresql -o jsonpath='{.data.postgres-password}' | base64 -d`. Anyone relying on the published default must set `postgresql.auth.postgresPassword` explicitly or use `postgresql.auth.existingSecret`.
+- **helm/postgresql: unknown `postgresql.*` values are now rejected at render time instead of being silently ignored.** Removing the subchart dropped roughly 55 keys; a values file carrying them would previously have installed cleanly with the settings discarded. Expect around twenty reports on the first upgrade if you vendored the upstream Bitnami `values.yaml`; each names the replacement key. Values left at their Bitnami defaults are accepted silently.
+
+- **helm: replaced the Bitnami PostgreSQL subchart with an in-chart StatefulSet on the official `postgres` image.** The chart no longer depends on `https://charts.bitnami.com/bitnami` and no longer ships a `bitnamilegacy/*` image, so the bundled database gets security patches again. This is a **breaking change for installs with `postgresql.primary.persistence.enabled: true`**: the data directory moves inside the volume. You have two options. If you stay on the same PostgreSQL major version you can reuse the volume in place, no dump needed, see the tested procedure in the chart README "Upgrading to 3.0.0". Otherwise, and always across major versions, use `pg_dump` and restore. Nebraska itself is restarted by the upgrade, through a pod template annotation, so it runs its schema migrations again against the database it now points at. Installs using an external database (`postgresql.enabled: false`) or the default ephemeral database need no action. Chart version bumped to 3.0.0. ([#1574](https://github.com/flatcar/nebraska/issues/1574), [#1148](https://github.com/flatcar/nebraska/issues/1148))
+
 - **Per-group runtime state moved to node-local `group_local` sidecar:** `rollout_in_progress` plus a nullable override column for each `policy_*` column on `groups` now live on a new `group_local` table, in preparation for the distributed Nebraska topology described in [RFC #1375](https://github.com/flatcar/nebraska/issues/1375). The safe-mode auto-pause brake writes the local override instead of mutating the admin default; reads return `COALESCE(override, default)`. The JSON contract is unchanged. ([#1396](https://github.com/flatcar/nebraska/pull/1396))
 - **Activity events split across runtime-local and admin tables:** Admin-originated activity events (channel package updates) are now stored in a separate `admin_activity` table, in preparation for the distributed Nebraska topology described in [RFC #1375](https://github.com/flatcar/nebraska/issues/1375). The JSON contract is unchanged. ([#1398](https://github.com/flatcar/nebraska/pull/1398))
 - **Package Management UI Improvements:**
@@ -25,6 +30,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Channel edit dialog filters out blacklisted packages from selection
   - Floor package selection prevents choosing blacklisted packages with clear visual feedback
 ### Removed
+
+- **helm/postgresql: the `password` key is removed from the `<release>-postgresql` Secret.** The Bitnami subchart emitted both `postgres-password` (superuser) and `password` (a separate app user); this chart has a single superuser and emits only `postgres-password`. Helm deletes the missing key on upgrade, so anything reading it, for example backup jobs or external tooling, must be repointed **before** upgrading.
+
 ### Bugfixes
 
 - Fixed package blacklist changes not appearing in UI immediately after save
