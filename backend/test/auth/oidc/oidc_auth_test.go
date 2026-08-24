@@ -258,6 +258,25 @@ func TestOIDCValidateTokenEndpoint(t *testing.T) {
 		assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 	})
 
+	// An ID token minted with the API audience passes audience validation, so
+	// only the token type check rejects it. This route is not in the auth
+	// skipper list, so the middleware authorizes it before the handler runs and
+	// the check inside ValidateToken is defence in depth. The assertion holds
+	// whichever layer enforces it.
+	t.Run("validate_token_rejects_id_token_carrying_the_api_audience", func(t *testing.T) {
+		setup := startWithOIDC(t)
+		defer setup.shutdown()
+
+		token := signedTokenWithClaims(t, setup.mockOIDCProvider, func(c jwt.MapClaims) {
+			c["aud"] = []string{clientID, audienceID}
+			c["typ"] = "ID"
+		})
+
+		resp := requestWithToken(t, "/login/validate_token", token)
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
+	})
+
 	t.Run("validate_token_without_header", func(t *testing.T) {
 		setup := startWithOIDC(t)
 		defer setup.shutdown()
