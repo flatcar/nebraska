@@ -44,7 +44,7 @@ func main() {
 	conf.CACertPool = caPool
 
 	if conf.RollbackDBTo != "" {
-		db, err := db.New()
+		db, err := db.New(db.OptionInstanceMode(conf.InstanceMode))
 		if err != nil {
 			l.Fatal().
 				Err(err).
@@ -62,7 +62,7 @@ func main() {
 	}
 
 	// create new DB
-	db, err := db.NewWithMigrations()
+	db, err := db.NewWithMigrations(db.OptionInstanceMode(conf.InstanceMode))
 	if err != nil {
 		l.Fatal().
 			Err(err).

@@ -101,6 +101,11 @@ func (api *API) setupServingRoles(migrationsDB *sqlx.DB) error {
 	}
 
 	if servingUser == migrationsUser {
+		if api.instanceMode.IsDistributed() {
+			return fmt.Errorf("instance-mode %s requires NEBRASKA_MIGRATIONS_DB_URL to name a different user than NEBRASKA_DB_URL, both connect as %s",
+				api.instanceMode, servingUser)
+		}
+
 		return nil
 	}
 
@@ -123,13 +128,18 @@ func (api *API) setupServingRoles(migrationsDB *sqlx.DB) error {
 		return err
 	}
 
-	granted, err := grantServingRole(migrationsDB, servingUser, roles.admin)
+	role := roles.admin
+	if api.instanceMode.IsEdge() {
+		role = roles.runtime
+	}
+
+	granted, err := grantServingRole(migrationsDB, servingUser, role)
 	if err != nil {
 		return err
 	}
 
 	if granted {
-		l.Info().Str("role", roles.admin).Str("user", servingUser).Msg("granted the serving database role")
+		l.Info().Str("role", role).Str("user", servingUser).Msg("granted the serving database role")
 	}
 
 	return applyGrants(migrationsDB, roles)
@@ -187,9 +197,8 @@ func ensureLogicalRoles(db *sqlx.DB, roles servingRoles) error {
 }
 
 // grantServingRole makes the serving user a member of the logical role carrying
-// its privileges, and reports whether it had to. Once NEBRASKA_INSTANCE_MODE
-// exists this picks the runtime role on edge nodes, and the admin role on
-// control and single nodes.
+// its privileges, and reports whether it had to. The role is the runtime one on
+// an edge node, and the admin one everywhere else.
 func grantServingRole(db *sqlx.DB, user, role string) (bool, error) {
 	var member bool
 	if err := db.Get(&member, "select pg_has_role($1, $2, 'member')", user, role); err != nil {

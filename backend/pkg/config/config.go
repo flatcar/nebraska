@@ -15,23 +15,24 @@ import (
 )
 
 type Config struct {
-	EnableSyncer        bool   `koanf:"enable-syncer"`
-	HostFlatcarPackages bool   `koanf:"host-flatcar-packages"`
-	FlatcarPackagesPath string `koanf:"flatcar-packages-path"`
-	NebraskaURL         string `koanf:"nebraska-url"`
-	SyncerPkgsURL       string `koanf:"syncer-packages-url"`
-	HTTPLog             bool   `koanf:"http-log"`
-	HTTPStaticDir       string `koanf:"http-static-dir"`
-	AuthMode            string `koanf:"auth-mode"`
-	FlatcarUpdatesURL   string `koanf:"sync-update-url"`
-	CheckFrequencyVal   string `koanf:"sync-interval"`
-	AppLogoPath         string `koanf:"client-logo"`
-	AppTitle            string `koanf:"client-title"`
-	AppHeaderStyle      string `koanf:"client-header-style"`
-	APIEndpointSuffix   string `koanf:"api-endpoint-suffix"`
-	Debug               bool   `koanf:"debug"`
-	ServerPort          uint   `koanf:"port"`
-	RollbackDBTo        string `koanf:"rollback-db-to"`
+	EnableSyncer        bool         `koanf:"enable-syncer"`
+	HostFlatcarPackages bool         `koanf:"host-flatcar-packages"`
+	FlatcarPackagesPath string       `koanf:"flatcar-packages-path"`
+	NebraskaURL         string       `koanf:"nebraska-url"`
+	SyncerPkgsURL       string       `koanf:"syncer-packages-url"`
+	HTTPLog             bool         `koanf:"http-log"`
+	HTTPStaticDir       string       `koanf:"http-static-dir"`
+	AuthMode            string       `koanf:"auth-mode"`
+	FlatcarUpdatesURL   string       `koanf:"sync-update-url"`
+	CheckFrequencyVal   string       `koanf:"sync-interval"`
+	AppLogoPath         string       `koanf:"client-logo"`
+	AppTitle            string       `koanf:"client-title"`
+	AppHeaderStyle      string       `koanf:"client-header-style"`
+	APIEndpointSuffix   string       `koanf:"api-endpoint-suffix"`
+	Debug               bool         `koanf:"debug"`
+	ServerPort          uint         `koanf:"port"`
+	RollbackDBTo        string       `koanf:"rollback-db-to"`
+	InstanceMode        InstanceMode `koanf:"instance-mode"`
 
 	GhClientID        string `koanf:"gh-client-id"`
 	GhClientSecret    string `koanf:"gh-client-secret"`
@@ -64,9 +65,53 @@ const (
 	ghSessionCryptKeyEnvName = "NEBRASKA_GITHUB_SESSION_CRYPT_KEY"
 	ghWebhookSecretEnvName   = "NEBRASKA_GITHUB_WEBHOOK_SECRET"
 	ghEnterpriseURLEnvName   = "NEBRASKA_GITHUB_ENTERPRISE_URL"
+	instanceModeEnvName      = "NEBRASKA_INSTANCE_MODE"
 )
 
+// InstanceMode is the role a node plays in the distributed topology.
+type InstanceMode string
+
+// The node roles of the distributed topology. An empty value is
+// InstanceModeSingle, so a deployment that does not opt in gets the single node mode.
+const (
+	InstanceModeSingle  InstanceMode = "single"
+	InstanceModeControl InstanceMode = "control"
+	InstanceModeEdge    InstanceMode = "edge"
+)
+
+// IsSingle reports whether the node is a single-instance one, so a deployment that
+// never sets the mode reads the same as one that sets it explicitly.
+func (m InstanceMode) IsSingle() bool {
+	return m == "" || m == InstanceModeSingle
+}
+
+// IsDistributed reports whether the mode gives the node a role in a distributed
+// deployment.
+func (m InstanceMode) IsDistributed() bool {
+	return m == InstanceModeControl || m == InstanceModeEdge
+}
+
+// IsEdge reports whether the mode is the one that does not accept admin writes.
+func (m InstanceMode) IsEdge() bool {
+	return m == InstanceModeEdge
+}
+
+// Valid reports whether the mode names a role this build knows.
+func (m InstanceMode) Valid() bool {
+	return m.IsSingle() || m == InstanceModeControl || m == InstanceModeEdge
+}
+
 func (c *Config) Validate() error {
+	if !c.InstanceMode.Valid() {
+		return fmt.Errorf("invalid instance-mode %q: must be one of %s, %s, %s",
+			c.InstanceMode, InstanceModeSingle, InstanceModeControl, InstanceModeEdge)
+	}
+
+	// The syncer only operates on control nodes.
+	if c.InstanceMode.IsEdge() && c.EnableSyncer {
+		return fmt.Errorf("enable-syncer cannot be used with instance-mode %s", InstanceModeEdge)
+	}
+
 	if c.HostFlatcarPackages {
 		if c.FlatcarPackagesPath == "" {
 			return errors.New("invalid Flatcar packages path. Please ensure you provide a valid path using -flatcar-packages-path")
@@ -145,6 +190,7 @@ func Parse() (*Config, error) {
 	f.String("api-endpoint-suffix", "", "Additional suffix for the API endpoint to serve Omaha clients on; use a secret to only serve your clients, e.g., mysecret results in /v1/update/mysecret")
 	f.Bool("debug", false, "sets log level to debug")
 	f.Uint("port", 8000, "port to run server")
+	f.String("instance-mode", "", fmt.Sprintf("node role in a distributed deployment: %s (default), %s or %s; can be taken from %s env var too", InstanceModeSingle, InstanceModeControl, InstanceModeEdge, instanceModeEnvName))
 
 	k := koanf.New(".")
 
@@ -163,6 +209,13 @@ func Parse() (*Config, error) {
 	if err := k.Unmarshal("", &config); err != nil {
 		return nil, fmt.Errorf("error unmarshal config: %w", err)
 	}
+
+	mode := getPotentialOrEnv(string(config.InstanceMode), instanceModeEnvName)
+	if mode == "" {
+		mode = string(InstanceModeSingle)
+	}
+
+	config.InstanceMode = InstanceMode(mode)
 
 	switch config.AuthMode {
 	case "oidc":
