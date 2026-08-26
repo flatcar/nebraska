@@ -421,7 +421,7 @@ func (q *Queries) GetInstanceStats(page, perPage uint64) ([]types.InstanceStats,
 		From("instance_stats").
 		Limit(limit).
 		Offset(offset).
-		Order(goqu.C("timestamp").Asc()).
+		Order(goqu.C("timestamp").Desc()).
 		ToSQL()
 	if err != nil {
 		return nil, err
