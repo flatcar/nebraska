@@ -4,9 +4,42 @@ run:
   tests: true
 linters:
   enable:
+    - depguard
     - revive
     - whitespace
     - errcheck
+  settings:
+    depguard:
+      rules:
+        handler-runtime:
+          files:
+            - '**/pkg/handler/runtime/*.go'
+          deny:
+            - pkg: github.com/flatcar/nebraska/backend/pkg/api/admin
+              desc: endpoints served on every node must not reach the admin write surface
+            - pkg: github.com/flatcar/nebraska/backend/pkg/api$
+              desc: handlers reach the database through a role-scoped service, not the root package
+        handler-admin:
+          files:
+            - '**/pkg/handler/admin/*.go'
+          deny:
+            - pkg: github.com/flatcar/nebraska/backend/pkg/api/runtime
+              desc: admin endpoints write runtime state only through LocalUpdatesBrake
+            - pkg: github.com/flatcar/nebraska/backend/pkg/api$
+              desc: handlers reach the database through a role-scoped service, not the root package
+        handler-base:
+          files:
+            - '**/pkg/handler/base/*.go'
+          deny:
+            - pkg: github.com/flatcar/nebraska/backend/pkg/api
+              desc: these endpoints touch no database
+        handler-no-service:
+          files:
+            - '**/pkg/handler/*.go'
+            - '**/pkg/handler/internal/shared/*.go'
+          deny:
+            - pkg: github.com/flatcar/nebraska/backend/pkg/api
+              desc: the composite and the shared helpers hold no service, so neither can bridge one role to the other
   exclusions:
     generated: lax
     presets:

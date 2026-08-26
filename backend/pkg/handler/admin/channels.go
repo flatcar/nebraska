@@ -1,4 +1,4 @@
-package handler
+package admin
 
 import (
 	"database/sql"
@@ -9,41 +9,11 @@ import (
 
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/codegen"
+	"github.com/flatcar/nebraska/backend/pkg/handler/internal/shared"
 )
 
-func (h *Handler) PaginateChannels(ctx echo.Context, appIDorProductID string, params codegen.PaginateChannelsParams) error {
-	appID, err := h.db.GetAppID(appIDorProductID)
-	if err != nil {
-		return appNotFoundResponse(ctx, appIDorProductID)
-	}
-
-	if params.Page == nil {
-		params.Page = &defaultPage
-	}
-
-	if params.Perpage == nil {
-		params.Perpage = &defaultPerPage
-	}
-
-	totalCount, err := h.db.GetChannelsCount(appID)
-	if err != nil {
-		l.Error().Err(err).Str("appID", appID).Msg("getChannels count - getting channels")
-		return ctx.NoContent(http.StatusInternalServerError)
-	}
-
-	channels, err := h.db.GetChannels(appID, uint64(*params.Page), uint64(*params.Perpage))
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return ctx.NoContent(http.StatusNotFound)
-		}
-		l.Error().Err(err).Str("appID", appID).Msg("getChannels - getting channels")
-		return ctx.NoContent(http.StatusInternalServerError)
-	}
-	return ctx.JSON(http.StatusOK, channelsPage{totalCount, len(channels), channels})
-}
-
 func (h *Handler) CreateChannel(ctx echo.Context, appIDorProductID string) error {
-	l := loggerWithUsername(l, ctx)
+	l := shared.LoggerWithUsername(l, ctx)
 
 	var request codegen.ChannelConfig
 	err := ctx.Bind(&request)
@@ -52,9 +22,9 @@ func (h *Handler) CreateChannel(ctx echo.Context, appIDorProductID string) error
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	appID, err := h.db.GetAppID(appIDorProductID)
+	appID, err := h.admin.GetAppID(appIDorProductID)
 	if err != nil {
-		return appNotFoundResponse(ctx, appIDorProductID)
+		return shared.AppNotFoundResponse(ctx, appIDorProductID)
 	}
 	channel := newChannel(appID, request.Arch, request.Color, request.Name, request.PackageId)
 	_, err = h.admin.AddChannel(channel)
@@ -63,7 +33,7 @@ func (h *Handler) CreateChannel(ctx echo.Context, appIDorProductID string) error
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	channel, err = h.db.GetChannel(channel.ID)
+	channel, err = h.admin.GetChannel(channel.ID)
 	if err != nil {
 		l.Error().Err(err).Str("channelID", channel.ID).Msg("addChannel")
 		return ctx.NoContent(http.StatusInternalServerError)
@@ -73,24 +43,12 @@ func (h *Handler) CreateChannel(ctx echo.Context, appIDorProductID string) error
 	return ctx.JSON(http.StatusOK, channel)
 }
 
-func (h *Handler) GetChannel(ctx echo.Context, _ string, channelID string) error {
-	channel, err := h.db.GetChannel(channelID)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return ctx.NoContent(http.StatusNotFound)
-		}
-		l.Error().Err(err).Str("channelID", channelID).Msg("getChannel - getting updated channel")
-		return ctx.NoContent(http.StatusInternalServerError)
-	}
-	return ctx.JSON(http.StatusOK, channel)
-}
-
 func (h *Handler) UpdateChannel(ctx echo.Context, appIDorProductID string, channelID string) error {
-	l := loggerWithUsername(l, ctx)
+	l := shared.LoggerWithUsername(l, ctx)
 
-	appID, err := h.db.GetAppID(appIDorProductID)
+	appID, err := h.admin.GetAppID(appIDorProductID)
 	if err != nil {
-		return appNotFoundResponse(ctx, appIDorProductID)
+		return shared.AppNotFoundResponse(ctx, appIDorProductID)
 	}
 
 	var request codegen.ChannelConfig
@@ -101,7 +59,7 @@ func (h *Handler) UpdateChannel(ctx echo.Context, appIDorProductID string, chann
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	oldChannel, err := h.db.GetChannel(channelID)
+	oldChannel, err := h.admin.GetChannel(channelID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
@@ -119,7 +77,7 @@ func (h *Handler) UpdateChannel(ctx echo.Context, appIDorProductID string, chann
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	channel, err = h.db.GetChannel(channelID)
+	channel, err = h.admin.GetChannel(channelID)
 	if err != nil {
 		l.Error().Err(err).Str("channelID", channel.ID).Msg("updateChannel - getting channel updated")
 		return ctx.NoContent(http.StatusInternalServerError)
@@ -131,9 +89,9 @@ func (h *Handler) UpdateChannel(ctx echo.Context, appIDorProductID string, chann
 }
 
 func (h *Handler) DeleteChannel(ctx echo.Context, _ string, channelID string) error {
-	l := loggerWithUsername(l, ctx)
+	l := shared.LoggerWithUsername(l, ctx)
 
-	channel, err := h.db.GetChannel(channelID)
+	channel, err := h.admin.GetChannel(channelID)
 	if err != nil {
 		l.Error().Err(err).Str("channelID", channel.ID).Msg("updateChannel - getting channel to be deleted")
 		return ctx.NoContent(http.StatusInternalServerError)
@@ -161,10 +119,4 @@ func newChannel(appID string, arch uint, color string, name string, packageID *s
 		channel.PackageID = null.StringFromPtr(packageID)
 	}
 	return channel
-}
-
-type channelsPage struct {
-	TotalCount int              `json:"totalCount"`
-	Count      int              `json:"count"`
-	Channels   []*types.Channel `json:"channels"`
 }

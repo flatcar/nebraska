@@ -1,4 +1,4 @@
-package handler
+package runtime
 
 import (
 	"database/sql"
@@ -6,10 +6,10 @@ import (
 
 	"github.com/labstack/echo/v4"
 	openapi_types "github.com/oapi-codegen/runtime/types"
-	"gopkg.in/guregu/null.v4"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/codegen"
+	"github.com/flatcar/nebraska/backend/pkg/handler/internal/shared"
 )
 
 func (h *Handler) PaginateGroups(ctx echo.Context, appIDorProductID string, params codegen.PaginateGroupsParams) error {
@@ -21,18 +21,18 @@ func (h *Handler) PaginateGroups(ctx echo.Context, appIDorProductID string, para
 		params.Perpage = &defaultPerPage
 	}
 
-	appID, err := h.db.GetAppID(appIDorProductID)
+	appID, err := h.runtime.GetAppID(appIDorProductID)
 	if err != nil {
-		return appNotFoundResponse(ctx, appIDorProductID)
+		return shared.AppNotFoundResponse(ctx, appIDorProductID)
 	}
 
-	totalCount, err := h.db.GetGroupsCount(appID)
+	totalCount, err := h.runtime.GetGroupsCount(appID)
 	if err != nil {
 		l.Error().Err(err).Str("appID", appID).Msg("getGroups count - getting groups")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	groups, err := h.db.GetGroups(appID, uint64(*params.Page), uint64(*params.Perpage))
+	groups, err := h.runtime.GetGroups(appID, uint64(*params.Page), uint64(*params.Perpage))
 	if err != nil {
 		if err == sql.ErrNoRows {
 			l.Error().Err(err).Msg("getGroups - getting groups not found error")
@@ -45,41 +45,8 @@ func (h *Handler) PaginateGroups(ctx echo.Context, appIDorProductID string, para
 	return ctx.JSON(http.StatusOK, groupsPage{totalCount, len(groups), groups})
 }
 
-func (h *Handler) CreateGroup(ctx echo.Context, appIDorProductID string) error {
-	l := loggerWithUsername(l, ctx)
-
-	appID, err := h.db.GetAppID(appIDorProductID)
-	if err != nil {
-		return appNotFoundResponse(ctx, appIDorProductID)
-	}
-
-	var request codegen.GroupConfig
-	err = ctx.Bind(&request)
-	if err != nil {
-		l.Error().Err(err).Msg("addGroup - decoding payload")
-		return ctx.NoContent(http.StatusBadRequest)
-	}
-
-	group := groupFromRequest(request.Name, request.Description, request.PolicyMaxUpdatesPerPeriod, request.PolicyOfficeHours, request.PolicyPeriodInterval, request.PolicySafeMode, request.PolicyTimezone, request.PolicyUpdateTimeout, request.PolicyUpdatesEnabled, request.ChannelId, request.Track, "", appID)
-
-	group, err = h.admin.AddGroup(group)
-	if err != nil {
-		l.Error().Err(err).Msgf("addGroup - adding group %v", group)
-		return ctx.NoContent(http.StatusInternalServerError)
-	}
-
-	group, err = h.db.GetGroup(group.ID)
-	if err != nil {
-		l.Error().Err(err).Msgf("addGroup - adding group %v", group)
-		return ctx.NoContent(http.StatusInternalServerError)
-	}
-	l.Info().Msgf("addGroup - successfully added group %+v", group)
-
-	return ctx.JSON(http.StatusOK, group)
-}
-
 func (h *Handler) GetGroup(ctx echo.Context, _ string, groupID string) error {
-	group, err := h.db.GetGroup(groupID)
+	group, err := h.runtime.GetGroup(groupID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
@@ -89,89 +56,13 @@ func (h *Handler) GetGroup(ctx echo.Context, _ string, groupID string) error {
 	}
 
 	return ctx.JSON(http.StatusOK, group)
-}
-
-func (h *Handler) UpdateGroup(ctx echo.Context, appIDorProductID string, groupID string) error {
-	l := loggerWithUsername(l, ctx)
-
-	appID, err := h.db.GetAppID(appIDorProductID)
-	if err != nil {
-		return appNotFoundResponse(ctx, appIDorProductID)
-	}
-
-	var request codegen.GroupConfig
-	err = ctx.Bind(&request)
-	if err != nil {
-		l.Error().Err(err).Msg("updateGroup - decoding payload")
-		return ctx.NoContent(http.StatusBadRequest)
-	}
-
-	oldGroup, err := h.db.GetGroup(groupID)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return ctx.NoContent(http.StatusNotFound)
-		}
-		l.Error().Err(err).Str("groupID", groupID).Msg("updateGroup - getting old group to update")
-		return ctx.NoContent(http.StatusInternalServerError)
-	}
-
-	group := groupFromRequest(request.Name, request.Description, request.PolicyMaxUpdatesPerPeriod, request.PolicyOfficeHours, request.PolicyPeriodInterval, request.PolicySafeMode, request.PolicyTimezone, request.PolicyUpdateTimeout, request.PolicyUpdatesEnabled, request.ChannelId, request.Track, groupID, appID)
-
-	err = h.admin.UpdateGroup(group)
-	if err != nil {
-		l.Error().Err(err).Msgf("updateGroup - updating group %+v", request)
-		return ctx.NoContent(http.StatusInternalServerError)
-	}
-
-	// A single-instance deployment has one updates-enabled switch, so re-enabling
-	// updates here also releases a brake this node tripped for itself.
-	if h.conf.InstanceMode.IsSingle() &&
-		!oldGroup.PolicyUpdatesEnabled && group.PolicyUpdatesEnabled {
-		if err := h.runtime.ClearUpdatesEnabledOverride(groupID); err != nil {
-			l.Error().Err(err).Str("groupID", groupID).Msg("updateGroup - clearing local updates-enabled override")
-			return ctx.NoContent(http.StatusInternalServerError)
-		}
-	}
-
-	group, err = h.db.GetGroup(groupID)
-	if err != nil {
-		l.Error().Err(err).Str("groupID", groupID).Msg("getGroup - getting group")
-		return ctx.NoContent(http.StatusInternalServerError)
-	}
-
-	l.Info().Msgf("updateGroup - successfully updated group %+v -> %+v", oldGroup, group)
-
-	return ctx.JSON(http.StatusOK, group)
-}
-
-func (h *Handler) DeleteGroup(ctx echo.Context, _ string, groupID string) error {
-	l := loggerWithUsername(l, ctx)
-
-	group, err := h.db.GetGroup(groupID)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return ctx.NoContent(http.StatusNotFound)
-		}
-		l.Error().Err(err).Str("groupID", groupID).Msg("updateGroup - getting old group to update")
-		return ctx.NoContent(http.StatusInternalServerError)
-	}
-
-	err = h.admin.DeleteGroup(groupID)
-	if err != nil {
-		l.Error().Err(err).Str("groupID", groupID).Msg("deleteGroup")
-		return ctx.NoContent(http.StatusInternalServerError)
-	}
-
-	l.Info().Msgf("deleteGroup - successfully deleted group %+v", group)
-
-	return ctx.NoContent(http.StatusNoContent)
 }
 
 // ClearGroupUpdatesOverride releases the safe-mode brake this node tripped for
 // itself. It writes group_local only, leaving the admin default on groups, which
 // a control node replicates out, untouched.
 func (h *Handler) ClearGroupUpdatesOverride(ctx echo.Context, _ string, groupID string) error {
-	l := loggerWithUsername(l, ctx)
+	l := shared.LoggerWithUsername(l, ctx)
 
 	// A single-instance deployment presents one updates-enabled switch, so it has
 	// no node-local override to clear separately from the group default.
@@ -198,7 +89,7 @@ func (h *Handler) ClearGroupUpdatesOverride(ctx echo.Context, _ string, groupID 
 func (h *Handler) GetGroupVersionTimeline(ctx echo.Context, _ string, groupID openapi_types.UUID, params codegen.GetGroupVersionTimelineParams) error {
 	groupIDStr := groupID.String()
 
-	versionCountTimeline, isCache, err := h.db.GetGroupVersionCountTimeline(groupIDStr, params.Duration)
+	versionCountTimeline, isCache, err := h.runtime.GetGroupVersionCountTimeline(groupIDStr, params.Duration)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
@@ -217,7 +108,7 @@ func (h *Handler) GetGroupVersionTimeline(ctx echo.Context, _ string, groupID op
 }
 
 func (h *Handler) GetGroupStatusTimeline(ctx echo.Context, _ string, groupID string, params codegen.GetGroupStatusTimelineParams) error {
-	statusCountTimeline, err := h.db.GetGroupStatusCountTimeline(groupID, params.Duration)
+	statusCountTimeline, err := h.runtime.GetGroupStatusCountTimeline(groupID, params.Duration)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
@@ -230,7 +121,7 @@ func (h *Handler) GetGroupStatusTimeline(ctx echo.Context, _ string, groupID str
 }
 
 func (h *Handler) GetGroupInstanceStats(ctx echo.Context, _ string, groupID string, params codegen.GetGroupInstanceStatsParams) error {
-	instancesStats, err := h.db.GetGroupInstancesStats(groupID, params.Duration)
+	instancesStats, err := h.runtime.GetGroupInstancesStats(groupID, params.Duration)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
@@ -243,7 +134,7 @@ func (h *Handler) GetGroupInstanceStats(ctx echo.Context, _ string, groupID stri
 }
 
 func (h *Handler) GetGroupVersionBreakdown(ctx echo.Context, _ string, groupID string) error {
-	versionBreakdown, err := h.db.GetGroupVersionBreakdown(groupID)
+	versionBreakdown, err := h.runtime.GetGroupVersionBreakdown(groupID)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -261,9 +152,9 @@ func (h *Handler) GetGroupVersionBreakdown(ctx echo.Context, _ string, groupID s
 }
 
 func (h *Handler) GetGroupInstances(ctx echo.Context, appIDorProductID string, groupID string, params codegen.GetGroupInstancesParams) error {
-	appID, err := h.db.GetAppID(appIDorProductID)
+	appID, err := h.runtime.GetAppID(appIDorProductID)
 	if err != nil {
-		return appNotFoundResponse(ctx, appIDorProductID)
+		return shared.AppNotFoundResponse(ctx, appIDorProductID)
 	}
 
 	if params.Page == nil {
@@ -297,7 +188,7 @@ func (h *Handler) GetGroupInstances(ctx echo.Context, appIDorProductID string, g
 		p.SearchValue = *params.SearchValue
 	}
 
-	groupInstances, err := h.db.GetInstances(p, params.Duration)
+	groupInstances, err := h.runtime.GetInstances(p, params.Duration)
 	if err != nil {
 		l.Error().Err(err).Msgf("getInstances - getting instances params %v", p)
 		return ctx.NoContent(http.StatusInternalServerError)
@@ -307,9 +198,9 @@ func (h *Handler) GetGroupInstances(ctx echo.Context, appIDorProductID string, g
 }
 
 func (h *Handler) GetGroupInstancesCount(ctx echo.Context, appIDorProductID string, groupID string, params codegen.GetGroupInstancesCountParams) error {
-	appID, err := h.db.GetAppID(appIDorProductID)
+	appID, err := h.runtime.GetAppID(appIDorProductID)
 	if err != nil {
-		return appNotFoundResponse(ctx, appIDorProductID)
+		return shared.AppNotFoundResponse(ctx, appIDorProductID)
 	}
 
 	p := types.InstancesQueryParams{
@@ -317,51 +208,13 @@ func (h *Handler) GetGroupInstancesCount(ctx echo.Context, appIDorProductID stri
 		GroupID:       groupID,
 	}
 
-	count, err := h.db.GetInstancesCount(p, params.Duration)
+	count, err := h.runtime.GetInstancesCount(p, params.Duration)
 	if err != nil {
 		l.Error().Err(err).Msgf("getInstances - getting instances params %v", p)
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
 	return ctx.JSON(http.StatusOK, codegen.InstanceCount{Count: uint64(count)})
-}
-
-func groupFromRequest(name string, description *string, policyMaxUpdatesPerPeriod int, policyOfficeHours *bool, policyPeriodInterval string, policySafeMode *bool, policyTimezone string, policyUpdateTimeout string, policyUpdatesEnabled *bool, channelID *string, track *string, groupID string, appID string) *types.Group {
-	group := &types.Group{
-		Name:                      name,
-		PolicyMaxUpdatesPerPeriod: policyMaxUpdatesPerPeriod,
-		PolicyPeriodInterval:      policyPeriodInterval,
-		PolicyUpdateTimeout:       policyUpdateTimeout,
-	}
-	if channelID != nil && *channelID != "" {
-		group.ChannelID = null.StringFromPtr(channelID)
-	}
-	if policyTimezone != "" {
-		group.PolicyTimezone = null.StringFrom(policyTimezone)
-	}
-	if groupID != "" {
-		group.ID = groupID
-	}
-	if appID != "" {
-		group.ApplicationID = appID
-	}
-	if track != nil {
-		group.Track = *track
-	}
-	if description != nil {
-		group.Description = *description
-	}
-	if policyOfficeHours != nil {
-		group.PolicyOfficeHours = *policyOfficeHours
-	}
-	if policySafeMode != nil {
-		group.PolicySafeMode = *policySafeMode
-	}
-	if policyUpdatesEnabled != nil {
-		group.PolicyUpdatesEnabled = *policyUpdatesEnabled
-	}
-
-	return group
 }
 
 type groupsPage struct {
