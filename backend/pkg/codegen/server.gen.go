@@ -122,11 +122,11 @@ type ServerInterface interface {
 	// (GET /health)
 	Health(ctx echo.Context) error
 
+	// (GET /instance-metrics)
+	GetLatestInstanceStats(ctx echo.Context) error
+
 	// (GET /instance-metrics/json)
 	GetInstanceStats(ctx echo.Context, params GetInstanceStatsParams) error
-
-	// (GET /instance-metrics/prometheus)
-	GetLatestInstanceStats(ctx echo.Context) error
 
 	// (GET /login/cb)
 	LoginCb(ctx echo.Context) error
@@ -1345,6 +1345,21 @@ func (w *ServerInterfaceWrapper) Health(ctx echo.Context) error {
 	return err
 }
 
+// GetLatestInstanceStats converts echo context to params.
+func (w *ServerInterfaceWrapper) GetLatestInstanceStats(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(OidcBearerAuthScopes, []string{})
+
+	ctx.Set(OidcCookieAuthScopes, []string{})
+
+	ctx.Set(GithubCookieAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetLatestInstanceStats(ctx)
+	return err
+}
+
 // GetInstanceStats converts echo context to params.
 func (w *ServerInterfaceWrapper) GetInstanceStats(ctx echo.Context) error {
 	var err error
@@ -1373,21 +1388,6 @@ func (w *ServerInterfaceWrapper) GetInstanceStats(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.GetInstanceStats(ctx, params)
-	return err
-}
-
-// GetLatestInstanceStats converts echo context to params.
-func (w *ServerInterfaceWrapper) GetLatestInstanceStats(ctx echo.Context) error {
-	var err error
-
-	ctx.Set(OidcBearerAuthScopes, []string{})
-
-	ctx.Set(OidcCookieAuthScopes, []string{})
-
-	ctx.Set(GithubCookieAuthScopes, []string{})
-
-	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GetLatestInstanceStats(ctx)
 	return err
 }
 
@@ -1530,8 +1530,8 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.PUT(baseURL+"/api/instances/:instanceID", wrapper.UpdateInstance)
 	router.GET(baseURL+"/config", wrapper.GetConfig)
 	router.GET(baseURL+"/health", wrapper.Health)
+	router.GET(baseURL+"/instance-metrics", wrapper.GetLatestInstanceStats)
 	router.GET(baseURL+"/instance-metrics/json", wrapper.GetInstanceStats)
-	router.GET(baseURL+"/instance-metrics/prometheus", wrapper.GetLatestInstanceStats)
 	router.GET(baseURL+"/login/cb", wrapper.LoginCb)
 	router.GET(baseURL+"/login/validate_token", wrapper.ValidateToken)
 	router.POST(baseURL+"/login/webhook", wrapper.LoginWebhook)

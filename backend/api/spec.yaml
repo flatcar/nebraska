@@ -1316,7 +1316,7 @@ paths:
           description: Activity not found response
         "500":
           description: List activity error response
-  /instance-metrics/prometheus:
+  /instance-metrics:
     get:
       description: Get latest instance stats
       operationId: getLatestInstanceStats

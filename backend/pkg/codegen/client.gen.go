@@ -217,11 +217,11 @@ type ClientInterface interface {
 	// Health request
 	Health(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetInstanceStats request
-	GetInstanceStats(ctx context.Context, params *GetInstanceStatsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// GetLatestInstanceStats request
 	GetLatestInstanceStats(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetInstanceStats request
+	GetInstanceStats(ctx context.Context, params *GetInstanceStatsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// LoginCb request
 	LoginCb(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -788,8 +788,8 @@ func (c *Client) Health(ctx context.Context, reqEditors ...RequestEditorFn) (*ht
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetInstanceStats(ctx context.Context, params *GetInstanceStatsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetInstanceStatsRequest(c.Server, params)
+func (c *Client) GetLatestInstanceStats(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetLatestInstanceStatsRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -800,8 +800,8 @@ func (c *Client) GetInstanceStats(ctx context.Context, params *GetInstanceStatsP
 	return c.Client.Do(req)
 }
 
-func (c *Client) GetLatestInstanceStats(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetLatestInstanceStatsRequest(c.Server)
+func (c *Client) GetInstanceStats(ctx context.Context, params *GetInstanceStatsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetInstanceStatsRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -2955,6 +2955,33 @@ func NewHealthRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
+// NewGetLatestInstanceStatsRequest generates requests for GetLatestInstanceStats
+func NewGetLatestInstanceStatsRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/instance-metrics")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetInstanceStatsRequest generates requests for GetInstanceStats
 func NewGetInstanceStatsRequest(server string, params *GetInstanceStatsParams) (*http.Request, error) {
 	var err error
@@ -3010,33 +3037,6 @@ func NewGetInstanceStatsRequest(server string, params *GetInstanceStatsParams) (
 		}
 
 		queryURL.RawQuery = queryValues.Encode()
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewGetLatestInstanceStatsRequest generates requests for GetLatestInstanceStats
-func NewGetLatestInstanceStatsRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/instance-metrics/prometheus")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
 	}
 
 	req, err := http.NewRequest("GET", queryURL.String(), nil)
@@ -3350,11 +3350,11 @@ type ClientWithResponsesInterface interface {
 	// HealthWithResponse request
 	HealthWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*HealthResponse, error)
 
-	// GetInstanceStatsWithResponse request
-	GetInstanceStatsWithResponse(ctx context.Context, params *GetInstanceStatsParams, reqEditors ...RequestEditorFn) (*GetInstanceStatsResponse, error)
-
 	// GetLatestInstanceStatsWithResponse request
 	GetLatestInstanceStatsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetLatestInstanceStatsResponse, error)
+
+	// GetInstanceStatsWithResponse request
+	GetInstanceStatsWithResponse(ctx context.Context, params *GetInstanceStatsParams, reqEditors ...RequestEditorFn) (*GetInstanceStatsResponse, error)
 
 	// LoginCbWithResponse request
 	LoginCbWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*LoginCbResponse, error)
@@ -4165,27 +4165,6 @@ func (r HealthResponse) StatusCode() int {
 	return 0
 }
 
-type GetInstanceStatsResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-}
-
-// Status returns HTTPResponse.Status
-func (r GetInstanceStatsResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetInstanceStatsResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type GetLatestInstanceStatsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -4201,6 +4180,27 @@ func (r GetLatestInstanceStatsResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetLatestInstanceStatsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetInstanceStatsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r GetInstanceStatsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetInstanceStatsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -4698,15 +4698,6 @@ func (c *ClientWithResponses) HealthWithResponse(ctx context.Context, reqEditors
 	return ParseHealthResponse(rsp)
 }
 
-// GetInstanceStatsWithResponse request returning *GetInstanceStatsResponse
-func (c *ClientWithResponses) GetInstanceStatsWithResponse(ctx context.Context, params *GetInstanceStatsParams, reqEditors ...RequestEditorFn) (*GetInstanceStatsResponse, error) {
-	rsp, err := c.GetInstanceStats(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetInstanceStatsResponse(rsp)
-}
-
 // GetLatestInstanceStatsWithResponse request returning *GetLatestInstanceStatsResponse
 func (c *ClientWithResponses) GetLatestInstanceStatsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetLatestInstanceStatsResponse, error) {
 	rsp, err := c.GetLatestInstanceStats(ctx, reqEditors...)
@@ -4714,6 +4705,15 @@ func (c *ClientWithResponses) GetLatestInstanceStatsWithResponse(ctx context.Con
 		return nil, err
 	}
 	return ParseGetLatestInstanceStatsResponse(rsp)
+}
+
+// GetInstanceStatsWithResponse request returning *GetInstanceStatsResponse
+func (c *ClientWithResponses) GetInstanceStatsWithResponse(ctx context.Context, params *GetInstanceStatsParams, reqEditors ...RequestEditorFn) (*GetInstanceStatsResponse, error) {
+	rsp, err := c.GetInstanceStats(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetInstanceStatsResponse(rsp)
 }
 
 // LoginCbWithResponse request returning *LoginCbResponse
@@ -5629,22 +5629,6 @@ func ParseHealthResponse(rsp *http.Response) (*HealthResponse, error) {
 	return response, nil
 }
 
-// ParseGetInstanceStatsResponse parses an HTTP response from a GetInstanceStatsWithResponse call
-func ParseGetInstanceStatsResponse(rsp *http.Response) (*GetInstanceStatsResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetInstanceStatsResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	return response, nil
-}
-
 // ParseGetLatestInstanceStatsResponse parses an HTTP response from a GetLatestInstanceStatsWithResponse call
 func ParseGetLatestInstanceStatsResponse(rsp *http.Response) (*GetLatestInstanceStatsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -5654,6 +5638,22 @@ func ParseGetLatestInstanceStatsResponse(rsp *http.Response) (*GetLatestInstance
 	}
 
 	response := &GetLatestInstanceStatsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseGetInstanceStatsResponse parses an HTTP response from a GetInstanceStatsWithResponse call
+func ParseGetInstanceStatsResponse(rsp *http.Response) (*GetInstanceStatsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetInstanceStatsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}
