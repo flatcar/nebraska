@@ -182,7 +182,7 @@ func calculateMetrics(api *api.API) error {
 	}
 
 	for _, metric := range lisMetrics {
-		latestInstanceStatsGaugeMetric.WithLabelValues(metric.ChannelName, metric.Version, metric.Arch, metric.Timestamp).Set(float64(metric.InstancesCount))
+		latestInstanceStatsGaugeMetric.WithLabelValues(metric.ChannelName, metric.Version, metric.Arch, metric.Timestamp.Format(time.RFC3339)).Set(float64(metric.InstancesCount))
 	}
 
 	// db stats

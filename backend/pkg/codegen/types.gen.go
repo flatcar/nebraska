@@ -260,7 +260,7 @@ type InstanceStats struct {
 	Arch      string            `json:"arch"`
 	Channel   string            `json:"channel"`
 	Count     int               `json:"count"`
-	Timestamp string            `json:"timestamp"`
+	Timestamp time.Time         `json:"timestamp"`
 	Type      InstanceStatsType `json:"type"`
 	Version   string            `json:"version"`
 }

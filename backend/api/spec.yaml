@@ -1551,6 +1551,7 @@ components:
           type: string
         timestamp:
           type: string
+          format: date-time
         count:
           type: integer
 
