@@ -1358,9 +1358,9 @@ paths:
         "200":
           description: List instance stats response
           content:
-            application/x-ndjson:
+            application/json:
               schema:
-                $ref: "#/components/schemas/instanceStats"
+                $ref: "#/components/schemas/instanceStatsPage"
         "500":
           description: Get instance stats error response
 components:
@@ -1519,13 +1519,13 @@ components:
       required:
         - totalCount
         - count
-        - applications
+        - metrics
       properties:
         totalCount:
           type: integer
         count:
           type: integer
-        applications:
+        metrics:
           type: array
           items:
             $ref: "#/components/schemas/instanceStats"
@@ -1538,7 +1538,7 @@ components:
         - version
         - arch
         - timestamp
-        - instances
+        - count
       properties:
         type:
           type: string

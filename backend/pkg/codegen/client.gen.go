@@ -4189,6 +4189,7 @@ func (r GetLatestInstanceStatsResponse) StatusCode() int {
 type GetInstanceStatsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON200      *InstanceStatsPage
 }
 
 // Status returns HTTPResponse.Status
@@ -5656,6 +5657,16 @@ func ParseGetInstanceStatsResponse(rsp *http.Response) (*GetInstanceStatsRespons
 	response := &GetInstanceStatsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest InstanceStatsPage
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
 	}
 
 	return response, nil

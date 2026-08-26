@@ -97,7 +97,7 @@ func (h *Handler) GetInstanceStats(ctx echo.Context, params codegen.GetInstanceS
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	ctx.Response().Header().Set(echo.HeaderContentType, "application/x-ndjson")
+	ctx.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 	ctx.Response().WriteHeader(http.StatusOK)
 
 	m := make([]map[string]interface{}, len(metrics))

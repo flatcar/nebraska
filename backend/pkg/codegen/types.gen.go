@@ -259,7 +259,7 @@ type InstancePage struct {
 type InstanceStats struct {
 	Arch      string            `json:"arch"`
 	Channel   string            `json:"channel"`
-	Count     *int              `json:"count,omitempty"`
+	Count     int               `json:"count"`
 	Timestamp string            `json:"timestamp"`
 	Type      InstanceStatsType `json:"type"`
 	Version   string            `json:"version"`
@@ -267,6 +267,13 @@ type InstanceStats struct {
 
 // InstanceStatsType defines model for InstanceStats.Type.
 type InstanceStatsType string
+
+// InstanceStatsPage defines model for instanceStatsPage.
+type InstanceStatsPage struct {
+	Count      int             `json:"count"`
+	Metrics    []InstanceStats `json:"metrics"`
+	TotalCount int             `json:"totalCount"`
+}
 
 // InstanceStatusHistories defines model for instanceStatusHistories.
 type InstanceStatusHistories = []InstanceStatusHistory
