@@ -103,7 +103,7 @@ func (h *Handler) GetInstanceStats(ctx echo.Context, params codegen.GetInstanceS
 	m := make([]map[string]interface{}, len(metrics))
 	for i, metric := range metrics {
 		formattedMetric := map[string]interface{}{
-			"type":      "instance_count",
+			"type":      codegen.InstanceStatsTypeInstanceCount,
 			"channel":   metric.ChannelName,
 			"version":   metric.Version,
 			"arch":      metric.Arch,
