@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-
 func newTestGithubAuth() *githubAuth {
 	return &githubAuth{
 		userSessionIDs: make(userSessionMap),
