@@ -29,15 +29,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Fixed package blacklist changes not appearing in UI immediately after save
 
-## [4.0.0] - 25/08/2026
+## [4.0.0] - 02/09/2026
 
 ### Security
 
 - **OIDC access token audience validation:** Before this release the backend checked only the signature, the issuer and the expiry time of a token. It therefore accepted any token from the configured issuer. This included a token that the provider issued for a different application in the same realm or tenant, and an ID token sent in place of an access token.
 
-  Nebraska now also checks the `aud` claim of the token. That claim must contain the audience you configure for the backend API, as required by [RFC 9068](https://www.rfc-editor.org/rfc/rfc9068) section 4. Nebraska also rejects a token that clearly says it is an ID token. A token whose header type is `at+jwt` is accepted as an access token. A token that carries a Keycloak `typ` claim with the value `ID` is rejected. A token that says nothing about its kind is accepted.
+  Nebraska now also checks the `aud` claim of the token. That claim must contain the audience you configure for the backend API. [RFC 9700](https://www.rfc-editor.org/rfc/rfc9700) section 2.3, which is BCP 240, requires every resource server to verify on every request that a token was meant for it, and to refuse the request if it was not. It names the `aud` claim defined in [RFC 9068](https://www.rfc-editor.org/rfc/rfc9068) as a way to do that. Nebraska also rejects a token that clearly says it is an ID token. A token whose header type is `at+jwt` is accepted as an access token. A token that carries a Keycloak `typ` claim with the value `ID` is rejected. A token that says nothing about its kind is accepted.
 
-  Nebraska does not follow the rule in the same section that requires rejecting any token whose header type is not `at+jwt`. Most providers issue access tokens with a plain `JWT` header, so that rule would reject them. In those setups the audience check is what separates an access token from an ID token.
+  Nebraska does not follow the rule in RFC 9068 section 4 that requires rejecting any token whose header type is not `at+jwt`. Most providers issue access tokens with a plain `JWT` header, so that rule would reject them. In those setups the audience check is what separates an access token from an ID token.
 
 - **SQL injection in the group version timeline:** the `groupID` path parameter was put straight into three SQL statements in the version timeline query path, so a crafted value could change those queries. All three now bind `groupID` as a query parameter. The `groupID` of the endpoint is also declared as a UUID in the OpenAPI spec, so a malformed value is rejected before it reaches the database.
 
