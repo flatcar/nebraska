@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/codegen"
 )
 
@@ -95,7 +95,7 @@ func TestCreateGroup(t *testing.T) {
 		payload := strings.NewReader(fmt.Sprintf(`{"name":"%s","policy_max_updates_per_period":1,"policy_period_interval":"1 hours","policy_update_timeout":"1 days","policy_timezone":"Asia/Calcutta","application_id":"%s"}`, groupName, app.ID))
 
 		// response
-		var group api.Group
+		var group types.Group
 
 		httpDo(t, url, method, payload, http.StatusOK, "json", &group)
 
@@ -122,7 +122,7 @@ func TestCreateGroup(t *testing.T) {
 		payload := strings.NewReader(fmt.Sprintf(`{"name":"%s","policy_max_updates_per_period":1,"policy_period_interval":"1 hours","policy_update_timeout":"1 days","policy_timezone":"Asia/Calcutta","application_id":"%s"}`, groupName, app.ID))
 
 		// response
-		var group api.Group
+		var group types.Group
 
 		httpDo(t, url, method, payload, http.StatusOK, "json", &group)
 
@@ -149,7 +149,7 @@ func TestGetGroup(t *testing.T) {
 		method := "GET"
 
 		// response
-		var group api.Group
+		var group types.Group
 
 		httpDo(t, url, method, nil, http.StatusOK, "json", &group)
 
@@ -169,7 +169,7 @@ func TestGetGroup(t *testing.T) {
 		method := "GET"
 
 		// response
-		var group api.Group
+		var group types.Group
 
 		httpDo(t, url, method, nil, http.StatusOK, "json", &group)
 
@@ -187,7 +187,7 @@ func TestUpdateGroup(t *testing.T) {
 		app := getRandomApp(t, db)
 
 		// update group request
-		var groupDB api.Group
+		var groupDB types.Group
 		err := copier.Copy(&groupDB, app.Groups[0])
 		require.NoError(t, err)
 
@@ -201,7 +201,7 @@ func TestUpdateGroup(t *testing.T) {
 		method := "PUT"
 
 		// response
-		var group api.Group
+		var group types.Group
 		httpDo(t, url, method, bytes.NewReader(payload), http.StatusOK, "json", &group)
 
 		assert.Equal(t, groupName, group.Name)
@@ -221,7 +221,7 @@ func TestUpdateGroup(t *testing.T) {
 		app := getAppWithProductID(t, db)
 
 		// update group request
-		var groupDB api.Group
+		var groupDB types.Group
 		err := copier.Copy(&groupDB, app.Groups[0])
 		require.NoError(t, err)
 
@@ -235,7 +235,7 @@ func TestUpdateGroup(t *testing.T) {
 		method := "PUT"
 
 		// response
-		var group api.Group
+		var group types.Group
 		httpDo(t, url, method, bytes.NewReader(payload), http.StatusOK, "json", &group)
 
 		assert.Equal(t, groupName, group.Name)

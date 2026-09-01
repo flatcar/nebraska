@@ -10,7 +10,7 @@ import (
 	"github.com/doug-martin/goqu/v9"
 	"golang.org/x/sync/errgroup"
 
-	"github.com/flatcar/nebraska/backend/pkg/api/internal/types"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
 type (

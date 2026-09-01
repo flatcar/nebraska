@@ -10,7 +10,8 @@ import (
 	omahaSpec "github.com/flatcar/go-omaha/omaha"
 	"github.com/rs/zerolog"
 
-	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/logger"
 )
 
@@ -42,13 +43,13 @@ var (
 // Handler represents a component capable of processing Omaha requests. It uses
 // the Nebraska API to get packages updates, process events, etc.
 type Handler struct {
-	crAPI *api.API
+	runtimeSvc *runtime.Service
 }
 
 // NewHandler creates a new Handler instance.
-func NewHandler(crAPI *api.API) *Handler {
+func NewHandler(runtimeSvc *runtime.Service) *Handler {
 	return &Handler{
-		crAPI: crAPI,
+		runtimeSvc: runtimeSvc,
 	}
 }
 
@@ -72,23 +73,23 @@ func (h *Handler) Handle(rawReq io.Reader, respWriter io.Writer, ip string) erro
 	return xml.NewEncoder(respWriter).Encode(omahaResp)
 }
 
-func getArch(os *omahaSpec.OS, appReq *omahaSpec.AppRequest) api.Arch {
+func getArch(os *omahaSpec.OS, appReq *omahaSpec.AppRequest) types.Arch {
 	if appReq != nil {
-		if arch, err := api.ArchFromCoreosString(appReq.Board); err == nil {
+		if arch, err := types.ArchFromCoreosString(appReq.Board); err == nil {
 			return arch
 		}
 	}
 
 	if os != nil {
-		if arch, err := api.ArchFromOmahaString(os.Arch); err == nil {
+		if arch, err := types.ArchFromOmahaString(os.Arch); err == nil {
 			return arch
 		}
-		if arch, err := api.ArchFromString(os.Arch); err == nil {
+		if arch, err := types.ArchFromString(os.Arch); err == nil {
 			return arch
 		}
 	}
 	l.Debug().Msgf("getArch - unknown arch, assuming amd64 arch")
-	return api.ArchAMD64
+	return types.ArchAMD64
 }
 
 // isSyncerClient detects if the client is a Nebraska syncer based on request characteristics
@@ -111,7 +112,7 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 	for _, reqApp := range omahaReq.Apps {
 		var respApp *omahaSpec.AppResponse
 
-		appID, err := h.crAPI.GetAppID(reqApp.ID)
+		appID, err := h.runtimeSvc.GetAppID(reqApp.ID)
 		if err != nil {
 			l.Info().Str("machineId", reqApp.MachineID).Str("app", reqApp.ID).Msgf("buildOmahaResponse - no app found for %s", err.Error())
 
@@ -130,7 +131,7 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 			l.Info().Str("machineId", reqApp.MachineID).Str("uuid", group).Msgf("buildOmahaResponse - found client using a hard-coded group UUID")
 			group = trackName
 		}
-		groupID, err := h.crAPI.GetGroupID(appID, group, getArch(omahaReq.OS, reqApp))
+		groupID, err := h.runtimeSvc.GetGroupID(appID, group, getArch(omahaReq.OS, reqApp))
 		if err == nil {
 			group = groupID
 		} else {
@@ -147,17 +148,17 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 			respApp.AddEvent()
 		}
 
-		inst := api.Instance{
+		inst := types.Instance{
 			ID:           reqApp.MachineID,
 			Alias:        reqApp.MachineAlias,
 			IP:           ip,
 			OEM:          reqApp.OEM,
 			AlephVersion: reqApp.AlephVersion,
 		}
-		instApp := api.NewInstanceApplication(appID, group, reqApp.Version)
+		instApp := runtime.NewInstanceApplication(appID, group, reqApp.Version)
 
 		if reqApp.Ping != nil {
-			if _, err := h.crAPI.RegisterInstance(inst, instApp); err != nil {
+			if _, err := h.runtimeSvc.RegisterInstance(inst, instApp); err != nil {
 				l.Debug().Str("machineId", reqApp.MachineID).Msgf("processPing error %s", err.Error())
 			}
 			respApp.AddPing()
@@ -166,9 +167,9 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 		if reqApp.UpdateCheck != nil {
 			if isSyncerClient(omahaReq) {
 				// Syncer - get all packages
-				packages, err := h.crAPI.GetUpdatePackagesForSyncer(inst, instApp)
+				packages, err := h.runtimeSvc.GetUpdatePackagesForSyncer(inst, instApp)
 				if err != nil {
-					if err == api.ErrNoUpdatePackageAvailable || err == api.ErrUpdateGrantFailed {
+					if err == types.ErrNoUpdatePackageAvailable || err == types.ErrUpdateGrantFailed {
 						respApp.AddUpdateCheck(omahaSpec.NoUpdate)
 					} else {
 						respApp.Status = h.getStatusMessage(err)
@@ -205,9 +206,9 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 				h.prepareMultiManifestUpdateCheck(respApp, packages)
 			} else {
 				// Regular client - get single package
-				pkg, err := h.crAPI.GetUpdatePackage(inst, instApp)
+				pkg, err := h.runtimeSvc.GetUpdatePackage(inst, instApp)
 				if err != nil {
-					if err == api.ErrNoUpdatePackageAvailable || err == api.ErrUpdateGrantFailed {
+					if err == types.ErrNoUpdatePackageAvailable || err == types.ErrUpdateGrantFailed {
 						respApp.AddUpdateCheck(omahaSpec.NoUpdate)
 					} else {
 						respApp.Status = h.getStatusMessage(err)
@@ -228,7 +229,7 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 func (h *Handler) processEvent(machineID string, appID string, group string, event *omahaSpec.EventRequest) error {
 	l.Info().Str("machineId", machineID).Str("appID", appID).Str("group", group).Str("event", event.Type.String()+"."+event.Result.String()).Str("previousVersion", event.PreviousVersion).Msgf("processEvent eventError %d", event.ErrorCode)
 
-	return h.crAPI.RegisterEvent(machineID, appID, group, int(event.Type), int(event.Result), event.PreviousVersion, strconv.Itoa(event.ErrorCode))
+	return h.runtimeSvc.RegisterEvent(machineID, appID, group, int(event.Type), int(event.Result), event.PreviousVersion, strconv.Itoa(event.ErrorCode))
 }
 
 func (h *Handler) getStatusMessage(crErr error) omahaSpec.AppStatus {
@@ -240,23 +241,23 @@ func (h *Handler) getStatusMessage(crErr error) omahaSpec.AppStatus {
 // AppStatus constants.
 func (h *Handler) getStatusMessageStr(crErr error) string {
 	switch crErr {
-	case api.ErrNoPackageFound:
+	case types.ErrNoPackageFound:
 		return "error-noPackageFound"
-	case api.ErrInvalidApplicationOrGroup:
+	case types.ErrInvalidApplicationOrGroup:
 		return "error-unknownApplicationOrGroup"
-	case api.ErrRegisterInstanceFailed:
+	case types.ErrRegisterInstanceFailed:
 		return "error-instanceRegistrationFailed"
-	case api.ErrMaxUpdatesPerPeriodLimitReached:
+	case types.ErrMaxUpdatesPerPeriodLimitReached:
 		return "error-maxUpdatesPerPeriodLimitReached"
-	case api.ErrMaxConcurrentUpdatesLimitReached:
+	case types.ErrMaxConcurrentUpdatesLimitReached:
 		return "error-maxConcurrentUpdatesLimitReached"
-	case api.ErrMaxTimedOutUpdatesLimitReached:
+	case types.ErrMaxTimedOutUpdatesLimitReached:
 		return "error-maxTimedOutUpdatesLimitReached"
-	case api.ErrUpdatesDisabled:
+	case types.ErrUpdatesDisabled:
 		return "error-updatesDisabled"
-	case api.ErrGetUpdatesStatsFailed:
+	case types.ErrGetUpdatesStatsFailed:
 		return "error-couldNotCheckUpdatesStats"
-	case api.ErrUpdateInProgressOnInstance:
+	case types.ErrUpdateInProgressOnInstance:
 		return "error-updateInProgressOnInstance"
 	}
 
@@ -266,7 +267,7 @@ func (h *Handler) getStatusMessageStr(crErr error) string {
 }
 
 // addPackageToManifest adds a package and its extra files to the manifest
-func (h *Handler) addPackageToManifest(manifest *omahaSpec.Manifest, pkg *api.Package) {
+func (h *Handler) addPackageToManifest(manifest *omahaSpec.Manifest, pkg *types.Package) {
 	mpkg := manifest.AddPackage()
 	mpkg.Name = pkg.Filename.String
 	mpkg.SHA1 = pkg.Hash.String
@@ -300,12 +301,12 @@ func (h *Handler) addPackageToManifest(manifest *omahaSpec.Manifest, pkg *api.Pa
 }
 
 // addFlatcarActionToManifest adds Flatcar-specific action to manifest if applicable
-func (h *Handler) addFlatcarActionToManifest(manifest *omahaSpec.Manifest, pkg *api.Package) error {
-	if pkg.Type != api.PkgTypeFlatcar {
+func (h *Handler) addFlatcarActionToManifest(manifest *omahaSpec.Manifest, pkg *types.Package) error {
+	if pkg.Type != types.PkgTypeFlatcar {
 		return nil
 	}
 
-	cra, err := h.crAPI.GetFlatcarAction(pkg.ID)
+	cra, err := h.runtimeSvc.GetFlatcarAction(pkg.ID)
 	if err != nil {
 		return err
 	}
@@ -323,7 +324,7 @@ func (h *Handler) addFlatcarActionToManifest(manifest *omahaSpec.Manifest, pkg *
 	return nil
 }
 
-func (h *Handler) prepareUpdateCheck(appResp *omahaSpec.AppResponse, pkg *api.Package) {
+func (h *Handler) prepareUpdateCheck(appResp *omahaSpec.AppResponse, pkg *types.Package) {
 	if pkg == nil {
 		appResp.AddUpdateCheck(omahaSpec.NoUpdate)
 		return
@@ -348,7 +349,7 @@ func (h *Handler) prepareUpdateCheck(appResp *omahaSpec.AppResponse, pkg *api.Pa
 
 // prepareMultiManifestUpdateCheck creates a response with multiple manifests
 // Each package gets one manifest with appropriate floor/target metadata based on its properties
-func (h *Handler) prepareMultiManifestUpdateCheck(appResp *omahaSpec.AppResponse, packages []*api.Package) {
+func (h *Handler) prepareMultiManifestUpdateCheck(appResp *omahaSpec.AppResponse, packages []*types.Package) {
 	if len(packages) == 0 {
 		appResp.AddUpdateCheck(omahaSpec.NoUpdate)
 		return

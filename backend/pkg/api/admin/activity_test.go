@@ -8,20 +8,20 @@ import (
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/flatcar/nebraska/backend/pkg/api"
-	"github.com/flatcar/nebraska/backend/pkg/api/internal/types"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
 // TestAdminActivityRouting verifies that the admin-side activity writer
 // (newChannelActivityEntry) writes only to the admin_activity table and never
-// leaks into the runtime activity table. The runtime side is covered by the api
-// package's TestRuntimeActivityRouting. Together they preserve the routing
+// leaks into the runtime activity table. The runtime side is covered by the
+// runtime package's TestRuntimeActivityRouting. Together they preserve the routing
 // invariant introduced when the activity table was split (PR #1398).
 func TestAdminActivityRouting(t *testing.T) {
-	a, err := api.NewForTest(api.OptionInitDB, api.OptionDisableUpdatesOnFailedRollout)
+	a, err := api.NewForTest(api.OptionInitDB)
 	require.NoError(t, err)
 	require.NotNil(t, a)
 	defer a.Close()
-	svc := NewService(a.Reads())
+	svc := NewService(a.Conn(), a.Reads())
 
 	tVersion := "12.1.0"
 	tTeam, _ := svc.AddTeam(&types.Team{Name: "test_team_routing"})
@@ -42,7 +42,7 @@ func TestAdminActivityRouting(t *testing.T) {
 	assert.Equal(t, 0, runtimeCount, "admin writer must not write to the runtime activity table")
 
 	// Checking the admin activity is visible through the GetActivity as well.
-	entries, err := a.GetActivity(tTeam.ID, api.ActivityQueryParams{AppID: tApp.ID})
+	entries, err := a.GetActivity(tTeam.ID, types.ActivityQueryParams{AppID: tApp.ID})
 	require.NoError(t, err)
 	require.Len(t, entries, 1)
 	assert.Equal(t, types.ActivityChannelPackageUpdated, entries[0].Class, "admin activity must be visible through GetActivity/all_activity")

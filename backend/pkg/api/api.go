@@ -12,8 +12,8 @@ import (
 	"github.com/jmoiron/sqlx"
 	migrate "github.com/rubenv/sql-migrate"
 
+	"github.com/flatcar/nebraska/backend/pkg/api/internal/dbconn"
 	"github.com/flatcar/nebraska/backend/pkg/api/internal/dbreads"
-	"github.com/flatcar/nebraska/backend/pkg/api/internal/types"
 	"github.com/flatcar/nebraska/backend/pkg/logger"
 
 	// PostgreSQL Driver and Toolkit
@@ -38,45 +38,57 @@ const (
 	dBConnMaxLifetime     = 5 * 60 // seconds
 )
 
-func nowUTC() time.Time {
-	return time.Now().UTC()
-}
-
-var (
-	l = logger.New("api")
-
-	// ErrNoRowsAffected indicates that no rows were affected in an update or
-	// delete database operation.
-	ErrNoRowsAffected = types.ErrNoRowsAffected
-
-	// ErrInvalidSemver indicates that the provided semver version is not valid.
-	ErrInvalidSemver = types.ErrInvalidSemver
-
-	// ErrArchMismatch indicates that arches of two objects didn't
-	// match (for example, for a package and channel)
-	ErrArchMismatch = types.ErrArchMismatch
-)
+var l = logger.New("api")
 
 const migrationsTable = "database_migrations"
 
 // API represents an api instance used to interact with Nebraska entities.
 type API struct {
-	db       *sqlx.DB
-	dbDriver string
-	dbURL    string
+	conn            *dbconn.Conn
+	dbDriver        string
+	dbURL           string
+	migrationsDBURL string
 
 	*dbreads.Queries
+}
 
-	// disableUpdatesOnFailedRollout defines wether to disable updates
-	// after a first rollout attempt failed (ResultFailed)
-	disableUpdatesOnFailedRollout bool
+// db returns the handle for the statements api runs itself.
+func (api *API) db() *sqlx.DB {
+	return dbconn.DB(api.conn)
+}
+
+// withMigrationsDB runs fn against the connection that owns the schema. When
+// NEBRASKA_MIGRATIONS_DB_URL is unset the serving connection is used, which is
+// what a single-instance deployment does today.
+func (api *API) withMigrationsDB(fn func(*sqlx.DB) error) error {
+	if api.migrationsDBURL == "" {
+		return fn(api.db())
+	}
+
+	conn, err := dbconn.Open(api.dbDriver, api.migrationsDBURL, dbconn.PoolConfig{
+		MaxOpenConns: 1,
+		MaxIdleConns: 1,
+	})
+	if err != nil {
+		return fmt.Errorf("opening the migrations database connection: %w", err)
+	}
+	defer func() { _ = conn.Close() }()
+
+	migrationsDB := dbconn.DB(conn)
+
+	if err := checkSameDeployment(api.db(), migrationsDB); err != nil {
+		return err
+	}
+
+	return fn(migrationsDB)
 }
 
 // New creates a new API instance, creates the underlying db connection.
 func New(options ...func(*API) error) (*API, error) {
 	api := &API{
-		dbDriver: "pgx",
-		dbURL:    os.Getenv("NEBRASKA_DB_URL"),
+		dbDriver:        "pgx",
+		dbURL:           os.Getenv("NEBRASKA_DB_URL"),
+		migrationsDBURL: os.Getenv("NEBRASKA_MIGRATIONS_DB_URL"),
 	}
 
 	if api.dbURL == "" {
@@ -84,13 +96,6 @@ func New(options ...func(*API) error) (*API, error) {
 	}
 
 	var err error
-	api.db, err = sqlx.Open(api.dbDriver, api.dbURL)
-	if err != nil {
-		return nil, err
-	}
-	if err := api.db.Ping(); err != nil {
-		return nil, err
-	}
 
 	var (
 		maxOpenConns    int
@@ -112,9 +117,14 @@ func New(options ...func(*API) error) (*API, error) {
 		connMaxLifetime = dBConnMaxLifetime
 	}
 
-	api.db.SetMaxOpenConns(maxOpenConns)
-	api.db.SetMaxIdleConns(maxIdleConns)
-	api.db.SetConnMaxLifetime(time.Duration(connMaxLifetime) * time.Second)
+	api.conn, err = dbconn.Open(api.dbDriver, api.dbURL, dbconn.PoolConfig{
+		MaxOpenConns:    maxOpenConns,
+		MaxIdleConns:    maxIdleConns,
+		ConnMaxLifetime: time.Duration(connMaxLifetime) * time.Second,
+	})
+	if err != nil {
+		return nil, err
+	}
 
 	// Load max floors per response configuration
 	maxFloorsPerResponse, err := strconv.Atoi(os.Getenv("NEBRASKA_MAX_FLOORS_PER_RESPONSE"))
@@ -122,7 +132,7 @@ func New(options ...func(*API) error) (*API, error) {
 		maxFloorsPerResponse = dbreads.DefaultMaxFloorsPerResponse
 	}
 
-	api.Queries = dbreads.New(api.db, maxFloorsPerResponse)
+	api.Queries = dbreads.New(api.conn, maxFloorsPerResponse)
 
 	for _, option := range options {
 		err := option(api)
@@ -142,12 +152,17 @@ func NewWithMigrations(options ...func(*API) error) (*API, error) {
 		return nil, err
 	}
 
-	migrate.SetTable(migrationsTable)
-	migrations := migrationAssets()
-
-	if _, err := migrate.Exec(api.db.DB, "postgres", migrations, migrate.Up); err != nil {
+	err = api.withMigrationsDB(func(db *sqlx.DB) error {
+		migrate.SetTable(migrationsTable)
+		if _, err := migrate.Exec(db.DB, "postgres", migrationAssets(), migrate.Up); err != nil {
+			return fmt.Errorf("applying database migrations: %w", err)
+		}
+		return api.setupServingRoles(db)
+	})
+	if err != nil {
 		return nil, err
 	}
+
 	api.UpdateCachedGroups()
 	api.ClearCachedAppIDs()
 
@@ -160,6 +175,18 @@ type migration struct {
 }
 
 func (api *API) MigrateDown(version string) (int, error) {
+	var count int
+
+	err := api.withMigrationsDB(func(db *sqlx.DB) error {
+		var err error
+		count, err = migrateDown(db, version)
+		return err
+	})
+
+	return count, err
+}
+
+func migrateDown(db *sqlx.DB, version string) (int, error) {
 	migrate.SetTable(migrationsTable)
 	migrations := migrationAssets()
 
@@ -170,7 +197,7 @@ func (api *API) MigrateDown(version string) (int, error) {
 	}
 
 	var mig migration
-	err = api.db.QueryRowx(query).StructScan(&mig)
+	err = db.QueryRowx(query).StructScan(&mig)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return 0, fmt.Errorf("no migrations found for: %s, err: %v", version, err)
@@ -186,14 +213,14 @@ func (api *API) MigrateDown(version string) (int, error) {
 
 	countMap := make(map[string]interface{})
 
-	err = api.db.QueryRowx(query).MapScan(countMap)
+	err = db.QueryRowx(query).MapScan(countMap)
 	if err != nil {
 		return 0, err
 	}
 
 	levels := countMap["count"].(int64)
 	l.Info().Msgf("migrating down %d levels", levels)
-	count, err := migrate.ExecMax(api.db.DB, "postgres", migrations, migrate.Down, int(levels))
+	count, err := migrate.ExecMax(db.DB, "postgres", migrations, migrate.Down, int(levels))
 	if err != nil {
 		return 0, err
 	}
@@ -217,7 +244,11 @@ func OptionInitDB(api *API) error {
 		return err
 	}
 
-	if _, err := api.db.Exec(string(sqlFile)); err != nil {
+	err = api.withMigrationsDB(func(db *sqlx.DB) error {
+		_, err := db.Exec(string(sqlFile))
+		return err
+	})
+	if err != nil {
 		return err
 	}
 	api.UpdateCachedGroups()
@@ -225,17 +256,15 @@ func OptionInitDB(api *API) error {
 	return nil
 }
 
-// OptionDisableUpdatesOnFailedRollout will modify API to disable
-// updates on failed rollout.
-func OptionDisableUpdatesOnFailedRollout(api *API) error {
-	api.disableUpdatesOnFailedRollout = true
-
-	return nil
-}
-
 // Close releases the connections to the database.
 func (api *API) Close() {
-	_ = api.db.Close()
+	_ = api.conn.Close()
+}
+
+// Conn returns the shared database connection (dbconn.Conn) owned by this API
+// instance.
+func (api *API) Conn() *dbconn.Conn {
+	return api.conn
 }
 
 // Reads returns the shared read queries (dbreads.Queries) owned by this API
@@ -257,7 +286,7 @@ func NewForTest(options ...func(*API) error) (*API, error) {
 		return nil, err
 	}
 
-	_, err = a.db.Exec(string(sqlFile))
+	_, err = a.db().Exec(string(sqlFile))
 	if err != nil {
 		return nil, err
 	}
