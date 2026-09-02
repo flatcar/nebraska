@@ -65,7 +65,7 @@ export default function Tabs(props: TabsProps) {
       >
         {tabs.map(({ label }, i) => (
           <MuiTab
-            key={i}
+            key={label}
             label={label}
             sx={
               tabs?.length > 7
@@ -78,8 +78,8 @@ export default function Tabs(props: TabsProps) {
           />
         ))}
       </MuiTabs>
-      {tabs.map(({ component }, i) => (
-        <TabPanel key={i} tabIndex={Number(tabIndex)} index={i}>
+      {tabs.map(({ component, label }, i) => (
+        <TabPanel key={label} tabIndex={Number(tabIndex)} index={i}>
           {component}
         </TabPanel>
       ))}
