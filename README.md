@@ -72,7 +72,7 @@ For instructions on how to set up user access, please check the [authorization d
 
 ## License
 
-Nebraska is released under the terms of the [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0), and was forked from the [CoreRoller](https://github.com/coreroller/coreroller) project.
+Nebraska is released under the terms of the [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0), and was forked from the [CoreRoller](https://github.com/coreroller/coreroller) project.
 
 ---
 
