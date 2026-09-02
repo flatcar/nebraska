@@ -68,7 +68,8 @@ func TestGetActivity(t *testing.T) {
 
 	activityEntries, err = a.GetActivity(uuid.New().String(), types.ActivityQueryParams{})
 	assert.NoError(t, err)
-	assert.Nil(t, activityEntries, "Team with this id doesn't exist")
+	assert.Empty(t, activityEntries, "Team with this id doesn't exist")
+	assert.NotNil(t, activityEntries)
 
 	// We try counting with default Start==-3days, End==Now
 	totalCount, err := a.GetActivityCount(tTeam.ID, types.ActivityQueryParams{})
