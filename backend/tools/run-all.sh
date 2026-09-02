@@ -19,32 +19,36 @@ function fail() {
     exit 1
 }
 
-opts=$(getopt \
-           --name "$(basename "${0}")" \
-           --options 'P:' \
-           --longoptions 'port:' \
-           -- "${@}"
-    )
-
-eval set -- "${opts}"
+# Parsing the arguments manually instead of relying on getopt so that the
+# script also works on macOS, which ships the BSD getopt that does not
+# support GNU long options (--longoptions).
 
 port=''
 
-while true; do
+while [[ "${#}" -gt 0 ]]; do
     case "${1}" in
         '-P'|'--port')
+            [[ "${#}" -ge 2 ]] || fail "Missing value for ${1}"
             port="${2}"
             shift 2
+            ;;
+        '--port='*)
+            port="${1#--port=}"
+            shift
             ;;
         '--')
             shift
             break
             ;;
         *)
-            fail 'Internal error!'
+            fail "Unrecognized argument: ${1}"
             ;;
     esac
 done
+
+if [[ "${#}" -ne 0 ]]; then
+    fail "Leftover unrecognized arguments: ${*}"
+fi
 
 tools_dir="$(dirname "${0}")"
 cid_file=$(mktemp)
