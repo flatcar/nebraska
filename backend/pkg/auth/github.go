@@ -12,7 +12,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/google/go-github/v28/github"
+	"github.com/google/go-github/v90/github"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/oauth2"
 	githuboauth "golang.org/x/oauth2/github"
@@ -299,6 +299,19 @@ func (gha *githubAuth) LoginWebhook(ctx echo.Context) error {
 	return nil
 }
 
+// newGithubClient builds a GitHub API client that authenticates through
+// oauthClient. When enterpriseURL is set, the client talks to that GitHub
+// Enterprise instance instead of github.com; WithEnterpriseURLs derives the
+// "/api/v3/" and "/api/uploads/" paths from the host, so the bare instance URL
+// is what it expects.
+func newGithubClient(oauthClient *http.Client, enterpriseURL string) (*github.Client, error) {
+	opts := []github.ClientOptionsFunc{github.WithHTTPClient(oauthClient)}
+	if enterpriseURL != "" {
+		opts = append(opts, github.WithEnterpriseURLs(enterpriseURL, enterpriseURL))
+	}
+	return github.NewClient(opts...)
+}
+
 func (gha *githubAuth) doLoginDance(ctx echo.Context, oauthClient *http.Client) (replied bool) {
 	const (
 		resultOK = iota
@@ -323,18 +336,11 @@ func (gha *githubAuth) doLoginDance(ctx echo.Context, oauthClient *http.Client) 
 		}
 	}()
 
-	client := github.NewClient(oauthClient)
-	if gha.enterpriseURL != "" {
-		var err error
-		client, err = github.NewEnterpriseClient(
-			gha.enterpriseURL+"/api/v3",
-			gha.enterpriseURL+"/api/v3/upload",
-			oauthClient)
-		if err != nil {
-			l.Error().Err(err).Msg("create enterprise client failed to create")
-			result = resultInternalFailure
-			return
-		}
+	client, err := newGithubClient(oauthClient, gha.enterpriseURL)
+	if err != nil {
+		l.Error().Err(err).Msg("create enterprise client failed to create")
+		result = resultInternalFailure
+		return
 	}
 
 	ghUser, _, err := client.Users.Get(ctx.Request().Context(), "")
