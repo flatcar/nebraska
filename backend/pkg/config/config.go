@@ -84,6 +84,8 @@ func (c *Config) Validate() error {
 	}
 
 	switch c.AuthMode {
+	case "noop":
+		// no validation needed
 	case "github":
 		if c.GhClientID == "" || c.GhClientSecret == "" || c.GhReadOnlyTeams == "" || c.GhReadWriteTeams == "" {
 			return errors.New("invalid github configuration")
@@ -92,6 +94,8 @@ func (c *Config) Validate() error {
 		if c.OidcClientID == "" || c.OidcIssuerURL == "" || c.OidcAdminRoles == "" || c.OidcViewerRoles == "" {
 			return errors.New("invalid OIDC configuration")
 		}
+	default:
+		return fmt.Errorf("invalid auth-mode %q: must be one of noop, github, oidc", c.AuthMode)
 	}
 
 	if c.CAFile != "" {
