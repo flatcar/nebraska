@@ -88,7 +88,7 @@ export function ApplicationListPure(props: ApplicationListPureProps) {
         entries = (
           <Empty>
             <Trans t={t} ns="applications" i18nKey="noappyet">
-              Oops, it looks like you have not created any application yet..
+              Oops, it looks like you have not created any application yet.
               <br />
               <br />
               Now is a great time to create your first one, just click on the plus symbol above.

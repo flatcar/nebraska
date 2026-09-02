@@ -121,7 +121,7 @@ func Parse() (*Config, error) {
 	f.String("gh-client-secret", "", fmt.Sprintf("GitHub client secret used for authentication; can be taken from %s env var too", ghClientSecretEnvName))
 	f.String("gh-session-secret", "", fmt.Sprintf("Session secret used for authenticating sessions in cookies used for storing GitHub info , will be generated if none is passed; can be taken from %s env var too", ghSessionAuthKeyEnvName))
 	f.String("gh-session-crypt-key", "", fmt.Sprintf("Session key used for encrypting sessions in cookies used for storing GitHub info, will be generated if none is passed; can be taken from %s env var too", ghSessionCryptKeyEnvName))
-	f.String("gh-webhook-secret", "", fmt.Sprintf("GitHub webhook secret used for validing webhook messages; can be taken from %s env var too", ghWebhookSecretEnvName))
+	f.String("gh-webhook-secret", "", fmt.Sprintf("GitHub webhook secret used for validating webhook messages; can be taken from %s env var too", ghWebhookSecretEnvName))
 	f.String("gh-rw-teams", "", "comma-separated list of read-write GitHub teams in the org/team format")
 	f.String("gh-ro-teams", "", "comma-separated list of read-only GitHub teams in the org/team format")
 	f.String("gh-enterprise-url", "", fmt.Sprintf("base URL of the enterprise instance if using GHE; can be taken from %s env var too", ghEnterpriseURLEnvName))
