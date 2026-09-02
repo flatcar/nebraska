@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Security
+
+- **helm/postgresql: default to the official `docker.io/postgres` image:** the chart pulled PostgreSQL from `bitnamilegacy/postgresql`, the frozen archive Bitnami moved its free catalog into. Those images are never rebuilt, so every PostgreSQL and OS-package CVE published from now on stays unpatched in them. The default is now `docker.io/postgres:17.10-trixie`, which is rebuilt for security updates. The data directory moves from `/bitnami/postgresql/data` to `/var/lib/postgresql/pgdata`; deployments with `postgresql.primary.persistence.enabled=true` need a dump and restore, see [Migrating from the Bitnami PostgreSQL image](charts/nebraska/README.md#migrating-from-the-bitnami-postgresql-image). This replaces the temporary Bitnami Legacy workaround from ([#1227](https://github.com/flatcar/nebraska/pull/1227)).
+
 ### Added
 
 - **Custom CA Certificate for TLS:** Added `--ca-file` flag to trust additional CA certificates for TLS verification (e.g., internal CA, Let's Encrypt staging). Applies to the OIDC provider client and the syncer. Supports multiple PEM-encoded certs, additive to system CAs. Also exposed as `config.caFile` in the Helm chart.
