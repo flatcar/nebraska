@@ -279,6 +279,82 @@ func TestProductIDBasedRequest(t *testing.T) {
 	checkOmahaResponse(t, omahaResp, *tApp.ProductID.Ptr(), omahaSpec.AppOK)
 }
 
+func TestMultiAppRequestWithInvalidApp(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	h := NewHandler(a)
+	as := adminSvc(a)
+
+	tTeam, _ := as.AddTeam(&api.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&api.Application{Name: "test_app", Description: "Test app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&api.Package{Type: api.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "640.0.0", ApplicationID: tApp.ID, Arch: api.ArchAMD64})
+	tChannel, _ := as.AddChannel(&api.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID), Arch: api.ArchAMD64})
+	tGroup, _ := as.AddGroup(&api.Group{Name: "test_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 4, PolicyUpdateTimeout: "60 minutes"})
+
+	validUnregisteredIP := "127.0.0.1"
+	validUnregisteredMachineID := "some-machine-id"
+	validUnverifiedAppVersion := "100.0.1"
+	addPing := false
+	updateCheck := true
+
+	// Create a multi-app request: first app invalid, second app valid
+	omahaReq := omahaSpec.NewRequest()
+	omahaReq.OS.Version = reqVersion
+	omahaReq.OS.Platform = reqPlatform
+	omahaReq.OS.ServicePack = reqSp
+	omahaReq.OS.Arch = reqArch
+
+	// First app: invalid ID
+	appReq1 := omahaReq.AddApp("invalid-app-uuid", validUnverifiedAppVersion)
+	appReq1.MachineID = validUnregisteredMachineID
+	appReq1.Track = tGroup.ID
+	if updateCheck {
+		appReq1.AddUpdateCheck()
+	}
+	if addPing {
+		appReq1.AddPing()
+	}
+
+	// Second app: valid ID
+	appReq2 := omahaReq.AddApp(tApp.ID, validUnverifiedAppVersion)
+	appReq2.MachineID = validUnregisteredMachineID
+	appReq2.Track = tGroup.ID
+	if updateCheck {
+		appReq2.AddUpdateCheck()
+	}
+	if addPing {
+		appReq2.AddPing()
+	}
+
+	omahaReqXML, err := xml.Marshal(omahaReq)
+	require.NoError(t, err)
+
+	omahaRespXML := new(bytes.Buffer)
+	err = h.Handle(bytes.NewReader(omahaReqXML), omahaRespXML, validUnregisteredIP)
+	require.NoError(t, err)
+
+	var omahaResp *omahaSpec.Response
+	err = xml.NewDecoder(omahaRespXML).Decode(&omahaResp)
+	require.NoError(t, err)
+
+	// Both apps should be in the response
+	require.Equal(t, 2, len(omahaResp.Apps))
+
+	// First app should have error status (AppUnknownID)
+	appResp1 := omahaResp.Apps[0]
+	assert.Equal(t, "invalid-app-uuid", appResp1.ID)
+	assert.Equal(t, omahaSpec.AppUnknownID, appResp1.Status)
+	assert.NotNil(t, appResp1.UpdateCheck)
+	assert.Equal(t, omahaSpec.UpdateInternalError, appResp1.UpdateCheck.Status)
+
+	// Second app should have OK status
+	appResp2 := omahaResp.Apps[1]
+	assert.Equal(t, tApp.ID, appResp2.ID)
+	assert.Equal(t, omahaSpec.AppOK, appResp2.Status)
+	assert.NotNil(t, appResp2.UpdateCheck)
+	assert.Equal(t, omahaSpec.NoUpdate, appResp2.UpdateCheck.Status) // No update because version is unverified
+}
+
 func TestMultiManifestResponse(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
