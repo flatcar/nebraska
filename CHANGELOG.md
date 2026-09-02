@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Security
+
+- **helm/postgresql: remove the shipped default database password:** `postgresql.auth.postgresPassword` was hardcoded to `changeIt`. Any install that didn't override it deployed with that literal, published string as the database administrator password. The default is now empty, which the bitnami subchart treats as "generate a random password and store it in the `<release>-postgresql` secret" — installs now get a unique credential with no operator action required.
+
 ### Added
 
 - **Custom CA Certificate for TLS:** Added `--ca-file` flag to trust additional CA certificates for TLS verification (e.g., internal CA, Let's Encrypt staging). Applies to the OIDC provider client and the syncer. Supports multiple PEM-encoded certs, additive to system CAs. Also exposed as `config.caFile` in the Helm chart.

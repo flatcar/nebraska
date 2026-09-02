@@ -205,7 +205,13 @@ postgresql:
   auth:
     username: postgres
     database: nebraska
-    postgresPassword: changeIt
+    # Left empty on purpose: the bitnami postgresql subchart generates a
+    # random password on install and stores it in the
+    # `<release>-postgresql` secret when this is unset and
+    # existingSecret is not used. Do not hardcode a default here — a
+    # shipped default password is a working credential to every
+    # deployment that doesn't override it.
+    postgresPassword: ""
   image:
     registry: docker.io
     repository: bitnamilegacy/postgresql
