@@ -188,7 +188,7 @@ $ kubectl exec -ti pod/nebraska-postgresql-0 -- psql < backup.sql
 | `config.auth.oidc.logoutURL`                          | URL to logout the user from current session  | `nil`  |
 | `config.auth.oidc.adminRoles`                         | comma-separated list of accepted roles with admin access | `nil`  |
 | `config.auth.oidc.viewerRoles`                        | comma-separated list of accepted roles with viewer access | `nil`  |
-| `config.auth.oidc.rolesPath`                          | json path in which the roles array is present in the id token  | `nil`  |
+| `config.auth.oidc.rolesPath`                          | json path in which the roles array is present in the access token  | `nil`  |
 | `config.auth.oidc.scopes`                             | comma-separated list of scopes to be used in OIDC | `nil`  |
 | `config.auth.oidc.audience`                           | Required API/resource audience expected in OIDC access tokens | `nil`  |
 | `config.auth.oidc.skipAudienceCheck`                  | Disable access-token audience validation (insecure migration escape hatch) | `false` |
