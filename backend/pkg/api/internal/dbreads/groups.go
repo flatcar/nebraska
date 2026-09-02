@@ -537,14 +537,18 @@ func (q *Queries) GetGroupVersionCountTimeline(groupID string, duration string) 
 		if err != nil {
 			return err
 		}
+		defer versionAggRows.Close()
 
 		for versionAggRows.Next() {
 			vc := versionCount{}
-			err = versionAggRows.StructScan(&vc)
-			if err != nil {
+			if err := versionAggRows.StructScan(&vc); err != nil {
 				return err
 			}
 			versionCounts = append(versionCounts, vc)
+		}
+
+		if err := versionAggRows.Err(); err != nil {
+			return err
 		}
 
 		return nil
