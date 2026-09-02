@@ -28,6 +28,7 @@ import (
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/config"
 	"github.com/flatcar/nebraska/backend/pkg/logger"
+	"github.com/flatcar/nebraska/backend/pkg/notifier"
 	"github.com/flatcar/nebraska/backend/pkg/tlsutil"
 )
 
@@ -72,6 +73,7 @@ type Syncer struct {
 	channelsIDs       map[channelDescriptor]string
 	httpClient        *http.Client
 	ticker            *time.Ticker
+	notifier          notifier.Notifier
 }
 
 // Config represents the configuration used to create a new Syncer instance.
@@ -84,6 +86,7 @@ type Config struct {
 	FlatcarUpdatesURL string
 	CheckFrequency    time.Duration
 	HTTPClient        *http.Client
+	Notifier          notifier.Notifier
 }
 
 // Setup creates a new syncer from config and db connection, and returns it.
@@ -99,6 +102,25 @@ func Setup(conf *config.Config, db *api.API, adminSvc *admin.Service) (*Syncer, 
 		conf.SyncerPkgsURL = conf.NebraskaURL + "/flatcar/"
 	}
 
+	var emailTo []string
+	if conf.NotificationEmailTo != "" {
+		for _, email := range strings.Split(conf.NotificationEmailTo, ",") {
+			if trimmed := strings.TrimSpace(email); trimmed != "" {
+				emailTo = append(emailTo, trimmed)
+			}
+		}
+	}
+
+	syncerNotifier := notifier.New(notifier.Config{
+		EmailFrom:  conf.NotificationEmailFrom,
+		EmailTo:    emailTo,
+		SMTPHost:   conf.NotificationSMTPHost,
+		SMTPPort:   conf.NotificationSMTPPort,
+		SMTPUser:   conf.NotificationSMTPUser,
+		SMTPPass:   conf.NotificationSMTPPass,
+		WebhookURL: conf.NotificationWebhookURL,
+	})
+
 	syncer, err := New(&Config{
 		API:               db,
 		Admin:             adminSvc,
@@ -108,6 +130,7 @@ func Setup(conf *config.Config, db *api.API, adminSvc *admin.Service) (*Syncer, 
 		FlatcarUpdatesURL: conf.FlatcarUpdatesURL,
 		CheckFrequency:    checkFrequency,
 		HTTPClient:        httpClient,
+		Notifier:          syncerNotifier,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("error setting up syncer: %w", err)
@@ -145,6 +168,7 @@ func New(conf *Config) (*Syncer, error) {
 		channelsIDs:       make(map[channelDescriptor]string, 8),
 		versions:          make(map[channelDescriptor]string, 8),
 		httpClient:        conf.HTTPClient,
+		notifier:          conf.Notifier,
 	}
 
 	if s.httpClient == nil {
@@ -550,6 +574,18 @@ func (s *Syncer) updateChannelToPackage(
 		Str("arch", descriptor.arch.String()).
 		Str("newVersion", pkg.Version).
 		Msg("Updated channel to new version")
+
+	if s.notifier != nil {
+		if errNotif := s.notifier.NotifySync(notifier.SyncEvent{
+			Channel:  descriptor.name,
+			Arch:     descriptor.arch.String(),
+			Version:  pkg.Version,
+			Filename: pkg.Filename.String,
+			SyncedAt: time.Now(),
+		}); errNotif != nil {
+			l.Error().Err(errNotif).Msg("failed to dispatch sync notification")
+		}
+	}
 
 	return nil
 }
