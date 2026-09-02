@@ -7,7 +7,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/codegen"
 )
 
@@ -22,7 +22,7 @@ func (h *Handler) PaginateActivity(ctx echo.Context, params codegen.PaginateActi
 		params.Perpage = &defaultPerPage
 	}
 
-	var p api.ActivityQueryParams
+	var p types.ActivityQueryParams
 	if params.AppIDorProductID != nil {
 		appID, err := h.db.GetAppID(*params.AppIDorProductID)
 		if err != nil {
@@ -68,7 +68,7 @@ func (h *Handler) PaginateActivity(ctx echo.Context, params codegen.PaginateActi
 }
 
 type activityPage struct {
-	TotalCount int             `json:"totalCount"`
-	Count      int             `json:"count"`
-	Activities []*api.Activity `json:"activities"`
+	TotalCount int               `json:"totalCount"`
+	Count      int               `json:"count"`
+	Activities []*types.Activity `json:"activities"`
 }

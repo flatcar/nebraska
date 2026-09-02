@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"gopkg.in/guregu/null.v4"
 
-	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/codegen"
 )
 
@@ -154,19 +154,19 @@ func (h *Handler) DeletePackage(ctx echo.Context, _ string, packageID string) er
 	return ctx.NoContent(http.StatusNoContent)
 }
 
-func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, description string, filename string, hash string, size string, url string, version string, packageType int, flAction *codegen.FlatcarActionPackage, ID string, extraFiles *codegen.ExtraFiles) *api.Package {
-	var flatcarAction *api.FlatcarAction
+func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, description string, filename string, hash string, size string, url string, version string, packageType int, flAction *codegen.FlatcarActionPackage, ID string, extraFiles *codegen.ExtraFiles) *types.Package {
+	var flatcarAction *types.FlatcarAction
 
 	if flAction != nil {
 		if flAction.Id != nil {
 			if flatcarAction == nil {
-				flatcarAction = &api.FlatcarAction{}
+				flatcarAction = &types.FlatcarAction{}
 			}
 			flatcarAction.ID = *flAction.Id
 		}
 		if flAction.Sha256 != nil {
 			if flatcarAction == nil {
-				flatcarAction = &api.FlatcarAction{}
+				flatcarAction = &types.FlatcarAction{}
 			}
 			flatcarAction.Sha256 = *flAction.Sha256
 		}
@@ -174,15 +174,15 @@ func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, desc
 
 	if ID != "" {
 		if flatcarAction == nil {
-			flatcarAction = &api.FlatcarAction{}
+			flatcarAction = &types.FlatcarAction{}
 		}
 		flatcarAction.PackageID = ID
 	}
 
-	var extraFilesArray []api.File
+	var extraFilesArray []types.File
 	if extraFiles != nil {
 		for _, file := range *extraFiles {
-			f := api.File{
+			f := types.File{
 				Name:    null.StringFrom(*file.Name),
 				Hash:    null.StringFrom(*file.Hash),
 				Hash256: null.StringFrom(*file.Hash256),
@@ -195,9 +195,9 @@ func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, desc
 		}
 	}
 
-	pkg := api.Package{
+	pkg := types.Package{
 		ApplicationID: appID,
-		Arch:          api.Arch(arch),
+		Arch:          types.Arch(arch),
 		Description:   null.StringFrom(description),
 		Filename:      null.StringFrom(filename),
 		Hash:          null.StringFrom(hash),
@@ -219,18 +219,18 @@ func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, desc
 }
 
 type packagePage struct {
-	TotalCount int            `json:"totalCount"`
-	Count      int            `json:"count"`
-	Packages   []*api.Package `json:"packages"`
+	TotalCount int              `json:"totalCount"`
+	Count      int              `json:"count"`
+	Packages   []*types.Package `json:"packages"`
 }
 
 // Floor handlers following existing patterns
 
 // Define the response structure following existing pattern
 type floorPackagesPage struct {
-	TotalCount int            `json:"totalCount"`
-	Count      int            `json:"count"`
-	Packages   []*api.Package `json:"packages"`
+	TotalCount int              `json:"totalCount"`
+	Count      int              `json:"count"`
+	Packages   []*types.Package `json:"packages"`
 }
 
 // PaginateChannelFloors handles paginated requests for channel floor packages
@@ -256,7 +256,7 @@ func (h *Handler) PaginateChannelFloors(ctx echo.Context, channelID string, para
 
 	// If no floors, return empty result immediately
 	if totalCount == 0 {
-		return ctx.JSON(http.StatusOK, floorPackagesPage{0, 0, []*api.Package{}})
+		return ctx.JSON(http.StatusOK, floorPackagesPage{0, 0, []*types.Package{}})
 	}
 
 	// Get paginated floor packages
@@ -264,7 +264,7 @@ func (h *Handler) PaginateChannelFloors(ctx echo.Context, channelID string, para
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// This shouldn't happen if count > 0, but handle gracefully
-			return ctx.JSON(http.StatusOK, floorPackagesPage{totalCount, 0, []*api.Package{}})
+			return ctx.JSON(http.StatusOK, floorPackagesPage{totalCount, 0, []*types.Package{}})
 		}
 		l.Error().Err(err).Str("channelID", channelID).Msg("PaginateChannelFloors - getting floor packages")
 		return ctx.NoContent(http.StatusInternalServerError)
@@ -292,11 +292,11 @@ func (h *Handler) SetChannelFloor(ctx echo.Context, channelID string, packageID 
 	// Use AddChannelPackageFloor which already handles upsert via ON CONFLICT
 	if err := h.admin.AddChannelPackageFloor(channelID, packageID, floorReason); err != nil {
 		switch err {
-		case api.ErrInvalidPackage:
+		case types.ErrInvalidPackage:
 			return ctx.NoContent(http.StatusNotFound)
-		case api.ErrArchMismatch:
+		case types.ErrArchMismatch:
 			return ctx.String(http.StatusBadRequest, "Architecture mismatch between channel and package")
-		case api.ErrInvalidApplicationOrGroup:
+		case types.ErrInvalidApplicationOrGroup:
 			return ctx.String(http.StatusBadRequest, "Package does not belong to the same application as the channel")
 		default:
 			l.Error().Err(err).Str("channelID", channelID).Str("packageID", packageID).Msg("SetChannelFloor - setting floor")
@@ -320,7 +320,7 @@ func (h *Handler) RemoveChannelFloor(ctx echo.Context, channelID string, package
 	l := loggerWithUsername(l, ctx)
 
 	if err := h.admin.RemoveChannelPackageFloor(channelID, packageID); err != nil {
-		if err == api.ErrNoRowsAffected {
+		if err == types.ErrNoRowsAffected {
 			return ctx.NoContent(http.StatusNotFound)
 		}
 		l.Error().Err(err).Str("channelID", channelID).Str("packageID", packageID).Msg("RemoveChannelFloor - removing floor")
@@ -353,8 +353,8 @@ func (h *Handler) GetPackageFloorChannels(ctx echo.Context, _ string, packageID 
 
 	// Response structure matching the frontend expectations
 	type response struct {
-		Channels []api.ChannelFloorInfo `json:"channels"`
-		Count    int                    `json:"count"`
+		Channels []types.ChannelFloorInfo `json:"channels"`
+		Count    int                      `json:"count"`
 	}
 
 	return ctx.JSON(http.StatusOK, response{

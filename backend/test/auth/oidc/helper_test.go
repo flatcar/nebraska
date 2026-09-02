@@ -9,6 +9,7 @@ import (
 
 	"github.com/flatcar/nebraska/backend/pkg/api"
 	"github.com/flatcar/nebraska/backend/pkg/api/admin"
+	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
 )
 
 // newDBForTest is a helper function that
@@ -24,7 +25,13 @@ func newDBForTest(t *testing.T) *api.API {
 // adminSvc builds an admin.Service over the given API's shared read queries,
 // matching how the composition root injects it into the server.
 func adminSvc(db *api.API) *admin.Service {
-	return admin.NewService(db.Reads())
+	return admin.NewService(db.Conn(), db.Reads())
+}
+
+// runtimeSvc builds a runtime.Service over the given API's shared read queries,
+// matching how the composition root injects it into the server.
+func runtimeSvc(db *api.API) *runtime.Service {
+	return runtime.NewService(db.Conn(), db.Reads(), runtime.Config{})
 }
 
 // newOIDCMockServer creates a new mockoidc server and returns it.

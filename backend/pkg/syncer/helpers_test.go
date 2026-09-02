@@ -8,16 +8,17 @@ import (
 
 	"github.com/flatcar/nebraska/backend/pkg/api"
 	"github.com/flatcar/nebraska/backend/pkg/api/admin"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
 // adminSvc returns an admin.Service that reuses a's shared read queries so
 // tests can exercise admin write operations.
 func adminSvc(a *api.API) *admin.Service {
-	return admin.NewService(a.Reads())
+	return admin.NewService(a.Conn(), a.Reads())
 }
 
 // setupSyncerTest sets up a standard syncer test environment
-func setupSyncerTest(t *testing.T) (*Syncer, *api.API, *api.Group, *api.Channel) {
+func setupSyncerTest(t *testing.T) (*Syncer, *api.API, *types.Group, *types.Channel) {
 	t.Helper()
 	syncer := newForTest(t, &Config{})
 	a := syncer.api
