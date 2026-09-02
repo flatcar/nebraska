@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Security
+
+- **Bounded the group version count timeline cache:** the cache backing the group update-history charts was a plain map keyed by group ID and duration. Stale entries were recomputed but never removed, so every distinct group ID a caller supplied added a permanent entry and memory grew for the lifetime of the process. It is now a size-bounded LRU cache, which keeps memory flat when a caller iterates over arbitrary group IDs.
+
 ### Added
 
 - **Custom CA Certificate for TLS:** Added `--ca-file` flag to trust additional CA certificates for TLS verification (e.g., internal CA, Let's Encrypt staging). Applies to the OIDC provider client and the syncer. Supports multiple PEM-encoded certs, additive to system CAs. Also exposed as `config.caFile` in the Helm chart.
