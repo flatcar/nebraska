@@ -219,6 +219,55 @@ func TestVersionBreakDownEmpty(t *testing.T) {
 	assert.Len(t, versionBreakdown, 0)
 }
 
+func TestGetGroupOEMBreakdown(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	as := adminSvc(a)
+	rs := runtimeSvc(a)
+
+	tTeam, err := as.AddTeam(&types.Team{Name: "oem_bd_team"})
+	assert.NoError(t, err)
+	tApp, err := as.AddApp(&types.Application{Name: "oem_bd_app", TeamID: tTeam.ID})
+	assert.NoError(t, err)
+	tPkg, err := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	assert.NoError(t, err)
+	tChannel, err := as.AddChannel(&types.Channel{Name: "oem_bd_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	assert.NoError(t, err)
+	tGroup, err := as.AddGroup(&types.Group{Name: "oem_bd_group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	assert.NoError(t, err)
+
+	_, err = rs.RegisterInstance(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1", OEM: "azure"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	assert.NoError(t, err)
+	_, err = rs.RegisterInstance(types.Instance{ID: uuid.New().String(), IP: "10.0.0.2", OEM: "azure"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	assert.NoError(t, err)
+	_, err = rs.RegisterInstance(types.Instance{ID: uuid.New().String(), IP: "10.0.0.3", OEM: "aws"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	assert.NoError(t, err)
+	_, err = rs.RegisterInstance(types.Instance{ID: uuid.New().String(), IP: "10.0.0.4"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	assert.NoError(t, err)
+
+	breakdown, err := a.GetGroupOEMBreakdown(tGroup.ID)
+	assert.NoError(t, err)
+	if assert.Len(t, breakdown, 3) {
+		assert.Equal(t, "azure", breakdown[0].OEM)
+		assert.Equal(t, 2, breakdown[0].Instances)
+		assert.InDelta(t, 50.0, breakdown[0].Percentage, 0.01)
+
+		assert.Equal(t, "aws", breakdown[1].OEM)
+		assert.Equal(t, 1, breakdown[1].Instances)
+		assert.InDelta(t, 25.0, breakdown[1].Percentage, 0.01)
+
+		assert.Equal(t, "unknown", breakdown[2].OEM)
+		assert.Equal(t, 1, breakdown[2].Instances)
+		assert.InDelta(t, 25.0, breakdown[2].Percentage, 0.01)
+	}
+
+	total := 0.0
+	for _, e := range breakdown {
+		total += e.Percentage
+	}
+	assert.InDelta(t, 100.0, total, 0.01)
+}
+
 func TestGroupTrackName(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()

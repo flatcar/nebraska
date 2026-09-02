@@ -143,3 +143,9 @@ export interface VersionBreakdownEntry {
   instances: number;
   percentage: number;
 }
+
+export interface OEMBreakdownEntry {
+  oem: string;
+  instances: number;
+  percentage: number;
+}

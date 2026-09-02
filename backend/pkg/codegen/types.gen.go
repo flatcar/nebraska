@@ -200,6 +200,9 @@ type GroupInstanceStats struct {
 	UpdateGranted int `json:"update_granted"`
 }
 
+// GroupOEMBreakdown defines model for groupOEMBreakdown.
+type GroupOEMBreakdown = []OemBreakdownEntry
+
 // GroupPage defines model for groupPage.
 type GroupPage struct {
 	Count      int     `json:"count"`
@@ -259,6 +262,13 @@ type InstanceStatusHistory struct {
 	ErrorCode string    `db:"error_code" json:"error_code"`
 	Status    int       `json:"status"`
 	Verison   string    `json:"verison"`
+}
+
+// OemBreakdownEntry defines model for oemBreakdownEntry.
+type OemBreakdownEntry struct {
+	Instances  int     `json:"instances"`
+	Oem        string  `json:"oem"`
+	Percentage float64 `json:"percentage"`
 }
 
 // OmahaRequest defines model for omahaRequest.

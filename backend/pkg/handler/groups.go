@@ -231,6 +231,18 @@ func (h *Handler) GetGroupVersionBreakdown(ctx echo.Context, _ string, groupID s
 	return ctx.JSON(http.StatusOK, versionBreakdown)
 }
 
+func (h *Handler) GetGroupOEMBreakdown(ctx echo.Context, _ string, groupID string) error {
+	oemBreakdown, err := h.db.GetGroupOEMBreakdown(groupID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return ctx.NoContent(http.StatusNotFound)
+		}
+		l.Error().Err(err).Str("groupID", groupID).Msg("getOEMBreakdown - getting OEM breakdown")
+		return ctx.NoContent(http.StatusInternalServerError)
+	}
+	return ctx.JSON(http.StatusOK, oemBreakdown)
+}
+
 func (h *Handler) GetGroupInstances(ctx echo.Context, appIDorProductID string, groupID string, params codegen.GetGroupInstancesParams) error {
 	appID, err := h.db.GetAppID(appIDorProductID)
 	if err != nil {

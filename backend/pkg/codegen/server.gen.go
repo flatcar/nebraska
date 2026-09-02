@@ -77,6 +77,9 @@ type ServerInterface interface {
 	// (GET /api/apps/{appIDorProductID}/groups/{groupID}/instancescount)
 	GetGroupInstancesCount(ctx echo.Context, appIDorProductID string, groupID string, params GetGroupInstancesCountParams) error
 
+	// (GET /api/apps/{appIDorProductID}/groups/{groupID}/oem_breakdown)
+	GetGroupOEMBreakdown(ctx echo.Context, appIDorProductID string, groupID string) error
+
 	// (GET /api/apps/{appIDorProductID}/groups/{groupID}/status_timeline)
 	GetGroupStatusTimeline(ctx echo.Context, appIDorProductID string, groupID string, params GetGroupStatusTimelineParams) error
 
@@ -906,6 +909,36 @@ func (w *ServerInterfaceWrapper) GetGroupInstancesCount(ctx echo.Context) error 
 	return err
 }
 
+// GetGroupOEMBreakdown converts echo context to params.
+func (w *ServerInterfaceWrapper) GetGroupOEMBreakdown(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "appIDorProductID", ctx.Param("appIDorProductID"), &appIDorProductID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
+	}
+
+	// ------------- Path parameter "groupID" -------------
+	var groupID string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "groupID", ctx.Param("groupID"), &groupID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter groupID: %s", err))
+	}
+
+	ctx.Set(OidcBearerAuthScopes, []string{})
+
+	ctx.Set(OidcCookieAuthScopes, []string{})
+
+	ctx.Set(GithubCookieAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GetGroupOEMBreakdown(ctx, appIDorProductID, groupID)
+	return err
+}
+
 // GetGroupStatusTimeline converts echo context to params.
 func (w *ServerInterfaceWrapper) GetGroupStatusTimeline(ctx echo.Context) error {
 	var err error
@@ -1463,6 +1496,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/instances/:instanceID/status_history", wrapper.GetInstanceStatusHistory)
 	router.GET(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/instances_stats", wrapper.GetGroupInstanceStats)
 	router.GET(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/instancescount", wrapper.GetGroupInstancesCount)
+	router.GET(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/oem_breakdown", wrapper.GetGroupOEMBreakdown)
 	router.GET(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/status_timeline", wrapper.GetGroupStatusTimeline)
 	router.GET(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/version_breakdown", wrapper.GetGroupVersionBreakdown)
 	router.GET(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/version_timeline", wrapper.GetGroupVersionTimeline)
