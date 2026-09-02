@@ -37,7 +37,7 @@ func (h *Handler) PaginateApps(ctx echo.Context, params codegen.PaginateAppsPara
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	return ctx.JSON(http.StatusOK, applicationPage{totalCount, len(apps), apps})
+	return ctx.JSON(http.StatusOK, applicationPage{totalCount, len(apps), orEmpty(apps)})
 }
 
 func (h *Handler) CreateApp(ctx echo.Context, params codegen.CreateAppParams) error {

@@ -45,7 +45,7 @@ func (h *Handler) GetInstanceStatusHistory(ctx echo.Context, appIDorProductID st
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	return ctx.JSON(http.StatusOK, instanceStatusHistory)
+	return ctx.JSON(http.StatusOK, orEmpty(instanceStatusHistory))
 }
 
 func (h *Handler) UpdateInstance(ctx echo.Context, instanceID string) error {
