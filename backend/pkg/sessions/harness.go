@@ -27,7 +27,7 @@ func (h *TestHarness) RunBasicSessionLifecycleTests() {
 	codec := NewMockCodec()
 	codec.AddIDValueMapping("id1", "val1")
 	cache := h.NewCache()
-	store := NewStore(cache, codec)
+	store := NewStore(cache, codec, true)
 	// new session
 	request1 := newRequest()
 	session1 := store.GetSessionUse(request1, "test")
@@ -63,7 +63,7 @@ func (h *TestHarness) RunDeadCookiesTests() {
 	codec := NewMockCodec()
 	codec.AddIDValueMapping("id1", "val1", "id2", "val2")
 	cache := h.NewCache()
-	store := NewStore(cache, codec)
+	store := NewStore(cache, codec, true)
 
 	// session from cookie
 	request1 := newRequestWithCookie("test", "bogusvalue")
