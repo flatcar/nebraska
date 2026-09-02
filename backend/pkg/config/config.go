@@ -131,7 +131,7 @@ func Parse() (*Config, error) {
 	f.String("oidc-issuer-url", "", "OIDC issuer URL used for authentication")
 	f.String("oidc-admin-roles", "", "comma-separated list of accepted roles with admin access")
 	f.String("oidc-viewer-roles", "", "comma-separated list of accepted roles with viewer access")
-	f.String("oidc-roles-path", "roles", "json path in which the roles array is present in the id token")
+	f.String("oidc-roles-path", "roles", "json path in which the roles array is present in the access token")
 	f.String("oidc-scopes", "openid,profile,email", "comma-separated list of scopes to be used in OIDC")
 	f.String("oidc-management-url", "", "OIDC management url for managing the account")
 	f.String("oidc-logout-url", "", "OIDC logout URL (optional fallback when end_session_endpoint is not available in discovery)")
