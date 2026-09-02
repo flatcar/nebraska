@@ -41,15 +41,17 @@ type Config struct {
 	GhReadOnlyTeams   string `koanf:"gh-ro-teams"`
 	GhEnterpriseURL   string `koanf:"gh-enterprise-url"`
 
-	OidcClientID      string `koanf:"oidc-client-id"`
-	OidcIssuerURL     string `koanf:"oidc-issuer-url"`
-	OidcAdminRoles    string `koanf:"oidc-admin-roles"`
-	OidcViewerRoles   string `koanf:"oidc-viewer-roles"`
-	OidcRolesPath     string `koanf:"oidc-roles-path"`
-	OidcScopes        string `koanf:"oidc-scopes"`
-	OidcManagementURL string `koanf:"oidc-management-url"`
-	OidcLogoutURL     string `koanf:"oidc-logout-url"`
-	OidcAudience      string `koanf:"oidc-audience"`
+	OidcClientID          string `koanf:"oidc-client-id"`
+	OidcIssuerURL         string `koanf:"oidc-issuer-url"`
+	OidcAdminRoles        string `koanf:"oidc-admin-roles"`
+	OidcViewerRoles       string `koanf:"oidc-viewer-roles"`
+	OidcRolesPath         string `koanf:"oidc-roles-path"`
+	OidcScopes            string `koanf:"oidc-scopes"`
+	OidcManagementURL     string `koanf:"oidc-management-url"`
+	OidcLogoutURL         string `koanf:"oidc-logout-url"`
+	OidcAudience          string `koanf:"oidc-audience"`
+	OidcSkipAudienceCheck bool   `koanf:"oidc-skip-audience-check"`
+	OidcUseUserInfo       bool   `koanf:"oidc-use-userinfo"`
 }
 
 const (
@@ -125,6 +127,8 @@ func Parse() (*Config, error) {
 	f.String("oidc-management-url", "", "OIDC management url for managing the account")
 	f.String("oidc-logout-url", "", "OIDC logout URL (optional fallback when end_session_endpoint is not available in discovery)")
 	f.String("oidc-audience", "", "OIDC audience parameter for the access token")
+	f.Bool("oidc-skip-audience-check", false, "disable OIDC access token audience validation (insecure)")
+	f.Bool("oidc-use-userinfo", false, "Use OIDC UserInfo endpoint for role extraction (for providers that don't include roles in access token)")
 	f.String("sync-update-url", "https://public.update.flatcar-linux.net/v1/update/", "Flatcar update URL to sync from")
 	f.String("sync-interval", "1h", "Sync check interval (the minimum depends on the number of channels to sync, e.g., 8m for 8 channels incl. different architectures)")
 	f.String("client-logo", "", "Client app logo, should be a path to svg file")

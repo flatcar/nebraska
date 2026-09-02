@@ -12,6 +12,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removed
 ### Bugfixes
 
+## [4.0.0] - 02/09/2026
+
+### Security
+
+- **OIDC access token audience validation:** Before this release the backend checked only the signature, the issuer and the expiry time of a token. It therefore accepted any token from the configured issuer. This included a token that the provider issued for a different application in the same realm or tenant, and an ID token sent in place of an access token.
+
+  Nebraska now also checks the `aud` claim of the token. That claim must contain the audience you configure for the backend API. [RFC 9700](https://www.rfc-editor.org/rfc/rfc9700) section 2.3, which is BCP 240, requires every resource server to verify on every request that a token was meant for it, and to refuse the request if it was not. It names the `aud` claim defined in [RFC 9068](https://www.rfc-editor.org/rfc/rfc9068) as a way to do that. Nebraska also rejects a token that clearly says it is an ID token. A token whose header type is `at+jwt` is accepted as an access token. A token that carries a Keycloak `typ` claim with the value `ID` is rejected. A token that says nothing about its kind is accepted.
+
+  Nebraska does not follow the rule in RFC 9068 section 4 that requires rejecting any token whose header type is not `at+jwt`. Most providers issue access tokens with a plain `JWT` header, so that rule would reject them. In those setups the audience check is what separates an access token from an ID token.
+
+- **SQL injection in the group version timeline:** the `groupID` path parameter was put straight into three SQL statements in the version timeline query path, so a crafted value could change those queries. All three now bind `groupID` as a query parameter. The `groupID` of the endpoint is also declared as a UUID in the OpenAPI spec, so a malformed value is rejected before it reaches the database.
+
+### Breaking Changes
+
+- **OIDC access token audience is now required.** A deployment that uses `--auth-mode=oidc` must set `--oidc-audience` to the audience that its identity provider puts in API access tokens. Nebraska refuses to start without it. Setting the flag is not enough on its own. The provider must really put that value in the `aud` claim of the access token. If it does not, Nebraska starts normally but then rejects every request. Keycloak does not support the `audience` request parameter, so you have to add an audience mapper that puts the value into the access token. Dex issues access tokens whose audience is the client ID. `--auth-mode=noop` and `--auth-mode=github` are not affected. `--oidc-skip-audience-check` brings back the old behaviour so you can migrate in steps, but it is insecure. See the [OIDC Migration Guide](docs/oidc-migration-guide.md).
+
+- **ID tokens are no longer accepted as access tokens.** Nebraska rejects a bearer token that says it is an ID token. In practice this affects Keycloak, which marks the kind of a token using a `typ` claim with the value `ID`. A provider that does not mark the kind of a token is not affected. Dex marks neither kind and gives both types of token the same audience and the same claims, so Nebraska cannot tell them apart there. Treat a Dex ID token as being as sensitive as an access token. This change only breaks a deployment that puts the API audience into ID tokens as well as access tokens, which is not the Keycloak default.
+
+### Added
+
+- **OIDC UserInfo endpoint for role extraction ([#1279](https://github.com/flatcar/nebraska/pull/1279)):** some providers do not place group membership in the access token. `--oidc-use-userinfo` makes the backend call the provider's UserInfo endpoint instead, using the same `--oidc-roles-path` to locate the roles. The token is verified before it is forwarded, so only an access token issued for this API reaches the provider.
+
 ## [3.0.0] - 28/11/2025
 
 ### Semantic Versioning Correction

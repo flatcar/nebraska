@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -12,14 +13,18 @@ import (
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/labstack/echo/v4"
 	"github.com/tidwall/gjson"
+	"golang.org/x/oauth2"
 )
 
 type OIDCAuthConfig struct {
 	DefaultTeamID string
 	IssuerURL     string
+	Audience      string
+	SkipAudience  bool
 	AdminRoles    []string
 	ViewerRoles   []string
 	RolesPath     string
+	UseUserInfo   bool
 }
 
 type oidcAuth struct {
@@ -30,9 +35,14 @@ type oidcAuth struct {
 	adminRoles    []string
 	viewerRoles   []string
 	rolesPath     string
+	useUserInfo   bool
 }
 
 func NewOIDCAuthenticator(config *OIDCAuthConfig) (Authenticator, error) {
+	if err := validateOIDCAudienceConfig(config.Audience, config.SkipAudience); err != nil {
+		return nil, err
+	}
+
 	ctx := context.Background()
 
 	// setup oidc provider
@@ -41,9 +51,14 @@ func NewOIDCAuthenticator(config *OIDCAuthConfig) (Authenticator, error) {
 		return nil, fmt.Errorf("error setting up oidc provider: %w", err)
 	}
 
-	// Configure verifier for JWT access tokens (not ID tokens)
+	if config.SkipAudience {
+		l.Warn().Msg("OIDC access token audience validation is DISABLED; tokens issued for other applications may be accepted")
+	}
+
+	// Configure verifier for JWT access tokens (not ID tokens).
 	oidcProviderConfig := &oidc.Config{
-		SkipClientIDCheck: true, // Access tokens don't have client_id claim
+		ClientID:          config.Audience,
+		SkipClientIDCheck: config.SkipAudience,
 		SkipExpiryCheck:   false,
 		SkipIssuerCheck:   false,
 	}
@@ -58,9 +73,74 @@ func NewOIDCAuthenticator(config *OIDCAuthConfig) (Authenticator, error) {
 		adminRoles:    config.AdminRoles,
 		viewerRoles:   config.ViewerRoles,
 		rolesPath:     config.RolesPath,
+		useUserInfo:   config.UseUserInfo,
 	}
 
 	return oidcAuthenticator, nil
+}
+
+// validateOIDCAudienceConfig rejects a configuration that would leave access
+// tokens unvalidated unless the operator asked for that explicitly.
+//
+// The audience is deliberately not compared against the OIDC client ID. Dex
+// defaults the access token audience to the requesting client, so the two are
+// legitimately equal there.
+func validateOIDCAudienceConfig(audience string, skip bool) error {
+	if skip {
+		return nil
+	}
+	if audience == "" {
+		return fmt.Errorf("oidc: no access token audience configured: set --oidc-audience to the audience your provider issues API access tokens for, or set --oidc-skip-audience-check to accept any audience")
+	}
+	return nil
+}
+
+// decodeJWTSegment decodes one base64url encoded JWT segment.
+func decodeJWTSegment(segment string) ([]byte, error) {
+	raw, err := base64.RawURLEncoding.DecodeString(segment)
+	if err != nil {
+		return nil, fmt.Errorf("oidc: malformed JWT segment: %w", err)
+	}
+	return raw, nil
+}
+
+// verifyAccessTokenType rejects an already signature-verified token that says it
+// is an ID token.
+//
+// RFC 9068 section 4 requires rejecting any token whose "typ" header is not
+// "at+jwt". Most providers still use a plain "JWT" header, so enforcing that
+// would reject the majority of real deployments. Treat "at+jwt" as an
+// authoritative accept instead, and reject only tokens that mark themselves as
+// ID tokens. The audience check covers everything else.
+//
+// The token is parsed again here because go-oidc does not expose the JOSE
+// header.
+func verifyAccessTokenType(rawToken string) error {
+	segments := strings.Split(rawToken, ".")
+	if len(segments) != 3 {
+		return fmt.Errorf("oidc: malformed JWT")
+	}
+
+	header, err := decodeJWTSegment(segments[0])
+	if err != nil {
+		return err
+	}
+	headerTyp := gjson.GetBytes(header, "typ").String()
+	if strings.EqualFold(headerTyp, "at+jwt") || strings.EqualFold(headerTyp, "application/at+jwt") {
+		return nil
+	}
+
+	// Keycloak and derivatives record the token kind in a "typ" claim:
+	// "Bearer" for access tokens, "ID" for ID tokens.
+	payload, err := decodeJWTSegment(segments[1])
+	if err != nil {
+		return err
+	}
+	if strings.EqualFold(gjson.GetBytes(payload, "typ").String(), "ID") {
+		return fmt.Errorf("oidc: an ID token was presented as an access token")
+	}
+
+	return nil
 }
 
 func (oa *oidcAuth) SetupRouter(_ *echo.Echo) {
@@ -82,6 +162,12 @@ func (oa *oidcAuth) ValidateToken(c echo.Context) error {
 	_, err := oa.verifier.Verify(ctx, token)
 	if err != nil {
 		l.Error().Str("request_id", requestID).AnErr("error", err).Msg("ValidateToken, Access token verification failed")
+		httpError(c, http.StatusUnauthorized)
+		return nil
+	}
+
+	if err := verifyAccessTokenType(token); err != nil {
+		l.Error().Str("request_id", requestID).AnErr("error", err).Msg("ValidateToken, Access token type rejected")
 		httpError(c, http.StatusUnauthorized)
 		return nil
 	}
@@ -137,6 +223,46 @@ func rolesFromToken(token *oidc.IDToken, rolesPath string) ([]string, error) {
 	}
 
 	result := gjson.GetBytes(claimsJSON, rolesPath)
+	if !result.Exists() {
+		return roles, fmt.Errorf("token does not contain roles at path '%s'", rolesPath)
+	}
+	result.ForEach(func(_, value gjson.Result) bool {
+		roles = append(roles, value.String())
+		return true
+	})
+
+	return roles, nil
+}
+
+// rolesFromUserInfo calls the OIDC providers userinfo endpoint to get user roles
+func (oa *oidcAuth) rolesFromUserInfo(ctx context.Context, rawToken string, rolesPath string) ([]string, error) {
+	roles := []string{}
+	if rolesPath == "" {
+		return roles, nil
+	}
+
+	userInfo, err := oa.provider.UserInfo(ctx, oauth2.StaticTokenSource(&oauth2.Token{
+		AccessToken: rawToken,
+		TokenType:   "Bearer",
+	}))
+	if err != nil {
+		return roles, fmt.Errorf("error loading userinfo: %w", err)
+	}
+
+	var claims map[string]any
+	if err := userInfo.Claims(&claims); err != nil {
+		return roles, fmt.Errorf("failed to decode userinfo claims: %w", err)
+	}
+
+	claimsJSON, err := json.Marshal(claims)
+	if err != nil {
+		return roles, fmt.Errorf("failed to marshal userinfo claims: %w", err)
+	}
+
+	result := gjson.GetBytes(claimsJSON, rolesPath)
+	if !result.Exists() {
+		return roles, fmt.Errorf("userinfo does not contain roles at path '%s'", rolesPath)
+	}
 	result.ForEach(func(_, value gjson.Result) bool {
 		roles = append(roles, value.String())
 		return true
@@ -182,12 +308,31 @@ func (oa *oidcAuth) Authorize(c echo.Context) (teamID string, replied bool) {
 		return "", true
 	}
 
-	// Extract roles from access token claims
-	roles, err := rolesFromToken(accessToken, oa.rolesPath)
-	if err != nil {
-		l.Error().Str("request_id", requestID).AnErr("error", err).Msg("Can't extract roles from access token")
-		httpError(c, http.StatusInternalServerError)
+	if err := verifyAccessTokenType(token); err != nil {
+		l.Error().Str("request_id", requestID).AnErr("error", err).Msg("Access token type rejected")
+		httpError(c, http.StatusUnauthorized)
 		return "", true
+	}
+
+	var roles []string
+	if oa.useUserInfo {
+		// Extract roles from the UserInfo endpoint. The token has already been
+		// verified for audience and type, so it is not forwarded upstream until
+		// it is known to be an access token issued for this API.
+		roles, err = oa.rolesFromUserInfo(ctx, token, oa.rolesPath)
+		if err != nil {
+			l.Error().Str("request_id", requestID).AnErr("error", err).Msg("Can't extract roles from userinfo")
+			httpError(c, http.StatusInternalServerError)
+			return "", true
+		}
+	} else {
+		// Extract roles from access token claims
+		roles, err = rolesFromToken(accessToken, oa.rolesPath)
+		if err != nil {
+			l.Error().Str("request_id", requestID).AnErr("error", err).Msg("Can't extract roles from access token")
+			httpError(c, http.StatusInternalServerError)
+			return "", true
+		}
 	}
 
 	accessLevel := oa.determineAccessLevel(roles)

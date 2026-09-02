@@ -190,9 +190,12 @@ func setupAuthenticator(conf config.Config, sessionStore *sessions.Store, defaul
 		oidcAuthConfig := &auth.OIDCAuthConfig{
 			DefaultTeamID: defaultTeamID,
 			IssuerURL:     conf.OidcIssuerURL,
+			Audience:      conf.OidcAudience,
+			SkipAudience:  conf.OidcSkipAudienceCheck,
 			AdminRoles:    strings.Split(conf.OidcAdminRoles, ","),
 			ViewerRoles:   strings.Split(conf.OidcViewerRoles, ","),
 			RolesPath:     conf.OidcRolesPath,
+			UseUserInfo:   conf.OidcUseUserInfo,
 		}
 		return auth.NewOIDCAuthenticator(oidcAuthConfig)
 	}

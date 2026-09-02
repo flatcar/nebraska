@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gopkg.in/guregu/null.v4"
 )
 
@@ -292,6 +293,43 @@ func TestGetVersionCountTimeline(t *testing.T) {
 	assert.Equal(t, false, isCache)
 }
 
+// TestGetVersionCountTimelineInjection verifies groupID is bound as a parameter
+// and a malicious value cannot leak instances.
+func TestGetVersionCountTimelineInjection(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	tTeam, _ := a.AddTeam(&Team{Name: "test_team"})
+	tApp, _ := a.AddApp(&Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := a.AddPackage(&Package{Type: PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := a.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := a.AddGroup(&Group{Name: "g1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+
+	id := uuid.New().String()
+	_, _ = a.RegisterInstance(id, "", "10.0.0.1", "4.0.0", tApp.ID, tGroup.ID)
+	inst, err := a.GetInstance(id, tApp.ID)
+	assert.NoError(t, err)
+	_ = a.grantUpdate(inst, "4.0.0")
+	_ = a.updateInstanceStatus(id, tApp.ID, InstanceStatusComplete)
+
+	total := func(m map[time.Time]VersionCountMap) (n uint64) {
+		for _, vm := range m {
+			for _, c := range vm {
+				n += c
+			}
+		}
+		return
+	}
+
+	// Baseline: the instance is visible for its real group.
+	legit, _, err := a.GetGroupVersionCountTimeline(tGroup.ID, "1h")
+	assert.NoError(t, err)
+	assert.Equal(t, uint64(1), total(legit))
+
+	leaked, _, _ := a.GetGroupVersionCountTimeline("00000000-0000-0000-0000-000000000000' OR '1'='1", "1h")
+	assert.Zero(t, total(leaked), "malicious groupID must not leak instances")
+}
+
 func TestGetStatusCountTimeline(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
@@ -400,4 +438,28 @@ func TestGroupTrackName(t *testing.T) {
 
 	_, err = a.GetGroupID(tApp.ID, tGroupNoChannel.Track, ArchAll)
 	assert.Error(t, err, "no group found")
+}
+
+// TestGetVersionCountTimelineRejectsSQLInjection asserts the statement never
+// runs, not merely that it returns nothing. The payload writes if the groupID
+// reaches the SQL text, so an unchanged canary is evidence of non execution.
+func TestGetVersionCountTimelineRejectsSQLInjection(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	before, err := a.GetUser("admin")
+	require.NoError(t, err)
+
+	payload := `00000000-0000-0000-0000-000000000000') ish ON true), ` +
+		`injected AS (UPDATE users SET secret = 'sql-injection-canary' ` +
+		`WHERE username = 'admin' RETURNING 1) ` +
+		`SELECT now() AS ts, ''::text AS version, 0::bigint AS total --`
+
+	_, _, err = a.GetGroupVersionCountTimeline(payload, "1h")
+	require.Error(t, err)
+
+	after, err := a.GetUser("admin")
+	require.NoError(t, err)
+	require.Equal(t, before.Secret, after.Secret,
+		"malicious groupID must not execute a database write")
 }

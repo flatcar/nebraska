@@ -9,6 +9,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/oapi-codegen/runtime"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // ServerInterface represents all server handlers.
@@ -84,7 +85,7 @@ type ServerInterface interface {
 	GetGroupVersionBreakdown(ctx echo.Context, appIDorProductID string, groupID string) error
 
 	// (GET /api/apps/{appIDorProductID}/groups/{groupID}/version_timeline)
-	GetGroupVersionTimeline(ctx echo.Context, appIDorProductID string, groupID string, params GetGroupVersionTimelineParams) error
+	GetGroupVersionTimeline(ctx echo.Context, appIDorProductID string, groupID openapi_types.UUID, params GetGroupVersionTimelineParams) error
 
 	// (GET /api/apps/{appIDorProductID}/packages)
 	PaginatePackages(ctx echo.Context, appIDorProductID string, params PaginatePackagesParams) error
@@ -975,7 +976,7 @@ func (w *ServerInterfaceWrapper) GetGroupVersionTimeline(ctx echo.Context) error
 	}
 
 	// ------------- Path parameter "groupID" -------------
-	var groupID string
+	var groupID openapi_types.UUID
 
 	err = runtime.BindStyledParameterWithOptions("simple", "groupID", ctx.Param("groupID"), &groupID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
 	if err != nil {

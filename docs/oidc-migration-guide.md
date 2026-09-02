@@ -7,6 +7,34 @@ Migration guide for Nebraska's secure OIDC implementation with Authorization Cod
 - PKCE security for SPA authentication
 - Stateless backend with JWT validation
 
+## Access token audience
+
+Nebraska checks that an access token was issued for this API by comparing the `aud` claim of the token against `--oidc-audience`, as required by [RFC 9068](https://www.rfc-editor.org/rfc/rfc9068) section 4. A token that the provider issued for a different application is rejected, even though its signature and its issuer are valid.
+
+`--oidc-audience` is **required** in OIDC mode. Nebraska refuses to start without it. `--auth-mode=noop` and `--auth-mode=github` are not affected.
+
+Nebraska also rejects a token that clearly says it is an ID token. A token whose header type is `at+jwt` is accepted as an access token. A token that carries a Keycloak `typ` claim with the value `ID` is rejected. A token that says nothing about its kind is accepted.
+
+Nebraska does not follow the rule in the same section of the RFC that requires rejecting any token whose header type is not `at+jwt`. Most providers issue access tokens with a plain `JWT` header, so that rule would reject them. In those setups the audience check is what separates an access token from an ID token.
+
+### Upgrading
+
+1. Configure your provider to put an API audience in **access tokens**.
+   - **Keycloak:** add an Audience protocol mapper to the Nebraska client or to a dedicated client scope. Set Included Custom Audience to an identifier such as `nebraska-api`, turn on "Add to access token", and leave "Add to ID token" off. Keycloak does not support the `audience` request parameter, so the mapper is the way to do it.
+   - **Auth0:** use the API Identifier registered under APIs.
+   - **Okta:** use a Custom Authorization Server and its configured Audience.
+   - **Azure AD:** expose the Nebraska backend API and use its application ID or URI.
+   - **Dex:** it has no separate resource server, so the audience of the access token is the client ID. Set `--oidc-audience` to the same value as `--oidc-client-id`. Dex marks neither token kind and gives its access tokens and its ID tokens the same audience and the same claims, so Nebraska cannot tell them apart. Treat a Dex ID token as being as sensitive as an access token.
+2. Confirm a freshly issued access token really carries it:
+   ```bash
+   echo "<access-token>" | cut -d. -f2 | tr '_-' '/+' | base64 -d | jq .aud
+   ```
+3. Set `--oidc-audience` to that value and upgrade.
+
+This change on the provider side works with earlier Nebraska versions too, so you can apply step 1 and check it before you upgrade. If you set the audience before the provider sends it, every API request fails with 401 even though the login looks successful.
+
+`--oidc-skip-audience-check` turns the check off so you can migrate in steps. It is insecure and you should remove it once the provider is configured.
+
 ## Migration Steps
 
 ### 1. OIDC Provider Configuration
@@ -53,6 +81,7 @@ Migration guide for Nebraska's secure OIDC implementation with Authorization Cod
 ```bash
 --oidc-client-id=your-public-client-id
 --oidc-issuer-url=https://your-oidc-provider.com
+--oidc-audience=https://nebraska-api
 --oidc-admin-roles=nebraska-admin
 --oidc-viewer-roles=nebraska-viewer
 ```
@@ -63,8 +92,11 @@ Migration guide for Nebraska's secure OIDC implementation with Authorization Cod
 --oidc-scopes=openid,profile,email         # OIDC scopes (default: "openid,profile,email")
 --oidc-management-url=https://your-idp.com # Account management URL
 --oidc-logout-url=https://your-idp.com/logout # Fallback logout URL
---oidc-audience=https://nebraska-api       # Required for Auth0 (use your API identifier)
+--oidc-use-userinfo                        # Read roles from the UserInfo endpoint
+--oidc-skip-audience-check                 # Accept any audience (insecure, migration only)
 ```
+
+Use `--oidc-use-userinfo` when your provider does not put group membership in the access token. Nebraska then calls the provider's UserInfo endpoint and applies `--oidc-roles-path` to the response instead of to the token claims. The token is verified before it is forwarded, so only an access token issued for this API reaches the provider.
 
 ### 3. Verification
 
@@ -100,7 +132,7 @@ Visit the updated Nebraska documentation at `https://www.flatcar.org/docs/latest
 **Debug JWT claims:**
 ```bash
 # Decode JWT payload
-echo "token" | cut -d. -f2 | base64 -d | jq .
+echo "token" | cut -d. -f2 | tr '_-' '/+' | base64 -d | jq .
 ```
 
 ## References

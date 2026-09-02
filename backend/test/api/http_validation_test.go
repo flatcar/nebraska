@@ -3,6 +3,7 @@ package api_test
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"testing"
@@ -83,5 +84,36 @@ func TestHTTPRequestValidation(t *testing.T) {
 		resp = httpMakeRequest(t, "POST", url, strings.NewReader(`{"name":"test_post"}`), headers)
 		resp.Body.Close()
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
+	})
+}
+
+// TestGroupIDUUIDValidation verifies the version timeline endpoint rejects a
+// malformed groupID at request validation, before it can reach the query layer.
+// This exercises the generated UUID binding; it is not a substitute for the
+// database write canary in pkg/api.
+func TestGroupIDUUIDValidation(t *testing.T) {
+	db := newDBForTest(t)
+	defer db.Close()
+
+	base := os.Getenv("NEBRASKA_TEST_SERVER_URL")
+
+	t.Run("malformed_group_id_is_rejected", func(t *testing.T) {
+		payload := url.PathEscape(`00000000-0000-0000-0000-000000000000' OR '1'='1`)
+		u := fmt.Sprintf("%s/api/apps/anything/groups/%s/version_timeline?duration=1h", base, payload)
+
+		resp := httpMakeRequest(t, "GET", u, nil, nil)
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusBadRequest, resp.StatusCode,
+			"a non-UUID groupID must be rejected at request validation")
+	})
+
+	t.Run("well_formed_group_id_passes_validation", func(t *testing.T) {
+		u := fmt.Sprintf("%s/api/apps/anything/groups/%s/version_timeline?duration=1h",
+			base, "00000000-0000-0000-0000-000000000000")
+
+		resp := httpMakeRequest(t, "GET", u, nil, nil)
+		defer resp.Body.Close()
+		assert.Equal(t, http.StatusOK, resp.StatusCode,
+			"a syntactically valid UUID must get past request validation")
 	})
 }
