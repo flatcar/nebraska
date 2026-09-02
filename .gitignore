@@ -3,3 +3,6 @@
 *sublime*
 backend/__postgres_testing_volume/
 **/.distrobox
+/dist/
+/static/
+/nebraska-static-assets.tar.gz
