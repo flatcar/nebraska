@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Security
+
+- **Omaha endpoint secret is compared in constant time:** the secret suffix configured through `--api-endpoint-suffix` was compared with `==`, which returns as soon as it finds a differing byte. The comparison now uses `crypto/subtle.ConstantTimeCompare`, so rejection time no longer depends on how much of the suffix was correct.
+
 ### Added
 
 - **Custom CA Certificate for TLS:** Added `--ca-file` flag to trust additional CA certificates for TLS verification (e.g., internal CA, Let's Encrypt staging). Applies to the OIDC provider client and the syncer. Supports multiple PEM-encoded certs, additive to system CAs. Also exposed as `config.caFile` in the Helm chart.
