@@ -1963,6 +1963,12 @@ components:
           type: string
         ip:
           type: string
+        oem:
+          type: string
+        alephVersion:
+          type: string
+          x-oapi-codegen-extra-tags:
+            json: aleph_version,omitempty
         createdTs:
           type: string
           format: date-time

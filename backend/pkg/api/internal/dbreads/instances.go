@@ -134,6 +134,12 @@ func (q *Queries) GetInstanceStatusHistory(instanceID, appID, groupID string, li
 	return instanceStatusHistory, nil
 }
 
+// instanceListColumns holds the instance columns selected by both the
+// instances list query and its count query; the scan in GetInstances relies
+// on this exact order.
+var instanceListColumns = []interface{}{"id", "ip", "created_ts", "oem", "aleph_version", goqu.Case().
+	When(goqu.C("alias").Neq(""), goqu.C("alias")).Else(goqu.C("id")).As("alias")}
+
 func prepareGetInstancesQuery(instanceQuery *goqu.SelectDataset, instanceAppQuery *goqu.SelectDataset) *goqu.SelectDataset {
 	return goqu.From(goqu.L("Instance")).With("Instance", instanceQuery).With("application", instanceAppQuery).InnerJoin(
 		goqu.L("application"),
@@ -183,8 +189,7 @@ func (q *Queries) GetInstances(p types.InstancesQueryParams, duration string) (t
 	sortFilter := sanitizeSortFilterParams(p.SortFilter)
 	sortOrder := sortOrderFromString(p.SortOrder)
 	instancesQuery := q.instancesQuery(p, dbDuration)
-	instancesQuery = instancesQuery.Select("id", "ip", "created_ts", goqu.Case().
-		When(goqu.C("alias").Neq(""), goqu.C("alias")).Else(goqu.C("id")).As("alias"))
+	instancesQuery = instancesQuery.Select(instanceListColumns...)
 
 	instanceAppQuery := prepareInstanceAppQuery()
 	finalQuery := prepareGetInstancesQuery(instancesQuery, instanceAppQuery)
@@ -210,7 +215,7 @@ func (q *Queries) GetInstances(p types.InstancesQueryParams, duration string) (t
 	defer rows.Close()
 	for rows.Next() {
 		var instance types.Instance
-		err = rows.Scan(&instance.ID, &instance.IP, &instance.CreatedTs, &instance.Alias,
+		err = rows.Scan(&instance.ID, &instance.IP, &instance.CreatedTs, &instance.OEM, &instance.AlephVersion, &instance.Alias,
 			&instance.Application.Version, &instance.Application.Status, &instance.Application.LastCheckForUpdates,
 			&instance.Application.LastUpdateVersion, &instance.Application.UpdateInProgress,
 			&instance.Application.ApplicationID, &instance.Application.GroupID, &instance.Application.InstanceID)
@@ -241,8 +246,7 @@ func (q *Queries) GetInstancesCount(p types.InstancesQueryParams, duration strin
 		return 0, err
 	}
 	instancesQuery := q.instancesQuery(p, dbDuration)
-	instancesQuery = instancesQuery.Select("id", "ip", "created_ts", goqu.Case().
-		When(goqu.C("alias").Neq(""), goqu.C("alias")).Else(goqu.C("id")).As("alias"))
+	instancesQuery = instancesQuery.Select(instanceListColumns...)
 
 	instanceAppQuery := prepareInstanceAppQuery()
 	finalQuery := prepareGetInstancesQuery(instancesQuery, instanceAppQuery)
