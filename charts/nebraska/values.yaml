@@ -42,10 +42,6 @@ config:
         - ReadWriteOnce
       size: 10Gi
 
-  # Path to a PEM-encoded CA certificate file to trust for TLS verification
-  # (additive to system CAs, supports multiple certs in one file)
-  caFile:
-
   auth:
     mode: noop
     oidc:

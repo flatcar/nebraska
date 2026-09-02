@@ -66,9 +66,6 @@ spec:
             {{- if .Values.config.app.httpStaticDir }}
             - "-http-static-dir={{ .Values.config.app.httpStaticDir }}"
             {{- end }}
-            {{- with .Values.config.caFile }}
-            - "-ca-file={{ . }}"
-            {{- end }}
 
             {{- /* --- Syncer settings --- */}}
             {{- if .Values.config.syncer.enabled }}
