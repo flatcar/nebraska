@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
 const (
@@ -48,7 +50,7 @@ func TestAddUser(t *testing.T) {
 	defer a.Close()
 	as := adminSvc(a)
 
-	user := &User{
+	user := &types.User{
 		Username: "chandler",
 		Secret:   "shhhhh",
 		TeamID:   defaultTeamID,
@@ -78,11 +80,11 @@ func TestGetUsersInTeam(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, len(teams), 1)
 
-	teamRoss, _ := as.AddTeam(&Team{Name: "team-ross"})
+	teamRoss, _ := as.AddTeam(&types.Team{Name: "team-ross"})
 	assert.NoError(t, err)
 	assert.Equal(t, teamRoss.Name, "team-ross")
 
-	user := &User{
+	user := &types.User{
 		Username: "chandler",
 		Secret:   "shhhhh",
 		TeamID:   teamRoss.ID,

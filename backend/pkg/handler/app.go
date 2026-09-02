@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"gopkg.in/guregu/null.v4"
 
-	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/codegen"
 )
 
@@ -164,7 +164,7 @@ func (h *Handler) DeleteApp(ctx echo.Context, appIDorProductID string) error {
 	return ctx.NoContent(http.StatusNoContent)
 }
 
-func appFromRequest(name string, description *string, appID string, teamID string, productID *string) *api.Application {
+func appFromRequest(name string, description *string, appID string, teamID string, productID *string) *types.Application {
 	productIDNullString := null.String{}
 	if productID != nil && *productID != "" {
 		productIDNullString = null.StringFrom(*productID)
@@ -175,7 +175,7 @@ func appFromRequest(name string, description *string, appID string, teamID strin
 		desc = *description
 	}
 
-	app := api.Application{
+	app := types.Application{
 		TeamID:      teamID,
 		Name:        name,
 		Description: desc,
@@ -192,7 +192,7 @@ func appFromRequest(name string, description *string, appID string, teamID strin
 }
 
 type applicationPage struct {
-	TotalCount   int                `json:"totalCount"`
-	Count        int                `json:"count"`
-	Applications []*api.Application `json:"applications"`
+	TotalCount   int                  `json:"totalCount"`
+	Count        int                  `json:"count"`
+	Applications []*types.Application `json:"applications"`
 }

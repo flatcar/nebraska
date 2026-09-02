@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/codegen"
 )
 
@@ -57,7 +58,7 @@ func TestCreateApp(t *testing.T) {
 		payload := strings.NewReader(fmt.Sprintf(`{"name":"%s"}`, appName))
 
 		// response struct
-		var application api.Application
+		var application types.Application
 
 		httpDo(t, url, method, payload, http.StatusOK, "json", &application)
 
@@ -85,7 +86,7 @@ func TestCreateApp(t *testing.T) {
 		payload := strings.NewReader(fmt.Sprintf(`{"name":"%s"}`, appName))
 
 		// response
-		var application api.Application
+		var application types.Application
 
 		httpDo(t, url, method, payload, http.StatusOK, "json", &application)
 
@@ -117,7 +118,7 @@ func TestCreateApp(t *testing.T) {
 		payload := strings.NewReader(fmt.Sprintf(`{"name":"%s"}`, appName))
 
 		// response
-		var application api.Application
+		var application types.Application
 
 		httpDo(t, url, method, payload, http.StatusOK, "json", &application)
 
@@ -148,7 +149,7 @@ func TestGetApp(t *testing.T) {
 		method := "GET"
 
 		// check response
-		var application api.Application
+		var application types.Application
 
 		httpDo(t, url, method, nil, http.StatusOK, "json", &application)
 
@@ -195,7 +196,7 @@ func TestUpdateApp(t *testing.T) {
 		payload := strings.NewReader(fmt.Sprintf(`{"name":"%s","description":"%s","id":"%s"}`, name, app.Description, app.ID))
 
 		// response struct
-		var application api.Application
+		var application types.Application
 
 		httpDo(t, url, method, payload, http.StatusOK, "json", &application)
 
@@ -225,7 +226,7 @@ func TestUpdateApp(t *testing.T) {
 		payload := strings.NewReader(fmt.Sprintf(`{"name":"%s","description":"%s","id":"%s"}`, name, app.Description, app.ID))
 
 		// response struct
-		var application api.Application
+		var application types.Application
 
 		httpDo(t, url, method, payload, http.StatusOK, "json", &application)
 
