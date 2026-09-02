@@ -106,7 +106,9 @@ func (s *Service) RegisterInstance(inst types.Instance, instApp types.InstanceAp
 			return nil, err
 		}
 
-		return instance, nil
+		// Re-fetch so the returned instance reflects the single-table update,
+		// matching the dual-update path below.
+		return s.GetInstance(inst.ID, appID)
 	}
 
 	// If this is an instance we haven't seen yet, then we write into instance + instance_application
