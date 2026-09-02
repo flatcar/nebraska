@@ -21,6 +21,8 @@ export default function InstanceLayout() {
     applicationsStore().getCachedApplication(appID || '')
   );
   const [instance, setInstance] = React.useState<Instance | null>(null);
+  const instanceRequestID = React.useRef(0);
+  const activeRoute = React.useRef({ appID, groupID, instanceID });
   const { t } = useTranslation();
 
   const getGroupFromApplication = React.useCallback(
@@ -34,14 +36,25 @@ export default function InstanceLayout() {
     [groupID]
   );
 
-  const [group, setGroup] = React.useState(getGroupFromApplication(application || null));
+  const group = getGroupFromApplication(application || null);
 
   const onChange = React.useCallback(() => {
     if (!appID || !groupID || !instanceID) {
       return;
     }
+    if (
+      activeRoute.current.appID !== appID ||
+      activeRoute.current.groupID !== groupID ||
+      activeRoute.current.instanceID !== instanceID
+    ) {
+      return;
+    }
 
+    const requestID = ++instanceRequestID.current;
     API.getInstance(appID, groupID, instanceID).then(instance => {
+      if (requestID !== instanceRequestID.current) {
+        return;
+      }
       instance.statusInfo = getInstanceStatus(
         instance.application.status,
         instance.application.version
@@ -50,11 +63,16 @@ export default function InstanceLayout() {
     });
     const apps = applicationsStore().getCachedApplications() || [];
     const app = apps.find(({ id }) => id === appID) || null;
-    if (app !== application) {
-      setApplication(app);
-      setGroup(getGroupFromApplication(app));
-    }
-  }, [appID, application, getGroupFromApplication, groupID, instanceID]);
+    setApplication(currentApplication => (app === currentApplication ? currentApplication : app));
+  }, [appID, groupID, instanceID]);
+
+  React.useLayoutEffect(() => {
+    activeRoute.current = { appID, groupID, instanceID };
+    setInstance(null);
+    return () => {
+      instanceRequestID.current += 1;
+    };
+  }, [appID, groupID, instanceID]);
 
   React.useEffect(() => {
     if (!appID) {
