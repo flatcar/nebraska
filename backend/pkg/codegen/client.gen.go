@@ -167,6 +167,9 @@ type ClientInterface interface {
 	// GetGroupStatusTimeline request
 	GetGroupStatusTimeline(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupStatusTimelineParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ClearGroupUpdatesOverride request
+	ClearGroupUpdatesOverride(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetGroupVersionBreakdown request
 	GetGroupVersionBreakdown(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -556,6 +559,18 @@ func (c *Client) GetGroupInstancesCount(ctx context.Context, appIDorProductID st
 
 func (c *Client) GetGroupStatusTimeline(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupStatusTimelineParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetGroupStatusTimelineRequest(c.Server, appIDorProductID, groupID, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ClearGroupUpdatesOverride(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewClearGroupUpdatesOverrideRequest(c.Server, appIDorProductID, groupID)
 	if err != nil {
 		return nil, err
 	}
@@ -2245,6 +2260,47 @@ func NewGetGroupStatusTimelineRequest(server string, appIDorProductID string, gr
 	return req, nil
 }
 
+// NewClearGroupUpdatesOverrideRequest generates requests for ClearGroupUpdatesOverride
+func NewClearGroupUpdatesOverrideRequest(server string, appIDorProductID string, groupID string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "groupID", runtime.ParamLocationPath, groupID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/apps/%s/groups/%s/updates_override", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetGroupVersionBreakdownRequest generates requests for GetGroupVersionBreakdown
 func NewGetGroupVersionBreakdownRequest(server string, appIDorProductID string, groupID string) (*http.Request, error) {
 	var err error
@@ -3178,6 +3234,9 @@ type ClientWithResponsesInterface interface {
 	// GetGroupStatusTimelineWithResponse request
 	GetGroupStatusTimelineWithResponse(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupStatusTimelineParams, reqEditors ...RequestEditorFn) (*GetGroupStatusTimelineResponse, error)
 
+	// ClearGroupUpdatesOverrideWithResponse request
+	ClearGroupUpdatesOverrideWithResponse(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*ClearGroupUpdatesOverrideResponse, error)
+
 	// GetGroupVersionBreakdownWithResponse request
 	GetGroupVersionBreakdownWithResponse(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*GetGroupVersionBreakdownResponse, error)
 
@@ -3289,6 +3348,7 @@ type CreateAppResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *Application
+	JSON403      *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -3310,6 +3370,7 @@ func (r CreateAppResponse) StatusCode() int {
 type DeleteAppResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON403      *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -3354,6 +3415,7 @@ type UpdateAppResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *Application
+	JSON403      *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -3398,6 +3460,7 @@ type CreateChannelResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *Channel
+	JSON403      *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -3419,6 +3482,7 @@ func (r CreateChannelResponse) StatusCode() int {
 type DeleteChannelResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON403      *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -3463,6 +3527,7 @@ type UpdateChannelResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *Channel
+	JSON403      *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -3507,6 +3572,7 @@ type CreateGroupResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *Group
+	JSON403      *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -3528,6 +3594,7 @@ func (r CreateGroupResponse) StatusCode() int {
 type DeleteGroupResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON403      *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -3572,6 +3639,7 @@ type UpdateGroupResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *Group
+	JSON403      *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -3722,6 +3790,28 @@ func (r GetGroupStatusTimelineResponse) StatusCode() int {
 	return 0
 }
 
+type ClearGroupUpdatesOverrideResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON501      *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r ClearGroupUpdatesOverrideResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ClearGroupUpdatesOverrideResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetGroupVersionBreakdownResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -3792,6 +3882,7 @@ type CreatePackageResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *Package
+	JSON403      *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -3813,6 +3904,7 @@ func (r CreatePackageResponse) StatusCode() int {
 type DeletePackageResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON403      *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -3857,6 +3949,7 @@ type UpdatePackageResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	JSON200      *Package
+	JSON403      *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -3933,6 +4026,7 @@ func (r PaginateChannelFloorsResponse) StatusCode() int {
 type RemoveChannelFloorResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON403      *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -3954,6 +4048,7 @@ func (r RemoveChannelFloorResponse) StatusCode() int {
 type SetChannelFloorResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON403      *ErrorResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -4370,6 +4465,15 @@ func (c *ClientWithResponses) GetGroupStatusTimelineWithResponse(ctx context.Con
 	return ParseGetGroupStatusTimelineResponse(rsp)
 }
 
+// ClearGroupUpdatesOverrideWithResponse request returning *ClearGroupUpdatesOverrideResponse
+func (c *ClientWithResponses) ClearGroupUpdatesOverrideWithResponse(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*ClearGroupUpdatesOverrideResponse, error) {
+	rsp, err := c.ClearGroupUpdatesOverride(ctx, appIDorProductID, groupID, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseClearGroupUpdatesOverrideResponse(rsp)
+}
+
 // GetGroupVersionBreakdownWithResponse request returning *GetGroupVersionBreakdownResponse
 func (c *ClientWithResponses) GetGroupVersionBreakdownWithResponse(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*GetGroupVersionBreakdownResponse, error) {
 	rsp, err := c.GetGroupVersionBreakdown(ctx, appIDorProductID, groupID, reqEditors...)
@@ -4637,6 +4741,13 @@ func ParseCreateAppResponse(rsp *http.Response) (*CreateAppResponse, error) {
 		}
 		response.JSON200 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
 	}
 
 	return response, nil
@@ -4653,6 +4764,16 @@ func ParseDeleteAppResponse(rsp *http.Response) (*DeleteAppResponse, error) {
 	response := &DeleteAppResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
 	}
 
 	return response, nil
@@ -4704,6 +4825,13 @@ func ParseUpdateAppResponse(rsp *http.Response) (*UpdateAppResponse, error) {
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
 
 	}
 
@@ -4757,6 +4885,13 @@ func ParseCreateChannelResponse(rsp *http.Response) (*CreateChannelResponse, err
 		}
 		response.JSON200 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
 	}
 
 	return response, nil
@@ -4773,6 +4908,16 @@ func ParseDeleteChannelResponse(rsp *http.Response) (*DeleteChannelResponse, err
 	response := &DeleteChannelResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
 	}
 
 	return response, nil
@@ -4824,6 +4969,13 @@ func ParseUpdateChannelResponse(rsp *http.Response) (*UpdateChannelResponse, err
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
 
 	}
 
@@ -4877,6 +5029,13 @@ func ParseCreateGroupResponse(rsp *http.Response) (*CreateGroupResponse, error) 
 		}
 		response.JSON200 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
 	}
 
 	return response, nil
@@ -4893,6 +5052,16 @@ func ParseDeleteGroupResponse(rsp *http.Response) (*DeleteGroupResponse, error) 
 	response := &DeleteGroupResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
 	}
 
 	return response, nil
@@ -4944,6 +5113,13 @@ func ParseUpdateGroupResponse(rsp *http.Response) (*UpdateGroupResponse, error) 
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
 
 	}
 
@@ -5106,6 +5282,32 @@ func ParseGetGroupStatusTimelineResponse(rsp *http.Response) (*GetGroupStatusTim
 	return response, nil
 }
 
+// ParseClearGroupUpdatesOverrideResponse parses an HTTP response from a ClearGroupUpdatesOverrideWithResponse call
+func ParseClearGroupUpdatesOverrideResponse(rsp *http.Response) (*ClearGroupUpdatesOverrideResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ClearGroupUpdatesOverrideResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 501:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON501 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetGroupVersionBreakdownResponse parses an HTTP response from a GetGroupVersionBreakdownWithResponse call
 func ParseGetGroupVersionBreakdownResponse(rsp *http.Response) (*GetGroupVersionBreakdownResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -5205,6 +5407,13 @@ func ParseCreatePackageResponse(rsp *http.Response) (*CreatePackageResponse, err
 		}
 		response.JSON200 = &dest
 
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
 	}
 
 	return response, nil
@@ -5221,6 +5430,16 @@ func ParseDeletePackageResponse(rsp *http.Response) (*DeletePackageResponse, err
 	response := &DeletePackageResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
 	}
 
 	return response, nil
@@ -5272,6 +5491,13 @@ func ParseUpdatePackageResponse(rsp *http.Response) (*UpdatePackageResponse, err
 			return nil, err
 		}
 		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
 
 	}
 
@@ -5354,6 +5580,16 @@ func ParseRemoveChannelFloorResponse(rsp *http.Response) (*RemoveChannelFloorRes
 		HTTPResponse: rsp,
 	}
 
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	}
+
 	return response, nil
 }
 
@@ -5368,6 +5604,16 @@ func ParseSetChannelFloorResponse(rsp *http.Response) (*SetChannelFloorResponse,
 	response := &SetChannelFloorResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
 	}
 
 	return response, nil
