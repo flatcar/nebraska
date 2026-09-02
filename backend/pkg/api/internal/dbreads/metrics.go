@@ -23,6 +23,12 @@ WHERE a.id = e.application_id AND e.event_type_id = et.id AND et.result = 0 AND 
 GROUP BY app_name
 ORDER BY app_name
 `, ignoreFakeInstanceCondition("e.instance_id"))
+
+	latestInstanceStatsSQL = `
+SELECT channel_name, version, arch, timestamp, instances AS instances_count
+FROM instance_stats
+WHERE timestamp = (SELECT MAX(timestamp) FROM instance_stats)
+`
 )
 
 func (q *Queries) GetAppInstancesPerChannelMetrics() ([]types.AppInstancesPerChannelMetric, error) {
@@ -64,6 +70,30 @@ func (q *Queries) GetFailedUpdatesMetrics() ([]types.FailedUpdatesMetric, error)
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
+	return metrics, nil
+}
+
+func (q *Queries) GetLatestInstanceStatsMetrics() ([]types.LatestInstanceStatsMetric, error) {
+	var metrics []types.LatestInstanceStatsMetric
+	rows, err := q.db.Queryx(latestInstanceStatsSQL)
+	if err != nil {
+		return nil, fmt.Errorf("querying latest instance stats from SQL: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var metric types.LatestInstanceStatsMetric
+		if err := rows.StructScan(&metric); err != nil {
+			return nil, fmt.Errorf("scanning instance stat metric: %w", err)
+		}
+
+		metrics = append(metrics, metric)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
 	return metrics, nil
 }
 
