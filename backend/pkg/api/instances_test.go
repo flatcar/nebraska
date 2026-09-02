@@ -374,3 +374,63 @@ func TestUpdateInstanceStatsNoArch(t *testing.T) {
 	assert.Equal(t, "1.0.0", instanceStats[0].Version)
 	assert.Equal(t, 1, instanceStats[0].Instances)
 }
+
+func TestUpdateInstanceStatsTimezone(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	defer func() {
+		_, _ = a.db().Exec("SET TIME ZONE 'UTC'")
+	}()
+	_, _ = a.db().Exec("TRUNCATE instance_stats")
+
+	as := adminSvc(a)
+	rs := runtimeSvc(a)
+
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team_tz"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app_tz", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: types.ArchAMD64})
+	tChannel, _ := as.AddChannel(&types.Channel{Name: "test_channel_tz", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID), Arch: types.ArchAMD64})
+	tGroup, _ := as.AddGroup(&types.Group{Name: "group_tz", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	_, _ = rs.RegisterInstance(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+
+	// Use deterministic end of day UTC timestamp for today
+	now := time.Now().UTC()
+	ts := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 0, time.UTC)
+	elapsed := 48 * time.Hour
+
+	// 1. Run under UTC session timezone
+	_, err := a.db().Exec("SET TIME ZONE 'UTC'")
+	assert.NoError(t, err)
+
+	err = rs.UpdateInstanceStats(&ts, &elapsed)
+	assert.NoError(t, err)
+
+	utcStats, err := a.GetInstanceStatsByTimestamp(ts)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, utcStats)
+
+	// 2. Run queries under non-UTC session timezone (America/New_York)
+	_, err = a.db().Exec("SET TIME ZONE 'America/New_York'")
+	assert.NoError(t, err)
+
+	nyStats, err := a.GetInstanceStatsByTimestamp(ts)
+	assert.NoError(t, err)
+	assert.Equal(t, utcStats, nyStats)
+
+	// 3. Update stats under America/New_York session timezone and verify timestamp consistency
+	ts2 := ts.Add(24 * time.Hour)
+	err = rs.UpdateInstanceStats(&ts2, &elapsed)
+	assert.NoError(t, err)
+
+	nyStats2, err := a.GetInstanceStatsByTimestamp(ts2)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, nyStats2)
+
+	// Reset timezone to UTC to fetch baseline comparison for ts2
+	_, err = a.db().Exec("SET TIME ZONE 'UTC'")
+	assert.NoError(t, err)
+
+	utcStats2, err := a.GetInstanceStatsByTimestamp(ts2)
+	assert.NoError(t, err)
+	assert.Equal(t, utcStats2, nyStats2)
+}
