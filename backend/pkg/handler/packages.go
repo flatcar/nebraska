@@ -62,8 +62,13 @@ func (h *Handler) CreatePackage(ctx echo.Context, appIDorProductID string) error
 
 	pkg, err = h.admin.AddPackage(pkg)
 	if err != nil {
-		l.Error().Err(err).Msgf("addPackage - adding package %v", request)
-		return ctx.NoContent(http.StatusInternalServerError)
+		switch err {
+		case types.ErrDuplicatePackage:
+			return ctx.String(http.StatusConflict, "Package with the same application, version and arch already exists")
+		default:
+			l.Error().Err(err).Msgf("addPackage - adding package %v", request)
+			return ctx.NoContent(http.StatusInternalServerError)
+		}
 	}
 
 	pkg, err = h.db.GetPackage(pkg.ID)

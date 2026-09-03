@@ -473,6 +473,19 @@ func (s *Syncer) createPackage(
 	// Create package in database
 	pkg, err = s.admin.AddPackageWithMetadata(pkg)
 	if err != nil {
+		// Another writer got there first. The filename comes from arch and
+		// version, so its row points at the file we just wrote: leave it.
+		if errors.Is(err, types.ErrDuplicatePackage) {
+			existing, getErr := s.api.GetPackageByVersionAndArch(flatcarAppID, version, descriptor.arch)
+			if getErr != nil {
+				l.Warn().Err(getErr).Str("version", version).Str("arch", descriptor.arch.String()).
+					Msg("package already exists but could not be fetched")
+				return nil, err
+			}
+			l.Info().Str("version", version).Str("arch", descriptor.arch.String()).
+				Msg("package already exists, using the existing one")
+			return existing, nil
+		}
 		// Clean up downloaded files if DB operation failed
 		if s.hostPackages {
 			filesToClean := []string{filename}

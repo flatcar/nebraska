@@ -2,15 +2,26 @@ package admin
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jmoiron/sqlx"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/internal/dbreads"
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
+
+// pgUniqueViolation is the PostgreSQL error code for a unique constraint violation.
+const pgUniqueViolation = "23505"
+
+// isUniqueViolation reports whether err is a PostgreSQL unique constraint violation.
+func isUniqueViolation(err error) bool {
+	var pgErr *pgconn.PgError
+	return errors.As(err, &pgErr) && pgErr.Code == pgUniqueViolation
+}
 
 // checkMatchingArch returns an error if the arch does not match the channels
 func (s *Service) checkMatchingArch(channelIDs types.StringArray, arch types.Arch) error {
@@ -72,6 +83,10 @@ func (s *Service) addPackage(pkg *types.Package, tx *sqlx.Tx) error {
 		return err
 	}
 	if err = tx.QueryRowx(query).StructScan(pkg); err != nil {
+		// Only the package insert can violate package_appid_version_arch_unique.
+		if isUniqueViolation(err) {
+			return types.ErrDuplicatePackage
+		}
 		return err
 	}
 
