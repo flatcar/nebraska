@@ -8,7 +8,6 @@ on:
     - 'backend/test/**'
     - 'backend/go.mod'
     - 'backend/go.sum'
-    - 'updaters/**'
     - '.github/**'
     - Makefile
 

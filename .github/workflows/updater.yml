@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
     - 'updater/**'
+    - 'backend/**'
+    - '.github/workflows/updater.yml'
 
 permissions:
   contents: read
@@ -18,8 +20,14 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
       with:
-        go-version-file: ./updater/go.mod
+        # Workspace builds both modules, so use the higher `go` directive.
+        go-version-file: ./backend/go.mod
       id: go
+
+    # Resolve the backend from this checkout rather than the pin in
+    # updater/go.mod, so backend changes that break these tests fail here.
+    - name: Link updater to the in-tree backend
+      run: go work init ./backend ./updater
 
     - name: Start postgres dependency
       run: |
