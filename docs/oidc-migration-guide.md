@@ -32,7 +32,7 @@ This change on the provider side works with older Nebraska versions too, so appl
    ```
 3. Upgrade Nebraska and set `--oidc-audience` to the same value.
 
-If you need to upgrade before you can change the provider, start with `--oidc-skip-audience-check`. Nebraska will start and log a warning, keeping the old and insecure behaviour until you finish the migration.
+If you need to upgrade before you can change the provider, start with `--oidc-skip-audience-check`. Nebraska will start and log a warning, skipping **audience** validation until you finish the migration (tokens that clearly identify as ID tokens are still rejected).
 
 ## Migration Steps
 
