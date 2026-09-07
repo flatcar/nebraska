@@ -135,7 +135,7 @@ func Parse() (*Config, error) {
 	f.String("oidc-scopes", "openid,profile,email", "comma-separated list of scopes to be used in OIDC")
 	f.String("oidc-management-url", "", "OIDC management url for managing the account")
 	f.String("oidc-logout-url", "", "OIDC logout URL (optional fallback when end_session_endpoint is not available in discovery)")
-	f.String("oidc-audience", "", "OIDC audience parameter for the access token")
+	f.String("oidc-audience", "", "OIDC access token audience identifier for this API; required in OIDC mode unless --oidc-skip-audience-check is set")
 	f.Bool("oidc-skip-audience-check", false, "disable OIDC access token audience validation (insecure)")
 	f.Bool("oidc-use-userinfo", false, "Use OIDC UserInfo endpoint for role extraction (for providers that don't include roles in access token)")
 	f.String("ca-file", "", "path to a PEM-encoded CA certificate file to trust for TLS verification (additive to system CAs, supports multiple certs in one file)")
