@@ -19,6 +19,18 @@ import (
 
 const defaultTestDbURL string = "postgres://postgres:nebraska@127.0.0.1:5432/nebraska_tests?sslmode=disable&connect_timeout=10"
 
+// TestMain lets NEBRASKA_SKIP_TESTS bypass this package's tests, consistent
+// with other DB-backed test packages (see pkg/api, pkg/random, etc.), since
+// make code-checks runs `NEBRASKA_SKIP_TESTS=1 go test ./...` in
+// environments without a Postgres test database available.
+func TestMain(m *testing.M) {
+	if os.Getenv("NEBRASKA_SKIP_TESTS") != "" {
+		return
+	}
+
+	os.Exit(m.Run())
+}
+
 func newAPIForTest(t *testing.T) *api.API {
 	t.Helper()
 

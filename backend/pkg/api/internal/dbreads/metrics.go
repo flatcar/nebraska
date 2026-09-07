@@ -15,7 +15,7 @@ var (
 	// GetInstances). It uses LEFT JOINs for groups/channel so instances
 	// whose group has no channel assigned (groups.channel_id can be NULL)
 	// are still counted instead of being silently dropped, and it also
-	// reports the channel's arch so that amd64/arm64 channels sharing the
+	// reports the channel's arch so that amd64/aarch64 channels sharing the
 	// same name are not folded into a single row.
 	appInstancesPerChannelMetricSQL = fmt.Sprintf(`
 SELECT a.name AS app_name, ia.version AS version, COALESCE(c.name, '') AS channel_name, COALESCE(c.arch, -1) AS arch, count(ia.version) AS instances_count
