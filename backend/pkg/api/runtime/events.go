@@ -3,6 +3,7 @@ package runtime
 import (
 	"github.com/doug-martin/goqu/v9"
 
+	"github.com/flatcar/nebraska/backend/pkg/api/internal/dbreads"
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
@@ -44,6 +45,10 @@ func (s *Service) RegisterEvent(instanceID, appID, groupID string, etype, eresul
 			}
 			return types.ErrFlatcarEventIgnored
 		}
+	}
+
+	if previousVersion != "" && previousVersion != "0.0.0.0" && !dbreads.IsValidSemver(previousVersion) {
+		return types.ErrInvalidSemver
 	}
 
 	var eventTypeID int
