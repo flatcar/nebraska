@@ -28,7 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Bugfixes
 
 - Fixed package blacklist changes not appearing in UI immediately after save
-- **Application instances per channel metric accuracy:** `nebraska_application_instances_per_channel` now excludes instances that have stopped checking in (matching the activity window used elsewhere), counts instances whose group has no channel assigned instead of silently dropping them, and reports amd64/arm64 channels separately via a new `arch` label. The gauge is also reset before each recalculation so series with no more matching instances stop being exported instead of freezing at their last value. ([#1580](https://github.com/flatcar/nebraska/pull/1580))
+- **Application instances per channel metric accuracy:** `nebraska_application_instances_per_channel` now excludes instances that have stopped checking in (matching the activity window used elsewhere), counts instances whose group has no channel assigned instead of silently dropping them, and reports amd64/aarch64 channels separately via a new `arch` label. The gauge is also kept in sync with the underlying data (rather than reset-and-repopulated) so series with no more matching instances stop being exported instead of freezing at their last value. ([#1580](https://github.com/flatcar/nebraska/pull/1580))
 
 ## [3.0.0] - 28/11/2025
 

@@ -5,7 +5,10 @@ import (
 	"testing"
 	"time"
 
+	dto "github.com/prometheus/client_model/go"
+
 	"github.com/jmoiron/sqlx"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/testutil"
 	"github.com/stretchr/testify/require"
 
@@ -30,7 +33,46 @@ func newAPIForTest(t *testing.T) *api.API {
 	return a
 }
 
-// TestCalculateMetricsResetsStaleSeries checks that calculateMetrics removes
+// resetMetricsState clears both GaugeVecs and their label-tracking maps, so
+// each test starts from a clean slate despite these being package-level
+// singletons shared across the whole test binary.
+func resetMetricsState(t *testing.T) {
+	t.Helper()
+
+	appInstancePerChannelGaugeMetric.Reset()
+	failedUpdatesGaugeMetric.Reset()
+	lastAipcLabelSets = map[string][]string{}
+	lastFuLabelSets = map[string][]string{}
+}
+
+// collectLabelValues returns every value seen for labelName across all
+// series currently exported by vec.
+func collectLabelValues(t *testing.T, vec *prometheus.GaugeVec, labelName string) []string {
+	t.Helper()
+
+	ch := make(chan prometheus.Metric, 64)
+	go func() {
+		vec.Collect(ch)
+		close(ch)
+	}()
+
+	var values []string
+
+	for m := range ch {
+		var dtoM dto.Metric
+		require.NoError(t, m.Write(&dtoM))
+
+		for _, lp := range dtoM.GetLabel() {
+			if lp.GetName() == labelName {
+				values = append(values, lp.GetValue())
+			}
+		}
+	}
+
+	return values
+}
+
+// TestCalculateMetricsRemovesStaleSeries checks that calculateMetrics removes
 // Prometheus series whose underlying data has disappeared (e.g. every
 // instance for a version/channel/arch went stale, or an application has no
 // more failed updates) instead of leaving their last exported value in
@@ -38,7 +80,9 @@ func newAPIForTest(t *testing.T) *api.API {
 // to GetAppInstancesPerChannelMetrics and make the metric disagree with the
 // UI again. Regression test for the review discussion on
 // https://github.com/flatcar/nebraska/pull/1580.
-func TestCalculateMetricsResetsStaleSeries(t *testing.T) {
+func TestCalculateMetricsRemovesStaleSeries(t *testing.T) {
+	resetMetricsState(t)
+
 	a := newAPIForTest(t)
 	defer a.Close()
 
@@ -69,7 +113,34 @@ func TestCalculateMetricsResetsStaleSeries(t *testing.T) {
 	require.NoError(t, calculateMetrics(a))
 
 	require.Equal(t, 0, testutil.CollectAndCount(appInstancePerChannelGaugeMetric),
-		"series with no more matching instances must be removed by Reset(), not left exporting their last value")
+		"series with no more matching instances must be synced away, not left exporting their last value")
 	require.Equal(t, 0, testutil.CollectAndCount(failedUpdatesGaugeMetric),
-		"series with no more matching instances must be removed by Reset(), not left exporting their last value")
+		"series with no more matching instances must be synced away, not left exporting their last value")
+}
+
+// TestCalculateMetricsUsesNoneSentinelForNoChannel checks that instances
+// whose group has no channel assigned are exported with an explicit
+// channel="none" label, never channel="" — an empty label value is easy to
+// miss or hard to filter for in PromQL. Regression test for the review
+// discussion on https://github.com/flatcar/nebraska/pull/1580.
+func TestCalculateMetricsUsesNoneSentinelForNoChannel(t *testing.T) {
+	resetMetricsState(t)
+
+	a := newAPIForTest(t)
+	defer a.Close()
+
+	db, err := sqlx.Connect("pgx", os.Getenv("NEBRASKA_DB_URL"))
+	require.NoError(t, err)
+	defer db.Close()
+
+	// "Prod EC2 us-west-2" (bcaa68bc-...) has active instances; drop its
+	// channel assignment so they fall into the no-channel bucket.
+	_, err = db.Exec(`UPDATE groups SET channel_id = NULL WHERE id = 'bcaa68bc-5f82-11e5-9d70-feff819cdc9f'`)
+	require.NoError(t, err)
+
+	require.NoError(t, calculateMetrics(a))
+
+	channelValues := collectLabelValues(t, appInstancePerChannelGaugeMetric, "channel")
+	require.Contains(t, channelValues, noChannelLabel)
+	require.NotContains(t, channelValues, "")
 }
