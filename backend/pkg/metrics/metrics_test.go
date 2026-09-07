@@ -118,12 +118,12 @@ func TestCalculateMetricsRemovesStaleSeries(t *testing.T) {
 		"series with no more matching instances must be synced away, not left exporting their last value")
 }
 
-// TestCalculateMetricsUsesNoneSentinelForNoChannel checks that instances
-// whose group has no channel assigned are exported with an explicit
-// channel="none" label, never channel="" — an empty label value is easy to
+// TestCalculateMetricsUsesReservedSentinelForNoChannel checks that instances
+// whose group has no channel assigned are exported with the reserved
+// noChannelLabel value, never channel="" — an empty label value is easy to
 // miss or hard to filter for in PromQL. Regression test for the review
 // discussion on https://github.com/flatcar/nebraska/pull/1580.
-func TestCalculateMetricsUsesNoneSentinelForNoChannel(t *testing.T) {
+func TestCalculateMetricsUsesReservedSentinelForNoChannel(t *testing.T) {
 	resetMetricsState(t)
 
 	a := newAPIForTest(t)

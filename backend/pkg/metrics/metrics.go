@@ -24,7 +24,7 @@ const noChannelArchLabel = "none"
 // empty, per the check constraint requiring a non-empty name), which we map
 // here to an explicit sentinel instead of exporting channel="" - an empty
 // label value is easy to miss/hard to filter for in PromQL.
-const noChannelLabel = "none"
+const noChannelLabel = "__no_channel__"
 
 const (
 	defaultMetricsUpdateInterval = 15 * time.Second
@@ -98,11 +98,11 @@ var (
 )
 
 // labelKey joins label values into a single map key so removed label
-// combinations can be detected between calculateMetrics runs. It doesn't
-// need to be collision-proof against label values containing the
-// separator: a spurious collision would only cause an extra
-// DeleteLabelValues + re-Set on the next run, never an incorrectly
-// exported value.
+// combinations can be detected between calculateMetrics runs.
+//
+// "\x00" is used as a separator because these label values originate from
+// Postgres text/varchar fields (which cannot contain NUL bytes), making the
+// join unambiguous.
 func labelKey(labels []string) string {
 	return strings.Join(labels, "\x00")
 }
