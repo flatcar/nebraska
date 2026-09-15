@@ -224,10 +224,6 @@ func (h *Handler) GetGroupVersionBreakdown(ctx echo.Context, _ string, groupID s
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	if len(versionBreakdown) == 0 {
-		// WAT?: because otherwise it serializes to null not []
-		return ctx.JSON(http.StatusOK, []string{})
-	}
 	return ctx.JSON(http.StatusOK, versionBreakdown)
 }
 
