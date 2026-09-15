@@ -28,6 +28,7 @@ import (
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/config"
 	"github.com/flatcar/nebraska/backend/pkg/logger"
+	"github.com/flatcar/nebraska/backend/pkg/metrics"
 	"github.com/flatcar/nebraska/backend/pkg/tlsutil"
 )
 
@@ -223,11 +224,18 @@ func (s *Syncer) initialize() error {
 func (s *Syncer) checkForUpdates() error {
 	for descriptor, currentVersion := range s.versions {
 		l.Debug().Str("channel", descriptor.name).Str("arch", descriptor.arch.String()).Str("currentVersion", currentVersion).Msg("checking for updates")
+        
+		channel := descriptor.name
+		arch := descriptor.arch.String()
 
+		start := time.Now()
 		update, err := s.doOmahaRequest(descriptor, currentVersion)
+		metrics.SyncerCheckDuration(channel, arch, time.Since(start).Seconds())
 		if err != nil {
+			metrics.SyncerCheckFailure(channel, arch)
 			return err
 		}
+		metrics.SyncerLastSuccessTimestamp(channel, arch)
 		if update != nil && update.Status == "ok" && len(update.Manifests) > 0 {
 			// processUpdate handles version tracking internally when appropriate
 			if err := s.processUpdate(descriptor, update); err != nil {
@@ -485,7 +493,8 @@ func (s *Syncer) createPackage(
 		}
 		return nil, err
 	}
-
+    
+	metrics.SyncerPackageCreated(descriptor.name, descriptor.arch.String())
 	return pkg, nil
 }
 
