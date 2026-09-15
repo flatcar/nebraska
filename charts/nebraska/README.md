@@ -88,8 +88,8 @@ statefulset.apps/nebraska-postgresql scaled
 
 3. Upgrade PostgreSQL version, e.g:
 ```diff
--          image: docker.io/bitnami/postgresql:13.8.0-debian-11-r18
-+          image: docker.io/bitnamilegacy/postgresql:17.5.0
+-          image: docker.io/postgres:17.10-trixie
++          image: docker.io/postgres:18.2-trixie
 ```
 
 5. Apply the changes and scale up Nebraska statefulset to its original value
@@ -100,6 +100,35 @@ $ kubectl exec -ti pod/nebraska-postgresql-0 -- psql < backup.sql
 ```
 
 7. Scale up Nebraska deployment and assert that everything is back to normal
+
+### Migrating from the Bitnami PostgreSQL image
+
+Charts up to 2.0.0 defaulted to `bitnamilegacy/postgresql`, an archive that is no
+longer rebuilt and therefore never receives security fixes. The default is now the
+official `docker.io/postgres` image.
+
+If persistence is disabled (the default) there is nothing to do: the database is
+recreated on upgrade as before.
+
+If persistence is enabled, the existing volume cannot be reused in place, because
+the Bitnami image keeps `postgresql.conf` and `pg_hba.conf` outside the data
+directory and runs `initdb` against a different glibc, which the official image
+reports as a collation version mismatch. Migrate with a dump and restore using the
+procedure above, with two additions:
+
+- The data directory moves from `/bitnami/postgresql/data` to
+  `/var/lib/postgresql/pgdata`. The old directory is left untouched on the volume;
+  remove it once the restore is verified.
+- `postgresql.auth.username` values other than `postgres` become the superuser of
+  the official image, and `postgresql.auth.postgresPassword` is then unused. Set
+  the password of the user Nebraska connects with through `postgresql.auth.password`.
+
+If your values file already overrides `postgresql.image.registry`,
+`postgresql.image.repository`, `postgresql.image.tag`,
+`postgresql.postgresqlDataDir`, or `postgresql.primary.persistence.mountPath`
+from a previous install, update those overrides to the values above. An old
+override will keep pointing at the bitnami image and paths, and the steps in
+this section will not apply.
 
 ## Parameters
 
@@ -213,8 +242,12 @@ $ kubectl exec -ti pod/nebraska-postgresql-0 -- psql < backup.sql
 | `postgresql.enabled`                                     | Enable Bitnami postgresql subchart and deploy database within this helm release                               | `true`                 |
 | `postgresql.auth.database`                               | PostgreSQL database                                                                                           | `nebraska`             |
 | `postgresql.auth.postgresPassword`                       | PostgreSQL password of user "postgres" **Recommended to change it to something secure for security reasons.** | `changeIt`             |
-| `postgresql.image.tag`                                   | PostgreSQL Image tag                                                                                          | `13.8.0-debian-11-r18` |
+| `postgresql.image.registry`                              | PostgreSQL Image registry                                                                                     | `docker.io`            |
+| `postgresql.image.repository`                            | PostgreSQL Image repository                                                                                   | `postgres`             |
+| `postgresql.image.tag`                                   | PostgreSQL Image tag                                                                                          | `17.10-trixie`         |
+| `postgresql.postgresqlDataDir`                           | PostgreSQL data directory (`PGDATA`)                                                                          | `/var/lib/postgresql/pgdata` |
 | `postgresql.primary.persistence.enabled`                 | Enable persistence using PVC                                                                                  | `false`                |
+| `postgresql.primary.persistence.mountPath`               | Mount path of the PostgreSQL volume                                                                           | `/var/lib/postgresql`  |
 | `postgresql.primary.persistence.storageClass`            | PVC Storage Class for PostgreSQL volume                                                                       | `nil`                  |
 | `postgresql.primary.persistence.accessModes`             | PVC Access Mode for PostgreSQL volume                                                                         | `["ReadWriteOnce"]`    |
 | `postgresql.primary.persistence.size`                    | PVC Storage Request for PostgreSQL volume                                                                     | `1Gi`                  |

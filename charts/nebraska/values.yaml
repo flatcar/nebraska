@@ -206,13 +206,17 @@ postgresql:
     username: postgres
     database: nebraska
     postgresPassword: changeIt
+  # Official PostgreSQL image, see README for migration notes from bitnamilegacy.
   image:
     registry: docker.io
-    repository: bitnamilegacy/postgresql
-    tag: 17.5.0
+    repository: postgres
+    tag: 17.10-trixie
+  # Data directory under the official image, see README for migration notes.
+  postgresqlDataDir: /var/lib/postgresql/pgdata
   primary:
     persistence:
       enabled: false
+      mountPath: /var/lib/postgresql
       storageClass:
       accessModes:
         - ReadWriteOnce
