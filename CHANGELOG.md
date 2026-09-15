@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Security
+
+- **Upgraded `go-github` from v28 to v90:** v28 pulled in `golang.org/x/crypto/openpgp`, which its own authors deprecated and no longer maintain and which has no fixed version (advisory GO-2026-5932). Nebraska never used that functionality, but it appeared in every vulnerability report. Current `go-github` releases do not depend on it, and it is no longer reachable from the module.
+
 ### Added
 
 - **Pluggable database password provider:** The database password can now be supplied by Go code through the `api.DBPasswordProvider` interface instead of being carried in `NEBRASKA_DB_URL`. It is consulted before every physical connection, so credentials that expire, such as cloud IAM tokens, are picked up without a restart.
