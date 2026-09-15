@@ -3,13 +3,28 @@ package metrics
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/logger"
 )
+
+// noChannelArchLabel is the "arch" label value used for instances whose
+// group has no channel (or no group) assigned, since there is no
+// architecture to report in that case.
+const noChannelArchLabel = "none"
+
+// noChannelLabel is the "channel" label value used for instances whose
+// group has no channel (or no group) assigned. GetAppInstancesPerChannelMetrics
+// reports this case as an empty ChannelName (channel.name can never itself be
+// empty, per the check constraint requiring a non-empty name), which we map
+// here to an explicit sentinel instead of exporting channel="" - an empty
+// label value is easy to miss/hard to filter for in PromQL.
+const noChannelLabel = "__no_channel__"
 
 const (
 	defaultMetricsUpdateInterval = 15 * time.Second
@@ -26,6 +41,12 @@ var (
 			"application",
 			"version",
 			"channel",
+			// arch distinguishes channels that share the same name across
+			// architectures (e.g. "stable" for amd64 and aarch64). This is a
+			// new label: existing dashboards/alerts that group solely by
+			// application/version/channel should add `by (arch)` or sum()
+			// over the new label to keep prior totals.
+			"arch",
 		},
 	)
 
@@ -65,7 +86,43 @@ var (
 	)
 
 	l = logger.New("nebraska")
+
+	// lastAipcLabelSets and lastFuLabelSets track the label combinations
+	// exported on the previous calculateMetrics run, keyed by labelKey.
+	// They're only ever read/written from the single ticker goroutine
+	// started in RegisterAndInstrument (calculateMetrics is never called
+	// concurrently with itself outside of tests, which also call it
+	// sequentially), so no extra locking is needed.
+	lastAipcLabelSets = map[string][]string{}
+	lastFuLabelSets   = map[string][]string{}
 )
+
+// labelKey joins label values into a single map key so removed label
+// combinations can be detected between calculateMetrics runs.
+//
+// "\x00" is used as a separator because these label values originate from
+// Postgres text/varchar fields (which cannot contain NUL bytes), making the
+// join unambiguous.
+func labelKey(labels []string) string {
+	return strings.Join(labels, "\x00")
+}
+
+// syncGaugeVec upserts every entry in newLabelSets (using values for each
+// series' new value) into vec, then removes any label combination present
+// in prevLabelSets but absent from newLabelSets. Unlike Reset() followed by
+// repopulating, this never makes the whole metric family briefly empty or
+// partial, so a concurrent Prometheus scrape always observes either the
+// previous or the new value for every series, never a gap.
+func syncGaugeVec(vec *prometheus.GaugeVec, prevLabelSets, newLabelSets map[string][]string, values map[string]float64) {
+	for key, labels := range newLabelSets {
+		vec.WithLabelValues(labels...).Set(values[key])
+	}
+	for key, labels := range prevLabelSets {
+		if _, stillPresent := newLabelSets[key]; !stillPresent {
+			vec.DeleteLabelValues(labels...)
+		}
+	}
+}
 
 // registerNebraskaMetrics registers the application metrics collector with the DefaultRegistrer.
 func registerNebraskaMetrics() error {
@@ -135,18 +192,47 @@ func calculateMetrics(api *api.API) error {
 		return fmt.Errorf("failed to get app instances per channel metrics: %w", err)
 	}
 
+	// Sync (rather than Reset()+repopulate) so a series whose instances
+	// all went stale, or whose channel was deleted, stops being exported
+	// instead of keeping its last non-zero count forever — without ever
+	// making the whole metric family briefly empty for a concurrent
+	// scrape (see syncGaugeVec).
+	newAipcLabelSets := make(map[string][]string, len(aipcMetrics))
+	aipcValues := make(map[string]float64, len(aipcMetrics))
 	for _, metric := range aipcMetrics {
-		appInstancePerChannelGaugeMetric.WithLabelValues(metric.ApplicationName, metric.Version, metric.ChannelName).Set(float64(metric.InstancesCount))
+		archLabel := noChannelArchLabel
+		if metric.Arch >= 0 {
+			archLabel = types.Arch(uint(metric.Arch)).String()
+		}
+		channelLabel := metric.ChannelName
+		if channelLabel == "" {
+			channelLabel = noChannelLabel
+		}
+		labels := []string{metric.ApplicationName, metric.Version, channelLabel, archLabel}
+		key := labelKey(labels)
+		newAipcLabelSets[key] = labels
+		aipcValues[key] = float64(metric.InstancesCount)
 	}
+	syncGaugeVec(appInstancePerChannelGaugeMetric, lastAipcLabelSets, newAipcLabelSets, aipcValues)
+	lastAipcLabelSets = newAipcLabelSets
 
 	fuMetrics, err := api.GetFailedUpdatesMetrics()
 	if err != nil {
 		return fmt.Errorf("failed to get failed update metrics: %w", err)
 	}
 
+	// Same reasoning as above: an application with no failed updates left
+	// should stop being exported instead of keeping its last count.
+	newFuLabelSets := make(map[string][]string, len(fuMetrics))
+	fuValues := make(map[string]float64, len(fuMetrics))
 	for _, metric := range fuMetrics {
-		failedUpdatesGaugeMetric.WithLabelValues(metric.ApplicationName).Set(float64(metric.FailureCount))
+		labels := []string{metric.ApplicationName}
+		key := labelKey(labels)
+		newFuLabelSets[key] = labels
+		fuValues[key] = float64(metric.FailureCount)
 	}
+	syncGaugeVec(failedUpdatesGaugeMetric, lastFuLabelSets, newFuLabelSets, fuValues)
+	lastFuLabelSets = newFuLabelSets
 
 	// db stats
 	dbStats := api.DbStats()
