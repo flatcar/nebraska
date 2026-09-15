@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/doug-martin/goqu/v9"
+	lru "github.com/hashicorp/golang-lru/v2"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
@@ -51,12 +52,32 @@ var (
 	// itself. An alternative is to use atomic loads instead of RLock()
 	// and using atomic stores inside Lock() of a normal Mutex to serialize
 	// the writes (or use channel handshakes instead of a mutex).
-	cachedGroups                    map[types.GroupDescriptor]string
-	cachedGroupsLock                sync.RWMutex
-	cachedGroupVersionCount         = make(map[groupDurationCacheKey]groupVersionCountCache)
-	cachedGroupVersionCountLock     sync.RWMutex
+	cachedGroups     map[types.GroupDescriptor]string
+	cachedGroupsLock sync.RWMutex
+	// cachedGroupVersionCount caches version count timelines keyed by group
+	// and duration. It is size-bounded and evicts the least recently used
+	// entry once full: entries are only ever refreshed, never deleted, so an
+	// unbounded map would grow for the lifetime of the process for every
+	// distinct group ID a caller supplies.
+	cachedGroupVersionCount         = newGroupVersionCountCache()
 	CachedGroupVersionCountLifespan = time.Minute
 )
+
+// maxCachedGroupVersionCountEntries bounds the number of entries kept in
+// cachedGroupVersionCount. The key space is (group, duration) and there are
+// four valid durations, so this holds the timelines of a few hundred groups —
+// far more than a deployment serves in practice, while keeping memory flat
+// when a caller iterates over arbitrary group IDs.
+const maxCachedGroupVersionCountEntries = 1024
+
+func newGroupVersionCountCache() *lru.Cache[groupDurationCacheKey, groupVersionCountCache] {
+	// lru.New only fails on a non-positive size, which is a constant here.
+	cache, err := lru.New[groupDurationCacheKey, groupVersionCountCache](maxCachedGroupVersionCountEntries)
+	if err != nil {
+		panic(fmt.Sprintf("dbreads: invalid group version count cache size: %v", err))
+	}
+	return cache
+}
 
 type groupDurationCacheKey struct {
 	GroupID  string
@@ -451,9 +472,7 @@ func updateVersionTimeline(timeline map[time.Time]types.VersionCountMap, spans [
 func (q *Queries) GetGroupVersionCountTimeline(groupID string, duration string) (map[time.Time](types.VersionCountMap), bool, error) {
 	cacheKey := groupDurationCacheKey{GroupID: groupID, Duration: duration}
 
-	cachedGroupVersionCountLock.RLock()
-	val, ok := cachedGroupVersionCount[cacheKey]
-	cachedGroupVersionCountLock.RUnlock()
+	val, ok := cachedGroupVersionCount.Get(cacheKey)
 	if ok {
 		if time.Since(val.storedAt) < CachedGroupVersionCountLifespan {
 			l.Debug().Str("cacheStatus", "HIT").Str("groupID", groupID).Str("duration", duration).Msg("GetGroupVersionCountTimeline")
@@ -625,12 +644,12 @@ func (q *Queries) GetGroupVersionCountTimeline(groupID string, duration string) 
 	}
 
 	go func() {
-		cachedGroupVersionCountLock.Lock()
-		defer cachedGroupVersionCountLock.Unlock()
-		val, ok := cachedGroupVersionCount[cacheKey]
+		// Peek so that checking for a fresher entry doesn't itself count as a
+		// use; the Add below promotes the key when we do store something.
+		val, ok := cachedGroupVersionCount.Peek(cacheKey)
 		if !ok || time.Since(val.storedAt) >= CachedGroupVersionCountLifespan {
 			l.Debug().Str("cacheStatus", "SET").Str("groupID", groupID).Str("duration", duration).Msg("GetGroupVersionCountTimeline")
-			cachedGroupVersionCount[cacheKey] = groupVersionCountCache{timelineCount, time.Now()}
+			cachedGroupVersionCount.Add(cacheKey, groupVersionCountCache{timelineCount, time.Now()})
 		}
 	}()
 

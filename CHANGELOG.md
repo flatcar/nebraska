@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Security
+
+- **Bounded the group version count timeline cache:** the cache backing the group update-history charts was a plain map keyed by group ID and duration. Stale entries were recomputed but never removed, so every distinct group ID a caller supplied added a permanent entry and memory grew for the lifetime of the process. It is now a size-bounded LRU cache, which keeps memory flat when a caller iterates over arbitrary group IDs.
+
 ### Added
 
 - **Pluggable database password provider:** The database password can now be supplied by Go code through the `api.DBPasswordProvider` interface instead of being carried in `NEBRASKA_DB_URL`. It is consulted before every physical connection, so credentials that expire, such as cloud IAM tokens, are picked up without a restart.
