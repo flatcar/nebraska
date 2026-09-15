@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"strings"
@@ -139,6 +140,38 @@ func TestCreatePackage(t *testing.T) {
 		assert.NotNil(t, packageDB)
 
 		assert.Equal(t, packageName, packageDB.Filename.String)
+	})
+
+	t.Run("duplicate_conflict", func(t *testing.T) {
+		// establish DB connection
+		db := newDBForTest(t)
+		defer db.Close()
+
+		// get random app
+		app := getRandomApp(t, db)
+
+		url := fmt.Sprintf("%s/api/apps/%s/packages", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID)
+		body := fmt.Sprintf(`{"arch":1,"filename":"dup_package","description":"flatcar package","url":"http://flatcar.org","version":"20.9.9","type":4,"size":"199","hash":"some random hash","application_id":"%s","channels_blacklist":[]}`, app.ID)
+
+		var packageResp types.Package
+		httpDo(t, url, "POST", strings.NewReader(body), http.StatusOK, "json", &packageResp)
+
+		// same application, version and arch again
+		req, err := http.NewRequest("POST", url, strings.NewReader(body))
+		require.NoError(t, err)
+		req.Header.Set("Content-Type", "application/json")
+
+		resp, err := http.DefaultClient.Do(req)
+		require.NoError(t, err)
+		defer resp.Body.Close()
+
+		assert.Equal(t, http.StatusConflict, resp.StatusCode)
+
+		respBody, err := io.ReadAll(resp.Body)
+		require.NoError(t, err)
+		// the caller gets a plain message, not the internal error or the SQLSTATE
+		assert.NotContains(t, string(respBody), "nebraska:")
+		assert.NotContains(t, string(respBody), "23505")
 	})
 }
 

@@ -9,6 +9,10 @@ var ErrNoRowsAffected = errors.New("nebraska: no rows affected")
 // ErrInvalidSemver indicates that the provided semver version is not valid.
 var ErrInvalidSemver = errors.New("nebraska: invalid semver")
 
+// ErrDuplicatePackage indicates that a package with the same application,
+// version and arch already exists.
+var ErrDuplicatePackage = errors.New("nebraska: duplicate package")
+
 // ErrNoPackageFound indicates that the group doesn't have a channel
 // assigned or that the channel doesn't have a package assigned.
 var ErrNoPackageFound = errors.New("nebraska: no package found")

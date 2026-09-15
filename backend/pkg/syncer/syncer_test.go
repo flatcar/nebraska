@@ -1,8 +1,13 @@
 package syncer
 
 import (
+	"crypto/sha256"
+	"encoding/base64"
 	"log"
+	"net/http"
+	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/flatcar/go-omaha/omaha"
@@ -155,6 +160,90 @@ func TestSyncer_Init(t *testing.T) {
 	version, ok := syncer.versions[desc]
 	assert.True(t, ok)
 	assert.Equal(t, tPkg.Version, version)
+}
+
+// addExistingFlatcarPackage registers a package so a later sync of the same
+// version and arch hits the unique constraint.
+func addExistingFlatcarPackage(t *testing.T, a *api.API, version string, arch types.Arch) *types.Package {
+	t.Helper()
+	pkg, err := adminSvc(a).AddPackage(&types.Package{
+		Type:          types.PkgTypeFlatcar,
+		URL:           "http://sample.url/pkg",
+		Version:       version,
+		ApplicationID: flatcarAppID,
+		Arch:          arch,
+	})
+	require.NoError(t, err)
+
+	return pkg
+}
+
+func TestSyncer_CreatePackageDuplicate(t *testing.T) {
+	syncer := newForTest(t, &Config{})
+	a := syncer.api
+	t.Cleanup(func() { a.Close() })
+
+	update := createOmahaUpdate()
+	manifest := update.Manifests[0]
+	desc := channelDescriptor{name: "stable", arch: types.ArchAMD64}
+
+	existing := addExistingFlatcarPackage(t, a, manifest.Version, desc.arch)
+
+	pkg, err := syncer.createPackage(desc, manifest, update)
+	require.NoError(t, err)
+	assert.Equal(t, existing.ID, pkg.ID)
+}
+
+// A duplicate must not delete the payloads on disk. The names are derived from
+// arch and version, so they are the ones the existing package already serves.
+func TestSyncer_CreatePackageDuplicateKeepsHostedFiles(t *testing.T) {
+	payload := []byte("payload")
+	sum := sha256.Sum256(payload)
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write(payload)
+	}))
+	t.Cleanup(server.Close)
+
+	packagesPath := t.TempDir()
+	syncer := newForTest(t, &Config{HostPackages: true, PackagesPath: packagesPath})
+	a := syncer.api
+	t.Cleanup(func() { a.Close() })
+
+	// Only the main payload carries checksums, so the extra files download
+	// without verification while the main one is still checked.
+	update := &omaha.UpdateResponse{
+		URLs: []*omaha.URL{{CodeBase: server.URL}},
+		Manifests: []*omaha.Manifest{{
+			Version: "1.2.3",
+			Packages: []*omaha.Package{
+				{Name: "updatepayload.tgz"},
+				{Name: "extra-file1.tgz"},
+				{Name: "extra-file2.tgz"},
+			},
+			Actions: []*omaha.Action{
+				{Event: "postinstall", SHA256: base64.StdEncoding.EncodeToString(sum[:])},
+			},
+		}},
+	}
+	manifest := update.Manifests[0]
+	desc := channelDescriptor{name: "stable", arch: types.ArchAMD64}
+
+	existing := addExistingFlatcarPackage(t, a, manifest.Version, desc.arch)
+
+	pkg, err := syncer.createPackage(desc, manifest, update)
+	require.NoError(t, err)
+	assert.Equal(t, existing.ID, pkg.ID)
+
+	for _, name := range []string{
+		"flatcar-amd64-1.2.3.gz",
+		"extrafile-amd64-1.2.3-extra-file1.tgz",
+		"extrafile-amd64-1.2.3-extra-file2.tgz",
+	} {
+		content, err := os.ReadFile(filepath.Join(packagesPath, name))
+		require.NoError(t, err, "%s should survive a duplicate", name)
+		assert.Equal(t, payload, content)
+	}
 }
 
 func createOmahaUpdate() *omaha.UpdateResponse {
