@@ -68,7 +68,7 @@ func (api *API) withMigrationsDB(fn func(*sqlx.DB) error) error {
 	conn, err := dbconn.Open(api.dbDriver, api.migrationsDBURL, dbconn.PoolConfig{
 		MaxOpenConns: 1,
 		MaxIdleConns: 1,
-	})
+	}, dbPasswordFunc())
 	if err != nil {
 		return fmt.Errorf("opening the migrations database connection: %w", err)
 	}
@@ -121,7 +121,7 @@ func New(options ...func(*API) error) (*API, error) {
 		MaxOpenConns:    maxOpenConns,
 		MaxIdleConns:    maxIdleConns,
 		ConnMaxLifetime: time.Duration(connMaxLifetime) * time.Second,
-	})
+	}, dbPasswordFunc())
 	if err != nil {
 		return nil, err
 	}
