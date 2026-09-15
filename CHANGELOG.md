@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Security
+
+- **Omaha endpoint secret is compared in constant time:** the secret suffix configured through `--api-endpoint-suffix` was compared with `==`, which returns as soon as it finds a differing byte. The comparison now uses `crypto/subtle.ConstantTimeCompare`, so rejection time no longer depends on how much of the suffix was correct.
+
 ### Added
 
 - **Pluggable database password provider:** The database password can now be supplied by Go code through the `api.DBPasswordProvider` interface instead of being carried in `NEBRASKA_DB_URL`. It is consulted before every physical connection, so credentials that expire, such as cloud IAM tokens, are picked up without a restart.
