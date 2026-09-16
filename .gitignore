@@ -3,3 +3,6 @@
 *sublime*
 backend/__postgres_testing_volume/
 **/.distrobox
+# Local Go workspace: go work init ./backend ./updater
+go.work
+go.work.sum

@@ -15,6 +15,9 @@ import (
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api/admin"
+	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/omaha"
 )
 
@@ -28,7 +31,7 @@ type testOmahaHandler struct {
 
 func newTestHandler(api *api.API) *testOmahaHandler {
 	return &testOmahaHandler{
-		handler: omaha.NewHandler(api),
+		handler: omaha.NewHandler(runtime.NewService(api.Conn(), api.Reads(), runtime.Config{})),
 	}
 }
 
@@ -65,6 +68,12 @@ func newForTest(t *testing.T) *api.API {
 	require.NotNil(t, api)
 
 	return api
+}
+
+// adminSvc returns an admin.Service that reuses a's read queries, since the
+// write operations moved off api.API.
+func adminSvc(a *api.API) *admin.Service {
+	return admin.NewService(a.Conn(), a.Reads())
 }
 
 func TestNewUpdater(t *testing.T) {
@@ -118,10 +127,11 @@ func TestCheckForUpdates(t *testing.T) {
 	assert.False(t, info.HasUpdate)
 	assert.Equal(t, "", info.Version)
 
-	newPkg, err := apiInstance.AddPackage(&api.Package{Type: api.PkgTypeOther, URL: "http://sample.url/pkg", Version: "0.3.0", ApplicationID: appID, Arch: api.ArchAMD64, Filename: null.StringFrom("updatefile.txt")})
+	adm := adminSvc(apiInstance)
+	newPkg, err := adm.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "0.3.0", ApplicationID: appID, Arch: types.ArchAMD64, Filename: null.StringFrom("updatefile.txt")})
 	require.NoError(t, err)
 	tChannel.PackageID = null.StringFrom(newPkg.ID)
-	err = apiInstance.UpdateChannel(tChannel)
+	err = adm.UpdateChannel(tChannel)
 	require.NoError(t, err)
 
 	info, err = u.CheckForUpdates(context.TODO())
@@ -168,17 +178,18 @@ type config struct {
 	policyMaxUpdatesPerPeriod int
 }
 
-func setup(cnf *config) (string, *api.Group, *api.Channel) {
+func setup(cnf *config) (string, *types.Group, *types.Channel) {
 	cnf.t.Helper()
-	tTeam, err := cnf.api.AddTeam(&api.Team{Name: "test_team"})
+	adm := adminSvc(cnf.api)
+	tTeam, err := adm.AddTeam(&types.Team{Name: "test_team"})
 	require.NoError(cnf.t, err)
-	tApp, err := cnf.api.AddApp(&api.Application{Name: "io.phony.App", TeamID: tTeam.ID})
+	tApp, err := adm.AddApp(&types.Application{Name: "io.phony.App", TeamID: tTeam.ID})
 	require.NoError(cnf.t, err)
-	tPkg, err := cnf.api.AddPackage(&api.Package{Type: api.PkgTypeOther, URL: "http://sample.url/pkg", Version: cnf.pkgVersion, ApplicationID: tApp.ID, Arch: api.ArchAMD64})
+	tPkg, err := adm.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: cnf.pkgVersion, ApplicationID: tApp.ID, Arch: types.ArchAMD64})
 	require.NoError(cnf.t, err)
-	tChannel, err := cnf.api.AddChannel(&api.Channel{Name: "channel1", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID), Arch: api.ArchAMD64})
+	tChannel, err := adm.AddChannel(&types.Channel{Name: "channel1", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID), Arch: types.ArchAMD64})
 	require.NoError(cnf.t, err)
-	tGroup, err := cnf.api.AddGroup(&api.Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: cnf.policySafeMode, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: cnf.policyMaxUpdatesPerPeriod, PolicyUpdateTimeout: "60 minutes", Track: "stable"})
+	tGroup, err := adm.AddGroup(&types.Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: cnf.policySafeMode, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: cnf.policyMaxUpdatesPerPeriod, PolicyUpdateTimeout: "60 minutes", Track: "stable"})
 	require.NoError(cnf.t, err)
 	return tApp.ID, tGroup, tChannel
 }
