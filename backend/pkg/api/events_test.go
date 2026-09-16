@@ -40,6 +40,9 @@ func TestRegisterEvent_InvalidParams(t *testing.T) {
 
 	_, _ = rs.GetUpdatePackage(types.Instance{ID: tInstance.ID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
 
+	err = rs.RegisterEvent(tInstance.ID, tApp.ID, tGroup.ID, types.EventUpdateComplete, types.ResultSuccessReboot, "not-a-version", "")
+	assert.Equal(t, types.ErrInvalidSemver, err)
+
 	err = rs.RegisterEvent(tInstance.ID, tApp.ID, tGroup.ID, 1000, types.ResultSuccess, "", "")
 	assert.Equal(t, types.ErrInvalidEventTypeOrResult, err)
 
