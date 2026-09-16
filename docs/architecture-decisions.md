@@ -32,6 +32,14 @@ This document captures important architectural decisions made for the Nebraska p
 **Security:** PKCE protection, in-memory storage, no token exposure in logs, stateless backend
 **Architecture:** Standard SPA pattern, improved scalability, simplified codebase, clear separation of concerns
 
+### Correction (4.0.0)
+
+The stateless validation added here set `SkipClientIDCheck: true`, so the backend checked only the
+signature, the issuer and the expiry. Any unexpired token from the configured issuer was accepted,
+including one the provider issued for a different application in the same realm. The backend now
+requires `--oidc-audience` and checks it against the `aud` claim. See the
+[OIDC Migration Guide](./oidc-migration-guide.md).
+
 ### Migration Impact
 
 **Breaking Changes:** Frontend-direct OIDC flow, public client setup, memory-only tokens
