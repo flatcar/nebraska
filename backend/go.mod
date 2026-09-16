@@ -7,7 +7,7 @@ require (
 	github.com/coreos/go-oidc/v3 v3.18.0
 	github.com/doug-martin/goqu/v9 v9.19.0
 	github.com/flatcar/go-omaha v0.0.2-0.20251014063321-4998849bd39c
-	github.com/getkin/kin-openapi v0.146.0
+	github.com/getkin/kin-openapi v0.149.0
 	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/golangci/golangci-lint/v2 v2.12.2
 	github.com/google/go-github/v28 v28.1.1
@@ -204,7 +204,7 @@ require (
 	github.com/ryancurrah/gomodguard/v2 v2.1.3 // indirect
 	github.com/ryanrolds/sqlclosecheck v0.6.0 // indirect
 	github.com/sanposhiho/wastedassign/v2 v2.1.0 // indirect
-	github.com/santhosh-tekuri/jsonschema/v6 v6.0.2 // indirect
+	github.com/santhosh-tekuri/jsonschema/v6 v6.0.3 // indirect
 	github.com/sashamelentyev/interfacebloat v1.1.0 // indirect
 	github.com/sashamelentyev/usestdlibvars v1.29.0 // indirect
 	github.com/securego/gosec/v2 v2.26.1 // indirect
