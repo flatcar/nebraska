@@ -218,10 +218,15 @@ spec:
             # Extra environment variables
             {{- toYaml .Values.extraEnv | nindent 12 }}
             {{- end }}
-          {{- if .Values.config.hostFlatcarPackages.enabled }}
+          {{- if or .Values.config.hostFlatcarPackages.enabled .Values.extraVolumeMounts }}
           volumeMounts:
+            {{- if .Values.config.hostFlatcarPackages.enabled }}
             - mountPath: {{ .Values.config.hostFlatcarPackages.packagesPath }}
               name: packages
+            {{- end }}
+            {{- with .Values.extraVolumeMounts }}
+            {{- tpl (toYaml .) $ | nindent 12 }}
+            {{- end }}
           {{- end }}
           ports:
             - name: http
@@ -237,8 +242,9 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-      {{- if .Values.config.hostFlatcarPackages.enabled }}
+      {{- if or .Values.config.hostFlatcarPackages.enabled .Values.extraVolumes }}
       volumes:
+        {{- if .Values.config.hostFlatcarPackages.enabled }}
         - name: packages
           {{- if .Values.config.hostFlatcarPackages.persistence.enabled }}
           persistentVolumeClaim:
@@ -246,6 +252,10 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+        {{- end }}
+        {{- with .Values.extraVolumes }}
+        {{- tpl (toYaml .) $ | nindent 8 }}
+        {{- end }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
