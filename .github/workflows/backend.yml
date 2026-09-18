@@ -2,12 +2,16 @@ name: Build Backend
 on:
   pull_request:
     paths:
+    - 'backend/api/**'
     - 'backend/cmd/**'
     - 'backend/pkg/**'
     - 'backend/tools/**'
     - 'backend/test/**'
+    - 'backend/test-configs/**'
+    - 'backend/docker-compose*.yaml'
     - 'backend/go.mod'
     - 'backend/go.sum'
+    - 'backend/Makefile'
     - 'updaters/**'
     - '.github/**'
     - Makefile
