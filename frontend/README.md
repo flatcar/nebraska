@@ -13,12 +13,22 @@
 
 ## Getting Started
 
-```bash
-# Install dependencies
-npm install
+### Prerequisites
 
-# Development
-## Start the backend
+- Node.js
+- Docker (for the backend database)
+- `psql` client (PostgreSQL CLI)
+
+### Install dependencies
+
+```bash
+npm install
+```
+
+## Development
+
+### Start the backend
+
 ```bash
 docker run --rm -d --name nebraska-postgres-dev -p 5432:5432 -e POSTGRES_PASSWORD=nebraska postgres && \
     sleep 10 && \
@@ -26,31 +36,58 @@ docker run --rm -d --name nebraska-postgres-dev -p 5432:5432 -e POSTGRES_PASSWOR
     psql postgres://postgres:nebraska@localhost:5432/nebraska -c 'set timezone = "utc";'
 make run-backend
 ```
-## Run development server
+
+### Run the development server
+
+```bash
 npm run dev
+```
 
-# Run tests
-## To run vitests
+## Testing
+
+### Run unit tests (Vitest)
+
+```bash
 npm test
+```
 
-## To update storybook snapshots
+### Update Storybook snapshots
+
+```bash
 npm run build-storybook:ci && npm run serve-storybook:ci
 npm run test-storybook:ci -- -u
+```
 
-## [E2E Playwright tests](./e2e/README.md)
+### [E2E Playwright tests](./e2e/README.md)
 
-## Generate test coverage report
+### Generate test coverage report
+
+```bash
 npm run test:coverage
+```
 
-## Run linter and formatter
+## Linting & Formatting
+
+```bash
 npm run lint
+```
+
+```bash
 npm run format
+```
 
-# Build for production
+## Production Build
+
+```bash
 npm run build
+```
 
-# Run Storybook
+## Storybook
+
+```bash
+# Run Storybook locally
 npm run storybook
 
-# Build Storybook
+# Build static Storybook
 npm run build-storybook
+```
