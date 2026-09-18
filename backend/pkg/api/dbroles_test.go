@@ -14,6 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/flatcar/nebraska/backend/pkg/config"
 	"github.com/flatcar/nebraska/backend/pkg/random"
 )
 
@@ -220,6 +221,89 @@ func TestServingRoleProvisioning(t *testing.T) {
 			"select has_table_privilege($1, 'public.application', $2)", name, priv))
 		assert.True(t, got, "the serving user must %s application", priv)
 	}
+}
+
+// TestServingRoleFollowsInstanceMode covers the hook the serving roles were
+// built for: only an edge node is held to the runtime role, and it is held to it
+// by the database, not only by the HTTP guard.
+func TestServingRoleFollowsInstanceMode(t *testing.T) {
+	for _, tc := range []struct {
+		name      string
+		mode      config.InstanceMode
+		wantAdmin bool
+	}{
+		{name: "unset", mode: "", wantAdmin: true},
+		{name: "single", mode: config.InstanceModeSingle, wantAdmin: true},
+		{name: "control", mode: config.InstanceModeControl, wantAdmin: true},
+		{name: "edge", mode: config.InstanceModeEdge, wantAdmin: false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			a := newForTest(t)
+			t.Cleanup(a.Close)
+			requireRoleAdmin(t, a)
+			roles := requireNoServingRoles(t, a)
+
+			name, password := createLoginRole(t, a)
+
+			t.Setenv("NEBRASKA_MIGRATIONS_DB_URL", testDBURL())
+			t.Setenv("NEBRASKA_DB_URL", loginURL(t, name, password))
+
+			served, err := NewWithMigrations(OptionInstanceMode(tc.mode))
+			require.NoError(t, err)
+			t.Cleanup(served.Close)
+
+			assert.Equal(t, tc.wantAdmin, isMemberOf(t, a, name, roles.admin), "membership of %s", roles.admin)
+			assert.Equal(t, !tc.wantAdmin, isMemberOf(t, a, name, roles.runtime), "membership of %s", roles.runtime)
+
+			if tc.wantAdmin {
+				return
+			}
+
+			edge, err := sqlx.Open("pgx", loginURL(t, name, password))
+			require.NoError(t, err)
+
+			t.Cleanup(func() { _ = edge.Close() })
+
+			requireDenied(t, edge, "insert into application select * from application where false")
+		})
+	}
+}
+
+// TestInstanceModeNeedsItsOwnMigrationsIdentity pins the two ways a distributed
+// node can be configured with no database boundary at all. Both have to stop the
+// node rather than leave it looking restricted.
+func TestInstanceModeNeedsItsOwnMigrationsIdentity(t *testing.T) {
+	a := newForTest(t)
+	t.Cleanup(a.Close)
+
+	for _, mode := range []config.InstanceMode{config.InstanceModeControl, config.InstanceModeEdge} {
+		t.Run(string(mode)+" without a migrations connection", func(t *testing.T) {
+			t.Setenv("NEBRASKA_MIGRATIONS_DB_URL", "")
+			t.Setenv("NEBRASKA_DB_URL", testDBURL())
+
+			_, err := NewWithMigrations(OptionInstanceMode(mode))
+			require.Error(t, err)
+			assert.Contains(t, err.Error(), "NEBRASKA_MIGRATIONS_DB_URL")
+		})
+
+		t.Run(string(mode)+" sharing one identity", func(t *testing.T) {
+			t.Setenv("NEBRASKA_MIGRATIONS_DB_URL", testDBURL())
+			t.Setenv("NEBRASKA_DB_URL", testDBURL())
+
+			_, err := NewWithMigrations(OptionInstanceMode(mode))
+			require.Error(t, err)
+			assert.Contains(t, err.Error(), "different user")
+		})
+	}
+}
+
+func isMemberOf(t *testing.T, a *API, user, role string) bool {
+	t.Helper()
+
+	var member bool
+	require.NoError(t, a.db().Get(&member, "select pg_has_role($1, $2, 'member')", user, role))
+
+	return member
 }
 
 // TestServingRoleGrantAfterMigrationsRotation pins that rotating the migrations

@@ -11,6 +11,7 @@ paths:
   /login/cb:
     get:
       operationId: loginCb
+      x-nebraska-node-role: none
       description: GitHub OAuth callback (GitHub mode only)
       security: []
       responses:
@@ -33,6 +34,7 @@ paths:
   /login/validate_token:
     get:
       operationId: validateToken
+      x-nebraska-node-role: none
       description: validate JWT access token (OIDC mode only)
       security: []
       responses:
@@ -49,6 +51,7 @@ paths:
   /login/webhook:
     post:
       operationId: loginWebhook
+      x-nebraska-node-role: none
       description: GitHub webhook (GitHub mode only)
       security: []
       parameters:
@@ -74,6 +77,7 @@ paths:
   /health:
     get:
       operationId: health
+      x-nebraska-node-role: none
       description: health endpoint
       security: []
       responses:
@@ -82,6 +86,7 @@ paths:
   /config:
     get:
       operationId: getConfig
+      x-nebraska-node-role: none
       description: get app config
       security: [] 
       responses:
@@ -94,6 +99,7 @@ paths:
   /v1/update:
     post:
       operationId: omaha
+      x-nebraska-node-role: runtime
       description: omaha endpoint
       security: []
       requestBody:
@@ -112,6 +118,7 @@ paths:
     get:
       description: get Apps
       operationId: paginateApps
+      x-nebraska-node-role: runtime
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -143,6 +150,7 @@ paths:
     post:
       description: create app
       operationId: createApp
+      x-nebraska-node-role: admin
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -169,6 +177,12 @@ paths:
                 $ref: "#/components/schemas/application"
         "400":
           description: Bad request response
+        "403":
+          description: Not accepted on this node
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
         "500":
           description: Create App error response
 
@@ -176,6 +190,7 @@ paths:
     get:
       description: get app
       operationId: getApp
+      x-nebraska-node-role: runtime
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -200,6 +215,7 @@ paths:
     put:
       description: update app
       operationId: updateApp
+      x-nebraska-node-role: admin
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -226,11 +242,18 @@ paths:
                 $ref: "#/components/schemas/application"
         "400":
           description: Bad request response
+        "403":
+          description: Not accepted on this node
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
         "500":
           description: Update app error response
     delete:
       description: delete app
       operationId: deleteApp
+      x-nebraska-node-role: admin
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -244,6 +267,12 @@ paths:
       responses:
         "200":
           description: Delete App success response
+        "403":
+          description: Not accepted on this node
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
         "500":
           description: Delete App error response
 
@@ -251,6 +280,7 @@ paths:
     get:
       description: paginate groups of an app
       operationId: paginateGroups
+      x-nebraska-node-role: runtime
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -287,6 +317,7 @@ paths:
     post:
       description: create group in app
       operationId: createGroup
+      x-nebraska-node-role: admin
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -313,6 +344,12 @@ paths:
                 $ref: "#/components/schemas/group"
         "400":
           description: Bad request response
+        "403":
+          description: Not accepted on this node
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
         "500":
           description: Create Group error response
 
@@ -320,6 +357,7 @@ paths:
     get:
       description: get group given its groupID and appID
       operationId: getGroup
+      x-nebraska-node-role: runtime
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -349,6 +387,7 @@ paths:
     put:
       description: update group given its groupID and appID
       operationId: updateGroup
+      x-nebraska-node-role: admin
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -382,11 +421,18 @@ paths:
           description: Group not found response
         "400":
           description: Update Group Bad request response
+        "403":
+          description: Not accepted on this node
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
         "500":
           description: Update Group error response
     delete:
       description: delete group given its groupID and appID
       operationId: deleteGroup
+      x-nebraska-node-role: admin
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -407,13 +453,54 @@ paths:
           description: Delete Group success response
         "404":
           description: Group not found response
+        "403":
+          description: Not accepted on this node
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
         "500":
           description: Delete Group error response
+
+  /api/apps/{appIDorProductID}/groups/{groupID}/updates_override:
+    delete:
+      description: clear this node's local updates-enabled override for the group, so that the admin default on the group applies here again
+      operationId: clearGroupUpdatesOverride
+      x-nebraska-node-role: runtime
+      security:
+        - oidcBearerAuth: []
+        - oidcCookieAuth: []
+        - githubCookieAuth: []
+      parameters:
+        - in: path
+          name: appIDorProductID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: groupID
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Clear updates override success response
+        "404":
+          description: Group not found response
+        "500":
+          description: Clear updates override error response
+        "501":
+          description: Not implemented in single-instance mode
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
 
   /api/apps/{appIDorProductID}/groups/{groupID}/version_timeline:
     get:
       description: get version timeline of a group given its groupID and appID
       operationId: getGroupVersionTimeline
+      x-nebraska-node-role: runtime
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -450,6 +537,7 @@ paths:
     get:
       description: get status timeline of a group given its groupID and appID
       operationId: getGroupStatusTimeline
+      x-nebraska-node-role: runtime
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -486,6 +574,7 @@ paths:
     get:
       description: get instance stats of a group given its groupID and appID
       operationId: getGroupInstanceStats
+      x-nebraska-node-role: runtime
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -521,6 +610,7 @@ paths:
     get:
       description: get version breakdown of a group given its groupID and appID
       operationId: getGroupVersionBreakdown
+      x-nebraska-node-role: runtime
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -551,6 +641,7 @@ paths:
     get:
       description: paginate channels of an app
       operationId: paginateChannels
+      x-nebraska-node-role: runtime
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -587,6 +678,7 @@ paths:
     post:
       description: create channel
       operationId: createChannel
+      x-nebraska-node-role: admin
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -613,12 +705,19 @@ paths:
                 $ref: "#/components/schemas/channel"
         "400":
           description: Bad request response
+        "403":
+          description: Not accepted on this node
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
         "500":
           description: Create channel error response
   /api/apps/{appIDorProductID}/channels/{channelID}:
     get:
       description: get channel by id
       operationId: getChannel
+      x-nebraska-node-role: runtime
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -648,6 +747,7 @@ paths:
     put:
       description: update channel by id
       operationId: updateChannel
+      x-nebraska-node-role: admin
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -681,11 +781,18 @@ paths:
           description: Channel not found response
         "400":
           description: Bad request response
+        "403":
+          description: Not accepted on this node
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
         "500":
           description: Update channel error response
     delete:
       description: delete channel by id
       operationId: deleteChannel
+      x-nebraska-node-role: admin
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -704,12 +811,19 @@ paths:
       responses:
         "200":
           description: Delete channel success response
+        "403":
+          description: Not accepted on this node
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
         "500":
           description: Delete channel error response
   /api/channels/{channelID}/floors:
     get:
       description: paginate floor packages of a channel
       operationId: paginateChannelFloors
+      x-nebraska-node-role: runtime
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -762,6 +876,7 @@ paths:
     put:
       description: Create or update a floor package relationship (idempotent operation)
       operationId: setChannelFloor
+      x-nebraska-node-role: admin
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -797,11 +912,18 @@ paths:
           description: Invalid request (architecture mismatch, wrong application, etc.)
         "404":
           description: Channel or package not found
+        "403":
+          description: Not accepted on this node
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
         "500":
           description: Set channel floor error response
     delete:
       description: remove package as floor for a channel
       operationId: removeChannelFloor
+      x-nebraska-node-role: admin
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -822,12 +944,19 @@ paths:
           description: Remove channel floor success response
         "404":
           description: Floor relationship not found
+        "403":
+          description: Not accepted on this node
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
         "500":
           description: Remove channel floor error response
   /api/apps/{appIDorProductID}/packages:
     get:
       description: paginate packages of an app
       operationId: paginatePackages
+      x-nebraska-node-role: runtime
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -866,6 +995,7 @@ paths:
     post:
       description: create package
       operationId: createPackage
+      x-nebraska-node-role: admin
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -892,12 +1022,19 @@ paths:
                 $ref: "#/components/schemas/package"
         "400": 
           description: Create Package bad request response
+        "403":
+          description: Not accepted on this node
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
         "500":
           description: Create package error response
   /api/apps/{appIDorProductID}/packages/{packageID}:
     get:
       description: get package given its packageID and appID
       operationId: getPackage
+      x-nebraska-node-role: runtime
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -927,6 +1064,7 @@ paths:
     put:
       description: update package given its packageID and appID
       operationId: updatePackage
+      x-nebraska-node-role: admin
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -958,11 +1096,18 @@ paths:
                 $ref: "#/components/schemas/package"
         "404":
           description: Package not found response
+        "403":
+          description: Not accepted on this node
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
         "500":
           description: Update package error response
     delete:
       description: delete package given its packageID and appID
       operationId: deletePackage
+      x-nebraska-node-role: admin
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -983,12 +1128,19 @@ paths:
           description: Delete Package success response
         "404":
           description: Package not found response
+        "403":
+          description: Not accepted on this node
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponse"
         "500":
           description: Delete package error response
   /api/apps/{appIDorProductID}/packages/{packageID}/floor-channels:
     get:
       description: get all channels where a package is marked as a floor
       operationId: getPackageFloorChannels
+      x-nebraska-node-role: runtime
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -1032,6 +1184,7 @@ paths:
     get:
       description: get instances of a group given its groupID and appID
       operationId: getGroupInstances
+      x-nebraska-node-role: runtime
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -1107,6 +1260,7 @@ paths:
     get:
       description: get instance count of a group given its groupID and appID
       operationId: getGroupInstancesCount
+      x-nebraska-node-role: runtime
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -1140,6 +1294,7 @@ paths:
     get:
       description: get instance of a group given its groupID and appID
       operationId: getInstance
+      x-nebraska-node-role: runtime
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -1175,6 +1330,7 @@ paths:
     get:
       description: get instance status_history.
       operationId: getInstanceStatusHistory
+      x-nebraska-node-role: runtime
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -1216,6 +1372,7 @@ paths:
     put:
       description: update instance
       operationId: updateInstance
+      x-nebraska-node-role: runtime
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []
@@ -1247,6 +1404,7 @@ paths:
     get:
       description: paginate activity
       operationId: paginateActivity
+      x-nebraska-node-role: runtime
       security:
         - oidcBearerAuth: []
         - oidcCookieAuth: []

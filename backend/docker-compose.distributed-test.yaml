@@ -1,0 +1,101 @@
+# Docker-compose file for the distributed-mode E2E tests.
+#
+# This mirrors the existing test infrastructure but runs one Nebraska node per
+# instance mode, each against its own database. A node's mode is fixed by a
+# flag at startup, so one server cannot cover all three.
+#
+# A node is not restarted when it dies: instance-mode misconfiguration is fatal
+# by design, and a restart loop would bury the message that says why.
+#
+# Build docker image from local sources:
+#   docker compose -f docker-compose.distributed-test.yaml build
+#
+# Run:
+#   docker compose -f docker-compose.distributed-test.yaml up
+
+# Fixed name and ports: CI runs one job per VM, so per-run isolation is not needed.
+name: nebraska-distributed-test
+
+services:
+  postgres:
+    image: postgres:17
+    ports:
+      - "8011:5432"
+    environment:
+      POSTGRES_PASSWORD: nebraska
+      POSTGRES_DB: nebraska_single
+      POSTGRES_USER: postgres
+      TZ: UTC
+    volumes:
+      - ./test-configs/distributed:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # A node with no instance mode set, which is what every existing deployment
+  # is. It must behave exactly as it did before instance modes existed.
+  single:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+      network: host
+    ports:
+      - "8012:8000"
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - NEBRASKA_DB_URL=postgres://postgres:nebraska@postgres:5432/nebraska_single?sslmode=disable&connect_timeout=10
+    command: sh -c "/nebraska/nebraska --auth-mode=noop --http-static-dir=/nebraska/static --api-endpoint-suffix=/"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://localhost:8000/health | grep -q OK"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  # Accepts admin writes, and is granted nebraska_admin_nebraska_control.
+  control:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+      network: host
+    ports:
+      - "8013:8000"
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - NEBRASKA_DB_URL=postgres://control_srv:nebraska@postgres:5432/nebraska_control?sslmode=disable&connect_timeout=10
+      - NEBRASKA_MIGRATIONS_DB_URL=postgres://control_mig:nebraska@postgres:5432/nebraska_control?sslmode=disable&connect_timeout=10
+    command: sh -c "/nebraska/nebraska --auth-mode=noop --http-static-dir=/nebraska/static --api-endpoint-suffix=/ --instance-mode=control"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://localhost:8000/health | grep -q OK"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  # Refuses admin writes, and is granted nebraska_runtime_nebraska_edge instead.
+  edge:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+      network: host
+    ports:
+      - "8014:8000"
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - NEBRASKA_DB_URL=postgres://edge_srv:nebraska@postgres:5432/nebraska_edge?sslmode=disable&connect_timeout=10
+      - NEBRASKA_MIGRATIONS_DB_URL=postgres://edge_mig:nebraska@postgres:5432/nebraska_edge?sslmode=disable&connect_timeout=10
+    command: sh -c "/nebraska/nebraska --auth-mode=noop --http-static-dir=/nebraska/static --api-endpoint-suffix=/ --instance-mode=edge"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://localhost:8000/health | grep -q OK"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
