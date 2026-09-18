@@ -14,6 +14,7 @@ import (
 
 	"github.com/flatcar/nebraska/backend/pkg/api/internal/dbconn"
 	"github.com/flatcar/nebraska/backend/pkg/api/internal/dbreads"
+	"github.com/flatcar/nebraska/backend/pkg/config"
 	"github.com/flatcar/nebraska/backend/pkg/logger"
 
 	// PostgreSQL Driver and Toolkit
@@ -48,6 +49,7 @@ type API struct {
 	dbDriver        string
 	dbURL           string
 	migrationsDBURL string
+	instanceMode    config.InstanceMode
 
 	*dbreads.Queries
 }
@@ -62,6 +64,11 @@ func (api *API) db() *sqlx.DB {
 // what a single-instance deployment does today.
 func (api *API) withMigrationsDB(fn func(*sqlx.DB) error) error {
 	if api.migrationsDBURL == "" {
+		// A distributed node has no schema owner to fall back to.
+		if api.instanceMode.IsDistributed() {
+			return fmt.Errorf("instance-mode %s requires NEBRASKA_MIGRATIONS_DB_URL", api.instanceMode)
+		}
+
 		return fn(api.db())
 	}
 
@@ -232,6 +239,21 @@ func migrationAssets() *migrate.EmbedFileSystemMigrationSource {
 	return &migrate.EmbedFileSystemMigrationSource{
 		FileSystem: migrationsFolder,
 		Root:       "db/migrations",
+	}
+}
+
+// OptionInstanceMode records the node role this process was started with, which
+// selects the serving database role. Without it a node provisions the way a
+// single instance does.
+func OptionInstanceMode(mode config.InstanceMode) func(*API) error {
+	return func(api *API) error {
+		if !mode.Valid() {
+			return fmt.Errorf("invalid instance mode %q", mode)
+		}
+
+		api.instanceMode = mode
+
+		return nil
 	}
 }
 

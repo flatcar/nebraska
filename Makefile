@@ -60,6 +60,10 @@ container_id:
 check-backend-with-container:
 	$(MAKE) -C backend $@
 
+.PHONY: check-distributed-with-container
+check-distributed-with-container:
+	$(MAKE) -C backend $@
+
 .PHONY: frontend
 frontend:
 	$(MAKE) -C frontend
