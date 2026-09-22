@@ -15,6 +15,7 @@ jobs:
   build:
     name: Build Container Image
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
     permissions:
       contents: read
       packages: write
