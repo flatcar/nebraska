@@ -217,7 +217,7 @@ $ kubectl exec -ti pod/nebraska-postgresql-0 -- psql < backup.sql
 | `postgresql.enabled`                                     | Enable Bitnami postgresql subchart and deploy database within this helm release                               | `true`                 |
 | `postgresql.auth.database`                               | PostgreSQL database                                                                                           | `nebraska`             |
 | `postgresql.auth.postgresPassword`                       | PostgreSQL password of user "postgres" **Recommended to change it to something secure for security reasons.** | `changeIt`             |
-| `postgresql.image.tag`                                   | PostgreSQL Image tag                                                                                          | `13.8.0-debian-11-r18` |
+| `postgresql.image.tag`                                   | PostgreSQL Image tag                                                                                          | `17.5.0` |
 | `postgresql.primary.persistence.enabled`                 | Enable persistence using PVC                                                                                  | `false`                |
 | `postgresql.primary.persistence.storageClass`            | PVC Storage Class for PostgreSQL volume                                                                       | `nil`                  |
 | `postgresql.primary.persistence.accessModes`             | PVC Access Mode for PostgreSQL volume                                                                         | `["ReadWriteOnce"]`    |
