@@ -36,7 +36,8 @@ services:
       KC_HTTP_PORT: 8080
     command: start-dev --import-realm --hostname-strict=false
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/realms/test || exit 1"]
+      # The image has no curl or wget.
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/8080 && printf 'GET /realms/test HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 && grep -q '200 OK' <&3"]
       interval: 10s
       timeout: 5s
       retries: 10
