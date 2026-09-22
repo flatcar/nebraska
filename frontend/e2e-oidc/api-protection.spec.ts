@@ -105,23 +105,30 @@ test.describe('OIDC API Endpoint Protection', () => {
   test('should handle HEAD requests properly', async ({ request }) => {
     const viewerToken = await oidcHelpers.tokenManager.getValidToken(TEST_USERS.VIEWER);
 
-    // HEAD requests should be allowed for viewers (read-only operation)
     const headResponse = await request.head('/api/apps', {
       headers: { Authorization: `Bearer ${viewerToken.token}` },
     });
 
-    // HEAD should be treated as read operation, allowed for viewers
-    expect(headResponse.status()).toBe(200);
+    // spec.yaml declares no head operations, so HEAD is refused.
+    expect(headResponse.status()).toBe(405);
   });
 
   test('should properly handle OPTIONS requests', async ({ request }) => {
-    // OPTIONS requests are typically for CORS preflight
+    // A browser preflight.
     const optionsResponse = await request.fetch('/api/apps', {
       method: 'OPTIONS',
+      headers: {
+        Origin: 'http://example.com',
+        'Access-Control-Request-Method': 'GET',
+      },
     });
 
-    // OPTIONS should be handled appropriately (200 or 204)
-    expect([200, 204, 405]).toContain(optionsResponse.status());
+    // CORS answers preflights before auth.
+    expect(optionsResponse.status()).toBe(204);
+    // Allow comes from the router, unlike access-control-allow-methods.
+    const allow = optionsResponse.headers()['allow'];
+    expect(allow).toContain('GET');
+    expect(allow).toContain('POST');
   });
 
   test('should protect nested API endpoints', async ({ request }) => {
