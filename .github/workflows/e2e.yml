@@ -8,6 +8,7 @@ on:
     - 'Makefile'
     - '.github/**'
     - Dockerfile
+    - .dockerignore
 
 permissions:
   contents: read
