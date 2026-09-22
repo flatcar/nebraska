@@ -19,9 +19,6 @@ import (
 	// PostgreSQL Driver and Toolkit
 	_ "github.com/jackc/pgx/v5/stdlib"
 
-	// Postgresql driver
-	_ "github.com/lib/pq"
-
 	"time"
 )
 
