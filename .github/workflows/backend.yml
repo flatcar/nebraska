@@ -1,4 +1,6 @@
 name: Build Backend
+permissions:
+  contents: read
 on:
   pull_request:
     paths:
