@@ -124,9 +124,12 @@ test.describe('OIDC API Endpoint Protection', () => {
     });
 
     // CORS answers preflights before auth.
+    const headers = optionsResponse.headers();
     expect(optionsResponse.status()).toBe(204);
+    expect(headers['access-control-allow-origin']).toBe('*');
+    expect(headers['access-control-allow-methods']).toContain('GET');
     // Allow comes from the router, unlike access-control-allow-methods.
-    const allow = optionsResponse.headers()['allow'];
+    const allow = headers['allow'];
     expect(allow).toContain('GET');
     expect(allow).toContain('POST');
   });
