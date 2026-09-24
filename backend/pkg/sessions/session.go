@@ -44,6 +44,7 @@ type Session struct {
 	cache  Cache
 	codec  Codec
 	marked bool
+	secure bool
 }
 
 // Has returns true if the session object contains a value under the
@@ -115,6 +116,8 @@ func (s *Session) Save(writer http.ResponseWriter) error {
 		Path:     "/",
 		MaxAge:   maxAge,
 		HttpOnly: true,
+		Secure:   s.secure,
+		SameSite: http.SameSiteLaxMode,
 	}
 	http.SetCookie(writer, cookie)
 	return nil
@@ -155,7 +158,8 @@ func (s sessionExt) Session() *Session {
 }
 
 type sessionBuilder struct {
-	codec Codec
+	codec  Codec
+	secure bool
 }
 
 var _ SessionBuilder = sessionBuilder{}
@@ -169,6 +173,7 @@ func (b sessionBuilder) NewSession(name string, cache Cache) SessionExt {
 			cache:  cache,
 			codec:  b.codec,
 			marked: false,
+			secure: b.secure,
 		},
 	}
 }
@@ -182,6 +187,7 @@ func (b sessionBuilder) NewExistingSession(name, id string, values ValuesType, c
 			cache:  cache,
 			codec:  b.codec,
 			marked: false,
+			secure: b.secure,
 		},
 	}
 }

@@ -215,7 +215,7 @@ func setupSessionStore(conf config.Config) *sessions.Store {
 	case "github":
 		cache := memcache.New(memcachegob.New())
 		codec := securecookie.New([]byte(conf.GhSessionAuthKey), []byte(conf.GhSessionCryptKey))
-		return sessions.NewStore(cache, codec)
+		return sessions.NewStore(cache, codec, conf.SecureCookie)
 	}
 	return nil
 }
