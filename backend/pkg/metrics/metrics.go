@@ -128,6 +128,20 @@ func RegisterAndInstrument(api *api.API) error {
 	return nil
 }
 
+func setAppInstancesPerChannel(metrics []api.AppInstancesPerChannelMetric) {
+	appInstancePerChannelGaugeMetric.Reset()
+	for _, metric := range metrics {
+		appInstancePerChannelGaugeMetric.WithLabelValues(metric.ApplicationName, metric.Version, metric.ChannelName).Set(float64(metric.InstancesCount))
+	}
+}
+
+func setFailedUpdates(metrics []api.FailedUpdatesMetric) {
+	failedUpdatesGaugeMetric.Reset()
+	for _, metric := range metrics {
+		failedUpdatesGaugeMetric.WithLabelValues(metric.ApplicationName).Set(float64(metric.FailureCount))
+	}
+}
+
 // calculateMetrics calculates the application metrics and updates the respective metric.
 func calculateMetrics(api *api.API) error {
 	aipcMetrics, err := api.GetAppInstancesPerChannelMetrics()
@@ -135,18 +149,14 @@ func calculateMetrics(api *api.API) error {
 		return fmt.Errorf("failed to get app instances per channel metrics: %w", err)
 	}
 
-	for _, metric := range aipcMetrics {
-		appInstancePerChannelGaugeMetric.WithLabelValues(metric.ApplicationName, metric.Version, metric.ChannelName).Set(float64(metric.InstancesCount))
-	}
+	setAppInstancesPerChannel(aipcMetrics)
 
 	fuMetrics, err := api.GetFailedUpdatesMetrics()
 	if err != nil {
 		return fmt.Errorf("failed to get failed update metrics: %w", err)
 	}
 
-	for _, metric := range fuMetrics {
-		failedUpdatesGaugeMetric.WithLabelValues(metric.ApplicationName).Set(float64(metric.FailureCount))
-	}
+	setFailedUpdates(fuMetrics)
 
 	// db stats
 	dbStats := api.DbStats()
