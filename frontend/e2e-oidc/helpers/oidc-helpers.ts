@@ -39,6 +39,21 @@ export class OIDCHelpers {
       data: data ? JSON.stringify(data) : undefined,
     });
 
+    const contentType = response.headers()['content-type'] ?? '';
+
+    // A non-JSON 2xx from /api means the SPA fallback answered with index.html.
+    // 204 is exempt: DeleteApp and friends return it with no body at all.
+    if (
+      response.ok() &&
+      response.status() !== 204 &&
+      url.includes('/api') &&
+      !contentType.includes('application/json')
+    ) {
+      throw new Error(
+        `${method} ${url} returned ${response.status()} as "${contentType}", expected JSON`
+      );
+    }
+
     return {
       status: response.status(),
       data: response.ok() ? await response.json().catch(() => null) : null,
