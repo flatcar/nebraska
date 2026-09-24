@@ -66,6 +66,8 @@ If you want to start contributing to Nebraska, please check out the [contributin
 
 For a quickstart on setting up a development environment, please check the [development documentation](https://www.flatcar.org/docs/latest/nebraska/development/).
 
+For developing on macOS, see the [macOS development guide](docs/development-macos.md).
+
 ### User Access
 
 For instructions on how to set up user access, please check the [authorization documentation](https://www.flatcar.org/docs/latest/nebraska/authorization/).
