@@ -30,6 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Bugfixes
 
 - Fixed package blacklist changes not appearing in UI immediately after save
+- Fixed group version breakdown percentages not adding up to 100% for groups containing instances with bracketed IDs
 
 ## [4.0.0] - 02/09/2026
 
