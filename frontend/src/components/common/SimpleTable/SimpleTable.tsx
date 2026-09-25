@@ -58,10 +58,10 @@ export default function SimpleTable(props: SimpleTableProps) {
         </TableHead>
         <TableBody>
           {props.instances &&
-            getPagedRows().map((row, i) => (
-              <TableRow key={i}>
-                {Object.keys(columns).map((column, i) => (
-                  <TableCell key={`cell_${i}`}>
+            getPagedRows().map((row: any, i) => (
+              <TableRow key={row.id || row.name || i}>
+                {Object.keys(columns).map(column => (
+                  <TableCell key={column}>
                     {i === 0 && row.color && (
                       <React.Fragment>
                         <InlineIcon icon={squareIcon} color={row.color} height="15" width="15" />

@@ -228,7 +228,7 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
         <InstanceCountLabel countText={totalInstances} href={href} />
       </Grid>
       <Grid container justifyContent="space-between" size={8}>
-        {instanceStateCount.map(({ status, count }, i) => {
+        {instanceStateCount.map(({ status, count }) => {
           // Sort the data entries so the smaller amounts are shown first.
           count.sort((obj1, obj2) => {
             const stats1 = instanceStats[obj1.key];
@@ -239,7 +239,7 @@ export default function InstanceStatusArea(props: InstanceStatusAreaProps) {
           });
 
           return (
-            <Grid key={i}>
+            <Grid key={status}>
               <ProgressDoughnut
                 data={count.map(({ key, label = status }) => {
                   const statusLabel = statusDefs[label].label;
