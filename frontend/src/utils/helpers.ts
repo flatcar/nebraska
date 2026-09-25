@@ -102,17 +102,16 @@ export function makeColorsForVersions(
   let latestVersion = null;
 
   if (channel && channel.package) {
-    latestVersion = cleanSemverVersion(channel.package.version);
+    latestVersion = channel.package.version;
   }
 
   for (let i = versions.length - 1; i >= 0; i--) {
     const version = versions[i];
-    const cleanVersion = cleanSemverVersion(version);
 
-    if (cleanVersion === latestVersion) {
-      versionColors[cleanVersion] = theme.palette.primary.main;
+    if (version === latestVersion) {
+      versionColors[version] = theme.palette.primary.main;
     } else {
-      versionColors[cleanVersion] = colors[colorIndex++ % colors.length];
+      versionColors[version] = colors[colorIndex++ % colors.length];
     }
   }
 
