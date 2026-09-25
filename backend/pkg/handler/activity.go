@@ -64,7 +64,7 @@ func (h *Handler) PaginateActivity(ctx echo.Context, params codegen.PaginateActi
 		l.Error().Err(err).Str("teamID", teamID).Msgf("getActivity params %v", p)
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
-	return ctx.JSON(http.StatusOK, activityPage{totalCount, len(activityEntries), activityEntries})
+	return ctx.JSON(http.StatusOK, activityPage{totalCount, len(activityEntries), orEmpty(activityEntries)})
 }
 
 type activityPage struct {
