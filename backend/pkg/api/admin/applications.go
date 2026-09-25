@@ -1,19 +1,23 @@
 package admin
 
 import (
+	"database/sql"
 	"fmt"
 	"regexp"
 
 	"github.com/doug-martin/goqu/v9"
+	"github.com/jmoiron/sqlx"
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
-// AddApp registers the provided application.
-func (s *Service) AddApp(app *types.Application) (*types.Application, error) {
+// addApp validates and inserts the application using the transaction
+// provided. The caller owns the transaction and is responsible for committing
+// it and for invalidating the application cache afterwards.
+func (s *Service) addApp(app *types.Application, tx *sqlx.Tx) error {
 	if err := validateProductID(app.ProductID); err != nil {
-		return nil, fmt.Errorf("cannot add application %v: %w", app.ID, err)
+		return fmt.Errorf("cannot add application %v: %w", app.ID, err)
 	}
 	query, _, err := goqu.Insert("application").
 		Cols("name", "product_id", "description", "team_id").
@@ -21,10 +25,28 @@ func (s *Service) AddApp(app *types.Application) (*types.Application, error) {
 		Returning(goqu.T("application").All()).
 		ToSQL()
 	if err != nil {
+		return err
+	}
+	return tx.QueryRowx(query).StructScan(app)
+}
+
+// AddApp registers the provided application.
+func (s *Service) AddApp(app *types.Application) (*types.Application, error) {
+	tx, err := s.db.Beginx()
+	if err != nil {
 		return nil, err
 	}
-	err = s.db.QueryRowx(query).StructScan(app)
-	if err != nil {
+	defer func() {
+		if err := tx.Rollback(); err != nil && err != sql.ErrTxDone {
+			l.Error().Err(err).Msg("AddApp - could not roll back")
+		}
+	}()
+
+	if err := s.addApp(app, tx); err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
 
@@ -35,19 +57,33 @@ func (s *Service) AddApp(app *types.Application) (*types.Application, error) {
 // AddAppCloning registers the provided application, cloning the groups and
 // channels from an existing application. Channels' packages will be set to null
 // as packages won't be cloned.
+//
+// The application and every cloned channel and group are written in a single
+// transaction, so a failure to copy any one of them rolls the whole clone back
+// and returns the error. A successful return therefore always means a complete
+// copy, never an application that silently lost some of its channels or has
+// groups pointing at channels that were never created.
 func (s *Service) AddAppCloning(app *types.Application, sourceAppID string) (*types.Application, error) {
-	app, err := s.AddApp(app)
+	tx, err := s.db.Beginx()
 	if err != nil {
 		return nil, err
 	}
+	defer func() {
+		if err := tx.Rollback(); err != nil && err != sql.ErrTxDone {
+			l.Error().Err(err).Msg("AddAppCloning - could not roll back")
+		}
+	}()
 
-	// NOTE: cloning operation is not transactional and something could go wrong
+	if err := s.addApp(app, tx); err != nil {
+		return nil, err
+	}
 
 	if sourceAppID != "" {
+		// The source application is pre-existing, committed data and isn't
+		// touched by this transaction, so it's read on the shared connection.
 		sourceApp, err := s.GetApp(sourceAppID)
 		if err != nil {
-			l.Error().Err(err).Msg("AddAppCloning - could not get source app")
-			return app, nil
+			return nil, fmt.Errorf("cannot clone application: could not get source app %v: %w", sourceAppID, err)
 		}
 
 		channelsIDsMappings := make(map[string]null.String)
@@ -56,30 +92,32 @@ func (s *Service) AddAppCloning(app *types.Application, sourceAppID string) (*ty
 			originalChannelID := channel.ID
 			channel.ApplicationID = app.ID
 			channel.PackageID = null.String{}
-			channelCopy, err := s.AddChannel(channel)
-			if err != nil {
-				l.Error().Err(err).Msg("AddAppCloning - could not add channel")
-				return app, nil // FIXME - think about what we should return to the caller
+			if err := s.addChannel(channel, tx); err != nil {
+				return nil, fmt.Errorf("cannot clone application: could not copy channel %v: %w", originalChannelID, err)
 			}
-			channelsIDsMappings[originalChannelID] = null.StringFrom(channelCopy.ID)
+			channelsIDsMappings[originalChannelID] = null.StringFrom(channel.ID)
 		}
 
 		for _, group := range sourceApp.Groups {
+			originalGroupID := group.ID
 			group.ApplicationID = app.ID
 			if group.ChannelID.String != "" {
 				group.ChannelID = channelsIDsMappings[group.ChannelID.String]
 			}
 			group.PolicyUpdatesEnabled = true
 			group.ID = ""
-			if _, err := s.AddGroup(group); err != nil {
-				l.Error().Err(err).Msg("AddAppCloning - could not add group")
-				return app, nil // FIXME - think about what we should return to the caller
+			if err := s.addGroup(group, tx); err != nil {
+				return nil, fmt.Errorf("cannot clone application: could not copy group %v: %w", originalGroupID, err)
 			}
 		}
 	}
-	// Even though AddApp will invalidate the cache, we need to do it again here
-	// to prevent eventual race issues.
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	s.ClearCachedAppIDs()
+	s.UpdateCachedGroups()
 	return app, nil
 }
 

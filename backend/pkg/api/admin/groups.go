@@ -1,23 +1,30 @@
 package admin
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/doug-martin/goqu/v9"
 	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
-// AddGroup registers the provided group.
-func (s *Service) AddGroup(group *types.Group) (*types.Group, error) {
+// addGroup validates and inserts the group using the transaction provided.
+// The caller owns the transaction and is responsible for committing it and
+// for invalidating the group cache afterwards.
+func (s *Service) addGroup(group *types.Group, tx *sqlx.Tx) error {
 	if group.PolicyOfficeHours && !isTimezoneValid(group.PolicyTimezone.String) {
-		return nil, types.ErrExpectingValidTimezone
+		return types.ErrExpectingValidTimezone
 	}
 
 	if group.ChannelID.String != "" {
-		if err := s.validateChannel(group.ChannelID.String, group.ApplicationID); err != nil {
-			return nil, err
+		// Validated through the transaction: when cloning an application the
+		// channel this group points at was inserted by the same transaction
+		// and isn't visible to reads made outside of it yet.
+		if err := validateChannel(tx, group.ChannelID.String, group.ApplicationID); err != nil {
+			return err
 		}
 	}
 	// Instead of trying to solve this in the database, generate the ID beforehand to copy it to the track.
@@ -48,12 +55,31 @@ func (s *Service) AddGroup(group *types.Group) (*types.Group, error) {
 		Returning(goqu.T("groups").All()).
 		ToSQL()
 	if err != nil {
-		return nil, err
+		return err
 	}
-	err = s.db.QueryRowx(query).StructScan(group)
+	return tx.QueryRowx(query).StructScan(group)
+}
+
+// AddGroup registers the provided group.
+func (s *Service) AddGroup(group *types.Group) (*types.Group, error) {
+	tx, err := s.db.Beginx()
 	if err != nil {
 		return nil, err
 	}
+	defer func() {
+		if err := tx.Rollback(); err != nil && err != sql.ErrTxDone {
+			l.Error().Err(err).Msg("AddGroup - could not roll back")
+		}
+	}()
+
+	if err := s.addGroup(group, tx); err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	s.UpdateCachedGroups()
 	// Re-read through groupsQuery so the returned struct reflects the joined
 	// group_local row.
@@ -73,7 +99,7 @@ func (s *Service) UpdateGroup(group *types.Group) error {
 	}
 
 	if group.ChannelID.String != "" {
-		if err := s.validateChannel(group.ChannelID.String, groupBeforeUpdate.ApplicationID); err != nil {
+		if err := validateChannel(s.db, group.ChannelID.String, groupBeforeUpdate.ApplicationID); err != nil {
 			return err
 		}
 	}
@@ -139,12 +165,22 @@ func (s *Service) DeleteGroup(groupID string) error {
 }
 
 // validateChannel checks if a channel belongs to the application provided.
-func (s *Service) validateChannel(channelID, appID string) error {
-	channel, err := s.GetChannel(channelID)
+// It takes the queryer to run against so that it can be called either on the
+// shared connection or on an open transaction, the latter being required when
+// the channel was inserted by that same, not yet committed, transaction.
+func validateChannel(q sqlx.Queryer, channelID, appID string) error {
+	query, _, err := goqu.From("channel").
+		Select("application_id").
+		Where(goqu.C("id").Eq(channelID)).
+		ToSQL()
 	if err != nil {
 		return err
 	}
-	if channel.ApplicationID != appID {
+	var channelAppID string
+	if err := q.QueryRowx(query).Scan(&channelAppID); err != nil {
+		return err
+	}
+	if channelAppID != appID {
 		return types.ErrInvalidChannel
 	}
 	return nil
