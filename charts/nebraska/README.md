@@ -66,6 +66,8 @@ The OIDC implementation has been refactored to use Authorization Code Flow with 
 
 ## Upgrade PostgreSQL
 
+> **⚠️ Important:** Nebraska requires **PostgreSQL 14 or newer**. PostgreSQL 17.x is recommended. If you are running PostgreSQL 13 or older, you must upgrade your database before upgrading Nebraska past 4.0.0.
+
 When there is a major upgrade of PostgreSQL, a manual intervention might be required with a downtime. It is possible to automate things with operators, but here's a simple example:
 
 1. Scale down Nebraska deployment:
@@ -215,7 +217,7 @@ $ kubectl exec -ti pod/nebraska-postgresql-0 -- psql < backup.sql
 | `postgresql.enabled`                                     | Enable Bitnami postgresql subchart and deploy database within this helm release                               | `true`                 |
 | `postgresql.auth.database`                               | PostgreSQL database                                                                                           | `nebraska`             |
 | `postgresql.auth.postgresPassword`                       | PostgreSQL password of user "postgres" **Recommended to change it to something secure for security reasons.** | `changeIt`             |
-| `postgresql.image.tag`                                   | PostgreSQL Image tag                                                                                          | `13.8.0-debian-11-r18` |
+| `postgresql.image.tag`                                   | PostgreSQL Image tag                                                                                          | `17.5.0` |
 | `postgresql.primary.persistence.enabled`                 | Enable persistence using PVC                                                                                  | `false`                |
 | `postgresql.primary.persistence.storageClass`            | PVC Storage Class for PostgreSQL volume                                                                       | `nil`                  |
 | `postgresql.primary.persistence.accessModes`             | PVC Access Mode for PostgreSQL volume                                                                         | `["ReadWriteOnce"]`    |
