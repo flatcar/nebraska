@@ -333,6 +333,9 @@ func (q *Queries) InstanceStatsQuery(t *time.Time, duration *time.Duration) *goq
 	if t == nil {
 		now := time.Now().UTC()
 		t = &now
+	} else {
+		utc := t.UTC()
+		t = &utc
 	}
 
 	if duration == nil {
@@ -375,8 +378,8 @@ func (q *Queries) InstanceStatsQuery(t *time.Time, duration *time.Duration) *goq
 	}
 
 	interval := durationToInterval(*duration)
-	timestamp := goqu.L("timestamp ?", goqu.V(t.Format("2006-01-02T15:04:05.999999Z07:00")))
-	timestampMinusDuration := goqu.L("timestamp ? - interval ?", goqu.V(t.Format("2006-01-02T15:04:05.999999Z07:00")), interval)
+	timestamp := goqu.L("timestamptz ?", goqu.V(t.Format("2006-01-02T15:04:05.999999Z07:00")))
+	timestampMinusDuration := goqu.L("timestamptz ? - interval ?", goqu.V(t.Format("2006-01-02T15:04:05.999999Z07:00")), interval)
 
 	query := goqu.From(goqu.T("instance_application")).
 		Select(
@@ -436,7 +439,8 @@ func (q *Queries) GetInstanceStats() ([]types.InstanceStats, error) {
 // GetInstanceStatsByTimestamp returns an InstanceStats array of instances matching a
 // given timestamp value, ordered by version.
 func (q *Queries) GetInstanceStatsByTimestamp(t time.Time) ([]types.InstanceStats, error) {
-	timestamp := goqu.L("timestamp ?", goqu.V(t.Format("2006-01-02T15:04:05.999999Z07:00")))
+	t = t.UTC()
+	timestamp := goqu.L("timestamptz ?", goqu.V(t.Format("2006-01-02T15:04:05.999999Z07:00")))
 
 	query, _, err := goqu.From("instance_stats").
 		Where(goqu.C("timestamp").Eq(timestamp)).
