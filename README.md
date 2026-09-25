@@ -32,7 +32,7 @@ To learn more about the Omaha protocol, please refer to the upstream docs [here]
 - Store and serve Flatcar Container Linux payloads (optional);
 - Compatible with any applications that use the Omaha protocol;
 - Define groups, channels, and packages;
-- Control what updates are rolled out for which instance groups, as well as when and how they are updates;
+- Control what updates are rolled out for which instance groups, as well as when and how they are updated;
 - Pause/resume updates at any time;
 - Statistics about the versions installed for instances, status history, and updates progress, etc.;
 - Activity timeline to quickly see important events or errors;
