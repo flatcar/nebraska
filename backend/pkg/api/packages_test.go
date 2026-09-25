@@ -135,6 +135,41 @@ func TestUpdatePackage(t *testing.T) {
 	assert.Equal(t, types.ArchAll, pkg.Arch)
 }
 
+func TestUpdatePackageArchMismatch(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	as := adminSvc(a)
+
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tChannel, _ := as.AddChannel(&types.Channel{
+		Name:          "arm_channel",
+		Color:         "blue",
+		ApplicationID: tApp.ID,
+		Arch:          types.ArchAArch64,
+	})
+
+	tPkg, err := as.AddPackage(&types.Package{
+		Type:          types.PkgTypeOther,
+		URL:           "http://sample.url/pkg",
+		Version:       "1.0.0",
+		ApplicationID: tApp.ID,
+		Arch:          types.ArchAMD64,
+	})
+	assert.NoError(t, err)
+
+	err = as.UpdatePackage(&types.Package{
+		ID:                tPkg.ID,
+		Type:              types.PkgTypeOther,
+		URL:               "http://sample.url/pkg",
+		Version:           "1.0.1",
+		ApplicationID:     tApp.ID,
+		Arch:              types.ArchAMD64,
+		ChannelsBlacklist: []string{tChannel.ID},
+	})
+	assert.Equal(t, types.ErrArchMismatch, err)
+}
+
 func TestUpdatePackageFlatcar(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()

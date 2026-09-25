@@ -336,6 +336,10 @@ func (s *Service) DeletePackage(pkgID string) error {
 // called, the package has already been updated except for the channels
 // blacklist, that may happen here if needed.
 func (s *Service) updatePackageBlacklistedChannels(tx *sqlx.Tx, pkg *types.Package, oldPkg *types.Package) error {
+	if err := s.checkMatchingArch(pkg.ChannelsBlacklist, pkg.Arch); err != nil {
+		return err
+	}
+
 	pkgUpdated := oldPkg
 
 	newChannelsBlacklist := make(map[string]struct{}, len(pkg.ChannelsBlacklist))
