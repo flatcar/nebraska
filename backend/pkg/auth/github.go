@@ -262,8 +262,9 @@ func (gha *githubAuth) LoginCb(ctx echo.Context) error {
 
 func (gha *githubAuth) LoginWebhook(ctx echo.Context) error {
 	signature := ctx.Request().Header.Get("X-Hub-Signature")
-	if len(signature) == 0 {
-		l.Debug().Str("webhook", "request with missing signature, ignoring it").Send()
+	signatureHex, hasPrefix := strings.CutPrefix(signature, "sha1=")
+	if !hasPrefix {
+		l.Debug().Str("webhook", "request with missing or malformed signature, ignoring it").Send()
 		httpError(ctx, http.StatusBadRequest)
 		return nil
 	}
@@ -277,8 +278,7 @@ func (gha *githubAuth) LoginWebhook(ctx echo.Context) error {
 	mac := hmac.New(sha1.New, []byte(gha.webhookSecret))
 	_, _ = mac.Write(rawPayload)
 	payloadMAC := hex.EncodeToString(mac.Sum(nil))
-	// [5:] is to drop the "sha1-" part.
-	if !hmac.Equal([]byte(signature[5:]), []byte(payloadMAC)) {
+	if !hmac.Equal([]byte(signatureHex), []byte(payloadMAC)) {
 		l.Debug().Str("webhook", "message validation failed").Send()
 		return nil
 	}
