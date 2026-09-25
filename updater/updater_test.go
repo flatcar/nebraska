@@ -277,3 +277,68 @@ func TestTryUpdate(t *testing.T) {
 		assert.ErrorIs(t, err, NoUpdateError{AppID: appID, Channel: group.Track, UpdateStatus: "noupdate"})
 	})
 }
+
+func TestProgressToEventRequest(t *testing.T) {
+	tests := []struct {
+		name           string
+		progress       progress
+		expectedType   omahaSpec.EventType
+		expectedResult omahaSpec.EventResult
+	}{
+		{
+			name:           "download_started",
+			progress:       ProgressDownloadStarted,
+			expectedType:   omahaSpec.EventTypeUpdateDownloadStarted,
+			expectedResult: omahaSpec.EventResultSuccess,
+		},
+		{
+			name:           "download_finished",
+			progress:       ProgressDownloadFinished,
+			expectedType:   omahaSpec.EventTypeUpdateDownloadFinished,
+			expectedResult: omahaSpec.EventResultSuccess,
+		},
+		{
+			name:           "installation_started",
+			progress:       ProgressInstallationStarted,
+			expectedType:   omahaSpec.EventTypeInstallStarted,
+			expectedResult: omahaSpec.EventResultSuccess,
+		},
+		{
+			name:           "installation_finished",
+			progress:       ProgressInstallationFinished,
+			expectedType:   omahaSpec.EventTypeInstallComplete,
+			expectedResult: omahaSpec.EventResultSuccess,
+		},
+		{
+			name:           "update_complete",
+			progress:       ProgressUpdateComplete,
+			expectedType:   omahaSpec.EventTypeUpdateComplete,
+			expectedResult: omahaSpec.EventResultSuccess,
+		},
+		{
+			name:           "update_complete_restarted",
+			progress:       ProgressUpdateCompleteAndRestarted,
+			expectedType:   omahaSpec.EventTypeUpdateComplete,
+			expectedResult: omahaSpec.EventResultSuccessReboot,
+		},
+		{
+			name:           "error",
+			progress:       ProgressError,
+			expectedType:   omahaSpec.EventTypeUpdateComplete,
+			expectedResult: omahaSpec.EventResultError,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req := progressToEventRequest(tt.progress)
+			require.NotNil(t, req)
+			assert.Equal(t, tt.expectedType, req.Type)
+			assert.Equal(t, tt.expectedResult, req.Result)
+		})
+	}
+
+	t.Run("invalid_progress_returns_nil", func(t *testing.T) {
+		assert.Nil(t, progressToEventRequest(progress(-1)))
+	})
+}
