@@ -135,6 +135,7 @@ func calculateMetrics(api *api.API) error {
 		return fmt.Errorf("failed to get app instances per channel metrics: %w", err)
 	}
 
+	appInstancePerChannelGaugeMetric.Reset()
 	for _, metric := range aipcMetrics {
 		appInstancePerChannelGaugeMetric.WithLabelValues(metric.ApplicationName, metric.Version, metric.ChannelName).Set(float64(metric.InstancesCount))
 	}
@@ -144,6 +145,7 @@ func calculateMetrics(api *api.API) error {
 		return fmt.Errorf("failed to get failed update metrics: %w", err)
 	}
 
+	failedUpdatesGaugeMetric.Reset()
 	for _, metric := range fuMetrics {
 		failedUpdatesGaugeMetric.WithLabelValues(metric.ApplicationName).Set(float64(metric.FailureCount))
 	}
