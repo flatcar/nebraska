@@ -7,18 +7,21 @@
 
 set -euo pipefail
 
-output_lines=()
-mapfile -t output_lines < <(go list -f '{{.Dir}} - {{.TestGoFiles}} {{.XTestGoFiles}}' ./...)
+# Get all Go packages and their test files to inspect below.
+pkg_test_entries=()
+while IFS= read -r line; do
+    pkg_test_entries+=("${line}")
+done < <(go list -f '{{.Dir}} - {{.TestGoFiles}} {{.XTestGoFiles}}' ./...)
 
-if [[ ${#output_lines[@]} -eq 0 ]]; then
+if [[ ${#pkg_test_entries[@]} -eq 0 ]]; then
     exit 0
 fi
 
-first_dir=$(echo "${output_lines[0]}" | cut -d' ' -f1)
+first_dir=$(echo "${pkg_test_entries[0]}" | cut -d' ' -f1)
 root=$(go list -f '{{.Root}}' "${first_dir}")
 status=0
 
-for line in "${output_lines[@]}"; do
+for line in "${pkg_test_entries[@]}"; do
     dir=$(echo "${line}" | cut -d' ' -f1)
     files=$(echo "${line}" | cut -d' ' -f3-)
     files="${files#'['}"

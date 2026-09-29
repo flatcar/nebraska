@@ -29,7 +29,12 @@ ifeq ($(VERSION),)
 	endif
 endif
 
-LDFLAGS := "-w -X github.com/flatcar/nebraska/backend/pkg/version.Version=$(VERSION) -extldflags \"-static\""
+# Disable CGO by default to allow pure-Go static builds
+CGO_ENABLED ?= 0
+export CGO_ENABLED
+
+LDFLAGS := "-w -X github.com/flatcar/nebraska/backend/pkg/version.Version=$(VERSION)"
+
 .PHONY: all
 all: codegen run-generators code-checks build
 
@@ -121,6 +126,8 @@ code-checks: tools/golangci-lint
 	# build (both the project and the tests), golangci-lint's
 	# output in this regard in unreadable.
 	go build ./...
+	# dry-run syntax check (`bash -n` parses commands without executing them)
+	for f in tools/*.sh; do bash -n "$$f" || exit 1; done
 	./tools/check_pkg_test.sh
 	NEBRASKA_SKIP_TESTS=1 go test ./... >/dev/null
 	./tools/golangci-lint run --fix
