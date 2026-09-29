@@ -1,7 +1,7 @@
 import '../../../i18n/config.ts';
 
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -18,7 +18,11 @@ vi.mock('./TimelineChart', () => ({
       {props.data.map(entry => (
         <div key={entry.timestamp}>
           {entry.timestamp}
-          {props.keys.map(key => `${key}:${entry[key]}`).join(',')}
+          {props.keys.map(key => (
+            <span key={key}>
+              <span>{key}</span>:{entry[key]}
+            </span>
+          ))}
         </div>
       ))}
     </div>
@@ -86,6 +90,10 @@ function renderWithStore(ui: ReactNode, store: object) {
   return render(wrapWithStore(ui, store));
 }
 
+function getTimelineChart() {
+  return within(screen.getByTestId('timeline-chart'));
+}
+
 describe('group timeline charts', () => {
   it('refetches version timeline data when the group changes with the same duration', async () => {
     const alpha = makeGroup('group-alpha', 'Alpha');
@@ -108,7 +116,7 @@ describe('group timeline charts', () => {
     await waitFor(() =>
       expect(store.getGroupVersionCountTimeline).toHaveBeenCalledWith('app-1', alpha.id, '1d')
     );
-    await waitFor(() => expect(screen.getByText('1.0.0')).toBeTruthy());
+    await waitFor(() => expect(getTimelineChart().getByText('1.0.0')).toBeTruthy());
 
     rerender(
       wrapWithStore(
@@ -120,8 +128,8 @@ describe('group timeline charts', () => {
     await waitFor(() =>
       expect(store.getGroupVersionCountTimeline).toHaveBeenCalledWith('app-1', beta.id, '1d')
     );
-    await waitFor(() => expect(screen.getByText('2.0.0')).toBeTruthy());
-    expect(screen.queryByText('1.0.0')).toBeNull();
+    await waitFor(() => expect(getTimelineChart().getByText('2.0.0')).toBeTruthy());
+    expect(getTimelineChart().queryByText('1.0.0')).toBeNull();
   });
 
   it('ignores stale version timeline responses after the selected group changes', async () => {
@@ -157,15 +165,15 @@ describe('group timeline charts', () => {
     await waitFor(() =>
       expect(store.getGroupVersionCountTimeline).toHaveBeenCalledWith('app-1', beta.id, '1d')
     );
-    await waitFor(() => expect(screen.getByText('2.0.0')).toBeTruthy());
+    await waitFor(() => expect(getTimelineChart().getByText('2.0.0')).toBeTruthy());
 
     await act(async () => {
       alphaTimeline.resolve({ '2026-01-01T00:00:00Z': { '1.0.0': 3 } });
       await alphaTimeline.promise;
     });
 
-    expect(screen.getByText('2.0.0')).toBeTruthy();
-    expect(screen.queryByText('1.0.0')).toBeNull();
+    expect(getTimelineChart().getByText('2.0.0')).toBeTruthy();
+    expect(getTimelineChart().queryByText('1.0.0')).toBeNull();
   });
 
   it('refetches status timeline data when the group changes with the same duration', async () => {
