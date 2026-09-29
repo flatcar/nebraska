@@ -94,6 +94,10 @@ function getTimelineChart() {
   return within(screen.getByTestId('timeline-chart'));
 }
 
+function getTimelineTable() {
+  return within(screen.getByRole('table'));
+}
+
 describe('group timeline charts', () => {
   it('refetches version timeline data when the group changes with the same duration', async () => {
     const alpha = makeGroup('group-alpha', 'Alpha');
@@ -230,7 +234,7 @@ describe('group timeline charts', () => {
     await waitFor(() =>
       expect(store.getGroupStatusCountTimeline).toHaveBeenCalledWith('app-1', alpha.id, '1d')
     );
-    await waitFor(() => expect(screen.getByText('1.0.0')).toBeTruthy());
+    await waitFor(() => expect(getTimelineTable().getByText('1.0.0')).toBeTruthy());
 
     rerender(
       wrapWithStore(
@@ -242,8 +246,8 @@ describe('group timeline charts', () => {
     await waitFor(() =>
       expect(store.getGroupStatusCountTimeline).toHaveBeenCalledWith('app-1', beta.id, '1d')
     );
-    await waitFor(() => expect(screen.getByText('2.0.0')).toBeTruthy());
-    expect(screen.queryByText('1.0.0')).toBeNull();
+    await waitFor(() => expect(getTimelineTable().getByText('2.0.0')).toBeTruthy());
+    expect(getTimelineTable().queryByText('1.0.0')).toBeNull();
   });
 
   it('ignores stale status timeline responses after the selected group changes', async () => {
@@ -279,14 +283,14 @@ describe('group timeline charts', () => {
     await waitFor(() =>
       expect(store.getGroupStatusCountTimeline).toHaveBeenCalledWith('app-1', beta.id, '1d')
     );
-    await waitFor(() => expect(screen.getByText('2.0.0')).toBeTruthy());
+    await waitFor(() => expect(getTimelineTable().getByText('2.0.0')).toBeTruthy());
 
     await act(async () => {
       alphaTimeline.resolve({ '2026-01-01T00:00:00Z': { 4: { '1.0.0': 3 } } });
       await alphaTimeline.promise;
     });
 
-    expect(screen.getByText('2.0.0')).toBeTruthy();
-    expect(screen.queryByText('1.0.0')).toBeNull();
+    expect(getTimelineTable().getByText('2.0.0')).toBeTruthy();
+    expect(getTimelineTable().queryByText('1.0.0')).toBeNull();
   });
 });
