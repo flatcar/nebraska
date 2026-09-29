@@ -13,8 +13,15 @@ tools_dir="$(dirname "${0}")"
 binary="${tools_dir}/../bin/nebraska"
 static_dir="${tools_dir}/../../frontend/dist"
 
-"${binary}" \
-    -auth-mode noop \
-    -http-log \
-    -http-static-dir "${static_dir}" \
-    "${@}"
+opts=(
+    -auth-mode noop
+    -http-log
+    -http-static-dir "${static_dir}"
+)
+
+# Guard against Bash 3.2 'unbound variable' error on empty "$@" under 'set -u'
+if [[ "${#}" -gt 0 ]]; then
+    opts+=("${@}")
+fi
+
+"${binary}" "${opts[@]}"
