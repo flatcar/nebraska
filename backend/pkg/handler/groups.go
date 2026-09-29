@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	openapi_types "github.com/oapi-codegen/runtime/types"
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
@@ -122,12 +123,10 @@ func (h *Handler) UpdateGroup(ctx echo.Context, appIDorProductID string, groupID
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	// When the admin re-enables updates, also clear the local safe-mode brake
-	// so the admin re-enable takes effect on this node and a previously tripped
-	// safe-mode brake stops shadowing it.
-	// This behavior applies in single mode only. Once the Nebraska mode flag lands,
-	// distributed mode will handle this differently.
-	if !oldGroup.PolicyUpdatesEnabled && group.PolicyUpdatesEnabled {
+	// A single-instance deployment has one updates-enabled switch, so re-enabling
+	// updates here also releases a brake this node tripped for itself.
+	if h.conf.InstanceMode.IsSingle() &&
+		!oldGroup.PolicyUpdatesEnabled && group.PolicyUpdatesEnabled {
 		if err := h.runtime.ClearUpdatesEnabledOverride(groupID); err != nil {
 			l.Error().Err(err).Str("groupID", groupID).Msg("updateGroup - clearing local updates-enabled override")
 			return ctx.NoContent(http.StatusInternalServerError)
@@ -168,13 +167,43 @@ func (h *Handler) DeleteGroup(ctx echo.Context, _ string, groupID string) error 
 	return ctx.NoContent(http.StatusNoContent)
 }
 
-func (h *Handler) GetGroupVersionTimeline(ctx echo.Context, _ string, groupID string, params codegen.GetGroupVersionTimelineParams) error {
-	versionCountTimeline, isCache, err := h.db.GetGroupVersionCountTimeline(groupID, params.Duration)
+// ClearGroupUpdatesOverride releases the safe-mode brake this node tripped for
+// itself. It writes group_local only, leaving the admin default on groups, which
+// a control node replicates out, untouched.
+func (h *Handler) ClearGroupUpdatesOverride(ctx echo.Context, _ string, groupID string) error {
+	l := loggerWithUsername(l, ctx)
+
+	// A single-instance deployment presents one updates-enabled switch, so it has
+	// no node-local override to clear separately from the group default.
+	if h.conf.InstanceMode.IsSingle() {
+		return ctx.JSON(http.StatusNotImplemented, map[string]any{
+			"error":       "local_override_not_supported",
+			"description": "Node-local overrides exist only in a distributed deployment. Enable updates on the group instead.",
+		})
+	}
+
+	if err := h.runtime.ClearUpdatesEnabledOverride(groupID); err != nil {
+		if err == types.ErrNoRowsAffected {
+			return ctx.NoContent(http.StatusNotFound)
+		}
+		l.Error().Err(err).Str("groupID", groupID).Msg("clearGroupUpdatesOverride - clearing local updates-enabled override")
+		return ctx.NoContent(http.StatusInternalServerError)
+	}
+
+	l.Info().Str("groupID", groupID).Msg("clearGroupUpdatesOverride - cleared the local updates-enabled override")
+
+	return ctx.NoContent(http.StatusNoContent)
+}
+
+func (h *Handler) GetGroupVersionTimeline(ctx echo.Context, _ string, groupID openapi_types.UUID, params codegen.GetGroupVersionTimelineParams) error {
+	groupIDStr := groupID.String()
+
+	versionCountTimeline, isCache, err := h.db.GetGroupVersionCountTimeline(groupIDStr, params.Duration)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
 		}
-		l.Error().Err(err).Str("groupID", groupID).Msg("getGroupVersionCountTimeline - getting version timeline")
+		l.Error().Err(err).Str("groupID", groupIDStr).Msg("getGroupVersionCountTimeline - getting version timeline")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 

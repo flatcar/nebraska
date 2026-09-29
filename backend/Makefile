@@ -56,6 +56,22 @@ check-backend-with-container: test-service-down
 	go clean -testcache && NEBRASKA_RUN_SERVER_TESTS=1 NEBRASKA_TEST_SERVER_URL="http://localhost:8002" NEBRASKA_DB_URL=$(CONTAINER_NEBRASKA_DB_URL) go test -p 1 ./...
 	$(MAKE) test-service-down
 
+.PHONY: distributed-service-up
+distributed-service-up:
+	# 60s matches the healthcheck budget in the compose file, 12 retries at 5s.
+	docker compose -f ./docker-compose.distributed-test.yaml up -d --build --wait --wait-timeout 60 \
+	  || { docker compose -f ./docker-compose.distributed-test.yaml logs --tail=15; exit 1; }
+
+.PHONY: distributed-service-down
+distributed-service-down:
+	docker compose -f ./docker-compose.distributed-test.yaml down
+
+.PHONY: check-distributed-with-container
+check-distributed-with-container: distributed-service-down
+	$(MAKE) distributed-service-up
+	go clean -testcache && NEBRASKA_RUN_DISTRIBUTED_TESTS=1 go test -p 1 ./test/distributed/...
+	$(MAKE) distributed-service-down
+
 run: bin/nebraska
 	./bin/nebraska -auth-mode noop -debug
 
@@ -90,7 +106,7 @@ tools/swag:
 	env GOBIN=$(CURDIR)/tools/ go install github.com/swaggo/swag/cmd/swag@v1.8.10
 
 .PHONY: ci
-ci: build test-clean-work-tree-backend check-backend-with-container
+ci: build test-clean-work-tree-backend check-backend-with-container check-distributed-with-container
 
 .PHONY: run-generators
 run-generators:

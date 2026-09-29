@@ -131,6 +131,9 @@ spec:
               {{- with .Values.config.auth.oidc.audience }}
             - "-oidc-audience={{ . }}"
               {{- end }}
+              {{- if .Values.config.auth.oidc.skipAudienceCheck }}
+            - "-oidc-skip-audience-check"
+              {{- end }}
               {{- if .Values.config.auth.oidc.useUserInfo }}
             - "-oidc-use-userinfo"
               {{- end }}
