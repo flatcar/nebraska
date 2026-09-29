@@ -49,7 +49,11 @@ function getVersionsFromTimeline(timeline: { [key: string]: any }) {
   return versions;
 }
 
-function makeTimelineChartData(theme: Theme, group: Group, groupTimeline: { [key: string]: any }) {
+function makeTimelineChartData(
+  theme: Theme,
+  latestVersion: string | null,
+  groupTimeline: { [key: string]: any }
+) {
   const data = Object.keys(groupTimeline).map((timestamp, i) => {
     const versions = groupTimeline[timestamp];
     return {
@@ -62,7 +66,7 @@ function makeTimelineChartData(theme: Theme, group: Group, groupTimeline: { [key
   const versions = getVersionsFromTimeline(groupTimeline);
   const versionColors: {
     [key: string]: string;
-  } = makeColorsForVersions(theme, versions, group.channel);
+  } = makeColorsForVersions(theme, versions, latestVersion);
 
   return {
     data: data,
@@ -76,6 +80,7 @@ export default function VersionCountTimeline(props: VersionCountTimelineProps) {
   const { duration, group } = props;
   const applicationID = group?.application_id;
   const groupID = group?.id;
+  const latestVersion = group?.channel?.package?.version ?? null;
   const durationQueryValue = duration.queryValue;
   const [timelineChartData, setTimelineChartData] = React.useState<{
     data: any[];
@@ -154,13 +159,12 @@ export default function VersionCountTimeline(props: VersionCountTimelineProps) {
     setSelectedEntry(-1);
     setTimelineChartData(makeEmptyTimelineChartData());
 
-    if (!group || !applicationID || !groupID) {
+    if (!applicationID || !groupID) {
       return () => {
         canceled = true;
       };
     }
 
-    const selectedGroup = group;
     const selectedApplicationID = applicationID;
     const selectedGroupID = groupID;
 
@@ -176,7 +180,7 @@ export default function VersionCountTimeline(props: VersionCountTimelineProps) {
         }
 
         const safeTimeline = versionCountTimeline || {};
-        setTimelineChartData(makeTimelineChartData(theme as Theme, selectedGroup, safeTimeline));
+        setTimelineChartData(makeTimelineChartData(theme as Theme, latestVersion, safeTimeline));
       } catch (error) {
         if (!canceled) {
           console.error(error);
@@ -189,7 +193,7 @@ export default function VersionCountTimeline(props: VersionCountTimelineProps) {
     return () => {
       canceled = true;
     };
-  }, [applicationID, durationQueryValue, group, groupChartStore, groupID, theme]);
+  }, [applicationID, durationQueryValue, groupChartStore, groupID, latestVersion, theme]);
 
   return (
     <Grid container alignItems="center" spacing={2}>

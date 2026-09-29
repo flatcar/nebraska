@@ -132,6 +132,39 @@ describe('group timeline charts', () => {
     expect(getTimelineChart().queryByText('1.0.0')).toBeNull();
   });
 
+  it('does not refetch version timeline data when only the group object reference changes', async () => {
+    const alpha = makeGroup('group-alpha', 'Alpha');
+    const store = {
+      getGroupVersionCountTimeline: vi.fn(() =>
+        Promise.resolve({ '2026-01-01T00:00:00Z': { '1.0.0': 3 } })
+      ),
+    };
+
+    const { rerender } = renderWithStore(
+      <VersionCountTimeline group={alpha} duration={duration} isAnimationActive={false} />,
+      store
+    );
+
+    await waitFor(() => expect(getTimelineChart().getByText('1.0.0')).toBeTruthy());
+    expect(store.getGroupVersionCountTimeline).toHaveBeenCalledTimes(1);
+
+    const refreshedAlpha = { ...alpha, channel: { ...alpha.channel } };
+
+    rerender(
+      wrapWithStore(
+        <VersionCountTimeline
+          group={refreshedAlpha}
+          duration={duration}
+          isAnimationActive={false}
+        />,
+        store
+      )
+    );
+
+    expect(store.getGroupVersionCountTimeline).toHaveBeenCalledTimes(1);
+    expect(getTimelineChart().getByText('1.0.0')).toBeTruthy();
+  });
+
   it('ignores stale version timeline responses after the selected group changes', async () => {
     const alpha = makeGroup('group-alpha', 'Alpha');
     const beta = makeGroup('group-beta', 'Beta');

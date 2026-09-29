@@ -7,7 +7,7 @@ import { red } from '@mui/material/colors';
 import React from 'react';
 
 import API from '../api/API';
-import { Channel, Group, VersionBreakdownEntry } from '../api/apiDataTypes';
+import { Group, VersionBreakdownEntry } from '../api/apiDataTypes';
 
 export const SearchFilterClassifiers = [
   {
@@ -95,21 +95,17 @@ export function cleanSemverVersion(version: string) {
 export function makeColorsForVersions(
   theme: Theme,
   versions: string[],
-  channel: Channel | null = null
+  latestVersion: string | null = null
 ) {
   const versionColors: { [key: string]: string } = {};
   let colorIndex = 0;
-  let latestVersion = null;
-
-  if (channel && channel.package) {
-    latestVersion = cleanSemverVersion(channel.package.version);
-  }
+  const cleanedLatestVersion = latestVersion ? cleanSemverVersion(latestVersion) : null;
 
   for (let i = versions.length - 1; i >= 0; i--) {
     const version = versions[i];
     const cleanVersion = cleanSemverVersion(version);
 
-    if (cleanVersion === latestVersion) {
+    if (cleanVersion === cleanedLatestVersion) {
       versionColors[cleanVersion] = theme.palette.primary.main;
     } else {
       versionColors[cleanVersion] = colors[colorIndex++ % colors.length];
