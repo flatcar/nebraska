@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- **macOS development support:** Backend build and helper scripts (`run-all.sh`, `setup_local_db.sh`, `check_pkg_test.sh`) now also work out of the box on macOS by removing GNU-specific dependencies and setting `CGO_ENABLED ?= 0`. ([#374](https://github.com/flatcar/nebraska/issues/374))
 - **Per-group runtime state moved to node-local `group_local` sidecar:** `rollout_in_progress` plus a nullable override column for each `policy_*` column on `groups` now live on a new `group_local` table, in preparation for the distributed Nebraska topology described in [RFC #1375](https://github.com/flatcar/nebraska/issues/1375). The safe-mode auto-pause brake writes the local override instead of mutating the admin default; reads return `COALESCE(override, default)`. The JSON contract is unchanged. ([#1396](https://github.com/flatcar/nebraska/pull/1396))
 - **Activity events split across runtime-local and admin tables:** Admin-originated activity events (channel package updates) are now stored in a separate `admin_activity` table, in preparation for the distributed Nebraska topology described in [RFC #1375](https://github.com/flatcar/nebraska/issues/1375). The JSON contract is unchanged. ([#1398](https://github.com/flatcar/nebraska/pull/1398))
 - **Package Management UI Improvements:**
