@@ -306,15 +306,13 @@ func (q *Queries) GetGroupVersionBreakdown(groupID string) ([]*types.VersionBrea
 		return nil, err
 	}
 
+	// The percentage denominator is derived from the same grouped rows as the
+	// numerator, so both sides always cover the same set of instances.
 	query := fmt.Sprintf(`
-	SELECT version, count(*) as instances, (count(*) * 100.0 / total) as percentage
-	FROM instance_application, (
-		SELECT count(*) as total
-		FROM instance_application
-		WHERE group_id=$1 AND last_check_for_updates > now() at time zone 'utc' - interval '%[1]s'
-		) totals
+	SELECT version, count(*) as instances, (count(*) * 100.0 / sum(count(*)) over ()) as percentage
+	FROM instance_application
 	WHERE group_id=$1 AND last_check_for_updates > now() at time zone 'utc' - interval '%[1]s' AND %[2]s
-	GROUP BY version, total
+	GROUP BY version
 	ORDER BY %[3]s DESC
 	`, validityInterval, ignoreFakeInstanceCondition("instance_id"), semverExpr)
 	rows, err := q.db.Queryx(query, groupID)
