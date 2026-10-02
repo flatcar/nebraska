@@ -32,7 +32,8 @@ export default function ListHeader(props: { title: string; actions?: React.React
           </Box>
         </Grid>
       )}
-      {actions && actions.map((action, i: number) => <Grid key={i}>{action}</Grid>)}
+      {actions &&
+        actions.map((action: any, i: number) => <Grid key={action?.key || i}>{action}</Grid>)}
     </StyledGrid>
   );
 }
