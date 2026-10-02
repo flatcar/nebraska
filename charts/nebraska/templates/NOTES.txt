@@ -1,4 +1,42 @@
-1. Get the application URL by running these commands:
+{{- /* Check the stored Secret too: a default 3.0.x install never set the value
+       in its values file, yet its Secret holds changeIt, and a persistent
+       upgrade keeps it (templates/postgresql.yaml). lookup sees the Secret as
+       it was before this upgrade. */ -}}
+{{- $pwSecret := (lookup "v1" "Secret" .Release.Namespace (include "nebraska.postgresql.fullname" .)) | default dict }}
+{{- $storedPw := index ($pwSecret.data | default dict) .Values.postgresql.auth.secretKeys.adminPasswordKey | default "" | b64dec }}
+{{- /* Same condition as the rotation in templates/postgresql.yaml. */ -}}
+{{- $rotated := and (eq $storedPw "changeIt") (not .Values.postgresql.auth.postgresPassword) (not .Values.postgresql.primary.persistence.enabled) (hasPrefix "postgresql-" (include "nebraska.postgresql.liveChart" .)) }}
+{{- $keptStored := and (eq $storedPw "changeIt") (not $rotated) }}
+{{- if and .Values.postgresql.enabled (not .Values.postgresql.auth.existingSecret) (or (eq (.Values.postgresql.auth.postgresPassword | toString) "changeIt") $keptStored) -}}
+WARNING: the PostgreSQL superuser password is "changeIt", the old default of
+  chart 3.0.x. Anyone who can reach the database can use it. Changing
+  postgresql.auth.postgresPassword does not change it. To change it, run:
+
+    kubectl exec -n {{ .Release.Namespace }} {{ include "nebraska.postgresql.fullname" . }}-0 -- \
+      psql -U {{ .Values.postgresql.auth.username }} -d {{ .Values.postgresql.auth.database }} \
+      -c "ALTER USER {{ .Values.postgresql.auth.username }} PASSWORD '<new-password>'"
+    kubectl patch secret {{ include "nebraska.postgresql.fullname" . }} -n {{ .Release.Namespace }} \
+      -p '{"stringData":{"{{ .Values.postgresql.auth.secretKeys.adminPasswordKey }}":"<new-password>"}}'
+    kubectl rollout restart deployment/{{ include "nebraska.fullname" . }} -n {{ .Release.Namespace }}
+
+  Also remove postgresPassword: changeIt from your values file, if it is there.
+
+{{ end -}}
+{{- if and .Values.postgresql.enabled (not .Values.postgresql.auth.existingSecret) (not $keptStored) (ne (.Values.postgresql.auth.postgresPassword | toString) "changeIt") }}
+{{- if $rotated -}}
+PASSWORD CHANGED: the old default password "changeIt" was replaced with a
+  generated one, because this upgrade started an empty database. Update
+  anything outside Nebraska that used "changeIt".
+{{- else -}}
+The PostgreSQL superuser password is stored in a Secret.
+{{- end }}
+  Get it with:
+
+    kubectl get secret {{ include "nebraska.postgresql.fullname" . }} -n {{ .Release.Namespace }} \
+      -o jsonpath='{.data.{{ .Values.postgresql.auth.secretKeys.adminPasswordKey }}}' | base64 -d
+
+{{ end -}}
+Get the application URL by running these commands:
 {{- if .Values.ingress.enabled }}
 {{- range .Values.ingress.hosts }}
   http{{ if $.Values.ingress.tls }}s{{ end }}://{{ . }}
@@ -9,7 +47,7 @@
   echo http://$NODE_IP:$NODE_PORT
 {{- else if contains "LoadBalancer" .Values.service.type }}
      NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "nebraska.fullname" . }}'
+           You can watch its status by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "nebraska.fullname" . }}'
   export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "nebraska.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
   echo http://$SERVICE_IP:{{ .Values.service.port }}
 {{- else if contains "ClusterIP" .Values.service.type }}
