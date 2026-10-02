@@ -218,11 +218,16 @@ type GroupVersionCountTimeline = map[time.Time]map[string]uint64
 
 // Instance defines model for instance.
 type Instance struct {
-	Alias       *string              `json:"alias,omitempty"`
-	Application *InstanceApplication `json:"application"`
-	CreatedTs   time.Time            `json:"created_ts"`
-	Id          string               `json:"id"`
-	Ip          string               `json:"ip"`
+	// AlephVersion The OS version the instance was originally installed with.
+	AlephVersion *string              `json:"aleph_version,omitempty"`
+	Alias        *string              `json:"alias,omitempty"`
+	Application  *InstanceApplication `json:"application"`
+	CreatedTs    time.Time            `json:"created_ts"`
+	Id           string               `json:"id"`
+	Ip           string               `json:"ip"`
+
+	// Oem The hardware platform or cloud provider the instance runs on (e.g. ami, azure, gce, qemu).
+	Oem *string `json:"oem,omitempty"`
 }
 
 // InstanceApplication defines model for instanceApplication.
