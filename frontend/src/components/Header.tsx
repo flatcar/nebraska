@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
 
 import nebraskaLogo from '../icons/nebraska-logo.json';
-import themes from '../lib/themes';
+import themes, { getThemeName } from '../lib/themes';
 import { setUser, UserState } from '../stores/redux/features/user';
 import { useDispatch, useSelector } from '../stores/redux/hooks';
 import { broadcastLogout, getIdToken } from '../utils/auth';
@@ -219,11 +219,8 @@ export default function Header() {
     handleLogout,
   } as AppbarProps;
   const appBar = <Appbar {...props} />;
-  // cachedConfig.appBarColor is for backward compatibility (the name used for the setting before).
-  // @todo: Use themes@getThemeName to get the name.
-  return config &&
-    (config.header_style === 'dark' ||
-      (config.header_style === undefined && config.appBarColor === 'dark')) ? (
+  const themeName = config?.header_style ?? config?.appBarColor ?? getThemeName();
+  return themeName === 'dark' ? (
     <StyledStyledEngineProvider injectFirst>
       (<ThemeProvider theme={themes.dark}>{appBar}</ThemeProvider>)
     </StyledStyledEngineProvider>
