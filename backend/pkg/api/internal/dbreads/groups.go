@@ -111,6 +111,7 @@ func (q *Queries) GetGroupID(appID, trackName string, arch types.Arch) (string, 
 	cachedGroupsLock.RUnlock()
 	// Generate map on startup or if invalidated.
 	if cachedGroupsRef == nil {
+		cacheMisses.WithLabelValues("groups").Inc()
 		cachedGroupsLock.Lock()
 		cachedGroupsRef = cachedGroups
 		// If a concurrent execution generated it inbetween our RUnlock() and Lock(),
@@ -144,6 +145,7 @@ func (q *Queries) GetGroupID(appID, trackName string, arch types.Arch) (string, 
 			}
 			// Keep a reference to the map we created.
 			cachedGroupsRef = cachedGroups
+			cacheSize.WithLabelValues("groups").Set(float64(len(cachedGroupsRef)))
 		}
 		cachedGroupsLock.Unlock()
 	}
@@ -158,6 +160,7 @@ func (q *Queries) GetGroupID(appID, trackName string, arch types.Arch) (string, 
 	if !ok {
 		return "", fmt.Errorf("no group found for app %v, track %v, and architecture %v", appID, trackName, arch)
 	}
+	cacheHits.WithLabelValues("groups").Inc()
 	return cachedGroupID, nil
 }
 
@@ -165,10 +168,14 @@ func (q *Queries) GetGroupID(appID, trackName string, arch types.Arch) (string, 
 // must be called whenever the group entries are modified.
 func (q *Queries) UpdateCachedGroups() {
 	cachedGroupsLock.Lock()
+	oldSize := len(cachedGroups)
 	cachedGroups = nil
-	// Generating the map is not always possible here because the database
-	// can be closed.
 	cachedGroupsLock.Unlock()
+	
+	cacheInvalidations.WithLabelValues("groups").Inc()
+	if oldSize > 0 {
+		cacheSize.WithLabelValues("groups").Set(0)
+	}
 }
 
 // GetGroupsCount retuns the total number of groups in an app
