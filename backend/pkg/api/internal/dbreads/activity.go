@@ -19,7 +19,7 @@ func (q *Queries) GetActivityCount(teamID string, p types.ActivityQueryParams) (
 // GetActivity returns a list of activity entries that match the specified
 // criteria in the query parameters.
 func (q *Queries) GetActivity(teamID string, p types.ActivityQueryParams) ([]*types.Activity, error) {
-	var activityEntries []*types.Activity
+	activityEntries := []*types.Activity{}
 	query, _, err := q.activityQuery(teamID, p, false).ToSQL()
 	if err != nil {
 		return nil, err

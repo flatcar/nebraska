@@ -200,7 +200,7 @@ func (q *Queries) getGroups(appID string) ([]*types.Group, error) {
 }
 
 func (q *Queries) getGroupsFromQuery(query string) ([]*types.Group, error) {
-	var groups []*types.Group
+	groups := []*types.Group{}
 	rows, err := q.db.Queryx(query)
 	if err != nil {
 		return nil, err
@@ -299,7 +299,7 @@ func (q *Queries) groupsQuery() *goqu.SelectDataset {
 
 // GetGroupVersionBreakdown returns a version breakdown of all instances running on a given group.
 func (q *Queries) GetGroupVersionBreakdown(groupID string) ([]*types.VersionBreakdownEntry, error) {
-	var entryList []*types.VersionBreakdownEntry
+	entryList := []*types.VersionBreakdownEntry{}
 
 	semverExpr, err := semverToIntArray("version")
 	if err != nil {
