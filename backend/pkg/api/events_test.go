@@ -38,13 +38,13 @@ func TestRegisterEvent_InvalidParams(t *testing.T) {
 	err = rs.RegisterEvent(tInstance.ID, tApp.ID, tGroup.ID, types.EventUpdateDownloadStarted, types.ResultSuccess, "", "")
 	assert.Equal(t, types.ErrNoUpdateInProgress, err)
 
-	_, _ = rs.GetUpdatePackage(types.Instance{ID: tInstance.ID, IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	_, _ = a.GetUpdatePackage(Instance{ID: tInstance.ID, IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
 
-	err = rs.RegisterEvent(tInstance.ID, tApp.ID, tGroup.ID, 1000, types.ResultSuccess, "", "")
-	assert.Equal(t, types.ErrInvalidEventTypeOrResult, err)
+	err = a.RegisterEvent(tInstance.ID, tApp.ID, tGroup.ID, 1000, ResultSuccess, "", "")
+	assert.Equal(t, ErrInvalidEventTypeOrResult, err)
 
-	err = rs.RegisterEvent(tInstance.ID, tApp.ID, tGroup.ID, types.EventUpdateComplete, 1000, "", "")
-	assert.Equal(t, types.ErrInvalidEventTypeOrResult, err)
+	err = a.RegisterEvent(tInstance.ID, tApp.ID, tGroup.ID, EventUpdateComplete, 1000, "", "")
+	assert.Equal(t, ErrInvalidEventTypeOrResult, err)
 }
 
 func TestRegisterEvent_TriggerEventConsequences(t *testing.T) {
