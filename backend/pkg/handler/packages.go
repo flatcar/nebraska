@@ -39,7 +39,7 @@ func (h *Handler) PaginatePackages(ctx echo.Context, appIDorProductID string, pa
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	return ctx.JSON(http.StatusOK, packagePage{totalCount, len(pkgs), pkgs})
+	return ctx.JSON(http.StatusOK, packagePage{totalCount, len(pkgs), orEmpty(pkgs)})
 }
 
 func (h *Handler) CreatePackage(ctx echo.Context, appIDorProductID string) error {
