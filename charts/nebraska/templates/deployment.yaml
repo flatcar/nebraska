@@ -1,6 +1,9 @@
 {{- $db := ( tpl .Values.config.database.dbname . ) }}
 {{- $host := .Values.config.database.host | default (include "nebraska.postgresql.fullname" .) }}
-{{- $port := .Values.config.database.port | toString }}
+{{- /* Port: an explicit config.database.port wins; otherwise follow the bundled
+       Service's port when postgresql.enabled (postgresql.service.port changes
+       the port PostgreSQL actually listens on) and 5432 for external hosts. */ -}}
+{{- $port := .Values.config.database.port | default (ternary .Values.postgresql.service.port 5432 .Values.postgresql.enabled) | toString }}
 {{- $sslMode := .Values.config.database.sslMode | default "disable" }}
 {{- $user := ( tpl .Values.config.database.username . ) }}
 apiVersion: apps/v1
@@ -26,9 +29,19 @@ spec:
       {{- include "nebraska.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
+      {{- /* Restarts Nebraska once on the upgrade from 3.0.0, so it runs its schema
+             migrations against the new database. Nothing else in the pod
+             template changes, and its probes pass even without tables. Change
+             the value only if the bundled database is replaced again; do not
+             derive it from the image tag. */}}
+      {{- if or .Values.postgresql.enabled .Values.podAnnotations }}
       annotations:
+        {{- if .Values.postgresql.enabled }}
+        nebraska.flatcar.org/bundled-db-generation: "official-postgres-v1"
+        {{- end }}
+        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- end }}
       labels:
         {{- include "nebraska.selectorLabels" . | nindent 8 }}
@@ -151,8 +164,10 @@ spec:
               valueFrom:
                 secretKeyRef:
                   {{- if .Values.config.database.passwordExistingSecret.enabled }}
+                  {{- /* Both go through tpl, so the defaults in values.yaml follow the Secret
+                         the chart renders, including postgresql.auth.existingSecret. */}}
                   name: {{ tpl .Values.config.database.passwordExistingSecret.name . }}
-                  key: {{ .Values.config.database.passwordExistingSecret.key }}
+                  key: {{ tpl .Values.config.database.passwordExistingSecret.key . }}
                   {{- else }}
                   name: {{ include "nebraska.fullname" . }}
                   key: dbPassword
@@ -215,7 +230,6 @@ spec:
               value: {{ $value | quote }}
             {{- end }}
             {{- if .Values.extraEnv }}
-            # Extra environment variables
             {{- toYaml .Values.extraEnv | nindent 12 }}
             {{- end }}
           {{- if .Values.config.hostFlatcarPackages.enabled }}
