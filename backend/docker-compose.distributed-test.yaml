@@ -19,6 +19,8 @@ name: nebraska-distributed-test
 services:
   postgres:
     image: postgres:17
+    # The edge database subscribes to the control database's admin tables.
+    command: ["postgres", "-c", "wal_level=logical"]
     ports:
       - "8011:5432"
     environment:

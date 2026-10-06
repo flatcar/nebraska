@@ -18,5 +18,7 @@ drop table if exists activity cascade;
 drop table if exists package_channel_blacklist cascade;
 drop table if exists database_migrations;
 drop function if exists create_group_local_for_group();
+drop function if exists delete_local_rows_for_application();
+drop function if exists delete_local_rows_for_group();
 -- Legacy tables if we're dropping tables in a non-migrated DB
 drop table if exists coreos_action cascade;
