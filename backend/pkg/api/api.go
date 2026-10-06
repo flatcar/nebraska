@@ -295,8 +295,8 @@ func (api *API) Reads() *dbreads.Queries {
 	return api.Queries
 }
 
-// NewForTest creates a new API instance with given options and fills
-// the database with sample data for testing purposes.
+// NewForTest creates a new *API instance with given options and fills
+// the database with sample data defined in db/sample_data.sql for testing purposes.
 func NewForTest(options ...func(*API) error) (*API, error) {
 	a, err := NewWithMigrations(options...)
 	if err != nil {
