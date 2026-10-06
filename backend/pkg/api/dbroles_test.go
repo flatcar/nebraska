@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"slices"
 	"strings"
 	"testing"
 	"unicode/utf8"
@@ -84,6 +85,46 @@ func TestTableClassification(t *testing.T) {
 			"relation %q is unclassified: add it to db/grants.sql and to this test", tbl)
 	}
 	assert.Len(t, classified, len(tables), "this test names relations that do not exist")
+}
+
+// Replication skips these on an edge, so the 0024 delete triggers repeat each one.
+var replicatedDeleteActions = []string{
+	"activity.application_id -> application on delete c",
+	"activity.group_id -> groups on delete c",
+	"event.application_id -> application on delete c",
+	"group_local.group_id -> groups on delete c",
+	"instance_application.application_id -> application on delete c",
+	"instance_application.group_id -> groups on delete n",
+	"instance_status_history.application_id -> application on delete c",
+	"instance_status_history.group_id -> groups on delete c",
+}
+
+func TestReplicatedDeleteActions(t *testing.T) {
+	a := newForTest(t)
+	t.Cleanup(a.Close)
+
+	var fks []struct {
+		Child  string `db:"child"`
+		Parent string `db:"parent"`
+		Action string `db:"action"`
+	}
+	require.NoError(t, a.db().Select(&fks, `select
+			format('%s.%s', child.relname, a.attname) as child, parent.relname as parent, c.confdeltype as action
+		from pg_constraint c
+		join pg_class child on child.oid = c.conrelid
+		join pg_class parent on parent.oid = c.confrelid
+		join pg_attribute a on a.attrelid = c.conrelid and a.attnum = c.conkey[1]
+		where c.contype = 'f'`))
+
+	var got []string
+	for _, fk := range fks {
+		if slices.Contains(runtimeTables, strings.Split(fk.Child, ".")[0]) && slices.Contains(adminTables, fk.Parent) {
+			got = append(got, fmt.Sprintf("%s -> %s on delete %s", fk.Child, fk.Parent, fk.Action))
+		}
+	}
+
+	assert.ElementsMatch(t, replicatedDeleteActions, got,
+		"repeat the changed foreign key in the delete triggers, then update this list")
 }
 
 func TestServingRoleGrants(t *testing.T) {
