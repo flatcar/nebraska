@@ -14,6 +14,8 @@ const (
 	defaultTestDbURL string = "postgres://postgres:nebraska@127.0.0.1:5432/nebraska_tests?sslmode=disable&connect_timeout=10"
 )
 
+// newForTest creates an *API instance backed by a test DB initialized with `db/sample_data.sql`,
+// failing the test immediately if initialization fails.
 func newForTest(t *testing.T) *API {
 	a, err := NewForTest(OptionInitDB)
 
