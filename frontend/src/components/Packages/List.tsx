@@ -53,7 +53,21 @@ function List(props: ListProps) {
   }
 
   function handlePackageUpdated(updatedPackage: Package) {
-    applicationsStore().updatePackage(updatedPackage);
+    setApplication(currentApplication => {
+      if (!currentApplication?.packages) {
+        return currentApplication;
+      }
+
+      return {
+        ...currentApplication,
+        packages: {
+          ...currentApplication.packages,
+          items: currentApplication.packages.items.map(packageItem =>
+            packageItem.id === updatedPackage.id ? updatedPackage : packageItem
+          ),
+        },
+      };
+    });
   }
 
   function openEditDialog(packageID: string) {
