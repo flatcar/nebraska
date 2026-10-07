@@ -1945,6 +1945,37 @@ components:
           $ref: "#/components/schemas/channel"
         track:
           type: string
+        localOverrides:
+          description: >-
+            Distributed nodes only. This node's overrides of the policy fields.
+            Null means no override, so the admin default applies. On these
+            nodes the policy fields above are the admin defaults, the values
+            updateGroup writes.
+          type: object
+          x-oapi-codegen-extra-tags:
+            json: local_overrides,omitempty
+          properties:
+            policy_updates_enabled:
+              type: boolean
+              nullable: true
+            policy_safe_mode:
+              type: boolean
+              nullable: true
+            policy_office_hours:
+              type: boolean
+              nullable: true
+            policy_timezone:
+              type: string
+              nullable: true
+            policy_period_interval:
+              type: string
+              nullable: true
+            policy_max_updates_per_period:
+              type: integer
+              nullable: true
+            policy_update_timeout:
+              type: string
+              nullable: true
           
     groupVersionCountTimeline:
       type: object

@@ -37,6 +37,8 @@ func (h *Handler) PaginateApps(ctx echo.Context, params codegen.PaginateAppsPara
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
+	h.presentApps(apps...)
+
 	return ctx.JSON(http.StatusOK, applicationPage{totalCount, len(apps), apps})
 }
 
@@ -80,6 +82,7 @@ func (h *Handler) CreateApp(ctx echo.Context, params codegen.CreateAppParams) er
 	}
 
 	l.Info().Msgf("addApp - successfully added app %+v", app)
+	h.presentApps(app)
 	return ctx.JSON(http.StatusOK, app)
 }
 
@@ -97,6 +100,7 @@ func (h *Handler) GetApp(ctx echo.Context, appIDorProductID string) error {
 		l.Error().Err(err).Str("appID", appID).Msg("getApp - getting app")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
+	h.presentApps(app)
 	return ctx.JSON(http.StatusOK, app)
 }
 
@@ -136,6 +140,8 @@ func (h *Handler) UpdateApp(ctx echo.Context, appIDorProductID string) error {
 	}
 
 	l.Info().Msgf("updateApp - successfully updated app %+v -> %+v", oldApp, app)
+
+	h.presentApps(app)
 
 	return ctx.JSON(http.StatusOK, app)
 }
