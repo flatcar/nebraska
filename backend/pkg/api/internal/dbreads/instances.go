@@ -436,7 +436,7 @@ func (q *Queries) GetInstanceStats() ([]types.InstanceStats, error) {
 // GetInstanceStatsByTimestamp returns an InstanceStats array of instances matching a
 // given timestamp value, ordered by version.
 func (q *Queries) GetInstanceStatsByTimestamp(t time.Time) ([]types.InstanceStats, error) {
-	timestamp := goqu.L("timestamp ?", goqu.V(t.Format("2006-01-02T15:04:05.999999Z07:00")))
+	timestamp := goqu.L("timestamptz ?", goqu.V(t.Format("2006-01-02T15:04:05.999999Z07:00")))
 
 	query, _, err := goqu.From("instance_stats").
 		Where(goqu.C("timestamp").Eq(timestamp)).
