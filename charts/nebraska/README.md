@@ -225,9 +225,9 @@ $ kubectl scale --replicas=0 deployment/nebraska
 deployment.apps/nebraska scaled
 ```
 
-2. Backup PostgreSQL data:
+2. Backup PostgreSQL data. `-U` must be a superuser: `postgres` after an in-place upgrade from 3.0.x, otherwise `postgresql.auth.username`:
 ```
-$ kubectl exec -i pod/nebraska-postgresql-0 -- pg_dumpall > backup.sql
+$ kubectl exec -i pod/nebraska-postgresql-0 -- pg_dumpall -U postgres > backup.sql
 ```
 
 3. Scale down Nebraska statefulset:
@@ -259,7 +259,7 @@ statefulset.apps/nebraska-postgresql scaled
 
 7. Inject the backup and assert that everything looks good in the database:
 ```
-$ kubectl exec -i pod/nebraska-postgresql-0 -- psql < backup.sql
+$ kubectl exec -i pod/nebraska-postgresql-0 -- psql -U postgres -d postgres < backup.sql
 ```
 
 8. Scale up Nebraska deployment and assert that everything is back to normal
@@ -368,7 +368,7 @@ $ kubectl exec -i pod/nebraska-postgresql-0 -- psql < backup.sql
 | `config.database.password`                            | PostgreSQL user password                                                                                                             | `""` (evaluated as a template)                                          |
 | `config.database.passwordExistingSecret.enabled`      | Enables setting PostgreSQL user password via an existing secret                                                                      | `true`                                                                  |
 | `config.database.passwordExistingSecret.name`         | Name of the existing secret                                                                                                          | `{{ include "nebraska.postgresql.secretName" . }}` (bundled DB: follows `existingSecret`/name overrides; external DB: `<release>-postgresql`) |
-| `config.database.passwordExistingSecret.key`          | Key inside the existing secret containing the PostgreSQL user password                                                               | `postgres-password`                                                     |
+| `config.database.passwordExistingSecret.key`          | Key inside the existing secret containing the PostgreSQL user password                                                               | `{{ .Values.postgresql.auth.secretKeys.adminPasswordKey }}` with the bundled DB, `postgres-password` with an external DB |
 | `extraArgs`                                           | Extra arguments to pass to Nebraska binary                                                                                           | `[]`                                                                    |
 | `extraEnvVars`                                        | Any extra environment variables you would like to pass on to the pod                                                                 | `{ "TZ": "UTC" }`                                                       |
 | `extraEnv`                                        | Any extra environment variables in the form of env spec to pass into the deployment pod                                                                 | `[]`                                                       |
@@ -378,13 +378,21 @@ $ kubectl exec -i pod/nebraska-postgresql-0 -- psql < backup.sql
 | Parameter                                                | Description                                                                                                   | Default                |
 |----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|------------------------|
 | `postgresql.enabled`                                     | Deploy the PostgreSQL StatefulSet bundled with this chart                                                     | `true`                 |
+| `postgresql.acknowledgeDataDirMigration` | Allow a persistent upgrade that points PostgreSQL at a new, empty data directory (see "Upgrading to 4.0.0") | `false` |
+| `postgresql.nameOverride` | Override the PostgreSQL name part of the object names | `""` |
+| `postgresql.fullnameOverride` | Override the full PostgreSQL object name | `""` |
+| `postgresql.auth.username` | PostgreSQL superuser created on first start (`POSTGRES_USER`) | `postgres` |
 | `postgresql.auth.database`                               | PostgreSQL database                                                                                           | `nebraska`             |
-| `postgresql.auth.postgresPassword`                       | PostgreSQL password of user "postgres" | `""` (a random password is generated on first install)             |
+| `postgresql.auth.postgresPassword`                       | Password of the superuser `postgresql.auth.username` | `""` (a random password is generated on first install)             |
 | `postgresql.image.repository`                             | PostgreSQL image repository                                                                                   | `postgres`             |
+| `postgresql.image.registry` | PostgreSQL image registry | `docker.io` |
 | `postgresql.image.tag`                                   | PostgreSQL Image tag                                                                                          | `17-bookworm`            |
+| `postgresql.image.digest` | PostgreSQL image digest; replaces the tag when set | `""` |
+| `postgresql.image.pullPolicy` | PostgreSQL image pull policy | `IfNotPresent` |
 | `postgresql.image.pullSecrets`                           | Image pull secrets. Accepts the Bitnami string form (`[regcred]`) and the object form (`[{name: regcred}]`)    | `[]`                   |
 | `postgresql.auth.existingSecret`                         | Use an existing secret for the password instead of rendering one (evaluated as a template)                    | `""`                   |
 | `postgresql.auth.secretKeys.adminPasswordKey`            | Key inside the secret holding the password                                                                    | `postgres-password`    |
+| `postgresql.service.port` | PostgreSQL service and container port | `5432` |
 | `postgresql.dataMountPath`                               | Where the data volume is mounted                                                                              | `/var/lib/postgresql/data` |
 | `postgresql.dataSubdir`                                  | Subdirectory of the mount used as `PGDATA` (must not be the mount root)                                       | `pgdata`               |
 | `postgresql.podSecurityContext`                          | Pod security context; uid/gid 999 matches the default Debian image (use 70 for Alpine tags)                           | see `values.yaml`      |
@@ -394,8 +402,19 @@ $ kubectl exec -i pod/nebraska-postgresql-0 -- psql < backup.sql
 | `postgresql.primary.persistence.storageClass`            | PVC Storage Class for PostgreSQL volume                                                                       | `nil`                  |
 | `postgresql.primary.persistence.accessModes`             | PVC Access Mode for PostgreSQL volume                                                                         | `["ReadWriteOnce"]`    |
 | `postgresql.primary.persistence.size`                    | PVC Storage Request for PostgreSQL volume                                                                     | `1Gi`                  |
+| `postgresql.primary.persistence.labels` | Labels for the PVC template | `{}` |
+| `postgresql.primary.persistence.annotations` | Annotations for the PVC template | `{}` |
 | `postgresql.serviceAccount.create`                       | Enable creation of ServiceAccount for PostgreSQL pod                                                          | `true`                 |
+| `postgresql.serviceAccount.name` | Name of the ServiceAccount to use or create | `""` |
 | `postgresql.serviceAccount.automountServiceAccountToken` | Can be set to false if pods using this serviceAccount do not need to use K8s API                              | `false`                |
+| `postgresql.terminationGracePeriodSeconds` | Seconds PostgreSQL gets to shut down before SIGKILL | `90` |
+| `postgresql.args` | Arguments for the postgres server, for example `-c` settings | `[]` |
+| `postgresql.shmSizeLimit` | Size limit of the memory-backed `/dev/shm` | `256Mi` |
+| `postgresql.startupProbe` | First-start budget for the fsGroup chown and initdb | see `values.yaml` |
+| `postgresql.extraEnv` | Extra environment variables for the PostgreSQL container | `[]` |
+| `postgresql.extraVolumes` | Extra volumes for the PostgreSQL pod | `[]` |
+| `postgresql.extraVolumeMounts` | Extra volume mounts for the PostgreSQL container | `[]` |
+| `postgresql.extraPodSpec` | Extra PostgreSQL pod spec fields, such as `nodeSelector`, `tolerations` or `initContainers` | `{}` |
 
 This is a deliberately minimal, single-replica PostgreSQL meant to make `helm install` work out of
 the box. It does no backups, no failover and no automated major-version upgrades. To use another

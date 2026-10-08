@@ -76,6 +76,7 @@ jobs:
           rejected --set postgresql.metrics.enabled=true                      # Bitnami feature that is gone
           rejected --set postgresql.image.repository=bitnamilegacy/postgresql # Bitnami image
           rejected --set postgresql.primary.resources.limits.memory=4Gi       # moved to postgresql.resources
+          rejected --set postgresql.auth.enablePostgresUser=false             # password moved to another secret key
           rejected --is-upgrade \
                    --set postgresql.primary.persistence.enabled=true          # would start an empty database
           rejected --set config.database.passwordExistingSecret.key=password  # key the chart's Secret does not have
