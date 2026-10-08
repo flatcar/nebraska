@@ -136,10 +136,19 @@ ServiceAccount of the PostgreSQL pod. Honours an explicit name, as the subchart 
 
 {{/*
 Name of the headless Service. Same formula as Bitnami, because
-spec.serviceName is immutable.
+spec.serviceName is immutable. Only when that formula gives the same name as
+the main Service (a 62-63 character name), the base is cut to 60 characters
+first. Chart 3.0.0 could not run a PostgreSQL pod at that length, so no working
+release changes.
 */}}
 {{- define "nebraska.postgresql.headlessName" -}}
-{{- printf "%s-hl" (include "nebraska.postgresql.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- $fullname := include "nebraska.postgresql.fullname" . -}}
+{{- $bitnami := printf "%s-hl" $fullname | trunc 63 | trimSuffix "-" -}}
+{{- if ne $bitnami $fullname -}}
+{{- $bitnami -}}
+{{- else -}}
+{{- printf "%s-hl" ($fullname | trunc 60 | trimSuffix "-") -}}
+{{- end -}}
 {{- end -}}
 
 {{/*

@@ -196,13 +196,23 @@ Inert values (empty, false, or a feature block that is switched off, such as
 {{- end -}}
 {{- end -}}
 
-{{/* extraPodSpec is merged at pod-spec level; `containers` or `volumes` there
-     emit a SECOND key alongside the chart's own, producing an invalid pod spec
-     (the values.yaml example says as much in prose, prose is not a guard). */}}
+{{/* extraPodSpec is rendered next to the pod spec keys the chart sets itself.
+     Setting one of them there gives a duplicate key. securityContext and
+     imagePullSecrets are rendered only in some cases, but they have their own
+     values, so they are rejected always. */}}
+{{- $podOwned := dict
+  "containers"                    "use postgresql.extraEnv and postgresql.extraVolumeMounts."
+  "volumes"                       "use postgresql.extraVolumes."
+  "serviceAccountName"            "use postgresql.serviceAccount.name."
+  "automountServiceAccountToken"  "use postgresql.serviceAccount.automountServiceAccountToken."
+  "terminationGracePeriodSeconds" "use postgresql.terminationGracePeriodSeconds."
+  "imagePullSecrets"              "use postgresql.image.pullSecrets."
+  "securityContext"               "use postgresql.podSecurityContext."
+-}}
 {{- if $pg.enabled -}}
 {{- range $k, $v := ($pg.extraPodSpec | default dict) -}}
-{{- if has $k (list "containers" "volumes") -}}
-{{- $found = append $found (printf "postgresql.extraPodSpec.%s: duplicates a key the chart renders itself, which makes the pod spec invalid. Set extraEnv/extraVolumes/extraVolumeMounts (first-class values) or use initContainers via extraPodSpec." $k) -}}
+{{- if hasKey $podOwned $k -}}
+{{- $found = append $found (printf "postgresql.extraPodSpec.%s: the chart sets this key itself, so it would be a duplicate key in the pod spec. Instead, %s" $k (index $podOwned $k)) -}}
 {{- end -}}
 {{- end -}}
 {{- end -}}

@@ -410,8 +410,11 @@ postgresql:
   #           - name: data
   #             mountPath: /var/lib/postgresql/data
   #
-  # Do not set `containers` or `volumes` here; the chart renders its own and
-  # rejects them. Run sidecars such as an exporter as their own Deployment.
+  # Do not set keys the chart sets itself (containers, volumes,
+  # securityContext, serviceAccountName, automountServiceAccountToken,
+  # terminationGracePeriodSeconds, imagePullSecrets); the chart rejects them and
+  # names the value to use instead. Run sidecars such as an exporter as their
+  # own Deployment.
   extraPodSpec: {}
 
 extraObjects: []
