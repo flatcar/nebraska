@@ -35,12 +35,8 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: admin
       KC_HTTP_PORT: 8080
     command: start-dev --import-realm --hostname-strict=false
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/realms/test || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 60s
+    # No healthcheck: depends_on has no condition, so nothing consumed it.
+    # startup-oidc.sh waits on /realms/test before the server starts.
 
   server:
     build:
