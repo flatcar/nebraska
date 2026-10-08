@@ -232,7 +232,7 @@ spec:
             {{- toYaml . | nindent 12 }}
             {{- end }}
       {{- /* Merged into the pod spec, for initContainers and scheduling fields.
-             Do not set `containers` or `volumes` here; _validate.tpl rejects them. */}}
+             Keys the chart sets itself are rejected by _validate.tpl. */}}
       {{- with .Values.postgresql.extraPodSpec }}
       {{- toYaml . | nindent 6 }}
       {{- end }}
