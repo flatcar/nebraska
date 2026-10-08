@@ -17,6 +17,7 @@ import * as Yup from 'yup';
 import { Group } from '../../../api/apiDataTypes';
 import { applicationsStore } from '../../../stores/Stores';
 import { DEFAULT_TIMEZONE } from '../../common/TimezonePicker';
+import { MAX_UPDATES_PER_TIME_PERIOD } from '../GroupItem';
 import GroupDetailsForm from './GroupDetailsForm';
 import GroupPolicyForm from './GroupPolicyForm';
 
@@ -68,7 +69,8 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
       policy_updates_enabled: values.updatesEnabled,
       policy_safe_mode: values.safeMode,
       policy_office_hours: values.onlyOfficeHours,
-      policy_max_updates_per_period: parseInt(values.maxUpdates),
+      policy_max_updates_per_period: values.updatesUnlimited 
+      ? Max_UPDATES_PER_TIME_PERIOD : parseInt(values.maxUpdates),
       policy_period_interval: updatesPeriodPolicy,
       policy_update_timeout: updatesTimeoutPolicy,
     };
@@ -188,7 +190,11 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
     name: maxCharacters(50, true).required(),
     track: maxCharacters(256),
     description: maxCharacters(250),
-    maxUpdates: positiveNum(),
+    maxUpdates: Yup.number(). when('updatesUnlimited', {
+      is: true,
+      then: schema => schema.notRequired(),
+      otherwise: () => positiveNum(),
+    }),
     updatesPeriodRange: positiveNum(),
     updatesTimeout: positiveNum(),
   });
@@ -205,6 +211,7 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
       track: '',
       appID: appID,
       maxUpdates: 1,
+      updatesUnlimited: false,
       updatesPeriodRange: 1,
       updatesPeriodUnit: 'hours',
       updatesTimeout: 1,
@@ -231,6 +238,7 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
       onlyOfficeHours: group.policy_office_hours,
       safeMode: group.policy_safe_mode,
       maxUpdates: group.policy_max_updates_per_period,
+      updatesUnlimited: group.policy_max_updates_per_period >= MAX_UPDATES_PER_TIME_PERIOD,
       channel: group.channel ? group.channel.id : '',
       updatesPeriodRange: currentUpdatesPeriodRange,
       updatesPeriodUnit: currentUpdatesPeriodUnit,

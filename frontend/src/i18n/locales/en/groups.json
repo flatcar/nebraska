@@ -21,6 +21,7 @@
   "safe_mode_lower": "Safe mode",
   "status_breakdown": "Status Breakdown",
   "track_identifier": "Track (identifier for clients, filled with the group ID if omitted)",
+  "unlimited_updates_lower": "Unlimited updates", 
   "update_policy_unlimited": "Unlimited number of parallel updates",
   "update": "Update",
   "update_limits": "Update Limits",
