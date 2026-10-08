@@ -27,6 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Bugfixes
 
 - Fixed package blacklist changes not appearing in UI immediately after save
+- **Application instances per channel metric accuracy (1/3):** `nebraska_application_instances_per_channel` now excludes instances that have stopped checking in (matching the activity window used elsewhere) and counts instances whose group has no channel assigned instead of silently dropping them. (part of [#1562](https://github.com/flatcar/nebraska/issues/1562))
 
 ## [3.0.0] - 28/11/2025
 
