@@ -370,7 +370,7 @@ postgresql:
   args: []
 
   # Size limit of the memory-backed /dev/shm (was shmVolume.sizeLimit). Empty
-  # means unbounded, which defaults to half the node's RAM.
+  # means no size limit, so it can grow to the node's allocatable memory.
   shmSizeLimit: 256Mi
 
   # First-start budget for the fsGroup chown and initdb. 5s x 60 = 300s.
@@ -410,8 +410,11 @@ postgresql:
   #           - name: data
   #             mountPath: /var/lib/postgresql/data
   #
-  # Do not set `containers` or `volumes` here; the chart renders its own and
-  # rejects them. Run sidecars such as an exporter as their own Deployment.
+  # Do not set keys the chart sets itself (containers, volumes,
+  # securityContext, serviceAccountName, automountServiceAccountToken,
+  # terminationGracePeriodSeconds, imagePullSecrets); the chart rejects them and
+  # names the value to use instead. Run sidecars such as an exporter as their
+  # own Deployment.
   extraPodSpec: {}
 
 extraObjects: []

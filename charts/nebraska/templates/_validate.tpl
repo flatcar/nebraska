@@ -136,14 +136,16 @@ Inert values (empty, false, or a feature block that is switched off, such as
 {{- $knownAuth := list "username" "database" "postgresPassword" "existingSecret" "secretKeys" -}}
 {{- $guideAuth := dict
   "password"            "the official image has a single superuser password. Use postgresql.auth.postgresPassword (secret key postgres-password). After an in-place upgrade, a custom auth.username keeps this password; if it differs from postgresPassword, let Nebraska log in as the superuser: config.database.username=postgres with secret key postgres-password."
-  "enablePostgresUser"  "POSTGRES_USER is always the superuser initdb creates; there is no separate postgres role to toggle."
+  "enablePostgresUser"  "POSTGRES_USER (auth.username) is always the superuser initdb creates, and its password is read from auth.secretKeys.adminPasswordKey (default postgres-password). With enablePostgresUser: false, chart 3.0.0 read the password of auth.username from secretKeys.userPasswordKey (default password), so set postgresql.auth.secretKeys.adminPasswordKey to that key."
   "replicationUsername" "replication is not provided by this chart."
   "replicationPassword" "replication is not provided by this chart."
   "usePasswordFiles"    "not supported; the password is injected with secretKeyRef."
 -}}
 {{- range $k, $v := ($pg.auth | default dict) -}}
 {{- if not (has $k $knownAuth) -}}
-{{- if not (include "nebraska.postgresql.isInertValue" (dict "key" $k "value" $v)) -}}
+{{- /* enablePostgresUser: false is a real change (it moved the password to
+       userPasswordKey), so isInertValue must not swallow it. */ -}}
+{{- if or (and (eq $k "enablePostgresUser") (kindIs "bool" $v)) (not (include "nebraska.postgresql.isInertValue" (dict "key" $k "value" $v))) -}}
 {{- $found = append $found (printf "postgresql.auth.%s: %s" $k (index $guideAuth $k | default "not read by this chart.")) -}}
 {{- end -}}
 {{- end -}}
@@ -196,13 +198,23 @@ Inert values (empty, false, or a feature block that is switched off, such as
 {{- end -}}
 {{- end -}}
 
-{{/* extraPodSpec is merged at pod-spec level; `containers` or `volumes` there
-     emit a SECOND key alongside the chart's own, producing an invalid pod spec
-     (the values.yaml example says as much in prose, prose is not a guard). */}}
+{{/* extraPodSpec is rendered next to the pod spec keys the chart sets itself.
+     Setting one of them there gives a duplicate key. securityContext and
+     imagePullSecrets are rendered only in some cases, but they have their own
+     values, so they are rejected always. */}}
+{{- $podOwned := dict
+  "containers"                    "use postgresql.extraEnv and postgresql.extraVolumeMounts."
+  "volumes"                       "use postgresql.extraVolumes."
+  "serviceAccountName"            "use postgresql.serviceAccount.name."
+  "automountServiceAccountToken"  "use postgresql.serviceAccount.automountServiceAccountToken."
+  "terminationGracePeriodSeconds" "use postgresql.terminationGracePeriodSeconds."
+  "imagePullSecrets"              "use postgresql.image.pullSecrets."
+  "securityContext"               "use postgresql.podSecurityContext."
+-}}
 {{- if $pg.enabled -}}
 {{- range $k, $v := ($pg.extraPodSpec | default dict) -}}
-{{- if has $k (list "containers" "volumes") -}}
-{{- $found = append $found (printf "postgresql.extraPodSpec.%s: duplicates a key the chart renders itself, which makes the pod spec invalid. Set extraEnv/extraVolumes/extraVolumeMounts (first-class values) or use initContainers via extraPodSpec." $k) -}}
+{{- if hasKey $podOwned $k -}}
+{{- $found = append $found (printf "postgresql.extraPodSpec.%s: the chart sets this key itself, so it would be a duplicate key in the pod spec. Instead, %s" $k (index $podOwned $k)) -}}
 {{- end -}}
 {{- end -}}
 {{- end -}}
@@ -282,7 +294,7 @@ Inert values (empty, false, or a feature block that is switched off, such as
      to the chart default while the database keeps the old password. */}}
 {{- $global := .Values.global | default dict -}}
 {{- if not (include "nebraska.postgresql.isInertValue" (dict "key" "postgresql" "value" $global.postgresql)) -}}
-{{- $found = append $found "global.postgresql.*: not read by this chart. Use postgresql.auth.* and postgresql.image.* instead." -}}
+{{- $found = append $found "global.postgresql.*: not read by this chart. Use postgresql.auth.*, postgresql.image.* and postgresql.service.port instead." -}}
 {{- end -}}
 {{- range $k, $v := $global -}}
 {{- if not (has $k (list "imageRegistry" "imagePullSecrets" "storageClass" "postgresql")) -}}
