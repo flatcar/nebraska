@@ -47,6 +47,40 @@ jobs:
         if: steps.list-changed.outputs.changed == 'true'
         run: ct lint --config .github/ct.yaml
 
+      # The chart rejects some values on purpose: old Bitnami values, a Bitnami
+      # image, and a persistent upgrade without acknowledgeDataDirMigration.
+      # `ct` renders only the default values, so it never tests these cases.
+      - name: Check that the chart rejects unsafe values
+        if: steps.list-changed.outputs.changed == 'true'
+        run: |
+          set -euo pipefail
+          renders()  { helm template ci charts/nebraska "$@" > /dev/null; }
+          rejected() {
+            if helm template ci charts/nebraska "$@" > /dev/null 2>&1; then
+              echo "::error::the chart should reject: $*"
+              exit 1
+            fi
+          }
+
+          # The renders checks come first: if the chart does not render at all,
+          # every rejected check below would pass.
+          renders
+          renders --set postgresql.primary.persistence.enabled=true            # new install with a PVC
+          renders --set postgresql.metrics.enabled=false \
+                  --set postgresql.tls.enabled=false \
+                  --set postgresql.architecture=standalone                     # Bitnami values that change nothing
+          renders --is-upgrade \
+                  --set postgresql.primary.persistence.enabled=true \
+                  --set postgresql.acknowledgeDataDirMigration=true            # the flag lets the upgrade through
+
+          rejected --set postgresql.metrics.enabled=true                      # Bitnami feature that is gone
+          rejected --set postgresql.image.repository=bitnamilegacy/postgresql # Bitnami image
+          rejected --set postgresql.primary.resources.limits.memory=4Gi       # moved to postgresql.resources
+          rejected --is-upgrade \
+                   --set postgresql.primary.persistence.enabled=true          # would start an empty database
+          rejected --set config.database.passwordExistingSecret.key=password  # key the chart's Secret does not have
+          rejected --set postgresql.dataMountPath=/var/lib//postgresql        # above the image VOLUME
+
       - name: Create kind cluster
         uses: helm/kind-action@ef37e7f390d99f746eb8b610417061a60e82a6cc # v1.14.0
         if: steps.list-changed.outputs.changed == 'true'

@@ -1,0 +1,282 @@
+{{- /*
+  Replaces the Bitnami postgresql 11.9.1 subchart used by chart 3.0.0 (see
+  Chart.yaml). It renders the same five objects under the same names, labels and
+  secret key, so existing releases and external secret managers keep working.
+*/ -}}
+{{- /* Unknown values are reported even with postgresql.enabled=false, because
+       that is when nobody would notice them being ignored. */ -}}
+{{- include "nebraska.postgresql.validateUnknownValues" . -}}
+{{- include "nebraska.postgresql.validateImage" . -}}
+{{- include "nebraska.postgresql.validateMountPath" . -}}
+{{- include "nebraska.postgresql.validatePasswordKey" . -}}
+{{- include "nebraska.postgresql.validateDataDirMigration" . -}}
+{{- if .Values.postgresql.enabled }}
+{{- $pgName := include "nebraska.postgresql.fullname" . -}}
+{{- $pgHl := include "nebraska.postgresql.headlessName" . -}}
+{{- $pgPort := int .Values.postgresql.service.port -}}
+{{- $user := .Values.postgresql.auth.username -}}
+{{- $db := .Values.postgresql.auth.database -}}
+{{- $persistence := .Values.postgresql.primary.persistence -}}
+{{- if .Values.postgresql.serviceAccount.create }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "nebraska.postgresql.serviceAccountName" . }}
+  {{- include "nebraska.postgresql.metadata" . | nindent 2 }}
+automountServiceAccountToken: {{ .Values.postgresql.serviceAccount.automountServiceAccountToken }}
+---
+{{- end }}
+{{- if not .Values.postgresql.auth.existingSecret }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $pgName }}
+  labels:
+    {{- include "nebraska.postgresql.labels" . | nindent 4 }}
+    {{- with .Values.extraLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- /* The PVC survives `helm uninstall`, so the Secret must too. Otherwise a
+           reinstall generates a new password that the old database rejects.
+           Known cost: reinstalling chart 3.0.0 over the kept Secret fails,
+           because Bitnami also expects a `password` key. */}}
+    helm.sh/resource-policy: keep
+    {{- with .Values.extraAnnotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+type: Opaque
+data:
+  {{- /* Password precedence, as in the Bitnami subchart: the value already in
+         the cluster, then postgresql.auth.postgresPassword, then a random one.
+         lookup is empty under `helm template` and dry-run, so GitOps users
+         should set postgresql.auth.existingSecret. */}}
+  {{- $key := .Values.postgresql.auth.secretKeys.adminPasswordKey }}
+  {{- $existing := (lookup "v1" "Secret" .Release.Namespace $pgName) | default dict }}
+  {{- $current := index ($existing.data | default dict) $key | default "" }}
+  {{- /* An ephemeral 3.0.0 install still holds the published "changeIt". This
+         upgrade recreates the database on a new emptyDir and restarts Nebraska,
+         so replacing the password is safe. With persistence it is kept, and
+         NOTES.txt warns. NOTES.txt repeats this condition. */}}
+  {{- if and (eq ($current | b64dec) "changeIt") (not .Values.postgresql.auth.postgresPassword) (not $persistence.enabled) (hasPrefix "postgresql-" (include "nebraska.postgresql.liveChart" .)) }}
+  {{- $current = "" }}
+  {{- end }}
+  {{- if $current }}
+  {{ $key }}: {{ $current | quote }}
+  {{- else if .Values.postgresql.auth.postgresPassword }}
+  {{ $key }}: {{ .Values.postgresql.auth.postgresPassword | toString | b64enc | quote }}
+  {{- else }}
+  {{ $key }}: {{ randAlphaNum 24 | b64enc | quote }}
+  {{- end }}
+---
+{{- end }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $pgName }}
+  {{- include "nebraska.postgresql.metadata" . | nindent 2 }}
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+    - name: tcp-postgresql
+      port: {{ $pgPort }}
+      targetPort: tcp-postgresql
+      protocol: TCP
+  selector:
+    {{- include "nebraska.postgresql.selectorLabels" . | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $pgHl }}
+  {{- include "nebraska.postgresql.metadata" . | nindent 2 }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+    - name: tcp-postgresql
+      port: {{ $pgPort }}
+      targetPort: tcp-postgresql
+      protocol: TCP
+  selector:
+    {{- include "nebraska.postgresql.selectorLabels" . | nindent 4 }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $pgName }}
+  {{- include "nebraska.postgresql.metadata" . | nindent 2 }}
+spec:
+  {{- /* Not a value: a second replica would run a second postmaster on the
+         same PVC and corrupt it. */}}
+  replicas: 1
+  serviceName: {{ $pgHl }}
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      {{- include "nebraska.postgresql.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "nebraska.postgresql.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "nebraska.postgresql.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.postgresql.serviceAccount.automountServiceAccountToken }}
+      terminationGracePeriodSeconds: {{ .Values.postgresql.terminationGracePeriodSeconds }}
+      {{- /* Accept bare strings (the Bitnami form) and {name: ...} objects, and add
+             global.imagePullSecrets, as the subchart did. */}}
+      {{- with concat (.Values.postgresql.image.pullSecrets | default list) ((.Values.global | default dict).imagePullSecrets | default list) }}
+      imagePullSecrets:
+        {{- range . }}
+        {{- if kindIs "string" . }}
+        - name: {{ . }}
+        {{- else }}
+        - name: {{ .name }}
+        {{- end }}
+        {{- end }}
+      {{- end }}
+      {{- /* `enabled: false` renders no securityContext (needed on OpenShift). The
+             `enabled` key itself is not a Kubernetes field, so it is dropped. */}}
+      {{- $psc := .Values.postgresql.podSecurityContext | default dict }}
+      {{- if or (not (hasKey $psc "enabled")) $psc.enabled }}
+      securityContext:
+        {{- toYaml (omit $psc "enabled") | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: postgresql
+          image: {{ include "nebraska.image" ( dict "imageRoot" .Values.postgresql.image "global" .Values.global "context" nil ) }}
+          imagePullPolicy: {{ .Values.postgresql.image.pullPolicy }}
+          {{- $csc := .Values.postgresql.containerSecurityContext | default dict }}
+          {{- if or (not (hasKey $csc "enabled")) $csc.enabled }}
+          securityContext:
+            {{- toYaml (omit $csc "enabled") | nindent 12 }}
+          {{- end }}
+          {{- /* Server options (-c name=value) replace the subchart's configuration
+                 values. The entrypoint needs "postgres" as the first element. */}}
+          {{- with .Values.postgresql.args }}
+          args:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "nebraska.postgresql.secretName" . }}
+                  key: {{ .Values.postgresql.auth.secretKeys.adminPasswordKey }}
+            - name: POSTGRES_USER
+              value: {{ $user | quote }}
+            - name: POSTGRES_DB
+              value: {{ $db | quote }}
+            {{- /* PGDATA must be a subdirectory of the mount: initdb refuses a volume
+                   root, which has the wrong mode and may contain lost+found. */}}
+            - name: PGDATA
+              value: {{ printf "%s/%s" .Values.postgresql.dataMountPath .Values.postgresql.dataSubdir | quote }}
+            - name: PGPORT
+              value: {{ $pgPort | quote }}
+            {{- with .Values.postgresql.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: tcp-postgresql
+              containerPort: {{ $pgPort }}
+              protocol: TCP
+          {{- /* Plain SIGTERM is PostgreSQL's "smart" shutdown, which waits forever for
+                 Nebraska's pooled connections and ends in SIGKILL and crash
+                 recovery. `-m fast` shuts down cleanly. */}}
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  {{- /* -W: do not wait. The postmaster is PID 1, so a waiting hook is
+                         killed when it exits and logs FailedPreStopHook. */}}
+                  - exec pg_ctl -D "$PGDATA" -m fast -W stop
+          {{- /* The startupProbe covers the first start (fsGroup chown and initdb).
+                 A liveness kill during initdb leaves a data directory that initdb
+                 then refuses forever. */}}
+          startupProbe:
+            {{- include "nebraska.postgresql.probeCommand" . | nindent 12 }}
+            {{- toYaml .Values.postgresql.startupProbe | nindent 12 }}
+          livenessProbe:
+            {{- include "nebraska.postgresql.probeCommand" . | nindent 12 }}
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+          readinessProbe:
+            {{- include "nebraska.postgresql.probeCommand" . | nindent 12 }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+          resources:
+            {{- toYaml .Values.postgresql.resources | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: {{ .Values.postgresql.dataMountPath }}
+            {{- /* The unix socket directory. Required with readOnlyRootFilesystem. */}}
+            - name: run
+              mountPath: /var/run/postgresql
+            {{- /* The entrypoint needs /tmp when runAsUser is not the image's own uid. */}}
+            - name: tmp
+              mountPath: /tmp
+            {{- /* As in the subchart: the runtime default /dev/shm (64Mi) is too small. */}}
+            - name: dshm
+              mountPath: /dev/shm
+            {{- with .Values.postgresql.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+      {{- /* Merged into the pod spec, for initContainers and scheduling fields.
+             Keys the chart sets itself are rejected by _validate.tpl. */}}
+      {{- with .Values.postgresql.extraPodSpec }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      volumes:
+        - name: run
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            {{- with .Values.postgresql.shmSizeLimit }}
+            {{- /* Counts against pod memory; unbounded it defaults to half the node RAM. */}}
+            sizeLimit: {{ . }}
+            {{- end }}
+        {{- if not $persistence.enabled }}
+        - name: data
+          emptyDir: {}
+        {{- end }}
+        {{- with .Values.postgresql.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+  {{- if $persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        {{- /* Must stay `data`, as in the subchart: the PVC name data-<sts>-0 comes
+               from it, and volumeClaimTemplates is immutable. */}}
+        name: data
+        {{- with $persistence.labels }}
+        labels:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with $persistence.annotations }}
+        annotations:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      spec:
+        accessModes:
+          {{- toYaml $persistence.accessModes | nindent 10 }}
+        resources:
+          requests:
+            storage: {{ $persistence.size | quote }}
+        {{- with (include "nebraska.postgresql.storageClass" .) }}
+        {{ . }}
+        {{- end }}
+  {{- end }}
+{{- end }}
