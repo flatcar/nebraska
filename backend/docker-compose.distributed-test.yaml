@@ -40,7 +40,6 @@ services:
     build:
       context: ../
       dockerfile: Dockerfile
-      network: host
     ports:
       - "8012:8000"
     restart: "no"
@@ -61,7 +60,6 @@ services:
     build:
       context: ../
       dockerfile: Dockerfile
-      network: host
     ports:
       - "8013:8000"
     restart: "no"
@@ -83,7 +81,6 @@ services:
     build:
       context: ../
       dockerfile: Dockerfile
-      network: host
     ports:
       - "8014:8000"
     restart: "no"
