@@ -58,7 +58,10 @@ config:
       viewerRoles:
       rolesPath:
       scopes:
+      # Required API/resource audience expected in OIDC access tokens.
       audience:
+      # Disable access-token audience validation. Insecure; migration only.
+      skipAudienceCheck: false
       # Use OIDC UserInfo endpoint for role extraction (for providers that don't include roles in access token)
       useUserInfo: false
     github:
@@ -109,6 +112,20 @@ extraEnvVars:
 ##       name: existing-secret
 ##       key: varname2-key
 extraEnv: []
+
+# extraVolumes and extraVolumeMounts let you mount additional Secrets or
+# ConfigMaps into the container, for example a CA bundle pointed at by
+# config.caFile. Both are rendered with tpl, so Helm expressions work.
+## extraVolumes:
+##   - name: custom-ca
+##     secret:
+##       secretName: '{{ .Release.Name }}-ca'
+## extraVolumeMounts:
+##   - name: custom-ca
+##     mountPath: /etc/nebraska/ca
+##     readOnly: true
+extraVolumes: []
+extraVolumeMounts: []
 
 serviceAccount:
   # Specifies whether a service account should be created

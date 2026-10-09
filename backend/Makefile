@@ -29,7 +29,12 @@ ifeq ($(VERSION),)
 	endif
 endif
 
-LDFLAGS := "-w -X github.com/flatcar/nebraska/backend/pkg/version.Version=$(VERSION) -extldflags \"-static\""
+# Disable CGO by default to allow pure-Go static builds
+CGO_ENABLED ?= 0
+export CGO_ENABLED
+
+LDFLAGS := "-w -X github.com/flatcar/nebraska/backend/pkg/version.Version=$(VERSION)"
+
 .PHONY: all
 all: codegen run-generators code-checks build
 
@@ -55,6 +60,22 @@ check-backend-with-container: test-service-down
 	$(MAKE) test-service-up
 	go clean -testcache && NEBRASKA_RUN_SERVER_TESTS=1 NEBRASKA_TEST_SERVER_URL="http://localhost:8002" NEBRASKA_DB_URL=$(CONTAINER_NEBRASKA_DB_URL) go test -p 1 ./...
 	$(MAKE) test-service-down
+
+.PHONY: distributed-service-up
+distributed-service-up:
+	# 60s matches the healthcheck budget in the compose file, 12 retries at 5s.
+	docker compose -f ./docker-compose.distributed-test.yaml up -d --build --wait --wait-timeout 60 \
+	  || { docker compose -f ./docker-compose.distributed-test.yaml logs --tail=15; exit 1; }
+
+.PHONY: distributed-service-down
+distributed-service-down:
+	docker compose -f ./docker-compose.distributed-test.yaml down
+
+.PHONY: check-distributed-with-container
+check-distributed-with-container: distributed-service-down
+	$(MAKE) distributed-service-up
+	go clean -testcache && NEBRASKA_RUN_DISTRIBUTED_TESTS=1 go test -p 1 ./test/distributed/...
+	$(MAKE) distributed-service-down
 
 run: bin/nebraska
 	./bin/nebraska -auth-mode noop -debug
@@ -90,7 +111,7 @@ tools/swag:
 	env GOBIN=$(CURDIR)/tools/ go install github.com/swaggo/swag/cmd/swag@v1.8.10
 
 .PHONY: ci
-ci: build test-clean-work-tree-backend check-backend-with-container
+ci: build test-clean-work-tree-backend check-backend-with-container check-distributed-with-container
 
 .PHONY: run-generators
 run-generators:
@@ -105,6 +126,8 @@ code-checks: tools/golangci-lint
 	# build (both the project and the tests), golangci-lint's
 	# output in this regard in unreadable.
 	go build ./...
+	# dry-run syntax check (`bash -n` parses commands without executing them)
+	for f in tools/*.sh; do bash -n "$$f" || exit 1; done
 	./tools/check_pkg_test.sh
 	NEBRASKA_SKIP_TESTS=1 go test ./... >/dev/null
 	./tools/golangci-lint run --fix

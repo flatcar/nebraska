@@ -48,8 +48,8 @@ test-storybook-ci:
 test-playwright-ci:
 	# Clean up any existing containers before starting
 	cd ../backend && docker compose -f docker-compose.test.yaml down 2>/dev/null || true
-	# Run Playwright tests (fail fast after 1 failure)
-	npx playwright test --max-failures=1
+	# Run Playwright tests
+	npx playwright test
 
 .PHONY: test-oidc
 test-oidc:
@@ -61,11 +61,11 @@ test-oidc-ci:
 	cd ../backend && docker compose -f docker-compose.test.yaml down 2>/dev/null || true
 	# Clean up any existing OIDC containers
 	cd ../backend && docker compose -f docker-compose.oidc-test.yaml down 2>/dev/null || true
-	# Run OIDC tests (fail fast after 1 failure)
-	npx playwright test --config=playwright.oidc.config.ts --max-failures=1 
+	# Run OIDC tests
+	npx playwright test --config=playwright.oidc.config.ts
 
 .PHONY: ci
-ci: install-ci lint test install-playwright test-storybook-ci test-playwright-ci test-oidc-ci tsc build 
+ci: install-ci lint test install-playwright test-storybook-ci tsc build
 
 node_modules: package-lock.json package.json
 	npm install

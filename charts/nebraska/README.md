@@ -26,7 +26,8 @@ The OIDC implementation has been refactored to use Authorization Code Flow with 
 - `config.auth.oidc.sessionCryptKey` - Backend is stateless
 
 **Added Configuration Options:**
-- `config.auth.oidc.audience` - Optional, required for Auth0
+- `config.auth.oidc.audience` - Required API/resource audience expected in access tokens
+- `config.auth.oidc.skipAudienceCheck` - Insecure migration escape hatch; disables audience validation
 - `config.auth.oidc.useUserInfo` - Use UserInfo endpoint for role extraction (for providers that don't include roles in access token)
 - `config.caFile` - Path to a PEM-encoded CA certificate file to trust for TLS verification
 
@@ -50,8 +51,8 @@ The OIDC implementation has been refactored to use Authorization Code Flow with 
          issuerURL: "https://your-oidc-provider.com"
          adminRoles: "nebraska-admin"
          viewerRoles: "nebraska-viewer"
+         audience: "your-nebraska-api-identifier"
          # Remove: clientSecret, validRedirectURLs, sessionAuthKey, sessionCryptKey
-         # Optional: audience (required for Auth0)
    ```
 
 3. **Upgrade the helm chart:**
@@ -64,6 +65,8 @@ The OIDC implementation has been refactored to use Authorization Code Flow with 
 **Note:** If you are using `mode: noop` (default) or `mode: github`, no changes are required.
 
 ## Upgrade PostgreSQL
+
+> **⚠️ Important:** Nebraska requires **PostgreSQL 14 or newer**. PostgreSQL 17.x is recommended. If you are running PostgreSQL 13 or older, you must upgrade your database before upgrading Nebraska past 4.0.0.
 
 When there is a major upgrade of PostgreSQL, a manual intervention might be required with a downtime. It is possible to automate things with operators, but here's a simple example:
 
@@ -172,6 +175,8 @@ $ kubectl exec -ti pod/nebraska-postgresql-0 -- psql < backup.sql
 | `config.hostFlatcarPackages.persistence.accessModes`  | PVC Access Mode for PostgreSQL volume                                                                                                | `["ReadWriteOnce"]`                                                     |
 | `config.hostFlatcarPackages.persistence.size`         | PVC Storage Request for PostgreSQL volume                                                                                            | `10Gi`                                                                  |
 | `config.caFile`                                       | Path to a PEM-encoded CA certificate file to trust for TLS verification (additive to system CAs, used for OIDC and syncer) | `nil`  |
+| `extraVolumes`                                        | Additional volumes for the Nebraska pod, e.g. a Secret holding the CA file pointed at by `config.caFile` | `[]` |
+| `extraVolumeMounts`                                   | Additional volume mounts for the Nebraska container | `[]` |
 | `config.auth.mode`                                    | Authentication mode, available modes: `noop`, `github`, `oidc`                                                                               | `noop`                                                                  |
 | `config.auth.github.clientID`                         | GitHub client ID used for authentication                                                                                             | `nil`                                                                   |
 | `config.auth.github.clientSecret`                     | GitHub client secret used for authentication                                                                                         | `nil`                                                                   |
@@ -189,9 +194,10 @@ $ kubectl exec -ti pod/nebraska-postgresql-0 -- psql < backup.sql
 | `config.auth.oidc.logoutURL`                          | URL to logout the user from current session  | `nil`  |
 | `config.auth.oidc.adminRoles`                         | comma-separated list of accepted roles with admin access | `nil`  |
 | `config.auth.oidc.viewerRoles`                        | comma-separated list of accepted roles with viewer access | `nil`  |
-| `config.auth.oidc.rolesPath`                          | json path in which the roles array is present in the id token  | `nil`  |
+| `config.auth.oidc.rolesPath`                          | json path in which the roles array is present in the access token  | `nil`  |
 | `config.auth.oidc.scopes`                             | comma-separated list of scopes to be used in OIDC | `nil`  |
-| `config.auth.oidc.audience`                           | OIDC audience (required for Auth0, optional for others) | `nil`  |
+| `config.auth.oidc.audience`                           | Required API/resource audience expected in OIDC access tokens | `nil`  |
+| `config.auth.oidc.skipAudienceCheck`                  | Disable access-token audience validation (insecure migration escape hatch) | `false` |
 | `config.auth.oidc.useUserInfo`                        | Use UserInfo endpoint for role extraction (for providers that don't include roles in access token) | `false`  |
 | `config.database.host`                                | The host name of the database server                                                                                                 | `""` (use postgresql from Bitnami subchart)                             |
 | `config.database.port`                                | The port number the database server is listening on                                                                                  | `5432`                                                                  |
@@ -213,7 +219,7 @@ $ kubectl exec -ti pod/nebraska-postgresql-0 -- psql < backup.sql
 | `postgresql.enabled`                                     | Enable Bitnami postgresql subchart and deploy database within this helm release                               | `true`                 |
 | `postgresql.auth.database`                               | PostgreSQL database                                                                                           | `nebraska`             |
 | `postgresql.auth.postgresPassword`                       | PostgreSQL password of user "postgres" **Recommended to change it to something secure for security reasons.** | `changeIt`             |
-| `postgresql.image.tag`                                   | PostgreSQL Image tag                                                                                          | `13.8.0-debian-11-r18` |
+| `postgresql.image.tag`                                   | PostgreSQL Image tag                                                                                          | `17.5.0` |
 | `postgresql.primary.persistence.enabled`                 | Enable persistence using PVC                                                                                  | `false`                |
 | `postgresql.primary.persistence.storageClass`            | PVC Storage Class for PostgreSQL volume                                                                       | `nil`                  |
 | `postgresql.primary.persistence.accessModes`             | PVC Access Mode for PostgreSQL volume                                                                         | `["ReadWriteOnce"]`    |

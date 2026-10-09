@@ -1,22 +1,33 @@
 name: Build Backend
+permissions:
+  contents: read
 on:
   pull_request:
     paths:
+    - 'backend/api/**'
     - 'backend/cmd/**'
     - 'backend/pkg/**'
     - 'backend/tools/**'
     - 'backend/test/**'
+    - 'backend/test-configs/**'
+    - 'backend/docker-compose*.yaml'
     - 'backend/go.mod'
     - 'backend/go.sum'
+    - 'backend/Makefile'
     - 'updaters/**'
     - '.github/**'
     - Makefile
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
 
   build:
     name: Backend Build Steps
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
 
     steps:
 

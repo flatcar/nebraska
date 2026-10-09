@@ -44,15 +44,6 @@ function fail() {
     exit 1
 }
 
-opts=$(getopt \
-           --name "$(basename "${0}")" \
-           --options 'f:n:p:P:d:' \
-           --longoptions 'id-file:,db-name:,password:,port:,pg-version:' \
-           -- "${@}"
-    )
-
-eval set -- "${opts}"
-
 id_file=''
 db_name=''
 password=''
@@ -63,40 +54,69 @@ pg_version='latest'
 # to enable the use of DOCKER_CMD="sudo docker".
 DOCKER_CMD="${DOCKER_CMD:-docker}"
 
-while true; do
+while [[ "${#}" -gt 0 ]]; do
     case "${1}" in
         '-f'|'--id-file')
+            [[ "${#}" -ge 2 && "${2}" != -* ]] || fail "Missing value for ${1}"
             id_file="${2}"
             shift 2
             ;;
+        '--id-file='*)
+            id_file="${1#--id-file=}"
+            [[ -n "${id_file}" ]] || fail "Missing value for --id-file"
+            shift
+            ;;
         '-n'|'--db-name')
+            [[ "${#}" -ge 2 && "${2}" != -* ]] || fail "Missing value for ${1}"
             db_name="${2}"
             shift 2
             ;;
+        '--db-name='*)
+            db_name="${1#--db-name=}"
+            [[ -n "${db_name}" ]] || fail "Missing value for --db-name"
+            shift
+            ;;
         '-p'|'--password')
+            [[ "${#}" -ge 2 && "${2}" != -* ]] || fail "Missing value for ${1}"
             password="${2}"
             shift 2
             ;;
+        '--password='*)
+            password="${1#--password=}"
+            shift
+            ;;
         '-P'|'--port')
+            [[ "${#}" -ge 2 && "${2}" != -* ]] || fail "Missing value for ${1}"
             port="${2}"
             shift 2
             ;;
+        '--port='*)
+            port="${1#--port=}"
+            [[ -n "${port}" ]] || fail "Missing value for --port"
+            shift
+            ;;
         '-d'|'--pg-version')
+            [[ "${#}" -ge 2 && "${2}" != -* ]] || fail "Missing value for ${1}"
             pg_version="${2}"
             shift 2
+            ;;
+        '--pg-version='*)
+            pg_version="${1#--pg-version=}"
+            [[ -n "${pg_version}" ]] || fail "Missing value for --pg-version"
+            shift
             ;;
         '--')
             shift
             break
             ;;
         *)
-            fail 'Internal error!'
+            fail "Unrecognized argument: ${1}"
             ;;
     esac
 done
 
 if [[ "${#}" -ne 0 ]]; then
-    fail "Leftover unrecognized arguments: ${@}"
+    fail "Leftover unrecognized arguments: ${*}"
 fi
 
 if [[ -z "${id_file}" ]]; then

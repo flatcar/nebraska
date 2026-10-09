@@ -7,15 +7,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Security
+
+### Breaking Changes
+
+- **PostgreSQL 14+ is now a hard requirement.** Nebraska connects through `pgx/v5`, which [supports only the PostgreSQL major releases still maintained upstream](https://github.com/jackc/pgx#supported-go-and-postgresql-versions), currently 14 and newer.
+
+  **Operators running PostgreSQL 13 or older must upgrade their database before upgrading Nebraska.** PostgreSQL 17.x is recommended. See the [Upgrade PostgreSQL](https://github.com/flatcar/nebraska/tree/main/charts/nebraska#upgrade-postgresql) migration guide for step-by-step instructions.
+- **Cascaded Nebraska syncers must run this release or newer to consume channels where floor packages are configured;** older syncers receive `NoUpdate`. Does not affect regular Flatcar clients.
+
 ### Added
 
-- **Custom CA Certificate for TLS:** Added `--ca-file` flag to trust additional CA certificates for TLS verification (e.g., internal CA, Let's Encrypt staging). Applies to the OIDC provider client and the syncer. Supports multiple PEM-encoded certs, additive to system CAs. Also exposed as `config.caFile` in the Helm chart.
+- **Pluggable database password provider:** The database password can now be supplied by Go code through the `api.DBPasswordProvider` interface instead of being carried in `NEBRASKA_DB_URL`. It is consulted before every physical connection, so credentials that expire, such as cloud IAM tokens, are picked up without a restart.
+- **Custom CA Certificate for TLS:** Added `--ca-file` flag to trust additional CA certificates for TLS verification (e.g., internal CA, Let's Encrypt staging). Applies to the OIDC provider client and the syncer. Supports multiple PEM-encoded certs, additive to system CAs. Also exposed as `config.caFile` in the Helm chart. ([#1370](https://github.com/flatcar/nebraska/pull/1370))
 - **OEM Attribute Capture:** Instances now store OEM and Aleph version information from Omaha update requests. ([#1286](https://github.com/flatcar/nebraska/pull/1286))
 - **Multi-Step Updates with Floor Packages:** Added support for mandatory intermediate update versions (floor packages) that clients must install before reaching the target version. This enables safe migration paths for breaking changes by ensuring clients update through specific versions in order. Floor packages can be configured per channel with optional reasons and are architecture-specific. ([#1195](https://github.com/flatcar/nebraska/pull/1195))
-- **Nebraska backend is able to use OIDC userinfo endpoint:** Some OIDC providers do not return group membership inside the access token. The Nebraska frontend passes this access token via the header `Authorization: Bearer <token>` to the backend which can then (optionally) call the OIDC provider's userinfo endpoint to gather group membership. ([#1279](https://github.com/flatcar/nebraska/pull/1279))
+- **Optional least-privilege database roles:** `NEBRASKA_MIGRATIONS_DB_URL` runs schema migrations over a separate, short-lived connection, so the serving connection no longer has to own the schema. Both connections must point at the same database in the same cluster. When it is set and names a different user than `NEBRASKA_DB_URL`, Nebraska grants the admin and runtime table privileges to two `NOLOGIN` roles named after the database, `nebraska_admin_<database>` and `nebraska_runtime_<database>`, and adds the serving user to one of them. Those two roles are created if they do not already exist, which needs `CREATE ROLE` on the migrations role. Groundwork for the distributed topology described in [RFC #1375](https://github.com/flatcar/nebraska/issues/1375); which of the two roles a node is granted is decided by `NEBRASKA_INSTANCE_MODE`. Deployments that do not set `NEBRASKA_MIGRATIONS_DB_URL` are unaffected: no roles are created and no table privileges change. ([#1575](https://github.com/flatcar/nebraska/pull/1575))
+- **Node roles for a distributed deployment:** `NEBRASKA_INSTANCE_MODE`, also settable with `--instance-mode`, places a node as `single` (the default), `control` or `edge`. An edge node keeps serving Omaha update checks and every read, but refuses the admin endpoints with HTTP 403 and is granted `nebraska_runtime_<database>` rather than `nebraska_admin_<database>`, so the database rejects an admin write even if the HTTP guard is bypassed. It also refuses to start with `--enable-syncer`, since the syncer creates packages and moves channels. `control` and `edge` both require `NEBRASKA_MIGRATIONS_DB_URL` to name a different user than `NEBRASKA_DB_URL`, because without that separation there is no database boundary at all. Any value other than the three above stops the process at startup. A new `DELETE /api/apps/{appIDorProductID}/groups/{groupID}/updates_override` endpoint clears the node-local safe-mode brake without touching the admin default that a control node replicates out; it answers 501 in single-instance mode, which has no node-local override. Part of the distributed topology described in [RFC #1375](https://github.com/flatcar/nebraska/issues/1375). Deployments that do not set `NEBRASKA_INSTANCE_MODE` are unaffected. ([#1613](https://github.com/flatcar/nebraska/pull/1613))
 
 ### Changed
 
+- **macOS development support:** Backend build and helper scripts (`run-all.sh`, `setup_local_db.sh`, `check_pkg_test.sh`) now also work out of the box on macOS by removing GNU-specific dependencies and setting `CGO_ENABLED ?= 0`. ([#374](https://github.com/flatcar/nebraska/issues/374))
+- **Unsupported HTTP methods on API routes now return 405:** for example `HEAD /api/apps`, or `GET /api/instances/{id}` which is registered for `PUT` only. These previously returned 200 with `index.html`. ([#1506](https://github.com/flatcar/nebraska/pull/1506))
 - **Per-group runtime state moved to node-local `group_local` sidecar:** `rollout_in_progress` plus a nullable override column for each `policy_*` column on `groups` now live on a new `group_local` table, in preparation for the distributed Nebraska topology described in [RFC #1375](https://github.com/flatcar/nebraska/issues/1375). The safe-mode auto-pause brake writes the local override instead of mutating the admin default; reads return `COALESCE(override, default)`. The JSON contract is unchanged. ([#1396](https://github.com/flatcar/nebraska/pull/1396))
 - **Activity events split across runtime-local and admin tables:** Admin-originated activity events (channel package updates) are now stored in a separate `admin_activity` table, in preparation for the distributed Nebraska topology described in [RFC #1375](https://github.com/flatcar/nebraska/issues/1375). The JSON contract is unchanged. ([#1398](https://github.com/flatcar/nebraska/pull/1398))
 - **Package Management UI Improvements:**
@@ -23,11 +35,37 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Package list UI now updates immediately after blacklist changes
   - Channel edit dialog filters out blacklisted packages from selection
   - Floor package selection prevents choosing blacklisted packages with clear visual feedback
+- Improved reverse domain ID validation regex to eliminate inefficient nested quantifiers flagged by CodeQL, and extracted it into a shared constant with tests. ([#1222](https://github.com/flatcar/nebraska/pull/1222))
+
 ### Removed
 ### Bugfixes
 
+- Fixed missing error checks on database row iteration in `GetGroupVersionCountTimeline` method, which could silently return truncated metrics.
 - Fixed package blacklist changes not appearing in UI immediately after save
-- **Application instances per channel metric accuracy (1/3):** `nebraska_application_instances_per_channel` now excludes instances that have stopped checking in (matching the activity window used elsewhere) and counts instances whose group has no channel assigned instead of silently dropping them. (part of [#1562](https://github.com/flatcar/nebraska/issues/1562))
+- **Application instances per channel metric accuracy (1/3):** `nebraska_application_instances_per_channel` now excludes instances that have stopped checking in (matching the activity window used elsewhere) and counts instances whose group has no channel assigned instead of silently dropping them. ([#1653](https://github.com/flatcar/nebraska/pull/1653), part of [#1562](https://github.com/flatcar/nebraska/issues/1562))
+- Fixed instance statistics query that returned incorrect group dashboard counts. ([#1356](https://github.com/flatcar/nebraska/pull/1356), thanks to Thilo Fromm)
+
+## [4.0.0] - 02/09/2026
+
+### Security
+
+- **OIDC access token audience validation:** Before this release the backend checked only the signature, the issuer and the expiry time of a token. It therefore accepted any token from the configured issuer. This included a token that the provider issued for a different application in the same realm or tenant, and an ID token sent in place of an access token.
+
+  Nebraska now also checks the `aud` claim of the token. That claim must contain the audience you configure for the backend API. [RFC 9700](https://www.rfc-editor.org/rfc/rfc9700) section 2.3, which is BCP 240, requires every resource server to verify on every request that a token was meant for it, and to refuse the request if it was not. It names the `aud` claim defined in [RFC 9068](https://www.rfc-editor.org/rfc/rfc9068) as a way to do that. Nebraska also rejects a token that clearly says it is an ID token. A token whose header type is `at+jwt` is accepted as an access token. A token that carries a Keycloak `typ` claim with the value `ID` is rejected. A token that says nothing about its kind is accepted.
+
+  Nebraska does not follow the rule in RFC 9068 section 4 that requires rejecting any token whose header type is not `at+jwt`. Most providers issue access tokens with a plain `JWT` header, so that rule would reject them. In those setups the audience check is what separates an access token from an ID token.
+
+- **SQL injection in the group version timeline:** the `groupID` path parameter was put straight into three SQL statements in the version timeline query path, so a crafted value could change those queries. All three now bind `groupID` as a query parameter. The `groupID` of the endpoint is also declared as a UUID in the OpenAPI spec, so a malformed value is rejected before it reaches the database.
+
+### Breaking Changes
+
+- **OIDC access token audience is now required.** A deployment that uses `--auth-mode=oidc` must set `--oidc-audience` to the audience that its identity provider puts in API access tokens. Nebraska refuses to start without it. Setting the flag is not enough on its own. The provider must really put that value in the `aud` claim of the access token. If it does not, Nebraska starts normally but then rejects every request. Keycloak does not support the `audience` request parameter, so you have to add an audience mapper that puts the value into the access token. Dex issues access tokens whose audience is the client ID. `--auth-mode=noop` and `--auth-mode=github` are not affected. `--oidc-skip-audience-check` brings back the old behaviour so you can migrate in steps, but it is insecure. See the [OIDC Migration Guide](docs/oidc-migration-guide.md).
+
+- **ID tokens are no longer accepted as access tokens.** Nebraska rejects a bearer token that says it is an ID token. In practice this affects Keycloak, which marks the kind of a token using a `typ` claim with the value `ID`. A provider that does not mark the kind of a token is not affected. Dex marks neither kind and gives both types of token the same audience and the same claims, so Nebraska cannot tell them apart there. Treat a Dex ID token as being as sensitive as an access token. This change only breaks a deployment that puts the API audience into ID tokens as well as access tokens, which is not the Keycloak default.
+
+### Added
+
+- **OIDC UserInfo endpoint for role extraction ([#1279](https://github.com/flatcar/nebraska/pull/1279)):** some providers do not place group membership in the access token. `--oidc-use-userinfo` makes the backend call the provider's UserInfo endpoint instead, using the same `--oidc-roles-path` to locate the roles. The token is verified before it is forwarded, so only an access token issued for this API reaches the provider.
 
 ## [3.0.0] - 28/11/2025
 
