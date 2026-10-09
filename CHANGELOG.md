@@ -36,11 +36,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Channel edit dialog filters out blacklisted packages from selection
   - Floor package selection prevents choosing blacklisted packages with clear visual feedback
 - Improved reverse domain ID validation regex to eliminate inefficient nested quantifiers flagged by CodeQL, and extracted it into a shared constant with tests. ([#1222](https://github.com/flatcar/nebraska/pull/1222))
+
 ### Removed
 ### Bugfixes
 
 - Fixed missing error checks on database row iteration in `GetGroupVersionCountTimeline` method, which could silently return truncated metrics.
 - Fixed package blacklist changes not appearing in UI immediately after save
+- **Application instances per channel metric accuracy (1/3):** `nebraska_application_instances_per_channel` now excludes instances that have stopped checking in (matching the activity window used elsewhere) and counts instances whose group has no channel assigned instead of silently dropping them. ([#1653](https://github.com/flatcar/nebraska/pull/1653), part of [#1562](https://github.com/flatcar/nebraska/issues/1562))
 - Fixed instance statistics query that returned incorrect group dashboard counts. ([#1356](https://github.com/flatcar/nebraska/pull/1356), thanks to Thilo Fromm)
 
 ## [4.0.0] - 02/09/2026
