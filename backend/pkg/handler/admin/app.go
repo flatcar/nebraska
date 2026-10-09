@@ -1,7 +1,6 @@
-package handler
+package admin
 
 import (
-	"database/sql"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -9,41 +8,13 @@ import (
 
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/codegen"
+	"github.com/flatcar/nebraska/backend/pkg/handler/internal/shared"
 )
 
-func (h *Handler) PaginateApps(ctx echo.Context, params codegen.PaginateAppsParams) error {
-	teamID := getTeamID(ctx)
-
-	if params.Page == nil {
-		params.Page = &defaultPage
-	}
-
-	if params.Perpage == nil {
-		params.Perpage = &defaultPerPage
-	}
-
-	totalCount, err := h.db.GetAppsCount(teamID)
-	if err != nil {
-		l.Error().Err(err).Str("teamID", teamID).Msg("getApps count - getting apps")
-		return ctx.NoContent(http.StatusBadRequest)
-	}
-
-	apps, err := h.db.GetApps(teamID, uint64(*params.Page), uint64(*params.Perpage))
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return ctx.NoContent(http.StatusNotFound)
-		}
-		l.Error().Err(err).Str("teamID", teamID).Msg("getApps - getting apps")
-		return ctx.NoContent(http.StatusBadRequest)
-	}
-
-	return ctx.JSON(http.StatusOK, applicationPage{totalCount, len(apps), apps})
-}
-
 func (h *Handler) CreateApp(ctx echo.Context, params codegen.CreateAppParams) error {
-	l := loggerWithUsername(l, ctx)
+	l := shared.LoggerWithUsername(l, ctx)
 
-	teamID := getTeamID(ctx)
+	teamID := shared.GetTeamID(ctx)
 
 	var request codegen.AppConfig
 	err := ctx.Bind(&request)
@@ -56,9 +27,9 @@ func (h *Handler) CreateApp(ctx echo.Context, params codegen.CreateAppParams) er
 
 	source := ""
 	if params.CloneFrom != nil {
-		cloneAppID, err := h.db.GetAppID(*params.CloneFrom)
+		cloneAppID, err := h.admin.GetAppID(*params.CloneFrom)
 		if err != nil {
-			return appNotFoundResponse(ctx, *params.CloneFrom)
+			return shared.AppNotFoundResponse(ctx, *params.CloneFrom)
 		}
 		source = cloneAppID
 	}
@@ -73,7 +44,7 @@ func (h *Handler) CreateApp(ctx echo.Context, params codegen.CreateAppParams) er
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	app, err = h.db.GetApp(app.ID)
+	app, err = h.admin.GetApp(app.ID)
 	if err != nil {
 		l.Error().Err(err).Str("appID", app.ID).Msg("addApp - getting added app")
 		return ctx.NoContent(http.StatusInternalServerError)
@@ -83,25 +54,8 @@ func (h *Handler) CreateApp(ctx echo.Context, params codegen.CreateAppParams) er
 	return ctx.JSON(http.StatusOK, app)
 }
 
-func (h *Handler) GetApp(ctx echo.Context, appIDorProductID string) error {
-	appID, err := h.db.GetAppID(appIDorProductID)
-	if err != nil {
-		return appNotFoundResponse(ctx, appIDorProductID)
-	}
-
-	app, err := h.db.GetApp(appID)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return ctx.NoContent(http.StatusNotFound)
-		}
-		l.Error().Err(err).Str("appID", appID).Msg("getApp - getting app")
-		return ctx.NoContent(http.StatusInternalServerError)
-	}
-	return ctx.JSON(http.StatusOK, app)
-}
-
 func (h *Handler) UpdateApp(ctx echo.Context, appIDorProductID string) error {
-	l := loggerWithUsername(l, ctx)
+	l := shared.LoggerWithUsername(l, ctx)
 
 	var request codegen.AppConfig
 	err := ctx.Bind(&request)
@@ -110,12 +64,12 @@ func (h *Handler) UpdateApp(ctx echo.Context, appIDorProductID string) error {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	appID, err := h.db.GetAppID(appIDorProductID)
+	appID, err := h.admin.GetAppID(appIDorProductID)
 	if err != nil {
-		return appNotFoundResponse(ctx, appIDorProductID)
+		return shared.AppNotFoundResponse(ctx, appIDorProductID)
 	}
 
-	oldApp, err := h.db.GetApp(appID)
+	oldApp, err := h.admin.GetApp(appID)
 	if err != nil {
 		l.Error().Err(err).Str("appID", appID).Msg("updateApp - getting old app to update")
 		return ctx.NoContent(http.StatusBadRequest)
@@ -129,7 +83,7 @@ func (h *Handler) UpdateApp(ctx echo.Context, appIDorProductID string) error {
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	app, err = h.db.GetApp(appID)
+	app, err = h.admin.GetApp(appID)
 	if err != nil {
 		l.Error().Err(err).Str("appID", appID).Msg("updateApp - getting updated app")
 		return ctx.NoContent(http.StatusInternalServerError)
@@ -141,14 +95,14 @@ func (h *Handler) UpdateApp(ctx echo.Context, appIDorProductID string) error {
 }
 
 func (h *Handler) DeleteApp(ctx echo.Context, appIDorProductID string) error {
-	l := loggerWithUsername(l, ctx)
+	l := shared.LoggerWithUsername(l, ctx)
 
-	appID, err := h.db.GetAppID(appIDorProductID)
+	appID, err := h.admin.GetAppID(appIDorProductID)
 	if err != nil {
-		return appNotFoundResponse(ctx, appIDorProductID)
+		return shared.AppNotFoundResponse(ctx, appIDorProductID)
 	}
 
-	app, err := h.db.GetApp(appID)
+	app, err := h.admin.GetApp(appID)
 	if err != nil {
 		l.Error().Err(err).Str("appID", appID).Msg("deleteApp - getting app to delete")
 		return ctx.NoContent(http.StatusInternalServerError)
@@ -189,10 +143,4 @@ func appFromRequest(name string, description *string, appID string, teamID strin
 	}
 
 	return &app
-}
-
-type applicationPage struct {
-	TotalCount   int                  `json:"totalCount"`
-	Count        int                  `json:"count"`
-	Applications []*types.Application `json:"applications"`
 }

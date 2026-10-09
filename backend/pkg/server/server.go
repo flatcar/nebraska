@@ -22,6 +22,9 @@ import (
 	"github.com/flatcar/nebraska/backend/pkg/codegen"
 	"github.com/flatcar/nebraska/backend/pkg/config"
 	"github.com/flatcar/nebraska/backend/pkg/handler"
+	adminhandler "github.com/flatcar/nebraska/backend/pkg/handler/admin"
+	basehandler "github.com/flatcar/nebraska/backend/pkg/handler/base"
+	runtimehandler "github.com/flatcar/nebraska/backend/pkg/handler/runtime"
 	"github.com/flatcar/nebraska/backend/pkg/logger"
 	custommiddleware "github.com/flatcar/nebraska/backend/pkg/middleware"
 	"github.com/flatcar/nebraska/backend/pkg/sessions"
@@ -131,10 +134,16 @@ func New(conf *config.Config, db *db.API, adminSvc *admin.Service, runtimeSvc *r
 		}))
 
 	// setup handler
-	handlers, err := handler.New(db, adminSvc, runtimeSvc, conf, authenticator)
+	baseHandler, err := basehandler.New(conf, authenticator)
 	if err != nil {
 		return nil, fmt.Errorf("error setting up handlers: %w", err)
 	}
+
+	handlers := handler.New(
+		adminhandler.New(adminSvc, runtimeSvc, conf),
+		baseHandler,
+		runtimehandler.New(runtimeSvc, conf),
+	)
 
 	// Register API handlers first
 	codegen.RegisterHandlers(e, handlers)

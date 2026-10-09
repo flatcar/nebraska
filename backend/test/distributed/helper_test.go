@@ -60,6 +60,7 @@ func singleURL() string  { return os.Getenv("NEBRASKA_TEST_SINGLE_URL") }
 func controlURL() string { return os.Getenv("NEBRASKA_TEST_CONTROL_URL") }
 func edgeURL() string    { return os.Getenv("NEBRASKA_TEST_EDGE_URL") }
 
+func singleDBURL() string  { return os.Getenv("NEBRASKA_TEST_SINGLE_DB_URL") }
 func controlDBURL() string { return os.Getenv("NEBRASKA_TEST_CONTROL_DB_URL") }
 func edgeDBURL() string    { return os.Getenv("NEBRASKA_TEST_EDGE_DB_URL") }
 

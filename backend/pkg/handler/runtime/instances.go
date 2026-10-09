@@ -1,4 +1,4 @@
-package handler
+package runtime
 
 import (
 	"database/sql"
@@ -7,15 +7,16 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/flatcar/nebraska/backend/pkg/codegen"
+	"github.com/flatcar/nebraska/backend/pkg/handler/internal/shared"
 )
 
 func (h *Handler) GetInstance(ctx echo.Context, appIDorProductID string, _ string, instanceID string) error {
-	appID, err := h.db.GetAppID(appIDorProductID)
+	appID, err := h.runtime.GetAppID(appIDorProductID)
 	if err != nil {
-		return appNotFoundResponse(ctx, appIDorProductID)
+		return shared.AppNotFoundResponse(ctx, appIDorProductID)
 	}
 
-	instance, err := h.db.GetInstance(instanceID, appID)
+	instance, err := h.runtime.GetInstance(instanceID, appID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
@@ -31,12 +32,12 @@ func (h *Handler) GetInstanceStatusHistory(ctx echo.Context, appIDorProductID st
 	if params.Limit != nil {
 		limit = *params.Limit
 	}
-	appID, err := h.db.GetAppID(appIDorProductID)
+	appID, err := h.runtime.GetAppID(appIDorProductID)
 	if err != nil {
-		return appNotFoundResponse(ctx, appIDorProductID)
+		return shared.AppNotFoundResponse(ctx, appIDorProductID)
 	}
 
-	instanceStatusHistory, err := h.db.GetInstanceStatusHistory(instanceID, appID, groupID, uint64(limit))
+	instanceStatusHistory, err := h.runtime.GetInstanceStatusHistory(instanceID, appID, groupID, uint64(limit))
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
@@ -49,7 +50,7 @@ func (h *Handler) GetInstanceStatusHistory(ctx echo.Context, appIDorProductID st
 }
 
 func (h *Handler) UpdateInstance(ctx echo.Context, instanceID string) error {
-	l := loggerWithUsername(l, ctx)
+	l := shared.LoggerWithUsername(l, ctx)
 
 	var request codegen.UpdateInstanceConfig
 
