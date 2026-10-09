@@ -19,6 +19,11 @@ const (
 // while to serve after its container starts.
 const nodeReadyTimeout = 90 * time.Second
 
+const (
+	replicationName    = "nebraska_admin"
+	replicationTimeout = 10 * time.Second
+)
+
 var nodeURLEnv = []string{
 	"NEBRASKA_TEST_SINGLE_URL",
 	"NEBRASKA_TEST_CONTROL_URL",
@@ -34,6 +39,7 @@ var defaultTestEnv = map[string]string{
 }
 
 func TestMain(m *testing.M) {
+	// Opt-in like test/api: check-backend-with-container runs ./... without it.
 	if os.Getenv("NEBRASKA_SKIP_TESTS") != "" || os.Getenv("NEBRASKA_RUN_DISTRIBUTED_TESTS") == "" {
 		return
 	}
@@ -50,6 +56,11 @@ func TestMain(m *testing.M) {
 			log.Printf("%s never served /health: %v\n", env, err)
 			os.Exit(1)
 		}
+	}
+
+	if err := setupReplication(controlDBURL(), edgeDBURL()); err != nil {
+		log.Printf("setting up replication: %v\n", err)
+		os.Exit(1)
 	}
 
 	os.Exit(m.Run())

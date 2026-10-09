@@ -41,6 +41,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Fixed package blacklist changes not appearing in UI immediately after save
 - Fixed instance statistics query that returned incorrect group dashboard counts. ([#1356](https://github.com/flatcar/nebraska/pull/1356), thanks to Thilo Fromm)
+- Fixed deleting an application or group on a control node leaving behind the rows each edge writes itself (`group_local`, `activity`, `event`, `instance_application`, `instance_status_history`). Logical replication skips foreign key actions on a subscriber, so two triggers now repeat them there. ([#1632](https://github.com/flatcar/nebraska/issues/1632))
 
 ## [4.0.0] - 02/09/2026
 
