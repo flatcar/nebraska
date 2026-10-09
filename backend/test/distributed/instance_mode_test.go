@@ -106,17 +106,16 @@ func TestClearGroupUpdatesOverride(t *testing.T) {
 
 			code, before := request(t, "GET", base+group, nil)
 			require.Equal(t, http.StatusOK, code, before)
-			require.Contains(t, before, `"policy_updates_enabled":false`)
+			require.Contains(t, before, `"local_overrides":{"policy_updates_enabled":false`)
+			assert.Contains(t, before, `"policy_updates_enabled":true`, "the admin default, not the brake")
 
 			code, body := request(t, "DELETE", base+override, nil)
 			require.Equal(t, http.StatusNoContent, code, body)
 			assert.Empty(t, body)
 
-			// Clearing the override has to restore the admin default rather
-			// than write a value of its own.
 			code, after := request(t, "GET", base+group, nil)
 			require.Equal(t, http.StatusOK, code, after)
-			assert.Contains(t, after, `"policy_updates_enabled":true`)
+			assert.Contains(t, after, `"local_overrides":{"policy_updates_enabled":null`)
 		})
 	}
 
@@ -133,4 +132,38 @@ func TestClearGroupUpdatesOverride(t *testing.T) {
 		assert.Equal(t, http.StatusNotImplemented, code)
 		assert.Contains(t, body, "local_override_not_supported")
 	})
+}
+
+// TestSavingAGroupKeepsTheLocalBrakeLocal saves a group the way the edit dialog
+// does, sending back every field it read, on a node whose brake has tripped.
+func TestSavingAGroupKeepsTheLocalBrakeLocal(t *testing.T) {
+	for _, tc := range []struct {
+		name         string
+		url, dbURL   func() string
+		showsBrake   bool
+		keepsDefault bool
+	}{
+		// The control node's default replicates to every edge.
+		{"control", controlURL, controlDBURL, false, true},
+		// A single node has one switch, so saving it as shown keeps it paused.
+		{"single", singleURL, singleDBURL, true, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			base, dbURL := tc.url(), tc.dbURL()
+			groupID := createGroup(t, base)
+			group := fmt.Sprintf("%s/api/apps/%s/groups/%s", base, seededAppID, groupID)
+
+			setUpdatesOverride(t, dbURL, groupID, false)
+
+			code, body := request(t, "GET", group, nil)
+			require.Equal(t, http.StatusOK, code, body)
+			assert.Equal(t, !tc.showsBrake, strings.Contains(body, `"policy_updates_enabled":true`), body)
+			assert.Equal(t, !tc.showsBrake, strings.Contains(body, `"local_overrides"`), body)
+
+			code, body = request(t, "PUT", group, strings.NewReader(editDialogSave(t, body)))
+			require.Equal(t, http.StatusOK, code, body)
+
+			assert.Equal(t, tc.keepsDefault, adminUpdatesEnabled(t, dbURL, groupID))
+		})
+	}
 }

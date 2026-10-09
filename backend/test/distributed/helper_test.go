@@ -1,6 +1,7 @@
 package distributed_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -62,6 +63,60 @@ func edgeURL() string    { return os.Getenv("NEBRASKA_TEST_EDGE_URL") }
 
 func controlDBURL() string { return os.Getenv("NEBRASKA_TEST_CONTROL_DB_URL") }
 func edgeDBURL() string    { return os.Getenv("NEBRASKA_TEST_EDGE_DB_URL") }
+func singleDBURL() string  { return os.Getenv("NEBRASKA_TEST_SINGLE_DB_URL") }
+
+// createGroup adds a group with updates enabled to the seeded application.
+func createGroup(t *testing.T, base string) string {
+	t.Helper()
+
+	name := fmt.Sprintf("g%d", time.Now().UnixNano())
+	payload := fmt.Sprintf(`{"name":%q,"policy_updates_enabled":true,"policy_timezone":"UTC","policy_period_interval":"15 minutes","policy_max_updates_per_period":2,"policy_update_timeout":"60 minutes"}`, name)
+	groups := fmt.Sprintf("%s/api/apps/%s/groups", base, seededAppID)
+
+	code, body := request(t, "POST", groups, strings.NewReader(payload))
+	require.Equal(t, http.StatusOK, code, body)
+
+	var group struct{ ID string }
+	require.NoError(t, json.Unmarshal([]byte(body), &group))
+
+	t.Cleanup(func() { request(t, "DELETE", groups+"/"+group.ID, nil) })
+
+	return group.ID
+}
+
+// editDialogSave builds the body GroupEditDialog sends on save: every field it
+// read, with only the description changed.
+func editDialogSave(t *testing.T, group string) string {
+	t.Helper()
+
+	var read map[string]any
+	require.NoError(t, json.Unmarshal([]byte(group), &read))
+
+	save := map[string]any{"description": "edited"}
+	for _, field := range []string{"id", "application_id", "name", "track", "policy_updates_enabled", "policy_safe_mode",
+		"policy_office_hours", "policy_timezone", "policy_period_interval", "policy_max_updates_per_period", "policy_update_timeout"} {
+		save[field] = read[field]
+	}
+
+	body, err := json.Marshal(save)
+	require.NoError(t, err)
+
+	return string(body)
+}
+
+func adminUpdatesEnabled(t *testing.T, dbURL, groupID string) bool {
+	t.Helper()
+
+	db, err := sqlx.Open("pgx", dbURL)
+	require.NoError(t, err)
+
+	defer db.Close()
+
+	var enabled bool
+	require.NoError(t, db.Get(&enabled, "select policy_updates_enabled from groups where id = $1", groupID))
+
+	return enabled
+}
 
 // setUpdatesOverride writes group_local directly. Nothing in the API sets this
 // column without a timed-out update under safe mode, which no E2E test can wait

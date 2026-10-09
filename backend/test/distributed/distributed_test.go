@@ -31,6 +31,7 @@ var defaultTestEnv = map[string]string{
 	"NEBRASKA_TEST_EDGE_URL":       "http://localhost:8014",
 	"NEBRASKA_TEST_CONTROL_DB_URL": "postgres://postgres:nebraska@localhost:8011/nebraska_control?sslmode=disable",
 	"NEBRASKA_TEST_EDGE_DB_URL":    "postgres://postgres:nebraska@localhost:8011/nebraska_edge?sslmode=disable",
+	"NEBRASKA_TEST_SINGLE_DB_URL":  "postgres://postgres:nebraska@localhost:8011/nebraska_single?sslmode=disable",
 }
 
 func TestMain(m *testing.M) {
