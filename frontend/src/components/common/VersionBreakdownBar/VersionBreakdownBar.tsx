@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 import { Channel } from '../../../api/apiDataTypes';
-import { cleanSemverVersion, makeColorsForVersions } from '../../../utils/helpers';
+import { makeColorsForVersions } from '../../../utils/helpers';
 
 const PREFIX = 'VersionProgressBar';
 
@@ -118,23 +118,13 @@ function VersionProgressBar(props: { version_breakdown: any; channel: Channel | 
     const versionsSorted = Object.keys(data).sort((version1, version2) => {
       // If the version is the channel's one, then it should come first.
       // If it's the 'Other', then it should come last.
-      // Otherwise compare the number of instances.
-      const cleanVersion1 = cleanSemverVersion(version1);
-      const cleanVersion2 = cleanSemverVersion(version2);
-      const results: { [key: string]: number } = { cleanVersion1: -1, cleanVersion2: 1 };
+      // Otherwise compare the percentages.
+      if (version1 === lastVersionChannel) return -1;
+      if (version2 === lastVersionChannel) return 1;
+      if (version1 === otherVersionLabel) return 1;
+      if (version2 === otherVersionLabel) return -1;
 
-      for (const version of [cleanVersion1, cleanVersion2]) {
-        switch (version) {
-          case lastVersionChannel:
-            return results[version];
-          case otherVersionLabel:
-            return -results[version];
-          default:
-            break;
-        }
-      }
-
-      return data[cleanVersion1] - data[cleanVersion2];
+      return (data[version1] || 0) - (data[version2] || 0);
     });
 
     data['key'] = 'version_breakdown';
