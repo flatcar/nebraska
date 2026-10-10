@@ -18,8 +18,8 @@ ORDER BY app_name, version, channel_name
 
 	failedUpdatesSQL = fmt.Sprintf(`
 SELECT a.name AS app_name, count(*) as fail_count
-FROM application a, event e, event_type et
-WHERE a.id = e.application_id AND e.event_type_id = et.id AND et.result = 0 AND et.type = 3 AND %s
+FROM application a, event e
+WHERE a.id = e.application_id AND e.event_result = 0 AND e.event_type = 3 AND %s
 GROUP BY app_name
 ORDER BY app_name
 `, ignoreFakeInstanceCondition("e.instance_id"))
