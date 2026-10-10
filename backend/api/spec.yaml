@@ -2122,6 +2122,14 @@ components:
           type: string
         ip:
           type: string
+        oem:
+          type: string
+          description: The hardware platform or cloud provider the instance runs on (e.g. ami, azure, gce, qemu).
+        alephVersion:
+          type: string
+          description: The OS version the instance was originally installed with.
+          x-oapi-codegen-extra-tags:
+            json: aleph_version,omitempty
         createdTs:
           type: string
           format: date-time
