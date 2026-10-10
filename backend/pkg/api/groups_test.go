@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"gopkg.in/guregu/null.v4"
 
+	"github.com/flatcar/nebraska/backend/pkg/api/admin"
 	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
@@ -219,6 +220,86 @@ func TestVersionBreakDownEmpty(t *testing.T) {
 	versionBreakdown, vbErr := a.GetGroupVersionBreakdown(g.ID)
 	assert.NoError(t, vbErr)
 	assert.Len(t, versionBreakdown, 0)
+}
+
+// setupOEMBreakdownGroup creates the app, channel and group the breakdown tests
+// read from, failing the test if any part of the arrange stage does.
+func setupOEMBreakdownGroup(t *testing.T, as *admin.Service) (*types.Application, *types.Group) {
+	t.Helper()
+
+	tTeam, err := as.AddTeam(&types.Team{Name: "test_team"})
+	require.NoError(t, err)
+	tApp, err := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	require.NoError(t, err)
+	tPkg, err := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	require.NoError(t, err)
+	tChannel, err := as.AddChannel(&types.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	require.NoError(t, err)
+	tGroup, err := as.AddGroup(&types.Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	require.NoError(t, err)
+
+	return tApp, tGroup
+}
+
+func TestOEMBreakDown(t *testing.T) {
+	t.Run("with instances", func(t *testing.T) {
+		a := newForTest(t)
+		defer a.Close()
+		rs := runtimeSvc(a)
+
+		tApp, tGroup := setupOEMBreakdownGroup(t, adminSvc(a))
+
+		// Two instances on the same OEM, one on another, one with no OEM at all,
+		// plus a fake instance that must be excluded from the breakdown.
+		for _, i := range []struct{ id, ip, oem string }{
+			{id: uuid.New().String(), ip: "10.0.0.1", oem: "azure"},
+			{id: uuid.New().String(), ip: "10.0.0.2", oem: "azure"},
+			{id: uuid.New().String(), ip: "10.0.0.3", oem: "ami"},
+			{id: uuid.New().String(), ip: "10.0.0.4"},
+			{id: "{" + uuid.New().String() + "}", ip: "10.0.0.5", oem: "azure"},
+		} {
+			_, err := rs.RegisterInstance(
+				types.Instance{ID: i.id, IP: i.ip, OEM: i.oem},
+				runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"),
+			)
+			require.NoError(t, err)
+		}
+
+		oemBreakdown, err := a.GetGroupOEMBreakdown(tGroup.ID)
+		require.NoError(t, err)
+		require.Len(t, oemBreakdown, 3)
+
+		// Ordered by instance count descending, then OEM ascending.
+		assert.Equal(t, "azure", oemBreakdown[0].OEM)
+		assert.Equal(t, 2, oemBreakdown[0].Instances)
+		assert.InDelta(t, 50.0, oemBreakdown[0].Percentage, 0.01)
+		assert.Equal(t, "ami", oemBreakdown[1].OEM)
+		assert.Equal(t, 1, oemBreakdown[1].Instances)
+		assert.InDelta(t, 25.0, oemBreakdown[1].Percentage, 0.01)
+		// An instance reporting no OEM is grouped as "unknown".
+		assert.Equal(t, "unknown", oemBreakdown[2].OEM)
+		assert.Equal(t, 1, oemBreakdown[2].Instances)
+		assert.InDelta(t, 25.0, oemBreakdown[2].Percentage, 0.01)
+
+		var total float64
+		for _, e := range oemBreakdown {
+			total += e.Percentage
+		}
+		assert.InDelta(t, 100.0, total, 0.01, "percentages must account for every counted instance")
+	})
+
+	t.Run("no instances", func(t *testing.T) {
+		a := newForTest(t)
+		defer a.Close()
+
+		_, tGroup := setupOEMBreakdownGroup(t, adminSvc(a))
+
+		oemBreakdown, err := a.GetGroupOEMBreakdown(tGroup.ID)
+		require.NoError(t, err)
+		// Non-nil so the handler serializes it as [] rather than null.
+		assert.NotNil(t, oemBreakdown)
+		assert.Empty(t, oemBreakdown)
+	})
 }
 
 func TestGroupTrackName(t *testing.T) {

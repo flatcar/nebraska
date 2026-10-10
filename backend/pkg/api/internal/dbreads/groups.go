@@ -336,6 +336,44 @@ func (q *Queries) GetGroupVersionBreakdown(groupID string) ([]*types.VersionBrea
 	return entryList, nil
 }
 
+// GetGroupOEMBreakdown returns the distribution of hardware/cloud platforms
+// (OEM) currently reported by the instances belonging to a given group.
+func (q *Queries) GetGroupOEMBreakdown(groupID string) ([]*types.OEMBreakdownEntry, error) {
+	// Non-nil so a group with no instances serializes to [] rather than null.
+	entryList := []*types.OEMBreakdownEntry{}
+
+	query := fmt.Sprintf(`
+	SELECT
+		COALESCE(NULLIF(i.oem, ''), 'unknown') AS oem,
+		count(*) AS instances,
+		(count(*) * 100.0 / sum(count(*)) OVER ()) AS percentage
+	FROM instance_application ia
+	JOIN instance i ON ia.instance_id = i.id
+	WHERE ia.group_id=$1
+		AND ia.last_check_for_updates > now() at time zone 'utc' - interval '%[1]s'
+		AND %[2]s
+	GROUP BY COALESCE(NULLIF(i.oem, ''), 'unknown')
+	ORDER BY instances DESC, oem ASC
+	`, validityInterval, ignoreFakeInstanceCondition("ia.instance_id"))
+	rows, err := q.db.Queryx(query, groupID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var entry types.OEMBreakdownEntry
+		err := rows.StructScan(&entry)
+		if err != nil {
+			return nil, err
+		}
+		entryList = append(entryList, &entry)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return entryList, nil
+}
+
 // getGroupInstancesStats returns a summary of the status of the
 // instances that belong to a given group.
 func (q *Queries) GetGroupInstancesStats(groupID, duration string) (*types.InstancesStatusStats, error) {
