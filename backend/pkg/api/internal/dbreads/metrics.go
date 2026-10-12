@@ -8,13 +8,23 @@ import (
 )
 
 var (
+	// appInstancesPerChannelMetricSQL only counts instances that are still
+	// considered "active" (i.e. within validityInterval of their last
+	// check-in), matching the activity window used everywhere else
+	// (GetApp, GetApps, GetGroupInstancesStats, GetGroupVersionBreakdown,
+	// GetInstances). It uses LEFT JOINs for groups/channel so instances
+	// whose group has no channel assigned (groups.channel_id can be NULL)
+	// are still counted instead of being silently dropped.
 	appInstancesPerChannelMetricSQL = fmt.Sprintf(`
-SELECT a.name AS app_name, ia.version AS version, c.name AS channel_name, count(ia.version) AS instances_count
-FROM instance_application ia, application a, channel c, groups g
-WHERE a.id = ia.application_id AND ia.group_id = g.id AND g.channel_id = c.id AND %s
+SELECT a.name AS app_name, ia.version AS version, COALESCE(c.name, '') AS channel_name, count(ia.version) AS instances_count
+FROM instance_application ia
+JOIN application a ON a.id = ia.application_id
+LEFT JOIN groups g ON ia.group_id = g.id
+LEFT JOIN channel c ON g.channel_id = c.id
+WHERE ia.last_check_for_updates > now() at time zone 'utc' - interval '%[1]s' AND %[2]s
 GROUP BY app_name, version, channel_name
 ORDER BY app_name, version, channel_name
-`, ignoreFakeInstanceCondition("ia.instance_id"))
+`, validityInterval, ignoreFakeInstanceCondition("ia.instance_id"))
 
 	failedUpdatesSQL = fmt.Sprintf(`
 SELECT a.name AS app_name, count(*) as fail_count
