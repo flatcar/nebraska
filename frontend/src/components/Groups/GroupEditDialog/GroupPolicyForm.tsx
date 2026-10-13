@@ -1,6 +1,7 @@
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import {
   Box,
+  Collapse,
   Divider,
   FormControlLabel,
   FormHelperText,
@@ -117,61 +118,83 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
           </Grid>
         </Grid>
       </Box>
+      <Box mt={1}>
+        <FormControlLabel
+          label={t('groups|unlimited_updates_lower')}
+          control={
+            <Field
+              name="updatesUnlimited"
+              component={Switch}
+              color="primary"
+              checked={values.updatesUnlimited}
+              onChange={(e: any) => {
+                setFieldValue('updatesUnlimited', e.target.checked);
+              }}
+            />
+          }
+        />
+        {values.updatesUnlimited && (
+          <FormHelperText>{t('groups|update_policy_no_rate_limit')}</FormHelperText>
+        )}
+      </Box>
       <Box my={2}>
-        <Grid container spacing={2} justifyContent="space-between" alignItems="center" size={12}>
-          <Grid size={5}>
-            <Box pl={2}>
-              <Field
-                name="maxUpdates"
-                component={TextField}
-                variant="standard"
-                label={t('groups|max_updates')}
-                margin="dense"
-                type="number"
-                fullWidth
-                inputProps={{ min: 0 }}
-              />
-            </Box>
+        {/* Formik keeps the hidden values, so the limit is restored when switching back. */}
+        <Collapse in={!values.updatesUnlimited} unmountOnExit>
+          <Grid container spacing={2} justifyContent="space-between" alignItems="center" size={12}>
+            <Grid size={5}>
+              <Box pl={2}>
+                <Field
+                  name="maxUpdates"
+                  component={TextField}
+                  variant="standard"
+                  label={t('groups|max_updates')}
+                  margin="dense"
+                  type="number"
+                  fullWidth
+                  inputProps={{ min: 1 }}
+                />
+              </Box>
+            </Grid>
+            <Grid>
+              <Typography color="textSecondary">{t('groups|time_per')}</Typography>
+            </Grid>
+            <Grid size={3}>
+              <Box mt={2}>
+                <Field
+                  name="updatesPeriodRange"
+                  component={TextField}
+                  variant="standard"
+                  margin="dense"
+                  type="number"
+                  fullWidth
+                  inputProps={{ min: 0 }}
+                />
+              </Box>
+            </Grid>
+            <Grid size={3}>
+              <Box mt={2} mr={2}>
+                <Field
+                  name="updatesPeriodUnit"
+                  component={TextField}
+                  variant="standard"
+                  margin="dense"
+                  select
+                  fullWidth
+                >
+                  <MenuItem value={'hours'} key={'hours'}>
+                    {t('groups|time_hours')}
+                  </MenuItem>
+                  <MenuItem value={'minutes'} key={'minutes'}>
+                    {t('groups|time_minutes')}
+                  </MenuItem>
+                  <MenuItem value={'days'} key={'days'}>
+                    {t('groups|time_days')}
+                  </MenuItem>
+                </Field>
+              </Box>
+            </Grid>
           </Grid>
-          <Grid>
-            <Typography color="textSecondary">{t('groups|time_per')}</Typography>
-          </Grid>
-          <Grid size={3}>
-            <Box mt={2}>
-              <Field
-                name="updatesPeriodRange"
-                component={TextField}
-                variant="standard"
-                margin="dense"
-                type="number"
-                fullWidth
-                inputProps={{ min: 0 }}
-              />
-            </Box>
-          </Grid>
-          <Grid size={3}>
-            <Box mt={2} mr={2}>
-              <Field
-                name="updatesPeriodUnit"
-                component={TextField}
-                variant="standard"
-                margin="dense"
-                select
-                fullWidth
-              >
-                <MenuItem value={'hours'} key={'hours'}>
-                  {t('groups|time_hours')}
-                </MenuItem>
-                <MenuItem value={'minutes'} key={'minutes'}>
-                  {t('groups|time_minutes')}
-                </MenuItem>
-                <MenuItem value={'days'} key={'days'}>
-                  {t('groups|time_days')}
-                </MenuItem>
-              </Field>
-            </Box>
-          </Grid>
-        </Grid>
+        </Collapse>
         <Grid size={12}>
           <Box mt={2} pl={2}>
             <FormLabel>{t('groups|updates_timeout_lower')}</FormLabel>

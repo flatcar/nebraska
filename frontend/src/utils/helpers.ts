@@ -9,6 +9,10 @@ import React from 'react';
 import API from '../api/API';
 import { Channel, Group, VersionBreakdownEntry } from '../api/apiDataTypes';
 
+// Groups allowing this many updates per period or more are not rate limited.
+// Needs to match maxParallelUpdates in backend/pkg/api/runtime/updates.go.
+export const MAX_UPDATES_PER_TIME_PERIOD = 900000;
+
 export const SearchFilterClassifiers = [
   {
     name: 'id',
