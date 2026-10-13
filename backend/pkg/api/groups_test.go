@@ -143,6 +143,52 @@ func TestGetGroup(t *testing.T) {
 	assert.Error(t, err, "Trying to get non existent group.")
 }
 
+func TestGetGroupSeparatesOverrideFromAdminPolicy(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	as := adminSvc(a)
+
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tGroup, err := as.AddGroup(&types.Group{Name: "test_group", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	require.NoError(t, err)
+
+	group, err := a.GetGroup(tGroup.ID)
+	require.NoError(t, err)
+	assert.True(t, group.AdminPolicy.PolicyUpdatesEnabled)
+	assert.False(t, group.LocalOverrides.PolicyUpdatesEnabled.Valid)
+
+	_, err = a.db().Exec(`update group_local set policy_updates_enabled_override = false, policy_safe_mode_override = true,
+		policy_office_hours_override = true, policy_timezone_override = 'Europe/Berlin', policy_period_interval_override = '1 hours',
+		policy_max_updates_per_period_override = 9, policy_update_timeout_override = '9 minutes' where group_id = $1`, tGroup.ID)
+	require.NoError(t, err)
+
+	group, err = a.GetGroup(tGroup.ID)
+	require.NoError(t, err)
+	// The rollout engine reads the top-level fields, so they must keep the brake.
+	assert.False(t, group.PolicyUpdatesEnabled)
+	assert.Equal(t, 9, group.PolicyMaxUpdatesPerPeriod)
+	assert.True(t, group.AdminPolicy.PolicyUpdatesEnabled)
+	assert.Equal(t, null.BoolFrom(false), group.LocalOverrides.PolicyUpdatesEnabled)
+	assert.Equal(t, null.IntFrom(9), group.LocalOverrides.PolicyMaxUpdatesPerPeriod)
+
+	group.ShowAdminPolicy()
+	assert.Equal(t, types.GroupPolicy{
+		PolicyUpdatesEnabled:      true,
+		PolicyPeriodInterval:      "15 minutes",
+		PolicyMaxUpdatesPerPeriod: 2,
+		PolicyUpdateTimeout:       "60 minutes",
+	}, types.GroupPolicy{
+		PolicyUpdatesEnabled:      group.PolicyUpdatesEnabled,
+		PolicySafeMode:            group.PolicySafeMode,
+		PolicyOfficeHours:         group.PolicyOfficeHours,
+		PolicyTimezone:            group.PolicyTimezone,
+		PolicyPeriodInterval:      group.PolicyPeriodInterval,
+		PolicyMaxUpdatesPerPeriod: group.PolicyMaxUpdatesPerPeriod,
+		PolicyUpdateTimeout:       group.PolicyUpdateTimeout,
+	})
+}
+
 func TestGetGroups(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()

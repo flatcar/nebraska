@@ -266,34 +266,44 @@ func (q *Queries) GetGroupUpdatesStats(group *types.Group) (*types.UpdatesStats,
 // groupsQuery returns a SelectDataset prepared to return all groups. It joins
 // the node-local group_local sidecar to expose rollout_in_progress and the
 // effective policy values, where effective means COALESCE(override, default).
+// It also returns the admin default and the override separately, so a caller
+// can tell which one it is showing.
 // The INNER JOIN is safe because the AFTER INSERT trigger on groups guarantees
 // a matching group_local row.
 func (q *Queries) groupsQuery() *goqu.SelectDataset {
-	eff := func(name string) interface{} {
-		return goqu.COALESCE(goqu.I("group_local."+name+"_override"), goqu.I("groups."+name)).As(name)
+	policy := []string{
+		"policy_updates_enabled",
+		"policy_safe_mode",
+		"policy_office_hours",
+		"policy_timezone",
+		"policy_period_interval",
+		"policy_max_updates_per_period",
+		"policy_update_timeout",
+	}
+	cols := []interface{}{
+		goqu.I("groups.id"),
+		goqu.I("groups.name"),
+		goqu.I("groups.description"),
+		goqu.I("groups.created_ts"),
+		goqu.I("groups.application_id"),
+		goqu.I("groups.channel_id"),
+		goqu.I("groups.track"),
+		goqu.I("group_local.rollout_in_progress"),
+	}
+	for _, name := range policy {
+		override := goqu.I("group_local." + name + "_override")
+		cols = append(cols,
+			goqu.COALESCE(override, goqu.I("groups."+name)).As(name),
+			goqu.I("groups."+name).As(goqu.C("admin_policy."+name)),
+			override.As(goqu.C("local_overrides."+name)),
+		)
 	}
 	return goqu.From("groups").
 		InnerJoin(
 			goqu.T("group_local"),
 			goqu.On(goqu.I("groups.id").Eq(goqu.I("group_local.group_id"))),
 		).
-		Select(
-			goqu.I("groups.id"),
-			goqu.I("groups.name"),
-			goqu.I("groups.description"),
-			goqu.I("groups.created_ts"),
-			goqu.I("groups.application_id"),
-			goqu.I("groups.channel_id"),
-			goqu.I("groups.track"),
-			goqu.I("group_local.rollout_in_progress"),
-			eff("policy_updates_enabled"),
-			eff("policy_safe_mode"),
-			eff("policy_office_hours"),
-			eff("policy_timezone"),
-			eff("policy_period_interval"),
-			eff("policy_max_updates_per_period"),
-			eff("policy_update_timeout"),
-		).
+		Select(cols...).
 		Order(goqu.I("groups.created_ts").Desc())
 }
 

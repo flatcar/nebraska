@@ -42,6 +42,8 @@ func (h *Handler) PaginateGroups(ctx echo.Context, appIDorProductID string, para
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
+	h.presentGroups(groups...)
+
 	return ctx.JSON(http.StatusOK, groupsPage{totalCount, len(groups), groups})
 }
 
@@ -75,6 +77,8 @@ func (h *Handler) CreateGroup(ctx echo.Context, appIDorProductID string) error {
 	}
 	l.Info().Msgf("addGroup - successfully added group %+v", group)
 
+	h.presentGroups(group)
+
 	return ctx.JSON(http.StatusOK, group)
 }
 
@@ -87,6 +91,8 @@ func (h *Handler) GetGroup(ctx echo.Context, _ string, groupID string) error {
 		l.Error().Err(err).Str("groupID", groupID).Msg("getGroup - getting group")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
+
+	h.presentGroups(group)
 
 	return ctx.JSON(http.StatusOK, group)
 }
@@ -140,6 +146,8 @@ func (h *Handler) UpdateGroup(ctx echo.Context, appIDorProductID string, groupID
 	}
 
 	l.Info().Msgf("updateGroup - successfully updated group %+v -> %+v", oldGroup, group)
+
+	h.presentGroups(group)
 
 	return ctx.JSON(http.StatusOK, group)
 }
@@ -362,6 +370,24 @@ func groupFromRequest(name string, description *string, policyMaxUpdatesPerPerio
 	}
 
 	return group
+}
+
+// presentGroups makes each group read back what UpdateGroup writes. A distributed
+// node reports its own overrides beside the admin policy rather than in it.
+func (h *Handler) presentGroups(groups ...*types.Group) {
+	for _, group := range groups {
+		if h.conf.InstanceMode.IsDistributed() {
+			group.ShowAdminPolicy()
+		} else {
+			group.LocalOverrides = nil
+		}
+	}
+}
+
+func (h *Handler) presentApps(apps ...*types.Application) {
+	for _, app := range apps {
+		h.presentGroups(app.Groups...)
+	}
 }
 
 type groupsPage struct {

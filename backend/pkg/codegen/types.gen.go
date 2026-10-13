@@ -154,22 +154,33 @@ type FlatcarActionPackage struct {
 
 // Group defines model for group.
 type Group struct {
-	ApplicationID             string    `json:"application_id"`
-	Channel                   *Channel  `db:"channel" json:"channel,omitempty"`
-	ChannelID                 string    `json:"channel_id"`
-	CreatedTs                 time.Time `json:"created_ts"`
-	Description               string    `json:"description"`
-	Id                        string    `json:"id"`
-	Name                      string    `json:"name"`
-	PolicyMaxUpdatesPerPeriod int       `json:"policy_max_updates_per_period"`
-	PolicyOfficeHours         bool      `json:"policy_office_hours"`
-	PolicyPeriodInterval      string    `json:"policy_period_interval"`
-	PolicySafeMode            bool      `json:"policy_safe_mode"`
-	PolicyTimezone            string    `json:"policy_timezone"`
-	PolicyUpdateTimeout       string    `json:"policy_update_timeout"`
-	PolicyUpdatesEnabled      bool      `json:"policy_updates_enabled"`
-	RolloutInProgress         bool      `json:"rollout_in_progress"`
-	Track                     string    `json:"track"`
+	ApplicationID string    `json:"application_id"`
+	Channel       *Channel  `db:"channel" json:"channel,omitempty"`
+	ChannelID     string    `json:"channel_id"`
+	CreatedTs     time.Time `json:"created_ts"`
+	Description   string    `json:"description"`
+	Id            string    `json:"id"`
+
+	// LocalOverrides Distributed nodes only. This node's overrides of the policy fields. Null means no override, so the admin default applies. On these nodes the policy fields above are the admin defaults, the values updateGroup writes.
+	LocalOverrides *struct {
+		PolicyMaxUpdatesPerPeriod *int    `json:"policy_max_updates_per_period"`
+		PolicyOfficeHours         *bool   `json:"policy_office_hours"`
+		PolicyPeriodInterval      *string `json:"policy_period_interval"`
+		PolicySafeMode            *bool   `json:"policy_safe_mode"`
+		PolicyTimezone            *string `json:"policy_timezone"`
+		PolicyUpdateTimeout       *string `json:"policy_update_timeout"`
+		PolicyUpdatesEnabled      *bool   `json:"policy_updates_enabled"`
+	} `json:"local_overrides,omitempty"`
+	Name                      string `json:"name"`
+	PolicyMaxUpdatesPerPeriod int    `json:"policy_max_updates_per_period"`
+	PolicyOfficeHours         bool   `json:"policy_office_hours"`
+	PolicyPeriodInterval      string `json:"policy_period_interval"`
+	PolicySafeMode            bool   `json:"policy_safe_mode"`
+	PolicyTimezone            string `json:"policy_timezone"`
+	PolicyUpdateTimeout       string `json:"policy_update_timeout"`
+	PolicyUpdatesEnabled      bool   `json:"policy_updates_enabled"`
+	RolloutInProgress         bool   `json:"rollout_in_progress"`
+	Track                     string `json:"track"`
 }
 
 // GroupConfig defines model for groupConfig.
