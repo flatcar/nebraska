@@ -134,7 +134,11 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
           }
         />
         {values.updatesUnlimited && (
-          <FormHelperText>{t('groups|update_policy_no_rate_limit')}</FormHelperText>
+          <FormHelperText>
+            {values.safeMode
+              ? t('groups|update_policy_no_rate_limit_safe_mode')
+              : t('groups|update_policy_no_rate_limit')}
+          </FormHelperText>
         )}
       </Box>
       <Box my={2}>
