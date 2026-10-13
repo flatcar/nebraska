@@ -16,6 +16,7 @@ import * as Yup from 'yup';
 
 import { Group } from '../../../api/apiDataTypes';
 import { applicationsStore } from '../../../stores/Stores';
+import { MAX_UPDATES_PER_TIME_PERIOD } from '../../../utils/helpers';
 import { DEFAULT_TIMEZONE } from '../../common/TimezonePicker';
 import GroupDetailsForm from './GroupDetailsForm';
 import GroupPolicyForm from './GroupPolicyForm';
@@ -55,8 +56,13 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
   const { appID } = useParams<{ appID: string }>();
 
   function handleSubmit(values: { [key: string]: any }, actions: { [key: string]: any }) {
-    const updatesPeriodPolicy =
-      values.updatesPeriodRange.toString() + ' ' + values.updatesPeriodUnit;
+    // The limit fields are not validated while updates are unlimited (the
+    // backend ignores the period then), so fall back to a valid period.
+    const updatesPeriodRange =
+      values.updatesUnlimited && !(Number(values.updatesPeriodRange) > 0)
+        ? 1
+        : values.updatesPeriodRange;
+    const updatesPeriodPolicy = updatesPeriodRange.toString() + ' ' + values.updatesPeriodUnit;
     const updatesTimeoutPolicy = values.updatesTimeout.toString() + ' ' + values.updatesTimeoutUnit;
 
     const data: {
@@ -68,7 +74,9 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
       policy_updates_enabled: values.updatesEnabled,
       policy_safe_mode: values.safeMode,
       policy_office_hours: values.onlyOfficeHours,
-      policy_max_updates_per_period: parseInt(values.maxUpdates),
+      policy_max_updates_per_period: values.updatesUnlimited
+        ? MAX_UPDATES_PER_TIME_PERIOD
+        : parseInt(values.maxUpdates, 10),
       policy_period_interval: updatesPeriodPolicy,
       policy_update_timeout: updatesTimeoutPolicy,
     };
@@ -184,12 +192,30 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
     return validation;
   }
 
+  // The limit fields keep their values while updates are unlimited, so they can
+  // be restored when switching back, but are only validated when a limit applies.
+  function whenLimited(schema: Yup.NumberSchema) {
+    return Yup.number()
+      .transform((value, originalValue) => (originalValue === '' ? undefined : value))
+      .when('updatesUnlimited', {
+        is: true,
+        then: unlimitedSchema => unlimitedSchema.notRequired(),
+        otherwise: () => schema,
+      });
+  }
+
   const validation = Yup.object().shape({
     name: maxCharacters(50, true).required(),
     track: maxCharacters(256),
     description: maxCharacters(250),
-    maxUpdates: positiveNum(),
-    updatesPeriodRange: positiveNum(),
+    // Values from MAX_UPDATES_PER_TIME_PERIOD up mean unlimited in the backend.
+    maxUpdates: whenLimited(
+      positiveNum().lessThan(
+        MAX_UPDATES_PER_TIME_PERIOD,
+        t('groups|max_updates_too_high', { number: MAX_UPDATES_PER_TIME_PERIOD })
+      )
+    ),
+    updatesPeriodRange: whenLimited(positiveNum()),
     updatesTimeout: positiveNum(),
   });
 
@@ -205,6 +231,7 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
       track: '',
       appID: appID,
       maxUpdates: 1,
+      updatesUnlimited: false,
       updatesPeriodRange: 1,
       updatesPeriodUnit: 'hours',
       updatesTimeout: 1,
@@ -222,6 +249,7 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
       group.policy_period_interval.split(' ');
     const [currentupdatesTimeout, currentUpdatesTimeoutUnit] =
       group.policy_update_timeout.split(' ');
+    const isUnlimited = group.policy_max_updates_per_period >= MAX_UPDATES_PER_TIME_PERIOD;
     initialValues = {
       name: group.name || '',
       track: group.track || '',
@@ -230,10 +258,13 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
       updatesEnabled: group.policy_updates_enabled,
       onlyOfficeHours: group.policy_office_hours,
       safeMode: group.policy_safe_mode,
-      maxUpdates: group.policy_max_updates_per_period,
+      updatesUnlimited: isUnlimited,
+      // An unlimited group has no real limit to show, so start from a safe
+      // default of 1 update per hour in case a limit gets set.
+      maxUpdates: isUnlimited ? 1 : group.policy_max_updates_per_period,
       channel: group.channel ? group.channel.id : '',
-      updatesPeriodRange: currentUpdatesPeriodRange,
-      updatesPeriodUnit: currentUpdatesPeriodUnit,
+      updatesPeriodRange: isUnlimited ? 1 : currentUpdatesPeriodRange,
+      updatesPeriodUnit: isUnlimited ? 'hours' : currentUpdatesPeriodUnit,
       updatesTimeout: currentupdatesTimeout,
       updatesTimeoutUnit: currentUpdatesTimeoutUnit,
     };

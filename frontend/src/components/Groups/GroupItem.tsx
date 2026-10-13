@@ -11,16 +11,13 @@ import _ from 'underscore';
 import API from '../../api/API';
 import { Group, VersionBreakdownEntry } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
-import { useGroupVersionBreakdown } from '../../utils/helpers';
+import { MAX_UPDATES_PER_TIME_PERIOD, useGroupVersionBreakdown } from '../../utils/helpers';
 import ChannelItem from '../Channels/ChannelItem';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../common/Card';
 import Empty from '../common/EmptyContent';
 import ListItem from '../common/ListItem';
 import MoreMenu from '../common/MoreMenu';
 import VersionProgressBar from '../common/VersionBreakdownBar';
-
-// From this number, we stop rate limiting in the backend
-const MAX_UPDATES_PER_TIME_PERIOD = 900000;
 
 export function formatUpdateLimits(t: TFunction, group: Group) {
   if (group.policy_max_updates_per_period >= MAX_UPDATES_PER_TIME_PERIOD) {

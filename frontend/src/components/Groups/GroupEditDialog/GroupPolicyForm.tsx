@@ -7,6 +7,8 @@ import {
   FormLabel,
   Grid,
   MenuItem,
+  Radio,
+  RadioGroup,
   Switch,
   Tooltip,
   Typography,
@@ -117,61 +119,87 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
           </Grid>
         </Grid>
       </Box>
+      <Box mt={2}>
+        <FormLabel id="rollout-rate-label">{t('groups|rollout_rate')}</FormLabel>
+        <RadioGroup
+          aria-labelledby="rollout-rate-label"
+          name="rolloutRate"
+          value={values.updatesUnlimited ? 'unlimited' : 'limited'}
+          onChange={(_e, value) => {
+            setFieldValue('updatesUnlimited', value === 'unlimited');
+          }}
+        >
+          <FormControlLabel
+            value="unlimited"
+            control={<Radio color="primary" />}
+            label={t('groups|rollout_rate_unlimited')}
+          />
+          {values.updatesUnlimited && (
+            <FormHelperText sx={{ mt: -1, ml: 4 }}>
+              {t('groups|update_policy_no_rate_limit')}
+            </FormHelperText>
+          )}
+          <Box display="flex" alignItems="center" flexWrap="wrap" columnGap={1.5}>
+            <FormControlLabel
+              value="limited"
+              control={<Radio color="primary" />}
+              label={t('groups|rollout_rate_limited')}
+            />
+            {/* Formik keeps the hidden values, so the limit is restored when switching back. */}
+            {!values.updatesUnlimited && (
+              <>
+                <Box width="7em">
+                  <Field
+                    name="maxUpdates"
+                    component={TextField}
+                    variant="standard"
+                    margin="dense"
+                    type="number"
+                    fullWidth
+                    inputProps={{ min: 1, 'aria-label': t('groups|max_updates') }}
+                  />
+                </Box>
+                <Typography color="textSecondary">
+                  {t('groups|updates_per', { count: Number(values.maxUpdates) })}
+                </Typography>
+                <Box width="5em">
+                  <Field
+                    name="updatesPeriodRange"
+                    component={TextField}
+                    variant="standard"
+                    margin="dense"
+                    type="number"
+                    fullWidth
+                    inputProps={{ min: 1, 'aria-label': t('groups|period_length') }}
+                  />
+                </Box>
+                <Box width="7em">
+                  <Field
+                    name="updatesPeriodUnit"
+                    component={TextField}
+                    variant="standard"
+                    margin="dense"
+                    select
+                    fullWidth
+                    inputProps={{ 'aria-label': t('groups|period_unit') }}
+                  >
+                    <MenuItem value={'hours'} key={'hours'}>
+                      {t('groups|time_hours')}
+                    </MenuItem>
+                    <MenuItem value={'minutes'} key={'minutes'}>
+                      {t('groups|time_minutes')}
+                    </MenuItem>
+                    <MenuItem value={'days'} key={'days'}>
+                      {t('groups|time_days')}
+                    </MenuItem>
+                  </Field>
+                </Box>
+              </>
+            )}
+          </Box>
+        </RadioGroup>
+      </Box>
       <Box my={2}>
-        <Grid container spacing={2} justifyContent="space-between" alignItems="center" size={12}>
-          <Grid size={5}>
-            <Box pl={2}>
-              <Field
-                name="maxUpdates"
-                component={TextField}
-                variant="standard"
-                label={t('groups|max_updates')}
-                margin="dense"
-                type="number"
-                fullWidth
-                inputProps={{ min: 0 }}
-              />
-            </Box>
-          </Grid>
-          <Grid>
-            <Typography color="textSecondary">{t('groups|time_per')}</Typography>
-          </Grid>
-          <Grid size={3}>
-            <Box mt={2}>
-              <Field
-                name="updatesPeriodRange"
-                component={TextField}
-                variant="standard"
-                margin="dense"
-                type="number"
-                fullWidth
-                inputProps={{ min: 0 }}
-              />
-            </Box>
-          </Grid>
-          <Grid size={3}>
-            <Box mt={2} mr={2}>
-              <Field
-                name="updatesPeriodUnit"
-                component={TextField}
-                variant="standard"
-                margin="dense"
-                select
-                fullWidth
-              >
-                <MenuItem value={'hours'} key={'hours'}>
-                  {t('groups|time_hours')}
-                </MenuItem>
-                <MenuItem value={'minutes'} key={'minutes'}>
-                  {t('groups|time_minutes')}
-                </MenuItem>
-                <MenuItem value={'days'} key={'days'}>
-                  {t('groups|time_days')}
-                </MenuItem>
-              </Field>
-            </Box>
-          </Grid>
-        </Grid>
         <Grid size={12}>
           <Box mt={2} pl={2}>
             <FormLabel>{t('groups|updates_timeout_lower')}</FormLabel>
