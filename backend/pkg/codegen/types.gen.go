@@ -224,6 +224,9 @@ type GroupStatusCountTimeline = map[time.Time]map[int]map[string]uint64
 // GroupVersionBreakdown defines model for groupVersionBreakdown.
 type GroupVersionBreakdown = []VersionBreakdownEntry
 
+// GroupOEMBreakdown defines model for groupOEMBreakdown.
+type GroupOEMBreakdown = []OEMBreakdownEntry
+
 // GroupVersionCountTimeline defines model for groupVersionCountTimeline.
 type GroupVersionCountTimeline = map[time.Time]map[string]uint64
 
@@ -332,6 +335,13 @@ type VersionBreakdownEntry struct {
 	Instances  *int    `json:"instances,omitempty"`
 	Percentage float64 `json:"percentage"`
 	Version    string  `json:"version"`
+}
+
+// OEMBreakdownEntry defines model for oemBreakdownEntry.
+type OEMBreakdownEntry struct {
+	Instances  *int    `json:"instances,omitempty"`
+	OEM        string  `json:"oem"`
+	Percentage float64 `json:"percentage"`
 }
 
 // PaginateActivityParams defines parameters for PaginateActivity.
