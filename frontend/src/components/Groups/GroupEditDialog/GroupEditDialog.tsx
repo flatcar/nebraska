@@ -56,13 +56,20 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
   const { appID } = useParams<{ appID: string }>();
 
   function handleSubmit(values: { [key: string]: any }, actions: { [key: string]: any }) {
-    // The limit fields are not validated while updates are unlimited (the
-    // backend ignores the period then), so fall back to a valid period.
-    const updatesPeriodRange =
-      values.updatesUnlimited && !(Number(values.updatesPeriodRange) > 0)
-        ? 1
-        : values.updatesPeriodRange;
-    const updatesPeriodPolicy = updatesPeriodRange.toString() + ' ' + values.updatesPeriodUnit;
+    let updatesPeriodPolicy: string;
+    if (values.updatesUnlimited && !isCreation) {
+      // Safe mode still counts updates per period, so keep the stored period
+      // rather than the default shown in the hidden limit fields.
+      updatesPeriodPolicy = props.data.group.policy_period_interval;
+    } else {
+      // The limit fields are not validated while updates are unlimited, so
+      // fall back to a valid period.
+      const updatesPeriodRange =
+        values.updatesUnlimited && !(Number(values.updatesPeriodRange) > 0)
+          ? 1
+          : values.updatesPeriodRange;
+      updatesPeriodPolicy = updatesPeriodRange.toString() + ' ' + values.updatesPeriodUnit;
+    }
     const updatesTimeoutPolicy = values.updatesTimeout.toString() + ' ' + values.updatesTimeoutUnit;
 
     const data: {

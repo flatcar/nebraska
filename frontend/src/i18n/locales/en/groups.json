@@ -30,6 +30,7 @@
   "updates_per_other": "updates per",
   "update_policy_unlimited": "Unlimited number of parallel updates",
   "update_policy_no_rate_limit": "Instances are not rate limited and can all update in the same period.",
+  "update_policy_no_rate_limit_safe_mode": "No limit per period, but safe mode still updates 1 instance at a time.",
   "max_updates_too_high": "Must be less than {{number, number}}. For no limit, choose Unlimited.",
   "update": "Update",
   "update_limits": "Update Limits",

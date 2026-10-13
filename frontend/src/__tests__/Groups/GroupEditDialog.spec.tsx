@@ -20,7 +20,7 @@ import GroupEditDialog from '../../components/Groups/GroupEditDialog';
 import { theme } from '../../TestHelpers/theme';
 import { MAX_UPDATES_PER_TIME_PERIOD } from '../../utils/helpers';
 
-function makeGroup(maxUpdates: number, periodInterval: string) {
+function makeGroup(maxUpdates: number, periodInterval: string, safeMode = false) {
   return {
     id: 'group-1',
     name: 'Stable',
@@ -29,7 +29,7 @@ function makeGroup(maxUpdates: number, periodInterval: string) {
     policy_timezone: 'UTC',
     policy_updates_enabled: true,
     policy_office_hours: false,
-    policy_safe_mode: false,
+    policy_safe_mode: safeMode,
     policy_max_updates_per_period: maxUpdates,
     policy_period_interval: periodInterval,
     policy_update_timeout: '60 minutes',
@@ -90,9 +90,25 @@ describe('GroupEditDialog update limits', () => {
     await submit();
 
     await waitFor(() => expect(mockUpdateGroup).toHaveBeenCalledTimes(1));
-    expect(mockUpdateGroup.mock.calls[0][0].policy_max_updates_per_period).toBe(
-      MAX_UPDATES_PER_TIME_PERIOD
-    );
+    const saved = mockUpdateGroup.mock.calls[0][0];
+    expect(saved.policy_max_updates_per_period).toBe(MAX_UPDATES_PER_TIME_PERIOD);
+    expect(saved.policy_period_interval).toBe('2 hours');
+  });
+
+  it('keeps the stored period when saving a group that stays unlimited', async () => {
+    await renderPolicyTab(makeGroup(MAX_UPDATES_PER_TIME_PERIOD, '15 minutes', true));
+    await submit();
+
+    await waitFor(() => expect(mockUpdateGroup).toHaveBeenCalledTimes(1));
+    const saved = mockUpdateGroup.mock.calls[0][0];
+    expect(saved.policy_max_updates_per_period).toBe(MAX_UPDATES_PER_TIME_PERIOD);
+    expect(saved.policy_period_interval).toBe('15 minutes');
+  });
+
+  it('explains that safe mode still applies to unlimited groups', async () => {
+    await renderPolicyTab(makeGroup(MAX_UPDATES_PER_TIME_PERIOD, '1 minutes', true));
+    expect(screen.getByText(/safe mode still updates 1 instance at a time/)).toBeTruthy();
+    expect(screen.queryByText(/can all update in the same period/)).toBeNull();
   });
 
   it('switches an unlimited group to a safe default limit', async () => {
