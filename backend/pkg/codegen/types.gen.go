@@ -292,11 +292,14 @@ type Package struct {
 	Id          string  `json:"id"`
 
 	// IsFloor Indicates if this package is a floor version for the current context
-	IsFloor *bool  `json:"is_floor,omitempty"`
-	Size    string `json:"size"`
-	Type    int    `json:"type"`
-	Url     string `json:"url"`
-	Version string `json:"version"`
+	IsFloor *bool `json:"is_floor,omitempty"`
+
+	// Labels Key/value strings sent with the package. Keys use A-Z a-z 0-9 . _ - (max 255). Omit to keep, {} to clear.
+	Labels  *PackageLabels `json:"labels,omitempty"`
+	Size    string         `json:"size"`
+	Type    int            `json:"type"`
+	Url     string         `json:"url"`
+	Version string         `json:"version"`
 }
 
 // PackageConfig defines model for packageConfig.
@@ -309,11 +312,17 @@ type PackageConfig struct {
 	Filename          string                `json:"filename"`
 	FlatcarAction     *FlatcarActionPackage `json:"flatcar_action"`
 	Hash              string                `json:"hash"`
-	Size              string                `json:"size"`
-	Type              int                   `json:"type"`
-	Url               string                `json:"url"`
-	Version           string                `json:"version"`
+
+	// Labels Key/value strings sent with the package. Keys use A-Z a-z 0-9 . _ - (max 255). Omit to keep, {} to clear.
+	Labels  *PackageLabels `json:"labels,omitempty"`
+	Size    string         `json:"size"`
+	Type    int            `json:"type"`
+	Url     string         `json:"url"`
+	Version string         `json:"version"`
 }
+
+// PackageLabels Key/value strings sent with the package. Keys use A-Z a-z 0-9 . _ - (max 255). Omit to keep, {} to clear.
+type PackageLabels map[string]string
 
 // PackagePage defines model for packagePage.
 type PackagePage struct {

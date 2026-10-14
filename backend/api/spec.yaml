@@ -1554,6 +1554,14 @@ components:
       x-oapi-codegen-extra-tags:
         json: extra_files
 
+    packageLabels:
+      type: object
+      description: "Key/value strings sent with the package. Keys use A-Z a-z 0-9 . _ - (max 255). Omit to keep, {} to clear."
+      maxProperties: 16
+      additionalProperties:
+        type: string
+        maxLength: 1024
+
     packageConfig:
       type: object
       required:
@@ -1594,6 +1602,8 @@ components:
           $ref: "#/components/schemas/flatcarActionPackage"
         extraFiles:
           $ref: "#/components/schemas/extraFiles"
+        labels:
+          $ref: "#/components/schemas/packageLabels"
 
     updateInstanceConfig:
       type: object
@@ -1787,6 +1797,8 @@ components:
             json: channels_blacklist
         extraFiles:
           $ref: "#/components/schemas/extraFiles"
+        labels:
+          $ref: "#/components/schemas/packageLabels"
         applicationID:
           type: string
           x-oapi-codegen-extra-tags:
