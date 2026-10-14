@@ -1,6 +1,7 @@
 package distributed_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -62,6 +63,60 @@ func edgeURL() string    { return os.Getenv("NEBRASKA_TEST_EDGE_URL") }
 
 func controlDBURL() string { return os.Getenv("NEBRASKA_TEST_CONTROL_DB_URL") }
 func edgeDBURL() string    { return os.Getenv("NEBRASKA_TEST_EDGE_DB_URL") }
+func singleDBURL() string  { return os.Getenv("NEBRASKA_TEST_SINGLE_DB_URL") }
+
+// createGroup adds a group with updates enabled to the seeded application.
+func createGroup(t *testing.T, base string) string {
+	t.Helper()
+
+	name := fmt.Sprintf("g%d", time.Now().UnixNano())
+	payload := fmt.Sprintf(`{"name":%q,"policy_updates_enabled":true,"policy_timezone":"UTC","policy_period_interval":"15 minutes","policy_max_updates_per_period":2,"policy_update_timeout":"60 minutes"}`, name)
+	groups := fmt.Sprintf("%s/api/apps/%s/groups", base, seededAppID)
+
+	code, body := request(t, "POST", groups, strings.NewReader(payload))
+	require.Equal(t, http.StatusOK, code, body)
+
+	var group struct{ ID string }
+	require.NoError(t, json.Unmarshal([]byte(body), &group))
+
+	t.Cleanup(func() { request(t, "DELETE", groups+"/"+group.ID, nil) })
+
+	return group.ID
+}
+
+// editDialogSave builds the body GroupEditDialog sends on save: every field it
+// read, with only the description changed.
+func editDialogSave(t *testing.T, group string) string {
+	t.Helper()
+
+	var read map[string]any
+	require.NoError(t, json.Unmarshal([]byte(group), &read))
+
+	save := map[string]any{"description": "edited"}
+	for _, field := range []string{"id", "application_id", "name", "track", "policy_updates_enabled", "policy_safe_mode",
+		"policy_office_hours", "policy_timezone", "policy_period_interval", "policy_max_updates_per_period", "policy_update_timeout"} {
+		save[field] = read[field]
+	}
+
+	body, err := json.Marshal(save)
+	require.NoError(t, err)
+
+	return string(body)
+}
+
+func adminUpdatesEnabled(t *testing.T, dbURL, groupID string) bool {
+	t.Helper()
+
+	db, err := sqlx.Open("pgx", dbURL)
+	require.NoError(t, err)
+
+	defer db.Close()
+
+	var enabled bool
+	require.NoError(t, db.Get(&enabled, "select policy_updates_enabled from groups where id = $1", groupID))
+
+	return enabled
+}
 
 // setUpdatesOverride writes group_local directly. Nothing in the API sets this
 // column without a timed-out update under safe mode, which no E2E test can wait
@@ -80,6 +135,119 @@ func setUpdatesOverride(t *testing.T, dbURL, groupID string, value any) {
 	rows, err := result.RowsAffected()
 	require.NoError(t, err)
 	require.Equal(t, int64(1), rows, "no group_local row for %s", groupID)
+}
+
+// setupReplication subscribes the edge database to the control database's admin
+// tables. Both nodes migrate to the same seeded rows, so nothing is copied.
+func setupReplication(controlDSN, edgeDSN string) error {
+	control, err := sqlx.Open("pgx", controlDSN)
+	if err != nil {
+		return err
+	}
+	defer control.Close()
+
+	edge, err := sqlx.Open("pgx", edgeDSN)
+	if err != nil {
+		return err
+	}
+	defer edge.Close()
+
+	var subscribed bool
+	if err := edge.Get(&subscribed, "select exists (select 1 from pg_subscription where subname = $1)", replicationName); err != nil {
+		return err
+	}
+	if subscribed {
+		return nil
+	}
+
+	// The admin tables are the ones grants.sql lets only the admin role write.
+	var tables []string
+	err = control.Select(&tables, `
+		select format('public.%I', c.relname)
+		from pg_class c join pg_namespace n on n.oid = c.relnamespace
+		where n.nspname = 'public' and c.relkind = 'r'
+		  and has_table_privilege('nebraska_admin_' || current_database(), c.oid, 'insert')
+		  and not has_table_privilege('nebraska_runtime_' || current_database(), c.oid, 'insert')
+		order by 1`)
+	if err != nil {
+		return err
+	}
+	if len(tables) == 0 {
+		return fmt.Errorf("no admin tables found to publish")
+	}
+
+	var controlDB string
+	if err := control.Get(&controlDB, "select current_database()"); err != nil {
+		return err
+	}
+
+	if _, err := control.Exec(fmt.Sprintf("create publication %s for table %s", replicationName, strings.Join(tables, ", "))); err != nil {
+		return err
+	}
+
+	// A subscription cannot create its own slot on the cluster it runs in.
+	if _, err := control.Exec("select pg_create_logical_replication_slot($1, 'pgoutput')", replicationName); err != nil {
+		return err
+	}
+
+	_, err = edge.Exec(fmt.Sprintf(
+		"create subscription %[1]s connection 'host=localhost dbname=%[2]s user=postgres password=nebraska' publication %[1]s with (create_slot = false, slot_name = %[1]s, copy_data = false)",
+		replicationName, controlDB))
+
+	return err
+}
+
+func openDB(t *testing.T, url string) *sqlx.DB {
+	t.Helper()
+
+	db, err := sqlx.Open("pgx", url)
+	require.NoError(t, err)
+	t.Cleanup(func() { db.Close() })
+
+	return db
+}
+
+func count(t *testing.T, db *sqlx.DB, query string, args ...any) int {
+	t.Helper()
+
+	var n int
+	require.NoError(t, db.Get(&n, query, args...))
+
+	return n
+}
+
+// waitCount polls, because a change on the control node reaches the edge
+// asynchronously.
+func waitCount(t *testing.T, db *sqlx.DB, want int, query string, args ...any) {
+	t.Helper()
+
+	deadline := time.Now().Add(replicationTimeout)
+
+	for {
+		got := count(t, db, query, args...)
+		if got == want || time.Now().After(deadline) {
+			require.Equal(t, want, got, query)
+			return
+		}
+
+		time.Sleep(50 * time.Millisecond)
+	}
+}
+
+// createID posts payload and returns the id of the created resource.
+func createID(t *testing.T, url, payload string) string {
+	t.Helper()
+
+	code, body := request(t, "POST", url, strings.NewReader(payload))
+	require.Equal(t, http.StatusOK, code, body)
+
+	var created struct {
+		ID string `json:"id"`
+	}
+	require.NoError(t, json.Unmarshal([]byte(body), &created))
+	require.NotEmpty(t, created.ID, body)
+
+	return created.ID
 }
 
 // request returns the status and the raw body, so a test can assert on an error

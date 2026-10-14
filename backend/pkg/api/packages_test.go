@@ -1,6 +1,8 @@
 package api
 
 import (
+	"fmt"
+	"strings"
 	"testing"
 
 	"gopkg.in/guregu/null.v4"
@@ -463,4 +465,148 @@ func TestMultiFilePackage(t *testing.T) {
 	pkg, err = as.AddPackage(pkg)
 	assert.NoError(t, err)
 	assert.NotNil(t, pkg.ExtraFiles)
+}
+
+func TestPackageLabels(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	as := adminSvc(a)
+
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+
+	labels := types.Labels{"image.metadata.sha384": "abc123", "build-id": "42"}
+	tPkg, err := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Labels: labels})
+	assert.NoError(t, err)
+
+	pkg, err := a.GetPackage(tPkg.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, labels, pkg.Labels)
+
+	pkgs, err := a.GetPackages(tApp.ID, 1, 10, nil)
+	assert.NoError(t, err)
+	assert.Equal(t, labels, pkgs[0].Labels)
+
+	// A package added without labels reads back with none.
+	tPkg2, err := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.2.0", ApplicationID: tApp.ID})
+	assert.NoError(t, err)
+	pkg, err = a.GetPackage(tPkg2.ID)
+	assert.NoError(t, err)
+	assert.Empty(t, pkg.Labels)
+
+	// Updating without labels keeps them.
+	err = as.UpdatePackage(&types.Package{ID: tPkg.ID, Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", Description: null.StringFrom("updated")})
+	assert.NoError(t, err)
+	pkg, err = a.GetPackage(tPkg.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, "updated", pkg.Description.String)
+	assert.Equal(t, labels, pkg.Labels)
+
+	// Updating with labels replaces them.
+	err = as.UpdatePackage(&types.Package{ID: tPkg.ID, Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", Labels: types.Labels{"build-id": "43"}})
+	assert.NoError(t, err)
+	pkg, err = a.GetPackage(tPkg.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, types.Labels{"build-id": "43"}, pkg.Labels)
+
+	// Updating with an empty set removes them.
+	err = as.UpdatePackage(&types.Package{ID: tPkg.ID, Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", Labels: types.Labels{}})
+	assert.NoError(t, err)
+	pkg, err = a.GetPackage(tPkg.ID)
+	assert.NoError(t, err)
+	assert.Empty(t, pkg.Labels)
+}
+
+func TestPackageLabelsValidation(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	as := adminSvc(a)
+
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, err := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	assert.NoError(t, err)
+
+	tooMany := types.Labels{}
+	for i := 0; i <= types.MaxLabels; i++ {
+		tooMany[fmt.Sprintf("key%d", i)] = "v"
+	}
+
+	invalid := map[string]types.Labels{
+		"empty_key":                {"": "v"},
+		"space_in_key":             {"a b": "v"},
+		"slash_in_key":             {"a/b": "v"},
+		"non_ascii_key":            {"kéy": "v"},
+		"key_too_long":             {strings.Repeat("k", types.MaxLabelKeyLength+1): "v"},
+		"value_too_long":           {"k": strings.Repeat("v", types.MaxLabelValueLength+1)},
+		"multibyte_value_too_long": {"k": strings.Repeat("é", types.MaxLabelValueLength+1)},
+		"nul_in_value":             {"k": "a\x00b"},
+		"control_character":        {"k": "a\x01b"},
+		"escape_character":         {"k": "\x1b[31m"},
+		"u_fffe_in_value":          {"k": "a\uFFFEb"},
+		"u_ffff_in_value":          {"k": "a\uFFFFb"},
+		"invalid_utf8_value":       {"k": "a\xffb"},
+		"too_many_labels":          tooMany,
+	}
+	for name, labels := range invalid {
+		t.Run(name, func(t *testing.T) {
+			_, err := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "13.0.0", ApplicationID: tApp.ID, Labels: labels})
+			assert.ErrorIs(t, err, types.ErrInvalidLabels)
+
+			err = as.UpdatePackage(&types.Package{ID: tPkg.ID, Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", Labels: labels})
+			assert.ErrorIs(t, err, types.ErrInvalidLabels)
+		})
+	}
+
+	// Values may hold any other text, including characters that need
+	// escaping in XML, and labels may go right up to the limits.
+	valid := types.Labels{
+		"k.1_x-y": "<a href=\"x\">&]]>\t\n\r'",
+		"empty":   "",
+		"unicode": "é中😀\uE000\uFFFD",
+		strings.Repeat("k", types.MaxLabelKeyLength): strings.Repeat("v", types.MaxLabelValueLength),
+		"multibyte_at_limit":                         strings.Repeat("é", types.MaxLabelValueLength),
+	}
+	for i := len(valid); i < types.MaxLabels; i++ {
+		valid[fmt.Sprintf("fill%d", i)] = "v"
+	}
+	err = as.UpdatePackage(&types.Package{ID: tPkg.ID, Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", Labels: valid})
+	assert.NoError(t, err)
+	pkg, err := a.GetPackage(tPkg.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, valid, pkg.Labels)
+}
+
+func TestPackageLabelsColumnCheck(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	as := adminSvc(a)
+
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, err := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	assert.NoError(t, err)
+
+	// The database refuses what Labels.Scan could not read back, even when
+	// the row is written without going through Nebraska.
+	for name, labels := range map[string]string{
+		"array":         `["k"]`,
+		"number_value":  `{"build": 1}`,
+		"null_value":    `{"k": null}`,
+		"object_value":  `{"k": {"x": "y"}}`,
+		"boolean_value": `{"k": true}`,
+	} {
+		t.Run(name, func(t *testing.T) {
+			_, err := a.db().Exec("update package set labels = $1::jsonb where id = $2", labels, tPkg.ID)
+			assert.Error(t, err)
+		})
+	}
+
+	for _, labels := range []string{`{}`, `{"k": "v", "build": "42"}`} {
+		_, err := a.db().Exec("update package set labels = $1::jsonb where id = $2", labels, tPkg.ID)
+		assert.NoError(t, err, labels)
+	}
+	pkg, err := a.GetPackage(tPkg.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, types.Labels{"k": "v", "build": "42"}, pkg.Labels)
 }

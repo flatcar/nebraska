@@ -70,6 +70,7 @@ type Package struct {
 	FlatcarAction     *FlatcarAction `db:"flatcar_action" json:"flatcar_action"`
 	Arch              Arch           `db:"arch" json:"arch"`
 	ExtraFiles        []File         `db:"extra_files" json:"extra_files"`
+	Labels            Labels         `db:"labels" json:"labels"`
 
 	// Floor metadata (populated when querying floor packages)
 	IsFloor     bool        `db:"is_floor" json:"is_floor,omitempty"`

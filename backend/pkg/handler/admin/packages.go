@@ -1,7 +1,8 @@
-package handler
+package admin
 
 import (
 	"database/sql"
+	"errors"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -9,45 +10,15 @@ import (
 
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/codegen"
+	"github.com/flatcar/nebraska/backend/pkg/handler/internal/shared"
 )
 
-func (h *Handler) PaginatePackages(ctx echo.Context, appIDorProductID string, params codegen.PaginatePackagesParams) error {
-	if params.Page == nil {
-		params.Page = &defaultPage
-	}
-
-	if params.Perpage == nil {
-		params.Perpage = &defaultPerPage
-	}
-
-	appID, err := h.db.GetAppID(appIDorProductID)
-	if err != nil {
-		return appNotFoundResponse(ctx, appIDorProductID)
-	}
-
-	totalCount, err := h.db.GetPackagesCount(appID, params.SearchVersion)
-	if err != nil {
-		l.Error().Err(err).Str("appID", appID).Msg("getPackages count - encoding packages")
-		return ctx.NoContent(http.StatusInternalServerError)
-	}
-	pkgs, err := h.db.GetPackages(appID, uint64(*params.Page), uint64(*params.Perpage), params.SearchVersion)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return ctx.NoContent(http.StatusNotFound)
-		}
-		l.Error().Err(err).Str("appID", appID).Msg("getPackages - encoding packages")
-		return ctx.NoContent(http.StatusInternalServerError)
-	}
-
-	return ctx.JSON(http.StatusOK, packagePage{totalCount, len(pkgs), pkgs})
-}
-
 func (h *Handler) CreatePackage(ctx echo.Context, appIDorProductID string) error {
-	l := loggerWithUsername(l, ctx)
+	l := shared.LoggerWithUsername(l, ctx)
 
-	appID, err := h.db.GetAppID(appIDorProductID)
+	appID, err := h.admin.GetAppID(appIDorProductID)
 	if err != nil {
-		return appNotFoundResponse(ctx, appIDorProductID)
+		return shared.AppNotFoundResponse(ctx, appIDorProductID)
 	}
 
 	var request codegen.PackageConfig
@@ -58,15 +29,18 @@ func (h *Handler) CreatePackage(ctx echo.Context, appIDorProductID string) error
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	pkg := packageFromRequest(appID, request.Arch, request.ChannelsBlacklist, request.Description, request.Filename, request.Hash, request.Size, request.Url, request.Version, request.Type, request.FlatcarAction, "", request.ExtraFiles)
+	pkg := packageFromRequest(appID, request.Arch, request.ChannelsBlacklist, request.Description, request.Filename, request.Hash, request.Size, request.Url, request.Version, request.Type, request.FlatcarAction, "", request.ExtraFiles, request.Labels)
 
 	pkg, err = h.admin.AddPackage(pkg)
 	if err != nil {
+		if errors.Is(err, types.ErrInvalidLabels) {
+			return ctx.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+		}
 		l.Error().Err(err).Msgf("addPackage - adding package %v", request)
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	pkg, err = h.db.GetPackage(pkg.ID)
+	pkg, err = h.admin.GetPackage(pkg.ID)
 	if err != nil {
 		l.Error().Err(err).Str("packageID", pkg.ID).Msg("addPackage - getting added package")
 		return ctx.NoContent(http.StatusInternalServerError)
@@ -77,25 +51,12 @@ func (h *Handler) CreatePackage(ctx echo.Context, appIDorProductID string) error
 	return ctx.JSON(http.StatusOK, pkg)
 }
 
-func (h *Handler) GetPackage(ctx echo.Context, _ string, packageID string) error {
-	pkg, err := h.db.GetPackage(packageID)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return ctx.NoContent(http.StatusNotFound)
-		}
-		l.Error().Err(err).Str("packageID", packageID).Msg("getPackage - getting package")
-		return ctx.NoContent(http.StatusInternalServerError)
-	}
-
-	return ctx.JSON(http.StatusOK, pkg)
-}
-
 func (h *Handler) UpdatePackage(ctx echo.Context, appIDorProductID string, packageID string) error {
-	l := loggerWithUsername(l, ctx)
+	l := shared.LoggerWithUsername(l, ctx)
 
-	appID, err := h.db.GetAppID(appIDorProductID)
+	appID, err := h.admin.GetAppID(appIDorProductID)
 	if err != nil {
-		return appNotFoundResponse(ctx, appIDorProductID)
+		return shared.AppNotFoundResponse(ctx, appIDorProductID)
 	}
 
 	var request codegen.PackageConfig
@@ -106,9 +67,9 @@ func (h *Handler) UpdatePackage(ctx echo.Context, appIDorProductID string, packa
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	pkg := packageFromRequest(appID, request.Arch, request.ChannelsBlacklist, request.Description, request.Filename, request.Hash, request.Size, request.Url, request.Version, request.Type, request.FlatcarAction, packageID, request.ExtraFiles)
+	pkg := packageFromRequest(appID, request.Arch, request.ChannelsBlacklist, request.Description, request.Filename, request.Hash, request.Size, request.Url, request.Version, request.Type, request.FlatcarAction, packageID, request.ExtraFiles, request.Labels)
 
-	oldPkg, err := h.db.GetPackage(packageID)
+	oldPkg, err := h.admin.GetPackage(packageID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
@@ -119,11 +80,14 @@ func (h *Handler) UpdatePackage(ctx echo.Context, appIDorProductID string, packa
 
 	err = h.admin.UpdatePackage(pkg)
 	if err != nil {
+		if errors.Is(err, types.ErrInvalidLabels) {
+			return ctx.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+		}
 		l.Error().Err(err).Msgf("updatePackage - updating package %+v", request)
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	pkg, err = h.db.GetPackage(packageID)
+	pkg, err = h.admin.GetPackage(packageID)
 	if err != nil {
 		l.Error().Err(err).Str("packageID", packageID).Msg("updatePackage - getting old package to update")
 		return ctx.NoContent(http.StatusInternalServerError)
@@ -135,9 +99,9 @@ func (h *Handler) UpdatePackage(ctx echo.Context, appIDorProductID string, packa
 }
 
 func (h *Handler) DeletePackage(ctx echo.Context, _ string, packageID string) error {
-	l := loggerWithUsername(l, ctx)
+	l := shared.LoggerWithUsername(l, ctx)
 
-	pkg, err := h.db.GetPackage(packageID)
+	pkg, err := h.admin.GetPackage(packageID)
 	if err != nil {
 		l.Error().Err(err).Str("packageID", packageID).Msg("deletePackage - getting package to delete")
 		return ctx.NoContent(http.StatusInternalServerError)
@@ -154,7 +118,7 @@ func (h *Handler) DeletePackage(ctx echo.Context, _ string, packageID string) er
 	return ctx.NoContent(http.StatusNoContent)
 }
 
-func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, description string, filename string, hash string, size string, url string, version string, packageType int, flAction *codegen.FlatcarActionPackage, ID string, extraFiles *codegen.ExtraFiles) *types.Package {
+func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, description string, filename string, hash string, size string, url string, version string, packageType int, flAction *codegen.FlatcarActionPackage, ID string, extraFiles *codegen.ExtraFiles, labels *codegen.PackageLabels) *types.Package {
 	var flatcarAction *types.FlatcarAction
 
 	if flAction != nil {
@@ -211,6 +175,9 @@ func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, desc
 	if ChannelsBlacklist != nil {
 		pkg.ChannelsBlacklist = ChannelsBlacklist
 	}
+	if labels != nil {
+		pkg.Labels = types.Labels(*labels)
+	}
 
 	if ID != "" {
 		pkg.ID = ID
@@ -218,64 +185,9 @@ func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, desc
 	return &pkg
 }
 
-type packagePage struct {
-	TotalCount int              `json:"totalCount"`
-	Count      int              `json:"count"`
-	Packages   []*types.Package `json:"packages"`
-}
-
-// Floor handlers following existing patterns
-
-// Define the response structure following existing pattern
-type floorPackagesPage struct {
-	TotalCount int              `json:"totalCount"`
-	Count      int              `json:"count"`
-	Packages   []*types.Package `json:"packages"`
-}
-
-// PaginateChannelFloors handles paginated requests for channel floor packages
-func (h *Handler) PaginateChannelFloors(ctx echo.Context, channelID string, params codegen.PaginateChannelFloorsParams) error {
-	l := loggerWithUsername(l, ctx)
-
-	if params.Page == nil {
-		params.Page = &defaultPage
-	}
-
-	if params.Perpage == nil {
-		// Use a larger default for floor packages since they're typically a small set
-		// and we want to show all of them in the UI
-		defaultFloorPerPage := 100
-		params.Perpage = &defaultFloorPerPage
-	}
-
-	totalCount, err := h.db.GetChannelFloorPackagesCount(channelID)
-	if err != nil {
-		l.Error().Err(err).Str("channelID", channelID).Msg("PaginateChannelFloors - getting floor packages count")
-		return ctx.NoContent(http.StatusInternalServerError)
-	}
-
-	// If no floors, return empty result immediately
-	if totalCount == 0 {
-		return ctx.JSON(http.StatusOK, floorPackagesPage{0, 0, []*types.Package{}})
-	}
-
-	// Get paginated floor packages
-	packages, err := h.db.GetChannelFloorPackagesPaginated(channelID, uint64(*params.Page), uint64(*params.Perpage))
-	if err != nil {
-		if err == sql.ErrNoRows {
-			// This shouldn't happen if count > 0, but handle gracefully
-			return ctx.JSON(http.StatusOK, floorPackagesPage{totalCount, 0, []*types.Package{}})
-		}
-		l.Error().Err(err).Str("channelID", channelID).Msg("PaginateChannelFloors - getting floor packages")
-		return ctx.NoContent(http.StatusInternalServerError)
-	}
-
-	return ctx.JSON(http.StatusOK, floorPackagesPage{totalCount, len(packages), packages})
-}
-
 // SetChannelFloor handles creating or updating a floor package relationship (idempotent)
 func (h *Handler) SetChannelFloor(ctx echo.Context, channelID string, packageID string) error {
-	l := loggerWithUsername(l, ctx)
+	l := shared.LoggerWithUsername(l, ctx)
 
 	var request codegen.SetChannelFloorJSONRequestBody
 	if err := ctx.Bind(&request); err != nil {
@@ -317,7 +229,7 @@ func (h *Handler) SetChannelFloor(ctx echo.Context, channelID string, packageID 
 
 // RemoveChannelFloor handles removing a package as a floor for a channel
 func (h *Handler) RemoveChannelFloor(ctx echo.Context, channelID string, packageID string) error {
-	l := loggerWithUsername(l, ctx)
+	l := shared.LoggerWithUsername(l, ctx)
 
 	if err := h.admin.RemoveChannelPackageFloor(channelID, packageID); err != nil {
 		if err == types.ErrNoRowsAffected {
@@ -329,36 +241,4 @@ func (h *Handler) RemoveChannelFloor(ctx echo.Context, channelID string, package
 
 	l.Info().Str("channelID", channelID).Str("packageID", packageID).Msg("RemoveChannelFloor - successfully removed floor")
 	return ctx.NoContent(http.StatusNoContent)
-}
-
-// GetPackageFloorChannels handles requests for channels where a package is a floor
-func (h *Handler) GetPackageFloorChannels(ctx echo.Context, _ string, packageID string) error {
-	l := loggerWithUsername(l, ctx)
-
-	// First verify the package exists
-	_, err := h.db.GetPackage(packageID)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return ctx.NoContent(http.StatusNotFound)
-		}
-		l.Error().Err(err).Str("packageID", packageID).Msg("GetPackageFloorChannels - getting package")
-		return ctx.NoContent(http.StatusInternalServerError)
-	}
-
-	channelInfos, err := h.db.GetPackageFloorChannels(packageID)
-	if err != nil {
-		l.Error().Err(err).Str("packageID", packageID).Msg("GetPackageFloorChannels - getting floor channels")
-		return ctx.NoContent(http.StatusInternalServerError)
-	}
-
-	// Response structure matching the frontend expectations
-	type response struct {
-		Channels []types.ChannelFloorInfo `json:"channels"`
-		Count    int                      `json:"count"`
-	}
-
-	return ctx.JSON(http.StatusOK, response{
-		Channels: channelInfos,
-		Count:    len(channelInfos),
-	})
 }

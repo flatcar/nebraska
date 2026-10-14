@@ -563,3 +563,111 @@ func Test_getArch(t *testing.T) {
 		})
 	}
 }
+
+func TestPackageLabelsInResponse(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	h := NewHandler(runtimeSvc(a))
+	as := adminSvc(a)
+
+	tTeam, err := as.AddTeam(&types.Team{Name: "test_team"})
+	require.NoError(t, err)
+	tApp, err := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	require.NoError(t, err)
+
+	addGroup := func(name string, pkg *types.Package) *types.Group {
+		channel, err := as.AddChannel(&types.Channel{Name: name, Color: "white", ApplicationID: tApp.ID, PackageID: null.StringFrom(pkg.ID), Arch: types.ArchAMD64})
+		require.NoError(t, err)
+		group, err := as.AddGroup(&types.Group{Name: name, ApplicationID: tApp.ID, ChannelID: null.StringFrom(channel.ID), PolicyUpdatesEnabled: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 100, PolicyUpdateTimeout: "60 minutes"})
+		require.NoError(t, err)
+		return group
+	}
+
+	t.Run("labels_are_sent_sorted_inside_the_package", func(t *testing.T) {
+		labels := types.Labels{
+			"image.metadata.sha384": "0a1b2c",
+			"a.first":               "1",
+			"tricky":                "<a href=\"x\">&'\t\n\r]]>é😀",
+		}
+		extraFiles := []types.File{{Name: null.StringFrom("extra.txt"), Size: null.StringFrom("1"), Hash: null.StringFrom("h")}}
+		pkg, err := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg/", Filename: null.StringFrom("labels.img"), Version: "2.0.0", ApplicationID: tApp.ID, Arch: types.ArchAMD64, Labels: labels, ExtraFiles: extraFiles})
+		require.NoError(t, err)
+		group := addGroup("labels", pkg)
+
+		omahaResp := doOmahaRequest(t, h, tApp.ID, "1.0.0", "machine-labels", group.ID, "127.0.0.1", false, true, nil)
+		checkOmahaUpdateResponse(t, omahaResp, pkg.Version, "labels.img", pkg.URL, omahaSpec.UpdateOK)
+		packages := omahaResp.Apps[0].UpdateCheck.Manifests[0].Packages
+		require.Len(t, packages, 2)
+		require.NotNil(t, packages[0].Labels)
+		assert.Equal(t, []*omahaSpec.Label{
+			{Key: "a.first", Value: "1"},
+			{Key: "image.metadata.sha384", Value: "0a1b2c"},
+			{Key: "tricky", Value: labels["tricky"]},
+		}, packages[0].Labels.Labels)
+		// Labels belong to the package, not to its extra files.
+		assert.Nil(t, packages[1].Labels)
+	})
+
+	t.Run("no_labels_means_no_element", func(t *testing.T) {
+		pkg, err := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg/", Filename: null.StringFrom("plain.img"), Version: "3.0.0", ApplicationID: tApp.ID, Arch: types.ArchAMD64})
+		require.NoError(t, err)
+		group := addGroup("plain", pkg)
+
+		req := omahaSpec.NewRequest()
+		app := req.AddApp(tApp.ID, "1.0.0")
+		app.MachineID = "machine-plain"
+		app.Track = group.ID
+		app.AddUpdateCheck()
+		reqXML, err := xml.Marshal(req)
+		require.NoError(t, err)
+		respXML := new(bytes.Buffer)
+		require.NoError(t, h.Handle(bytes.NewReader(reqXML), respXML, "127.0.0.1"))
+		assert.Contains(t, respXML.String(), `<package name="plain.img"`)
+		assert.NotContains(t, respXML.String(), "<labels")
+	})
+}
+
+func TestPackageLabelsInMultiManifestResponse(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	h := NewHandler(runtimeSvc(a))
+	as := adminSvc(a)
+
+	addPkg := func(version string, labels types.Labels) *types.Package {
+		pkg, err := as.AddPackage(&types.Package{Type: types.PkgTypeFlatcar, URL: "http://sample.url/" + version, Filename: null.StringFrom("flatcar_" + version + ".gz"), Version: version, ApplicationID: flatcarAppID, Arch: types.ArchAMD64, Labels: labels})
+		require.NoError(t, err)
+		_, err = as.AddFlatcarAction(&types.FlatcarAction{Event: "postinstall", Sha256: "sha256-" + version, PackageID: pkg.ID})
+		require.NoError(t, err)
+		return pkg
+	}
+	floor := addPkg("41000.0.0", types.Labels{"step": "floor"})
+	target := addPkg("42000.0.0", types.Labels{"step": "target"})
+	channel, err := as.AddChannel(&types.Channel{Name: "labels-floors", Color: "white", ApplicationID: flatcarAppID, PackageID: null.StringFrom(target.ID), Arch: types.ArchAMD64})
+	require.NoError(t, err)
+	require.NoError(t, as.AddChannelPackageFloor(channel.ID, floor.ID, null.StringFrom("required step")))
+	group, err := as.AddGroup(&types.Group{Name: "labels-floors", ApplicationID: flatcarAppID, ChannelID: null.StringFrom(channel.ID), PolicyUpdatesEnabled: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 100, PolicyUpdateTimeout: "60 minutes"})
+	require.NoError(t, err)
+
+	req := omahaSpec.NewRequest()
+	req.OS.Platform = "CoreOS"
+	req.Version = "CoreOSUpdateEngine-0.1.0.0"
+	req.InstallSource = "scheduler"
+	app := req.AddApp(flatcarAppID, "40000.0.0")
+	app.MachineID = "syncer-labels"
+	app.Track = group.ID
+	app.MultiManifestOK = true
+	app.AddUpdateCheck()
+	reqXML, err := xml.Marshal(req)
+	require.NoError(t, err)
+	respXML := new(bytes.Buffer)
+	require.NoError(t, h.Handle(bytes.NewReader(reqXML), respXML, "10.0.0.1"))
+	var resp omahaSpec.Response
+	require.NoError(t, xml.NewDecoder(respXML).Decode(&resp))
+
+	manifests := resp.Apps[0].UpdateCheck.Manifests
+	require.Len(t, manifests, 2)
+	step, _ := manifests[0].Packages[0].Labels.Get("step")
+	assert.Equal(t, "floor", step)
+	step, _ = manifests[1].Packages[0].Labels.Get("step")
+	assert.Equal(t, "target", step)
+}

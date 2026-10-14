@@ -154,22 +154,33 @@ type FlatcarActionPackage struct {
 
 // Group defines model for group.
 type Group struct {
-	ApplicationID             string    `json:"application_id"`
-	Channel                   *Channel  `db:"channel" json:"channel,omitempty"`
-	ChannelID                 string    `json:"channel_id"`
-	CreatedTs                 time.Time `json:"created_ts"`
-	Description               string    `json:"description"`
-	Id                        string    `json:"id"`
-	Name                      string    `json:"name"`
-	PolicyMaxUpdatesPerPeriod int       `json:"policy_max_updates_per_period"`
-	PolicyOfficeHours         bool      `json:"policy_office_hours"`
-	PolicyPeriodInterval      string    `json:"policy_period_interval"`
-	PolicySafeMode            bool      `json:"policy_safe_mode"`
-	PolicyTimezone            string    `json:"policy_timezone"`
-	PolicyUpdateTimeout       string    `json:"policy_update_timeout"`
-	PolicyUpdatesEnabled      bool      `json:"policy_updates_enabled"`
-	RolloutInProgress         bool      `json:"rollout_in_progress"`
-	Track                     string    `json:"track"`
+	ApplicationID string    `json:"application_id"`
+	Channel       *Channel  `db:"channel" json:"channel,omitempty"`
+	ChannelID     string    `json:"channel_id"`
+	CreatedTs     time.Time `json:"created_ts"`
+	Description   string    `json:"description"`
+	Id            string    `json:"id"`
+
+	// LocalOverrides Distributed nodes only. This node's overrides of the policy fields. Null means no override, so the admin default applies. On these nodes the policy fields above are the admin defaults, the values updateGroup writes.
+	LocalOverrides *struct {
+		PolicyMaxUpdatesPerPeriod *int    `json:"policy_max_updates_per_period"`
+		PolicyOfficeHours         *bool   `json:"policy_office_hours"`
+		PolicyPeriodInterval      *string `json:"policy_period_interval"`
+		PolicySafeMode            *bool   `json:"policy_safe_mode"`
+		PolicyTimezone            *string `json:"policy_timezone"`
+		PolicyUpdateTimeout       *string `json:"policy_update_timeout"`
+		PolicyUpdatesEnabled      *bool   `json:"policy_updates_enabled"`
+	} `json:"local_overrides,omitempty"`
+	Name                      string `json:"name"`
+	PolicyMaxUpdatesPerPeriod int    `json:"policy_max_updates_per_period"`
+	PolicyOfficeHours         bool   `json:"policy_office_hours"`
+	PolicyPeriodInterval      string `json:"policy_period_interval"`
+	PolicySafeMode            bool   `json:"policy_safe_mode"`
+	PolicyTimezone            string `json:"policy_timezone"`
+	PolicyUpdateTimeout       string `json:"policy_update_timeout"`
+	PolicyUpdatesEnabled      bool   `json:"policy_updates_enabled"`
+	RolloutInProgress         bool   `json:"rollout_in_progress"`
+	Track                     string `json:"track"`
 }
 
 // GroupConfig defines model for groupConfig.
@@ -281,11 +292,14 @@ type Package struct {
 	Id          string  `json:"id"`
 
 	// IsFloor Indicates if this package is a floor version for the current context
-	IsFloor *bool  `json:"is_floor,omitempty"`
-	Size    string `json:"size"`
-	Type    int    `json:"type"`
-	Url     string `json:"url"`
-	Version string `json:"version"`
+	IsFloor *bool `json:"is_floor,omitempty"`
+
+	// Labels Key/value strings sent with the package. Keys use A-Z a-z 0-9 . _ - (max 255). Omit to keep, {} to clear.
+	Labels  *PackageLabels `json:"labels,omitempty"`
+	Size    string         `json:"size"`
+	Type    int            `json:"type"`
+	Url     string         `json:"url"`
+	Version string         `json:"version"`
 }
 
 // PackageConfig defines model for packageConfig.
@@ -298,11 +312,17 @@ type PackageConfig struct {
 	Filename          string                `json:"filename"`
 	FlatcarAction     *FlatcarActionPackage `json:"flatcar_action"`
 	Hash              string                `json:"hash"`
-	Size              string                `json:"size"`
-	Type              int                   `json:"type"`
-	Url               string                `json:"url"`
-	Version           string                `json:"version"`
+
+	// Labels Key/value strings sent with the package. Keys use A-Z a-z 0-9 . _ - (max 255). Omit to keep, {} to clear.
+	Labels  *PackageLabels `json:"labels,omitempty"`
+	Size    string         `json:"size"`
+	Type    int            `json:"type"`
+	Url     string         `json:"url"`
+	Version string         `json:"version"`
 }
+
+// PackageLabels Key/value strings sent with the package. Keys use A-Z a-z 0-9 . _ - (max 255). Omit to keep, {} to clear.
+type PackageLabels map[string]string
 
 // PackagePage defines model for packagePage.
 type PackagePage struct {

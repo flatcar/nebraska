@@ -35,6 +35,47 @@ type Group struct {
 	PolicyUpdateTimeout       string      `db:"policy_update_timeout" json:"policy_update_timeout"`
 	Channel                   *Channel    `db:"channel" json:"channel,omitempty"`
 	Track                     string      `db:"track" json:"track"`
+
+	// AdminPolicy is the policy as stored on groups, before this node's
+	// overrides apply.
+	AdminPolicy GroupPolicy `db:"admin_policy" json:"-"`
+	// LocalOverrides are this node's overrides, null where the admin default
+	// applies.
+	LocalOverrides *GroupPolicyOverrides `db:"local_overrides" json:"local_overrides,omitempty"`
+}
+
+// GroupPolicy is the update policy of a group.
+type GroupPolicy struct {
+	PolicyUpdatesEnabled      bool        `db:"policy_updates_enabled" json:"policy_updates_enabled"`
+	PolicySafeMode            bool        `db:"policy_safe_mode" json:"policy_safe_mode"`
+	PolicyOfficeHours         bool        `db:"policy_office_hours" json:"policy_office_hours"`
+	PolicyTimezone            null.String `db:"policy_timezone" json:"policy_timezone"`
+	PolicyPeriodInterval      string      `db:"policy_period_interval" json:"policy_period_interval"`
+	PolicyMaxUpdatesPerPeriod int         `db:"policy_max_updates_per_period" json:"policy_max_updates_per_period"`
+	PolicyUpdateTimeout       string      `db:"policy_update_timeout" json:"policy_update_timeout"`
+}
+
+// GroupPolicyOverrides are a node's overrides of a group's update policy.
+type GroupPolicyOverrides struct {
+	PolicyUpdatesEnabled      null.Bool   `db:"policy_updates_enabled" json:"policy_updates_enabled"`
+	PolicySafeMode            null.Bool   `db:"policy_safe_mode" json:"policy_safe_mode"`
+	PolicyOfficeHours         null.Bool   `db:"policy_office_hours" json:"policy_office_hours"`
+	PolicyTimezone            null.String `db:"policy_timezone" json:"policy_timezone"`
+	PolicyPeriodInterval      null.String `db:"policy_period_interval" json:"policy_period_interval"`
+	PolicyMaxUpdatesPerPeriod null.Int    `db:"policy_max_updates_per_period" json:"policy_max_updates_per_period"`
+	PolicyUpdateTimeout       null.String `db:"policy_update_timeout" json:"policy_update_timeout"`
+}
+
+// ShowAdminPolicy replaces the effective policy with the admin policy, the
+// values UpdateGroup writes.
+func (g *Group) ShowAdminPolicy() {
+	g.PolicyUpdatesEnabled = g.AdminPolicy.PolicyUpdatesEnabled
+	g.PolicySafeMode = g.AdminPolicy.PolicySafeMode
+	g.PolicyOfficeHours = g.AdminPolicy.PolicyOfficeHours
+	g.PolicyTimezone = g.AdminPolicy.PolicyTimezone
+	g.PolicyPeriodInterval = g.AdminPolicy.PolicyPeriodInterval
+	g.PolicyMaxUpdatesPerPeriod = g.AdminPolicy.PolicyMaxUpdatesPerPeriod
+	g.PolicyUpdateTimeout = g.AdminPolicy.PolicyUpdateTimeout
 }
 
 // VersionBreakdownEntry represents the distribution of the versions currently

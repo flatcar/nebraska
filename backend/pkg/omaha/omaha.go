@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"maps"
+	"slices"
 	"strconv"
 
 	omahaSpec "github.com/flatcar/go-omaha/omaha"
@@ -280,6 +282,9 @@ func (h *Handler) addPackageToManifest(manifest *omahaSpec.Manifest, pkg *types.
 		}
 	}
 	mpkg.Required = true
+	for _, key := range slices.Sorted(maps.Keys(pkg.Labels)) {
+		mpkg.AddLabel(key, pkg.Labels[key])
+	}
 
 	// Add extra files
 	for _, pkgFile := range pkg.ExtraFiles {
