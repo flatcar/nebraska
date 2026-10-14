@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
@@ -110,6 +111,62 @@ func TestAddAppCloning(t *testing.T) {
 		},
 	)
 	assert.Error(t, err, "duplicate name because it is case insensitive")
+}
+
+// TestAddAppCloningRollsBackOnFailure checks that a clone which fails partway
+// through reports the error and leaves nothing behind, rather than returning a
+// success and an application missing some of its channels and groups.
+func TestAddAppCloningRollsBackOnFailure(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	as := adminSvc(a)
+
+	tTeam, err := as.AddTeam(&Team{Name: "test_team"})
+	require.NoError(t, err)
+	tApp, err := as.AddApp(&Application{Name: "source_app", TeamID: tTeam.ID})
+	require.NoError(t, err)
+	tChannel, err := as.AddChannel(&Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID})
+	require.NoError(t, err)
+	_, err = as.AddGroup(&Group{Name: "group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	require.NoError(t, err)
+	lastGroup, err := as.AddGroup(&Group{Name: "group2", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	require.NoError(t, err)
+
+	// Make the last source group impossible to copy, so the clone fails only
+	// after the application, its channel and the first group have been
+	// written. This is done in SQL because AddGroup rightly refuses to create
+	// a group in this state in the first place.
+	_, err = a.db().Exec("update groups set policy_office_hours = true, policy_timezone = 'Not/AZone' where id = $1", lastGroup.ID)
+	require.NoError(t, err)
+
+	_, err = as.AddAppCloning(&Application{Name: "cloned_app", TeamID: tTeam.ID}, tApp.ID)
+	assert.Error(t, err, "a clone that cannot copy every group must fail")
+
+	// Nothing from the failed clone may survive: no application row, and no
+	// channels or groups left pointing at it.
+	var clonedApps int
+	err = a.db().QueryRow("select count(*) from application where name = 'cloned_app'").Scan(&clonedApps)
+	assert.NoError(t, err)
+	assert.Equal(t, 0, clonedApps, "the half-built application must be rolled back")
+
+	sourceApp, err := a.GetApp(tApp.ID)
+	assert.NoError(t, err)
+	assert.Len(t, sourceApp.Channels, 1, "the source application must be untouched")
+	assert.Len(t, sourceApp.Groups, 2, "the source application must be untouched")
+
+	// The copies carry the same names as the originals, so finding more than
+	// the one source row means part of the clone survived the failure. The
+	// names are checked rather than the cloned application id, which never
+	// made it to the database.
+	var channelCopies int
+	err = a.db().QueryRow("select count(*) from channel where name = 'test_channel'").Scan(&channelCopies)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, channelCopies, "channels written by the failed clone must be rolled back")
+
+	var groupCopies int
+	err = a.db().QueryRow("select count(*) from groups where name in ('group1', 'group2')").Scan(&groupCopies)
+	assert.NoError(t, err)
+	assert.Equal(t, 2, groupCopies, "groups written by the failed clone must be rolled back")
 }
 
 func TestUpdateApp(t *testing.T) {
