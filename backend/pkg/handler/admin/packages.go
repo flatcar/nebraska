@@ -2,6 +2,7 @@ package admin
 
 import (
 	"database/sql"
+	"errors"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -28,10 +29,13 @@ func (h *Handler) CreatePackage(ctx echo.Context, appIDorProductID string) error
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	pkg := packageFromRequest(appID, request.Arch, request.ChannelsBlacklist, request.Description, request.Filename, request.Hash, request.Size, request.Url, request.Version, request.Type, request.FlatcarAction, "", request.ExtraFiles)
+	pkg := packageFromRequest(appID, request.Arch, request.ChannelsBlacklist, request.Description, request.Filename, request.Hash, request.Size, request.Url, request.Version, request.Type, request.FlatcarAction, "", request.ExtraFiles, request.Labels)
 
 	pkg, err = h.admin.AddPackage(pkg)
 	if err != nil {
+		if errors.Is(err, types.ErrInvalidLabels) {
+			return ctx.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+		}
 		l.Error().Err(err).Msgf("addPackage - adding package %v", request)
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
@@ -63,7 +67,7 @@ func (h *Handler) UpdatePackage(ctx echo.Context, appIDorProductID string, packa
 		return ctx.NoContent(http.StatusBadRequest)
 	}
 
-	pkg := packageFromRequest(appID, request.Arch, request.ChannelsBlacklist, request.Description, request.Filename, request.Hash, request.Size, request.Url, request.Version, request.Type, request.FlatcarAction, packageID, request.ExtraFiles)
+	pkg := packageFromRequest(appID, request.Arch, request.ChannelsBlacklist, request.Description, request.Filename, request.Hash, request.Size, request.Url, request.Version, request.Type, request.FlatcarAction, packageID, request.ExtraFiles, request.Labels)
 
 	oldPkg, err := h.admin.GetPackage(packageID)
 	if err != nil {
@@ -76,6 +80,9 @@ func (h *Handler) UpdatePackage(ctx echo.Context, appIDorProductID string, packa
 
 	err = h.admin.UpdatePackage(pkg)
 	if err != nil {
+		if errors.Is(err, types.ErrInvalidLabels) {
+			return ctx.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+		}
 		l.Error().Err(err).Msgf("updatePackage - updating package %+v", request)
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
@@ -111,7 +118,7 @@ func (h *Handler) DeletePackage(ctx echo.Context, _ string, packageID string) er
 	return ctx.NoContent(http.StatusNoContent)
 }
 
-func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, description string, filename string, hash string, size string, url string, version string, packageType int, flAction *codegen.FlatcarActionPackage, ID string, extraFiles *codegen.ExtraFiles) *types.Package {
+func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, description string, filename string, hash string, size string, url string, version string, packageType int, flAction *codegen.FlatcarActionPackage, ID string, extraFiles *codegen.ExtraFiles, labels *codegen.PackageLabels) *types.Package {
 	var flatcarAction *types.FlatcarAction
 
 	if flAction != nil {
@@ -167,6 +174,9 @@ func packageFromRequest(appID string, arch int, ChannelsBlacklist []string, desc
 	}
 	if ChannelsBlacklist != nil {
 		pkg.ChannelsBlacklist = ChannelsBlacklist
+	}
+	if labels != nil {
+		pkg.Labels = types.Labels(*labels)
 	}
 
 	if ID != "" {

@@ -52,9 +52,12 @@ func (s *Service) addPackage(pkg *types.Package, tx *sqlx.Tx) error {
 	if err := s.checkMatchingArch(pkg.ChannelsBlacklist, pkg.Arch); err != nil {
 		return err
 	}
+	if err := pkg.Labels.Validate(); err != nil {
+		return err
+	}
 
 	query, _, err := goqu.Insert("package").
-		Cols("type", "filename", "description", "size", "hash", "url", "version", "application_id", "arch").
+		Cols("type", "filename", "description", "size", "hash", "url", "version", "application_id", "arch", "labels").
 		Vals(goqu.Vals{
 			pkg.Type,
 			pkg.Filename,
@@ -65,6 +68,7 @@ func (s *Service) addPackage(pkg *types.Package, tx *sqlx.Tx) error {
 			pkg.Version,
 			pkg.ApplicationID,
 			pkg.Arch,
+			pkg.Labels,
 		}).
 		Returning(goqu.T("package").All()).
 		ToSQL()
@@ -205,6 +209,9 @@ func (s *Service) UpdatePackage(pkg *types.Package) error {
 	if !dbreads.IsValidSemver(pkg.Version) {
 		return types.ErrInvalidSemver
 	}
+	if err := pkg.Labels.Validate(); err != nil {
+		return err
+	}
 	tx, err := s.db.Beginx()
 	if err != nil {
 		return err
@@ -214,16 +221,22 @@ func (s *Service) UpdatePackage(pkg *types.Package) error {
 			l.Error().Err(err).Msg("UpdatePackage - could not roll back")
 		}
 	}()
+	record := goqu.Record{
+		"type":        pkg.Type,
+		"filename":    pkg.Filename,
+		"description": pkg.Description,
+		"size":        pkg.Size,
+		"hash":        pkg.Hash,
+		"url":         pkg.URL,
+		"version":     pkg.Version,
+	}
+	// Labels are left alone unless the caller sets them, so a client that
+	// does not know about labels cannot clear them by saving the package.
+	if pkg.Labels != nil {
+		record["labels"] = pkg.Labels
+	}
 	query, _, err := goqu.Update("package").
-		Set(goqu.Record{
-			"type":        pkg.Type,
-			"filename":    pkg.Filename,
-			"description": pkg.Description,
-			"size":        pkg.Size,
-			"hash":        pkg.Hash,
-			"url":         pkg.URL,
-			"version":     pkg.Version,
-		}).
+		Set(record).
 		Where(goqu.C("id").Eq(pkg.ID)).
 		ToSQL()
 	if err != nil {

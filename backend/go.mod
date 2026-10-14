@@ -6,7 +6,7 @@ require (
 	github.com/blang/semver/v4 v4.0.0
 	github.com/coreos/go-oidc/v3 v3.20.0
 	github.com/doug-martin/goqu/v9 v9.19.0
-	github.com/flatcar/go-omaha v0.0.2-0.20251014063321-4998849bd39c
+	github.com/flatcar/go-omaha v0.0.2-0.20261014101157-d35a6d1f8c43
 	github.com/getkin/kin-openapi v0.146.0
 	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/golangci/golangci-lint/v2 v2.12.2
