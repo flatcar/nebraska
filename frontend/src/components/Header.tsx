@@ -225,7 +225,7 @@ export default function Header() {
     (config.header_style === 'dark' ||
       (config.header_style === undefined && config.appBarColor === 'dark')) ? (
     <StyledStyledEngineProvider injectFirst>
-      (<ThemeProvider theme={themes.dark}>{appBar}</ThemeProvider>)
+      <ThemeProvider theme={themes.dark}>{appBar}</ThemeProvider>
     </StyledStyledEngineProvider>
   ) : (
     appBar
