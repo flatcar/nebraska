@@ -277,3 +277,10 @@ func TestTryUpdate(t *testing.T) {
 		assert.ErrorIs(t, err, NoUpdateError{AppID: appID, Channel: group.Track, UpdateStatus: "noupdate"})
 	})
 }
+
+func TestProgressToEventRequest(t *testing.T) {
+	req := progressToEventRequest(ProgressInstallationFinished)
+	require.NotNil(t, req)
+	assert.Equal(t, omahaSpec.EventTypeInstallComplete, req.Type)
+	assert.Equal(t, omahaSpec.EventResultSuccess, req.Result)
+}
