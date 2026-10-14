@@ -64,8 +64,76 @@ var (
 		},
 	)
 
+	syncerLastSuccessTimestamp = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: "nebraska",
+			Name:      "syncer_last_success_timestamp_seconds",
+			Help:      "Unix timestamp of the last successful syncer check for a channel/arch",
+		},
+		[]string{
+			"channel",
+			"arch",
+		},
+	)
+	syncerCheckFailuresTotal = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Namespace: "nebraska",
+			Name:      "syncer_check_failures_total",
+			Help:      "Total number of failed syncer checks for a channel/arch",
+		},
+		[]string{
+			"channel",
+			"arch",
+		},
+	)
+
+	syncerCheckDurationSeconds = prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Namespace: "nebraska",
+			Name:      "syncer_check_duration_seconds",
+			Help:      "Duration of syncer Omaha requests to upstream Flatcar servers",
+			Buckets:   prometheus.DefBuckets,
+		},
+		[]string{
+			"channel",
+			"arch",
+		},
+	)
+
+	syncerPackagesCreatedTotal = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Namespace: "nebraska",
+			Name:      "syncer_packages_created_total",
+			Help:      "Total number of new packages created by the syncer for a channel/arch",
+		},
+		[]string{
+			"channel",
+			"arch",
+		},
+	)
+
+
 	l = logger.New("nebraska")
 )
+// SyncerLastSuccessTimestamp records the last successful check time for a channel/arch.
+func SyncerLastSuccessTimestamp(channel, arch string) {
+	syncerLastSuccessTimestamp.WithLabelValues(channel, arch).SetToCurrentTime()
+}
+
+// SyncerCheckFailure increments the failure counter for a channel/arch.
+func SyncerCheckFailure(channel, arch string) {
+	syncerCheckFailuresTotal.WithLabelValues(channel, arch).Inc()
+}
+
+// SyncerCheckDuration observes how long an Omaha check took for a channel/arch.
+func SyncerCheckDuration(channel, arch string, seconds float64) {
+	syncerCheckDurationSeconds.WithLabelValues(channel, arch).Observe(seconds)
+}
+
+// SyncerPackageCreated increments the packages-created counter for a channel/arch.
+func SyncerPackageCreated(channel, arch string) {
+	syncerPackagesCreatedTotal.WithLabelValues(channel, arch).Inc()
+}
 
 // registerNebraskaMetrics registers the application metrics collector with the DefaultRegistrer.
 func registerNebraskaMetrics() error {
@@ -75,6 +143,10 @@ func registerNebraskaMetrics() error {
 		openConnections,
 		inUseConnections,
 		idleConnections,
+		syncerLastSuccessTimestamp,
+		syncerCheckFailuresTotal,
+		syncerCheckDurationSeconds,
+		syncerPackagesCreatedTotal,
 	}
 
 	for _, collector := range collectors {
