@@ -104,7 +104,7 @@ func (q *Queries) getInstanceApp(appID, instanceID string, duration postgresDura
 // GetInstanceStatusHistory returns the status history of an instance in the
 // context of the application/group provided.
 func (q *Queries) GetInstanceStatusHistory(instanceID, appID, groupID string, limit uint64) ([]*types.InstanceStatusHistoryEntry, error) {
-	var instanceStatusHistory []*types.InstanceStatusHistoryEntry
+	instanceStatusHistory := []*types.InstanceStatusHistoryEntry{}
 	query, _, err := q.instanceStatusHistoryQuery(instanceID, appID, groupID, limit).ToSQL()
 	if err != nil {
 		return nil, err
@@ -166,7 +166,7 @@ func prepareSearchQuery(finalQuery *goqu.SelectDataset, p types.InstancesQueryPa
 
 // GetInstances returns all instances that match with the provided criteria.
 func (q *Queries) GetInstances(p types.InstancesQueryParams, duration string) (types.InstancesWithTotal, error) {
-	var instances []*types.Instance
+	instances := []*types.Instance{}
 	var err error
 	totalCount, err := q.GetInstancesCount(p, duration)
 	if err != nil {

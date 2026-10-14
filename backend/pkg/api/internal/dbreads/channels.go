@@ -66,7 +66,7 @@ func (q *Queries) getChannels(appID string) ([]*types.Channel, error) {
 }
 
 func (q *Queries) getChannelsFromQuery(query string) ([]*types.Channel, error) {
-	var channels []*types.Channel
+	channels := []*types.Channel{}
 	rows, err := q.db.Queryx(query)
 	if err != nil {
 		return nil, err

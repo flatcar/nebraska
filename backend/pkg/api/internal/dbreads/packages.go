@@ -81,7 +81,7 @@ func (q *Queries) GetPackages(appID string, page, perPage uint64, searchVersion 
 }
 
 func (q *Queries) getPackagesFromQuery(query string) ([]*types.Package, error) {
-	var pkgs []*types.Package
+	pkgs := []*types.Package{}
 	rows, err := q.db.Queryx(query)
 	if err != nil {
 		return nil, err
@@ -163,7 +163,7 @@ func (q *Queries) loadPackageExtras(packages []*types.Package) ([]*types.Package
 		if files, ok := filesByPkg[pkg.ID]; ok {
 			pkg.ExtraFiles = files
 		} else {
-			pkg.ExtraFiles = nil
+			pkg.ExtraFiles = []types.File{}
 		}
 		if action, ok := actionsByPkg[pkg.ID]; ok {
 			pkg.FlatcarAction = action
@@ -218,7 +218,7 @@ func (q *Queries) getExtraFiles(packageID string) ([]types.File, error) {
 		return nil, err
 	}
 
-	var files []types.File
+	files := []types.File{}
 	rows, err := q.db.Queryx(query)
 	if err != nil {
 		return nil, err
@@ -263,7 +263,7 @@ func (q *Queries) getPackage(packageID null.String) (*types.Package, error) {
 	case nil:
 		packageEntity.ExtraFiles = extraFiles
 	case sql.ErrNoRows:
-		packageEntity.ExtraFiles = nil
+		packageEntity.ExtraFiles = []types.File{}
 	default:
 		return nil, err
 	}
