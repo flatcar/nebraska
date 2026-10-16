@@ -136,33 +136,40 @@ func TestGetStatusCountTimeline(t *testing.T) {
 	registerInstanceWithStatus(types.InstanceStatusComplete)
 	registerInstanceWithStatus(types.InstanceStatusDownloading)
 
-	// get StatusCountTimeline from 1 hr before now
+	// 1. Verify "1h" duration: 5 buckets (15m interval is hardcoded by durationCodeToPostgresTimings)
 	statusTimelineMap, err := a.GetGroupStatusCountTimeline(tGroup.ID, "1h")
-	assert.NoError(t, err)
-	// for 1h we generate timestamp for every 15 minute so total timeline should have 5 timestamps
-	assert.Equal(t, len(statusTimelineMap), 5)
-	var statusInstanceCountMap = make(map[int]uint64)
-	for _, statusMap := range statusTimelineMap {
-		statusInstanceCountMap[types.InstanceStatusComplete] += statusMap[types.InstanceStatusComplete][targetVersion]
-		statusInstanceCountMap[types.InstanceStatusDownloading] += statusMap[types.InstanceStatusDownloading][targetVersion]
-	}
-	// as we registered two instances with version 4.0.0 with statuses 4 and 7
-	// so our status breakdown should have count 1 for both status 4 and 7
-	assert.Equal(t, statusInstanceCountMap[types.InstanceStatusComplete], uint64(1))
-	assert.Equal(t, statusInstanceCountMap[types.InstanceStatusDownloading], uint64(1))
+	require.NoError(t, err)
+	assert.Equal(t, 5, len(statusTimelineMap))
 
+	// Find the latest timestamp bucket
+	var latestTimestamp time.Time
+	for ts := range statusTimelineMap {
+		if ts.After(latestTimestamp) {
+			latestTimestamp = ts
+		}
+	}
+
+	// Verify events reside strictly in the latest bucket, and earlier buckets are zero
+	for ts, statusBreakdown := range statusTimelineMap {
+		if ts.Equal(latestTimestamp) {
+			assert.Equal(t, uint64(1), statusBreakdown[types.InstanceStatusComplete][targetVersion], "expected 1 complete instance in latest bucket")
+			assert.Equal(t, uint64(1), statusBreakdown[types.InstanceStatusDownloading][targetVersion], "expected 1 downloading instance in latest bucket")
+		} else {
+			assert.Equal(t, uint64(0), statusBreakdown[types.InstanceStatusComplete][targetVersion], "earlier buckets must have 0 complete instances")
+			assert.Equal(t, uint64(0), statusBreakdown[types.InstanceStatusDownloading][targetVersion], "earlier buckets must have 0 downloading instances")
+		}
+	}
+
+	// 2. Verify bucket counts for remaining durations
 	statusTimelineMap, err = a.GetGroupStatusCountTimeline(tGroup.ID, "1d")
-	assert.NoError(t, err)
-	// for 1d we generate timestamp for each hour so total timeline should have 25 timestamps
-	assert.Equal(t, len(statusTimelineMap), 25)
+	require.NoError(t, err)
+	assert.Equal(t, 25, len(statusTimelineMap))
 
 	statusTimelineMap, err = a.GetGroupStatusCountTimeline(tGroup.ID, "7d")
-	assert.NoError(t, err)
-	// for 7d we generate timestamp for each day so total timeline should have 8 timestamps
-	assert.Equal(t, len(statusTimelineMap), 8)
+	require.NoError(t, err)
+	assert.Equal(t, 8, len(statusTimelineMap))
 
 	statusTimelineMap, err = a.GetGroupStatusCountTimeline(tGroup.ID, "30d")
-	assert.NoError(t, err)
-	// for 30d we generate timestamp after each 3days so total timeline should have 11 timestamps
-	assert.Equal(t, len(statusTimelineMap), 11)
+	require.NoError(t, err)
+	assert.Equal(t, 11, len(statusTimelineMap))
 }
