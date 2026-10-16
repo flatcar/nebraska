@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
@@ -103,11 +104,18 @@ func TestGetStatusCountTimeline(t *testing.T) {
 	rs := runtimeSvc(a)
 
 	version := "4.0.0"
-	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
-	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
-	tPkg, _ := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	tChannel, _ := as.AddChannel(&types.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	tGroup, _ := as.AddGroup(&types.Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tTeam, err := as.AddTeam(&types.Team{Name: "test_team"})
+	require.NoError(t, err)
+	tApp, err := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	require.NoError(t, err)
+	tGroup, err := as.AddGroup(&types.Group{
+		Name:                      "test_group1",
+		ApplicationID:             tApp.ID,
+		PolicyPeriodInterval:      "15 minutes",
+		PolicyMaxUpdatesPerPeriod: 2,
+		PolicyUpdateTimeout:       "60 minutes",
+	})
+	require.NoError(t, err)
 	instanceID1 := uuid.New().String()
 	instanceID2 := uuid.New().String()
 
