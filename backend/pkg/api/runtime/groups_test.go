@@ -103,7 +103,8 @@ func TestGetStatusCountTimeline(t *testing.T) {
 	as := adminSvc(a)
 	rs := runtimeSvc(a)
 
-	version := "4.0.0"
+	initialVersion := "1.0.0"
+	targetVersion := "1.0.1"
 	tTeam, err := as.AddTeam(&types.Team{Name: "test_team"})
 	require.NoError(t, err)
 	tApp, err := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
@@ -116,23 +117,24 @@ func TestGetStatusCountTimeline(t *testing.T) {
 		PolicyUpdateTimeout:       "60 minutes",
 	})
 	require.NoError(t, err)
-	instanceID1 := uuid.New().String()
-	instanceID2 := uuid.New().String()
 
-	_, _ = rs.RegisterInstance(types.Instance{ID: instanceID1, IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, version))
+	registerInstanceWithStatus := func(status int) {
+		instanceID := uuid.New().String()
+		const dummyIPAddress = "10.0.0.1"
+		_, err := rs.RegisterInstance(types.Instance{ID: instanceID, IP: dummyIPAddress}, NewInstanceApplication(tApp.ID, tGroup.ID, initialVersion))
+		require.NoError(t, err)
 
-	instance1, err := a.GetInstance(instanceID1, tApp.ID)
-	assert.NoError(t, err)
+		instance, err := a.GetInstance(instanceID, tApp.ID)
+		require.NoError(t, err)
 
-	_ = rs.grantUpdate(instance1, version)
-	_ = rs.updateInstanceStatus(instanceID1, tApp.ID, types.InstanceStatusComplete)
-	_, _ = rs.RegisterInstance(types.Instance{ID: instanceID2, IP: "10.0.0.2"}, NewInstanceApplication(tApp.ID, tGroup.ID, version))
+		// FIXME: updateInstanceStatus implicitly requires grantUpdate to populate last_update_version.
+		require.NoError(t, rs.grantUpdate(instance, targetVersion))
+		require.NoError(t, rs.updateInstanceStatus(instanceID, tApp.ID, status))
+	}
 
-	instance2, err := a.GetInstance(instanceID2, tApp.ID)
-	assert.NoError(t, err)
-
-	_ = rs.grantUpdate(instance2, version)
-	_ = rs.updateInstanceStatus(instanceID2, tApp.ID, types.InstanceStatusDownloading)
+	// Register two instances with distinct statuses to verify breakdown aggregation
+	registerInstanceWithStatus(types.InstanceStatusComplete)
+	registerInstanceWithStatus(types.InstanceStatusDownloading)
 
 	// get StatusCountTimeline from 1 hr before now
 	statusTimelineMap, err := a.GetGroupStatusCountTimeline(tGroup.ID, "1h")
@@ -141,8 +143,8 @@ func TestGetStatusCountTimeline(t *testing.T) {
 	assert.Equal(t, len(statusTimelineMap), 5)
 	var statusInstanceCountMap = make(map[int]uint64)
 	for _, statusMap := range statusTimelineMap {
-		statusInstanceCountMap[types.InstanceStatusComplete] += statusMap[types.InstanceStatusComplete][version]
-		statusInstanceCountMap[types.InstanceStatusDownloading] += statusMap[types.InstanceStatusDownloading][version]
+		statusInstanceCountMap[types.InstanceStatusComplete] += statusMap[types.InstanceStatusComplete][targetVersion]
+		statusInstanceCountMap[types.InstanceStatusDownloading] += statusMap[types.InstanceStatusDownloading][targetVersion]
 	}
 	// as we registered two instances with version 4.0.0 with statuses 4 and 7
 	// so our status breakdown should have count 1 for both status 4 and 7
