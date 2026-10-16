@@ -2,7 +2,7 @@ apiVersion: v2
 name: nebraska
 description: Nebraska is an update manager for Flatcar Container Linux.
 type: application
-home: https://github.com/flatcar/nebraska/tree/main/deploy/helm
+home: https://github.com/flatcar/nebraska/tree/main/charts/nebraska
 icon: https://raw.githubusercontent.com/flatcar/nebraska/main/docs/nebraska-logo.svg
 keywords:
   - nebraska
@@ -18,11 +18,13 @@ sources:
 maintainers:
   - name: flatcar
     url: https://flatcar.org/
-version: 3.0.0
+# 3.0.0 -> 4.0.0: MAJOR, because the bundled PostgreSQL changed image, data
+# directory layout and uid. Installs with persistence enabled need an in-place
+# procedure or a dump and restore; see "Upgrading to 4.0.0" in README.md.
+version: 4.0.0
 appVersion: "4.0.0"
 
-dependencies:
-  - name: postgresql
-    version: 11.9.1
-    repository: https://charts.bitnami.com/bitnami
-    condition: postgresql.enabled
+# No `dependencies:` on purpose. Charts 1.0.0 to 3.0.0 used the Bitnami
+# postgresql 11.9.1 subchart, whose images are frozen in bitnamilegacy and whose
+# chart repository is deprecated (flatcar/nebraska#1574, #1148). The chart now
+# ships its own small StatefulSet (templates/postgresql.yaml) instead.
