@@ -724,7 +724,7 @@ func (q *Queries) GetGroupVersionCountTimeline(groupID string, duration string) 
 }
 
 // GetGroupStatusCountTimeline computes the number of status transition events of each status type (e.g. Downloading, Installed, Complete, Error)
-// thatoccurred within each sliding interval [T - interval, T).
+// that occurred within each sliding interval [T - interval, T).
 // Target Table: instance_status_history
 func (q *Queries) GetGroupStatusCountTimeline(groupID string, duration string) (map[time.Time](map[int](types.VersionCountMap)), error) {
 	var timelineEntry []types.StatusVersionCountTimelineEntry
