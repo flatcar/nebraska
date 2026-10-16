@@ -116,86 +116,88 @@ func TestGetStatusCountTimeline(t *testing.T) {
 	as := adminSvc(a)
 	rs := runtimeSvc(a)
 
-	initialVersion := "1.0.0"
-	targetVersion := "1.0.1"
-	tTeam, err := as.AddTeam(&types.Team{Name: "test_team"})
-	require.NoError(t, err)
-	tApp, err := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
-	require.NoError(t, err)
-	tGroup, err := as.AddGroup(&types.Group{
-		Name:                      "test_group1",
-		ApplicationID:             tApp.ID,
-		PolicyPeriodInterval:      "15 minutes",
-		PolicyMaxUpdatesPerPeriod: 2,
-		PolicyUpdateTimeout:       "60 minutes",
+	t.Run("latest_bucket_and_duration_counts", func(t *testing.T) {
+		initialVersion := "1.0.0"
+		targetVersion := "1.0.1"
+		tTeam, err := as.AddTeam(&types.Team{Name: "test_team"})
+		require.NoError(t, err)
+		tApp, err := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+		require.NoError(t, err)
+		tGroup, err := as.AddGroup(&types.Group{
+			Name:                      "test_group1",
+			ApplicationID:             tApp.ID,
+			PolicyPeriodInterval:      "15 minutes",
+			PolicyMaxUpdatesPerPeriod: 2,
+			PolicyUpdateTimeout:       "60 minutes",
+		})
+		require.NoError(t, err)
+
+		registerInstanceWithStatus := func(status int) {
+			instanceID := uuid.New().String()
+			const dummyIPAddress = "10.0.0.1"
+			_, err := rs.RegisterInstance(types.Instance{ID: instanceID, IP: dummyIPAddress}, NewInstanceApplication(tApp.ID, tGroup.ID, initialVersion))
+			require.NoError(t, err)
+
+			instance, err := a.GetInstance(instanceID, tApp.ID)
+			require.NoError(t, err)
+
+			// FIXME: updateInstanceObjStatus implicitly requires grantUpdate to populate last_update_version.
+			require.NoError(t, rs.grantUpdate(instance, targetVersion))
+			instance, err = a.GetInstance(instanceID, tApp.ID)
+			require.NoError(t, err)
+			require.NoError(t, rs.updateInstanceObjStatus(instance, status))
+		}
+
+		// Register two instances with distinct statuses to verify breakdown aggregation
+		registerInstanceWithStatus(types.InstanceStatusComplete)
+		registerInstanceWithStatus(types.InstanceStatusDownloading)
+
+		// 1. Verify "1h" duration: 5 buckets (15m interval is hardcoded by durationCodeToPostgresTimings)
+		statusTimelineMap, err := a.GetGroupStatusCountTimeline(tGroup.ID, "1h")
+		require.NoError(t, err)
+		assert.Equal(t, 5, len(statusTimelineMap))
+
+		// Find the latest timestamp bucket
+		var latestTimestamp time.Time
+		for ts := range statusTimelineMap {
+			if ts.After(latestTimestamp) {
+				latestTimestamp = ts
+			}
+		}
+
+		// Verify events reside strictly in the latest bucket, and earlier buckets are zero
+		for ts, statusBreakdown := range statusTimelineMap {
+			if ts.Equal(latestTimestamp) {
+				assert.Equal(t, uint64(1), statusBreakdown[types.InstanceStatusComplete][targetVersion], "expected 1 complete instance in latest bucket")
+				assert.Equal(t, uint64(1), statusBreakdown[types.InstanceStatusDownloading][targetVersion], "expected 1 downloading instance in latest bucket")
+			} else {
+				assert.Equal(t, uint64(0), statusBreakdown[types.InstanceStatusComplete][targetVersion], "earlier buckets must have 0 complete instances")
+				assert.Equal(t, uint64(0), statusBreakdown[types.InstanceStatusDownloading][targetVersion], "earlier buckets must have 0 downloading instances")
+			}
+		}
+
+		// 2. Verify bucket counts for remaining durations
+		statusTimelineMap, err = a.GetGroupStatusCountTimeline(tGroup.ID, "1d")
+		require.NoError(t, err)
+		assert.Equal(t, 25, len(statusTimelineMap))
+
+		statusTimelineMap, err = a.GetGroupStatusCountTimeline(tGroup.ID, "7d")
+		require.NoError(t, err)
+		assert.Equal(t, 8, len(statusTimelineMap))
+
+		statusTimelineMap, err = a.GetGroupStatusCountTimeline(tGroup.ID, "30d")
+		require.NoError(t, err)
+		assert.Equal(t, 11, len(statusTimelineMap))
+
+		// An unknown group ID returns all 5 time buckets with a nil error instead of sql.ErrNoRows.
+		// Because generate_series always emits 5 buckets, check that each bucket is actually empty.
+		statusTimelineMap, err = a.GetGroupStatusCountTimeline(uuid.New().String(), "1h")
+		require.NoError(t, err)
+		assert.Equal(t, 5, len(statusTimelineMap))
+		for _, statusBreakdown := range statusTimelineMap {
+			assert.Empty(t, statusBreakdown)
+		}
 	})
-	require.NoError(t, err)
-
-	registerInstanceWithStatus := func(status int) {
-		instanceID := uuid.New().String()
-		const dummyIPAddress = "10.0.0.1"
-		_, err := rs.RegisterInstance(types.Instance{ID: instanceID, IP: dummyIPAddress}, NewInstanceApplication(tApp.ID, tGroup.ID, initialVersion))
-		require.NoError(t, err)
-
-		instance, err := a.GetInstance(instanceID, tApp.ID)
-		require.NoError(t, err)
-
-		// FIXME: updateInstanceObjStatus implicitly requires grantUpdate to populate last_update_version.
-		require.NoError(t, rs.grantUpdate(instance, targetVersion))
-		instance, err = a.GetInstance(instanceID, tApp.ID)
-		require.NoError(t, err)
-		require.NoError(t, rs.updateInstanceObjStatus(instance, status))
-	}
-
-	// Register two instances with distinct statuses to verify breakdown aggregation
-	registerInstanceWithStatus(types.InstanceStatusComplete)
-	registerInstanceWithStatus(types.InstanceStatusDownloading)
-
-	// 1. Verify "1h" duration: 5 buckets (15m interval is hardcoded by durationCodeToPostgresTimings)
-	statusTimelineMap, err := a.GetGroupStatusCountTimeline(tGroup.ID, "1h")
-	require.NoError(t, err)
-	assert.Equal(t, 5, len(statusTimelineMap))
-
-	// Find the latest timestamp bucket
-	var latestTimestamp time.Time
-	for ts := range statusTimelineMap {
-		if ts.After(latestTimestamp) {
-			latestTimestamp = ts
-		}
-	}
-
-	// Verify events reside strictly in the latest bucket, and earlier buckets are zero
-	for ts, statusBreakdown := range statusTimelineMap {
-		if ts.Equal(latestTimestamp) {
-			assert.Equal(t, uint64(1), statusBreakdown[types.InstanceStatusComplete][targetVersion], "expected 1 complete instance in latest bucket")
-			assert.Equal(t, uint64(1), statusBreakdown[types.InstanceStatusDownloading][targetVersion], "expected 1 downloading instance in latest bucket")
-		} else {
-			assert.Equal(t, uint64(0), statusBreakdown[types.InstanceStatusComplete][targetVersion], "earlier buckets must have 0 complete instances")
-			assert.Equal(t, uint64(0), statusBreakdown[types.InstanceStatusDownloading][targetVersion], "earlier buckets must have 0 downloading instances")
-		}
-	}
-
-	// 2. Verify bucket counts for remaining durations
-	statusTimelineMap, err = a.GetGroupStatusCountTimeline(tGroup.ID, "1d")
-	require.NoError(t, err)
-	assert.Equal(t, 25, len(statusTimelineMap))
-
-	statusTimelineMap, err = a.GetGroupStatusCountTimeline(tGroup.ID, "7d")
-	require.NoError(t, err)
-	assert.Equal(t, 8, len(statusTimelineMap))
-
-	statusTimelineMap, err = a.GetGroupStatusCountTimeline(tGroup.ID, "30d")
-	require.NoError(t, err)
-	assert.Equal(t, 11, len(statusTimelineMap))
-
-	// An unknown group ID returns all 5 time buckets with a nil error instead of sql.ErrNoRows.
-	// Because generate_series always emits 5 buckets, check that each bucket is actually empty.
-	statusTimelineMap, err = a.GetGroupStatusCountTimeline(uuid.New().String(), "1h")
-	require.NoError(t, err)
-	assert.Equal(t, 5, len(statusTimelineMap))
-	for _, statusBreakdown := range statusTimelineMap {
-		assert.Empty(t, statusBreakdown)
-	}
 }
 
 func TestUpdateLocalOverrides(t *testing.T) {
