@@ -78,13 +78,15 @@ export default function VersionCountTimeline(props: VersionCountTimelineProps) {
       const cleanedVersion = cleanSemverVersion(version);
       // Discard any invalid versions (empty strings, etc.)
       if (semver.valid(cleanedVersion)) {
-        versions.push(cleanedVersion);
+        versions.push(version);
       }
     });
 
     // Sort versions (earliest first)
     versions.sort((version1, version2) => {
-      return semver.compare(version1, version2);
+      const cmp = semver.compare(cleanSemverVersion(version1), cleanSemverVersion(version2));
+      if (cmp !== 0) return cmp;
+      return version1.localeCompare(version2);
     });
 
     return versions;
@@ -106,10 +108,10 @@ export default function VersionCountTimeline(props: VersionCountTimelineProps) {
     // let's populate it from the selected time one.
     if (version_breakdown.length === 0 && selectedEntryPoint > -1) {
       // Create the version breakdown from the timeline
-      const entries = timelineChartData.data[selectedEntryPoint] || [];
+      const entries = timelineChartData.data[selectedEntryPoint] || {};
 
       for (const version of timelineChartData.keys) {
-        const versionCount = entries[version];
+        const versionCount = entries[version] || 0;
 
         total += versionCount;
 
