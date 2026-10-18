@@ -64,8 +64,24 @@ var (
 		},
 	)
 
+	instancesPrunedTotal = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Namespace: "nebraska",
+			Name:      "instances_pruned_total",
+			Help:      "Number of stale instances deleted by the instance-retention pruner",
+		},
+	)
+
 	l = logger.New("nebraska")
 )
+
+// AddInstancesPruned increments the instances_pruned_total counter.
+func AddInstancesPruned(n float64) {
+	if n <= 0 {
+		return
+	}
+	instancesPrunedTotal.Add(n)
+}
 
 // registerNebraskaMetrics registers the application metrics collector with the DefaultRegistrer.
 func registerNebraskaMetrics() error {
@@ -75,6 +91,7 @@ func registerNebraskaMetrics() error {
 		openConnections,
 		inUseConnections,
 		idleConnections,
+		instancesPrunedTotal,
 	}
 
 	for _, collector := range collectors {
