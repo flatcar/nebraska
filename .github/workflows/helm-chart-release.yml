@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - release/chart-*
     paths:
       - charts/**
       - '!charts/**/README.md'
