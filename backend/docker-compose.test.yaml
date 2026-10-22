@@ -30,7 +30,6 @@ services:
     build:
       context: ../
       dockerfile: Dockerfile
-      network: host
     ports:
       - "8002:8000"
     # Workaround for missing support for depends_on conditions in podman-compose:
