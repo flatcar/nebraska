@@ -9,3 +9,6 @@ https://x.com/flatcar
 
 # www.robotstxt.org times out frequently in CI
 https://www.robotstxt.org/robotstxt.html
+
+# Slack rejects automated link checks with HTTP 403.
+https://kubernetes.slack.com
