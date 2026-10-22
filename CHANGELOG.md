@@ -12,6 +12,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removed
 ### Bugfixes
 
+## [4.0.1] - 22/10/2026
+
+### Security
+
+- **Go 1.27.3:** Rebuild Nebraska with a supported, patched Go release, including the certificate trust mitigation for [CVE-2026-111943](https://pkg.go.dev/vuln/GO-2026-6809). Backend and updater builds and CI now require Go 1.27.3.
+- **Alpine 3.24.3:** Refresh the runtime image and its CA certificates, replacing Alpine 3.21.3.
+
+### Changed
+
+- Update golangci-lint for Go 1.27 support and regenerate the embedded OpenAPI specification with the new toolchain.
+- Correct the status-history error log to format the resolved limit rather than its optional pointer, as required by the updated lint checks.
+- No application API, database schema, configuration, or frontend dependency changes. No migration is required when upgrading from 4.0.0.
+
 ## [4.0.0] - 02/09/2026
 
 ### Security

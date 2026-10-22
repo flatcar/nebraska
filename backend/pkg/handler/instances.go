@@ -41,7 +41,7 @@ func (h *Handler) GetInstanceStatusHistory(ctx echo.Context, appIDorProductID st
 		if err == sql.ErrNoRows {
 			return ctx.NoContent(http.StatusNotFound)
 		}
-		l.Error().Err(err).Str("appID", appID).Str("groupID", groupID).Str("instanceID", instanceID).Msgf("getInstanceStatusHistory - getting status history limit %d", params.Limit)
+		l.Error().Err(err).Str("appID", appID).Str("groupID", groupID).Str("instanceID", instanceID).Msgf("getInstanceStatusHistory - getting status history limit %d", limit)
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
