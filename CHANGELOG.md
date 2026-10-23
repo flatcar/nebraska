@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removed
 ### Bugfixes
 
+- Fixed the package picker in the channel dialog crashing the page when an application has more than 750 packages.
+
 ## [4.0.1] - 22/10/2026
 
 ### Security
