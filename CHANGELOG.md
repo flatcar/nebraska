@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Security
 
+- **golang.org/x/net → v0.61.0, golang.org/x/text → v0.43.0:** Picks up fixes for GO-2026-6617, GO-2026-6612, GO-2026-6611, GO-2026-6603 and GO-2026-6629. Nebraska's default setup does not use the affected code paths. `govulncheck` still reports GO-2026-5932 (`golang.org/x/crypto/openpgp` is unmaintained, no fix), which remains an indirect dependency through `github.com/google/go-github` v28.
+
 ### Breaking Changes
 
 - **PostgreSQL 14+ is now a hard requirement.** Nebraska connects through `pgx/v5`, which [supports only the PostgreSQL major releases still maintained upstream](https://github.com/jackc/pgx#supported-go-and-postgresql-versions), currently 14 and newer.
@@ -45,6 +47,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fixed instance statistics query that returned incorrect group dashboard counts. ([#1356](https://github.com/flatcar/nebraska/pull/1356), thanks to Thilo Fromm)
 - Fixed deleting an application or group on a control node leaving behind the rows each edge writes itself (`group_local`, `activity`, `event`, `instance_application`, `instance_status_history`). Logical replication skips foreign key actions on a subscriber, so two triggers now repeat them there. ([#1632](https://github.com/flatcar/nebraska/issues/1632))
 - Fixed saving a group on a control node copying its safe-mode brake into the shared default, which paused updates on every edge. A node's own overrides are now returned separately under `local_overrides`. ([#1631](https://github.com/flatcar/nebraska/issues/1631))
+
+## [4.0.1] - 22/10/2026
+
+### Security
+
+- **Go 1.27.3:** Rebuild Nebraska with a supported, patched Go release, including the certificate trust mitigation for [CVE-2026-111943](https://pkg.go.dev/vuln/GO-2026-6809). Backend and updater builds and CI now require Go 1.27.3.
+- **Alpine 3.24.3:** Refresh the runtime image and its CA certificates, replacing Alpine 3.21.3.
+
+### Changed
+
+- Update golangci-lint for Go 1.27 support and regenerate the embedded OpenAPI specification with the new toolchain.
+- Correct the status-history error log to format the resolved limit rather than its optional pointer, as required by the updated lint checks.
+- No application API, database schema, configuration, or frontend dependency changes. No migration is required when upgrading from 4.0.0.
 
 ## [4.0.0] - 02/09/2026
 
