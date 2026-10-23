@@ -1,6 +1,6 @@
 module github.com/flatcar/nebraska/updater
 
-go 1.25.0
+go 1.27.3
 
 require (
 	github.com/flatcar/go-omaha v0.0.2-0.20251014063321-4998849bd39c
