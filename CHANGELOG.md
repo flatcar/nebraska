@@ -48,6 +48,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fixed deleting an application or group on a control node leaving behind the rows each edge writes itself (`group_local`, `activity`, `event`, `instance_application`, `instance_status_history`). Logical replication skips foreign key actions on a subscriber, so two triggers now repeat them there. ([#1632](https://github.com/flatcar/nebraska/issues/1632))
 - Fixed saving a group on a control node copying its safe-mode brake into the shared default, which paused updates on every edge. A node's own overrides are now returned separately under `local_overrides`. ([#1631](https://github.com/flatcar/nebraska/issues/1631))
 
+## [4.0.2] - 23/10/2026
+
+### Bugfixes
+
+- Fixed the package picker in the channel dialog crashing the page when an application has more than 750 packages.
+
 ## [4.0.1] - 22/10/2026
 
 ### Security
