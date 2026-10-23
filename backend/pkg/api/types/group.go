@@ -11,12 +11,6 @@ import (
 // provided when enabling the flag PolicyOfficeHours.
 var ErrExpectingValidTimezone = errors.New("nebraska: expecting valid timezone")
 
-type GroupDescriptor struct {
-	AppID string
-	Track string
-	Arch  Arch
-}
-
 // Group represents a Nebraska application's group.
 type Group struct {
 	ID                        string      `db:"id" json:"id"`

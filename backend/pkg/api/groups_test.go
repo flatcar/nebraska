@@ -399,6 +399,16 @@ func TestGroupTrackName(t *testing.T) {
 
 	_, err = a.GetGroupID(tApp.ID, tGroupNoChannel.Track, types.ArchAll)
 	assert.Error(t, err, "no group found")
+
+	// Check that the newest group wins when two groups in the same app share a track name and arch
+	tGroupNewer, err := as.AddGroup(&types.Group{Name: "test_group_newer", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes", Track: trackName})
+	require.NoError(t, err)
+	_, err = a.db().Exec("UPDATE groups SET created_ts = created_ts - interval '1 hour' WHERE id = $1", tGroup1.ID)
+	require.NoError(t, err)
+
+	id, err = a.GetGroupID(tApp.ID, trackName, types.ArchAll)
+	assert.NoError(t, err)
+	assert.Equal(t, tGroupNewer.ID, id)
 }
 
 // TestGetVersionCountTimelineInjection verifies groupID is bound as a parameter

@@ -41,18 +41,6 @@ var durationParamToCode = map[durationParam]durationCode{
 }
 
 var (
-	// cachedGroups caches the mapping of group track names and
-	// architectures to groups. It must not be modified directly but
-	// replaced (atomically or via lock) by a new map to prevent data races.
-	// An update must be triggered through updateCachedGroups() each time
-	// a group entry changes (channel architectures are not modified after
-	// creation, thus changes to the channel don't need to trigger an
-	// update). A RW lock was chosen to prevent data races over the pointer
-	// itself. An alternative is to use atomic loads instead of RLock()
-	// and using atomic stores inside Lock() of a normal Mutex to serialize
-	// the writes (or use channel handshakes instead of a mutex).
-	cachedGroups                    map[types.GroupDescriptor]string
-	cachedGroupsLock                sync.RWMutex
 	cachedGroupVersionCount         = make(map[groupDurationCacheKey]groupVersionCountCache)
 	cachedGroupVersionCountLock     sync.RWMutex
 	CachedGroupVersionCountLifespan = time.Minute
@@ -102,73 +90,44 @@ func (q *Queries) GetGroup(groupID string) (*types.Group, error) {
 // The track names should be unique in combination with the group's channel architecture but this is not
 // enforced on the DB level and the newest entry wins.
 func (q *Queries) GetGroupID(appID, trackName string, arch types.Arch) (string, error) {
-	var cachedGroupsRef map[types.GroupDescriptor]string
-	cachedGroupsLock.RLock()
-	if cachedGroups != nil {
-		// Keep a reference to the map that we found.
-		cachedGroupsRef = cachedGroups
-	}
-	cachedGroupsLock.RUnlock()
-	// Generate map on startup or if invalidated.
-	if cachedGroupsRef == nil {
-		cachedGroupsLock.Lock()
-		cachedGroupsRef = cachedGroups
-		// If a concurrent execution generated it inbetween our RUnlock() and Lock(),
-		// we can use this because any invalidation inbetween must have happened
-		// before the generation because all writes are sequential.
-		if cachedGroupsRef == nil {
-			cachedGroups = make(map[types.GroupDescriptor]string)
-			query, _, err := goqu.From("groups").ToSQL()
-			var groups []*types.Group
-			if err == nil {
-				groups, err = q.getGroupsFromQuery(query)
-			}
-			// Checks boths errors above.
-			if err != nil {
-				l.Error().Err(err).Msg("GetGroupID error")
-			} else {
-				for _, group := range groups {
-					if group.Channel != nil {
-						descriptor := types.GroupDescriptor{AppID: group.ApplicationID, Track: group.Track, Arch: group.Channel.Arch}
-						// The groups are sorted descendingly by the creation time.
-						// The newest group with the track name and arch wins.
-						if otherID, ok := cachedGroups[descriptor]; ok {
-							// Log a warning for others.
-							l.Warn().Str("group", group.ID).Str("group2", otherID).Str("track", group.Track).Msg("GetGroupID - another group already uses the same track name and architecture")
-						}
-						cachedGroups[descriptor] = group.ID
-					} else {
-						l.Warn().Str("group", group.ID).Msg("GetGroupID - no channel found for")
-					}
-				}
-			}
-			// Keep a reference to the map we created.
-			cachedGroupsRef = cachedGroups
-		}
-		cachedGroupsLock.Unlock()
-	}
-
 	// Trim space and the {} that may surround the ID
 	appIDNoBrackets := strings.TrimSpace(appID)
 	if len(appIDNoBrackets) > 1 && appIDNoBrackets[0] == '{' {
 		appIDNoBrackets = strings.TrimSpace(appIDNoBrackets[1 : len(appIDNoBrackets)-1])
 	}
 
-	cachedGroupID, ok := cachedGroupsRef[types.GroupDescriptor{AppID: appIDNoBrackets, Track: trackName, Arch: arch}]
-	if !ok {
-		return "", fmt.Errorf("no group found for app %v, track %v, and architecture %v", appID, trackName, arch)
+	notFound := func() error {
+		return fmt.Errorf("no group found for app %v, track %v, and architecture %v", appID, trackName, arch)
 	}
-	return cachedGroupID, nil
-}
+	// application_id is a UUID column; any other key would only make the query fail.
+	if !isCanonicalUUID(appIDNoBrackets) {
+		return "", notFound()
+	}
 
-// UpdateCachedGroups invalidates the cached track names in cachedGroups and
-// must be called whenever the group entries are modified.
-func (q *Queries) UpdateCachedGroups() {
-	cachedGroupsLock.Lock()
-	cachedGroups = nil
-	// Generating the map is not always possible here because the database
-	// can be closed.
-	cachedGroupsLock.Unlock()
+	query, args, err := PGDialect.From("groups").Prepared(true).
+		Select(goqu.I("groups.id")).
+		InnerJoin(goqu.T("channel"), goqu.On(goqu.I("channel.id").Eq(goqu.I("groups.channel_id")))).
+		Where(
+			goqu.I("groups.application_id").Eq(appIDNoBrackets),
+			goqu.I("groups.track").Eq(trackName),
+			goqu.I("channel.arch").Eq(arch),
+		).
+		Order(goqu.I("groups.created_ts").Desc(), goqu.I("groups.id").Desc()).
+		Limit(1).
+		ToSQL()
+	if err != nil {
+		return "", err
+	}
+
+	var groupID string
+	if err := q.db.QueryRow(query, args...).Scan(&groupID); err != nil {
+		if err == sql.ErrNoRows {
+			return "", notFound()
+		}
+		l.Error().Err(err).Str("appID", appID).Str("track", trackName).Msg("GetGroupID")
+		return "", err
+	}
+	return groupID, nil
 }
 
 // GetGroupsCount retuns the total number of groups in an app

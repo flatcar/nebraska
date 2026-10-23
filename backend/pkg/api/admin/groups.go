@@ -54,7 +54,6 @@ func (s *Service) AddGroup(group *types.Group) (*types.Group, error) {
 	if err != nil {
 		return nil, err
 	}
-	s.UpdateCachedGroups()
 	// Re-read through groupsQuery so the returned struct reflects the joined
 	// group_local row.
 	return s.GetGroup(group.ID)
@@ -112,7 +111,6 @@ func (s *Service) UpdateGroup(group *types.Group) error {
 	if rowsAffected == 0 {
 		return types.ErrNoRowsAffected
 	}
-	s.UpdateCachedGroups()
 	return nil
 }
 
@@ -134,7 +132,6 @@ func (s *Service) DeleteGroup(groupID string) error {
 	if rowsAffected == 0 {
 		return types.ErrNoRowsAffected
 	}
-	s.UpdateCachedGroups()
 	return nil
 }
 

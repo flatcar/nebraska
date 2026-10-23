@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/flatcar/go-omaha/omaha"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -73,5 +74,59 @@ func TestReplicatedDeletesClearEdgeRows(t *testing.T) {
 		}
 		// Control cascades to the groups and replicates each delete separately.
 		assert.Zero(t, count(t, edge, "select count(*) from group_local where group_id = $1", keptGroup))
+	})
+}
+
+// The edge must answer update checks for applications and groups that reach it
+// from control after it has already answered others.
+func TestEdgeServesReplicatedAppsAndGroups(t *testing.T) {
+	control, edge := controlURL(), edgeURL()
+	edgeDB := openDB(t, edgeDBURL())
+
+	suffix := fmt.Sprintf("n%d", time.Now().UnixNano())
+	t.Cleanup(func() { _, _ = edgeDB.Exec("delete from instance where id like $1", "lookup-"+suffix+"-%") })
+
+	newGroup := func(t *testing.T, appID, channelID, track string) {
+		t.Helper()
+		createID(t, fmt.Sprintf("%s/api/apps/%s/groups", control, appID), fmt.Sprintf(`{"name":"%[1]s","track":"%[1]s","channel_id":"%[2]s",`+
+			`"policy_updates_enabled":true,"policy_max_updates_per_period":100,"policy_period_interval":"1 hours",`+
+			`"policy_update_timeout":"1 days","policy_timezone":"UTC","application_id":"%[3]s"}`, track, channelID, appID))
+	}
+	// newApp creates an application on control with a package, a channel and a
+	// group on the "stable" track, and waits for them to reach the edge.
+	newApp := func(t *testing.T, name string) (appID, channelID string) {
+		t.Helper()
+		appID = createID(t, control+"/api/apps", fmt.Sprintf(`{"name":"%[1]s-%[2]s","product_id":"io.test.%[1]s.%[2]s"}`, name, suffix))
+		t.Cleanup(func() { request(t, "DELETE", control+"/api/apps/"+appID, nil) })
+		base := control + "/api/apps/" + appID
+		pkgID := createID(t, base+"/packages", fmt.Sprintf(`{"arch":1,"filename":"update.gz","description":"","url":"http://example.com/",`+
+			`"version":"1.0.0","type":4,"size":"10","hash":"","application_id":"%s","channels_blacklist":[]}`, appID))
+		channelID = createID(t, base+"/channels", fmt.Sprintf(`{"name":"stable","arch":1,"color":"","application_id":"%s","package_id":"%s"}`, appID, pkgID))
+		newGroup(t, appID, channelID, "stable")
+		waitCount(t, edgeDB, 1, "select count(*) from groups where application_id = $1", appID)
+		return appID, channelID
+	}
+	machines := 0
+	requireUpdate := func(t *testing.T, appID, track string) {
+		t.Helper()
+		machines++
+		app := updateCheck(t, edge, appID, track, fmt.Sprintf("lookup-%s-%d", suffix, machines))
+		assert.Equal(t, omaha.AppOK, app.Status)
+		require.NotNil(t, app.UpdateCheck)
+		assert.Equal(t, omaha.UpdateOK, app.UpdateCheck.Status)
+	}
+
+	firstApp, firstChannel := newApp(t, "first")
+	requireUpdate(t, firstApp, "stable")
+
+	t.Run("new_group", func(t *testing.T) {
+		newGroup(t, firstApp, firstChannel, "beta")
+		waitCount(t, edgeDB, 2, "select count(*) from groups where application_id = $1", firstApp)
+		requireUpdate(t, firstApp, "beta")
+	})
+
+	t.Run("new_application", func(t *testing.T) {
+		secondApp, _ := newApp(t, "second")
+		requireUpdate(t, secondApp, "stable")
 	})
 }
