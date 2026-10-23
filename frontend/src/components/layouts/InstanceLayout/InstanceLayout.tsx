@@ -50,11 +50,9 @@ export default function InstanceLayout() {
     });
     const apps = applicationsStore().getCachedApplications() || [];
     const app = apps.find(({ id }) => id === appID) || null;
-    if (app !== application) {
-      setApplication(app);
-      setGroup(getGroupFromApplication(app));
-    }
-  }, [appID, application, getGroupFromApplication, groupID, instanceID]);
+    setApplication(app);
+    setGroup(getGroupFromApplication(app));
+  }, [appID, getGroupFromApplication, groupID, instanceID]);
 
   React.useEffect(() => {
     if (!appID) {
