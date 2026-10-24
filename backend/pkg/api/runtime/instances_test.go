@@ -56,3 +56,27 @@ func TestGetInstanceStatusHistory(t *testing.T) {
 	assert.Equal(t, history[3].Status, types.InstanceStatusUpdateGranted)
 	assert.Equal(t, history[3].Version, "1.0.1")
 }
+
+func TestGetInstanceStatusHistoryErrorWithoutEvent(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	as := adminSvc(a)
+	rs := runtimeSvc(a)
+
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tGroup, _ := as.AddGroup(&types.Group{Name: "group1", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tInstance, _ := rs.RegisterInstance(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+
+	err := rs.grantUpdate(tInstance, "1.0.1")
+	assert.NoError(t, err)
+	err = rs.updateInstanceStatus(tInstance.ID, tApp.ID, types.InstanceStatusError)
+	assert.NoError(t, err)
+
+	history, err := a.GetInstanceStatusHistory(tInstance.ID, tApp.ID, tGroup.ID, 100)
+	assert.NoError(t, err)
+	if assert.Len(t, history, 2) {
+		assert.Equal(t, types.InstanceStatusError, history[0].Status)
+		assert.False(t, history[0].ErrorCode.Valid)
+	}
+}

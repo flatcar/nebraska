@@ -2,6 +2,7 @@ package dbreads
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -114,8 +115,10 @@ func (q *Queries) GetInstanceStatusHistory(instanceID, appID, groupID string, li
 	}
 	for _, entry := range instanceStatusHistory {
 		if entry.Status == types.InstanceStatusError {
-			entry.ErrorCode, err = q.GetEvent(instanceID, appID, entry.CreatedTs)
-			if err != nil {
+			errorCode, err := q.GetEvent(instanceID, appID, entry.CreatedTs)
+			if err == nil {
+				entry.ErrorCode = errorCode
+			} else if !errors.Is(err, sql.ErrNoRows) {
 				return nil, err
 			}
 		}
