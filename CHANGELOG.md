@@ -12,6 +12,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removed
 ### Bugfixes
 
+## [4.0.2] - 23/10/2026
+
+### Bugfixes
+
+- Fixed the package picker in the channel dialog crashing the page when an application has more than 750 packages.
+- Fixed the instance details page requesting the application, instance and status history in an endless loop while open.
+
 ## [4.0.1] - 22/10/2026
 
 ### Security
