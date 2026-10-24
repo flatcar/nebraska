@@ -75,17 +75,10 @@ func (q *Queries) GetApps(teamID string, page, perPage uint64) ([]*types.Applica
 	if err != nil {
 		return nil, err
 	}
-	rows, err := q.db.Queryx(query)
-	if err != nil {
+	if err := q.db.Select(&apps, query); err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	for rows.Next() {
-		app := types.Application{}
-		err := rows.StructScan(&app)
-		if err != nil {
-			return nil, err
-		}
+	for _, app := range apps {
 		groups, err := q.getGroups(app.ID)
 		if err == nil || err == sql.ErrNoRows {
 			app.Groups = groups
@@ -102,10 +95,6 @@ func (q *Queries) GetApps(teamID string, page, perPage uint64) ([]*types.Applica
 		if err != nil {
 			return nil, err
 		}
-		apps = append(apps, &app)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
 	}
 	return apps, nil
 }

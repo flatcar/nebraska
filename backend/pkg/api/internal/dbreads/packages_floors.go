@@ -211,19 +211,13 @@ func (q *Queries) GetPackageFloorChannels(packageID string) ([]types.ChannelFloo
 		return nil, err
 	}
 
-	rows, err := q.db.Queryx(query)
-	if err != nil {
+	var channels []*channelWithFloor
+	if err := q.db.Select(&channels, query); err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
 	var result []types.ChannelFloorInfo
-	for rows.Next() {
-		var chWithFloor channelWithFloor
-		if err := rows.StructScan(&chWithFloor); err != nil {
-			return nil, err
-		}
-
+	for _, chWithFloor := range channels {
 		// Load the package that the channel points to (if any) - same as getChannelsFromQuery
 		if chWithFloor.PackageID.Valid {
 			pkg, err := q.getPackage(chWithFloor.PackageID)
@@ -241,10 +235,6 @@ func (q *Queries) GetPackageFloorChannels(packageID string) ([]types.ChannelFloo
 			Channel:     &chWithFloor.Channel,
 			FloorReason: chWithFloor.FloorReason,
 		})
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
 	}
 
 	return result, nil

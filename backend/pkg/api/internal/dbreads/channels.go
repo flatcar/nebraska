@@ -67,17 +67,10 @@ func (q *Queries) getChannels(appID string) ([]*types.Channel, error) {
 
 func (q *Queries) getChannelsFromQuery(query string) ([]*types.Channel, error) {
 	var channels []*types.Channel
-	rows, err := q.db.Queryx(query)
-	if err != nil {
+	if err := q.db.Select(&channels, query); err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	for rows.Next() {
-		channel := types.Channel{}
-		if err := rows.StructScan(&channel); err != nil {
-			return nil, err
-		}
-
+	for _, channel := range channels {
 		packageEntity, err := q.getPackage(channel.PackageID)
 		switch err {
 		case nil:
@@ -87,10 +80,6 @@ func (q *Queries) getChannelsFromQuery(query string) ([]*types.Channel, error) {
 		default:
 			return nil, err
 		}
-		channels = append(channels, &channel)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
 	}
 	return channels, nil
 }
