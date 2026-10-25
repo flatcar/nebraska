@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
   **Operators running PostgreSQL 13 or older must upgrade their database before upgrading Nebraska.** PostgreSQL 17.x is recommended. See the [Upgrade PostgreSQL](https://github.com/flatcar/nebraska/tree/main/charts/nebraska#upgrade-postgresql) migration guide for step-by-step instructions.
 - **Cascaded Nebraska syncers must run this release or newer to consume channels where floor packages are configured;** older syncers receive `NoUpdate`. Does not affect regular Flatcar clients.
+- The `nebraska_application_instances_per_channel` metric has a new `arch` label, so channels sharing a name across architectures (for example amd64 and aarch64 `stable`) are now separate series instead of being summed. Queries that select a series by `application`, `version` and `channel` should sum over `arch` to keep their previous totals. ([#1672](https://github.com/flatcar/nebraska/pull/1672))
 
 ### Added
 
