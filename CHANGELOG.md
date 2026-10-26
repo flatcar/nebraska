@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Bugfixes
 
 - Fixed GitHub login not being required when opening `/apps` or `/instances` pages directly, which showed an empty application list instead of the login page.
+- Fixed tapping a time zone in the group policy dialog on a touch screen not selecting it.
 
 ## [4.0.2] - 23/10/2026
 

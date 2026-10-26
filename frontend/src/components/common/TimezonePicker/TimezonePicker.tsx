@@ -116,30 +116,30 @@ interface LazyListProps {
   width: number;
 }
 
+function RowComponent(props: {
+  index: number;
+  style: React.CSSProperties;
+  suggestions: any[];
+  getItemProps: any;
+  highlightedIndex: any;
+  selectedItem: any;
+}) {
+  const { index, style, suggestions, getItemProps, highlightedIndex, selectedItem } = props;
+  const suggestion = suggestions[index];
+  return renderSuggestion({
+    suggestion,
+    style,
+    itemProps: getItemProps({ item: suggestion.label }),
+    index,
+    highlightedIndex,
+    selectedItem,
+  });
+}
+
 function LazyList(props: LazyListProps) {
   const { options, itemData, height, itemSize, width } = props;
 
   const rowProps = { ...itemData, suggestions: options };
-
-  function RowComponent(props: {
-    index: number;
-    style: React.CSSProperties;
-    suggestions: any[];
-    getItemProps: any;
-    highlightedIndex: any;
-    selectedItem: any;
-  }) {
-    const { index, style, suggestions, getItemProps, highlightedIndex, selectedItem } = props;
-    const suggestion = suggestions[index];
-    return renderSuggestion({
-      suggestion,
-      style,
-      itemProps: getItemProps({ item: suggestion.label }),
-      index,
-      highlightedIndex,
-      selectedItem,
-    });
-  }
 
   return (
     <List
