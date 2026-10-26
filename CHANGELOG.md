@@ -12,6 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removed
 ### Bugfixes
 
+## [4.0.3] - 26/10/2026
+
+### Bugfixes
+
+- Fixed GitHub login not being required when opening `/apps` or `/instances` pages directly, which showed an empty application list instead of the login page.
+
 ## [4.0.2] - 23/10/2026
 
 ### Bugfixes
