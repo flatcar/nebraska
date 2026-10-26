@@ -522,6 +522,12 @@ paths:
           required: true
           schema:
             type: string
+            x-go-type: string
+            enum:
+              - 1h
+              - 1d
+              - 7d
+              - 30d
       responses:
         "200":
           description: Version Timeline of group success response
@@ -531,6 +537,8 @@ paths:
                 $ref: "#/components/schemas/groupVersionCountTimeline"
         "404":
           description: Group not found response
+        "400":
+          description: Invalid duration query parameter
         "500":
           description: Version Timeline of group error response
   /api/apps/{appIDorProductID}/groups/{groupID}/status_timeline:
@@ -558,6 +566,12 @@ paths:
           required: true
           schema:
             type: string
+            x-go-type: string
+            enum:
+              - 1h
+              - 1d
+              - 7d
+              - 30d
       responses:
         "200":
           description: Status Timeline of group success response
@@ -567,6 +581,8 @@ paths:
                 $ref: "#/components/schemas/groupStatusCountTimeline"
         "404":
           description: Group not found response        
+        "400":
+          description: Invalid duration query parameter
         "500":
           description: Status Timeline of group error response
 
@@ -595,6 +611,12 @@ paths:
           required: true
           schema:
             type: string
+            x-go-type: string
+            enum:
+              - 1h
+              - 1d
+              - 7d
+              - 30d
       responses:
         "200":
           description: Instance Stats of group success response
@@ -604,6 +626,8 @@ paths:
                 $ref: "#/components/schemas/groupInstanceStats"
         "404":
           description: Group not found response
+        "400":
+          description: Invalid duration query parameter
         "500":
            description: Instance Stats of group error response
   /api/apps/{appIDorProductID}/groups/{groupID}/version_breakdown:
@@ -1242,6 +1266,12 @@ paths:
           required: true
           schema:
             type: string
+            x-go-type: string
+            enum:
+              - 1h
+              - 1d
+              - 7d
+              - 30d
         - in: query
           name: version
           required: false
@@ -1254,6 +1284,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/instancePage"
+        "400":
+          description: Invalid duration query parameter
         "500":
           description: Get Instances of a Group error response
   /api/apps/{appIDorProductID}/groups/{groupID}/instancescount:
@@ -1281,6 +1313,12 @@ paths:
           required: true
           schema:
             type: string
+            x-go-type: string
+            enum:
+              - 1h
+              - 1d
+              - 7d
+              - 30d
       responses:
         "200":
           description: Get Instance count of a Group success response
@@ -1288,6 +1326,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/instanceCount"
+        "400":
+          description: Invalid duration query parameter
         "500":
           description: Get Instance count of a Group error response
   /api/apps/{appIDorProductID}/groups/{groupID}/instances/{instanceID}:
