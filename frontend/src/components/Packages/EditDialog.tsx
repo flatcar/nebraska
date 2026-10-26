@@ -287,6 +287,9 @@ function EditDialog(props: EditDialogProps) {
                           variant="standard"
                           label="Channels Blacklist"
                           multiple
+                          // formik-mui's default onClose stores the focused option as a string,
+                          // which breaks the multiple value on Escape or Tab.
+                          onClose={() => {}}
                           renderValue={(selected: string[]) =>
                             getChannelsNames(selected).join(' / ')
                           }
