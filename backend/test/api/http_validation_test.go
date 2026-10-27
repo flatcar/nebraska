@@ -2,6 +2,7 @@ package api_test
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -9,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestContentTypeValidation(t *testing.T) {
@@ -116,4 +118,52 @@ func TestGroupIDUUIDValidation(t *testing.T) {
 		assert.NotEqual(t, http.StatusBadRequest, resp.StatusCode,
 			"a syntactically valid UUID must get past request validation")
 	})
+}
+
+// TestDurationParamValidation verifies that the duration query parameter is
+// checked against its allowed values at request validation. Before the spec
+// declared the enum, any other value reached durationParamToPostgresTimings()
+// and surfaced as a 500; a client mistake is a bad request, not a server error.
+func TestDurationParamValidation(t *testing.T) {
+	db := newDBForTest(t)
+	defer db.Close()
+
+	app := getAppWithProductID(t, db)
+	endpoint := fmt.Sprintf("%s/api/apps/%s/groups/%s/instancescount",
+		os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID, app.Groups[0].ID)
+
+	rejected := []struct {
+		name  string
+		query string
+	}{
+		{"literal_null", "?duration=null"},
+		{"unsupported_value", "?duration=2d"},
+		{"empty_value", "?duration="},
+		{"missing_parameter", ""},
+	}
+
+	for _, tc := range rejected {
+		t.Run(tc.name, func(t *testing.T) {
+			resp := httpMakeRequest(t, "GET", endpoint+tc.query, nil, nil)
+			defer resp.Body.Close()
+
+			body, err := io.ReadAll(resp.Body)
+			require.NoError(t, err)
+
+			assert.Equal(t, http.StatusBadRequest, resp.StatusCode,
+				"duration %q must be rejected at request validation, not reach the query layer", tc.query)
+			assert.Contains(t, string(body), "duration",
+				"the error must name the parameter that was rejected")
+		})
+	}
+
+	for _, duration := range []string{"1h", "1d", "7d", "30d"} {
+		t.Run("accepts_"+duration, func(t *testing.T) {
+			resp := httpMakeRequest(t, "GET", endpoint+"?duration="+duration, nil, nil)
+			defer resp.Body.Close()
+
+			assert.Equal(t, http.StatusOK, resp.StatusCode,
+				"duration %q is a documented value and must be served", duration)
+		})
+	}
 }
