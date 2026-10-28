@@ -6,6 +6,7 @@ import _ from 'underscore';
 
 import { Application } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
+import { adminWriteRefusal, InstanceMode, useInstanceMode } from '../../utils/instanceMode';
 import Empty from '../common/EmptyContent';
 import ListHeader from '../common/ListHeader';
 import Loader from '../common/Loader';
@@ -16,6 +17,7 @@ import ApplicationItem from './ApplicationItem';
 export type ApplicationListProps = unknown;
 
 export default function ApplicationList() {
+  const instanceMode = useInstanceMode();
   const [applications, setApplications] = React.useState(
     applicationsStore().getCachedApplications ? applicationsStore().getCachedApplications() : []
   );
@@ -40,7 +42,13 @@ export default function ApplicationList() {
     };
   }, [onChange]);
 
-  return <ApplicationListPure applications={applications} loading={applications === null} />;
+  return (
+    <ApplicationListPure
+      applications={applications}
+      loading={applications === null}
+      instanceMode={instanceMode}
+    />
+  );
 }
 
 export interface ApplicationListPureProps {
@@ -54,6 +62,8 @@ export interface ApplicationListPureProps {
   editId?: string;
   /** A default term to search. */
   defaultSearchTerm?: string;
+  /** The role of the node serving the UI. An edge node refuses changes to applications. */
+  instanceMode?: InstanceMode;
 }
 
 export function ApplicationListPure(props: ApplicationListPureProps) {
@@ -61,6 +71,7 @@ export function ApplicationListPure(props: ApplicationListPureProps) {
   const [editOpen, setEditOpen] = React.useState(!!props.editOpen);
   const [editId, setEditId] = React.useState<null | string>(props.editId ? props.editId : null);
   const [searchTerm] = React.useState(props.defaultSearchTerm);
+  const refusal = adminWriteRefusal(t, props.instanceMode || 'single');
 
   function closeUpdateAppModal() {
     setEditOpen(false);
@@ -108,6 +119,7 @@ export function ApplicationListPure(props: ApplicationListPureProps) {
             numberOfInstances={application.instances?.count || 0}
             onUpdate={openUpdateAppModal}
             productId={application.product_id || ''}
+            adminWriteRefusal={refusal}
           />
         );
       });
@@ -120,7 +132,11 @@ export function ApplicationListPure(props: ApplicationListPureProps) {
       <ListHeader
         title={t('applications|applications')}
         actions={[
-          <ModalButton modalToOpen="AddApplicationModal" data={{ applications: applications }} />,
+          <ModalButton
+            modalToOpen="AddApplicationModal"
+            data={{ applications: applications }}
+            disabledReason={refusal}
+          />,
         ]}
       />
       <Paper>

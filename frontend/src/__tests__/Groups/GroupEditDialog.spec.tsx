@@ -14,9 +14,11 @@ import '../../i18n/config.ts';
 
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router';
 
 import GroupEditDialog from '../../components/Groups/GroupEditDialog';
+import { makeStore } from '../../TestHelpers/store';
 import { theme } from '../../TestHelpers/theme';
 import { MAX_UPDATES_PER_TIME_PERIOD } from '../../utils/helpers';
 
@@ -37,20 +39,22 @@ function makeGroup(maxUpdates: number, periodInterval: string, safeMode = false)
   };
 }
 
-async function renderPolicyTab(group?: ReturnType<typeof makeGroup>) {
+async function renderPolicyTab(group?: ReturnType<typeof makeGroup>, instanceMode?: string) {
   render(
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={theme}>
-        <MemoryRouter initialEntries={['/app/123']}>
-          <GroupEditDialog
-            create={!group}
-            data={group ? { group, channels: [] } : { channels: [] }}
-            onHide={() => {}}
-            show
-          />
-        </MemoryRouter>
-      </ThemeProvider>
-    </StyledEngineProvider>
+    <Provider store={makeStore(instanceMode)}>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <MemoryRouter initialEntries={['/app/123']}>
+            <GroupEditDialog
+              create={!group}
+              data={group ? { group, channels: [] } : { channels: [] }}
+              onHide={() => {}}
+              show
+            />
+          </MemoryRouter>
+        </ThemeProvider>
+      </StyledEngineProvider>
+    </Provider>
   );
   await act(async () => fireEvent.click(screen.getByRole('tab', { name: 'Policy' })));
 }
@@ -163,5 +167,22 @@ describe('GroupEditDialog update limits', () => {
     expect(mockCreateGroup.mock.calls[0][0].policy_max_updates_per_period).toBe(
       MAX_UPDATES_PER_TIME_PERIOD
     );
+  });
+});
+
+describe('GroupEditDialog on a distributed deployment', () => {
+  const hint = /This is the default policy of every node/;
+
+  it.each([
+    ['editing', makeGroup(5, '2 hours')],
+    ['creating', undefined],
+  ])('tells a control node it is %s the default of every node', async (_, group) => {
+    await renderPolicyTab(group, 'control');
+    expect(screen.getByText(hint)).toBeTruthy();
+  });
+
+  it.each([undefined, 'single'])('shows no hint on a single node (%s)', async instanceMode => {
+    await renderPolicyTab(makeGroup(5, '2 hours'), instanceMode);
+    expect(screen.queryByText(hint)).toBeNull();
   });
 });

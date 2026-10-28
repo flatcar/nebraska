@@ -20,12 +20,21 @@ export interface ChannelItemProps {
   isAppView?: boolean;
   /** When an update to the channel happens. */
   onChannelUpdate?: (channelID: string) => void;
+  /** Why editing or deleting the channel is unavailable, such as on an edge node. */
+  adminWriteRefusal?: string;
 }
 
 export default function ChannelItem(props: ChannelItemProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { channel, showArch = true, isAppView = false, onChannelUpdate = null, ...others } = props;
+  const {
+    channel,
+    showArch = true,
+    isAppView = false,
+    onChannelUpdate = null,
+    adminWriteRefusal,
+    ...others
+  } = props;
   const name = channel.name;
   const version = channel.package
     ? cleanSemverVersion(channel.package.version)
@@ -116,6 +125,7 @@ export default function ChannelItem(props: ChannelItemProps) {
               { label: t('frequent|edit'), action: updateChannel },
               { label: t('frequent|delete'), action: deleteChannel },
             ]}
+            disabledReason={adminWriteRefusal}
           />
         </ListItemSecondaryAction>
       )}

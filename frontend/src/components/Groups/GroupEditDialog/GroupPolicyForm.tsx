@@ -6,9 +6,6 @@ import {
   FormHelperText,
   FormLabel,
   Grid,
-  MenuItem,
-  Radio,
-  RadioGroup,
   Switch,
   Tooltip,
   Typography,
@@ -18,18 +15,21 @@ import { TextField } from 'formik-mui';
 import { useTranslation } from 'react-i18next';
 
 import TimezonePicker from '../../common/TimezonePicker';
+import RolloutRateFields, { UnitField } from '../RolloutRateFields';
 
 export interface GroupPolicyFormProps {
   values: { [key: string]: string };
   setFieldValue: (formField: string, value: any) => any;
+  hint?: string;
 }
 
 export default function GroupPolicyForm(props: GroupPolicyFormProps) {
   const { t } = useTranslation();
-  const { values, setFieldValue } = props;
+  const { values, setFieldValue, hint } = props;
 
   return (
     <div style={{ padding: '1rem' }}>
+      {hint && <Typography color="textSecondary">{hint}</Typography>}
       <Grid container justifyContent="space-between" spacing={4}>
         <Grid size={12}>
           <Box mt={1}>
@@ -120,86 +120,8 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
         </Grid>
       </Box>
       <Box mt={2}>
-        <FormLabel id="rollout-rate-label">{t('groups|rollout_rate')}</FormLabel>
-        <RadioGroup
-          aria-labelledby="rollout-rate-label"
-          name="rolloutRate"
-          value={values.updatesUnlimited ? 'unlimited' : 'limited'}
-          onChange={(_e, value) => {
-            setFieldValue('updatesUnlimited', value === 'unlimited');
-          }}
-        >
-          <FormControlLabel
-            value="unlimited"
-            control={<Radio color="primary" />}
-            label={t('groups|rollout_rate_unlimited')}
-          />
-          {values.updatesUnlimited && (
-            <FormHelperText sx={{ mt: -1, ml: 4 }}>
-              {values.safeMode
-                ? t('groups|update_policy_no_rate_limit_safe_mode')
-                : t('groups|update_policy_no_rate_limit')}
-            </FormHelperText>
-          )}
-          <Box display="flex" alignItems="center" flexWrap="wrap" columnGap={1.5}>
-            <FormControlLabel
-              value="limited"
-              control={<Radio color="primary" />}
-              label={t('groups|rollout_rate_limited')}
-            />
-            {/* Formik keeps the hidden values, so the limit is restored when switching back. */}
-            {!values.updatesUnlimited && (
-              <>
-                <Box width="7em">
-                  <Field
-                    name="maxUpdates"
-                    component={TextField}
-                    variant="standard"
-                    margin="dense"
-                    type="number"
-                    fullWidth
-                    inputProps={{ min: 1, 'aria-label': t('groups|max_updates') }}
-                  />
-                </Box>
-                <Typography color="textSecondary">
-                  {t('groups|updates_per', { count: Number(values.maxUpdates) })}
-                </Typography>
-                <Box width="5em">
-                  <Field
-                    name="updatesPeriodRange"
-                    component={TextField}
-                    variant="standard"
-                    margin="dense"
-                    type="number"
-                    fullWidth
-                    inputProps={{ min: 1, 'aria-label': t('groups|period_length') }}
-                  />
-                </Box>
-                <Box width="7em">
-                  <Field
-                    name="updatesPeriodUnit"
-                    component={TextField}
-                    variant="standard"
-                    margin="dense"
-                    select
-                    fullWidth
-                    inputProps={{ 'aria-label': t('groups|period_unit') }}
-                  >
-                    <MenuItem value={'hours'} key={'hours'}>
-                      {t('groups|time_hours')}
-                    </MenuItem>
-                    <MenuItem value={'minutes'} key={'minutes'}>
-                      {t('groups|time_minutes')}
-                    </MenuItem>
-                    <MenuItem value={'days'} key={'days'}>
-                      {t('groups|time_days')}
-                    </MenuItem>
-                  </Field>
-                </Box>
-              </>
-            )}
-          </Box>
-        </RadioGroup>
+        <FormLabel>{t('groups|rollout_rate')}</FormLabel>
+        <RolloutRateFields />
       </Box>
       <Box my={2}>
         <Grid size={12}>
@@ -218,24 +140,7 @@ export default function GroupPolicyForm(props: GroupPolicyFormProps) {
               </Grid>
               <Grid size={3}>
                 <Box pr={2}>
-                  <Field
-                    name="updatesTimeoutUnit"
-                    component={TextField}
-                    variant="standard"
-                    margin="dense"
-                    select
-                    fullWidth
-                  >
-                    <MenuItem value={'hours'} key={'hours'}>
-                      {t('groups|time_hours')}
-                    </MenuItem>
-                    <MenuItem value={'minutes'} key={'minutes'}>
-                      {t('groups|time_minutes')}
-                    </MenuItem>
-                    <MenuItem value={'days'} key={'days'}>
-                      {t('groups|time_days')}
-                    </MenuItem>
-                  </Field>
+                  <UnitField name="updatesTimeoutUnit" label={t('groups|timeout_unit')} />
                 </Box>
               </Grid>
             </Grid>
