@@ -10,6 +10,7 @@ import _ from 'underscore';
 import { Channel } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import { ARCHES } from '../../utils/helpers';
+import { adminWriteRefusal, InstanceMode, useInstanceMode } from '../../utils/instanceMode';
 import Empty from '../common/EmptyContent';
 import Loader from '../common/Loader';
 import ModalButton from '../common/ModalButton';
@@ -17,8 +18,12 @@ import SectionPaper from '../common/SectionPaper';
 import ChannelEdit from './ChannelEdit';
 import ChannelItem from './ChannelItem';
 
-function Channels(props: { channels: null | Channel[]; onEdit: (channelId: string) => void }) {
-  const { channels, onEdit } = props;
+function Channels(props: {
+  channels: null | Channel[];
+  onEdit: (channelId: string) => void;
+  adminWriteRefusal?: string;
+}) {
+  const { channels, onEdit, adminWriteRefusal } = props;
   const { t } = useTranslation();
 
   const channelsPerArch = (function () {
@@ -63,6 +68,7 @@ function Channels(props: { channels: null | Channel[]; onEdit: (channelId: strin
               channel={channel}
               showArch={false}
               onChannelUpdate={onEdit}
+              adminWriteRefusal={adminWriteRefusal}
             />
           ))}
         </MuiList>
@@ -76,6 +82,7 @@ export interface ChannelListProps {
 }
 export default function ChannelList(props: ChannelListProps) {
   const { appID } = props;
+  const instanceMode = useInstanceMode();
   const [application, setApplication] = React.useState(
     applicationsStore().getCachedApplication(appID)
   );
@@ -101,7 +108,14 @@ export default function ChannelList(props: ChannelListProps) {
   const channels = application?.channels ?? [];
   const loading = !application;
 
-  return <ChannelListPure channels={channels} appID={appID} loading={loading} />;
+  return (
+    <ChannelListPure
+      channels={channels}
+      appID={appID}
+      loading={loading}
+      instanceMode={instanceMode}
+    />
+  );
 }
 
 export interface ChannelListPureProps {
@@ -111,12 +125,15 @@ export interface ChannelListPureProps {
   channels: Channel[];
   /** If we are waiting on channels or packages data. */
   loading: boolean;
+  /** The role of the node serving the UI. An edge node refuses changes to channels. */
+  instanceMode?: InstanceMode;
 }
 
 export function ChannelListPure(props: ChannelListPureProps) {
   const [channelToEdit, setChannelToEdit] = React.useState<null | Channel>(null);
   const { t } = useTranslation();
   const { appID, channels, loading } = props;
+  const refusal = adminWriteRefusal(t, props.instanceMode || 'single');
 
   function onChannelEditOpen(channelID: string) {
     const channelToUpdate =
@@ -144,12 +161,17 @@ export function ChannelListPure(props: ChannelListPureProps) {
               data={{
                 applicationID: appID,
               }}
+              disabledReason={refusal}
             />
           </Grid>
         </Grid>
       </Box>
       <SectionPaper>
-        {loading ? <Loader /> : <Channels channels={channels} onEdit={onChannelEditOpen} />}
+        {loading ? (
+          <Loader />
+        ) : (
+          <Channels channels={channels} onEdit={onChannelEditOpen} adminWriteRefusal={refusal} />
+        )}
         {channelToEdit && (
           <ChannelEdit
             data={{ applicationID: appID, channel: channelToEdit }}

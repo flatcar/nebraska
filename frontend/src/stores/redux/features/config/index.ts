@@ -7,6 +7,7 @@ export interface NebraskaConfig {
   login_url: string;
   auth_mode: string;
   header_style: string;
+  instance_mode?: string;
   [prop: string]: any;
 }
 

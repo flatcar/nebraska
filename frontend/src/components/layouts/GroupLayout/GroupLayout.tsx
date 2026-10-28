@@ -8,6 +8,7 @@ import { applicationsStore } from '../../../stores/Stores';
 import SectionHeader from '../../common/SectionHeader';
 import GroupEditDialog from '../../Groups/GroupEditDialog/GroupEditDialog';
 import GroupItemExtended from '../../Groups/GroupItemExtended';
+import GroupLocalOverridesDialog from '../../Groups/GroupLocalOverridesDialog';
 
 function GroupLayout() {
   const { appID, groupID } = useParams<{ appID: string; groupID: string }>();
@@ -15,6 +16,7 @@ function GroupLayout() {
     applicationsStore().getCachedApplications() || []
   );
   const [updateGroupModalVisible, setUpdateGroupModalVisible] = React.useState(false);
+  const [overridesModalVisible, setOverridesModalVisible] = React.useState(false);
   const { t } = useTranslation();
 
   function onChange() {
@@ -78,12 +80,24 @@ function GroupLayout() {
           },
         ]}
       />
-      <GroupItemExtended appID={appID} groupID={groupID} handleUpdateGroup={openUpdateGroupModal} />
+      <GroupItemExtended
+        appID={appID}
+        groupID={groupID}
+        handleUpdateGroup={openUpdateGroupModal}
+        handleEditOverrides={() => setOverridesModalVisible(true)}
+      />
       <GroupEditDialog
         data={{ group: groupToUpdate, channels: channels }}
         show={updateGroupModalVisible}
         onHide={closeUpdateGroupModal}
       />
+      {groupToUpdate && (
+        <GroupLocalOverridesDialog
+          group={groupToUpdate}
+          show={overridesModalVisible}
+          onHide={() => setOverridesModalVisible(false)}
+        />
+      )}
     </div>
   );
 }

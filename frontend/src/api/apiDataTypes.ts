@@ -2,6 +2,16 @@ import { getInstanceStatus } from '../utils/helpers';
 
 type Arch = number;
 
+export interface GroupLocalOverrides {
+  policy_updates_enabled: null | boolean;
+  policy_safe_mode: null | boolean;
+  policy_office_hours: null | boolean;
+  policy_timezone: null | string;
+  policy_period_interval: null | string;
+  policy_max_updates_per_period: null | number;
+  policy_update_timeout: null | string;
+}
+
 export interface Group {
   id: string;
   name: string;
@@ -19,6 +29,7 @@ export interface Group {
   policy_update_timeout: string;
   channel: Channel;
   track: string;
+  local_overrides?: null | GroupLocalOverrides;
 }
 
 export interface Channel {
