@@ -2,6 +2,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Tooltip from '@mui/material/Tooltip';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,6 +14,7 @@ interface MoreMenuProps {
     action: () => void;
   }[];
   iconButtonProps?: React.ComponentProps<typeof IconButton>;
+  disabledReason?: string;
 }
 
 export default function MoreMenu(props: MoreMenuProps) {
@@ -32,20 +34,32 @@ export default function MoreMenu(props: MoreMenuProps) {
     setAnchorEl(null);
   }
 
+  const button = (
+    <IconButton
+      edge="end"
+      aria-controls={menuId}
+      aria-haspopup="true"
+      aria-label={t('common|open_menu')}
+      onClick={handleClick}
+      data-testid="more-menu-open-button"
+      {...props.iconButtonProps}
+      disabled={Boolean(props.disabledReason || props.iconButtonProps?.disabled)}
+      size="large"
+    >
+      <MoreVertIcon />
+    </IconButton>
+  );
+
   return (
     <div>
-      <IconButton
-        edge="end"
-        aria-controls={menuId}
-        aria-haspopup="true"
-        aria-label={t('common|open_menu')}
-        onClick={handleClick}
-        data-testid="more-menu-open-button"
-        {...props.iconButtonProps}
-        size="large"
-      >
-        <MoreVertIcon />
-      </IconButton>
+      {props.disabledReason ? (
+        // A disabled button fires no events, so the tooltip listens on a wrapper.
+        <Tooltip title={props.disabledReason}>
+          <span tabIndex={0}>{button}</span>
+        </Tooltip>
+      ) : (
+        button
+      )}
       <Menu
         id={menuId}
         anchorEl={anchorEl}

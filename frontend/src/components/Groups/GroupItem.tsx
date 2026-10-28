@@ -1,5 +1,3 @@
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import { Box, Divider, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
@@ -11,21 +9,28 @@ import _ from 'underscore';
 import API from '../../api/API';
 import { Group, VersionBreakdownEntry } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
+import { effectivePolicy, isOverridden, isPausedHere } from '../../utils/groupPolicy';
 import { MAX_UPDATES_PER_TIME_PERIOD, useGroupVersionBreakdown } from '../../utils/helpers';
+import { adminWriteRefusal, InstanceMode, useInstanceMode } from '../../utils/instanceMode';
 import ChannelItem from '../Channels/ChannelItem';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../common/Card';
 import Empty from '../common/EmptyContent';
 import ListItem from '../common/ListItem';
 import MoreMenu from '../common/MoreMenu';
 import VersionProgressBar from '../common/VersionBreakdownBar';
+import OverrideLabel from './OverrideLabel';
+import UpdatesStatus from './UpdatesStatus';
 
-export function formatUpdateLimits(t: TFunction, group: Group) {
-  if (group.policy_max_updates_per_period >= MAX_UPDATES_PER_TIME_PERIOD) {
+export function formatUpdateLimits(
+  t: TFunction,
+  policy: Pick<Group, 'policy_max_updates_per_period' | 'policy_period_interval'>
+) {
+  if (policy.policy_max_updates_per_period >= MAX_UPDATES_PER_TIME_PERIOD) {
     return t('groups|update_policy_unlimited');
   }
   return t('groups|max_updates_per_period', {
-    policy_max_updates_per_period: group.policy_max_updates_per_period,
-    policy_period_interval: group.policy_period_interval,
+    policy_max_updates_per_period: policy.policy_max_updates_per_period,
+    policy_period_interval: policy.policy_period_interval,
   });
 }
 
@@ -36,6 +41,7 @@ export interface GroupItemProps {
 
 function GroupItem({ group, handleUpdateGroup }: GroupItemProps) {
   const { t } = useTranslation();
+  const instanceMode = useInstanceMode();
   const [totalInstances, setTotalInstances] = React.useState<null | number>(null);
   const versionBreakdown = useGroupVersionBreakdown(group);
 
@@ -62,6 +68,7 @@ function GroupItem({ group, handleUpdateGroup }: GroupItemProps) {
       deleteGroup={deleteGroup}
       versionBreakdown={versionBreakdown}
       totalInstances={totalInstances}
+      instanceMode={instanceMode}
     />
   );
 }
@@ -72,6 +79,7 @@ export interface PureGroupItemProps {
   totalInstances: number | null;
   handleUpdateGroup: (appID: string, groupID: string) => void;
   deleteGroup: (appID: string, groupID: string) => void;
+  instanceMode?: InstanceMode;
 }
 
 export function PureGroupItem({
@@ -80,8 +88,16 @@ export function PureGroupItem({
   totalInstances,
   handleUpdateGroup,
   deleteGroup,
+  instanceMode = 'single',
 }: PureGroupItemProps) {
   const { t } = useTranslation();
+  const policy = effectivePolicy(group);
+  const updatesOverridden = isOverridden(group, 'policy_updates_enabled');
+  const rateOverridden = isOverridden(
+    group,
+    'policy_max_updates_per_period',
+    'policy_period_interval'
+  );
 
   const description = group.description || t('groups|description_none_provided');
   const channel = group.channel || null;
@@ -119,6 +135,7 @@ export function PureGroupItem({
                   action: () => deleteGroup(group.application_id, group.id),
                 },
               ]}
+              disabledReason={adminWriteRefusal(t, instanceMode)}
             />
           </CardHeader>
         </Grid>
@@ -166,24 +183,15 @@ export function PureGroupItem({
               <CardFeatureLabel>{t('groups|updates')}</CardFeatureLabel>
               <Box p={1} mb={1}>
                 <CardLabel>
-                  <Box display="flex">
-                    {group.policy_updates_enabled ? (
-                      <>
-                        <Box>{t('frequent|enabled')}</Box>
-                        <Box>
-                          <CheckIcon
-                            sx={{ color: theme => theme.palette.success.main }}
-                            fontSize={'small'}
-                          />
-                        </Box>
-                      </>
-                    ) : (
-                      <>
-                        <Box>{t('frequent|disabled')}</Box>
-                        <Box>
-                          <CloseIcon color="error" />
-                        </Box>
-                      </>
+                  <Box display="flex" alignItems={updatesOverridden ? 'center' : undefined}>
+                    <UpdatesStatus
+                      enabled={policy.policy_updates_enabled}
+                      pausedHere={isPausedHere(group)}
+                    />
+                    {updatesOverridden && (
+                      <Box ml={1}>
+                        <OverrideLabel />
+                      </Box>
                     )}
                   </Box>
                 </CardLabel>
@@ -192,7 +200,14 @@ export function PureGroupItem({
             <Grid>
               <CardFeatureLabel>{t('groups|rollout_policy')}</CardFeatureLabel>
               <Box p={1} mb={1}>
-                <CardLabel>{formatUpdateLimits(t, group)}</CardLabel>
+                <CardLabel>
+                  {formatUpdateLimits(t, policy)}
+                  {rateOverridden && (
+                    <Box component="span" ml={1}>
+                      <OverrideLabel />
+                    </Box>
+                  )}
+                </CardLabel>
               </Box>
             </Grid>
             <Grid container>

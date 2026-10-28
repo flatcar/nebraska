@@ -59,6 +59,7 @@ interface ItemProps {
   packageItem: Package;
   channels: Channel[];
   handleUpdatePackage(pkgId: string): void;
+  adminWriteRefusal?: string;
 }
 
 function Item(props: ItemProps) {
@@ -165,6 +166,7 @@ function Item(props: ItemProps) {
             { label: t('frequent|edit'), action: updatePackage },
             { label: t('frequent|delete'), action: deletePackage },
           ]}
+          disabledReason={props.adminWriteRefusal}
         />
       </ListItemSecondaryAction>
     </StyledListItem>

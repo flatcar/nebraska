@@ -1,5 +1,7 @@
 {
   "manage_account": "Manage Account",
   "user_menu": "User menu",
-  "logout": "Logout"
+  "logout": "Logout",
+  "node_control": "Control node",
+  "node_edge": "Edge node"
 }
