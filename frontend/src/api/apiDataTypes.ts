@@ -111,6 +111,8 @@ export interface Instance {
   alias: string;
   created_ts: string | Date | number;
   ip: string;
+  oem?: string;
+  aleph_version?: string;
   application: InstanceApplication;
   statusInfo?: ReturnType<typeof getInstanceStatus>;
   statusHistory?: InstanceStatusHistory[];
