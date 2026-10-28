@@ -78,14 +78,14 @@ type ServerInterface interface {
 	// (GET /api/apps/{appIDorProductID}/groups/{groupID}/instancescount)
 	GetGroupInstancesCount(ctx echo.Context, appIDorProductID string, groupID string, params GetGroupInstancesCountParams) error
 
+	// (PATCH /api/apps/{appIDorProductID}/groups/{groupID}/local_overrides)
+	UpdateGroupLocalOverrides(ctx echo.Context, appIDorProductID string, groupID openapi_types.UUID) error
+
 	// (GET /api/apps/{appIDorProductID}/groups/{groupID}/oem_breakdown)
 	GetGroupOEMBreakdown(ctx echo.Context, appIDorProductID string, groupID string) error
 
 	// (GET /api/apps/{appIDorProductID}/groups/{groupID}/status_timeline)
 	GetGroupStatusTimeline(ctx echo.Context, appIDorProductID string, groupID string, params GetGroupStatusTimelineParams) error
-
-	// (DELETE /api/apps/{appIDorProductID}/groups/{groupID}/updates_override)
-	ClearGroupUpdatesOverride(ctx echo.Context, appIDorProductID string, groupID string) error
 
 	// (GET /api/apps/{appIDorProductID}/groups/{groupID}/version_breakdown)
 	GetGroupVersionBreakdown(ctx echo.Context, appIDorProductID string, groupID string) error
@@ -913,6 +913,36 @@ func (w *ServerInterfaceWrapper) GetGroupInstancesCount(ctx echo.Context) error 
 	return err
 }
 
+// UpdateGroupLocalOverrides converts echo context to params.
+func (w *ServerInterfaceWrapper) UpdateGroupLocalOverrides(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "appIDorProductID" -------------
+	var appIDorProductID string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "appIDorProductID", ctx.Param("appIDorProductID"), &appIDorProductID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
+	}
+
+	// ------------- Path parameter "groupID" -------------
+	var groupID openapi_types.UUID
+
+	err = runtime.BindStyledParameterWithOptions("simple", "groupID", ctx.Param("groupID"), &groupID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter groupID: %s", err))
+	}
+
+	ctx.Set(OidcBearerAuthScopes, []string{})
+
+	ctx.Set(OidcCookieAuthScopes, []string{})
+
+	ctx.Set(GithubCookieAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.UpdateGroupLocalOverrides(ctx, appIDorProductID, groupID)
+	return err
+}
+
 // GetGroupOEMBreakdown converts echo context to params.
 func (w *ServerInterfaceWrapper) GetGroupOEMBreakdown(ctx echo.Context) error {
 	var err error
@@ -979,36 +1009,6 @@ func (w *ServerInterfaceWrapper) GetGroupStatusTimeline(ctx echo.Context) error 
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.GetGroupStatusTimeline(ctx, appIDorProductID, groupID, params)
-	return err
-}
-
-// ClearGroupUpdatesOverride converts echo context to params.
-func (w *ServerInterfaceWrapper) ClearGroupUpdatesOverride(ctx echo.Context) error {
-	var err error
-	// ------------- Path parameter "appIDorProductID" -------------
-	var appIDorProductID string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "appIDorProductID", ctx.Param("appIDorProductID"), &appIDorProductID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter appIDorProductID: %s", err))
-	}
-
-	// ------------- Path parameter "groupID" -------------
-	var groupID string
-
-	err = runtime.BindStyledParameterWithOptions("simple", "groupID", ctx.Param("groupID"), &groupID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter groupID: %s", err))
-	}
-
-	ctx.Set(OidcBearerAuthScopes, []string{})
-
-	ctx.Set(OidcCookieAuthScopes, []string{})
-
-	ctx.Set(GithubCookieAuthScopes, []string{})
-
-	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.ClearGroupUpdatesOverride(ctx, appIDorProductID, groupID)
 	return err
 }
 
@@ -1530,9 +1530,9 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/instances/:instanceID/status_history", wrapper.GetInstanceStatusHistory)
 	router.GET(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/instances_stats", wrapper.GetGroupInstanceStats)
 	router.GET(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/instancescount", wrapper.GetGroupInstancesCount)
+	router.PATCH(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/local_overrides", wrapper.UpdateGroupLocalOverrides)
 	router.GET(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/oem_breakdown", wrapper.GetGroupOEMBreakdown)
 	router.GET(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/status_timeline", wrapper.GetGroupStatusTimeline)
-	router.DELETE(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/updates_override", wrapper.ClearGroupUpdatesOverride)
 	router.GET(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/version_breakdown", wrapper.GetGroupVersionBreakdown)
 	router.GET(baseURL+"/api/apps/:appIDorProductID/groups/:groupID/version_timeline", wrapper.GetGroupVersionTimeline)
 	router.GET(baseURL+"/api/apps/:appIDorProductID/packages", wrapper.PaginatePackages)
