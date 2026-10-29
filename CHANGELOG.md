@@ -40,6 +40,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Channel edit dialog filters out blacklisted packages from selection
   - Floor package selection prevents choosing blacklisted packages with clear visual feedback
 - Improved reverse domain ID validation regex to eliminate inefficient nested quantifiers flagged by CodeQL, and extracted it into a shared constant with tests. ([#1222](https://github.com/flatcar/nebraska/pull/1222))
+- **Update checks do much less database work:** An update check runs 3 to 5 database statements instead of 13 to 27, and reading a group, channel or instance takes one. The rollout policy and the check for a finished rollout now stop at the policy limit or the first unfinished instance, instead of counting every active instance in the group on each call. Three indexes are added for them and six redundant ones are dropped ([#1447](https://github.com/flatcar/nebraska/issues/1447)); check-ins wait while the new indexes build during the upgrade, about 4 seconds with a million instances. Rolling back past this change with `--rollback-db-to` rebuilds the dropped indexes, about 20 seconds with a million instances. An update timeout given in months is now counted in calendar months, like the other policy durations.
 ### Removed
 ### Bugfixes
 
@@ -50,6 +51,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fixed saving a group on a control node copying its safe-mode brake into the shared default, which paused updates on every edge. A node's own overrides are now returned separately under `local_overrides`. ([#1631](https://github.com/flatcar/nebraska/issues/1631))
 - Fixed `nebraska_application_instances_per_channel` counting instances that stopped checking in, and dropping instances whose group has no channel assigned. ([#1653](https://github.com/flatcar/nebraska/pull/1653))
 - Fixed instance statistics queries returning empty results on non-UTC database sessions by making timestamp literals timezone independent. ([#1682](https://github.com/flatcar/nebraska/pull/1682))
+- Fixed an update check sent without a ping getting no update when the instance had not checked in for over a day, or not yet for that application. Clients that send a ping with every update check were not affected.
 
 ## [4.0.3] - 26/10/2026
 

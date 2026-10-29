@@ -36,7 +36,9 @@ func TestGetVersionCountTimeline(t *testing.T) {
 	instance, err := a.GetInstance(instanceID, tApp.ID)
 	assert.NoError(t, err)
 	_ = rs.grantUpdate(instance, version)
-	_ = rs.updateInstanceStatus(instanceID, tApp.ID, types.InstanceStatusComplete)
+	instance, err = a.GetInstance(instanceID, tApp.ID)
+	assert.NoError(t, err)
+	_ = rs.updateInstanceObjStatus(instance, types.InstanceStatusComplete)
 
 	var versionTimelineMap map[time.Time](types.VersionCountMap)
 	var isCache bool
@@ -127,9 +129,11 @@ func TestGetStatusCountTimeline(t *testing.T) {
 		instance, err := a.GetInstance(instanceID, tApp.ID)
 		require.NoError(t, err)
 
-		// FIXME: updateInstanceStatus implicitly requires grantUpdate to populate last_update_version.
+		// FIXME: updateInstanceObjStatus implicitly requires grantUpdate to populate last_update_version.
 		require.NoError(t, rs.grantUpdate(instance, targetVersion))
-		require.NoError(t, rs.updateInstanceStatus(instanceID, tApp.ID, status))
+		instance, err = a.GetInstance(instanceID, tApp.ID)
+		require.NoError(t, err)
+		require.NoError(t, rs.updateInstanceObjStatus(instance, status))
 	}
 
 	// Register two instances with distinct statuses to verify breakdown aggregation

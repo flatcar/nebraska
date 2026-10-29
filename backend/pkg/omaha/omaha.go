@@ -159,9 +159,14 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 		}
 		instApp := runtime.NewInstanceApplication(appID, group, reqApp.Version)
 
+		// A regular client's update check registers the instance itself.
+		registerWithUpdateCheck := reqApp.UpdateCheck != nil && !isSyncerClient(omahaReq)
+
 		if reqApp.Ping != nil {
-			if _, err := h.runtimeSvc.RegisterInstance(inst, instApp); err != nil {
-				l.Debug().Str("machineId", reqApp.MachineID).Msgf("processPing error %s", err.Error())
+			if !registerWithUpdateCheck {
+				if _, err := h.runtimeSvc.RegisterInstance(inst, instApp); err != nil {
+					l.Debug().Str("machineId", reqApp.MachineID).Msgf("processPing error %s", err.Error())
+				}
 			}
 			respApp.AddPing()
 		}
