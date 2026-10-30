@@ -46,6 +46,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fixed deleting an application or group on a control node leaving behind the rows each edge writes itself (`group_local`, `activity`, `event`, `instance_application`, `instance_status_history`). Logical replication skips foreign key actions on a subscriber, so two triggers now repeat them there. ([#1632](https://github.com/flatcar/nebraska/issues/1632))
 - Fixed saving a group on a control node copying its safe-mode brake into the shared default, which paused updates on every edge. A node's own overrides are now returned separately under `local_overrides`. ([#1631](https://github.com/flatcar/nebraska/issues/1631))
 - Fixed `nebraska_application_instances_per_channel` counting instances that stopped checking in, and dropping instances whose group has no channel assigned. ([#1653](https://github.com/flatcar/nebraska/pull/1653))
+- Fixed instance statistics queries returning empty results on non-UTC database sessions by making timestamp literals timezone independent. ([#1682](https://github.com/flatcar/nebraska/pull/1682))
 
 ## [4.0.0] - 02/09/2026
 

@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
@@ -373,4 +374,99 @@ func TestUpdateInstanceStatsNoArch(t *testing.T) {
 	assert.Equal(t, "", instanceStats[0].Arch)
 	assert.Equal(t, "1.0.0", instanceStats[0].Version)
 	assert.Equal(t, 1, instanceStats[0].Instances)
+}
+
+// TestUpdateInstanceStatsTimezone checks that writing and reading instance stats
+// works the same way in UTC and non-UTC sessions (like America/New_York).
+func TestUpdateInstanceStatsTimezone(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	// Pin pool to a single connection so SET TIME ZONE applies to all subsequent statements.
+	// Note: The pool defaults to 25 connections.
+	a.db().SetMaxOpenConns(1)
+
+	// Reset session timezone to UTC on exit so other tests are not affected.
+	defer func() {
+		_, _ = a.db().Exec("SET TIME ZONE 'UTC'")
+	}()
+
+	// Ensure idempotence: clear instance_stats so repeated test runs on the same day do not fail on duplicate keys.
+	_, err := a.db().Exec("TRUNCATE instance_stats")
+	require.NoError(t, err)
+
+	as := adminSvc(a)
+	rs := runtimeSvc(a)
+
+	tTeam, err := as.AddTeam(&types.Team{Name: "test_team_tz"})
+	require.NoError(t, err)
+	tApp, err := as.AddApp(&types.Application{Name: "test_app_tz", TeamID: tTeam.ID})
+	require.NoError(t, err)
+	tChannel, err := as.AddChannel(&types.Channel{
+		Name:          "test_channel_tz",
+		Color:         "blue",
+		ApplicationID: tApp.ID,
+		Arch:          types.ArchAMD64,
+	})
+	require.NoError(t, err)
+	tGroup, err := as.AddGroup(&types.Group{
+		Name:                      "group_tz",
+		ApplicationID:             tApp.ID,
+		ChannelID:                 null.StringFrom(tChannel.ID),
+		PolicyUpdatesEnabled:      true,
+		PolicySafeMode:            true,
+		PolicyPeriodInterval:      "15 minutes",
+		PolicyMaxUpdatesPerPeriod: 2,
+		PolicyUpdateTimeout:       "60 minutes",
+	})
+	require.NoError(t, err)
+
+	_, err = rs.RegisterInstance(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"},
+		runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+	require.NoError(t, err)
+
+	// Use the end of today so the instance created today is included (created_ts <= snapshotTime).
+	now := time.Now().UTC()
+	snapshotTime := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 0, time.UTC)
+
+	// Use a 48-hour window so the instance's check-in is counted as active.
+	lookbackWindow := 48 * time.Hour
+
+	// 1. Establish a baseline in UTC
+	_, err = a.db().Exec("SET TIME ZONE 'UTC'")
+	require.NoError(t, err)
+
+	err = rs.UpdateInstanceStats(&snapshotTime, &lookbackWindow)
+	require.NoError(t, err)
+
+	utcStats, err := a.GetInstanceStatsByTimestamp(snapshotTime)
+	require.NoError(t, err)
+	require.NotEmpty(t, utcStats)
+
+	// 2. Query stats in a non-UTC session (America/New_York)
+	_, err = a.db().Exec("SET TIME ZONE 'America/New_York'")
+	require.NoError(t, err)
+
+	nyStats, err := a.GetInstanceStatsByTimestamp(snapshotTime)
+	require.NoError(t, err)
+	require.NotEmpty(t, nyStats)
+	assert.Equal(t, utcStats, nyStats, "query under America/New_York session must match UTC baseline")
+
+	// 3. Write stats in a non-UTC session and verify against UTC
+	nextDaySnapshotTime := snapshotTime.Add(24 * time.Hour)
+	err = rs.UpdateInstanceStats(&nextDaySnapshotTime, &lookbackWindow)
+	require.NoError(t, err)
+
+	nyStats2, err := a.GetInstanceStatsByTimestamp(nextDaySnapshotTime)
+	require.NoError(t, err)
+	require.NotEmpty(t, nyStats2)
+
+	// Switch back to UTC to read and compare
+	_, err = a.db().Exec("SET TIME ZONE 'UTC'")
+	require.NoError(t, err)
+
+	utcStats2, err := a.GetInstanceStatsByTimestamp(nextDaySnapshotTime)
+	require.NoError(t, err)
+	require.NotEmpty(t, utcStats2)
+	assert.Equal(t, utcStats2, nyStats2, "stats written under America/New_York session must match UTC read")
 }
