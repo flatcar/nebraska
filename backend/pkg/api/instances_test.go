@@ -382,7 +382,11 @@ func TestUpdateInstanceStatsTimezone(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()
 
-	// Defensively reset session timezone to UTC on exit so other tests are not affected.
+	// Pin pool to a single connection so SET TIME ZONE applies to all subsequent statements.
+	// Note: The pool defaults to 25 connections.
+	a.db().SetMaxOpenConns(1)
+
+	// Reset session timezone to UTC on exit so other tests are not affected.
 	defer func() {
 		_, _ = a.db().Exec("SET TIME ZONE 'UTC'")
 	}()
