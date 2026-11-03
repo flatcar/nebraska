@@ -89,7 +89,7 @@ version:
 
 .PHONY: test-clean-work-tree-backend
 test-clean-work-tree-backend:
-	if ! git diff --quiet -- go.mod go.sum pkg cmd tools/tools.go; then \
+	if ! git diff --quiet -- go.mod go.sum pkg cmd; then \
 	  echo; \
 	  echo 'Working tree of backend code is not clean'; \
 	  echo; \
@@ -104,7 +104,7 @@ tools: bin/initdb
 bin/initdb:
 	go build -o bin/initdb ./cmd/initdb
 
-tools/golangci-lint: go.mod go.sum
+tools/golangci-lint:
 	env GOBIN=$(CURDIR)/tools/ go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.15.0
 
 tools/swag:
