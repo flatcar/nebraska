@@ -109,7 +109,9 @@ func TestGetStatusCountTimeline(t *testing.T) {
 		targetVersion  = "1.0.1"
 	)
 
-	registerInstanceWithStatusHistory := func(appID, groupID string, status int, age time.Duration, customID ...string) {
+	registerInstanceWithStatusHistory := func(t *testing.T, appID, groupID string, status int, age time.Duration, customID ...string) {
+		t.Helper()
+
 		id := uuid.New().String()
 		if len(customID) > 0 && customID[0] != "" {
 			id = customID[0]
@@ -144,8 +146,8 @@ func TestGetStatusCountTimeline(t *testing.T) {
 		require.NoError(t, err)
 
 		// Register two instances with distinct statuses to verify breakdown aggregation
-		registerInstanceWithStatusHistory(tApp.ID, tGroup.ID, types.InstanceStatusComplete, 0)
-		registerInstanceWithStatusHistory(tApp.ID, tGroup.ID, types.InstanceStatusDownloading, 0)
+		registerInstanceWithStatusHistory(t, tApp.ID, tGroup.ID, types.InstanceStatusComplete, 0)
+		registerInstanceWithStatusHistory(t, tApp.ID, tGroup.ID, types.InstanceStatusDownloading, 0)
 
 		// 1. Verify "1h" duration: 5 buckets (15m interval is hardcoded by durationCodeToPostgresTimings)
 		statusTimelineMap, err := a.GetGroupStatusCountTimeline(tGroup.ID, "1h")
@@ -208,11 +210,11 @@ func TestGetStatusCountTimeline(t *testing.T) {
 		// | inst15d  | Installed   | 15d |  0 |  0 |  1  | 15d > 7d window        |
 		// | inst45d  | Error       | 45d |  0 |  0 |  0  | 45d > 30d window       |
 		// | fakeInst | Complete    |  0  |  0 |  0 |  0  | Filtered by ID '{%}'   |
-		registerInstanceWithStatusHistory(tApp.ID, tGroup.ID, types.InstanceStatusComplete, 0)
-		registerInstanceWithStatusHistory(tApp.ID, tGroup.ID, types.InstanceStatusDownloading, 5*day)
-		registerInstanceWithStatusHistory(tApp.ID, tGroup.ID, types.InstanceStatusInstalled, 15*day)
-		registerInstanceWithStatusHistory(tApp.ID, tGroup.ID, types.InstanceStatusError, 45*day)
-		registerInstanceWithStatusHistory(tApp.ID, tGroup.ID, types.InstanceStatusComplete, 0, "{12345678-1234-1234-1234-123456789012}")
+		registerInstanceWithStatusHistory(t, tApp.ID, tGroup.ID, types.InstanceStatusComplete, 0)
+		registerInstanceWithStatusHistory(t, tApp.ID, tGroup.ID, types.InstanceStatusDownloading, 5*day)
+		registerInstanceWithStatusHistory(t, tApp.ID, tGroup.ID, types.InstanceStatusInstalled, 15*day)
+		registerInstanceWithStatusHistory(t, tApp.ID, tGroup.ID, types.InstanceStatusError, 45*day)
+		registerInstanceWithStatusHistory(t, tApp.ID, tGroup.ID, types.InstanceStatusComplete, 0, "{12345678-1234-1234-1234-123456789012}")
 
 		countStatusInWindow := func(timeline map[time.Time]map[int]types.VersionCountMap, status int) uint64 {
 			var total uint64
