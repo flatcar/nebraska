@@ -86,27 +86,107 @@ func (q *Queries) GetApps(teamID string, page, perPage uint64) ([]*types.Applica
 		if err != nil {
 			return nil, err
 		}
-		groups, err := q.getGroups(app.ID)
-		if err == nil || err == sql.ErrNoRows {
-			app.Groups = groups
-		} else {
-			return nil, err
-		}
-		channels, err := q.getChannels(app.ID)
-		if err == nil || err == sql.ErrNoRows {
-			app.Channels = channels
-		} else {
-			return nil, err
-		}
-		app.Instances.Count, err = q.getInstanceCount(app.ID, "", validityInterval)
-		if err != nil {
-			return nil, err
-		}
 		apps = append(apps, &app)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
+
+	return q.loadAppRelations(apps)
+}
+
+// loadAppRelations loads groups, channels, and instance counts for applications efficiently
+func (q *Queries) loadAppRelations(apps []*types.Application) ([]*types.Application, error) {
+	if len(apps) == 0 {
+		return apps, nil
+	}
+
+	appIDs := make([]string, len(apps))
+	for i, app := range apps {
+		appIDs[i] = app.ID
+	}
+
+	groupsQuery, _, err := q.groupsQuery().
+		Where(goqu.C("application_id").In(appIDs)).
+		ToSQL()
+	if err != nil {
+		return nil, err
+	}
+
+	allGroups, err := q.getGroupsFromQuery(groupsQuery)
+	if err != nil && err != sql.ErrNoRows {
+		return nil, err
+	}
+
+	groupsByApp := make(map[string][]*types.Group)
+	for _, group := range allGroups {
+		groupsByApp[group.ApplicationID] = append(groupsByApp[group.ApplicationID], group)
+	}
+
+	channelsQuery, _, err := q.channelsQuery().
+		Where(goqu.C("application_id").In(appIDs)).
+		ToSQL()
+	if err != nil {
+		return nil, err
+	}
+
+	allChannels, err := q.getChannelsFromQuery(channelsQuery)
+	if err != nil && err != sql.ErrNoRows {
+		return nil, err
+	}
+
+	channelsByApp := make(map[string][]*types.Channel)
+	for _, channel := range allChannels {
+		channelsByApp[channel.ApplicationID] = append(channelsByApp[channel.ApplicationID], channel)
+	}
+
+	instanceCountQuery, _, err := goqu.From("instance_application").
+		Select(goqu.C("application_id"), goqu.COUNT("*").As("count")).
+		Where(
+			goqu.C("application_id").In(appIDs),
+			goqu.L("last_check_for_updates > now() at time zone 'utc' - interval ?", validityInterval),
+			goqu.L(ignoreFakeInstanceCondition("instance_id")),
+		).
+		GroupBy("application_id").
+		ToSQL()
+	if err != nil {
+		return nil, err
+	}
+
+	type appCount struct {
+		ApplicationID string `db:"application_id"`
+		Count         int    `db:"count"`
+	}
+	var counts []appCount
+	if err := q.db.Select(&counts, instanceCountQuery); err != nil && err != sql.ErrNoRows {
+		return nil, err
+	}
+
+	countsByApp := make(map[string]int)
+	for _, c := range counts {
+		countsByApp[c.ApplicationID] = c.Count
+	}
+
+	for _, app := range apps {
+		if groups, ok := groupsByApp[app.ID]; ok {
+			app.Groups = groups
+		} else {
+			app.Groups = nil
+		}
+
+		if channels, ok := channelsByApp[app.ID]; ok {
+			app.Channels = channels
+		} else {
+			app.Channels = nil
+		}
+
+		if count, ok := countsByApp[app.ID]; ok {
+			app.Instances.Count = count
+		} else {
+			app.Instances.Count = 0
+		}
+	}
+
 	return apps, nil
 }
 
