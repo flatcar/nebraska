@@ -89,7 +89,7 @@ version:
 
 .PHONY: test-clean-work-tree-backend
 test-clean-work-tree-backend:
-	if ! git diff --quiet -- go.mod go.sum pkg cmd tools/tools.go; then \
+	if ! git diff --quiet -- go.mod go.sum pkg cmd; then \
 	  echo; \
 	  echo 'Working tree of backend code is not clean'; \
 	  echo; \
@@ -104,11 +104,8 @@ tools: bin/initdb
 bin/initdb:
 	go build -o bin/initdb ./cmd/initdb
 
-tools/golangci-lint: go.mod go.sum
+tools/golangci-lint: Makefile
 	env GOBIN=$(CURDIR)/tools/ go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.15.0
-
-tools/swag:
-	env GOBIN=$(CURDIR)/tools/ go install github.com/swaggo/swag/cmd/swag@v1.8.10
 
 .PHONY: ci
 ci: build test-clean-work-tree-backend check-backend-with-container check-distributed-with-container
@@ -133,8 +130,7 @@ code-checks: tools/golangci-lint
 	./tools/golangci-lint run --fix
 	go mod tidy
 
-.PHONY: tools/oapi-codegen
-tools/oapi-codegen:
+tools/oapi-codegen: Makefile
 	env GOBIN=$(CURDIR)/tools/ go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.3.0
 
 .PHONY: codegen

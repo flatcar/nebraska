@@ -159,7 +159,3 @@ build-backend-binary:
 .PHONY: backend-code-checks
 backend-code-checks:
 	$(MAKE) -C backend code-checks
-
-.PHONY: swagger-install
-swagger-install:
-	$(MAKE) -C backend tools/swag
