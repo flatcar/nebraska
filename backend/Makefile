@@ -104,7 +104,7 @@ tools: bin/initdb
 bin/initdb:
 	go build -o bin/initdb ./cmd/initdb
 
-tools/golangci-lint:
+tools/golangci-lint: Makefile
 	env GOBIN=$(CURDIR)/tools/ go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.15.0
 
 .PHONY: ci
@@ -130,8 +130,7 @@ code-checks: tools/golangci-lint
 	./tools/golangci-lint run --fix
 	go mod tidy
 
-.PHONY: tools/oapi-codegen
-tools/oapi-codegen:
+tools/oapi-codegen: Makefile
 	env GOBIN=$(CURDIR)/tools/ go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.3.0
 
 .PHONY: codegen
