@@ -107,9 +107,6 @@ bin/initdb:
 tools/golangci-lint:
 	env GOBIN=$(CURDIR)/tools/ go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.15.0
 
-tools/swag:
-	env GOBIN=$(CURDIR)/tools/ go install github.com/swaggo/swag/cmd/swag@v1.8.10
-
 .PHONY: ci
 ci: build test-clean-work-tree-backend check-backend-with-container check-distributed-with-container
 
