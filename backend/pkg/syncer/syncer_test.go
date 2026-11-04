@@ -344,3 +344,35 @@ func TestSyncer_GetPackageWithGeneratedURL(t *testing.T) {
 	assert.Equal(t, baseURL+getArchString(tChannel.Arch)+"/"+tGroup.Channel.Package.Version, tGroup.Channel.Package.URL)
 	assert.Equal(t, update.Manifests[0].Packages[0].Name, tGroup.Channel.Package.Filename.String)
 }
+
+// TestSyncer_SingleManifestFloor checks that a single manifest flagged as a floor
+// (the channel target is itself a floor) is recorded as a floor.
+func TestSyncer_SingleManifestFloor(t *testing.T) {
+	syncer, a, _, tChannel := setupSyncerTest(t)
+
+	update := &omaha.UpdateResponse{
+		Status: "ok",
+		URLs:   []*omaha.URL{{CodeBase: "https://example.com"}},
+		Manifests: []*omaha.Manifest{{
+			Version:     "2000.0.0",
+			Packages:    []*omaha.Package{{Name: "flatcar-2000.0.0.gz", SHA1: "hash2000", Size: 2000}},
+			Actions:     []*omaha.Action{{Event: "postinstall", SHA256: "dGVzdHNoYTI1Ng=="}},
+			IsFloor:     true,
+			IsTarget:    true,
+			FloorReason: "Critical mandatory version",
+		}},
+	}
+
+	desc := channelDescriptor{name: tChannel.Name, arch: tChannel.Arch}
+	require.NoError(t, syncer.processUpdate(desc, update))
+
+	floors, err := a.GetChannelFloorPackages(tChannel.ID)
+	require.NoError(t, err)
+	require.Len(t, floors, 1)
+	assert.Equal(t, "2000.0.0", floors[0].Version)
+	assert.Equal(t, "Critical mandatory version", floors[0].FloorReason.String)
+
+	updatedChannel, err := a.GetChannel(tChannel.ID)
+	require.NoError(t, err)
+	assert.Equal(t, floors[0].ID, updatedChannel.Package.ID)
+}
