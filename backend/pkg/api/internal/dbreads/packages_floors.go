@@ -4,7 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 	"regexp"
+	"sort"
 
+	"github.com/blang/semver/v4"
 	"github.com/doug-martin/goqu/v9"
 	"gopkg.in/guregu/null.v4"
 
@@ -20,29 +22,6 @@ func semverToIntArray(column string) (string, error) {
 		return "", fmt.Errorf("semverToIntArray: invalid column name %q - potential SQL injection", column)
 	}
 	return fmt.Sprintf("string_to_array((regexp_split_to_array(%s, '[+-]'))[1], '.')::int[]", column), nil
-}
-
-// versionCompareExpr creates a version comparison expression
-func versionCompareExpr(column, operator, value string) (goqu.Expression, error) {
-	// Validate operator to prevent SQL injection
-	validOperators := map[string]bool{
-		">": true, ">=": true, "<": true, "<=": true, "=": true, "!=": true,
-	}
-	if !validOperators[operator] {
-		return nil, fmt.Errorf("versionCompareExpr: invalid operator %q - potential SQL injection", operator)
-	}
-
-	colArray, err := semverToIntArray(column)
-	if err != nil {
-		return nil, err
-	}
-
-	valArray, err := semverToIntArray("?")
-	if err != nil {
-		return nil, err
-	}
-
-	return goqu.L(fmt.Sprintf("%s %s %s", colArray, operator, valArray), value), nil
 }
 
 // GetChannelFloorPackages returns all floor packages for a specific channel
@@ -83,7 +62,9 @@ const (
 	DefaultMaxFloorsPerResponse = 5
 )
 
-// GetRequiredChannelFloors returns floor packages between instance and target versions for a channel
+// GetRequiredChannelFloors returns the floor packages between the instance version and
+// the channel target (instance < floor <= target), sorted ascending by semantic version
+// and capped at the configured limit.
 func (q *Queries) GetRequiredChannelFloors(channel *types.Channel, instanceVersion string) ([]*types.Package, error) {
 	if channel == nil || channel.Package == nil {
 		return nil, types.ErrNoPackageFound
@@ -92,52 +73,52 @@ func (q *Queries) GetRequiredChannelFloors(channel *types.Channel, instanceVersi
 		return nil, fmt.Errorf("instance version cannot be empty")
 	}
 
-	targetVersion := channel.Package.Version
-
-	maxFloorsPerResponse := DefaultMaxFloorsPerResponse
+	limit := DefaultMaxFloorsPerResponse
 	if q.maxFloorsPerResponse > 0 {
-		maxFloorsPerResponse = q.maxFloorsPerResponse
+		limit = q.maxFloorsPerResponse
 	}
 
-	// No blacklist check needed for floors
-	gtExpr, err := versionCompareExpr("p.version", ">", instanceVersion)
+	allFloors, err := q.GetChannelFloorPackages(channel.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	lteExpr, err := versionCompareExpr("p.version", "<=", targetVersion)
+	return selectFloorsInRange(allFloors, instanceVersion, channel.Package.Version, limit)
+}
+
+// selectFloorsInRange returns the floor packages with instanceVersion < v <= targetVersion,
+// sorted ascending by semantic version and capped at limit.
+func selectFloorsInRange(floors []*types.Package, instanceVersion, targetVersion string, limit int) ([]*types.Package, error) {
+	inst, err := semver.Make(instanceVersion)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("invalid instance version %q: %w", instanceVersion, err)
+	}
+	target, err := semver.Make(targetVersion)
+	if err != nil {
+		return nil, fmt.Errorf("invalid target version %q: %w", targetVersion, err)
 	}
 
-	semverExpr, err := semverToIntArray("p.version")
-	if err != nil {
-		return nil, err
+	inRange := make([]*types.Package, 0, len(floors))
+	for _, p := range floors {
+		v, err := semver.Make(p.Version)
+		if err != nil {
+			continue // versions are validated on insert; skip defensively
+		}
+		if v.GT(inst) && v.LTE(target) {
+			inRange = append(inRange, p)
+		}
 	}
 
-	query, _, err := goqu.From(goqu.L(`
-		package p
-		JOIN channel_package_floors cpf ON p.id = cpf.package_id
-	`)).
-		Select(goqu.L(`
-			p.*,
-			true as is_floor,
-			cpf.floor_reason
-		`)).
-		Where(goqu.And(
-			goqu.C("channel_id").Table("cpf").Eq(channel.ID),
-			gtExpr,
-			lteExpr,
-		)).
-		Order(goqu.L(semverExpr).Asc()).
-		Limit(uint(maxFloorsPerResponse)).
-		ToSQL()
+	sort.SliceStable(inRange, func(i, j int) bool {
+		vi, _ := semver.Make(inRange[i].Version)
+		vj, _ := semver.Make(inRange[j].Version)
+		return vi.LT(vj)
+	})
 
-	if err != nil {
-		return nil, err
+	if len(inRange) > limit {
+		inRange = inRange[:limit]
 	}
-
-	return q.getPackagesFromQuery(query)
+	return inRange, nil
 }
 
 // GetChannelFloorPackagesCount returns the count of floor packages for a channel
