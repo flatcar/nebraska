@@ -7,13 +7,14 @@ import (
 	"github.com/doug-martin/goqu/v9"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
+	"gopkg.in/guregu/null.v4"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/internal/dbreads"
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
 // checkMatchingArch returns an error if the arch does not match the channels
-func (s *Service) checkMatchingArch(channelIDs types.StringArray, arch types.Arch) error {
+func (s *Service) checkMatchingArch(tx *sqlx.Tx, channelIDs types.StringArray, arch types.Arch) error {
 	if len(channelIDs) == 0 {
 		return nil
 	}
@@ -28,7 +29,7 @@ func (s *Service) checkMatchingArch(channelIDs types.StringArray, arch types.Arc
 		return err
 	}
 	count := 0
-	if err := s.db.QueryRow(query).Scan(&count); err != nil {
+	if err := tx.QueryRow(query).Scan(&count); err != nil {
 		return err
 	}
 
@@ -49,7 +50,7 @@ func (s *Service) addPackage(pkg *types.Package, tx *sqlx.Tx) error {
 	if !pkg.Arch.IsValid() {
 		return types.ErrInvalidArch
 	}
-	if err := s.checkMatchingArch(pkg.ChannelsBlacklist, pkg.Arch); err != nil {
+	if err := s.checkMatchingArch(tx, pkg.ChannelsBlacklist, pkg.Arch); err != nil {
 		return err
 	}
 	if err := pkg.Labels.Validate(); err != nil {
@@ -253,7 +254,7 @@ func (s *Service) UpdatePackage(pkg *types.Package) error {
 		return types.ErrNoRowsAffected
 	}
 
-	oldPkg, err := s.GetPackage(pkg.ID)
+	oldPkg, err := s.GetPackageTx(tx, pkg.ID)
 	if err != nil {
 		return err
 	}
@@ -365,15 +366,15 @@ func (s *Service) updatePackageBlacklistedChannels(tx *sqlx.Tx, pkg *types.Packa
 		if _, ok := oldChannelsBlacklist[channelID]; ok {
 			continue
 		}
-		channel, err := s.GetChannel(channelID)
-		if err != nil {
+		var packageID null.String
+		if err := tx.QueryRow("SELECT package_id FROM channel WHERE id = $1", channelID).Scan(&packageID); err != nil {
 			return err
 		}
-		if channel.PackageID.String == pkg.ID {
+		if packageID.String == pkg.ID {
 			return types.ErrBlacklistingChannel
 		}
 		// Check if package is a floor for this channel
-		isFloor, err := s.isPackageFloorForChannel(pkg.ID, channelID)
+		isFloor, err := s.isPackageFloorForChannel(tx, pkg.ID, channelID)
 		if err != nil {
 			return err
 		}
