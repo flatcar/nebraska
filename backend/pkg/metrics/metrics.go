@@ -8,12 +8,18 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/flatcar/nebraska/backend/pkg/api"
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/logger"
 )
 
 const (
 	defaultMetricsUpdateInterval = 15 * time.Second
 )
+
+// noChannelArchLabel is the "arch" label value used for instances whose
+// group has no channel (or no group) assigned, since there is no
+// architecture to report in that case.
+const noChannelArchLabel = "none"
 
 var (
 	appInstancePerChannelGaugeMetric = prometheus.NewGaugeVec(
@@ -26,6 +32,12 @@ var (
 			"application",
 			"version",
 			"channel",
+			// arch distinguishes channels that share the same name across
+			// architectures (e.g. "stable" for amd64 and aarch64). Existing
+			// dashboards and alerts that select a single series by
+			// application/version/channel should sum over arch to keep their
+			// previous totals.
+			"arch",
 		},
 	)
 
@@ -128,6 +140,18 @@ func RegisterAndInstrument(api *api.API) error {
 	return nil
 }
 
+// archLabel returns the "arch" label value for the Arch reported by
+// GetAppInstancesPerChannelMetrics. A negative value means the instance's
+// group has no channel (or no group) assigned, so there is no architecture
+// to report.
+func archLabel(arch int) string {
+	if arch < 0 {
+		return noChannelArchLabel
+	}
+
+	return types.Arch(uint(arch)).String()
+}
+
 // calculateMetrics calculates the application metrics and updates the respective metric.
 func calculateMetrics(api *api.API) error {
 	aipcMetrics, err := api.GetAppInstancesPerChannelMetrics()
@@ -136,7 +160,7 @@ func calculateMetrics(api *api.API) error {
 	}
 
 	for _, metric := range aipcMetrics {
-		appInstancePerChannelGaugeMetric.WithLabelValues(metric.ApplicationName, metric.Version, metric.ChannelName).Set(float64(metric.InstancesCount))
+		appInstancePerChannelGaugeMetric.WithLabelValues(metric.ApplicationName, metric.Version, metric.ChannelName, archLabel(metric.Arch)).Set(float64(metric.InstancesCount))
 	}
 
 	fuMetrics, err := api.GetFailedUpdatesMetrics()

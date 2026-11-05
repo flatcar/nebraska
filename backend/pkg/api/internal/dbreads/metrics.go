@@ -14,16 +14,18 @@ var (
 	// (GetApp, GetApps, GetGroupInstancesStats, GetGroupVersionBreakdown,
 	// GetInstances). It uses LEFT JOINs for groups/channel so instances
 	// whose group has no channel assigned (groups.channel_id can be NULL)
-	// are still counted instead of being silently dropped.
+	// are still counted instead of being silently dropped, and it also
+	// reports the channel's arch so that amd64/aarch64 channels sharing the
+	// same name are not folded into a single row.
 	appInstancesPerChannelMetricSQL = fmt.Sprintf(`
-SELECT a.name AS app_name, ia.version AS version, COALESCE(c.name, '') AS channel_name, count(ia.version) AS instances_count
+SELECT a.name AS app_name, ia.version AS version, COALESCE(c.name, '') AS channel_name, COALESCE(c.arch, -1) AS arch, count(ia.version) AS instances_count
 FROM instance_application ia
 JOIN application a ON a.id = ia.application_id
 LEFT JOIN groups g ON ia.group_id = g.id
 LEFT JOIN channel c ON g.channel_id = c.id
 WHERE ia.last_check_for_updates > now() - interval '%[1]s' AND %[2]s
-GROUP BY app_name, version, channel_name
-ORDER BY app_name, version, channel_name
+GROUP BY app_name, version, channel_name, arch
+ORDER BY app_name, version, channel_name, arch
 `, validityInterval, ignoreFakeInstanceCondition("ia.instance_id"))
 
 	failedUpdatesSQL = fmt.Sprintf(`
