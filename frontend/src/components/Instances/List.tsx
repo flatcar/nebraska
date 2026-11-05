@@ -331,10 +331,9 @@ function ListView(props: ListViewProps) {
     }
 
     // We use this function without any filter to get the total number of instances
-    // in the group.
-    const queryParams = new URLSearchParams(window.location.search);
-    const duration = queryParams.get('period');
-    API.getInstancesCount(application.id, group.id, duration as string)
+    // in the group. Default the period the same way the list fetch does, so a
+    // URL without ?period= does not send duration=null to the API.
+    API.getInstancesCount(application.id, group.id, getDuration())
       .then(result => {
         setTotalInstances(result);
       })
