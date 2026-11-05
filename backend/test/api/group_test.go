@@ -12,6 +12,7 @@ import (
 	"github.com/jinzhu/copier"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"gopkg.in/guregu/null.v4"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/codegen"
@@ -244,6 +245,66 @@ func TestUpdateGroup(t *testing.T) {
 		updatedGroupDB, err := db.GetGroup(groupDB.ID)
 		require.NoError(t, err)
 		assert.Equal(t, groupName, updatedGroupDB.Name)
+	})
+
+	t.Run("omitted_policy_flags", func(t *testing.T) {
+		// establish DB connection
+		db := newDBForTest(t)
+		defer db.Close()
+
+		// get random app from DB
+		app := getRandomApp(t, db)
+
+		var groupDB types.Group
+		err := copier.Copy(&groupDB, app.Groups[0])
+		require.NoError(t, err)
+		groupDB.PolicyUpdatesEnabled = true
+		groupDB.PolicySafeMode = true
+		groupDB.PolicyOfficeHours = true
+		groupDB.PolicyTimezone = null.StringFrom("Europe/Berlin")
+
+		url := fmt.Sprintf("%s/api/apps/%s/groups/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID, groupDB.ID)
+		method := "PUT"
+
+		payload, err := json.Marshal(groupDB)
+		require.NoError(t, err)
+		httpDo(t, url, method, bytes.NewReader(payload), http.StatusOK, "json", &types.Group{})
+
+		groupName := "test_group"
+		request := map[string]interface{}{
+			"name":                          groupName,
+			"policy_timezone":               "Europe/Berlin",
+			"policy_period_interval":        groupDB.PolicyPeriodInterval,
+			"policy_max_updates_per_period": groupDB.PolicyMaxUpdatesPerPeriod,
+			"policy_update_timeout":         groupDB.PolicyUpdateTimeout,
+		}
+		payload, err = json.Marshal(request)
+		require.NoError(t, err)
+
+		var group types.Group
+		httpDo(t, url, method, bytes.NewReader(payload), http.StatusOK, "json", &group)
+
+		assert.Equal(t, groupName, group.Name)
+		assert.True(t, group.PolicyUpdatesEnabled)
+		assert.True(t, group.PolicySafeMode)
+		assert.True(t, group.PolicyOfficeHours)
+
+		updatedGroupDB, err := db.GetGroup(groupDB.ID)
+		require.NoError(t, err)
+		assert.True(t, updatedGroupDB.PolicyUpdatesEnabled)
+		assert.True(t, updatedGroupDB.PolicySafeMode)
+		assert.True(t, updatedGroupDB.PolicyOfficeHours)
+
+		request["policy_updates_enabled"] = false
+		payload, err = json.Marshal(request)
+		require.NoError(t, err)
+		httpDo(t, url, method, bytes.NewReader(payload), http.StatusOK, "json", &group)
+
+		updatedGroupDB, err = db.GetGroup(groupDB.ID)
+		require.NoError(t, err)
+		assert.False(t, updatedGroupDB.PolicyUpdatesEnabled)
+		assert.True(t, updatedGroupDB.PolicySafeMode)
+		assert.True(t, updatedGroupDB.PolicyOfficeHours)
 	})
 }
 

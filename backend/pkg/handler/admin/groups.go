@@ -73,6 +73,19 @@ func (h *Handler) UpdateGroup(ctx echo.Context, appIDorProductID string, groupID
 
 	group := groupFromRequest(request.Name, request.Description, request.PolicyMaxUpdatesPerPeriod, request.PolicyOfficeHours, request.PolicyPeriodInterval, request.PolicySafeMode, request.PolicyTimezone, request.PolicyUpdateTimeout, request.PolicyUpdatesEnabled, request.ChannelId, request.Track, groupID, appID)
 
+	// Use the admin default on distributed nodes, not the local brake.
+	current := *oldGroup
+	shared.PresentGroups(h.conf.InstanceMode, &current)
+	if request.PolicyUpdatesEnabled == nil {
+		group.PolicyUpdatesEnabled = current.PolicyUpdatesEnabled
+	}
+	if request.PolicySafeMode == nil {
+		group.PolicySafeMode = current.PolicySafeMode
+	}
+	if request.PolicyOfficeHours == nil {
+		group.PolicyOfficeHours = current.PolicyOfficeHours
+	}
+
 	err = h.admin.UpdateGroup(group)
 	if err != nil {
 		l.Error().Err(err).Msgf("updateGroup - updating group %+v", request)
