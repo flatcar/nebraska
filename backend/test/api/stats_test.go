@@ -107,6 +107,40 @@ func TestGroupVersionBreakdown(t *testing.T) {
 	})
 }
 
+func TestGroupOEMBreakdown(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		// establish DB connection
+		db := newDBForTest(t)
+
+		// get random app
+		app := getRandomApp(t, db)
+
+		// register an instance with a known OEM into the group under test, so the
+		// breakdown is exercised with real data rather than two empty lists
+		_, err := runtimeSvc(db).RegisterInstance(
+			types.Instance{ID: uuid.New().String(), Alias: "alias", IP: "0.0.0.0", OEM: "azure"},
+			runtime.NewInstanceApplication(app.ID, app.Groups[0].ID, "0.0.1"),
+		)
+		require.NoError(t, err)
+
+		// fetch OEM breakdown from DB
+		breakdownDB, err := db.GetGroupOEMBreakdown(app.Groups[0].ID)
+		require.NoError(t, err)
+		require.NotEmpty(t, breakdownDB)
+
+		// fetch OEM breakdown from API
+		url := fmt.Sprintf("%s/api/apps/%s/groups/%s/oem_breakdown", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID, app.Groups[0].ID)
+		method := "GET"
+
+		// response
+		var breakdownResp []*types.OEMBreakdownEntry
+
+		httpDo(t, url, method, nil, http.StatusOK, "json", &breakdownResp)
+
+		assert.Equal(t, breakdownDB, breakdownResp)
+	})
+}
+
 func TestGroupStatusTimeline(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// set timezone
