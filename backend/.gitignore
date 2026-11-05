@@ -1,6 +1,6 @@
 bin
 coverage.out
-tools/golangci-lint
+tools/golangci-lint*
 tools/oapi-codegen
 .env
 /nebraska
