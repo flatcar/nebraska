@@ -1,7 +1,7 @@
 package dbreads
 
 import (
-	"database/sql"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -60,45 +60,38 @@ func sanitizeSortFilterParams(sortFilter string) string {
 	return sortFilterMap[id]
 }
 
-// GetInstance returns the instance identified by the id provided.
+// GetInstance returns the instance identified by the id provided, with its row
+// for the application provided if the instance checked in within the last day.
+// It reads both in one statement, the row as JSON. appID must be a valid
+// application id.
 func (q *Queries) GetInstance(instanceID, appID string) (*types.Instance, error) {
-	var instance types.Instance
-	query, _, err := goqu.From("instance").
-		Where(goqu.C("id").Eq(instanceID)).
+	application := prepareInstanceAppQuery().Where(
+		goqu.I("instance_id").Eq(goqu.I("i.id")),
+		goqu.L("application_id = ?::text::uuid", appID),
+		goqu.L("last_check_for_updates > now() at time zone 'utc' - ?::text::interval", validityInterval))
+	query, args, err := PGDialect.From(goqu.T("instance").As("i")).Prepared(true).
+		Select(goqu.L("i.*"), goqu.L("(SELECT to_jsonb(ia) FROM ? ia)", application).As("application_json")).
+		Where(goqu.I("i.id").Eq(instanceID)).
 		ToSQL()
 	if err != nil {
 		return nil, err
 	}
-	err = q.db.QueryRowx(query).StructScan(&instance)
-	if err != nil {
+	var row struct {
+		types.Instance
+		ApplicationJSON []byte `db:"application_json"`
+	}
+	if err := q.db.QueryRowx(query, args...).StructScan(&row); err != nil {
 		return nil, err
 	}
-	/* passing "" to sortFilter while invoking getInstanceApp signifies we are not interested
-	in a sort
-	*/
-	instanceApplication, err := q.getInstanceApp(appID, instance.ID, validityInterval, "", 0)
-	switch err {
-	case nil:
-		instance.Application = *instanceApplication
-	case sql.ErrNoRows:
-		instance.Application = types.InstanceApplication{}
-	default:
-		return nil, err
+	instance := row.Instance
+	if row.ApplicationJSON != nil {
+		if err := json.Unmarshal(row.ApplicationJSON, &instance.Application); err != nil {
+			return nil, err
+		}
+		// Match the location the driver gives a scanned timestamptz.
+		instance.Application.LastCheckForUpdates = instance.Application.LastCheckForUpdates.In(time.Local)
 	}
-
 	return &instance, nil
-}
-func (q *Queries) getInstanceApp(appID, instanceID string, duration postgresDuration, sortFilter string, orderOfSort sortOrder) (*types.InstanceApplication, error) {
-	var instanceApp types.InstanceApplication
-	query, _, err := q.instanceAppQuery(appID, instanceID, duration, sortFilter, orderOfSort).ToSQL()
-	if err != nil {
-		return nil, err
-	}
-	err = q.db.QueryRowx(query).StructScan(&instanceApp)
-	if err != nil {
-		return nil, err
-	}
-	return &instanceApp, nil
 }
 
 // GetInstanceStatusHistory returns the status history of an instance in the
@@ -229,7 +222,7 @@ func (q *Queries) GetInstances(p types.InstancesQueryParams, duration string) (t
 	return result, nil
 }
 func prepareInstanceAppQuery() *goqu.SelectDataset {
-	return goqu.From("instance_application").
+	return PGDialect.From("instance_application").
 		Select("version", "status", "last_check_for_updates", "last_update_version", "update_in_progress", "application_id", "group_id", "instance_id")
 }
 func (q *Queries) GetInstancesCount(p types.InstancesQueryParams, duration string) (int, error) {
@@ -249,27 +242,6 @@ func (q *Queries) GetInstancesCount(p types.InstancesQueryParams, duration strin
 	finalQuery = prepareSearchQuery(finalQuery, p).Select(goqu.L("COUNT(*)"))
 
 	return q.GetCountQuery(finalQuery)
-}
-
-// instanceAppQuery returns a SelectDataset prepared to return the app status
-// of the app identified by the application id provided for a given instance.
-func (q *Queries) instanceAppQuery(appID, instanceID string, duration postgresDuration, sortFilter string, orderOfSort sortOrder) *goqu.SelectDataset {
-	query := prepareInstanceAppQuery().Where(goqu.C("application_id").Eq(appID)).
-		Where(goqu.L("last_check_for_updates > now() at time zone 'utc' - interval ?", duration))
-
-	if instanceID != "" {
-		query = query.Where(goqu.C("instance_id").Eq(instanceID))
-	}
-
-	if sortFilter != "" {
-		switch orderOfSort {
-		case sortOrderAsc:
-			query = query.Order(goqu.I(sortFilter).Asc().NullsLast())
-		case sortOrderDesc:
-			query = query.Order(goqu.I(sortFilter).Desc().NullsLast())
-		}
-	}
-	return query
 }
 
 func ignoreFakeInstanceCondition(instanceIDField string) string {

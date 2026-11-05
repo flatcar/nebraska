@@ -123,14 +123,10 @@ type InstancesStatusStats struct {
 	OnHold        null.Int `db:"onhold" json:"onhold"`
 }
 
-// UpdatesStats represents a set of statistics about the status of the updates
-// that may be taking place in the instances belonging to a given group.
+// UpdatesStats are the counts about the updates taking place in a group that
+// the rollout policy compares with its limits.
 type UpdatesStats struct {
-	TotalInstances                   int `db:"total_instances"`
-	UpdatesToCurrentVersionGranted   int `db:"updates_to_current_version_granted"`
 	UpdatesToCurrentVersionAttempted int `db:"updates_to_current_version_attempted"`
-	UpdatesToCurrentVersionSucceeded int `db:"updates_to_current_version_succeeded"`
-	UpdatesToCurrentVersionFailed    int `db:"updates_to_current_version_failed"`
 	UpdatesGrantedInLastPeriod       int `db:"updates_granted_in_last_period"`
 	UpdatesInProgress                int `db:"updates_in_progress"`
 	UpdatesTimedOut                  int `db:"updates_timed_out"`

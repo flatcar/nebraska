@@ -1,13 +1,13 @@
 package dbreads
 
 import (
-	"database/sql"
 	"fmt"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/doug-martin/goqu/v9"
+	"github.com/doug-martin/goqu/v9/exp"
 	"golang.org/x/sync/errgroup"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
@@ -68,32 +68,43 @@ type groupVersionCountCache struct {
 	storedAt time.Time
 }
 
-// GetGroup returns the group identified by the id provided.
+// GetGroup returns the group identified by the id provided, with its channel,
+// the channel's package and the package's blacklist, action and extra files,
+// read in one statement.
 func (q *Queries) GetGroup(groupID string) (*types.Group, error) {
-	var group types.Group
-
-	query, _, err := q.groupsQuery().
-		Where(goqu.I("groups.id").Eq(groupID)).
+	query, args, err := q.groupsQuery().Prepared(true).
+		SelectAppend(goqu.L(groupChannelJSON).As("channel_json")).
+		// PostgreSQL parses the id, so it accepts the spellings a uuid literal accepts.
+		Where(goqu.L("groups.id = ?::text::uuid", groupID)).
 		ToSQL()
 	if err != nil {
 		return nil, err
 	}
-	err = q.db.QueryRowx(query).StructScan(&group)
-	if err != nil {
+	var row groupRow
+	if err := q.db.QueryRowx(query, args...).StructScan(&row); err != nil {
 		return nil, err
 	}
-	if group.ChannelID.String == "" {
-		group.Channel = nil
-	} else {
-		channel, err := q.GetChannel(group.ChannelID.String)
-		switch err {
-		case nil:
-			group.Channel = channel
-		case sql.ErrNoRows:
-			group.Channel = nil
-		default:
+	return row.group()
+}
+
+// groupChannelJSON is the channel of the groups row in the query it is added
+// to, as channelJSON.
+const groupChannelJSON = `(SELECT ` + channelJSON + ` FROM channel WHERE id = groups.channel_id)`
+
+// groupRow is a groups row read with its channel as groupChannelJSON.
+type groupRow struct {
+	types.Group
+	ChannelJSON []byte `db:"channel_json"`
+}
+
+func (r groupRow) group() (*types.Group, error) {
+	group := r.Group
+	if r.ChannelJSON != nil {
+		channel, err := decodeChannel(r.ChannelJSON)
+		if err != nil {
 			return nil, err
 		}
+		group.Channel = channel
 	}
 	return &group, nil
 }
@@ -118,12 +129,7 @@ func (q *Queries) GetGroupID(appID, trackName string, arch types.Arch) (string, 
 		// before the generation because all writes are sequential.
 		if cachedGroupsRef == nil {
 			cachedGroups = make(map[types.GroupDescriptor]string)
-			query, _, err := goqu.From("groups").ToSQL()
-			var groups []*types.Group
-			if err == nil {
-				groups, err = q.getGroupsFromQuery(query)
-			}
-			// Checks boths errors above.
+			groups, err := q.getGroupsFromQuery(goqu.From("groups"))
 			if err != nil {
 				l.Error().Err(err).Msg("GetGroupID error")
 			} else {
@@ -181,50 +187,37 @@ func (q *Queries) GetGroupsCount(appID string) (int, error) {
 func (q *Queries) GetGroups(appID string, page, perPage uint64) ([]*types.Group, error) {
 	page, perPage = validatePaginationParams(page, perPage)
 	limit, offset := sqlPaginate(page, perPage)
-	query, _, err := q.groupsQuery().Where(goqu.C("application_id").Eq(appID)).
+	return q.getGroupsFromQuery(q.groupsQuery().Where(goqu.C("application_id").Eq(appID)).
 		Limit(limit).
-		Offset(offset).
-		ToSQL()
-	if err != nil {
-		return nil, err
-	}
-	return q.getGroupsFromQuery(query)
+		Offset(offset))
 }
 
 func (q *Queries) getGroups(appID string) ([]*types.Group, error) {
-	query, _, err := q.groupsQuery().Where(goqu.C("application_id").Eq(appID)).ToSQL()
+	return q.getGroupsFromQuery(q.groupsQuery().Where(goqu.C("application_id").Eq(appID)))
+}
+
+// getGroupsFromQuery reads the groups query returns, each with its channel.
+func (q *Queries) getGroupsFromQuery(query *goqu.SelectDataset) ([]*types.Group, error) {
+	statement, _, err := query.SelectAppend(goqu.L(groupChannelJSON).As("channel_json")).ToSQL()
 	if err != nil {
 		return nil, err
 	}
-	return q.getGroupsFromQuery(query)
-}
-
-func (q *Queries) getGroupsFromQuery(query string) ([]*types.Group, error) {
 	var groups []*types.Group
-	rows, err := q.db.Queryx(query)
+	rows, err := q.db.Queryx(statement)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 	for rows.Next() {
-		group := types.Group{}
-		if err := rows.StructScan(&group); err != nil {
+		var row groupRow
+		if err := rows.StructScan(&row); err != nil {
 			return nil, err
 		}
-		if group.ChannelID.String == "" {
-			group.Channel = nil
-		} else {
-			channel, err := q.GetChannel(group.ChannelID.String)
-			switch err {
-			case nil:
-				group.Channel = channel
-			case sql.ErrNoRows:
-				group.Channel = nil
-			default:
-				return nil, err
-			}
+		group, err := row.group()
+		if err != nil {
+			return nil, err
 		}
-		groups = append(groups, &group)
+		groups = append(groups, group)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -232,35 +225,127 @@ func (q *Queries) getGroupsFromQuery(query string) ([]*types.Group, error) {
 	return groups, nil
 }
 
-// GetGroupUpdatesStats returns a set of statistics about the distribution of
-// updates and their status in the group provided.
-func (q *Queries) GetGroupUpdatesStats(group *types.Group) (*types.UpdatesStats, error) {
-	var updatesStats types.UpdatesStats
+// activeGroupInstances selects the instances of the group that checked in
+// within the validity interval, leaving out fake ones. The rollout queries
+// below add their condition to it.
+//
+// Each query below orders by the columns of the index it should use. Without
+// the ORDER BY, PostgreSQL can choose to scan the whole table instead: its
+// statistics cover all groups, so rows that only another group has make a
+// match look close.
+func activeGroupInstances(groupID string) *goqu.SelectDataset {
+	return PGDialect.From("instance_application").Select(goqu.L("1")).Where(
+		goqu.C("group_id").Eq(groupID),
+		goqu.L("last_check_for_updates > now() at time zone 'utc' - ?::text::interval", validityInterval),
+		goqu.L(ignoreFakeInstanceCondition("instance_id")))
+}
 
-	packageVersion := ""
+// countUpTo counts the rows query returns, stopping at limit.
+func countUpTo(query *goqu.SelectDataset, limit uint) *goqu.SelectDataset {
+	return PGDialect.From(query.Limit(limit).As("s")).Select(goqu.COUNT("*"))
+}
+
+// updatesAttempted counts the active instances that finished an update to the
+// group's version. It stops at 2, as callers only tell 0 and 1 apart.
+func updatesAttempted(group *types.Group) *goqu.SelectDataset {
+	return countUpTo(activeGroupInstances(group.ID).
+		Where(goqu.L("NOT update_in_progress"), goqu.C("last_update_version").Eq(groupPackageVersion(group))).
+		Order(goqu.C("version").Asc(), goqu.C("last_update_version").Asc()), 2)
+}
+
+// rolloutPolicyStatsQuery reads the counts the rollout policy compares with
+// its limit, each stopping at the cap. The time tests compare the column with
+// a point in time, like the active test, so that the index starts at that
+// point. The timed-out and attempted counts are only used in safe mode.
+func rolloutPolicyStatsQuery(group *types.Group, limit int, safeMode bool) (string, []interface{}, error) {
+	limitCap := uint(max(limit, 1))
+	active := activeGroupInstances(group.ID)
+	counts := []interface{}{
+		countUpTo(active.Where(goqu.L("last_update_granted_ts > now() at time zone 'utc' - ?::text::interval", group.PolicyPeriodInterval)).
+			Order(goqu.C("last_update_granted_ts").Asc()), limitCap).As("updates_granted_in_last_period"),
+		countUpTo(active.Where(goqu.L("update_in_progress"), goqu.L("last_update_granted_ts >= now() at time zone 'utc' - ?::text::interval", group.PolicyUpdateTimeout)).
+			Order(goqu.C("last_update_granted_ts").Asc()), limitCap).As("updates_in_progress"),
+	}
+	if safeMode {
+		counts = append(counts,
+			countUpTo(active.Where(goqu.L("update_in_progress"), goqu.L("last_update_granted_ts < now() at time zone 'utc' - ?::text::interval", group.PolicyUpdateTimeout)).
+				Order(goqu.C("last_update_granted_ts").Asc()), limitCap).As("updates_timed_out"),
+			updatesAttempted(group).As("updates_to_current_version_attempted"))
+	}
+	return PGDialect.Select(counts...).Prepared(true).ToSQL()
+}
+
+// rolloutCompleteQuery is true when no active instance blocks completion: one
+// that is updating, is not on the group's version, or is on it without it as
+// its last granted version. Each test is a range on an index. Updating
+// instances are looked at newest grant first: an instance granted recently has
+// checked in since, so it is active.
+func rolloutCompleteQuery(group *types.Group) (string, []interface{}, error) {
+	version := groupPackageVersion(group)
+	// A subquery rather than NOT EXISTS, because PostgreSQL drops the ORDER BY
+	// of an EXISTS subquery.
+	noActiveInstance := func(order exp.OrderedExpression, conditions ...exp.Expression) exp.Expression {
+		return goqu.L("(?) IS NULL", activeGroupInstances(group.ID).Where(conditions...).Order(order).Limit(1))
+	}
+	return PGDialect.Select(goqu.And(
+		noActiveInstance(goqu.C("last_update_granted_ts").Desc(), goqu.L("update_in_progress")),
+		noActiveInstance(goqu.C("version").Asc(), goqu.C("version").Lt(version)),
+		noActiveInstance(goqu.C("version").Asc(), goqu.C("version").Gt(version)),
+		noActiveInstance(goqu.C("last_update_version").Asc(), goqu.C("version").Eq(version), goqu.C("last_update_version").IsNull()),
+		noActiveInstance(goqu.C("last_update_version").Asc(), goqu.C("version").Eq(version), goqu.C("last_update_version").Lt(version)),
+		noActiveInstance(goqu.C("last_update_version").Asc(), goqu.C("version").Eq(version), goqu.C("last_update_version").Gt(version)),
+	)).Prepared(true).ToSQL()
+}
+
+// GetGroupRolloutPolicyStats returns, from one statement, the counts the
+// rollout policy compares with its limit. UpdatesTimedOut and
+// UpdatesToCurrentVersionAttempted are only used in safe mode, so they are only
+// read if safeMode is set, and are 0 otherwise.
+//
+// Each of the three stops at max(limit, 1), so comparing it with the limit, or
+// with 1 when safe mode lowers the limit, gives the same answer as the full
+// count. Attempted stops at 2.
+func (q *Queries) GetGroupRolloutPolicyStats(group *types.Group, limit int, safeMode bool) (*types.UpdatesStats, error) {
+	query, args, err := rolloutPolicyStatsQuery(group, limit, safeMode)
+	if err != nil {
+		return nil, err
+	}
+	var stats types.UpdatesStats
+	if err := q.db.QueryRowx(query, args...).StructScan(&stats); err != nil {
+		return nil, err
+	}
+	return &stats, nil
+}
+
+// CountGroupUpdatesToCurrentVersionAttempted returns
+// UpdatesToCurrentVersionAttempted for the group, capped at 2.
+func (q *Queries) CountGroupUpdatesToCurrentVersionAttempted(group *types.Group) (int, error) {
+	query, args, err := updatesAttempted(group).Prepared(true).ToSQL()
+	if err != nil {
+		return 0, err
+	}
+	var attempted int
+	err = q.db.QueryRowx(query, args...).Scan(&attempted)
+	return attempted, err
+}
+
+// IsGroupRolloutComplete reports whether every active instance in the group has
+// successfully updated to the group's current package version.
+func (q *Queries) IsGroupRolloutComplete(group *types.Group) (bool, error) {
+	query, args, err := rolloutCompleteQuery(group)
+	if err != nil {
+		return false, err
+	}
+	var complete bool
+	err = q.db.QueryRowx(query, args...).Scan(&complete)
+	return complete, err
+}
+
+func groupPackageVersion(group *types.Group) string {
 	if group.Channel != nil && group.Channel.Package != nil {
-		packageVersion = group.Channel.Package.Version
+		return group.Channel.Package.Version
 	}
-	query, _, err := goqu.From("instance_application").Select(
-		goqu.COUNT("*").As("total_instances"),
-		goqu.COALESCE(goqu.SUM(goqu.L("case when last_update_version = ? then 1 else 0 end", packageVersion)), 0).As("updates_to_current_version_granted"),
-		goqu.COALESCE(goqu.SUM(goqu.L("case when update_in_progress = 'false' and last_update_version = ? then 1 else 0 end", packageVersion)), 0).As("updates_to_current_version_attempted"),
-		goqu.COALESCE(goqu.SUM(goqu.L("case when update_in_progress = 'false' and last_update_version = ? and last_update_version = version then 1 else 0 end", packageVersion)), 0).As("updates_to_current_version_succeeded"),
-		goqu.COALESCE(goqu.SUM(goqu.L("case when update_in_progress = 'false' and last_update_version = ? and last_update_version != version then 1 else 0 end", packageVersion)), 0).As("updates_to_current_version_failed"),
-		goqu.COALESCE(goqu.SUM(goqu.L("case when last_update_granted_ts > now() at time zone 'utc' - interval ? then 1 else 0 end", group.PolicyPeriodInterval)), 0).As("updates_granted_in_last_period"),
-		goqu.COALESCE(goqu.SUM(goqu.L("case when update_in_progress = 'true' and now() at time zone 'utc' - last_update_granted_ts <= interval ? then 1 else 0 end", group.PolicyUpdateTimeout)), 0).As("updates_in_progress"),
-		goqu.COALESCE(goqu.SUM(goqu.L("case when update_in_progress = 'true' and now() at time zone 'utc' - last_update_granted_ts > interval ? then 1 else 0 end", group.PolicyUpdateTimeout)), 0).As("updates_timed_out"),
-	).Where(goqu.C("group_id").Eq(group.ID), goqu.L("last_check_for_updates > now() at time zone 'utc' - interval ?", validityInterval),
-		goqu.L(ignoreFakeInstanceCondition("instance_id")),
-	).ToSQL()
-	if err != nil {
-		return nil, err
-	}
-	err = q.db.QueryRowx(query).StructScan(&updatesStats)
-	if err != nil {
-		return nil, err
-	}
-	return &updatesStats, nil
+	return ""
 }
 
 // groupsQuery returns a SelectDataset prepared to return all groups. It joins
@@ -298,7 +383,7 @@ func (q *Queries) groupsQuery() *goqu.SelectDataset {
 			override.As(goqu.C("local_overrides."+name)),
 		)
 	}
-	return goqu.From("groups").
+	return PGDialect.From("groups").
 		InnerJoin(
 			goqu.T("group_local"),
 			goqu.On(goqu.I("groups.id").Eq(goqu.I("group_local.group_id"))),

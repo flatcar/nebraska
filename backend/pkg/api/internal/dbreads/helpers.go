@@ -1,11 +1,22 @@
 package dbreads
 
-import "github.com/blang/semver/v4"
+import (
+	"github.com/blang/semver/v4"
+	"github.com/doug-martin/goqu/v9"
+
+	// Registers the postgres dialect. Without it goqu.Dialect falls back to
+	// the default dialect and emits ? placeholders, which PostgreSQL rejects.
+	_ "github.com/doug-martin/goqu/v9/dialect/postgres"
+)
 
 const (
 	defaultPage    uint64 = 1
 	defaultPerPage uint64 = 10
 )
+
+// PGDialect builds statements with numbered placeholders, for queries whose
+// arguments are bound rather than inlined.
+var PGDialect = goqu.Dialect("postgres")
 
 // validatePaginationParams validates the pagination parameters provided,
 // setting them to the default values in case they are invalid.

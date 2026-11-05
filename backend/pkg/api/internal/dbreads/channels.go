@@ -1,37 +1,45 @@
 package dbreads
 
 import (
-	"database/sql"
+	"encoding/json"
+	"time"
 
 	"github.com/doug-martin/goqu/v9"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
+// channelJSON is the channel row of the query it is used in, as JSON, with its
+// package nested in it:
+//
+//	{<channel columns>, "package": {<package columns>,
+//		"channels_blacklist": [<channel id>, ...],
+//		"flatcar_action": {<action columns>},
+//		"extra_files": [{<file columns>}, ...]}}
+//
+// The keys are the column names, which the types' JSON tags match. It takes
+// whichever action row comes first.
+const channelJSON = `to_jsonb(channel) || jsonb_build_object('package', (
+	SELECT to_jsonb(package) || jsonb_build_object(
+		'channels_blacklist', (SELECT array_agg(channel_id) FROM package_channel_blacklist WHERE package_id = package.id),
+		'flatcar_action', (SELECT to_jsonb(flatcar_action) FROM flatcar_action WHERE package_id = package.id LIMIT 1),
+		'extra_files', (SELECT jsonb_agg(package_file ORDER BY id) FROM package_file WHERE package_id = package.id))
+	FROM package WHERE id = channel.package_id))`
+
 // GetChannel returns the channel identified by the id provided.
 func (q *Queries) GetChannel(channelID string) (*types.Channel, error) {
-	var channel types.Channel
-
 	query, _, err := goqu.From("channel").
+		Select(goqu.L(channelJSON)).
 		Where(goqu.C("id").Eq(channelID)).
 		ToSQL()
 	if err != nil {
 		return nil, err
 	}
-	err = q.db.QueryRowx(query).StructScan(&channel)
-	if err != nil {
+	var data []byte
+	if err := q.db.QueryRowx(query).Scan(&data); err != nil {
 		return nil, err
 	}
-	packageEntity, err := q.getPackage(channel.PackageID)
-	switch err {
-	case nil:
-		channel.Package = packageEntity
-	case sql.ErrNoRows:
-		channel.Package = nil
-	default:
-		return nil, err
-	}
-	return &channel, nil
+	return decodeChannel(data)
 }
 
 // GetChannelsCount retuns the total number of channels in an app
@@ -73,21 +81,15 @@ func (q *Queries) getChannelsFromQuery(query string) ([]*types.Channel, error) {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		channel := types.Channel{}
-		if err := rows.StructScan(&channel); err != nil {
+		var data []byte
+		if err := rows.Scan(&data); err != nil {
 			return nil, err
 		}
-
-		packageEntity, err := q.getPackage(channel.PackageID)
-		switch err {
-		case nil:
-			channel.Package = packageEntity
-		case sql.ErrNoRows:
-			channel.Package = nil
-		default:
+		channel, err := decodeChannel(data)
+		if err != nil {
 			return nil, err
 		}
-		channels = append(channels, &channel)
+		channels = append(channels, channel)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -95,12 +97,36 @@ func (q *Queries) getChannelsFromQuery(query string) ([]*types.Channel, error) {
 	return channels, nil
 }
 
-// channelsQuery returns a SelectDataset prepared to return all channels.
+// channelsQuery returns a SelectDataset prepared to return all channels, each
+// as channelJSON.
 // This query is meant to be extended later in the methods using it to filter
 // by a specific channel id, all channels that belong to a given application,
 // specify how to query the rows or their destination.
 
 func (q *Queries) channelsQuery() *goqu.SelectDataset {
-	query := goqu.From("channel").Order(goqu.I("name").Asc())
+	query := goqu.From("channel").Select(goqu.L(channelJSON)).Order(goqu.I("name").Asc())
 	return query
+}
+
+// decodeChannel decodes a channel read as channelJSON, with its times in the
+// location the driver gives a timestamptz and its action's package id set.
+func decodeChannel(data []byte) (*types.Channel, error) {
+	var channel types.Channel
+	if err := json.Unmarshal(data, &channel); err != nil {
+		return nil, err
+	}
+	channel.CreatedTs = channel.CreatedTs.In(time.Local)
+	if p := channel.Package; p != nil {
+		p.CreatedTs = p.CreatedTs.In(time.Local)
+		if a := p.FlatcarAction; a != nil {
+			a.CreatedTs = a.CreatedTs.In(time.Local)
+			// The API leaves an action's package id out of its JSON; the action
+			// belongs to the package it is nested in.
+			a.PackageID = p.ID
+		}
+		for i := range p.ExtraFiles {
+			p.ExtraFiles[i].CreatedTs = p.ExtraFiles[i].CreatedTs.In(time.Local)
+		}
+	}
+	return &channel, nil
 }
