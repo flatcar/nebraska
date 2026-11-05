@@ -201,16 +201,10 @@ func (q *Queries) getGroups(appID string) ([]*types.Group, error) {
 
 func (q *Queries) getGroupsFromQuery(query string) ([]*types.Group, error) {
 	var groups []*types.Group
-	rows, err := q.db.Queryx(query)
-	if err != nil {
+	if err := q.db.Select(&groups, query); err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	for rows.Next() {
-		group := types.Group{}
-		if err := rows.StructScan(&group); err != nil {
-			return nil, err
-		}
+	for _, group := range groups {
 		if group.ChannelID.String == "" {
 			group.Channel = nil
 		} else {
@@ -224,10 +218,6 @@ func (q *Queries) getGroupsFromQuery(query string) ([]*types.Group, error) {
 				return nil, err
 			}
 		}
-		groups = append(groups, &group)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
 	}
 	return groups, nil
 }

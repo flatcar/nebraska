@@ -43,6 +43,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removed
 ### Bugfixes
 
+- Fixed the server hanging until restart when many requests run at once. Some requests held one database connection while waiting for a second one. ([#1689](https://github.com/flatcar/nebraska/pull/1689))
 - Fixed missing error checks on database row iteration in `GetGroupVersionCountTimeline` method, which could silently return truncated metrics.
 - Fixed package blacklist changes not appearing in UI immediately after save
 - Fixed instance statistics query that returned incorrect group dashboard counts. ([#1356](https://github.com/flatcar/nebraska/pull/1356), thanks to Thilo Fromm)

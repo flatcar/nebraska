@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/doug-martin/goqu/v9"
+	"github.com/jmoiron/sqlx"
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
@@ -96,7 +97,7 @@ func (s *Service) isPackageBlacklistedForChannel(packageID, channelID string) (b
 }
 
 // isPackageFloorForChannel checks if a package is marked as a floor for a specific channel
-func (s *Service) isPackageFloorForChannel(packageID, channelID string) (bool, error) {
+func (s *Service) isPackageFloorForChannel(tx *sqlx.Tx, packageID, channelID string) (bool, error) {
 	query, _, err := goqu.From("channel_package_floors").
 		Select(goqu.COUNT("*")).
 		Where(goqu.And(
@@ -110,7 +111,7 @@ func (s *Service) isPackageFloorForChannel(packageID, channelID string) (bool, e
 	}
 
 	var count int
-	err = s.db.QueryRow(query).Scan(&count)
+	err = tx.QueryRow(query).Scan(&count)
 	if err != nil {
 		return false, err
 	}

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/doug-martin/goqu/v9"
+	"github.com/jmoiron/sqlx"
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
@@ -14,6 +15,11 @@ import (
 // GetPackage returns the package identified by the id provided.
 func (q *Queries) GetPackage(pkgID string) (*types.Package, error) {
 	return q.getPackage(null.StringFrom(pkgID))
+}
+
+// GetPackageTx loads a package using the transaction's connection.
+func (q *Queries) GetPackageTx(tx *sqlx.Tx, pkgID string) (*types.Package, error) {
+	return q.getPackageFrom(tx, null.StringFrom(pkgID))
 }
 
 // GetPackageByVersionAndArch returns the package identified by the
@@ -33,7 +39,7 @@ func (q *Queries) GetPackageByVersionAndArch(appID, version string, arch types.A
 	if err != nil {
 		return nil, err
 	}
-	flatcarAction, err := q.getFlatcarAction(pkg.ID)
+	flatcarAction, err := q.getFlatcarAction(q.db, pkg.ID)
 	switch err {
 	case nil:
 		pkg.FlatcarAction = flatcarAction
@@ -199,27 +205,27 @@ func (q *Queries) getFlatcarActionQuery(packageID string) *goqu.SelectDataset {
 	query := goqu.From("flatcar_action").Where(goqu.C("package_id").Eq(packageID))
 	return query
 }
-func (q *Queries) getFlatcarAction(packageID string) (*types.FlatcarAction, error) {
+func (q *Queries) getFlatcarAction(db sqlx.Queryer, packageID string) (*types.FlatcarAction, error) {
 	query, _, err := q.getFlatcarActionQuery(packageID).ToSQL()
 	if err != nil {
 		return nil, err
 	}
 	flatcarAction := types.FlatcarAction{}
-	err = q.db.QueryRowx(query).StructScan(&flatcarAction)
+	err = db.QueryRowx(query).StructScan(&flatcarAction)
 	if err != nil {
 		return nil, err
 	}
 	return &flatcarAction, nil
 }
 
-func (q *Queries) getExtraFiles(packageID string) ([]types.File, error) {
+func (q *Queries) getExtraFiles(db sqlx.Queryer, packageID string) ([]types.File, error) {
 	query, _, err := goqu.From("package_file").Where(goqu.C("package_id").Eq(packageID)).Order(goqu.C("id").Asc()).ToSQL()
 	if err != nil {
 		return nil, err
 	}
 
 	var files []types.File
-	rows, err := q.db.Queryx(query)
+	rows, err := db.Queryx(query)
 	if err != nil {
 		return nil, err
 	}
@@ -239,16 +245,20 @@ func (q *Queries) getExtraFiles(packageID string) ([]types.File, error) {
 }
 
 func (q *Queries) getPackage(packageID null.String) (*types.Package, error) {
+	return q.getPackageFrom(q.db, packageID)
+}
+
+func (q *Queries) getPackageFrom(db sqlx.Queryer, packageID null.String) (*types.Package, error) {
 	query, _, err := q.packagesQuery().Where(goqu.C("id").Eq(packageID)).ToSQL()
 	if err != nil {
 		return nil, err
 	}
 	packageEntity := types.Package{}
-	err = q.db.QueryRowx(query).StructScan(&packageEntity)
+	err = db.QueryRowx(query).StructScan(&packageEntity)
 	if err != nil {
 		return nil, err
 	}
-	flatcarAction, err := q.getFlatcarAction(packageEntity.ID)
+	flatcarAction, err := q.getFlatcarAction(db, packageEntity.ID)
 	switch err {
 	case nil:
 		packageEntity.FlatcarAction = flatcarAction
@@ -258,7 +268,7 @@ func (q *Queries) getPackage(packageID null.String) (*types.Package, error) {
 		return nil, err
 	}
 
-	extraFiles, err := q.getExtraFiles(packageEntity.ID)
+	extraFiles, err := q.getExtraFiles(db, packageEntity.ID)
 	switch err {
 	case nil:
 		packageEntity.ExtraFiles = extraFiles
