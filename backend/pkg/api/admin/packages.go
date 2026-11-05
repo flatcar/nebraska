@@ -372,6 +372,9 @@ func (s *Service) updatePackageBlacklistedChannels(tx *sqlx.Tx, pkg *types.Packa
 		if channel.PackageID.String == pkg.ID {
 			return types.ErrBlacklistingChannel
 		}
+		if channel.Arch != pkgUpdated.Arch {
+			return types.ErrArchMismatch
+		}
 		// Check if package is a floor for this channel
 		isFloor, err := s.isPackageFloorForChannel(pkg.ID, channelID)
 		if err != nil {

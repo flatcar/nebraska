@@ -137,6 +137,31 @@ func TestUpdatePackage(t *testing.T) {
 	assert.Equal(t, types.ArchAll, pkg.Arch)
 }
 
+func TestUpdatePackageBlacklistArchMismatch(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	as := adminSvc(a)
+
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tChannelAArch64, _ := as.AddChannel(&types.Channel{Name: "test_channel_aarch64", Color: "blue", ApplicationID: tApp.ID, Arch: types.ArchAArch64})
+	tChannelAMD64, _ := as.AddChannel(&types.Channel{Name: "test_channel_amd64", Color: "green", ApplicationID: tApp.ID, Arch: types.ArchAMD64})
+	tPkg, err := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID, Arch: types.ArchAMD64})
+	assert.NoError(t, err)
+
+	err = as.UpdatePackage(&types.Package{ID: tPkg.ID, Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ChannelsBlacklist: []string{tChannelAArch64.ID}})
+	assert.Equal(t, types.ErrArchMismatch, err, "Blacklisted channels must have a matching arch.")
+	pkg, err := a.GetPackage(tPkg.ID)
+	assert.NoError(t, err)
+	assert.Len(t, pkg.ChannelsBlacklist, 0)
+
+	err = as.UpdatePackage(&types.Package{ID: tPkg.ID, Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ChannelsBlacklist: []string{tChannelAMD64.ID}})
+	assert.NoError(t, err)
+	pkg, err = a.GetPackage(tPkg.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, types.StringArray{tChannelAMD64.ID}, pkg.ChannelsBlacklist)
+}
+
 func TestUpdatePackageFlatcar(t *testing.T) {
 	a := newForTest(t)
 	defer a.Close()

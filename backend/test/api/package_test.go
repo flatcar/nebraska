@@ -247,6 +247,32 @@ func TestUpdatePackage(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, packageVersion, updatedPackageDB.Version)
 	})
+	t.Run("blacklist_channel_with_other_arch", func(t *testing.T) {
+		db := newDBForTest(t)
+		defer db.Close()
+
+		app := getRandomApp(t, db)
+		serverURL := os.Getenv("NEBRASKA_TEST_SERVER_URL")
+
+		var pkg types.Package
+		packagePayload := strings.NewReader(fmt.Sprintf(`{"arch":1,"filename":"arch.img","description":"arch","url":"http://example.com/","version":"20.4.1","type":4,"size":"10","hash":"","application_id":"%s","channels_blacklist":[]}`, app.ID))
+		httpDo(t, fmt.Sprintf("%s/api/apps/%s/packages", serverURL, app.ID), "POST", packagePayload, http.StatusOK, "json", &pkg)
+
+		var channel types.Channel
+		channelPayload := strings.NewReader(fmt.Sprintf(`{"name":"arch_mismatch","arch":2,"color":"","application_id":"%s"}`, app.ID))
+		httpDo(t, fmt.Sprintf("%s/api/apps/%s/channels", serverURL, app.ID), "POST", channelPayload, http.StatusOK, "json", &channel)
+
+		update := strings.NewReader(fmt.Sprintf(`{"arch":1,"filename":"arch.img","description":"arch","url":"http://example.com/","version":"20.4.1","type":4,"size":"10","hash":"","application_id":"%s","channels_blacklist":["%s"]}`, app.ID, channel.ID))
+		var errResp struct {
+			Message string `json:"message"`
+		}
+		httpDo(t, fmt.Sprintf("%s/api/apps/%s/packages/%s", serverURL, app.ID, pkg.ID), "PUT", update, http.StatusBadRequest, "json", &errResp)
+		assert.NotEmpty(t, errResp.Message)
+
+		stored, err := db.GetPackage(pkg.ID)
+		require.NoError(t, err)
+		assert.Empty(t, stored.ChannelsBlacklist)
+	})
 	t.Run("success_product_id", func(t *testing.T) {
 		// establish DB connection
 		db := newDBForTest(t)

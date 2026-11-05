@@ -80,7 +80,7 @@ func (h *Handler) UpdatePackage(ctx echo.Context, appIDorProductID string, packa
 
 	err = h.admin.UpdatePackage(pkg)
 	if err != nil {
-		if errors.Is(err, types.ErrInvalidLabels) {
+		if errors.Is(err, types.ErrInvalidLabels) || errors.Is(err, types.ErrArchMismatch) {
 			return ctx.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
 		}
 		l.Error().Err(err).Msgf("updatePackage - updating package %+v", request)
