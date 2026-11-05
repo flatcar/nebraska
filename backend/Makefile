@@ -89,7 +89,7 @@ version:
 
 .PHONY: test-clean-work-tree-backend
 test-clean-work-tree-backend:
-	if ! git diff --quiet -- go.mod go.sum pkg cmd tools/tools.go; then \
+	if ! git diff --quiet -- go.mod go.sum pkg cmd; then \
 	  echo; \
 	  echo 'Working tree of backend code is not clean'; \
 	  echo; \
@@ -104,11 +104,13 @@ tools: bin/initdb
 bin/initdb:
 	go build -o bin/initdb ./cmd/initdb
 
-tools/golangci-lint: go.mod go.sum
-	env GOBIN=$(CURDIR)/tools/ go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.9.0
+GOLANGCI_LINT_VERSION := v2.15.0
+GOLANGCI_LINT := tools/golangci-lint-$(GOLANGCI_LINT_VERSION)/golangci-lint
 
-tools/swag:
-	env GOBIN=$(CURDIR)/tools/ go install github.com/swaggo/swag/cmd/swag@v1.8.10
+# golangci-lint recommends its release binaries over go install builds:
+# https://golangci-lint.run/docs/welcome/install/local/
+$(GOLANGCI_LINT):
+	set -o pipefail; curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/refs/tags/$(GOLANGCI_LINT_VERSION)/install.sh | sh -s -- -b $(CURDIR)/$(@D) $(GOLANGCI_LINT_VERSION)
 
 .PHONY: ci
 ci: build test-clean-work-tree-backend check-backend-with-container check-distributed-with-container
@@ -121,7 +123,7 @@ bin/nebraska: run-generators
 	go build -a -tags netgo -trimpath -ldflags ${LDFLAGS} -o bin/nebraska ./cmd/nebraska
 
 .PHONY: code-checks
-code-checks: tools/golangci-lint
+code-checks: $(GOLANGCI_LINT)
 	# this is to get nice error messages when something doesn't
 	# build (both the project and the tests), golangci-lint's
 	# output in this regard in unreadable.
@@ -130,16 +132,17 @@ code-checks: tools/golangci-lint
 	for f in tools/*.sh; do bash -n "$$f" || exit 1; done
 	./tools/check_pkg_test.sh
 	NEBRASKA_SKIP_TESTS=1 go test ./... >/dev/null
-	./tools/golangci-lint run --fix
+	./$(GOLANGCI_LINT) run --fix
 	go mod tidy
 
-.PHONY: tools/oapi-codegen
-tools/oapi-codegen:
-	env GOBIN=$(CURDIR)/tools/ go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.3.0
+OAPI_CODEGEN_VERSION := v2.3.0
+# go run pkg@version builds with the installed Go, not the go.mod one.
+# spec.gen.go changes with the Go version, so pin the go.mod version.
+OAPI_CODEGEN = GOTOOLCHAIN=go$(shell sed -n 's/^go //p' go.mod) go run github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@$(OAPI_CODEGEN_VERSION) --old-config-style --package codegen
 
 .PHONY: codegen
-codegen: tools/oapi-codegen
-	PATH=$$GOPATH/bin:$$PATH ./tools/oapi-codegen --old-config-style --generate=server --package codegen -o ./pkg/codegen/server.gen.go ./api/spec.yaml;
-	PATH=$$GOPATH/bin:$$PATH ./tools/oapi-codegen --old-config-style --generate=spec --package codegen -o ./pkg/codegen/spec.gen.go ./api/spec.yaml;
-	PATH=$$GOPATH/bin:$$PATH ./tools/oapi-codegen --old-config-style --generate=client --package codegen -o ./pkg/codegen/client.gen.go ./api/spec.yaml;
-	PATH=$$GOPATH/bin:$$PATH ./tools/oapi-codegen --old-config-style --generate=types --package codegen -o ./pkg/codegen/types.gen.go ./api/spec.yaml;
+codegen:
+	$(OAPI_CODEGEN) --generate=server -o ./pkg/codegen/server.gen.go ./api/spec.yaml
+	$(OAPI_CODEGEN) --generate=spec -o ./pkg/codegen/spec.gen.go ./api/spec.yaml
+	$(OAPI_CODEGEN) --generate=client -o ./pkg/codegen/client.gen.go ./api/spec.yaml
+	$(OAPI_CODEGEN) --generate=types -o ./pkg/codegen/types.gen.go ./api/spec.yaml

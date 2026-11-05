@@ -135,25 +135,23 @@ function RowComponent(props: {
   });
 }
 
-function createOnItemsRendered(onBottomScrolled?: () => void) {
-  return function onItemsRendered(args: {
-    visibleStartIndex: number;
-    visibleStopIndex: number;
-    overscanStartIndex: number;
-    overscanStopIndex: number;
-  }) {
-    const { overscanStopIndex, visibleStopIndex } = args;
-    if (onBottomScrolled && overscanStopIndex === visibleStopIndex) {
-      onBottomScrolled();
-    }
-  };
-}
-
 function LazyList(props: LazyListProps) {
   const { options, itemData, height, itemSize, width, onBottomScrolled } = props;
 
   const rowProps = { ...itemData, suggestions: options };
-  const onItemsRendered = createOnItemsRendered(onBottomScrolled);
+
+  const onBottomScrolledRef = React.useRef(onBottomScrolled);
+  React.useLayoutEffect(() => {
+    onBottomScrolledRef.current = onBottomScrolled;
+  });
+  const onRowsRendered = React.useCallback(
+    (visibleRows: { stopIndex: number }, allRows: { stopIndex: number }) => {
+      if (allRows.stopIndex === visibleRows.stopIndex) {
+        onBottomScrolledRef.current?.();
+      }
+    },
+    []
+  );
 
   return (
     <List
@@ -161,14 +159,7 @@ function LazyList(props: LazyListProps) {
       rowHeight={itemSize}
       rowComponent={RowComponent}
       rowProps={rowProps}
-      onRowsRendered={(visibleRows, allRows) => {
-        onItemsRendered({
-          visibleStartIndex: visibleRows.startIndex,
-          visibleStopIndex: visibleRows.stopIndex,
-          overscanStartIndex: allRows.startIndex,
-          overscanStopIndex: allRows.stopIndex,
-        });
-      }}
+      onRowsRendered={onRowsRendered}
       style={{ height, width }}
       role="listbox"
       aria-label="Autocomplete options"
