@@ -301,3 +301,19 @@ func TestFloorBlacklistConflict(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+// TestFloorPreReleaseNotSkipped checks that a release floor is still returned when the
+// instance reports a pre-release of the same version.
+func TestFloorPreReleaseNotSkipped(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	setup := setupFloors(t, a, "prerelease", []string{"2000.0.0"}, "3000.0.0")
+
+	ch, err := a.GetChannel(setup.Channel.ID)
+	require.NoError(t, err)
+	floors, err := a.GetRequiredChannelFloors(ch, "2000.0.0-rc1")
+	require.NoError(t, err)
+	require.Len(t, floors, 1)
+	assert.Equal(t, "2000.0.0", floors[0].Version)
+}
