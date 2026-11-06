@@ -13,6 +13,7 @@ import (
 func (h *Handler) Omaha(ctx echo.Context) error {
 	responseBuffer := new(bytes.Buffer)
 	ctx.Response().Writer.Header().Set("Content-Type", "text/xml")
+	ctx.Response().Writer.Header().Set("Cache-Control", "no-store")
 	ctx.Request().Body = http.MaxBytesReader(ctx.Response().Writer, ctx.Request().Body, UpdateMaxRequestSize)
 	if err := h.omahaHandler.Handle(ctx.Request().Body, responseBuffer, getRequestIP(ctx.Request())); err != nil {
 		l.Error().Err(err).Msg("process omaha request")
