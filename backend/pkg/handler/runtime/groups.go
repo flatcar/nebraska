@@ -141,9 +141,6 @@ func (h *Handler) GetGroupVersionBreakdown(ctx echo.Context, _ string, groupID s
 	versionBreakdown, err := h.runtime.GetGroupVersionBreakdown(groupID)
 
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return ctx.NoContent(http.StatusNotFound)
-		}
 		l.Error().Err(err).Str("groupID", groupID).Msg("getVersionBreakdown - getting version breakdown")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
@@ -159,9 +156,6 @@ func (h *Handler) GetGroupOEMBreakdown(ctx echo.Context, _ string, groupID strin
 	oemBreakdown, err := h.runtime.GetGroupOEMBreakdown(groupID)
 
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return ctx.NoContent(http.StatusNotFound)
-		}
 		l.Error().Err(err).Str("groupID", groupID).Msg("getOEMBreakdown - getting OEM breakdown")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}

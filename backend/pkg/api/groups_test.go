@@ -268,7 +268,7 @@ func TestVersionBreakDownEmpty(t *testing.T) {
 	assert.Len(t, versionBreakdown, 0)
 }
 
-// setupOEMBreakdownGroup creates the app, channel and group the breakdown
+// setupOEMBreakdownGroup creates the app and group the breakdown
 // tests read from.
 func setupOEMBreakdownGroup(t *testing.T, as *admin.Service) (*types.Application, *types.Group) {
 	t.Helper()
@@ -277,11 +277,15 @@ func setupOEMBreakdownGroup(t *testing.T, as *admin.Service) (*types.Application
 	require.NoError(t, err)
 	tApp, err := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
 	require.NoError(t, err)
-	tPkg, err := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
-	require.NoError(t, err)
-	tChannel, err := as.AddChannel(&types.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
-	require.NoError(t, err)
-	tGroup, err := as.AddGroup(&types.Group{Name: "test_group1", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: true, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	tGroup, err := as.AddGroup(&types.Group{
+		Name:                      "test_group1",
+		ApplicationID:             tApp.ID,
+		PolicyUpdatesEnabled:      true,
+		PolicySafeMode:            true,
+		PolicyPeriodInterval:      "15 minutes",
+		PolicyMaxUpdatesPerPeriod: 2,
+		PolicyUpdateTimeout:       "60 minutes",
+	})
 	require.NoError(t, err)
 
 	return tApp, tGroup
