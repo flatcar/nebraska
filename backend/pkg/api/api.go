@@ -167,9 +167,6 @@ func NewWithMigrations(options ...func(*API) error) (*API, error) {
 		return nil, err
 	}
 
-	api.UpdateCachedGroups()
-	api.ClearCachedAppIDs()
-
 	return api, nil
 }
 
@@ -270,7 +267,6 @@ func OptionInitDB(api *API) error {
 	if err != nil {
 		return err
 	}
-	api.UpdateCachedGroups()
 
 	return nil
 }
@@ -309,8 +305,6 @@ func NewForTest(options ...func(*API) error) (*API, error) {
 	if err != nil {
 		return nil, err
 	}
-	a.UpdateCachedGroups()
-	a.ClearCachedAppIDs()
 
 	return a, nil
 }
