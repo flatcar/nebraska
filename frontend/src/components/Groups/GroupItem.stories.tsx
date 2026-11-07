@@ -90,3 +90,25 @@ export const Loading = {
     },
   },
 };
+
+// An edge node shows what applies on it, and does not offer to change the group.
+export const EdgeNodeWithOverrides = {
+  render: Template,
+
+  args: {
+    ...Group.args,
+    instanceMode: 'edge',
+    group: {
+      ...Group.args.group,
+      local_overrides: {
+        policy_updates_enabled: false,
+        policy_safe_mode: null,
+        policy_office_hours: null,
+        policy_timezone: null,
+        policy_period_interval: '2 hours',
+        policy_max_updates_per_period: 5,
+        policy_update_timeout: null,
+      },
+    },
+  },
+};

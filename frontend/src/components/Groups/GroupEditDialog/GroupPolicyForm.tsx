@@ -22,14 +22,16 @@ import TimezonePicker from '../../common/TimezonePicker';
 export interface GroupPolicyFormProps {
   values: { [key: string]: string };
   setFieldValue: (formField: string, value: any) => any;
+  hint?: string;
 }
 
 export default function GroupPolicyForm(props: GroupPolicyFormProps) {
   const { t } = useTranslation();
-  const { values, setFieldValue } = props;
+  const { values, setFieldValue, hint } = props;
 
   return (
     <div style={{ padding: '1rem' }}>
+      {hint && <Typography color="textSecondary">{hint}</Typography>}
       <Grid container justifyContent="space-between" spacing={4}>
         <Grid size={12}>
           <Box mt={1}>

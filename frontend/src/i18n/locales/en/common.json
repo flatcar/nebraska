@@ -18,5 +18,6 @@
   "authentication_error": "Authentication Error",
   "authentication_failed": "Authentication failed",
   "auth_error_help": "If this problem persists, please contact your administrator.",
-  "go_back": "Go back"
+  "go_back": "Go back",
+  "admin_writes_unavailable": "Only available on a control or single node"
 }

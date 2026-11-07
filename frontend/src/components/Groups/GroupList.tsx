@@ -6,6 +6,7 @@ import _ from 'underscore';
 
 import { Channel, Group } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
+import { adminWriteRefusal, useInstanceMode } from '../../utils/instanceMode';
 import Empty from '../common/EmptyContent';
 import ListHeader from '../common/ListHeader';
 import Loader from '../common/Loader/Loader';
@@ -19,6 +20,7 @@ export interface GroupListProps {
 
 function GroupList({ appID }: GroupListProps) {
   const { t } = useTranslation();
+  const instanceMode = useInstanceMode();
   const [application, setApplication] = React.useState(
     applicationsStore().getCachedApplication(appID)
   );
@@ -97,6 +99,7 @@ function GroupList({ appID }: GroupListProps) {
               channels: channels,
               appID: appID,
             }}
+            disabledReason={adminWriteRefusal(t, instanceMode)}
           />,
         ]}
       />

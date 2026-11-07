@@ -21,9 +21,11 @@ import '../../i18n/config.ts';
 
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import { render, screen } from '@testing-library/react';
+import { Provider } from 'react-redux';
 
 import List from '../../components/Packages/List.tsx';
 import themes from '../../lib/themes';
+import { makeStore } from '../../TestHelpers/store';
 
 const mockGetCachedApplication = vi.fn();
 const mockGetApplication = vi.fn();
@@ -53,11 +55,13 @@ describe('List Component', () => {
     mockStore.getCachedApplication.mockReturnValueOnce(null);
 
     render(
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={themes['light']}>
-          <List {...minProps} />
-        </ThemeProvider>
-      </StyledEngineProvider>
+      <Provider store={makeStore()}>
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={themes['light']}>
+            <List {...minProps} />
+          </ThemeProvider>
+        </StyledEngineProvider>
+      </Provider>
     );
     expect(screen.getByText('Packages')).toBeTruthy();
   });

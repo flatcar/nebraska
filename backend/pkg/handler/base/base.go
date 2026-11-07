@@ -28,8 +28,15 @@ type Handler struct {
 }
 
 func New(conf *config.Config, auth auth.Authenticator) (*Handler, error) {
+	// A node that does not set a mode is a single one.
+	mode := conf.InstanceMode
+	if mode.IsSingle() {
+		mode = config.InstanceModeSingle
+	}
+
 	clientConfig := &codegen.Config{
 		AuthMode:        conf.AuthMode,
+		InstanceMode:    codegen.ConfigInstanceMode(mode),
 		NebraskaVersion: version.Version,
 		Title:           conf.AppTitle,
 		HeaderStyle:     conf.AppHeaderStyle,
