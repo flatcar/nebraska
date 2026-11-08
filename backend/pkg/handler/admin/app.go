@@ -44,9 +44,10 @@ func (h *Handler) CreateApp(ctx echo.Context, params codegen.CreateAppParams) er
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	app, err = h.admin.GetApp(app.ID)
+	appID := app.ID
+	app, err = h.admin.GetApp(appID)
 	if err != nil {
-		l.Error().Err(err).Str("appID", app.ID).Msg("addApp - getting added app")
+		l.Error().Err(err).Str("appID", appID).Msg("addApp - getting added app")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 

@@ -33,9 +33,10 @@ func (h *Handler) CreateChannel(ctx echo.Context, appIDorProductID string) error
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	channel, err = h.admin.GetChannel(channel.ID)
+	channelID := channel.ID
+	channel, err = h.admin.GetChannel(channelID)
 	if err != nil {
-		l.Error().Err(err).Str("channelID", channel.ID).Msg("addChannel")
+		l.Error().Err(err).Str("channelID", channelID).Msg("addChannel")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
@@ -79,7 +80,7 @@ func (h *Handler) UpdateChannel(ctx echo.Context, appIDorProductID string, chann
 
 	channel, err = h.admin.GetChannel(channelID)
 	if err != nil {
-		l.Error().Err(err).Str("channelID", channel.ID).Msg("updateChannel - getting channel updated")
+		l.Error().Err(err).Str("channelID", channelID).Msg("updateChannel - getting channel updated")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
@@ -93,7 +94,7 @@ func (h *Handler) DeleteChannel(ctx echo.Context, _ string, channelID string) er
 
 	channel, err := h.admin.GetChannel(channelID)
 	if err != nil {
-		l.Error().Err(err).Str("channelID", channel.ID).Msg("updateChannel - getting channel to be deleted")
+		l.Error().Err(err).Str("channelID", channelID).Msg("updateChannel - getting channel to be deleted")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
