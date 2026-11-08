@@ -52,6 +52,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fixed `nebraska_application_instances_per_channel` counting instances that stopped checking in, and dropping instances whose group has no channel assigned. ([#1653](https://github.com/flatcar/nebraska/pull/1653))
 - Fixed instance statistics queries returning empty results on non-UTC database sessions by making timestamp literals timezone independent. ([#1682](https://github.com/flatcar/nebraska/pull/1682))
 - Fixed proxies treating Omaha responses as cacheable; they now carry `Cache-Control: no-store`.
+- Fixed nil-pointer dereference panics when logging `GetChannel`, `GetApp`, or `GetPackage` errors in admin HTTP handlers (such as deleting a nonexistent channel). ([#1697](https://github.com/flatcar/nebraska/issues/1697))
 
 ## [4.0.3] - 26/10/2026
 

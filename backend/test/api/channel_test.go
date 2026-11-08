@@ -5,16 +5,20 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"strings"
 	"testing"
 
 	"github.com/jinzhu/copier"
+	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
 	"github.com/flatcar/nebraska/backend/pkg/codegen"
+	"github.com/flatcar/nebraska/backend/pkg/config"
+	adminhandler "github.com/flatcar/nebraska/backend/pkg/handler/admin"
 )
 
 func TestListChannels(t *testing.T) {
@@ -285,5 +289,29 @@ func TestDeleteChannel(t *testing.T) {
 		channel, err := db.GetChannel(channelDB.ID)
 		assert.Error(t, err)
 		assert.Nil(t, channel)
+	})
+
+	t.Run("missing_channel", func(t *testing.T) {
+		db := newDBForTest(t)
+		defer db.Close()
+
+		app := getRandomApp(t, db)
+		missingChannelID := "00000000-0000-0000-0000-000000000000"
+
+		h := adminhandler.New(adminSvc(db), runtimeSvc(db), &config.Config{})
+		e := echo.New()
+		req := httptest.NewRequest(http.MethodDelete, fmt.Sprintf("/api/apps/%s/channels/%s", app.ID, missingChannelID), nil)
+		rec := httptest.NewRecorder()
+		ctx := e.NewContext(req, rec)
+
+		var err error
+		require.NotPanics(t, func() {
+			err = h.DeleteChannel(ctx, app.ID, missingChannelID)
+		})
+		require.NoError(t, err)
+		assert.Equal(t, http.StatusInternalServerError, rec.Code)
+
+		url := fmt.Sprintf("%s/api/apps/%s/channels/%s", os.Getenv("NEBRASKA_TEST_SERVER_URL"), app.ID, missingChannelID)
+		httpDo(t, url, http.MethodDelete, nil, http.StatusInternalServerError, "", nil)
 	})
 }
