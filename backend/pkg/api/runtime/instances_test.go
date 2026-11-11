@@ -35,10 +35,14 @@ func TestGetInstanceStatusHistory(t *testing.T) {
 	err = rs.grantUpdate(tInstance, "1.0.1")
 	assert.NoError(t, err)
 
-	err = rs.updateInstanceStatus(tInstance.ID, tApp.ID, types.InstanceStatusInstalled)
+	instance, err = a.GetInstance(tInstance.ID, tApp.ID)
+	assert.NoError(t, err)
+	err = rs.updateInstanceObjStatus(instance, types.InstanceStatusInstalled)
 	assert.NoError(t, err)
 
-	err = rs.updateInstanceStatus(tInstance.ID, tApp.ID, types.InstanceStatusComplete)
+	instance, err = a.GetInstance(tInstance.ID, tApp.ID)
+	assert.NoError(t, err)
+	err = rs.updateInstanceObjStatus(instance, types.InstanceStatusComplete)
 	assert.NoError(t, err)
 
 	err = rs.grantUpdate(tInstance, "1.0.2")

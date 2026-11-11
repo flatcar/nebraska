@@ -40,6 +40,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Channel edit dialog filters out blacklisted packages from selection
   - Floor package selection prevents choosing blacklisted packages with clear visual feedback
 - Improved reverse domain ID validation regex to eliminate inefficient nested quantifiers flagged by CodeQL, and extracted it into a shared constant with tests. ([#1222](https://github.com/flatcar/nebraska/pull/1222))
+- Update checks do much less database work, especially during rollouts in large groups. An update timeout given in months now counts calendar months.
 ### Removed
 ### Bugfixes
 
@@ -52,6 +53,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fixed `nebraska_application_instances_per_channel` counting instances that stopped checking in, and dropping instances whose group has no channel assigned. ([#1653](https://github.com/flatcar/nebraska/pull/1653))
 - Fixed instance statistics queries returning empty results on non-UTC database sessions by making timestamp literals timezone independent. ([#1682](https://github.com/flatcar/nebraska/pull/1682))
 - Fixed proxies treating Omaha responses as cacheable; they now carry `Cache-Control: no-store`.
+- Fixed update checks sent without a ping getting no update when the instance had not checked in for over a day.
 
 ## [4.0.3] - 26/10/2026
 

@@ -17,7 +17,7 @@ const (
 // provided. The instance details and the application it's running will be
 // registered in Nebraska (or updated if it's already registered).
 func (s *Service) GetUpdatePackage(inst types.Instance, instApp types.InstanceApplication) (*types.Package, error) {
-	instance, err := s.RegisterInstance(inst, instApp)
+	instance, group, err := s.registerInstance(inst, instApp)
 	if err != nil {
 		l.Error().Err(err).Msg("GetUpdatePackage - could not register instance")
 		return nil, types.ErrRegisterInstanceFailed
@@ -32,11 +32,6 @@ func (s *Service) GetUpdatePackage(inst types.Instance, instApp types.InstanceAp
 		case types.InstanceStatusDownloading, types.InstanceStatusDownloaded, types.InstanceStatusInstalled:
 			return nil, types.ErrUpdateInProgressOnInstance
 		}
-	}
-
-	group, err := s.GetGroup(groupID)
-	if err != nil {
-		return nil, err
 	}
 
 	if group.Channel == nil || group.Channel.Package == nil {
@@ -149,7 +144,7 @@ func (s *Service) GetUpdatePackage(inst types.Instance, instApp types.InstanceAp
 
 // GetUpdatePackagesForSyncer returns all packages (floors + target) for a syncer client
 func (s *Service) GetUpdatePackagesForSyncer(inst types.Instance, instApp types.InstanceApplication) ([]*types.Package, error) {
-	instance, err := s.RegisterInstance(inst, instApp)
+	instance, group, err := s.registerInstance(inst, instApp)
 	if err != nil {
 		l.Error().Err(err).Msg("GetUpdatePackagesForSyncer - could not register instance")
 		return nil, types.ErrRegisterInstanceFailed
@@ -164,11 +159,6 @@ func (s *Service) GetUpdatePackagesForSyncer(inst types.Instance, instApp types.
 		case types.InstanceStatusDownloading, types.InstanceStatusDownloaded, types.InstanceStatusInstalled:
 			return nil, types.ErrUpdateInProgressOnInstance
 		}
-	}
-
-	group, err := s.GetGroup(groupID)
-	if err != nil {
-		return nil, err
 	}
 
 	if group.Channel == nil || group.Channel.Package == nil {
@@ -239,8 +229,6 @@ func (s *Service) GetUpdatePackagesForSyncer(inst types.Instance, instApp types.
 // requesting instance based on the group rollout policy and the current status
 // of the updates taking place in the group.
 func (s *Service) enforceRolloutPolicy(instance *types.Instance, group *types.Group) error {
-	appID := instance.Application.ApplicationID
-
 	if !group.PolicyUpdatesEnabled {
 		return types.ErrUpdatesDisabled
 	}
@@ -256,9 +244,9 @@ func (s *Service) enforceRolloutPolicy(instance *types.Instance, group *types.Gr
 		return nil
 	}
 
-	updatesStats, err := s.GetGroupUpdatesStats(group)
+	updatesStats, err := s.GetGroupRolloutPolicyStats(group, effectiveMaxUpdates, group.PolicySafeMode)
 	if err != nil {
-		l.Error().Err(err).Msg("GetUpdatePackage - getGroupUpdatesStats error (propagates as ErrGetUpdatesStatsFailed):")
+		l.Error().Err(err).Msg("GetUpdatePackage - GetGroupRolloutPolicyStats error (propagates as ErrGetUpdatesStatsFailed):")
 		return types.ErrGetUpdatesStatsFailed
 	}
 
@@ -267,14 +255,14 @@ func (s *Service) enforceRolloutPolicy(instance *types.Instance, group *types.Gr
 	}
 
 	if updatesStats.UpdatesGrantedInLastPeriod >= effectiveMaxUpdates {
-		if err := s.updateInstanceStatus(instance.ID, appID, types.InstanceStatusOnHold); err != nil {
+		if err := s.updateInstanceObjStatus(instance, types.InstanceStatusOnHold); err != nil {
 			l.Error().Err(err).Msg("enforceRolloutPolicy - could not update instance status")
 		}
 		return types.ErrMaxUpdatesPerPeriodLimitReached
 	}
 
 	if updatesStats.UpdatesInProgress >= effectiveMaxUpdates {
-		if err := s.updateInstanceStatus(instance.ID, appID, types.InstanceStatusOnHold); err != nil {
+		if err := s.updateInstanceObjStatus(instance, types.InstanceStatusOnHold); err != nil {
 			l.Error().Err(err).Msg("enforceRolloutPolicy - could not update instance status")
 		}
 		return types.ErrMaxConcurrentUpdatesLimitReached
@@ -286,7 +274,7 @@ func (s *Service) enforceRolloutPolicy(instance *types.Instance, group *types.Gr
 				l.Error().Err(err).Msg("enforceRolloutPolicy - could not disable updates")
 			}
 		}
-		if err := s.updateInstanceStatus(instance.ID, appID, types.InstanceStatusOnHold); err != nil {
+		if err := s.updateInstanceObjStatus(instance, types.InstanceStatusOnHold); err != nil {
 			l.Error().Err(err).Msg("enforceRolloutPolicy - could not update instance status")
 		}
 		return types.ErrMaxTimedOutUpdatesLimitReached
