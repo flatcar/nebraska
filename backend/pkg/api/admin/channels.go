@@ -1,19 +1,28 @@
 package admin
 
 import (
+	"database/sql"
+
 	"github.com/doug-martin/goqu/v9"
+	"github.com/jmoiron/sqlx"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
-// AddChannel registers the provided channel.
-func (s *Service) AddChannel(channel *types.Channel) (*types.Channel, error) {
+// addChannel validates and inserts the channel using the transaction
+// provided. The caller owns the transaction and is responsible for
+// committing it.
+func (s *Service) addChannel(channel *types.Channel, tx *sqlx.Tx) error {
 	if !channel.Arch.IsValid() {
-		return nil, types.ErrInvalidArch
+		return types.ErrInvalidArch
 	}
 	if channel.PackageID.String != "" {
+		// The package is looked up outside the transaction, which is fine:
+		// packages are never created by the same transaction that creates a
+		// channel pointing at them. Cloning an application clears PackageID,
+		// so this doesn't run on that path at all.
 		if _, err := s.validatePackage(channel.PackageID.String, channel.ID, channel.ApplicationID, channel.Arch); err != nil {
-			return nil, err
+			return err
 		}
 	}
 	query, _, err := goqu.Insert("channel").
@@ -27,10 +36,28 @@ func (s *Service) AddChannel(channel *types.Channel) (*types.Channel, error) {
 		Returning(goqu.T("channel").All()).
 		ToSQL()
 	if err != nil {
+		return err
+	}
+	return tx.QueryRowx(query).StructScan(channel)
+}
+
+// AddChannel registers the provided channel.
+func (s *Service) AddChannel(channel *types.Channel) (*types.Channel, error) {
+	tx, err := s.db.Beginx()
+	if err != nil {
 		return nil, err
 	}
-	err = s.db.QueryRowx(query).StructScan(channel)
-	if err != nil {
+	defer func() {
+		if err := tx.Rollback(); err != nil && err != sql.ErrTxDone {
+			l.Error().Err(err).Msg("AddChannel - could not roll back")
+		}
+	}()
+
+	if err := s.addChannel(channel, tx); err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
 	return channel, nil
