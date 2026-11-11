@@ -1,9 +1,11 @@
 import { StyledEngineProvider, ThemeProvider } from '@mui/material/styles';
 import { act, fireEvent, render } from '@testing-library/react';
+import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router';
 import { describe, expect, it } from 'vitest';
 
 import ModalButton from '../../components/common/ModalButton';
+import { makeStore } from '../../TestHelpers/store';
 import { theme } from '../../TestHelpers/theme';
 
 describe('Modal Button', () => {
@@ -22,15 +24,17 @@ describe('Modal Button', () => {
   });
   it('should render AddGroupModal on Add Icon click', async () => {
     const { getByTestId } = render(
-      <StyledEngineProvider injectFirst>
-        (
-        <ThemeProvider theme={theme}>
-          <MemoryRouter initialEntries={['/app/123/groups/321']}>
-            <ModalButton data={{}} modalToOpen="AddGroupModal" />
-          </MemoryRouter>
-        </ThemeProvider>
-        )
-      </StyledEngineProvider>
+      <Provider store={makeStore()}>
+        <StyledEngineProvider injectFirst>
+          (
+          <ThemeProvider theme={theme}>
+            <MemoryRouter initialEntries={['/app/123/groups/321']}>
+              <ModalButton data={{}} modalToOpen="AddGroupModal" />
+            </MemoryRouter>
+          </ThemeProvider>
+          )
+        </StyledEngineProvider>
+      </Provider>
     );
     await act(async () => fireEvent.click(getByTestId('modal-button')));
     expect(getByTestId('group-edit-form')).toBeTruthy();

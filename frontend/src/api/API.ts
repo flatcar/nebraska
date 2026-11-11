@@ -10,6 +10,7 @@ import {
   Channel,
   FlatcarAction,
   Group,
+  GroupLocalOverrides,
   Instance,
   Instances,
   InstanceStatusHistory,
@@ -81,6 +82,18 @@ export default class API {
       'PUT',
       `${BASE_URL}/apps/${groupData.application_id}/groups/${groupData.id}`,
       JSON.stringify(groupData)
+    );
+  }
+
+  static updateGroupLocalOverrides(
+    applicationID: string,
+    groupID: string,
+    overrides: Partial<GroupLocalOverrides>
+  ): Promise<Group> {
+    return API.doRequest(
+      'PATCH',
+      `${BASE_URL}/apps/${applicationID}/groups/${groupID}/local_overrides`,
+      JSON.stringify(overrides)
     );
   }
 

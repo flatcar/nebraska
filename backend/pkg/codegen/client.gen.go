@@ -165,14 +165,16 @@ type ClientInterface interface {
 	// GetGroupInstancesCount request
 	GetGroupInstancesCount(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupInstancesCountParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// UpdateGroupLocalOverridesWithBody request with any body
+	UpdateGroupLocalOverridesWithBody(ctx context.Context, appIDorProductID string, groupID openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateGroupLocalOverrides(ctx context.Context, appIDorProductID string, groupID openapi_types.UUID, body UpdateGroupLocalOverridesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetGroupOEMBreakdown request
 	GetGroupOEMBreakdown(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetGroupStatusTimeline request
 	GetGroupStatusTimeline(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupStatusTimelineParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// ClearGroupUpdatesOverride request
-	ClearGroupUpdatesOverride(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetGroupVersionBreakdown request
 	GetGroupVersionBreakdown(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -561,6 +563,30 @@ func (c *Client) GetGroupInstancesCount(ctx context.Context, appIDorProductID st
 	return c.Client.Do(req)
 }
 
+func (c *Client) UpdateGroupLocalOverridesWithBody(ctx context.Context, appIDorProductID string, groupID openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateGroupLocalOverridesRequestWithBody(c.Server, appIDorProductID, groupID, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateGroupLocalOverrides(ctx context.Context, appIDorProductID string, groupID openapi_types.UUID, body UpdateGroupLocalOverridesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateGroupLocalOverridesRequest(c.Server, appIDorProductID, groupID, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) GetGroupOEMBreakdown(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetGroupOEMBreakdownRequest(c.Server, appIDorProductID, groupID)
 	if err != nil {
@@ -575,18 +601,6 @@ func (c *Client) GetGroupOEMBreakdown(ctx context.Context, appIDorProductID stri
 
 func (c *Client) GetGroupStatusTimeline(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupStatusTimelineParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetGroupStatusTimelineRequest(c.Server, appIDorProductID, groupID, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) ClearGroupUpdatesOverride(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewClearGroupUpdatesOverrideRequest(c.Server, appIDorProductID, groupID)
 	if err != nil {
 		return nil, err
 	}
@@ -2217,6 +2231,60 @@ func NewGetGroupInstancesCountRequest(server string, appIDorProductID string, gr
 	return req, nil
 }
 
+// NewUpdateGroupLocalOverridesRequest calls the generic UpdateGroupLocalOverrides builder with application/json body
+func NewUpdateGroupLocalOverridesRequest(server string, appIDorProductID string, groupID openapi_types.UUID, body UpdateGroupLocalOverridesJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateGroupLocalOverridesRequestWithBody(server, appIDorProductID, groupID, "application/json", bodyReader)
+}
+
+// NewUpdateGroupLocalOverridesRequestWithBody generates requests for UpdateGroupLocalOverrides with any type of body
+func NewUpdateGroupLocalOverridesRequestWithBody(server string, appIDorProductID string, groupID openapi_types.UUID, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "groupID", runtime.ParamLocationPath, groupID)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/api/apps/%s/groups/%s/local_overrides", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PATCH", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
 // NewGetGroupOEMBreakdownRequest generates requests for GetGroupOEMBreakdown
 func NewGetGroupOEMBreakdownRequest(server string, appIDorProductID string, groupID string) (*http.Request, error) {
 	var err error
@@ -2310,47 +2378,6 @@ func NewGetGroupStatusTimelineRequest(server string, appIDorProductID string, gr
 	}
 
 	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewClearGroupUpdatesOverrideRequest generates requests for ClearGroupUpdatesOverride
-func NewClearGroupUpdatesOverrideRequest(server string, appIDorProductID string, groupID string) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "appIDorProductID", runtime.ParamLocationPath, appIDorProductID)
-	if err != nil {
-		return nil, err
-	}
-
-	var pathParam1 string
-
-	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "groupID", runtime.ParamLocationPath, groupID)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/apps/%s/groups/%s/updates_override", pathParam0, pathParam1)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -3288,14 +3315,16 @@ type ClientWithResponsesInterface interface {
 	// GetGroupInstancesCountWithResponse request
 	GetGroupInstancesCountWithResponse(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupInstancesCountParams, reqEditors ...RequestEditorFn) (*GetGroupInstancesCountResponse, error)
 
+	// UpdateGroupLocalOverridesWithBodyWithResponse request with any body
+	UpdateGroupLocalOverridesWithBodyWithResponse(ctx context.Context, appIDorProductID string, groupID openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateGroupLocalOverridesResponse, error)
+
+	UpdateGroupLocalOverridesWithResponse(ctx context.Context, appIDorProductID string, groupID openapi_types.UUID, body UpdateGroupLocalOverridesJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateGroupLocalOverridesResponse, error)
+
 	// GetGroupOEMBreakdownWithResponse request
 	GetGroupOEMBreakdownWithResponse(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*GetGroupOEMBreakdownResponse, error)
 
 	// GetGroupStatusTimelineWithResponse request
 	GetGroupStatusTimelineWithResponse(ctx context.Context, appIDorProductID string, groupID string, params *GetGroupStatusTimelineParams, reqEditors ...RequestEditorFn) (*GetGroupStatusTimelineResponse, error)
-
-	// ClearGroupUpdatesOverrideWithResponse request
-	ClearGroupUpdatesOverrideWithResponse(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*ClearGroupUpdatesOverrideResponse, error)
 
 	// GetGroupVersionBreakdownWithResponse request
 	GetGroupVersionBreakdownWithResponse(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*GetGroupVersionBreakdownResponse, error)
@@ -3828,6 +3857,29 @@ func (r GetGroupInstancesCountResponse) StatusCode() int {
 	return 0
 }
 
+type UpdateGroupLocalOverridesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Group
+	JSON501      *ErrorResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateGroupLocalOverridesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateGroupLocalOverridesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetGroupOEMBreakdownResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -3866,28 +3918,6 @@ func (r GetGroupStatusTimelineResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetGroupStatusTimelineResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type ClearGroupUpdatesOverrideResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON501      *ErrorResponse
-}
-
-// Status returns HTTPResponse.Status
-func (r ClearGroupUpdatesOverrideResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r ClearGroupUpdatesOverrideResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -4538,6 +4568,23 @@ func (c *ClientWithResponses) GetGroupInstancesCountWithResponse(ctx context.Con
 	return ParseGetGroupInstancesCountResponse(rsp)
 }
 
+// UpdateGroupLocalOverridesWithBodyWithResponse request with arbitrary body returning *UpdateGroupLocalOverridesResponse
+func (c *ClientWithResponses) UpdateGroupLocalOverridesWithBodyWithResponse(ctx context.Context, appIDorProductID string, groupID openapi_types.UUID, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateGroupLocalOverridesResponse, error) {
+	rsp, err := c.UpdateGroupLocalOverridesWithBody(ctx, appIDorProductID, groupID, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateGroupLocalOverridesResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateGroupLocalOverridesWithResponse(ctx context.Context, appIDorProductID string, groupID openapi_types.UUID, body UpdateGroupLocalOverridesJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateGroupLocalOverridesResponse, error) {
+	rsp, err := c.UpdateGroupLocalOverrides(ctx, appIDorProductID, groupID, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateGroupLocalOverridesResponse(rsp)
+}
+
 // GetGroupOEMBreakdownWithResponse request returning *GetGroupOEMBreakdownResponse
 func (c *ClientWithResponses) GetGroupOEMBreakdownWithResponse(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*GetGroupOEMBreakdownResponse, error) {
 	rsp, err := c.GetGroupOEMBreakdown(ctx, appIDorProductID, groupID, reqEditors...)
@@ -4554,15 +4601,6 @@ func (c *ClientWithResponses) GetGroupStatusTimelineWithResponse(ctx context.Con
 		return nil, err
 	}
 	return ParseGetGroupStatusTimelineResponse(rsp)
-}
-
-// ClearGroupUpdatesOverrideWithResponse request returning *ClearGroupUpdatesOverrideResponse
-func (c *ClientWithResponses) ClearGroupUpdatesOverrideWithResponse(ctx context.Context, appIDorProductID string, groupID string, reqEditors ...RequestEditorFn) (*ClearGroupUpdatesOverrideResponse, error) {
-	rsp, err := c.ClearGroupUpdatesOverride(ctx, appIDorProductID, groupID, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseClearGroupUpdatesOverrideResponse(rsp)
 }
 
 // GetGroupVersionBreakdownWithResponse request returning *GetGroupVersionBreakdownResponse
@@ -5347,6 +5385,39 @@ func ParseGetGroupInstancesCountResponse(rsp *http.Response) (*GetGroupInstances
 	return response, nil
 }
 
+// ParseUpdateGroupLocalOverridesResponse parses an HTTP response from a UpdateGroupLocalOverridesWithResponse call
+func ParseUpdateGroupLocalOverridesResponse(rsp *http.Response) (*UpdateGroupLocalOverridesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateGroupLocalOverridesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Group
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 501:
+		var dest ErrorResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON501 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetGroupOEMBreakdownResponse parses an HTTP response from a GetGroupOEMBreakdownWithResponse call
 func ParseGetGroupOEMBreakdownResponse(rsp *http.Response) (*GetGroupOEMBreakdownResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -5393,32 +5464,6 @@ func ParseGetGroupStatusTimelineResponse(rsp *http.Response) (*GetGroupStatusTim
 			return nil, err
 		}
 		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseClearGroupUpdatesOverrideResponse parses an HTTP response from a ClearGroupUpdatesOverrideWithResponse call
-func ParseClearGroupUpdatesOverrideResponse(rsp *http.Response) (*ClearGroupUpdatesOverrideResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &ClearGroupUpdatesOverrideResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 501:
-		var dest ErrorResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON501 = &dest
 
 	}
 

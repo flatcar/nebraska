@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Package } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
+import { adminWriteRefusal, useInstanceMode } from '../../utils/instanceMode';
 import Empty from '../common/EmptyContent';
 import ListHeader from '../common/ListHeader';
 import Loader from '../common/Loader';
@@ -24,6 +25,8 @@ function List(props: ListProps) {
   );
   const [packageToUpdate, setPackageToUpdate] = React.useState<Package | null>(null);
   const { t } = useTranslation();
+  const instanceMode = useInstanceMode();
+  const refusal = adminWriteRefusal(t, instanceMode);
   const packageQueryParams = applicationsStore().getPackageQueryParams();
 
   function onChange() {
@@ -89,6 +92,7 @@ function List(props: ListProps) {
                     channels: application.channels || [],
                     appID: props.appID,
                   }}
+                  disabledReason={refusal}
                 />,
               ]
             : []
@@ -108,6 +112,7 @@ function List(props: ListProps) {
                       packageItem={packageItem}
                       channels={application.channels}
                       handleUpdatePackage={openEditDialog}
+                      adminWriteRefusal={refusal}
                     />
                   ))}
                 </MuiList>

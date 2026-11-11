@@ -5,12 +5,21 @@ package codegen
 
 import (
 	"time"
+
+	"github.com/flatcar/nebraska/backend/pkg/api/types"
 )
 
 const (
 	GithubCookieAuthScopes = "githubCookieAuth.Scopes"
 	OidcBearerAuthScopes   = "oidcBearerAuth.Scopes"
 	OidcCookieAuthScopes   = "oidcCookieAuth.Scopes"
+)
+
+// Defines values for ConfigInstanceMode.
+const (
+	InstanceModeControl ConfigInstanceMode = "control"
+	InstanceModeEdge    ConfigInstanceMode = "edge"
+	InstanceModeSingle  ConfigInstanceMode = "single"
 )
 
 // Activity defines model for activity.
@@ -96,19 +105,25 @@ type ChannelPage struct {
 
 // Config defines model for config.
 type Config struct {
-	AccessManagementUrl string  `json:"access_management_url"`
-	AuthMode            string  `json:"auth_mode"`
-	HeaderStyle         string  `json:"header_style"`
-	LoginUrl            string  `json:"login_url"`
-	Logo                string  `json:"logo"`
-	NebraskaVersion     string  `json:"nebraska_version"`
-	OidcAudience        *string `json:"oidc_audience"`
-	OidcClientId        *string `json:"oidc_client_id"`
-	OidcIssuerUrl       *string `json:"oidc_issuer_url"`
-	OidcLogoutUrl       *string `json:"oidc_logout_url"`
-	OidcScopes          *string `json:"oidc_scopes"`
-	Title               string  `json:"title"`
+	AccessManagementUrl string `json:"access_management_url"`
+	AuthMode            string `json:"auth_mode"`
+	HeaderStyle         string `json:"header_style"`
+
+	// InstanceMode The role of this node.
+	InstanceMode    ConfigInstanceMode `json:"instance_mode"`
+	LoginUrl        string             `json:"login_url"`
+	Logo            string             `json:"logo"`
+	NebraskaVersion string             `json:"nebraska_version"`
+	OidcAudience    *string            `json:"oidc_audience"`
+	OidcClientId    *string            `json:"oidc_client_id"`
+	OidcIssuerUrl   *string            `json:"oidc_issuer_url"`
+	OidcLogoutUrl   *string            `json:"oidc_logout_url"`
+	OidcScopes      *string            `json:"oidc_scopes"`
+	Title           string             `json:"title"`
 }
+
+// ConfigInstanceMode The role of this node.
+type ConfigInstanceMode string
 
 // ErrorResponse defines model for errorResponse.
 type ErrorResponse struct {
@@ -210,6 +225,9 @@ type GroupInstanceStats struct {
 	Undefined     int `json:"undefined"`
 	UpdateGranted int `json:"update_granted"`
 }
+
+// GroupLocalOverridesPatch A field left out keeps its override and null removes it.
+type GroupLocalOverridesPatch = types.GroupPolicyOverridesPatch
 
 // GroupOEMBreakdown defines model for groupOEMBreakdown.
 type GroupOEMBreakdown = []OemBreakdownEntry
@@ -470,6 +488,9 @@ type CreateGroupJSONRequestBody = GroupConfig
 
 // UpdateGroupJSONRequestBody defines body for UpdateGroup for application/json ContentType.
 type UpdateGroupJSONRequestBody = GroupConfig
+
+// UpdateGroupLocalOverridesJSONRequestBody defines body for UpdateGroupLocalOverrides for application/json ContentType.
+type UpdateGroupLocalOverridesJSONRequestBody = GroupLocalOverridesPatch
 
 // CreatePackageJSONRequestBody defines body for CreatePackage for application/json ContentType.
 type CreatePackageJSONRequestBody = PackageConfig
