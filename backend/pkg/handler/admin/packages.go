@@ -40,9 +40,10 @@ func (h *Handler) CreatePackage(ctx echo.Context, appIDorProductID string) error
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
-	pkg, err = h.admin.GetPackage(pkg.ID)
+	packageID := pkg.ID
+	pkg, err = h.admin.GetPackage(packageID)
 	if err != nil {
-		l.Error().Err(err).Str("packageID", pkg.ID).Msg("addPackage - getting added package")
+		l.Error().Err(err).Str("packageID", packageID).Msg("addPackage - getting added package")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
 
