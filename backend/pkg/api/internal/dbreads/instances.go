@@ -109,27 +109,16 @@ func (q *Queries) GetInstanceStatusHistory(instanceID, appID, groupID string, li
 	if err != nil {
 		return nil, err
 	}
-	rows, err := q.db.Queryx(query)
-	if err != nil {
+	if err := q.db.Select(&instanceStatusHistory, query); err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	for rows.Next() {
-		var instanceStatusHistoryEntity types.InstanceStatusHistoryEntry
-		err = rows.StructScan(&instanceStatusHistoryEntity)
-		if err != nil {
-			return nil, err
-		}
-		if instanceStatusHistoryEntity.Status == types.InstanceStatusError {
-			instanceStatusHistoryEntity.ErrorCode, err = q.GetEvent(instanceID, appID, instanceStatusHistoryEntity.CreatedTs)
+	for _, entry := range instanceStatusHistory {
+		if entry.Status == types.InstanceStatusError {
+			entry.ErrorCode, err = q.GetEvent(instanceID, appID, entry.CreatedTs)
 			if err != nil {
 				return nil, err
 			}
 		}
-		instanceStatusHistory = append(instanceStatusHistory, &instanceStatusHistoryEntity)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
 	}
 	return instanceStatusHistory, nil
 }
