@@ -633,8 +633,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/groupVersionBreakdown"
-        "404":
-          description: Group not found response
         "500":
           description:  Version Breakdown of group error response
   /api/apps/{appIDorProductID}/groups/{groupID}/oem_breakdown:
@@ -664,8 +662,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/groupOEMBreakdown"
-        "404":
-          description: Group not found response
         "500":
           description: OEM Breakdown of group error response
   /api/apps/{appIDorProductID}/channels:
