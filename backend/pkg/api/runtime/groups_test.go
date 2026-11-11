@@ -237,6 +237,12 @@ func TestGetStatusCountTimeline(t *testing.T) {
 		timeline7d, err := a.GetGroupStatusCountTimeline(tGroup.ID, "7d")
 		require.NoError(t, err)
 		require.Equal(t, 8, len(timeline7d), "7d window produces 8 daily buckets (7d/1d + 1)")
+
+		// Verify 0d Complete and 5d Downloading events reside in their attributed historical slots
+		assert.Equal(t, uint64(1), statusTimelineBucketAt(timeline7d, 0)[types.InstanceStatusComplete][targetVersion], "latest slot must have Complete event")
+		assert.Equal(t, uint64(1), statusTimelineBucketAt(timeline7d, 5*day)[types.InstanceStatusDownloading][targetVersion], "5d slot must have Downloading event")
+		assert.Equal(t, uint64(0), statusTimelineBucketAt(timeline7d, 0)[types.InstanceStatusDownloading][targetVersion], "latest slot must not have Downloading event")
+
 		assert.Equal(t, uint64(1), countStatusInWindow(timeline7d, types.InstanceStatusComplete), "7d window should count latest Complete event")
 		assert.Equal(t, uint64(1), countStatusInWindow(timeline7d, types.InstanceStatusDownloading), "7d window should count 5d Downloading event")
 		assert.Equal(t, uint64(0), countStatusInWindow(timeline7d, types.InstanceStatusInstalled), "15d Installed event should not be in 7d window")
@@ -246,6 +252,10 @@ func TestGetStatusCountTimeline(t *testing.T) {
 		timeline30d, err := a.GetGroupStatusCountTimeline(tGroup.ID, "30d")
 		require.NoError(t, err)
 		require.Equal(t, 11, len(timeline30d), "30d window produces 11 3-day buckets (30d/3d + 1)")
+
+		// Verify multi-day bucket allocation (3-day bucket) accurately attributes the 15-day-old event
+		assert.Equal(t, uint64(1), statusTimelineBucketAt(timeline30d, 15*day)[types.InstanceStatusInstalled][targetVersion], "15d event must reside in the 15-day 3-day bucket")
+
 		assert.Equal(t, uint64(1), countStatusInWindow(timeline30d, types.InstanceStatusComplete), "30d window should count latest Complete event")
 		assert.Equal(t, uint64(1), countStatusInWindow(timeline30d, types.InstanceStatusDownloading), "30d window should count 5d Downloading event")
 		assert.Equal(t, uint64(1), countStatusInWindow(timeline30d, types.InstanceStatusInstalled), "30d window should count 15d Installed event")
