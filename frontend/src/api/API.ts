@@ -30,8 +30,22 @@ function isNotNullUndefinedOrEmptyString(val: any) {
 }
 
 export default class API {
-  static getApplications(): Promise<WithCount<{ applications: Application[] }>> {
-    return API.getJSON(`${BASE_URL}/apps`);
+  static getApplications(queryOptions?: {
+    page?: number;
+    perpage?: number;
+  }): Promise<WithCount<{ applications: Application[] }>> {
+    const params = new URLSearchParams();
+    if (queryOptions) {
+      if (queryOptions.page !== undefined) {
+        params.append('page', String(queryOptions.page));
+      }
+      if (queryOptions.perpage !== undefined) {
+        params.append('perpage', String(queryOptions.perpage));
+      }
+    }
+    const queryStr = params.toString();
+    const url = `${BASE_URL}/apps${queryStr ? '?' + queryStr : ''}`;
+    return API.doRequest('GET', url);
   }
 
   static getApplication(applicationID: string): Promise<Application> {
