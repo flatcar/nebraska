@@ -28,7 +28,6 @@ func (s *Service) AddApp(app *types.Application) (*types.Application, error) {
 		return nil, err
 	}
 
-	s.ClearCachedAppIDs()
 	return app, nil
 }
 
@@ -77,9 +76,6 @@ func (s *Service) AddAppCloning(app *types.Application, sourceAppID string) (*ty
 			}
 		}
 	}
-	// Even though AddApp will invalidate the cache, we need to do it again here
-	// to prevent eventual race issues.
-	s.ClearCachedAppIDs()
 	return app, nil
 }
 
@@ -142,7 +138,6 @@ func (s *Service) UpdateApp(app *types.Application) error {
 		return types.ErrNoRowsAffected
 	}
 
-	s.ClearCachedAppIDs()
 	return nil
 }
 
@@ -164,6 +159,5 @@ func (s *Service) DeleteApp(appID string) error {
 		return types.ErrNoRowsAffected
 	}
 
-	s.ClearCachedAppIDs()
 	return nil
 }

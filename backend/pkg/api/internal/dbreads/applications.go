@@ -4,27 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
-	"sync"
 
 	"github.com/doug-martin/goqu/v9"
-	"github.com/jmoiron/sqlx"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
-)
-
-type appsCache map[string]string
-
-var (
-	// cachedApps caches the mapping of apps' product-ids and UUIDs to apps' UUIDs.
-	// The UUID -> UUID seeming redundancy is because this way we can use it to
-	// validate also the UUIDs against existing apps.
-	// It must not be modified directly but replaced (atomically or via lock)
-	// by a new map to prevent data races.
-	// An update must be triggered through clearCachedAppIDs() each time
-	// an apps change. A RW lock was chosen to prevent data
-	// races over the pointer itself.
-	cachedAppIDs      appsCache
-	cachedAppsIDsLock sync.RWMutex
 )
 
 // GetApp returns the application identified by the id provided.
@@ -110,82 +93,41 @@ func (q *Queries) GetApps(teamID string, page, perPage uint64) ([]*types.Applica
 	return apps, nil
 }
 
-// ClearCachedAppIDs invalidates the cached app IDs in cachedApps and
-// must be called whenever the apps entries are modified.
-func (q *Queries) ClearCachedAppIDs() {
-	cachedAppsIDsLock.Lock()
-	cachedAppIDs = nil
-	// Generating the map is not always possible here because the database
-	// can be closed.
-	cachedAppsIDsLock.Unlock()
-}
-
+// GetAppID returns the id of the application with the given id or product id.
+// It always queries the database, so it sees changes made by anything else
+// that shares the database.
 func (q *Queries) GetAppID(appOrProductID string) (string, error) {
-	var cachedAppsRef appsCache
-	cachedAppsIDsLock.RLock()
-	if cachedAppIDs != nil {
-		// Keep a reference to the map that we found.
-		cachedAppsRef = cachedAppIDs
-	}
-	cachedAppsIDsLock.RUnlock()
-
-	// Generate map on startup or if invalidated.
-	if cachedAppsRef == nil {
-		cachedAppsIDsLock.Lock()
-		cachedAppsRef = cachedAppIDs
-
-		if cachedAppsRef == nil {
-			cachedAppIDs = make(appsCache)
-
-			query, _, err := goqu.From("application").ToSQL()
-
-			var rows *sqlx.Rows
-			if err == nil {
-				rows, err = q.db.Queryx(query)
-			}
-
-			if err == nil {
-				defer rows.Close()
-				for rows.Next() {
-					app := types.Application{}
-					err := rows.StructScan(&app)
-					if err != nil {
-						l.Warn().Err(err).Msg("Failed to read app from DB")
-					}
-
-					if prodIDPtr := app.ProductID.Ptr(); prodIDPtr != nil {
-						// lower case so lookups are case insensitive
-						prodIDLower := strings.ToLower(*prodIDPtr)
-						cachedAppIDs[prodIDLower] = app.ID
-					}
-
-					// So we can quickly validate the UUID based IDs
-					cachedAppIDs[app.ID] = app.ID
-				}
-			} else {
-				l.Error().Err(err).Msg("Failed to get apps")
-			}
-
-			cachedAppsRef = cachedAppIDs
-		}
-		cachedAppsIDsLock.Unlock()
-	}
-
 	// Trim space and the {} that may surround the ID
-	appIDNoBrackets := strings.TrimSpace(appOrProductID)
-	lastIdx := len(appIDNoBrackets) - 1
-	if len(appIDNoBrackets) > 2 && appIDNoBrackets[0] == '{' && appIDNoBrackets[lastIdx] == '}' {
-		appIDNoBrackets = strings.TrimSpace(appIDNoBrackets[1:lastIdx])
+	key := strings.TrimSpace(appOrProductID)
+	lastIdx := len(key) - 1
+	if len(key) > 2 && key[0] == '{' && key[lastIdx] == '}' {
+		key = strings.TrimSpace(key[1:lastIdx])
 	}
 
 	// Case insensitive, so use lower case as key
-	appIDNoBrackets = strings.ToLower(appIDNoBrackets)
+	key = strings.ToLower(key)
 
-	cachedAppID, ok := cachedAppsRef[appIDNoBrackets]
-	if !ok {
-		return "", fmt.Errorf("no app found for ID %v", appOrProductID)
+	// Product ids must contain a dot, so a UUID-shaped key can only be an id.
+	match := goqu.L("lower(product_id)").Eq(key)
+	if isCanonicalUUID(key) {
+		match = goqu.C("id").Eq(key)
 	}
-	return cachedAppID, nil
+
+	// Bind the key so that every lookup reuses one prepared statement.
+	query, args, err := PGDialect.From("application").Prepared(true).Select("id").Where(match).ToSQL()
+	if err != nil {
+		return "", err
+	}
+
+	var appID string
+	if err := q.db.QueryRow(query, args...).Scan(&appID); err != nil {
+		if err == sql.ErrNoRows {
+			return "", fmt.Errorf("no app found for ID %v", appOrProductID)
+		}
+		l.Error().Err(err).Str("appOrProductID", appOrProductID).Msg("GetAppID")
+		return "", err
+	}
+	return appID, nil
 }
 
 // appsQuery returns a SelectDataset prepared to return all applications.

@@ -1,11 +1,23 @@
 package dbreads
 
-import "github.com/blang/semver/v4"
+import (
+	"github.com/blang/semver/v4"
+	"github.com/doug-martin/goqu/v9"
+
+	// Registers the postgres dialect. Without it goqu.Dialect falls back to
+	// the default dialect and emits ? placeholders, which PostgreSQL rejects.
+	_ "github.com/doug-martin/goqu/v9/dialect/postgres"
+	"github.com/google/uuid"
+)
 
 const (
 	defaultPage    uint64 = 1
 	defaultPerPage uint64 = 10
 )
+
+// PGDialect builds statements with numbered placeholders, for queries whose
+// arguments are bound rather than inlined.
+var PGDialect = goqu.Dialect("postgres")
 
 // validatePaginationParams validates the pagination parameters provided,
 // setting them to the default values in case they are invalid.
@@ -28,6 +40,15 @@ func IsValidSemver(version string) bool {
 		return false
 	}
 	return true
+}
+
+// isCanonicalUUID reports whether s is a UUID in its 36-character form.
+func isCanonicalUUID(s string) bool {
+	if len(s) != 36 {
+		return false
+	}
+	_, err := uuid.Parse(s)
+	return err == nil
 }
 
 func sqlPaginate(page, perPage uint64) (uint, uint) {

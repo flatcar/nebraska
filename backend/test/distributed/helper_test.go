@@ -2,6 +2,7 @@ package distributed_test
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"io"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/flatcar/go-omaha/omaha"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/require"
@@ -267,4 +269,22 @@ func request(t *testing.T, method, url string, payload io.Reader) (int, string) 
 	require.NoError(t, err)
 
 	return resp.StatusCode, strings.TrimSpace(string(body))
+}
+
+// updateCheck sends node an Omaha update check for appID on track and returns
+// the answer for the application.
+func updateCheck(t *testing.T, node, appID, track, machineID string) *omaha.AppResponse {
+	t.Helper()
+
+	body := fmt.Sprintf(`<request protocol="3.0"><os platform="CoreOS" version="lsb" arch="x64"></os>`+
+		`<app appid="%s" version="0.0.0" track="%s" machineid="%s"><updatecheck></updatecheck></app></request>`,
+		appID, track, machineID)
+	code, resp := request(t, "POST", node+"/v1/update", strings.NewReader(body))
+	require.Equal(t, http.StatusOK, code, resp)
+
+	var answer omaha.Response
+	require.NoError(t, xml.Unmarshal([]byte(resp), &answer), resp)
+	require.Len(t, answer.Apps, 1, resp)
+
+	return answer.Apps[0]
 }
