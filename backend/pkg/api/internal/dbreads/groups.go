@@ -775,7 +775,7 @@ func (q *Queries) GetGroupStatusCountTimeline(groupID string, duration string) (
 	WITH time_series AS (SELECT * FROM generate_series(now() - interval '%[1]s', now(), INTERVAL '%[2]s') AS ts),
 	min_time AS (SELECT min(ts) AS min_ts FROM time_series),
 	filtered_status_history AS (SELECT instance_status_history.* FROM instance_status_history,
-		 min_time WHERE group_id=$1 AND %[3]s AND created_ts >= min_time.min_ts - INTERVAL '1 hour')
+		 min_time WHERE group_id=$1 AND %[3]s AND created_ts >= min_time.min_ts)
 	SELECT ts, (CASE WHEN status IS NULL THEN 0 ELSE status END), 
 	  (CASE WHEN version IS NULL THEN '' ELSE version END), count(instance_id) as total 
 	FROM 
