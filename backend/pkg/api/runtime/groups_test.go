@@ -227,15 +227,19 @@ func TestGetStatusCountTimeline(t *testing.T) {
 
 		// Window filtering depends strictly on Age.
 		//
-		// | Inst     | Tracer      | Age | 1d | 7d | 30d | Notes                  |
-		// |----------|-------------|:---:|:--:|:--:|:---:|------------------------|
-		// | instNow  | Complete    |  0  |  1 |  1 |  1  | Latest bucket only     |
-		// | inst5d   | Downloading |  5d |  0 |  1 |  1  | 5d > 1d window         |
-		// | inst15d  | Installed   | 15d |  0 |  0 |  1  | 15d > 7d window        |
-		// | inst45d  | Error       | 45d |  0 |  0 |  0  | 45d > 30d window       |
-		// | fakeInst | Complete    |  0  |  0 |  0 |  0  | Filtered by ID '{%}'   |
+		// | Inst      | Tracer      |  Age  | 1d | 7d | 30d | Notes                       |
+		// |-----------|-------------|:-----:|:--:|:--:|:---:|-----------------------------|
+		// | instNow   | Complete    |   0   |  1 |  1 |  1  | Latest bucket only          |
+		// | inst5d    | Downloading |  5d   |  0 |  1 |  1  | 5d < 7d window              |
+		// | inst7d30m | Downloaded  | 7d30m |  0 |  1 |  1  | Falls in 7d T0 [now-8d,-7d) |
+		// | inst7d12h | Downloaded  | 7d12h |  0 |  1 |  1  | Falls in 7d T0 [now-8d,-7d) |
+		// | inst15d   | Installed   |  15d  |  0 |  0 |  1  | 15d > 7d window             |
+		// | inst45d   | Error       |  45d  |  0 |  0 |  0  | 45d > 30d window            |
+		// | fakeInst  | Complete    |   0   |  0 |  0 |  0  | Filtered by ID '{%}'        |
 		registerInstanceWithStatusHistory(t, tApp.ID, tGroup.ID, types.InstanceStatusComplete, 0)
 		registerInstanceWithStatusHistory(t, tApp.ID, tGroup.ID, types.InstanceStatusDownloading, 5*day)
+		registerInstanceWithStatusHistory(t, tApp.ID, tGroup.ID, types.InstanceStatusDownloaded, 7*day+30*time.Minute)
+		registerInstanceWithStatusHistory(t, tApp.ID, tGroup.ID, types.InstanceStatusDownloaded, 7*day+12*time.Hour)
 		registerInstanceWithStatusHistory(t, tApp.ID, tGroup.ID, types.InstanceStatusInstalled, 15*day)
 		registerInstanceWithStatusHistory(t, tApp.ID, tGroup.ID, types.InstanceStatusError, 45*day)
 		registerInstanceWithStatusHistory(t, tApp.ID, tGroup.ID, types.InstanceStatusComplete, 0, "{12345678-1234-1234-1234-123456789012}")
@@ -254,6 +258,7 @@ func TestGetStatusCountTimeline(t *testing.T) {
 		require.Equal(t, 25, len(timeline1d), "1d window produces 25 hourly buckets (24h/1h + 1)")
 		assert.Equal(t, uint64(1), countStatusInWindow(timeline1d, types.InstanceStatusComplete), "1d window should only count latest Complete event")
 		assert.Equal(t, uint64(0), countStatusInWindow(timeline1d, types.InstanceStatusDownloading), "5d Downloading event should not be in 1d window")
+		assert.Equal(t, uint64(0), countStatusInWindow(timeline1d, types.InstanceStatusDownloaded), "7d 30m and 7d 12h Downloaded events should not be in 1d window")
 		assert.Equal(t, uint64(0), countStatusInWindow(timeline1d, types.InstanceStatusInstalled), "15d Installed event should not be in 1d window")
 		assert.Equal(t, uint64(0), countStatusInWindow(timeline1d, types.InstanceStatusError), "45d Error event should not be in 1d window")
 
@@ -262,13 +267,15 @@ func TestGetStatusCountTimeline(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, 8, len(timeline7d), "7d window produces 8 daily buckets (7d/1d + 1)")
 
-		// Verify 0d Complete and 5d Downloading events reside in their attributed historical slots
+		// Verify 0d Complete, 5d Downloading, and T0 Downloaded events reside in their attributed historical slots
 		assert.Equal(t, uint64(1), statusTimelineBucketAt(timeline7d, 0)[types.InstanceStatusComplete][targetVersion], "latest slot must have Complete event")
 		assert.Equal(t, uint64(1), statusTimelineBucketAt(timeline7d, 5*day)[types.InstanceStatusDownloading][targetVersion], "5d slot must have Downloading event")
+		assert.Equal(t, uint64(2), statusTimelineBucketAt(timeline7d, 7*day)[types.InstanceStatusDownloaded][targetVersion], "T0 slot must have both 7d 30m and 7d 12h Downloaded events")
 		assert.Equal(t, uint64(0), statusTimelineBucketAt(timeline7d, 0)[types.InstanceStatusDownloading][targetVersion], "latest slot must not have Downloading event")
 
 		assert.Equal(t, uint64(1), countStatusInWindow(timeline7d, types.InstanceStatusComplete), "7d window should count latest Complete event")
 		assert.Equal(t, uint64(1), countStatusInWindow(timeline7d, types.InstanceStatusDownloading), "7d window should count 5d Downloading event")
+		assert.Equal(t, uint64(2), countStatusInWindow(timeline7d, types.InstanceStatusDownloaded), "7d window should count both 7d 30m and 7d 12h Downloaded events in T0")
 		assert.Equal(t, uint64(0), countStatusInWindow(timeline7d, types.InstanceStatusInstalled), "15d Installed event should not be in 7d window")
 		assert.Equal(t, uint64(0), countStatusInWindow(timeline7d, types.InstanceStatusError), "45d Error event should not be in 7d window")
 
@@ -282,6 +289,7 @@ func TestGetStatusCountTimeline(t *testing.T) {
 
 		assert.Equal(t, uint64(1), countStatusInWindow(timeline30d, types.InstanceStatusComplete), "30d window should count latest Complete event")
 		assert.Equal(t, uint64(1), countStatusInWindow(timeline30d, types.InstanceStatusDownloading), "30d window should count 5d Downloading event")
+		assert.Equal(t, uint64(2), countStatusInWindow(timeline30d, types.InstanceStatusDownloaded), "30d window should count both 7d 30m and 7d 12h Downloaded events")
 		assert.Equal(t, uint64(1), countStatusInWindow(timeline30d, types.InstanceStatusInstalled), "30d window should count 15d Installed event")
 		assert.Equal(t, uint64(0), countStatusInWindow(timeline30d, types.InstanceStatusError), "45d Error event is past 30d and must be excluded")
 	})
