@@ -80,7 +80,8 @@ func (s *Session) Name() string {
 
 // Save persists the information stored in the session object to the
 // cache associated with the object, and updates the cookie header in
-// the response.
+// the response. Set secure when the client reached Nebraska over TLS;
+// it marks the cookie as HTTPS-only.
 //
 // TODO: Split the writing the cookie into a separate function, like
 // WriteCookie.
@@ -88,7 +89,7 @@ func (s *Session) Name() string {
 // TODO: Add support for options, so we don't hardcode the max age
 // value here. The support should probably be reflected in the Cache
 // interface itself and in Session.
-func (s *Session) Save(writer http.ResponseWriter) error {
+func (s *Session) Save(writer http.ResponseWriter, secure bool) error {
 	if !s.marked {
 		var err error
 		s.marked, err = s.cache.SaveSession(sessionExt{
@@ -115,6 +116,8 @@ func (s *Session) Save(writer http.ResponseWriter) error {
 		Path:     "/",
 		MaxAge:   maxAge,
 		HttpOnly: true,
+		Secure:   secure,
+		SameSite: http.SameSiteLaxMode,
 	}
 	http.SetCookie(writer, cookie)
 	return nil
