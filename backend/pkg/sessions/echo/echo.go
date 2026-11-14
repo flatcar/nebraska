@@ -29,5 +29,8 @@ func GetSession(c echo.Context) *sessions.Session {
 }
 
 func SaveSession(c echo.Context, session *sessions.Session) error {
-	return session.Save(c.Response().Writer)
+	// Scheme also honours X-Forwarded-Proto, so cookies stay HTTPS-only
+	// behind a TLS-terminating proxy. A spoofed header can only add the
+	// Secure attribute, never remove it.
+	return session.Save(c.Response().Writer, c.Scheme() == "https")
 }
