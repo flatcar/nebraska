@@ -139,6 +139,41 @@ func setUpdatesOverride(t *testing.T, dbURL, groupID string, value any) {
 	require.Equal(t, int64(1), rows, "no group_local row for %s", groupID)
 }
 
+// clearOverrides removes every one of the node's overrides of the group.
+func clearOverrides(t *testing.T, dbURL, groupID string) {
+	t.Helper()
+
+	db := openDB(t, dbURL)
+
+	_, err := db.Exec(`update group_local set policy_updates_enabled_override = null, policy_safe_mode_override = null,
+		policy_office_hours_override = null, policy_timezone_override = null, policy_period_interval_override = null,
+		policy_max_updates_per_period_override = null, policy_update_timeout_override = null where group_id = $1`, groupID)
+	require.NoError(t, err)
+}
+
+// groupDefault is the policy as stored on groups, the default every node reads.
+type groupDefault struct {
+	UpdatesEnabled      bool    `db:"policy_updates_enabled"`
+	SafeMode            bool    `db:"policy_safe_mode"`
+	OfficeHours         bool    `db:"policy_office_hours"`
+	Timezone            *string `db:"policy_timezone"`
+	PeriodInterval      string  `db:"policy_period_interval"`
+	MaxUpdatesPerPeriod int     `db:"policy_max_updates_per_period"`
+	UpdateTimeout       string  `db:"policy_update_timeout"`
+}
+
+func readGroupDefault(t *testing.T, dbURL, groupID string) groupDefault {
+	t.Helper()
+
+	db := openDB(t, dbURL)
+
+	var policy groupDefault
+	require.NoError(t, db.Get(&policy, `select policy_updates_enabled, policy_safe_mode, policy_office_hours, policy_timezone,
+		policy_period_interval, policy_max_updates_per_period, policy_update_timeout from groups where id = $1`, groupID))
+
+	return policy
+}
+
 // setupReplication subscribes the edge database to the control database's admin
 // tables. Both nodes migrate to the same seeded rows, so nothing is copied.
 func setupReplication(controlDSN, edgeDSN string) error {

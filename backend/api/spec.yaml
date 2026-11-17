@@ -462,10 +462,10 @@ paths:
         "500":
           description: Delete Group error response
 
-  /api/apps/{appIDorProductID}/groups/{groupID}/updates_override:
-    delete:
-      description: clear this node's local updates-enabled override for the group, so that the admin default on the group applies here again
-      operationId: clearGroupUpdatesOverride
+  /api/apps/{appIDorProductID}/groups/{groupID}/local_overrides:
+    patch:
+      description: update this node's overrides of a group given its groupID and appID
+      operationId: updateGroupLocalOverrides
       x-nebraska-node-role: runtime
       security:
         - oidcBearerAuth: []
@@ -482,13 +482,27 @@ paths:
           required: true
           schema:
             type: string
+            format: uuid
+      requestBody:
+        description: payload for update group local overrides
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/groupLocalOverridesPatch"
       responses:
-        "204":
-          description: Clear updates override success response
+        "200":
+          description: Update group local overrides success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/group"
+        "400":
+          description: Update group local overrides bad request response
         "404":
           description: Group not found response
         "500":
-          description: Clear updates override error response
+          description: Update group local overrides error response
         "501":
           description: Not implemented in single-instance mode
           content:
@@ -1557,6 +1571,45 @@ components:
           type: string
           maxLength: 256
 
+    groupLocalOverridesPatch:
+      description: A field left out keeps its override and null removes it.
+      type: object
+      additionalProperties: false
+      x-go-type: types.GroupPolicyOverridesPatch
+      x-go-type-import:
+        path: github.com/flatcar/nebraska/backend/pkg/api/types
+      properties:
+        policy_updates_enabled:
+          description: Only false, which pauses updates on this node, or null.
+          type: boolean
+          nullable: true
+        policy_safe_mode:
+          type: boolean
+          nullable: true
+        policy_office_hours:
+          description: Overridden together with policy_timezone.
+          type: boolean
+          nullable: true
+        policy_timezone:
+          type: string
+          nullable: true
+          maxLength: 40
+        policy_period_interval:
+          description: A whole number of minutes, hours or days, such as "15 minutes".
+          type: string
+          nullable: true
+          pattern: "^[1-9][0-9]{0,5} (minute|hour|day)s?$"
+        policy_max_updates_per_period:
+          type: integer
+          nullable: true
+          minimum: 1
+          maximum: 2147483647
+        policy_update_timeout:
+          description: A whole number of minutes, hours or days, such as "60 minutes".
+          type: string
+          nullable: true
+          pattern: "^[1-9][0-9]{0,5} (minute|hour|day)s?$"
+
     flatcarActionPackage:
       type: object
       properties:
@@ -1679,7 +1732,21 @@ components:
         - headerStyle
         - loginUrl
         - authMode
+        - instanceMode
       properties:
+        instanceMode:
+          description: The role of this node.
+          type: string
+          enum:
+            - single
+            - control
+            - edge
+          x-enum-varnames:
+            - InstanceModeSingle
+            - InstanceModeControl
+            - InstanceModeEdge
+          x-oapi-codegen-extra-tags:
+            json: "instance_mode"
         accessManagementUrl:
           type: string
           x-oapi-codegen-extra-tags:
