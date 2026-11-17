@@ -116,9 +116,6 @@ func (h *Handler) GetGroupVersionTimeline(ctx echo.Context, _ string, groupID op
 
 	versionCountTimeline, isCache, err := h.runtime.GetGroupVersionCountTimeline(groupIDStr, params.Duration)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return ctx.NoContent(http.StatusNotFound)
-		}
 		l.Error().Err(err).Str("groupID", groupIDStr).Msg("getGroupVersionCountTimeline - getting version timeline")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}
@@ -135,9 +132,6 @@ func (h *Handler) GetGroupVersionTimeline(ctx echo.Context, _ string, groupID op
 func (h *Handler) GetGroupStatusTimeline(ctx echo.Context, _ string, groupID string, params codegen.GetGroupStatusTimelineParams) error {
 	statusCountTimeline, err := h.runtime.GetGroupStatusCountTimeline(groupID, params.Duration)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return ctx.NoContent(http.StatusNotFound)
-		}
 		l.Error().Err(err).Str("groupID", groupID).Msg("getGroupStatusCountTimeline - getting status timeline")
 		return ctx.NoContent(http.StatusInternalServerError)
 	}

@@ -543,8 +543,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/groupVersionCountTimeline"
-        "404":
-          description: Group not found response
         "500":
           description: Version Timeline of group error response
   /api/apps/{appIDorProductID}/groups/{groupID}/status_timeline:
@@ -579,8 +577,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/groupStatusCountTimeline"
-        "404":
-          description: Group not found response        
         "500":
           description: Status Timeline of group error response
 
