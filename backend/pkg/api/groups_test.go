@@ -266,6 +266,10 @@ func TestVersionBreakDownEmpty(t *testing.T) {
 	versionBreakdown, vbErr := a.GetGroupVersionBreakdown(g.ID)
 	assert.NoError(t, vbErr)
 	assert.Len(t, versionBreakdown, 0)
+
+	versionBreakdown, vbErr = a.GetGroupVersionBreakdown(uuid.New().String())
+	assert.NoError(t, vbErr)
+	assert.Len(t, versionBreakdown, 0)
 }
 
 // setupOEMBreakdownGroup creates the app and group that the breakdown tests read from.
@@ -346,6 +350,11 @@ func TestOEMBreakDown(t *testing.T) {
 		oemBreakdown, err := a.GetGroupOEMBreakdown(tGroup.ID)
 		require.NoError(t, err)
 		// Non-nil so the handler serializes it as [] rather than null.
+		assert.NotNil(t, oemBreakdown)
+		assert.Empty(t, oemBreakdown)
+
+		oemBreakdown, err = a.GetGroupOEMBreakdown(uuid.New().String())
+		require.NoError(t, err)
 		assert.NotNil(t, oemBreakdown)
 		assert.Empty(t, oemBreakdown)
 	})
