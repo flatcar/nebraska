@@ -12,7 +12,8 @@ const flatcarAppID = types.FlatcarAppID
 // event will be bound to an application/group combination.
 func (s *Service) RegisterEvent(instanceID, appID, groupID string, etype, eresult int, previousVersion, errorCode string) error {
 	var err error
-	if appID, groupID, err = s.validateApplicationAndGroup(appID, groupID); err != nil {
+	var group *types.Group
+	if appID, _, group, err = s.validateApplicationAndGroup(appID, groupID); err != nil {
 		return err
 	}
 	instance, err := s.GetInstance(instanceID, appID)
@@ -72,8 +73,7 @@ func (s *Service) RegisterEvent(instanceID, appID, groupID string, etype, eresul
 		return types.ErrEventRegistrationFailed
 	}
 
-	lastUpdateVersion := instance.Application.LastUpdateVersion.String
-	if err := s.triggerEventConsequences(instanceID, appID, groupID, lastUpdateVersion, etype, eresult); err != nil {
+	if err := s.triggerEventConsequences(instance, group, etype, eresult); err != nil {
 		l.Error().Err(err).Msgf("RegisterEvent - could not trigger event consequences")
 	}
 
@@ -83,24 +83,22 @@ func (s *Service) RegisterEvent(instanceID, appID, groupID string, etype, eresul
 // triggerEventConsequences is in charge of triggering the consequences of a
 // given event. Depending on the type of the event and its result, the status
 // of the instance may be updated, new activity entries could be created, etc.
-func (s *Service) triggerEventConsequences(instanceID, appID, groupID, lastUpdateVersion string, etype, result int) error {
-	group, err := s.GetGroup(groupID)
-	if err != nil {
-		return err
-	}
+func (s *Service) triggerEventConsequences(instance *types.Instance, group *types.Group, etype, result int) error {
+	instanceID, appID, groupID := instance.ID, instance.Application.ApplicationID, group.ID
+	lastUpdateVersion := instance.Application.LastUpdateVersion.String
 
 	// We allow the plain ResultSuccess here only if the app is not Flatcar because Flatcar is relying on
 	// having only the update-complete logic on ResultSuccessReboot.
 	if etype == types.EventUpdateComplete && (result == types.ResultSuccessReboot || (appID != flatcarAppID && result == types.ResultSuccess)) {
-		if err := s.updateInstanceStatus(instanceID, appID, types.InstanceStatusComplete); err != nil {
+		if err := s.updateInstanceObjStatus(instance, types.InstanceStatusComplete); err != nil {
 			l.Error().Err(err).Msg("triggerEventConsequences - could not update instance status")
 		}
 
-		updatesStats, err := s.GetGroupUpdatesStats(group)
+		complete, err := s.IsGroupRolloutComplete(group)
 		if err != nil {
 			return err
 		}
-		if updatesStats.UpdatesToCurrentVersionSucceeded == updatesStats.TotalInstances {
+		if complete {
 			if err := s.setGroupRolloutInProgress(groupID, false); err != nil {
 				l.Error().Err(err).Msg("triggerEventConsequences - could not set rollout progress")
 			}
@@ -111,25 +109,25 @@ func (s *Service) triggerEventConsequences(instanceID, appID, groupID, lastUpdat
 	}
 
 	if etype == types.EventUpdateDownloadStarted && result == types.ResultSuccess {
-		if err := s.updateInstanceStatus(instanceID, appID, types.InstanceStatusDownloading); err != nil {
+		if err := s.updateInstanceObjStatus(instance, types.InstanceStatusDownloading); err != nil {
 			l.Error().Err(err).Msg("triggerEventConsequences - could not update instance status")
 		}
 	}
 
 	if etype == types.EventUpdateDownloadFinished && result == types.ResultSuccess {
-		if err := s.updateInstanceStatus(instanceID, appID, types.InstanceStatusDownloaded); err != nil {
+		if err := s.updateInstanceObjStatus(instance, types.InstanceStatusDownloaded); err != nil {
 			l.Error().Err(err).Msg("triggerEventConsequences - could not update instance status")
 		}
 	}
 
 	if etype == types.EventUpdateInstalled && result == types.ResultSuccess {
-		if err := s.updateInstanceStatus(instanceID, appID, types.InstanceStatusInstalled); err != nil {
+		if err := s.updateInstanceObjStatus(instance, types.InstanceStatusInstalled); err != nil {
 			l.Error().Err(err).Msg("triggerEventConsequences - could not update instance status")
 		}
 	}
 
 	if result == types.ResultFailed {
-		if err := s.updateInstanceStatus(instanceID, appID, types.InstanceStatusError); err != nil {
+		if err := s.updateInstanceObjStatus(instance, types.InstanceStatusError); err != nil {
 			l.Error().Err(err).Msg("triggerEventConsequences - could not update instance status")
 		}
 		if err := s.newInstanceActivityEntry(types.ActivityInstanceUpdateFailed, types.ActivityError, lastUpdateVersion, appID, groupID, instanceID); err != nil {
@@ -137,11 +135,11 @@ func (s *Service) triggerEventConsequences(instanceID, appID, groupID, lastUpdat
 		}
 
 		if s.disableUpdatesOnFailedRollout {
-			updatesStats, err := s.GetGroupUpdatesStats(group)
+			attempted, err := s.CountGroupUpdatesToCurrentVersionAttempted(group)
 			if err != nil {
 				return err
 			}
-			if updatesStats.UpdatesToCurrentVersionAttempted == 1 {
+			if attempted == 1 {
 				if err := s.disableUpdates(groupID); err != nil {
 					l.Error().Err(err).Msg("triggerEventConsequences - could not disable updates")
 				}

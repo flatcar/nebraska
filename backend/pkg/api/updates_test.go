@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gopkg.in/guregu/null.v4"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/runtime"
@@ -130,6 +131,35 @@ func TestGetUpdatePackage_MaxUpdatesPerPeriodLimitReached_LimitUpdated(t *testin
 
 	_, err = rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.2"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
 	assert.NoError(t, err)
+}
+
+// A refused instance is put on hold, and only once while it stays refused.
+func TestGetUpdatePackage_RefusedInstanceIsPutOnHold(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	as := adminSvc(a)
+	rs := runtimeSvc(a)
+
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tPkg, _ := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+	tChannel, _ := as.AddChannel(&types.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+	tGroup, _ := as.AddGroup(&types.Group{Name: "group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true, PolicySafeMode: false, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 1, PolicyUpdateTimeout: "60 minutes"})
+	instApp := runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0")
+
+	_, err := rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, instApp)
+	assert.NoError(t, err)
+
+	refused := types.Instance{ID: uuid.New().String(), IP: "10.0.0.2"}
+	for check := 1; check <= 2; check++ {
+		_, err := rs.GetUpdatePackage(refused, instApp)
+		assert.Equal(t, types.ErrMaxUpdatesPerPeriodLimitReached, err)
+		instance, _ := a.GetInstance(refused.ID, tApp.ID)
+		assert.Equal(t, null.IntFrom(int64(types.InstanceStatusOnHold)), instance.Application.Status)
+		var onHold int
+		assert.NoError(t, a.db().Get(&onHold, "select count(*) from instance_status_history where instance_id = $1 and status = $2", refused.ID, types.InstanceStatusOnHold))
+		assert.Equal(t, 1, onHold, "check %d", check)
+	}
 }
 
 func TestGetUpdatePackage_MaxTimedOutUpdatesLimitReached_SafeMode(t *testing.T) {
@@ -563,4 +593,50 @@ func TestSafetyRulesValidation(t *testing.T) {
 		err = as.UpdatePackage(floorPkg)
 		assert.NoError(t, err)
 	})
+}
+
+// The node-local max updates per period has no lower bound; the rollout policy
+// must treat 0 and negative values as before, with and without safe mode.
+func TestGetUpdatePackage_LocalMaxUpdatesOverrideBelowOne(t *testing.T) {
+	for _, tc := range []struct {
+		override      int
+		safeMode      bool
+		first, second error
+		askSecond     bool
+	}{
+		{override: 0, safeMode: false, first: types.ErrMaxUpdatesPerPeriodLimitReached},
+		{override: -1, safeMode: false, first: types.ErrMaxUpdatesPerPeriodLimitReached},
+		// Safe mode lowers the limit to 1 until an update has been attempted,
+		// so one instance gets through and the next one is held.
+		{override: 0, safeMode: true, first: nil, second: types.ErrMaxUpdatesPerPeriodLimitReached, askSecond: true},
+		{override: -1, safeMode: true, first: nil, second: types.ErrMaxUpdatesPerPeriodLimitReached, askSecond: true},
+	} {
+		t.Run(fmt.Sprintf("override %d, safe mode %t", tc.override, tc.safeMode), func(t *testing.T) {
+			a := newForTest(t)
+			defer a.Close()
+			as := adminSvc(a)
+			rs := runtimeSvc(a)
+
+			tTeam, err := as.AddTeam(&types.Team{Name: "test_team"})
+			require.NoError(t, err)
+			tApp, err := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+			require.NoError(t, err)
+			tPkg, err := as.AddPackage(&types.Package{Type: types.PkgTypeOther, URL: "http://sample.url/pkg", Version: "12.1.0", ApplicationID: tApp.ID})
+			require.NoError(t, err)
+			tChannel, err := as.AddChannel(&types.Channel{Name: "test_channel", Color: "blue", ApplicationID: tApp.ID, PackageID: null.StringFrom(tPkg.ID)})
+			require.NoError(t, err)
+			tGroup, err := as.AddGroup(&types.Group{Name: "group", ApplicationID: tApp.ID, ChannelID: null.StringFrom(tChannel.ID), PolicyUpdatesEnabled: true,
+				PolicySafeMode: tc.safeMode, PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+			require.NoError(t, err)
+			_, err = a.db().Exec("update group_local set policy_max_updates_per_period_override = $1 where group_id = $2", tc.override, tGroup.ID)
+			require.NoError(t, err)
+
+			_, err = rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+			assert.Equal(t, tc.first, err, "first instance")
+			if tc.askSecond {
+				_, err = rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.2"}, runtime.NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
+				assert.Equal(t, tc.second, err, "second instance, while the first one is updating")
+			}
+		})
+	}
 }

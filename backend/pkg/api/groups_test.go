@@ -42,7 +42,7 @@ func TestAddGroup(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, true, group.PolicyUpdatesEnabled)
 
-	_, err = a.GetGroupUpdatesStats(group)
+	_, err = a.GetGroupRolloutPolicyStats(group, group.PolicyMaxUpdatesPerPeriod, group.PolicySafeMode)
 	assert.NoError(t, err)
 
 	groupX, err := a.GetGroup(group.ID)
@@ -83,7 +83,7 @@ func TestUpdateGroup(t *testing.T) {
 	err := as.UpdateGroup(group)
 	assert.NoError(t, err)
 
-	_, err = a.GetGroupUpdatesStats(group)
+	_, err = a.GetGroupRolloutPolicyStats(group, group.PolicyMaxUpdatesPerPeriod, group.PolicySafeMode)
 	assert.NoError(t, err)
 
 	groupX, _ := a.GetGroup(group.ID)
