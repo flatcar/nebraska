@@ -15,6 +15,7 @@ import API from '../../api/API';
 import { Application, Group } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import { defaultTimeInterval, timeIntervalsDefault } from '../../utils/helpers';
+import { adminWriteRefusal, hasLocalOverrides, useInstanceMode } from '../../utils/instanceMode';
 import ChannelItem from '../Channels/ChannelItem';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../common/Card';
 import MoreMenu from '../common/MoreMenu';
@@ -23,6 +24,7 @@ import InstanceStatusArea from '../Instances/Charts';
 import StatusCountTimeline from './GroupCharts/StatusCountTimeline';
 import VersionCountTimeline from './GroupCharts/VersionCountTimeline';
 import { formatUpdateLimits } from './GroupItem';
+import GroupPolicyPanes from './GroupPolicyPanes';
 
 const PREFIX = 'ItemExtended';
 
@@ -50,9 +52,11 @@ function ItemExtended(props: {
   appID: string;
   groupID: string;
   handleUpdateGroup: (groupID: string, appID: string) => void;
+  handleEditOverrides: () => void;
 }) {
   const [application, setApplication] = React.useState<Application | null>(null);
   const [group, setGroup] = React.useState<Group | null>(null);
+  const instanceMode = useInstanceMode();
   const [instancesStats, setInstancesStats] = React.useState<{
     [key: string]: any;
     total: number;
@@ -89,6 +93,20 @@ function ItemExtended(props: {
 
   function updateGroup() {
     props.handleUpdateGroup(props.groupID, props.appID);
+  }
+
+  function setUpdatesPaused(paused: boolean) {
+    const confirmation = paused
+      ? t('groups|pause_updates_confirmation')
+      : t('groups|resume_updates_confirmation');
+    if (window.confirm(confirmation)) {
+      applicationsStore()
+        .setGroupUpdatesPaused(props.appID, props.groupID, paused)
+        .catch(err => {
+          console.error('Error pausing or resuming updates in Groups/ItemExtended:', err);
+          window.alert(t('common|generic_error'));
+        });
+    }
   }
 
   function setDurationToURL(key: string, duration: string) {
@@ -175,9 +193,25 @@ function ItemExtended(props: {
                   action: updateGroup,
                 },
               ]}
+              disabledReason={adminWriteRefusal(t, instanceMode)}
             />
           </CardHeader>
         </Grid>
+        {group && hasLocalOverrides(instanceMode) && (
+          <Grid size={12}>
+            <Box px={2} pb={2}>
+              <GroupPolicyPanes
+                group={group}
+                instanceMode={instanceMode}
+                onEditDefault={updateGroup}
+                onEditOverrides={props.handleEditOverrides}
+                onPauseUpdates={() => setUpdatesPaused(true)}
+                onResumeUpdates={() => setUpdatesPaused(false)}
+              />
+            </Box>
+            <Divider variant="fullWidth" />
+          </Grid>
+        )}
         <Grid size={4}>
           <Grid container>
             {group && (
@@ -194,58 +228,62 @@ function ItemExtended(props: {
                         <ChannelItem channel={group.channel} />
                       )}
                     </Grid>
-                    <Grid>
-                      <CardFeatureLabel>{t('frequent|updates')}</CardFeatureLabel>
-                      <Box my={1}>
-                        <CardLabel>
-                          <Box display="flex">
-                            {group.policy_updates_enabled ? (
-                              <>
-                                <Box>{t('frequent|enabled')}</Box>
-                                <Box pl={1}>
-                                  <CheckIcon className={classes.success} fontSize="small" />
-                                </Box>
-                              </>
-                            ) : (
-                              <>
-                                <Box>{t('frequent|disabled')}</Box>
-                                <Box>
-                                  <CloseIcon color="error" />
-                                </Box>
-                              </>
-                            )}
+                    {!hasLocalOverrides(instanceMode) && (
+                      <>
+                        <Grid>
+                          <CardFeatureLabel>{t('frequent|updates')}</CardFeatureLabel>
+                          <Box my={1}>
+                            <CardLabel>
+                              <Box display="flex">
+                                {group.policy_updates_enabled ? (
+                                  <>
+                                    <Box>{t('frequent|enabled')}</Box>
+                                    <Box pl={1}>
+                                      <CheckIcon className={classes.success} fontSize="small" />
+                                    </Box>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Box>{t('frequent|disabled')}</Box>
+                                    <Box>
+                                      <CloseIcon color="error" />
+                                    </Box>
+                                  </>
+                                )}
+                              </Box>
+                            </CardLabel>
                           </Box>
-                        </CardLabel>
-                      </Box>
-                    </Grid>
-                    <Grid>
-                      <CardFeatureLabel>{t('groups|office_hours_only')}</CardFeatureLabel>
-                      <Box my={1}>
-                        <CardLabel>
-                          {group.policy_office_hours ? t('frequent|yes') : t('frequent|no')}
-                        </CardLabel>
-                      </Box>
-                    </Grid>
-                    <Grid>
-                      <CardFeatureLabel>{t('groups|safe_mode')}</CardFeatureLabel>
-                      <Box my={1}>
-                        <CardLabel>
-                          {group.policy_safe_mode ? t('frequent|yes') : t('frequent|no')}
-                        </CardLabel>
-                      </Box>
-                    </Grid>
-                    <Grid>
-                      <CardFeatureLabel>{t('groups|updates_policy')}</CardFeatureLabel>
-                      <Box my={1}>
-                        <CardLabel>{formatUpdateLimits(t, group)}</CardLabel>
-                      </Box>
-                    </Grid>
-                    <Grid>
-                      <CardFeatureLabel>{t('groups|updates_timeout')}</CardFeatureLabel>
-                      <Box my={1}>
-                        <CardLabel>{group.policy_update_timeout}</CardLabel>
-                      </Box>
-                    </Grid>
+                        </Grid>
+                        <Grid>
+                          <CardFeatureLabel>{t('groups|office_hours_only')}</CardFeatureLabel>
+                          <Box my={1}>
+                            <CardLabel>
+                              {group.policy_office_hours ? t('frequent|yes') : t('frequent|no')}
+                            </CardLabel>
+                          </Box>
+                        </Grid>
+                        <Grid>
+                          <CardFeatureLabel>{t('groups|safe_mode')}</CardFeatureLabel>
+                          <Box my={1}>
+                            <CardLabel>
+                              {group.policy_safe_mode ? t('frequent|yes') : t('frequent|no')}
+                            </CardLabel>
+                          </Box>
+                        </Grid>
+                        <Grid>
+                          <CardFeatureLabel>{t('groups|updates_policy')}</CardFeatureLabel>
+                          <Box my={1}>
+                            <CardLabel>{formatUpdateLimits(t, group)}</CardLabel>
+                          </Box>
+                        </Grid>
+                        <Grid>
+                          <CardFeatureLabel>{t('groups|updates_timeout')}</CardFeatureLabel>
+                          <Box my={1}>
+                            <CardLabel>{group.policy_update_timeout}</CardLabel>
+                          </Box>
+                        </Grid>
+                      </>
+                    )}
                   </Grid>
                 </Box>
               </Grid>

@@ -35,6 +35,7 @@ export interface ApplicationItemProps {
   id: string;
   productId: string;
   name: string;
+  adminWriteRefusal?: string;
 }
 
 export default function ApplicationItem(props: ApplicationItemProps) {
@@ -67,6 +68,7 @@ export default function ApplicationItem(props: ApplicationItemProps) {
                   },
                 },
               ]}
+              disabledReason={props.adminWriteRefusal}
             />
           </CardHeader>
         </Grid>

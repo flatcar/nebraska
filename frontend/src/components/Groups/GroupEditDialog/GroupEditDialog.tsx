@@ -17,6 +17,7 @@ import * as Yup from 'yup';
 import { Group } from '../../../api/apiDataTypes';
 import { applicationsStore } from '../../../stores/Stores';
 import { MAX_UPDATES_PER_TIME_PERIOD } from '../../../utils/helpers';
+import { useInstanceMode } from '../../../utils/instanceMode';
 import { DEFAULT_TIMEZONE } from '../../common/TimezonePicker';
 import GroupDetailsForm from './GroupDetailsForm';
 import GroupPolicyForm from './GroupPolicyForm';
@@ -49,6 +50,7 @@ export interface GroupEditDialogProps {
 
 export default function GroupEditDialog(props: GroupEditDialogProps) {
   const isCreation = Boolean(props.create);
+  const instanceMode = useInstanceMode();
 
   const [groupEditActiveTab, setGroupEditActiveTab] = React.useState(0);
   const { t } = useTranslation();
@@ -164,7 +166,14 @@ export default function GroupEditDialog(props: GroupEditDialogProps) {
           <TabPanel
             index={1}
             value={groupEditActiveTab}
-            render={() => <GroupPolicyForm values={values} setFieldValue={setFieldValue} />}
+            render={() => (
+              <GroupPolicyForm
+                values={values}
+                setFieldValue={setFieldValue}
+                // A control node edits the default that every node replicates.
+                hint={instanceMode === 'control' ? t('groups|default_policy_hint') : undefined}
+              />
+            )}
           />
         </DialogContent>
         <DialogActions>

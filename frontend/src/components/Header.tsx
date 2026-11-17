@@ -2,7 +2,7 @@ import { Icon, IconifyIcon } from '@iconify/react';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import CreateOutlined from '@mui/icons-material/CreateOutlined';
 import LogoutOutlined from '@mui/icons-material/LogoutOutlined';
-import { Box, Button, Divider } from '@mui/material';
+import { Box, Button, Chip, Divider } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import IconButton from '@mui/material/IconButton';
 import Menu, { MenuProps } from '@mui/material/Menu';
@@ -20,6 +20,7 @@ import themes from '../lib/themes';
 import { setUser, UserState } from '../stores/redux/features/user';
 import { useDispatch, useSelector } from '../stores/redux/hooks';
 import { broadcastLogout, getIdToken } from '../utils/auth';
+import { instanceModeOf } from '../utils/instanceMode';
 import { getOIDCClient } from '../utils/oidc';
 
 const PREFIX = 'Header';
@@ -96,6 +97,7 @@ function Appbar(props: AppbarProps) {
   }
 
   const showAccountButton = showAccountMenu();
+  const instanceMode = instanceModeOf({ instance_mode: config?.instance_mode });
 
   return (
     <AppBar position="static" className={classes.header}>
@@ -113,6 +115,15 @@ function Appbar(props: AppbarProps) {
           </Typography>
         )}
         <div style={{ flex: '1 0 0' }} />
+        {instanceMode !== 'single' && (
+          <Chip
+            label={instanceMode === 'control' ? t('header|node_control') : t('header|node_edge')}
+            size="small"
+            variant="outlined"
+            sx={{ mr: 1 }}
+            data-testid="node-mode"
+          />
+        )}
         {showAccountButton && (
           <IconButton
             aria-label={t('header|user_menu')}
