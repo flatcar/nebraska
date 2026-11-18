@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"path/filepath"
 	"strconv"
 	"testing"
 
@@ -101,4 +102,17 @@ func withArgs(t *testing.T, args []string) {
 	t.Cleanup(func() { os.Args = original })
 
 	os.Args = append([]string{"nebraska"}, args...)
+}
+
+func TestDefaultStaticDir(t *testing.T) {
+	assert.Equal(t, "../frontend/dist", defaultStaticDir())
+
+	exe, err := os.Executable()
+	require.NoError(t, err)
+	dir := filepath.Join(filepath.Dir(exe), "static")
+	require.NoError(t, os.Mkdir(dir, 0o755))
+	t.Cleanup(func() { os.RemoveAll(dir) })
+	require.NoError(t, os.WriteFile(filepath.Join(dir, "index.html"), nil, 0o644))
+
+	assert.Equal(t, dir, defaultStaticDir())
 }
