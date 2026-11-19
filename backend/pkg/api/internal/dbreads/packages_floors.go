@@ -75,12 +75,9 @@ func (q *Queries) GetChannelFloorPackages(channelID string) ([]*types.Package, e
 
 const (
 	// DefaultMaxFloorsPerResponse is the default maximum number of floor versions
-	// to return in a single update response. This limit prevents:
-	// - Timeouts during sequential syncer updates
-	// - Very large Omaha responses
-	// - Overwhelming syncers with too many intermediate versions
+	// to return in a single update response. 0 indicates no limit (all floors returned).
 	// Can be overridden via NEBRASKA_MAX_FLOORS_PER_RESPONSE env var
-	DefaultMaxFloorsPerResponse = 5
+	DefaultMaxFloorsPerResponse = 0
 )
 
 // GetRequiredChannelFloors returns floor packages between instance and target versions for a channel
@@ -115,7 +112,7 @@ func (q *Queries) GetRequiredChannelFloors(channel *types.Channel, instanceVersi
 		return nil, err
 	}
 
-	query, _, err := goqu.From(goqu.L(`
+	dataset := goqu.From(goqu.L(`
 		package p
 		JOIN channel_package_floors cpf ON p.id = cpf.package_id
 	`)).
@@ -129,10 +126,13 @@ func (q *Queries) GetRequiredChannelFloors(channel *types.Channel, instanceVersi
 			gtExpr,
 			lteExpr,
 		)).
-		Order(goqu.L(semverExpr).Asc()).
-		Limit(uint(maxFloorsPerResponse)).
-		ToSQL()
+		Order(goqu.L(semverExpr).Asc())
 
+	if maxFloorsPerResponse > 0 {
+		dataset = dataset.Limit(uint(maxFloorsPerResponse))
+	}
+
+	query, _, err := dataset.ToSQL()
 	if err != nil {
 		return nil, err
 	}
