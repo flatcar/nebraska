@@ -320,13 +320,15 @@ func TestUpdateLocalOverrides(t *testing.T) {
 		require.NoError(t, err)
 
 		require.NoError(t, update(t, `{"policy_period_interval": "999999 days", "policy_update_timeout": "999999 days"}`))
-		_, err = rs.GetGroupUpdatesStats(read(t))
+		group := read(t)
+		_, err = rs.GetGroupRolloutPolicyStats(group, group.PolicyMaxUpdatesPerPeriod, group.PolicySafeMode)
 		assert.NoError(t, err)
 
 		// One the bound refuses would fail every update check in the group.
 		_, err = rs.db.Exec(`update group_local set policy_period_interval_override = '3000000 days' where group_id = $1`, tGroup.ID)
 		require.NoError(t, err)
-		_, err = rs.GetGroupUpdatesStats(read(t))
+		group = read(t)
+		_, err = rs.GetGroupRolloutPolicyStats(group, group.PolicyMaxUpdatesPerPeriod, group.PolicySafeMode)
 		assert.ErrorContains(t, err, "out of range")
 	})
 
