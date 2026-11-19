@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 
 	"github.com/flatcar/nebraska/backend/pkg/api/types"
@@ -21,48 +22,56 @@ func TestGetAppInstancesPerChannelMetrics(t *testing.T) {
 			ApplicationName: "Sample application",
 			Version:         "1.0.1",
 			ChannelName:     "Failing",
+			Arch:            int(types.ArchAMD64),
 			InstancesCount:  1,
 		},
 		{
 			ApplicationName: "Sample application",
 			Version:         "1.0.1",
 			ChannelName:     "Master",
+			Arch:            int(types.ArchAMD64),
 			InstancesCount:  1,
 		},
 		{
 			ApplicationName: "Sample application",
 			Version:         "1.0.1",
 			ChannelName:     "Stable",
+			Arch:            int(types.ArchAMD64),
 			InstancesCount:  1,
 		},
 		{
 			ApplicationName: "Sample application",
 			Version:         "1.0.2",
 			ChannelName:     "Master",
+			Arch:            int(types.ArchAMD64),
 			InstancesCount:  1,
 		},
 		{
 			ApplicationName: "Sample application",
 			Version:         "1.0.2",
 			ChannelName:     "Stable",
+			Arch:            int(types.ArchAMD64),
 			InstancesCount:  2,
 		},
 		{
 			ApplicationName: "Sample application",
 			Version:         "1.0.3",
 			ChannelName:     "Master",
+			Arch:            int(types.ArchAMD64),
 			InstancesCount:  1,
 		},
 		{
 			ApplicationName: "Sample application",
 			Version:         "1.0.3",
 			ChannelName:     "Stable",
+			Arch:            int(types.ArchAMD64),
 			InstancesCount:  4,
 		},
 		{
 			ApplicationName: "Sample application",
 			Version:         "1.0.4",
 			ChannelName:     "Master",
+			Arch:            int(types.ArchAMD64),
 			InstancesCount:  1,
 		},
 	}
@@ -109,6 +118,7 @@ func TestGetAppInstancesPerChannelMetricsIncludesGroupsWithoutChannel(t *testing
 	for _, m := range metrics {
 		totalInstances += m.InstancesCount
 		if m.ChannelName == "" {
+			require.Equal(t, -1, m.Arch, "instances without a channel must not report a real arch")
 			switch m.Version {
 			case "1.0.3":
 				noChannel103 = m.InstancesCount
@@ -121,6 +131,58 @@ func TestGetAppInstancesPerChannelMetricsIncludesGroupsWithoutChannel(t *testing
 	require.Equal(t, 12, totalInstances, "all 12 active sample instances must still be counted, channel or not")
 	require.Equal(t, 2, noChannel103, "instance1 and instance2 should fall into the no-channel bucket")
 	require.Equal(t, 1, noChannel102, "instance3 should fall into the no-channel bucket")
+}
+
+// TestGetAppInstancesPerChannelMetricsSeparatesArch checks that two channels
+// that share the same name "Stable" but differ by arch (amd64 and aarch64)
+// are reported as separate rows instead of being folded together by `GROUP BY` channel_name.
+func TestGetAppInstancesPerChannelMetricsSeparatesArch(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+
+	// In sample_data.sql (the single source of truth),
+	// both "Prod EC2 us-west-2" (3 instances) and "Prod EC2 us-east-1" (4 instances)
+	// point to the same amd64 "Stable" channel.
+	const (
+		appID          = "b6458005-8f40-4627-b33b-be70a718c48e" // "Sample application"
+		usWest2GroupID = "bcaa68bc-5f82-11e5-9d70-feff819cdc9f" // "Prod EC2 us-west-2" group
+	)
+
+	// Insert a second "Stable" channel for the same application, for aarch64.
+	aarch64ChannelID := uuid.New().String()
+	_, err := a.db().Exec(`
+		INSERT INTO channel (id, name, color, application_id, arch)
+		VALUES ($1, 'Stable', '#0099FF', $2, $3)`,
+		aarch64ChannelID, appID, int(types.ArchAArch64))
+	require.NoError(t, err)
+
+	// Move the us-west-2 group onto the aarch64 channel. The other "Stable" group
+	// (us-east-1) stays on the amd64 one.
+	_, err = a.db().Exec(`UPDATE groups SET channel_id = $1 WHERE id = $2`, aarch64ChannelID, usWest2GroupID)
+	require.NoError(t, err)
+
+	metrics, err := a.GetAppInstancesPerChannelMetrics()
+	require.NoError(t, err)
+
+	type key struct {
+		version string
+		arch    int
+	}
+
+	stable := map[key]int{}
+	for _, m := range metrics {
+		if m.ChannelName == "Stable" {
+			stable[key{m.Version, m.Arch}] = m.InstancesCount
+		}
+	}
+
+	require.Equal(t, map[key]int{
+		{"1.0.3", int(types.ArchAMD64)}:   2, // instance4, instance5
+		{"1.0.2", int(types.ArchAMD64)}:   1, // instance6
+		{"1.0.1", int(types.ArchAMD64)}:   1, // instance7
+		{"1.0.3", int(types.ArchAArch64)}: 2, // instance1, instance2
+		{"1.0.2", int(types.ArchAArch64)}: 1, // instance3
+	}, stable)
 }
 
 func TestGetFailedUpdatesMetrics(t *testing.T) {
