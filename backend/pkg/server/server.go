@@ -154,7 +154,7 @@ func New(conf *config.Config, db *db.API, adminSvc *admin.Service, runtimeSvc *r
 	}
 
 	if _, err := os.Stat(path.Join(conf.HTTPStaticDir, "index.html")); err != nil {
-		l.Warn().Str("http-static-dir", conf.HTTPStaticDir).Msg("no index.html in the static dir, the web UI will not load")
+		l.Warn().Err(err).Str("http-static-dir", conf.HTTPStaticDir).Msg("no index.html in the static dir, the web UI will not load")
 	}
 
 	// Register static file handler last to serve frontend assets
