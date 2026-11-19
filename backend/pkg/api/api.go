@@ -4,8 +4,11 @@ import (
 	"database/sql"
 	"embed"
 	"fmt"
+	"net/url"
 	"os"
+	"regexp"
 	"strconv"
+	"strings"
 
 	//register "pgx" sql driver
 	"github.com/doug-martin/goqu/v9"
@@ -35,6 +38,40 @@ const (
 	maxOpenAndIdleDbConns = 25
 	dBConnMaxLifetime     = 5 * 60 // seconds
 )
+
+// defaultDbTimeZone is the Postgres session time zone Nebraska connects with
+// when the DSN does not pin one itself. The queries are written to be time
+// zone agnostic, so this only keeps the timestamps Postgres reports back
+// predictable for anyone inspecting the database with the same DSN.
+const defaultDbTimeZone = "UTC"
+
+// dbTimeZoneParamRegexp matches a "timezone" run-time parameter in either the
+// URL or the keyword/value form of a Postgres DSN.
+var dbTimeZoneParamRegexp = regexp.MustCompile(`(?i)(^|[?&\s])timezone=`)
+
+// withDefaultTimeZone returns dbURL with the Postgres "timezone" run-time
+// parameter set to defaultDbTimeZone, leaving the DSN alone if it already pins
+// one, either directly or through "options=-c timezone=...". Both the URL and
+// the keyword/value DSN forms are supported.
+func withDefaultTimeZone(dbURL string) string {
+	if dbTimeZoneParamRegexp.MatchString(dbURL) {
+		return dbURL
+	}
+
+	if u, err := url.Parse(dbURL); err == nil && (u.Scheme == "postgres" || u.Scheme == "postgresql") {
+		params := u.Query()
+		// options can carry "-c timezone=...", which arrives percent-encoded,
+		// so the regexp above will not have seen it.
+		if strings.Contains(strings.ToLower(params.Get("options")), "timezone=") {
+			return dbURL
+		}
+		params.Set("timezone", defaultDbTimeZone)
+		u.RawQuery = params.Encode()
+		return u.String()
+	}
+
+	return strings.TrimSpace(dbURL) + " timezone=" + defaultDbTimeZone
+}
 
 var l = logger.New("api")
 
@@ -98,6 +135,8 @@ func New(options ...func(*API) error) (*API, error) {
 	if api.dbURL == "" {
 		api.dbURL = defaultDbURL
 	}
+
+	api.dbURL = withDefaultTimeZone(api.dbURL)
 
 	var err error
 
