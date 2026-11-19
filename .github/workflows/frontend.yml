@@ -1,11 +1,15 @@
 name: Build Frontend
 
+# Also run on main: two PRs can pass alone and break main together.
 on:
   pull_request:
-    paths:
+    paths: &paths
     - 'frontend/**'
     - 'Makefile'
     - '.github/**'
+  push:
+    branches: [main]
+    paths: *paths
 
 permissions:
   contents: read
