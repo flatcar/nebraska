@@ -94,6 +94,6 @@ func TestHostFlatcarPackage(t *testing.T) {
 		assert.NoError(t, err)
 		assert.NotNil(t, resp)
 
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
 	})
 }

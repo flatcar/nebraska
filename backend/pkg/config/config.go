@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"path/filepath"
 
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/providers/basicflag"
@@ -160,7 +161,7 @@ func Parse() (*Config, error) {
 	f.String("nebraska-url", "http://localhost:8000", "nebraska URL (http://host:port - required when hosting Flatcar packages in nebraska)")
 	f.String("syncer-packages-url", "", "use this URL instead of the original one for packages created by the syncer; any {{ARCH}} and {{VERSION}} in the URL will be replaced by the original package's architecture and version, respectively. If this option is not used but the 'host-flatcar-packages' one is, then the URL will be nebraska-url/flatcar/ .")
 	f.Bool("http-log", false, "Enable http requests logging")
-	f.String("http-static-dir", "../frontend/dist", "Path to frontend static files")
+	f.String("http-static-dir", defaultStaticDir(), "Path to frontend files (auto-detected by default)")
 	f.String("auth-mode", "oidc", "authentication mode, available modes: noop, github, oidc")
 
 	f.String("gh-client-id", "", fmt.Sprintf("GitHub client ID used for authentication; can be taken from %s env var too", ghClientIDEnvName))
@@ -241,6 +242,18 @@ func Parse() (*Config, error) {
 	}
 
 	return &config, nil
+}
+
+// The image has the frontend in static/ next to the binary. In a source
+// checkout, it is built in ../frontend/dist.
+func defaultStaticDir() string {
+	if exe, err := os.Executable(); err == nil {
+		dir := filepath.Join(filepath.Dir(exe), "static")
+		if _, err := os.Stat(filepath.Join(dir, "index.html")); err == nil {
+			return dir
+		}
+	}
+	return "../frontend/dist"
 }
 
 func getPotentialOrEnv(potentialValue, envName string) string {

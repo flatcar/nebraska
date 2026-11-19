@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
 	"path"
 	"strings"
 	"time"
@@ -152,6 +153,10 @@ func New(conf *config.Config, db *db.API, adminSvc *admin.Service, runtimeSvc *r
 		e.Static("/flatcar/", conf.FlatcarPackagesPath)
 	}
 
+	if _, err := os.Stat(path.Join(conf.HTTPStaticDir, "index.html")); err != nil {
+		l.Warn().Err(err).Str("http-static-dir", conf.HTTPStaticDir).Msg("no index.html in the static dir, the web UI will not load")
+	}
+
 	// Register static file handler last to serve frontend assets
 	e.Static("/", conf.HTTPStaticDir)
 
@@ -162,10 +167,10 @@ func New(conf *config.Config, db *db.API, adminSvc *admin.Service, runtimeSvc *r
 		}
 		if code == http.StatusNotFound {
 			fileErr := c.File(path.Join(conf.HTTPStaticDir, "index.html"))
-			if fileErr != nil {
-				l.Err(fileErr).Msg("Error serving index.html")
+			if fileErr == nil {
+				return
 			}
-			return
+			l.Err(fileErr).Msg("Error serving index.html")
 		}
 		e.DefaultHTTPErrorHandler(err, c)
 	}
