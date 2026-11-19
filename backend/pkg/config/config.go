@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"time"
 
 	"github.com/knadh/koanf"
 	"github.com/knadh/koanf/providers/basicflag"
@@ -56,6 +57,14 @@ type Config struct {
 	OidcUseUserInfo       bool   `koanf:"oidc-use-userinfo"`
 	CAFile                string `koanf:"ca-file"`
 	CACertPool            *x509.CertPool
+
+	// InstanceRetention, when greater than zero, enables a background job that
+	// deletes instances whose newest last_check_for_updates (or created_ts if
+	// they never checked in) is older than this duration. Zero disables it so
+	// existing deployments do not change behaviour on upgrade.
+	InstanceRetention          time.Duration `koanf:"instance-retention"`
+	InstanceRetentionDryRun    bool          `koanf:"instance-retention-dry-run"`
+	InstanceRetentionBatchSize uint          `koanf:"instance-retention-batch-size"`
 }
 
 const (
@@ -146,6 +155,16 @@ func (c *Config) Validate() error {
 		}
 	}
 
+	if c.InstanceRetention < 0 {
+		return errors.New("instance-retention must be zero or a positive duration")
+	}
+	if c.InstanceRetention > 0 && c.InstanceRetentionBatchSize == 0 {
+		return errors.New("instance-retention-batch-size must be greater than zero when instance-retention is enabled")
+	}
+	if c.InstanceRetentionBatchSize > 10000 {
+		return errors.New("instance-retention-batch-size must be at most 10000")
+	}
+
 	return nil
 }
 
@@ -193,6 +212,9 @@ func Parse() (*Config, error) {
 	f.Bool("debug", false, "sets log level to debug")
 	f.Uint("port", 8000, "port to run server")
 	f.String("instance-mode", "", fmt.Sprintf("node role in a distributed deployment: %s (default), %s or %s; can be taken from %s env var too", InstanceModeSingle, InstanceModeControl, InstanceModeEdge, instanceModeEnvName))
+	f.Duration("instance-retention", 0, "delete instances whose newest last_check_for_updates (or created_ts if they never checked in) is older than this duration; 0 disables the pruner")
+	f.Bool("instance-retention-dry-run", false, "log how many instances would be deleted by instance-retention without deleting them")
+	f.Uint("instance-retention-batch-size", 500, "maximum number of instances deleted per batch when instance-retention is enabled")
 
 	k := koanf.New(".")
 
