@@ -65,7 +65,7 @@ func (q *Queries) GetInstance(instanceID, appID string) (*types.Instance, error)
 	application := prepareInstanceAppQuery().Where(
 		goqu.I("instance_id").Eq(goqu.I("i.id")),
 		goqu.L("application_id = ?::text::uuid", appID),
-		goqu.L("last_check_for_updates > now() at time zone 'utc' - ?::text::interval", validityInterval))
+		goqu.L("last_check_for_updates > now() - ?::text::interval", validityInterval))
 	query, args, err := PGDialect.From(goqu.T("instance").As("i")).Prepared(true).
 		Select(goqu.L("i.*"), goqu.L("(SELECT to_jsonb(ia) FROM ? ia)", application).As("application_json")).
 		Where(goqu.I("i.id").Eq(instanceID)).
@@ -249,7 +249,7 @@ func (q *Queries) getFilterInstancesQuery(selectPart exp.LiteralExpression, p ty
 	query := goqu.From("instance_application").
 		Select(selectPart).
 		Where(goqu.C("application_id").Eq(p.ApplicationID), goqu.C("group_id").Eq(p.GroupID)).
-		Where(goqu.L("last_check_for_updates > now() at time zone 'utc' - interval ?", duration),
+		Where(goqu.L("last_check_for_updates > now() - interval ?", duration),
 			goqu.L(ignoreFakeInstanceCondition("instance_id")))
 
 	if p.Status == types.InstanceStatusUndefined {
