@@ -1,22 +1,17 @@
 name: Build Backend
 permissions:
   contents: read
+# Also run on main: two PRs can pass alone and break main together.
 on:
   pull_request:
-    paths:
-    - 'backend/api/**'
-    - 'backend/cmd/**'
-    - 'backend/pkg/**'
-    - 'backend/tools/**'
-    - 'backend/test/**'
-    - 'backend/test-configs/**'
-    - 'backend/docker-compose*.yaml'
-    - 'backend/go.mod'
-    - 'backend/go.sum'
-    - 'backend/Makefile'
-    - 'updaters/**'
+    paths: &paths
+    - 'backend/**'
+    - '.golangci.yml'
     - '.github/**'
     - Makefile
+  push:
+    branches: [main]
+    paths: *paths
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

@@ -71,8 +71,8 @@ func TestGetVersionCountTimeline(t *testing.T) {
 	assert.Equal(t, false, isCache)
 
 	var totalInstances uint64
-	for _, versionMap := range versionTimelineMap {
-		totalInstances += versionMap[version]
+	for _, versionBreakdown := range versionTimelineMap {
+		totalInstances += versionBreakdown[version]
 	}
 	assert.Equal(t, totalInstances, uint64(1))
 	// for 1h we generate timestamp for every 15 minute so total timeline should have 5 timestamps
@@ -98,6 +98,16 @@ func TestGetVersionCountTimeline(t *testing.T) {
 	assert.Equal(t, len(versionTimelineMap), 11)
 	// the first time the cache is not hit
 	assert.Equal(t, false, isCache)
+
+	// An unknown group ID returns all 5 time buckets with a nil error instead of sql.ErrNoRows.
+	// Because generate_series always emits 5 buckets, check that each bucket is actually empty.
+	versionTimelineMap, isCache, err = a.GetGroupVersionCountTimeline(uuid.New().String(), "1h")
+	assert.NoError(t, err)
+	assert.False(t, isCache)
+	assert.Equal(t, 5, len(versionTimelineMap))
+	for _, versionBreakdown := range versionTimelineMap {
+		assert.Empty(t, versionBreakdown)
+	}
 }
 
 func TestGetStatusCountTimeline(t *testing.T) {
@@ -177,6 +187,15 @@ func TestGetStatusCountTimeline(t *testing.T) {
 	statusTimelineMap, err = a.GetGroupStatusCountTimeline(tGroup.ID, "30d")
 	require.NoError(t, err)
 	assert.Equal(t, 11, len(statusTimelineMap))
+
+	// An unknown group ID returns all 5 time buckets with a nil error instead of sql.ErrNoRows.
+	// Because generate_series always emits 5 buckets, check that each bucket is actually empty.
+	statusTimelineMap, err = a.GetGroupStatusCountTimeline(uuid.New().String(), "1h")
+	require.NoError(t, err)
+	assert.Equal(t, 5, len(statusTimelineMap))
+	for _, statusBreakdown := range statusTimelineMap {
+		assert.Empty(t, statusBreakdown)
+	}
 }
 
 func TestUpdateLocalOverrides(t *testing.T) {
@@ -301,13 +320,15 @@ func TestUpdateLocalOverrides(t *testing.T) {
 		require.NoError(t, err)
 
 		require.NoError(t, update(t, `{"policy_period_interval": "999999 days", "policy_update_timeout": "999999 days"}`))
-		_, err = rs.GetGroupUpdatesStats(read(t))
+		group := read(t)
+		_, err = rs.GetGroupRolloutPolicyStats(group, group.PolicyMaxUpdatesPerPeriod, group.PolicySafeMode)
 		assert.NoError(t, err)
 
 		// One the bound refuses would fail every update check in the group.
 		_, err = rs.db.Exec(`update group_local set policy_period_interval_override = '3000000 days' where group_id = $1`, tGroup.ID)
 		require.NoError(t, err)
-		_, err = rs.GetGroupUpdatesStats(read(t))
+		group = read(t)
+		_, err = rs.GetGroupRolloutPolicyStats(group, group.PolicyMaxUpdatesPerPeriod, group.PolicySafeMode)
 		assert.ErrorContains(t, err, "out of range")
 	})
 
