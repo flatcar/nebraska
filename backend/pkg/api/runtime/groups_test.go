@@ -200,10 +200,12 @@ func TestGetStatusCountTimeline(t *testing.T) {
 		statusTimelineMap, err = a.GetGroupStatusCountTimeline(tGroup.ID, "30d")
 		require.NoError(t, err)
 		assert.Equal(t, 11, len(statusTimelineMap), "30d window produces 11 3-day buckets (30d/3d + 1)")
+	})
 
+	t.Run("unknown_group_id", func(t *testing.T) {
 		// An unknown group ID returns all 5 time buckets with a nil error instead of sql.ErrNoRows.
 		// Because generate_series always emits 5 buckets, check that each bucket is actually empty.
-		statusTimelineMap, err = a.GetGroupStatusCountTimeline(uuid.New().String(), "1h")
+		statusTimelineMap, err := a.GetGroupStatusCountTimeline(uuid.New().String(), "1h")
 		require.NoError(t, err)
 		assert.Equal(t, 5, len(statusTimelineMap))
 		for _, statusBreakdown := range statusTimelineMap {
