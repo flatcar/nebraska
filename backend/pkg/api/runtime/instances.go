@@ -24,16 +24,20 @@ func NewInstanceApplication(appID, groupID, version string) types.InstanceApplic
 
 // RegisterInstance registers an instance into Nebraska.
 func (s *Service) RegisterInstance(inst types.Instance, instApp types.InstanceApplication) (*types.Instance, error) {
+	instance, _, err := s.registerInstance(inst, instApp)
+	return instance, err
+}
+
+// registerInstance also returns the instance's group. The returned instance
+// reflects what was written.
+func (s *Service) registerInstance(inst types.Instance, instApp types.InstanceApplication) (*types.Instance, *types.Group, error) {
 	if !dbreads.IsValidSemver(instApp.Version) {
-		return nil, types.ErrInvalidSemver
+		return nil, nil, types.ErrInvalidSemver
 	}
 
-	appID := instApp.ApplicationID
-	groupID := instApp.GroupID.String
-
-	var err error
-	if appID, groupID, err = s.validateApplicationAndGroup(appID, groupID); err != nil {
-		return nil, err
+	appID, groupID, group, err := s.validateApplicationAndGroup(instApp.ApplicationID, instApp.GroupID.String)
+	if err != nil {
+		return nil, nil, err
 	}
 
 	instanceAlias := inst.Alias
@@ -72,47 +76,66 @@ func (s *Service) RegisterInstance(inst types.Instance, instApp types.InstanceAp
 
 		// Skip updating anything unnecessary
 		if !updateInstance && !updateInstanceApplication {
-			return instance, nil
+			return instance, group, nil
 		}
 	}
 
-	upsertInstance, _, err := goqu.Insert("instance").
+	now := nowUTC()
+	upsertInstance, instanceArgs, err := dbreads.PGDialect.Insert("instance").Prepared(true).
 		Cols("id", "ip", "alias", "oem", "aleph_version").
 		Vals(goqu.Vals{inst.ID, inst.IP, instanceAlias, instanceOEM, instanceAlephVersion}).
 		OnConflict(goqu.DoUpdate("id", goqu.Record{"id": inst.ID, "ip": inst.IP, "alias": instanceAlias, "oem": instanceOEM, "aleph_version": instanceAlephVersion})).
 		ToSQL()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	upsertInstanceApplication, _, err := goqu.Insert("instance_application").
+	upsertInstanceApplication, instanceAppArgs, err := dbreads.PGDialect.Insert("instance_application").Prepared(true).
 		Cols("instance_id", "application_id", "group_id", "version", "last_check_for_updates").
-		Vals(goqu.Vals{inst.ID, appID, groupID, instApp.Version, nowUTC()}).
-		OnConflict(goqu.DoUpdate("ON CONSTRAINT instance_application_pkey", goqu.Record{"group_id": groupID, "version": instApp.Version, "last_check_for_updates": nowUTC()})).
+		Vals(goqu.Vals{inst.ID, appID, groupID, instApp.Version, now}).
+		OnConflict(goqu.DoUpdate("ON CONSTRAINT instance_application_pkey", goqu.Record{"group_id": groupID, "version": instApp.Version, "last_check_for_updates": now})).
 		ToSQL()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	// If we only have one table to update, then we just do that here directly and avoid the
 	// transaction below.
 	if updateInstance != updateInstanceApplication {
-		queryToExec := upsertInstance
+		queryToExec, args := upsertInstance, instanceArgs
 		if updateInstanceApplication {
-			queryToExec = upsertInstanceApplication
+			queryToExec, args = upsertInstanceApplication, instanceAppArgs
 		}
-		_, err := s.db.Exec(queryToExec)
+		_, err := s.db.Exec(queryToExec, args...)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
-		return instance, nil
+		if instance.Application.ApplicationID == "" {
+			// The read above found no recent application row; only a fresh read has its status.
+			instance, err = s.GetInstance(inst.ID, appID)
+			if err != nil {
+				return nil, nil, err
+			}
+			return instance, group, nil
+		}
+		written := *instance
+		if updateInstance {
+			written.IP, written.Alias, written.OEM, written.AlephVersion = inst.IP, instanceAlias, instanceOEM, instanceAlephVersion
+		}
+		if updateInstanceApplication {
+			written.Application.GroupID = null.StringFrom(groupID)
+			written.Application.Version = instApp.Version
+			// As a read returns it: whole microseconds, in local time.
+			written.Application.LastCheckForUpdates = now.Truncate(time.Microsecond).In(time.Local)
+		}
+		return &written, group, nil
 	}
 
 	// If this is an instance we haven't seen yet, then we write into instance + instance_application
 	tx, err := s.db.Begin()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	defer func() {
 		if err := tx.Rollback(); err != nil && err != sql.ErrTxDone {
@@ -120,33 +143,37 @@ func (s *Service) RegisterInstance(inst types.Instance, instApp types.InstanceAp
 		}
 	}()
 
-	result, err := tx.Exec(upsertInstance)
+	result, err := tx.Exec(upsertInstance, instanceArgs...)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	if rowsAffected == 0 {
-		return nil, fmt.Errorf("RegisterInstance instance insert failed")
+		return nil, nil, fmt.Errorf("RegisterInstance instance insert failed")
 	}
 
-	result, err = tx.Exec(upsertInstanceApplication)
+	result, err = tx.Exec(upsertInstanceApplication, instanceAppArgs...)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	rowsAffected, err = result.RowsAffected()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	if rowsAffected == 0 {
-		return nil, fmt.Errorf("RegisterInstance upsert for instance_application failed")
+		return nil, nil, fmt.Errorf("RegisterInstance upsert for instance_application failed")
 	}
 	if err := tx.Commit(); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return s.GetInstance(inst.ID, appID)
+	instance, err = s.GetInstance(inst.ID, appID)
+	if err != nil {
+		return nil, nil, err
+	}
+	return instance, group, nil
 }
 
 func (s *Service) UpdateInstance(instanceID string, alias string) (*types.Instance, error) {
@@ -172,39 +199,28 @@ func (s *Service) UpdateInstance(instanceID string, alias string) (*types.Instan
 
 // validateApplicationAndGroup validates if the group provided belongs to the
 // provided application, returning the normalized uuid version of the appID and
-// groupID provided if both are valid and the group belongs to the given
-// application, or an error if something goes wrong.
-func (s *Service) validateApplicationAndGroup(appID, groupID string) (string, string, error) {
+// groupID provided and the group if both are valid and the group belongs to the
+// given application, or an error if something goes wrong.
+func (s *Service) validateApplicationAndGroup(appID, groupID string) (string, string, *types.Group, error) {
 	appUUID, err := uuid.Parse(appID)
 	if err != nil {
-		return "", "", err
+		return "", "", nil, err
 	}
 	groupUUID, err := uuid.Parse(groupID)
 	if err != nil {
-		return "", "", err
+		return "", "", nil, err
 	}
 
 	group, err := s.GetGroup(groupID)
 	if err != nil {
-		return "", "", err
+		return "", "", nil, err
 	}
 
 	if group.ApplicationID != appUUID.String() {
-		return "", "", types.ErrInvalidApplicationOrGroup
+		return "", "", nil, types.ErrInvalidApplicationOrGroup
 	}
 
-	return appUUID.String(), groupUUID.String(), nil
-}
-
-// updateInstanceStatus updates the status for the provided instance in the
-// context of the given application, storing it as well in the instance status
-// history registry.
-func (s *Service) updateInstanceStatus(instanceID, appID string, newStatus int) error {
-	instance, err := s.GetInstance(instanceID, appID)
-	if err != nil {
-		return err
-	}
-	return s.updateInstanceObjStatus(instance, newStatus)
+	return appUUID.String(), groupUUID.String(), group, nil
 }
 
 // InstanceStatusUpdateGranted for an instance and version

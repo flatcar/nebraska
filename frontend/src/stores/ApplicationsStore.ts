@@ -1,7 +1,14 @@
 import _ from 'underscore';
 
 import API from '../api/API';
-import { Application, Channel, Group, Package, Packages } from '../api/apiDataTypes';
+import {
+  Application,
+  Channel,
+  Group,
+  GroupLocalOverrides,
+  Package,
+  Packages,
+} from '../api/apiDataTypes';
 import Store from './BaseStore';
 import { setUser } from './redux/features/user';
 import store from './redux/store';
@@ -209,6 +216,28 @@ class ApplicationsStore extends Store {
     const index = _.findIndex(applicationToUpdate.groups, { id: groupItem.id });
     applicationToUpdate.groups[index] = groupItem;
     this.emitChange();
+  }
+
+  async updateGroupLocalOverrides(
+    applicationID: string,
+    groupID: string,
+    overrides: Partial<GroupLocalOverrides>
+  ) {
+    const group = await API.updateGroupLocalOverrides(applicationID, groupID, overrides);
+    const applicationToUpdate = _.findWhere(this.applications as _.Collection<any>, {
+      id: group.application_id,
+    });
+    const index = _.findIndex(applicationToUpdate.groups, { id: group.id });
+    applicationToUpdate.groups[index] = group;
+    this.emitChange();
+  }
+
+  // Pauses updates on this node only, or releases the pause, including one the
+  // safe-mode brake set, so the group default applies on the node again.
+  setGroupUpdatesPaused(applicationID: string, groupID: string, paused: boolean) {
+    return this.updateGroupLocalOverrides(applicationID, groupID, {
+      policy_updates_enabled: paused ? false : null,
+    });
   }
 
   getGroup(applicationID: string, groupID: string) {

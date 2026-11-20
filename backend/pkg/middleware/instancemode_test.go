@@ -160,8 +160,8 @@ func TestEchoTemplate(t *testing.T) {
 	assert.Equal(t, "/health", echoTemplate("/health"))
 	assert.Equal(t, "/api/apps", echoTemplate("/api/apps"))
 	assert.Equal(t, "/api/apps/:appIDorProductID", echoTemplate("/api/apps/{appIDorProductID}"))
-	assert.Equal(t, "/api/apps/:appIDorProductID/groups/:groupID/updates_override",
-		echoTemplate("/api/apps/{appIDorProductID}/groups/{groupID}/updates_override"))
+	assert.Equal(t, "/api/apps/:appIDorProductID/groups/:groupID/local_overrides",
+		echoTemplate("/api/apps/{appIDorProductID}/groups/{groupID}/local_overrides"))
 }
 
 // concreteURL fills a route template in with values, so that a request reaches

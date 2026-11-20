@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -36,7 +37,9 @@ func TestGetVersionCountTimeline(t *testing.T) {
 	instance, err := a.GetInstance(instanceID, tApp.ID)
 	assert.NoError(t, err)
 	_ = rs.grantUpdate(instance, version)
-	_ = rs.updateInstanceStatus(instanceID, tApp.ID, types.InstanceStatusComplete)
+	instance, err = a.GetInstance(instanceID, tApp.ID)
+	assert.NoError(t, err)
+	_ = rs.updateInstanceObjStatus(instance, types.InstanceStatusComplete)
 
 	var versionTimelineMap map[time.Time](types.VersionCountMap)
 	var isCache bool
@@ -68,8 +71,8 @@ func TestGetVersionCountTimeline(t *testing.T) {
 	assert.Equal(t, false, isCache)
 
 	var totalInstances uint64
-	for _, versionMap := range versionTimelineMap {
-		totalInstances += versionMap[version]
+	for _, versionBreakdown := range versionTimelineMap {
+		totalInstances += versionBreakdown[version]
 	}
 	assert.Equal(t, totalInstances, uint64(1))
 	// for 1h we generate timestamp for every 15 minute so total timeline should have 5 timestamps
@@ -95,6 +98,16 @@ func TestGetVersionCountTimeline(t *testing.T) {
 	assert.Equal(t, len(versionTimelineMap), 11)
 	// the first time the cache is not hit
 	assert.Equal(t, false, isCache)
+
+	// An unknown group ID returns all 5 time buckets with a nil error instead of sql.ErrNoRows.
+	// Because generate_series always emits 5 buckets, check that each bucket is actually empty.
+	versionTimelineMap, isCache, err = a.GetGroupVersionCountTimeline(uuid.New().String(), "1h")
+	assert.NoError(t, err)
+	assert.False(t, isCache)
+	assert.Equal(t, 5, len(versionTimelineMap))
+	for _, versionBreakdown := range versionTimelineMap {
+		assert.Empty(t, versionBreakdown)
+	}
 }
 
 func TestGetStatusCountTimeline(t *testing.T) {
@@ -127,9 +140,11 @@ func TestGetStatusCountTimeline(t *testing.T) {
 		instance, err := a.GetInstance(instanceID, tApp.ID)
 		require.NoError(t, err)
 
-		// FIXME: updateInstanceStatus implicitly requires grantUpdate to populate last_update_version.
+		// FIXME: updateInstanceObjStatus implicitly requires grantUpdate to populate last_update_version.
 		require.NoError(t, rs.grantUpdate(instance, targetVersion))
-		require.NoError(t, rs.updateInstanceStatus(instanceID, tApp.ID, status))
+		instance, err = a.GetInstance(instanceID, tApp.ID)
+		require.NoError(t, err)
+		require.NoError(t, rs.updateInstanceObjStatus(instance, status))
 	}
 
 	// Register two instances with distinct statuses to verify breakdown aggregation
@@ -172,4 +187,178 @@ func TestGetStatusCountTimeline(t *testing.T) {
 	statusTimelineMap, err = a.GetGroupStatusCountTimeline(tGroup.ID, "30d")
 	require.NoError(t, err)
 	assert.Equal(t, 11, len(statusTimelineMap))
+
+	// An unknown group ID returns all 5 time buckets with a nil error instead of sql.ErrNoRows.
+	// Because generate_series always emits 5 buckets, check that each bucket is actually empty.
+	statusTimelineMap, err = a.GetGroupStatusCountTimeline(uuid.New().String(), "1h")
+	require.NoError(t, err)
+	assert.Equal(t, 5, len(statusTimelineMap))
+	for _, statusBreakdown := range statusTimelineMap {
+		assert.Empty(t, statusBreakdown)
+	}
+}
+
+func TestUpdateLocalOverrides(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	as := adminSvc(a)
+	rs := runtimeSvc(a)
+
+	tTeam, _ := as.AddTeam(&types.Team{Name: "test_team"})
+	tApp, _ := as.AddApp(&types.Application{Name: "test_app", TeamID: tTeam.ID})
+	tGroup, err := as.AddGroup(&types.Group{Name: "test_group", ApplicationID: tApp.ID, PolicyUpdatesEnabled: true, PolicyTimezone: null.StringFrom("UTC"), PolicyPeriodInterval: "15 minutes", PolicyMaxUpdatesPerPeriod: 2, PolicyUpdateTimeout: "60 minutes"})
+	require.NoError(t, err)
+
+	update := func(t *testing.T, body string) error {
+		t.Helper()
+
+		var patch types.GroupPolicyOverridesPatch
+		require.NoError(t, json.Unmarshal([]byte(body), &patch))
+		return rs.UpdateLocalOverrides(tGroup.ID, &patch)
+	}
+	read := func(t *testing.T) *types.Group {
+		t.Helper()
+
+		group, err := rs.GetGroup(tGroup.ID)
+		require.NoError(t, err)
+		return group
+	}
+	reset := func(t *testing.T) {
+		t.Helper()
+
+		require.NoError(t, update(t, `{"policy_updates_enabled": null, "policy_safe_mode": null, "policy_office_hours": null,
+			"policy_timezone": null, "policy_period_interval": null, "policy_max_updates_per_period": null, "policy_update_timeout": null}`))
+	}
+	adminDefault := types.GroupPolicy{
+		PolicyUpdatesEnabled:      true,
+		PolicyTimezone:            null.StringFrom("UTC"),
+		PolicyPeriodInterval:      "15 minutes",
+		PolicyMaxUpdatesPerPeriod: 2,
+		PolicyUpdateTimeout:       "60 minutes",
+	}
+
+	t.Run("sets_overrides_without_touching_the_default", func(t *testing.T) {
+		t.Cleanup(func() { reset(t) })
+
+		require.NoError(t, update(t, `{"policy_safe_mode": true, "policy_max_updates_per_period": 5, "policy_period_interval": "2 hours"}`))
+
+		group := read(t)
+		// The rollout engine reads the top-level fields.
+		assert.True(t, group.PolicySafeMode)
+		assert.Equal(t, 5, group.PolicyMaxUpdatesPerPeriod)
+		assert.Equal(t, "2 hours", group.PolicyPeriodInterval)
+		assert.Equal(t, "60 minutes", group.PolicyUpdateTimeout)
+		assert.Equal(t, null.IntFrom(5), group.LocalOverrides.PolicyMaxUpdatesPerPeriod)
+		assert.False(t, group.LocalOverrides.PolicyUpdateTimeout.Valid)
+		assert.Equal(t, adminDefault, group.AdminPolicy)
+	})
+
+	t.Run("leaves_out_what_it_does_not_name", func(t *testing.T) {
+		t.Cleanup(func() { reset(t) })
+
+		require.NoError(t, update(t, `{"policy_safe_mode": true}`))
+		// The rollout engine trips the brake while the operator edits something else.
+		require.NoError(t, rs.disableUpdates(tGroup.ID))
+		require.NoError(t, update(t, `{"policy_safe_mode": null, "policy_update_timeout": "2 hours"}`))
+
+		group := read(t)
+		assert.False(t, group.PolicyUpdatesEnabled, "the brake must stay")
+		assert.False(t, group.LocalOverrides.PolicySafeMode.Valid)
+		assert.Equal(t, null.StringFrom("2 hours"), group.LocalOverrides.PolicyUpdateTimeout)
+	})
+
+	t.Run("pauses_and_resumes_this_node", func(t *testing.T) {
+		t.Cleanup(func() { reset(t) })
+
+		require.NoError(t, update(t, `{"policy_updates_enabled": false}`))
+		assert.False(t, read(t).PolicyUpdatesEnabled)
+
+		require.NoError(t, update(t, `{"policy_updates_enabled": null}`))
+		assert.True(t, read(t).PolicyUpdatesEnabled, "back to the default")
+	})
+
+	t.Run("an_office_hours_override_carries_its_timezone", func(t *testing.T) {
+		t.Cleanup(func() { reset(t) })
+
+		assert.ErrorIs(t, update(t, `{"policy_office_hours": true}`), types.ErrInvalidLocalOverrides)
+
+		require.NoError(t, update(t, `{"policy_office_hours": true, "policy_timezone": "Asia/Tokyo"}`))
+		group := read(t)
+		assert.True(t, group.PolicyOfficeHours)
+		assert.Equal(t, null.StringFrom("Asia/Tokyo"), group.PolicyTimezone)
+
+		assert.ErrorIs(t, update(t, `{"policy_timezone": null}`), types.ErrInvalidLocalOverrides)
+		require.NoError(t, update(t, `{"policy_office_hours": false}`))
+		require.NoError(t, update(t, `{"policy_timezone": null}`))
+	})
+
+	t.Run("a_timezone_override_goes_with_office_hours", func(t *testing.T) {
+		t.Cleanup(func() { reset(t) })
+
+		// Left alone it would pair with office hours the default may turn on.
+		assert.ErrorIs(t, update(t, `{"policy_timezone": "Asia/Tokyo"}`), types.ErrInvalidLocalOverrides)
+
+		require.NoError(t, update(t, `{"policy_office_hours": true, "policy_timezone": "Asia/Tokyo"}`))
+		assert.ErrorIs(t, update(t, `{"policy_office_hours": null}`), types.ErrInvalidLocalOverrides)
+		require.NoError(t, update(t, `{"policy_office_hours": null, "policy_timezone": null}`))
+		assert.Equal(t, types.GroupPolicyOverrides{}, *read(t).LocalOverrides)
+	})
+
+	t.Run("refuses_what_it_cannot_apply", func(t *testing.T) {
+		assert.ErrorIs(t, update(t, `{"policy_safe_mode": true, "policy_updates_enabled": true}`), types.ErrInvalidLocalOverrides)
+
+		group := read(t)
+		assert.Equal(t, types.GroupPolicyOverrides{}, *group.LocalOverrides, "a refused change writes nothing")
+	})
+
+	// The rollout engine computes now() less the period on every update check
+	// while an instance of the group is active.
+	t.Run("the_longest_interval_still_works_in_an_update_check", func(t *testing.T) {
+		t.Cleanup(func() { reset(t) })
+
+		_, err := rs.RegisterInstance(types.Instance{ID: uuid.New().String(), IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, "1.0.0"))
+		require.NoError(t, err)
+
+		require.NoError(t, update(t, `{"policy_period_interval": "999999 days", "policy_update_timeout": "999999 days"}`))
+		group := read(t)
+		_, err = rs.GetGroupRolloutPolicyStats(group, group.PolicyMaxUpdatesPerPeriod, group.PolicySafeMode)
+		assert.NoError(t, err)
+
+		// One the bound refuses would fail every update check in the group.
+		_, err = rs.db.Exec(`update group_local set policy_period_interval_override = '3000000 days' where group_id = $1`, tGroup.ID)
+		require.NoError(t, err)
+		group = read(t)
+		_, err = rs.GetGroupRolloutPolicyStats(group, group.PolicyMaxUpdatesPerPeriod, group.PolicySafeMode)
+		assert.ErrorContains(t, err, "out of range")
+	})
+
+	// A row may hold a timezone override without office hours, such as one
+	// changed by hand. A change that leaves both alone still applies.
+	t.Run("a_pause_never_fails_on_account_of_office_hours", func(t *testing.T) {
+		t.Cleanup(func() { reset(t) })
+
+		_, err := rs.db.Exec(`update group_local set policy_timezone_override = 'Asia/Tokyo' where group_id = $1`, tGroup.ID)
+		require.NoError(t, err)
+
+		for _, body := range []string{
+			`{"policy_updates_enabled": false}`,
+			`{"policy_updates_enabled": null}`,
+			`{"policy_safe_mode": true}`,
+			`{}`,
+		} {
+			assert.NoError(t, update(t, body), body)
+		}
+
+		// A change to either still has to leave them paired.
+		assert.ErrorIs(t, update(t, `{"policy_timezone": "Europe/Paris"}`), types.ErrInvalidLocalOverrides)
+		require.NoError(t, update(t, `{"policy_office_hours": null, "policy_timezone": null}`))
+		assert.Equal(t, types.GroupPolicyOverrides{PolicySafeMode: null.BoolFrom(true)}, *read(t).LocalOverrides)
+	})
+
+	t.Run("unknown_group", func(t *testing.T) {
+		var patch types.GroupPolicyOverridesPatch
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &patch))
+
+		assert.ErrorIs(t, rs.UpdateLocalOverrides(uuid.New().String(), &patch), types.ErrNoRowsAffected)
+	})
 }

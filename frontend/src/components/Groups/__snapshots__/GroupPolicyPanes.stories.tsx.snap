@@ -1,0 +1,541 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`groups/GroupPolicyPanes ControlNode smoke-test 1`] = `
+<div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-2 css-zjhuaj-MuiGrid-root">
+  <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 MuiGrid-grid-md-6 css-204a8q-MuiGrid-root">
+    <section class="MuiPaper-root MuiPaper-outlined MuiPaper-rounded css-1if871j-MuiPaper-root"
+             aria-label="Default Policy"
+             data-testid="default-policy-pane"
+    >
+      <div class="MuiBox-root css-2djo2m">
+        <div class="MuiBox-root css-0">
+          <h2 class="MuiTypography-root MuiTypography-body1 css-vjbd2p-MuiTypography-root">
+            Default Policy
+          </h2>
+          <p class="MuiTypography-root MuiTypography-body1 css-1fv81l5-MuiTypography-root">
+            Replicated to every node. Applies where a node has no override.
+          </p>
+        </div>
+        <div class="MuiBox-root css-6su6fj">
+          <button class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall MuiButton-colorPrimary css-hbv5nw-MuiButtonBase-root-MuiButton-root"
+                  tabindex="0"
+                  type="button"
+                  aria-label="Edit default policy"
+          >
+            <span class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeSmall css-d8i980-MuiButton-startIcon">
+              <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-120dh41-MuiSvgIcon-root"
+                   focusable="false"
+                   aria-hidden="true"
+                   viewbox="0 0 24 24"
+                   data-testid="EditIcon"
+              >
+                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z">
+                </path>
+              </svg>
+            </span>
+            Edit
+          </button>
+        </div>
+      </div>
+      <div class="MuiBox-root css-1hw29i9">
+        <div class="MuiBox-root css-1q3pv36"
+             data-testid="policy-row"
+        >
+          <div class="MuiBox-root css-1rzienk">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+              Updates
+            </span>
+          </div>
+          <div class="MuiBox-root css-1to425n">
+            <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
+              <span class="MuiBox-root css-70qvj9">
+                <div class="MuiBox-root css-0">
+                  Enabled
+                </div>
+                <div class="MuiBox-root css-0">
+                  <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-s5crqp-MuiSvgIcon-root"
+                       focusable="false"
+                       aria-hidden="true"
+                       viewbox="0 0 24 24"
+                       data-testid="CheckIcon"
+                  >
+                    <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z">
+                    </path>
+                  </svg>
+                </div>
+              </span>
+            </span>
+          </div>
+        </div>
+        <div class="MuiBox-root css-1q3pv36"
+             data-testid="policy-row"
+        >
+          <div class="MuiBox-root css-1rzienk">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+              Only Office Hours
+            </span>
+          </div>
+          <div class="MuiBox-root css-1to425n">
+            <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
+              No
+            </span>
+          </div>
+        </div>
+        <div class="MuiBox-root css-1q3pv36"
+             data-testid="policy-row"
+        >
+          <div class="MuiBox-root css-1rzienk">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+              Safe Mode
+            </span>
+          </div>
+          <div class="MuiBox-root css-1to425n">
+            <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
+              Yes
+            </span>
+          </div>
+        </div>
+        <div class="MuiBox-root css-1q3pv36"
+             data-testid="policy-row"
+        >
+          <div class="MuiBox-root css-1rzienk">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+              Updates Policy
+            </span>
+          </div>
+          <div class="MuiBox-root css-1to425n">
+            <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
+              Max 2 / 15 minutes
+            </span>
+          </div>
+        </div>
+        <div class="MuiBox-root css-1q3pv36"
+             data-testid="policy-row"
+        >
+          <div class="MuiBox-root css-1rzienk">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+              Updates Timeout
+            </span>
+          </div>
+          <div class="MuiBox-root css-1to425n">
+            <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
+              60 minutes
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 MuiGrid-grid-md-6 css-204a8q-MuiGrid-root">
+    <section class="MuiPaper-root MuiPaper-outlined MuiPaper-rounded css-1if871j-MuiPaper-root"
+             aria-label="This Node (Control)"
+             data-testid="local-policy-pane"
+    >
+      <div class="MuiBox-root css-2djo2m">
+        <div class="MuiBox-root css-0">
+          <h2 class="MuiTypography-root MuiTypography-body1 css-vjbd2p-MuiTypography-root">
+            This Node (Control)
+          </h2>
+          <p class="MuiTypography-root MuiTypography-body1 css-1fv81l5-MuiTypography-root">
+            In effect on this node. Overrides are not replicated.
+          </p>
+        </div>
+        <div class="MuiBox-root css-6su6fj">
+          <button class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall MuiButton-colorPrimary css-hbv5nw-MuiButtonBase-root-MuiButton-root"
+                  tabindex="0"
+                  type="button"
+                  aria-label="Edit this node's overrides"
+          >
+            <span class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeSmall css-d8i980-MuiButton-startIcon">
+              <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-120dh41-MuiSvgIcon-root"
+                   focusable="false"
+                   aria-hidden="true"
+                   viewbox="0 0 24 24"
+                   data-testid="EditIcon"
+              >
+                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z">
+                </path>
+              </svg>
+            </span>
+            Edit
+          </button>
+        </div>
+      </div>
+      <div class="MuiBox-root css-1hw29i9">
+        <div class="MuiBox-root css-1q3pv36"
+             data-testid="policy-row"
+        >
+          <div class="MuiBox-root css-1rzienk">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+              Updates
+            </span>
+          </div>
+          <div class="MuiBox-root css-1to425n">
+            <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
+              <span class="MuiBox-root css-70qvj9">
+                <div class="MuiBox-root css-0">
+                  Enabled
+                </div>
+                <div class="MuiBox-root css-0">
+                  <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-s5crqp-MuiSvgIcon-root"
+                       focusable="false"
+                       aria-hidden="true"
+                       viewbox="0 0 24 24"
+                       data-testid="CheckIcon"
+                  >
+                    <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z">
+                    </path>
+                  </svg>
+                </div>
+              </span>
+            </span>
+            <button class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall MuiButton-colorPrimary css-1ymauxe-MuiButtonBase-root-MuiButton-root"
+                    tabindex="0"
+                    type="button"
+                    aria-label="Pause updates on this node"
+            >
+              Pause
+            </button>
+          </div>
+        </div>
+        <div class="MuiBox-root css-1q3pv36"
+             data-testid="policy-row"
+        >
+          <div class="MuiBox-root css-1rzienk">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+              Only Office Hours
+            </span>
+          </div>
+          <div class="MuiBox-root css-1to425n">
+            <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
+              No
+            </span>
+          </div>
+        </div>
+        <div class="MuiBox-root css-1q3pv36"
+             data-testid="policy-row"
+        >
+          <div class="MuiBox-root css-1rzienk">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+              Safe Mode
+            </span>
+          </div>
+          <div class="MuiBox-root css-1to425n">
+            <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
+              Yes
+            </span>
+          </div>
+        </div>
+        <div class="MuiBox-root css-1q3pv36"
+             data-testid="policy-row"
+        >
+          <div class="MuiBox-root css-1rzienk">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+              Updates Policy
+            </span>
+          </div>
+          <div class="MuiBox-root css-1to425n">
+            <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
+              Max 2 / 15 minutes
+            </span>
+          </div>
+        </div>
+        <div class="MuiBox-root css-1q3pv36"
+             data-testid="policy-row"
+        >
+          <div class="MuiBox-root css-1rzienk">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+              Updates Timeout
+            </span>
+          </div>
+          <div class="MuiBox-root css-1to425n">
+            <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
+              60 minutes
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+`;
+
+exports[`groups/GroupPolicyPanes EdgeNodeWithOverrides smoke-test 1`] = `
+<div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row MuiGrid-spacing-xs-2 css-zjhuaj-MuiGrid-root">
+  <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 MuiGrid-grid-md-6 css-204a8q-MuiGrid-root">
+    <section class="MuiPaper-root MuiPaper-outlined MuiPaper-rounded css-1if871j-MuiPaper-root"
+             aria-label="Default Policy"
+             data-testid="default-policy-pane"
+    >
+      <div class="MuiBox-root css-2djo2m">
+        <div class="MuiBox-root css-0">
+          <h2 class="MuiTypography-root MuiTypography-body1 css-vjbd2p-MuiTypography-root">
+            Default Policy
+          </h2>
+          <p class="MuiTypography-root MuiTypography-body1 css-1fv81l5-MuiTypography-root">
+            Replicated from the control node. Read-only here.
+          </p>
+        </div>
+        <div class="MuiBox-root css-6su6fj">
+          <svg class="MuiSvgIcon-root MuiSvgIcon-colorDisabled MuiSvgIcon-fontSizeMedium css-3nihpm-MuiSvgIcon-root"
+               focusable="false"
+               role="img"
+               viewbox="0 0 24 24"
+               data-testid="LockOutlinedIcon"
+               aria-label="Read-only on an edge node. Change it on the control node."
+               data-mui-internal-clone-element="true"
+          >
+            <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2M9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9zm9 14H6V10h12zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2">
+            </path>
+            <title>
+              Read-only on an edge node. Change it on the control node.
+            </title>
+          </svg>
+        </div>
+      </div>
+      <div class="MuiBox-root css-1hw29i9">
+        <div class="MuiBox-root css-1q3pv36"
+             data-testid="policy-row"
+        >
+          <div class="MuiBox-root css-1rzienk">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+              Updates
+            </span>
+          </div>
+          <div class="MuiBox-root css-1to425n">
+            <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
+              <span class="MuiBox-root css-70qvj9">
+                <div class="MuiBox-root css-0">
+                  Enabled
+                </div>
+                <div class="MuiBox-root css-0">
+                  <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-s5crqp-MuiSvgIcon-root"
+                       focusable="false"
+                       aria-hidden="true"
+                       viewbox="0 0 24 24"
+                       data-testid="CheckIcon"
+                  >
+                    <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z">
+                    </path>
+                  </svg>
+                </div>
+              </span>
+            </span>
+          </div>
+        </div>
+        <div class="MuiBox-root css-1q3pv36"
+             data-testid="policy-row"
+        >
+          <div class="MuiBox-root css-1rzienk">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+              Only Office Hours
+            </span>
+          </div>
+          <div class="MuiBox-root css-1to425n">
+            <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
+              No
+            </span>
+          </div>
+        </div>
+        <div class="MuiBox-root css-1q3pv36"
+             data-testid="policy-row"
+        >
+          <div class="MuiBox-root css-1rzienk">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+              Safe Mode
+            </span>
+          </div>
+          <div class="MuiBox-root css-1to425n">
+            <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
+              Yes
+            </span>
+          </div>
+        </div>
+        <div class="MuiBox-root css-1q3pv36"
+             data-testid="policy-row"
+        >
+          <div class="MuiBox-root css-1rzienk">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+              Updates Policy
+            </span>
+          </div>
+          <div class="MuiBox-root css-1to425n">
+            <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
+              Max 2 / 15 minutes
+            </span>
+          </div>
+        </div>
+        <div class="MuiBox-root css-1q3pv36"
+             data-testid="policy-row"
+        >
+          <div class="MuiBox-root css-1rzienk">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+              Updates Timeout
+            </span>
+          </div>
+          <div class="MuiBox-root css-1to425n">
+            <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
+              60 minutes
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 MuiGrid-grid-md-6 css-204a8q-MuiGrid-root">
+    <section class="MuiPaper-root MuiPaper-outlined MuiPaper-rounded css-1if871j-MuiPaper-root"
+             aria-label="This Node (Edge)"
+             data-testid="local-policy-pane"
+    >
+      <div class="MuiBox-root css-2djo2m">
+        <div class="MuiBox-root css-0">
+          <h2 class="MuiTypography-root MuiTypography-body1 css-vjbd2p-MuiTypography-root">
+            This Node (Edge)
+          </h2>
+          <p class="MuiTypography-root MuiTypography-body1 css-1fv81l5-MuiTypography-root">
+            In effect on this node. Overrides are not replicated.
+          </p>
+        </div>
+        <div class="MuiBox-root css-6su6fj">
+          <button class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall MuiButton-colorPrimary css-hbv5nw-MuiButtonBase-root-MuiButton-root"
+                  tabindex="0"
+                  type="button"
+                  aria-label="Edit this node's overrides"
+          >
+            <span class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeSmall css-d8i980-MuiButton-startIcon">
+              <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-120dh41-MuiSvgIcon-root"
+                   focusable="false"
+                   aria-hidden="true"
+                   viewbox="0 0 24 24"
+                   data-testid="EditIcon"
+              >
+                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z">
+                </path>
+              </svg>
+            </span>
+            Edit
+          </button>
+        </div>
+      </div>
+      <div class="MuiBox-root css-1hw29i9">
+        <div class="MuiBox-root css-1q3pv36"
+             data-testid="policy-row"
+        >
+          <div class="MuiBox-root css-1rzienk">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+              Updates
+            </span>
+          </div>
+          <div class="MuiBox-root css-1to425n">
+            <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
+              <span class="MuiBox-root css-70qvj9">
+                <div class="MuiBox-root css-0">
+                  Paused on this node
+                </div>
+                <div class="MuiBox-root css-0">
+                  <svg class="MuiSvgIcon-root MuiSvgIcon-colorError MuiSvgIcon-fontSizeMedium css-n4bcw2-MuiSvgIcon-root"
+                       focusable="false"
+                       aria-hidden="true"
+                       viewbox="0 0 24 24"
+                       data-testid="CloseIcon"
+                  >
+                    <path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z">
+                    </path>
+                  </svg>
+                </div>
+              </span>
+            </span>
+            <span aria-label="Set on this node only, in place of the default."
+                  class
+                  data-mui-internal-clone-element="true"
+            >
+              <span class="Label-label css-1wzl15x">
+                Override
+              </span>
+            </span>
+            <button class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary MuiButton-sizeSmall MuiButton-textSizeSmall MuiButton-colorPrimary css-1ymauxe-MuiButtonBase-root-MuiButton-root"
+                    tabindex="0"
+                    type="button"
+                    aria-label="Resume updates on this node"
+            >
+              Resume
+            </button>
+          </div>
+        </div>
+        <div class="MuiBox-root css-1q3pv36"
+             data-testid="policy-row"
+        >
+          <div class="MuiBox-root css-1rzienk">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+              Only Office Hours
+            </span>
+          </div>
+          <div class="MuiBox-root css-1to425n">
+            <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
+              Yes (Asia/Tokyo)
+            </span>
+            <span aria-label="Set on this node only, in place of the default."
+                  class
+                  data-mui-internal-clone-element="true"
+            >
+              <span class="Label-label css-1wzl15x">
+                Override
+              </span>
+            </span>
+          </div>
+        </div>
+        <div class="MuiBox-root css-1q3pv36"
+             data-testid="policy-row"
+        >
+          <div class="MuiBox-root css-1rzienk">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+              Safe Mode
+            </span>
+          </div>
+          <div class="MuiBox-root css-1to425n">
+            <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
+              Yes
+            </span>
+          </div>
+        </div>
+        <div class="MuiBox-root css-1q3pv36"
+             data-testid="policy-row"
+        >
+          <div class="MuiBox-root css-1rzienk">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+              Updates Policy
+            </span>
+          </div>
+          <div class="MuiBox-root css-1to425n">
+            <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
+              Max 5 / 2 hours
+            </span>
+            <span aria-label="Set on this node only, in place of the default."
+                  class
+                  data-mui-internal-clone-element="true"
+            >
+              <span class="Label-label css-1wzl15x">
+                Override
+              </span>
+            </span>
+          </div>
+        </div>
+        <div class="MuiBox-root css-1q3pv36"
+             data-testid="policy-row"
+        >
+          <div class="MuiBox-root css-1rzienk">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+              Updates Timeout
+            </span>
+          </div>
+          <div class="MuiBox-root css-1to425n">
+            <span class="MuiTypography-root MuiTypography-body1 css-tgh5fb-MuiTypography-root">
+              60 minutes
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+`;

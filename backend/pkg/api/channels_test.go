@@ -130,6 +130,23 @@ func TestGetChannel(t *testing.T) {
 	assert.Equal(t, tApp.ID, channel.ApplicationID)
 	assert.Equal(t, types.ArchAArch64, channel.Arch)
 
+	// A channel reads back the same package GetPackage reads, with every field
+	// set so that one the channel read leaves empty shows.
+	tPkg, err := as.AddPackageWithMetadata(&types.Package{Type: types.PkgTypeFlatcar, URL: "http://sample.url/pkg", Version: "12.1.0",
+		Description: null.StringFrom("package"), ApplicationID: tApp.ID, Arch: types.ArchAArch64, Filename: null.StringFrom("update.gz"),
+		Size: null.StringFrom("123"), Hash: null.StringFrom("aGFzaA=="), Labels: types.Labels{"tier": "gold"}, ChannelsBlacklist: []string{tChannel.ID},
+		ExtraFiles: []types.File{{Name: null.StringFrom("a.raw"), Size: null.StringFrom("1"), Hash: null.StringFrom("aA=="), Hash256: null.StringFrom("bB==")}},
+		FlatcarAction: &types.FlatcarAction{Event: "postinstall", ChromeOSVersion: "16.0.0", Sha256: "c2hh", NeedsAdmin: true, IsDelta: true,
+			DisablePayloadBackoff: true, MetadataSignatureRsa: "c2ln", MetadataSize: "42", Deadline: "now"}})
+	assert.NoError(t, err)
+	pkgChannel, err := as.AddChannel(&types.Channel{Name: "pkg_channel", Color: "blue", ApplicationID: tApp.ID, Arch: types.ArchAArch64, PackageID: null.StringFrom(tPkg.ID)})
+	assert.NoError(t, err)
+	channel, err = a.GetChannel(pkgChannel.ID)
+	assert.NoError(t, err)
+	pkg, err := a.GetPackage(tPkg.ID)
+	assert.NoError(t, err)
+	assert.Equal(t, pkg, channel.Package)
+
 	_, err = a.GetChannel("invalidChannelID")
 	assert.Error(t, err, "Channel id must be a valid uuid.")
 

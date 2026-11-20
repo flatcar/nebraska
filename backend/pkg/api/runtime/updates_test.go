@@ -45,7 +45,9 @@ func TestGetUpdatePackage_MaxUpdatesLimitsReached(t *testing.T) {
 	_, err = rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.3"}, NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
 	assert.Equal(t, types.ErrMaxConcurrentUpdatesLimitReached, err, "Period interval is over, but there are still two updates not completed or failed.")
 
-	_ = rs.updateInstanceStatus(newInstance1ID, tApp.ID, types.InstanceStatusComplete)
+	instance, err := a.GetInstance(newInstance1ID, tApp.ID)
+	assert.NoError(t, err)
+	_ = rs.updateInstanceObjStatus(instance, types.InstanceStatusComplete)
 
 	_, err = rs.GetUpdatePackage(types.Instance{ID: uuid.New().String(), IP: "10.0.0.3"}, NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
 	assert.NoError(t, err)
@@ -77,7 +79,9 @@ func TestGetUpdatePackage_UpdateInProgressOnInstance(t *testing.T) {
 	assert.True(t, instance.Application.UpdateInProgress)
 	assert.Equal(t, "12.1.0", instance.Application.LastUpdateVersion.String)
 
-	err = rs.updateInstanceStatus(instanceID, tApp.ID, types.InstanceStatusDownloading)
+	instance, err = a.GetInstance(instanceID, tApp.ID)
+	assert.NoError(t, err)
+	err = rs.updateInstanceObjStatus(instance, types.InstanceStatusDownloading)
 	assert.NoError(t, err)
 	_, err = rs.GetUpdatePackage(types.Instance{ID: instanceID, IP: "10.0.0.1"}, NewInstanceApplication(tApp.ID, tGroup.ID, "12.0.0"))
 	assert.Equal(t, types.ErrUpdateInProgressOnInstance, err)

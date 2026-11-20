@@ -25,6 +25,7 @@ func TestGroupVersionTimeline(t *testing.T) {
 
 		// establish DB connection
 		db := newDBForTest(t)
+		defer db.Close()
 
 		// get app that has instance
 		appWithInstance := getAppWithInstance(t, db)
@@ -85,6 +86,7 @@ func TestGroupVersionBreakdown(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// establish DB connection
 		db := newDBForTest(t)
+		defer db.Close()
 
 		// get app that has instance
 		appWithInstance := getAppWithInstance(t, db)
@@ -111,6 +113,7 @@ func TestGroupOEMBreakdown(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// establish DB connection
 		db := newDBForTest(t)
+		defer db.Close()
 
 		// get random app
 		app := getRandomApp(t, db)
@@ -150,6 +153,7 @@ func TestGroupStatusTimeline(t *testing.T) {
 
 		// establish DB connection
 		db := newDBForTest(t)
+		defer db.Close()
 
 		// get random app
 		app := getRandomApp(t, db)
@@ -224,6 +228,7 @@ func TestGroupInstanceStats(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		// establish DB connection
 		db := newDBForTest(t)
+		defer db.Close()
 
 		// get app that has instance
 		appWithInstance := getAppWithInstance(t, db)
