@@ -41,7 +41,7 @@ const day = 24 * time.Hour
 // backdateInstanceStatusHistory rewinds the created_ts of an instance's status history records
 // by timeAgo relative to the database current timestamp (now()).
 //
-// Status transitions written via updateInstanceStatus always register with created_ts = now().
+// Status transitions written via updateInstanceObjStatus always register with created_ts = now().
 // To verify multi-bucket timeline aggregation (e.g. 1d, 7d, 30d queries) and historical window
 // filtering, this helper simulates past events by updating created_ts.
 func backdateInstanceStatusHistory(t *testing.T, a *api.API, instanceID string, timeAgo time.Duration) {
