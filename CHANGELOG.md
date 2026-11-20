@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Security
 
+- **Session cookies are now HTTPS-only and SameSite=Lax:** the login session cookie now carries `Secure` whenever the client reaches Nebraska over TLS, including behind a TLS-terminating proxy that sets `X-Forwarded-Proto`, and `SameSite=Lax` unconditionally, so it is no longer attached to cross-site requests. ([#1542](https://github.com/flatcar/nebraska/issues/1542))
 - **golang.org/x/net → v0.61.0, golang.org/x/text → v0.43.0:** Picks up fixes for GO-2026-6617, GO-2026-6612, GO-2026-6611, GO-2026-6603 and GO-2026-6629. Nebraska's default setup does not use the affected code paths. `govulncheck` still reports GO-2026-5932 (`golang.org/x/crypto/openpgp` is unmaintained, no fix), which remains an indirect dependency through `github.com/google/go-github` v28.
 
 ### Breaking Changes

@@ -31,7 +31,7 @@ func (h *TestHarness) RunBasicSessionLifecycleTests() {
 	// new session
 	request1 := newRequest()
 	session1 := store.GetSessionUse(request1, "test")
-	assert.NoError(h.T, session1.Save(httptest.NewRecorder()))
+	assert.NoError(h.T, session1.Save(httptest.NewRecorder(), false))
 	assert.Equal(h.T, 1, h.UseCountFor(cache, "id1"))
 
 	// session from cookie
@@ -70,7 +70,7 @@ func (h *TestHarness) RunDeadCookiesTests() {
 	session1 := store.GetSessionUse(request1, "test")
 	assert.Equal(h.T, "", session1.ID())
 
-	assert.NoError(h.T, session1.Save(httptest.NewRecorder()))
+	assert.NoError(h.T, session1.Save(httptest.NewRecorder(), false))
 	assert.Equal(h.T, "id1", session1.ID())
 	assert.Equal(h.T, 1, h.UseCountFor(cache, "id1"))
 	assert.Equal(h.T, -1, h.UseCountFor(cache, "id2"))
@@ -88,7 +88,7 @@ func (h *TestHarness) RunDeadCookiesTests() {
 	assert.Equal(h.T, 2, h.UseCountFor(cache, "id1"))
 	assert.Equal(h.T, -1, h.UseCountFor(cache, "id2"))
 
-	assert.NoError(h.T, session3.Save(httptest.NewRecorder()))
+	assert.NoError(h.T, session3.Save(httptest.NewRecorder(), false))
 	assert.Equal(h.T, "id2", session3.ID())
 	assert.Equal(h.T, 1, h.UseCountFor(cache, "id2"))
 
