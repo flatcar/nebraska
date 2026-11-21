@@ -40,6 +40,79 @@ var (
 		},
 	)
 
+	// Rollout progress and update tracking metrics
+	groupTotalInstancesMetric = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: "nebraska",
+			Name:      "group_total_instances",
+			Help:      "Total number of instances in a group",
+		},
+		[]string{"application", "group", "channel"},
+	)
+
+	groupUpdatesGrantedMetric = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: "nebraska",
+			Name:      "group_updates_granted",
+			Help:      "Number of instances granted update to current version",
+		},
+		[]string{"application", "group", "channel"},
+	)
+
+	groupUpdatesAttemptedMetric = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: "nebraska",
+			Name:      "group_updates_attempted",
+			Help:      "Number of instances that attempted update to current version",
+		},
+		[]string{"application", "group", "channel"},
+	)
+
+	groupUpdatesSucceededMetric = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: "nebraska",
+			Name:      "group_updates_succeeded",
+			Help:      "Number of instances that successfully updated to current version",
+		},
+		[]string{"application", "group", "channel"},
+	)
+
+	groupUpdatesFailedMetric = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: "nebraska",
+			Name:      "group_updates_failed",
+			Help:      "Number of instances that failed to update to current version",
+		},
+		[]string{"application", "group", "channel"},
+	)
+
+	groupUpdatesInProgressMetric = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: "nebraska",
+			Name:      "group_updates_in_progress",
+			Help:      "Number of instances currently updating (within timeout window)",
+		},
+		[]string{"application", "group", "channel"},
+	)
+
+	groupUpdatesTimedOutMetric = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: "nebraska",
+			Name:      "group_updates_timed_out",
+			Help:      "Number of instances where update exceeded timeout",
+		},
+		[]string{"application", "group", "channel"},
+	)
+
+	groupUpdatesGrantedInPeriodMetric = prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Namespace: "nebraska",
+			Name:      "group_updates_granted_in_period",
+			Help:      "Number of updates granted in the current policy period",
+		},
+		[]string{"application", "group", "channel"},
+	)
+
 	openConnections = prometheus.NewGauge(
 		prometheus.GaugeOpts{
 			Namespace: "nebraska",
@@ -72,6 +145,14 @@ func registerNebraskaMetrics() error {
 	collectors := []prometheus.Collector{
 		appInstancePerChannelGaugeMetric,
 		failedUpdatesGaugeMetric,
+		groupTotalInstancesMetric,
+		groupUpdatesGrantedMetric,
+		groupUpdatesAttemptedMetric,
+		groupUpdatesSucceededMetric,
+		groupUpdatesFailedMetric,
+		groupUpdatesInProgressMetric,
+		groupUpdatesTimedOutMetric,
+		groupUpdatesGrantedInPeriodMetric,
 		openConnections,
 		inUseConnections,
 		idleConnections,
@@ -135,6 +216,10 @@ func calculateMetrics(api *api.API) error {
 		return fmt.Errorf("failed to get app instances per channel metrics: %w", err)
 	}
 
+	// Reset gauge to clear stale label combinations before setting new values.
+	// This prevents old labels (e.g., from renamed applications or changed channels)
+	// from persisting indefinitely with their last known value.
+	appInstancePerChannelGaugeMetric.Reset()
 	for _, metric := range aipcMetrics {
 		appInstancePerChannelGaugeMetric.WithLabelValues(metric.ApplicationName, metric.Version, metric.ChannelName).Set(float64(metric.InstancesCount))
 	}
@@ -144,8 +229,38 @@ func calculateMetrics(api *api.API) error {
 		return fmt.Errorf("failed to get failed update metrics: %w", err)
 	}
 
+	// Reset gauge to clear stale label combinations.
+	failedUpdatesGaugeMetric.Reset()
 	for _, metric := range fuMetrics {
 		failedUpdatesGaugeMetric.WithLabelValues(metric.ApplicationName).Set(float64(metric.FailureCount))
+	}
+
+	// Rollout progress metrics
+	groupStatsMetrics, err := api.GetGroupUpdatesStatsMetrics()
+	if err != nil {
+		return fmt.Errorf("failed to get group updates stats metrics: %w", err)
+	}
+
+	// Reset all rollout progress gauges to clear stale label combinations.
+	groupTotalInstancesMetric.Reset()
+	groupUpdatesGrantedMetric.Reset()
+	groupUpdatesAttemptedMetric.Reset()
+	groupUpdatesSucceededMetric.Reset()
+	groupUpdatesFailedMetric.Reset()
+	groupUpdatesInProgressMetric.Reset()
+	groupUpdatesTimedOutMetric.Reset()
+	groupUpdatesGrantedInPeriodMetric.Reset()
+
+	for _, metric := range groupStatsMetrics {
+		labels := []string{metric.ApplicationName, metric.GroupName, metric.ChannelName}
+		groupTotalInstancesMetric.WithLabelValues(labels...).Set(float64(metric.TotalInstances))
+		groupUpdatesGrantedMetric.WithLabelValues(labels...).Set(float64(metric.UpdatesToCurrentVersionGranted))
+		groupUpdatesAttemptedMetric.WithLabelValues(labels...).Set(float64(metric.UpdatesToCurrentVersionAttempted))
+		groupUpdatesSucceededMetric.WithLabelValues(labels...).Set(float64(metric.UpdatesToCurrentVersionSucceeded))
+		groupUpdatesFailedMetric.WithLabelValues(labels...).Set(float64(metric.UpdatesToCurrentVersionFailed))
+		groupUpdatesInProgressMetric.WithLabelValues(labels...).Set(float64(metric.UpdatesInProgress))
+		groupUpdatesTimedOutMetric.WithLabelValues(labels...).Set(float64(metric.UpdatesTimedOut))
+		groupUpdatesGrantedInPeriodMetric.WithLabelValues(labels...).Set(float64(metric.UpdatesGrantedInLastPeriod))
 	}
 
 	// db stats
