@@ -164,13 +164,17 @@ func (s *Syncer) Start() {
 	l.Debug().Msg("syncer ready!")
 	s.ticker = time.NewTicker(s.checkFrequency)
 
-	_ = s.checkForUpdates()
+	if err := s.checkForUpdates(); err != nil {
+		l.Error().Err(err).Msg("syncer: initial check for updates failed")
+	}
 
 L:
 	for {
 		select {
 		case <-s.ticker.C:
-			_ = s.checkForUpdates()
+			if err := s.checkForUpdates(); err != nil {
+				l.Error().Err(err).Msg("syncer: periodic check for updates failed")
+			}
 		case <-s.stopCh:
 			break L
 		}
@@ -292,6 +296,10 @@ func (s *Syncer) doOmahaRequest(descriptor channelDescriptor, currentVersion str
 	if err != nil {
 		l.Error().Err(err).Msg("checkForUpdates, unmarshalling omaha response")
 		return nil, err
+	}
+
+	if len(oresp.Apps) == 0 {
+		return nil, fmt.Errorf("omaha response contains no apps")
 	}
 
 	return oresp.Apps[0].UpdateCheck, nil
@@ -427,6 +435,9 @@ func (s *Syncer) createPackage(
 	}
 
 	// Determine URL and filename
+	if len(update.URLs) == 0 {
+		return nil, fmt.Errorf("omaha update response contains no URLs for version %s", manifest.Version)
+	}
 	url := update.URLs[0].CodeBase
 	filename := omahaPkg.Name
 
@@ -751,6 +762,9 @@ func (s *Syncer) downloadPackage(update *omaha.UpdateResponse, pkgName, sha1Base
 	}
 	defer os.Remove(tmpFile.Name())
 
+	if len(update.URLs) == 0 {
+		return fmt.Errorf("omaha update response contains no URLs")
+	}
 	updateURL, err := url.Parse(update.URLs[0].CodeBase)
 	if err != nil {
 		return err
