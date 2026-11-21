@@ -17,7 +17,7 @@ import TablePagination from '@mui/material/TablePagination';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router';
-import _ from 'underscore';
+
 
 import API from '../../api/API';
 import { Application, Group, Instance, Instances } from '../../api/apiDataTypes';
@@ -154,16 +154,33 @@ function ListView(props: ListViewProps) {
   const statusDefs = makeStatusDefs(useTheme());
   const { application, group } = props;
   const versionBreakdown = useGroupVersionBreakdown(group);
-  /*TODO: use the URL as the single source of truth and remove states */
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [isDescSortOrder, setIsDescSortOrder] = React.useState(false);
-  const [sortQuery, setSortQuery] = React.useState(InstanceSortFilters['last-check']);
-  const [filters, setFilters] = React.useState<{ [key: string]: any }>({
-    status: '',
-    version: '',
-    sortOrder: SORT_ORDERS[1],
-  });
+  const location = useLocation();
+  const navigate = useNavigate();
+  const queryParams = new URLSearchParams(location.search);
+
+  const page = Math.max(0, parseInt(queryParams.get('page') || '1', 10) - 1);
+  const rowsPerPage = parseInt(queryParams.get('perPage') || '10', 10);
+  const isDescSortOrder = queryParams.get('sortOrder') === SORT_ORDERS[1];
+  const sortQuery = InstanceSortFilters[queryParams.get('sort') || 'last-check'];
+  const duration = queryParams.get('period') || '1d';
+
+  let status = '';
+  const statusValue = queryParams.get('status');
+  if (statusValue && statusValue !== 'ShowAll') {
+    for (const key in statusDefs) {
+      if (statusDefs[key].label === statusValue) {
+        status = key;
+        break;
+      }
+    }
+  }
+  const version = queryParams.get('version') || '';
+  const filters = {
+    status,
+    version,
+    sortOrder: isDescSortOrder ? SORT_ORDERS[1] : SORT_ORDERS[0],
+  };
+
   const [instancesObj, setInstancesObj] = React.useState<Instances>({
     instances: [],
     total: -1,
@@ -174,36 +191,9 @@ function ListView(props: ListViewProps) {
     searchFilter?: string;
     searchValue?: string;
   }>({});
-  const location = useLocation();
-  const navigate = useNavigate();
 
   function getDuration() {
-    return new URLSearchParams(location.search).get('period') || '1d';
-  }
-
-  function fetchFiltersFromURL(callback: (...args: any) => void) {
-    let status = '';
-    const queryParams = new URLSearchParams(location.search);
-    if (queryParams.has('status')) {
-      const statusValue = queryParams.get('status');
-      if (statusValue !== 'ShowAll') {
-        for (const key in statusDefs) {
-          if (statusDefs[key].label === statusValue) {
-            status = key;
-            break;
-          }
-        }
-      }
-    }
-    const version = queryParams.get('version') || '';
-    const sort = InstanceSortFilters[queryParams.get('sort') || 'last-check'];
-    const pageFromURL = queryParams.get('page');
-    const pageQueryParam = ((pageFromURL && parseInt(pageFromURL)) || 1) - 1;
-    const perPage = parseInt(queryParams.get('perPage') as string) || 10;
-    const sortOrder = SORT_ORDERS[1] === (queryParams.get('sortOrder') as string) ? 1 : 0;
-    const duration = getDuration();
-
-    callback(status, version, sort, sortOrder, pageQueryParam, perPage, duration);
+    return duration;
   }
 
   function addQuery(queryObj: { [key: string]: any }) {
@@ -289,40 +279,16 @@ function ListView(props: ListViewProps) {
       Object.keys(_filters).length !== 0 ? _filters : { status: '', version: '' };
     const statusQueryParam = newFilters.status ? statusDefs[newFilters.status].label : '';
     addQuery({ status: statusQueryParam, version: newFilters.version });
-    setFilters(newFilters);
   }
 
   function resetFilters() {
     applyFilters();
   }
 
-  function handleInstanceFetch(searchObject: {
-    searchFilter?: string | undefined;
-    searchValue?: string | undefined;
-  }) {
-    fetchFiltersFromURL(
-      (
-        status: string,
-        version: string,
-        sort: string,
-        isDescSortOrder: boolean,
-        pageParam: number,
-        perPageParam: number,
-        duration: string
-      ) => {
-        setFilters({ status, version, sort });
-        setPage(pageParam);
-        setIsDescSortOrder(isDescSortOrder);
-        setSortQuery(sort);
-        setRowsPerPage(perPageParam);
-        fetchInstances({ status, version, sort }, pageParam, perPageParam, duration, searchObject);
-      }
-    );
-  }
   React.useEffect(() => {
-    handleInstanceFetch(searchObject);
+    fetchInstances(filters, page, rowsPerPage, duration, searchObject);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location]);
+  }, [location.search]);
 
   React.useEffect(() => {
     // We want to run it only if the searchValue is empty and once for change in totalInstances.
@@ -358,18 +324,18 @@ function ListView(props: ListViewProps) {
     return filters.status || filters.version;
   }
 
-  function sortHandler(isDescSortOrder: boolean, sortQuery: string) {
-    setIsDescSortOrder(isDescSortOrder);
-    setSortQuery(sortQuery);
-    const sortAliasKey = getKeyByValue(InstanceSortFilters, sortQuery);
-    addQuery({ sort: sortAliasKey, sortOrder: SORT_ORDERS[Number(isDescSortOrder)] });
+  function sortHandler(isDescSortOrderParam: boolean, sortQueryParam: string) {
+    const sortAliasKey = getKeyByValue(InstanceSortFilters, sortQueryParam);
+    addQuery({ sort: sortAliasKey, sortOrder: SORT_ORDERS[Number(isDescSortOrderParam)] });
   }
 
   function searchHandler(e: React.ChangeEvent<{ value: string }>) {
     const value = e.target.value;
     // This means user has reset the input field, and now we need to fetch all the instances
     if (value === '') {
-      handleInstanceFetch({});
+      setSearchObject({});
+      fetchInstances(filters, page, rowsPerPage, duration, {});
+      return;
     }
     // handle if a classifier is present
     const [classifierName] = value.split(':');
@@ -395,8 +361,7 @@ function ListView(props: ListViewProps) {
 
   function handleSearchSubmit(e: any) {
     if (e.key === 'Enter' && Object.keys(searchObject).length !== 0) {
-      const debouncedFetch = _.debounce(handleInstanceFetch, 100);
-      debouncedFetch(searchObject);
+      fetchInstances(filters, page, rowsPerPage, duration, searchObject);
     }
   }
 
