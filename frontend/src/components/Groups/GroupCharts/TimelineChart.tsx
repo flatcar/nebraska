@@ -143,11 +143,11 @@ export default function TimelineChart(props: TimelineChartProps) {
         stroke={'#000'}
       />
       <YAxis stroke="#000" />
-      {props.keys.map((key: string, i: number) => (
+      {props.keys.map((key: string) => (
         <Area
           isAnimationActive={props.isAnimationActive}
           type={interpolation}
-          key={i}
+          key={key}
           dataKey={key}
           stackId="1"
           stroke={props.colors[key]}
