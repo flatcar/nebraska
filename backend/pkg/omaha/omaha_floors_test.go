@@ -254,7 +254,7 @@ func TestLegacySyncerBlockedWithFloors(t *testing.T) {
 		app.MachineID = "modern-syncer"
 		app.Track = group.ID
 		app.AddUpdateCheck()
-		app.MultiManifestOK = true // Modern syncer with multi-manifest support
+		app.MultiManifestOK = true // Modern syncer with multi-package support
 
 		buf := bytes.NewBuffer(nil)
 		err := xml.NewEncoder(buf).Encode(req)
@@ -275,4 +275,46 @@ func TestLegacySyncerBlockedWithFloors(t *testing.T) {
 		assert.Equal(t, omahaSpec.UpdateOK, resp.Apps[0].UpdateCheck.Status)
 		assert.Len(t, resp.Apps[0].UpdateCheck.Manifests, 3) // 2 floors + 1 target
 	})
+}
+
+// TestSyncerReceivesAllFloorsBeyondDefaultLimit verifies that syncer update responses
+// do not truncate floor packages when a channel has more than 5 floor versions.
+func TestSyncerReceivesAllFloorsBeyondDefaultLimit(t *testing.T) {
+	a := newForTest(t)
+	defer a.Close()
+	h := NewHandler(runtimeSvc(a))
+
+	// 7 floors + 1 target = 8 packages total
+	floors := []string{"1.0.0", "2.0.0", "3.0.0", "4.0.0", "5.0.0", "6.0.0", "7.0.0"}
+	group, pkgs := setupOmahaFloorTest(t, a, "overflow", floors, "8.0.0")
+	require.Len(t, pkgs, 8)
+
+	req := omahaSpec.NewRequest()
+	req.OS.Version, req.OS.Platform, req.OS.ServicePack, req.OS.Arch = "3", "CoreOS", "linux", "x64"
+	req.Version = "CoreOSUpdateEngine-0.1.0.0"
+	req.InstallSource = "scheduler"
+	app := req.AddApp(flatcarAppID, "0.5.0")
+	app.MachineID, app.Track = "syncer-overflow", group.ID
+	app.AddUpdateCheck()
+	app.MultiManifestOK = true
+
+	buf := bytes.NewBuffer(nil)
+	require.NoError(t, xml.NewEncoder(buf).Encode(req))
+	respBuf := bytes.NewBuffer(nil)
+	require.NoError(t, h.Handle(buf, respBuf, "10.0.0.1"))
+	var resp omahaSpec.Response
+	require.NoError(t, xml.NewDecoder(respBuf).Decode(&resp))
+
+	manifests := resp.Apps[0].UpdateCheck.Manifests
+	require.Len(t, manifests, 8, "syncer must receive all 7 floor manifests + target")
+
+	got := make(map[string]bool)
+	for _, m := range manifests {
+		got[m.Version] = true
+	}
+
+	for _, f := range floors {
+		assert.True(t, got[f], "floor %s missing from multi-manifest response", f)
+	}
+	assert.True(t, got["8.0.0"], "target package 8.0.0 missing from multi-manifest response")
 }
