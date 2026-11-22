@@ -22,73 +22,76 @@ export interface VersionCountTimelineProps {
   isAnimationActive?: boolean;
 }
 
+function makeEmptyTimelineChartData() {
+  return { data: [], keys: [], colors: [] };
+}
+
+function getVersionsFromTimeline(timeline: { [key: string]: any }) {
+  if (Object.keys(timeline).length === 0) {
+    return [];
+  }
+
+  const versions: string[] = [];
+
+  Object.keys(Object.values(timeline)[0]).forEach(version => {
+    const cleanedVersion = cleanSemverVersion(version);
+    // Discard any invalid versions (empty strings, etc.)
+    if (semver.valid(cleanedVersion)) {
+      versions.push(cleanedVersion);
+    }
+  });
+
+  // Sort versions (earliest first)
+  versions.sort((version1, version2) => {
+    return semver.compare(version1, version2);
+  });
+
+  return versions;
+}
+
+function makeTimelineChartData(
+  theme: Theme,
+  latestVersion: string | null,
+  groupTimeline: { [key: string]: any }
+) {
+  const data = Object.keys(groupTimeline).map((timestamp, i) => {
+    const versions = groupTimeline[timestamp];
+    return {
+      index: i,
+      timestamp: timestamp,
+      ...versions,
+    };
+  });
+
+  const versions = getVersionsFromTimeline(groupTimeline);
+  const versionColors: {
+    [key: string]: string;
+  } = makeColorsForVersions(theme, versions, latestVersion);
+
+  return {
+    data: data,
+    keys: versions,
+    colors: versionColors,
+  };
+}
+
 export default function VersionCountTimeline(props: VersionCountTimelineProps) {
   const [selectedEntry, setSelectedEntry] = React.useState(-1);
-  const { duration } = props;
+  const { duration, group } = props;
+  const applicationID = group?.application_id;
+  const groupID = group?.id;
+  const latestVersion = group?.channel?.package?.version ?? null;
+  const durationQueryValue = duration.queryValue;
   const [timelineChartData, setTimelineChartData] = React.useState<{
     data: any[];
     keys: any[];
     colors: any;
-  }>({
-    data: [],
-    keys: [],
-    colors: [],
-  });
-  const [timeline, setTimeline] = React.useState({
-    timeline: {},
-    // A long time ago, to force the first update...
-    lastUpdate: new Date(2000, 1, 1).toUTCString(),
-  });
+  }>(makeEmptyTimelineChartData);
 
   const theme = useTheme();
 
   const ChartStoreContext = groupChartStoreContext();
   const groupChartStore = React.useContext(ChartStoreContext);
-
-  function makeChartData(group: Group, groupTimeline: { [key: string]: any }) {
-    const data = Object.keys(groupTimeline).map((timestamp, i) => {
-      const versions = groupTimeline[timestamp];
-      return {
-        index: i,
-        timestamp: timestamp,
-        ...versions,
-      };
-    });
-
-    const versions = getVersionsFromTimeline(groupTimeline);
-    const versionColors: {
-      [key: string]: string;
-    } = makeColorsForVersions(theme as Theme, versions, group.channel);
-
-    setTimelineChartData({
-      data: data,
-      keys: versions,
-      colors: versionColors,
-    });
-  }
-
-  function getVersionsFromTimeline(timeline: { [key: string]: any }) {
-    if (Object.keys(timeline).length === 0) {
-      return [];
-    }
-
-    const versions: string[] = [];
-
-    Object.keys(Object.values(timeline)[0]).forEach(version => {
-      const cleanedVersion = cleanSemverVersion(version);
-      // Discard any invalid versions (empty strings, etc.)
-      if (semver.valid(cleanedVersion)) {
-        versions.push(cleanedVersion);
-      }
-    });
-
-    // Sort versions (earliest first)
-    versions.sort((version1, version2) => {
-      return semver.compare(version1, version2);
-    });
-
-    return versions;
-  }
 
   function getInstanceCount(selectedEntry: number) {
     const version_breakdown = [];
@@ -152,36 +155,45 @@ export default function VersionCountTimeline(props: VersionCountTimelineProps) {
   // Make the timeline data again when needed.
   React.useEffect(() => {
     let canceled = false;
-    async function getVersionTimeline(group: Group | null) {
-      if (group) {
-        // Check if we should update the timeline or it's too early.
-        const lastUpdate = new Date(timeline.lastUpdate);
-        setTimelineChartData({ data: [], keys: [], colors: [] });
-        try {
-          const versionCountTimeline = await groupChartStore.getGroupVersionCountTimeline(
-            group.application_id,
-            group.id,
-            duration.queryValue
-          );
-          if (!canceled) {
-            setTimeline({
-              timeline: versionCountTimeline,
-              lastUpdate: lastUpdate.toUTCString(),
-            });
-          }
-          makeChartData(group, versionCountTimeline || []);
-          setSelectedEntry(-1);
-        } catch (error) {
+
+    setSelectedEntry(-1);
+    setTimelineChartData(makeEmptyTimelineChartData());
+
+    if (!applicationID || !groupID) {
+      return () => {
+        canceled = true;
+      };
+    }
+
+    const selectedApplicationID = applicationID;
+    const selectedGroupID = groupID;
+
+    async function getVersionTimeline() {
+      try {
+        const versionCountTimeline = await groupChartStore.getGroupVersionCountTimeline(
+          selectedApplicationID,
+          selectedGroupID,
+          durationQueryValue
+        );
+        if (canceled) {
+          return;
+        }
+
+        const safeTimeline = versionCountTimeline || {};
+        setTimelineChartData(makeTimelineChartData(theme as Theme, latestVersion, safeTimeline));
+      } catch (error) {
+        if (!canceled) {
           console.error(error);
         }
       }
     }
-    getVersionTimeline(props.group);
+
+    getVersionTimeline();
+
     return () => {
       canceled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [duration]);
+  }, [applicationID, durationQueryValue, groupChartStore, groupID, latestVersion, theme]);
 
   return (
     <Grid container alignItems="center" spacing={2}>

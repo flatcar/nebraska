@@ -107,8 +107,12 @@ function VersionProgressBar(props: { version_breakdown: any; channel: Channel | 
       data[version] = percentageValue;
     });
 
-    const versionColors = makeColorsForVersions(theme as Theme, Object.keys(data), channel);
     lastVersionChannel = channel && channel.package ? channel.package.version : null;
+    const versionColors = makeColorsForVersions(
+      theme as Theme,
+      Object.keys(data),
+      lastVersionChannel
+    );
 
     if (other.percentage > 0) {
       data[otherVersionLabel] = other.percentage;
