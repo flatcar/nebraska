@@ -122,7 +122,7 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 			respApp.Status = h.getStatusMessage(err)
 			respApp.AddUpdateCheck(omahaSpec.UpdateInternalError)
 
-			return omahaResp, nil
+			continue
 		}
 
 		respApp = omahaResp.AddApp(reqApp.ID, omahaSpec.AppOK)
@@ -140,7 +140,7 @@ func (h *Handler) buildOmahaResponse(omahaReq *omahaSpec.Request, ip string) (*o
 			l.Info().Str("machineId", reqApp.MachineID).Str("track", group).Msgf("buildOmahaResponse - no group found for track and arch error %s", err.Error())
 			respApp.Status = h.getStatusMessage(err)
 			respApp.AddUpdateCheck(omahaSpec.UpdateInternalError)
-			return omahaResp, nil
+			continue
 		}
 
 		for _, event := range reqApp.Events {
