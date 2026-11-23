@@ -192,7 +192,7 @@ func (q *Queries) getGroupsFromQuery(query *goqu.SelectDataset) ([]*types.Group,
 func activeGroupInstances(groupID string) *goqu.SelectDataset {
 	return PGDialect.From("instance_application").Select(goqu.L("1")).Where(
 		goqu.C("group_id").Eq(groupID),
-		goqu.L("last_check_for_updates > now() at time zone 'utc' - ?::text::interval", validityInterval),
+		goqu.L("last_check_for_updates > now() - ?::text::interval", validityInterval),
 		goqu.L(ignoreFakeInstanceCondition("instance_id")))
 }
 
@@ -215,14 +215,14 @@ func (q *Queries) GetGroupRolloutPolicyStats(group *types.Group, limit int, safe
 	limitCap := uint(max(limit, 1))
 	active := activeGroupInstances(group.ID)
 	counts := []interface{}{
-		countUpTo(active.Where(goqu.L("last_update_granted_ts > now() at time zone 'utc' - ?::text::interval", group.PolicyPeriodInterval)).
+		countUpTo(active.Where(goqu.L("last_update_granted_ts > now() - ?::text::interval", group.PolicyPeriodInterval)).
 			Order(goqu.C("last_update_granted_ts").Asc()), limitCap).As("updates_granted_in_last_period"),
-		countUpTo(active.Where(goqu.L("update_in_progress"), goqu.L("last_update_granted_ts >= now() at time zone 'utc' - ?::text::interval", group.PolicyUpdateTimeout)).
+		countUpTo(active.Where(goqu.L("update_in_progress"), goqu.L("last_update_granted_ts >= now() - ?::text::interval", group.PolicyUpdateTimeout)).
 			Order(goqu.C("last_update_granted_ts").Asc()), limitCap).As("updates_in_progress"),
 	}
 	if safeMode {
 		counts = append(counts,
-			countUpTo(active.Where(goqu.L("update_in_progress"), goqu.L("last_update_granted_ts < now() at time zone 'utc' - ?::text::interval", group.PolicyUpdateTimeout)).
+			countUpTo(active.Where(goqu.L("update_in_progress"), goqu.L("last_update_granted_ts < now() - ?::text::interval", group.PolicyUpdateTimeout)).
 				Order(goqu.C("last_update_granted_ts").Asc()), limitCap).As("updates_timed_out"),
 			updatesAttempted(group).As("updates_to_current_version_attempted"))
 	}
@@ -339,9 +339,9 @@ func (q *Queries) GetGroupVersionBreakdown(groupID string) ([]*types.VersionBrea
 	FROM instance_application, (
 		SELECT count(*) as total
 		FROM instance_application
-		WHERE group_id=$1 AND last_check_for_updates > now() at time zone 'utc' - interval '%[1]s'
+		WHERE group_id=$1 AND last_check_for_updates > now() - interval '%[1]s'
 		) totals
-	WHERE group_id=$1 AND last_check_for_updates > now() at time zone 'utc' - interval '%[1]s' AND %[2]s
+	WHERE group_id=$1 AND last_check_for_updates > now() - interval '%[1]s' AND %[2]s
 	GROUP BY version, total
 	ORDER BY %[3]s DESC
 	`, validityInterval, ignoreFakeInstanceCondition("instance_id"), semverExpr)
@@ -439,7 +439,7 @@ func (q *Queries) GetGroupInstancesStats(groupID, duration string) (*types.Insta
 		goqu.COALESCE(goqu.SUM(goqu.L("case when status = ? then 1 else 0 end", types.InstanceStatusDownloaded)), 0).As("downloaded"),
 		goqu.COALESCE(goqu.SUM(goqu.L("case when status = ? then 1 else 0 end", types.InstanceStatusDownloading)), 0).As("downloading"),
 		goqu.COALESCE(goqu.SUM(goqu.L("case when status = ? then 1 else 0 end", types.InstanceStatusOnHold)), 0).As("onhold"),
-	).Where(goqu.C("group_id").Eq(groupID), goqu.L("last_check_for_updates > now() at time zone 'utc' - interval ?", durationString),
+	).Where(goqu.C("group_id").Eq(groupID), goqu.L("last_check_for_updates > now() - interval ?", durationString),
 		goqu.L(ignoreFakeInstanceCondition("instance_id")),
 	).ToSQL()
 	if err != nil {

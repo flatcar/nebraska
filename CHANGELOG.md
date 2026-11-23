@@ -47,6 +47,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removed
 ### Bugfixes
 
+- **Instance stats and rollout policy no longer depend on the Postgres session time zone.** Queries in `dbreads` compared `timestamptz` columns against `now() at time zone 'utc'`, which returns a plain timestamp that Postgres converts back using the session time zone, shifting every window by the session's UTC offset. Dashboard instance counts were wrong, and granted updates aged incorrectly: west of UTC they timed out early, which with safe mode on disables updates for the whole group, and east of UTC they stayed counted and held the concurrent update limit full. Nebraska now compares against plain `now()`, and pins `timezone=UTC` on the connection when the DSN does not set one. ([#1541](https://github.com/flatcar/nebraska/issues/1541))
 - Fixed missing error checks on database row iteration in `GetGroupVersionCountTimeline` method, which could silently return truncated metrics.
 - Fixed package blacklist changes not appearing in UI immediately after save
 - Fixed instance statistics query that returned incorrect group dashboard counts. ([#1356](https://github.com/flatcar/nebraska/pull/1356), thanks to Thilo Fromm)
