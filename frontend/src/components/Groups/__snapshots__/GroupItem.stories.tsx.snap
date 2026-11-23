@@ -204,6 +204,23 @@ exports[`groups/GroupItem EdgeNodeWithOverrides smoke-test 1`] = `
             </div>
           </div>
         </div>
+        <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-j0o5il-MuiGrid-root">
+          <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+              OEM / platform breakdown
+            </span>
+          </div>
+          <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
+            <div class="MuiBox-root css-19midj6">
+              <p class="MuiTypography-root MuiTypography-body1 MuiTypography-alignCenter css-12k2fzb-MuiTypography-root"
+                 data-testid="empty"
+                 style="--Typography-textAlign: center;"
+              >
+                No instances available.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -374,6 +391,23 @@ exports[`groups/GroupItem Group smoke-test 1`] = `
           <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
             <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
               Version breakdown
+            </span>
+          </div>
+          <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
+            <div class="MuiBox-root css-19midj6">
+              <p class="MuiTypography-root MuiTypography-body1 MuiTypography-alignCenter css-12k2fzb-MuiTypography-root"
+                 data-testid="empty"
+                 style="--Typography-textAlign: center;"
+              >
+                No instances available.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-j0o5il-MuiGrid-root">
+          <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+              OEM / platform breakdown
             </span>
           </div>
           <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
@@ -564,6 +598,23 @@ exports[`groups/GroupItem Loading smoke-test 1`] = `
           <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
             <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
               Version breakdown
+            </span>
+          </div>
+          <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
+            <div class="MuiBox-root css-19midj6">
+              <p class="MuiTypography-root MuiTypography-body1 MuiTypography-alignCenter css-12k2fzb-MuiTypography-root"
+                 data-testid="empty"
+                 style="--Typography-textAlign: center;"
+              >
+                Loading…
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-row css-j0o5il-MuiGrid-root">
+          <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">
+            <span class="MuiTypography-root MuiTypography-body1 css-19mjxle-MuiTypography-root">
+              OEM / platform breakdown
             </span>
           </div>
           <div class="MuiGrid-root MuiGrid-direction-xs-row MuiGrid-grid-xs-12 css-yqiqnf-MuiGrid-root">

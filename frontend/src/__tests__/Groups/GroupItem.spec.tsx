@@ -19,6 +19,7 @@ function renderCard(group: Group, instanceMode?: InstanceMode) {
           <PureGroupItem
             group={group}
             versionBreakdown={[]}
+            oemBreakdown={[]}
             totalInstances={0}
             handleUpdateGroup={vi.fn()}
             deleteGroup={vi.fn()}
