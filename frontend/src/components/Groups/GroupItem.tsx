@@ -7,10 +7,14 @@ import { useTranslation } from 'react-i18next';
 import _ from 'underscore';
 
 import API from '../../api/API';
-import { Group, VersionBreakdownEntry } from '../../api/apiDataTypes';
+import { Group, OEMBreakdownEntry, VersionBreakdownEntry } from '../../api/apiDataTypes';
 import { applicationsStore } from '../../stores/Stores';
 import { effectivePolicy, isOverridden, isPausedHere } from '../../utils/groupPolicy';
-import { MAX_UPDATES_PER_TIME_PERIOD, useGroupVersionBreakdown } from '../../utils/helpers';
+import {
+  MAX_UPDATES_PER_TIME_PERIOD,
+  useGroupOEMBreakdown,
+  useGroupVersionBreakdown,
+} from '../../utils/helpers';
 import { adminWriteRefusal, InstanceMode, useInstanceMode } from '../../utils/instanceMode';
 import ChannelItem from '../Channels/ChannelItem';
 import { CardFeatureLabel, CardHeader, CardLabel } from '../common/Card';
@@ -44,6 +48,7 @@ function GroupItem({ group, handleUpdateGroup }: GroupItemProps) {
   const instanceMode = useInstanceMode();
   const [totalInstances, setTotalInstances] = React.useState<null | number>(null);
   const versionBreakdown = useGroupVersionBreakdown(group);
+  const oemBreakdown = useGroupOEMBreakdown(group);
 
   function deleteGroup(appID: string, groupID: string) {
     const confirmationText = t('groups|group_delete_confirmation');
@@ -67,6 +72,7 @@ function GroupItem({ group, handleUpdateGroup }: GroupItemProps) {
       handleUpdateGroup={handleUpdateGroup}
       deleteGroup={deleteGroup}
       versionBreakdown={versionBreakdown}
+      oemBreakdown={oemBreakdown}
       totalInstances={totalInstances}
       instanceMode={instanceMode}
     />
@@ -76,6 +82,7 @@ function GroupItem({ group, handleUpdateGroup }: GroupItemProps) {
 export interface PureGroupItemProps {
   group: Group;
   versionBreakdown: VersionBreakdownEntry[] | null;
+  oemBreakdown: OEMBreakdownEntry[] | null;
   totalInstances: number | null;
   handleUpdateGroup: (appID: string, groupID: string) => void;
   deleteGroup: (appID: string, groupID: string) => void;
@@ -85,6 +92,7 @@ export interface PureGroupItemProps {
 export function PureGroupItem({
   group,
   versionBreakdown,
+  oemBreakdown,
   totalInstances,
   handleUpdateGroup,
   deleteGroup,
@@ -101,6 +109,12 @@ export function PureGroupItem({
 
   const description = group.description || t('groups|description_none_provided');
   const channel = group.channel || null;
+  const oemAsVersionBreakdown =
+    oemBreakdown?.map(entry => ({
+      version: entry.oem,
+      instances: entry.instances,
+      percentage: entry.percentage,
+    })) ?? null;
 
   const groupChannel = _.isEmpty(group.channel) ? (
     <CardLabel>{t('groups|channel_none_provided')}</CardLabel>
@@ -219,6 +233,20 @@ export function PureGroupItem({
                   <Empty>{t('frequent|loading')}</Empty>
                 ) : versionBreakdown?.length > 0 ? (
                   <VersionProgressBar version_breakdown={versionBreakdown} channel={channel} />
+                ) : (
+                  <Empty>{t('groups|instances_none_available')}</Empty>
+                )}
+              </Grid>
+            </Grid>
+            <Grid container>
+              <Grid size={12}>
+                <CardFeatureLabel>{t('groups|oem_breakdown_lower')}</CardFeatureLabel>
+              </Grid>
+              <Grid size={12}>
+                {oemAsVersionBreakdown === null ? (
+                  <Empty>{t('frequent|loading')}</Empty>
+                ) : oemAsVersionBreakdown.length > 0 ? (
+                  <VersionProgressBar version_breakdown={oemAsVersionBreakdown} channel={null} />
                 ) : (
                   <Empty>{t('groups|instances_none_available')}</Empty>
                 )}

@@ -24,6 +24,7 @@ export const Group = {
 
   args: {
     versionBreakdown: [],
+    oemBreakdown: [],
     totalInstances: 2,
     group: {
       id: '11a585f6-9418-4df0-8863-78b2fd3240f8',
@@ -60,6 +61,7 @@ export const Loading = {
 
   args: {
     versionBreakdown: null,
+    oemBreakdown: null,
     totalInstances: null,
     group: {
       id: '11a585f6-9418-4df0-8863-78b2fd3240f8',
