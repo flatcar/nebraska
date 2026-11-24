@@ -57,6 +57,27 @@ type groupVersionCountCache struct {
 	storedAt time.Time
 }
 
+// dropExpiredGroupVersionCount removes one stale timeline so a deleted or
+// unknown group does not stay in the process cache after its lifespan.
+func dropExpiredGroupVersionCount(key groupDurationCacheKey) {
+	cachedGroupVersionCountLock.Lock()
+	defer cachedGroupVersionCountLock.Unlock()
+	val, ok := cachedGroupVersionCount[key]
+	if ok && time.Since(val.storedAt) >= CachedGroupVersionCountLifespan {
+		delete(cachedGroupVersionCount, key)
+	}
+}
+
+// pruneExpiredGroupVersionCountLocked deletes every expired timeline entry.
+// The caller must hold cachedGroupVersionCountLock.
+func pruneExpiredGroupVersionCountLocked(now time.Time) {
+	for key, val := range cachedGroupVersionCount {
+		if now.Sub(val.storedAt) >= CachedGroupVersionCountLifespan {
+			delete(cachedGroupVersionCount, key)
+		}
+	}
+}
+
 // GetGroup returns the group identified by the id provided.
 func (q *Queries) GetGroup(groupID string) (*types.Group, error) {
 	query, args, err := q.groupsQuery().Prepared(true).
@@ -526,6 +547,7 @@ func (q *Queries) GetGroupVersionCountTimeline(groupID string, duration string) 
 			return val.data, true, nil
 		}
 		l.Debug().Str("cacheStatus", "STALE").Str("groupID", groupID).Str("duration", duration).Msg("GetGroupVersionCountTimeline")
+		dropExpiredGroupVersionCount(cacheKey)
 	}
 
 	durationString, interval, err := durationParamToPostgresTimings(durationParam(duration))
@@ -769,6 +791,7 @@ func (q *Queries) GetGroupVersionCountTimeline(groupID string, duration string) 
 	go func() {
 		cachedGroupVersionCountLock.Lock()
 		defer cachedGroupVersionCountLock.Unlock()
+		pruneExpiredGroupVersionCountLocked(time.Now())
 		val, ok := cachedGroupVersionCount[cacheKey]
 		if !ok || time.Since(val.storedAt) >= CachedGroupVersionCountLifespan {
 			l.Debug().Str("cacheStatus", "SET").Str("groupID", groupID).Str("duration", duration).Msg("GetGroupVersionCountTimeline")
